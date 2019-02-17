@@ -6,10 +6,11 @@
 
 @interface FLTImagePickerPlugin : NSObject <FlutterPlugin>
 
-+ (void)getSize:(CGSize*)size drawRect:(CGRect*)drawRect
-   originalSize:(CGSize)originalSize
-       maxWidth:(NSNumber*)maxWidth
-      maxHeight:(NSNumber*)maxHeight
-           crop:(BOOL)crop;
++ (void)getSize:(CGSize*)size
+        drawRect:(CGRect*)drawRect
+    originalSize:(CGSize)originalSize
+        maxWidth:(NSNumber*)maxWidth
+       maxHeight:(NSNumber*)maxHeight
+            crop:(BOOL)crop;
 
 @end

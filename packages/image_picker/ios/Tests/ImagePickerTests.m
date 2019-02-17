@@ -1,11 +1,10 @@
-#import "ImagePickerPlugin.h"
 #import <XCTest/XCTest.h>
+#import "ImagePickerPlugin.h"
 
-@interface ImagePickerTests : XCTestCase @end
+@interface ImagePickerTests : XCTestCase
+@end
 
-static CGSize SwappedSize(CGSize size) {
-  return CGSizeMake(size.height, size.width);
-}
+static CGSize SwappedSize(CGSize size) { return CGSizeMake(size.height, size.width); }
 
 static CGRect SwappedRect(CGRect rect) {
   return CGRectMake(rect.origin.y, rect.origin.x, rect.size.height, rect.size.width);
@@ -18,8 +17,7 @@ static CGRect SwappedRect(CGRect rect) {
                   maxHeight:(NSNumber*)maxHeight
                        crop:(BOOL)crop
                        size:(CGSize)expectedSize
-                   drawRect:(CGRect)expectedDrawRect
-{
+                   drawRect:(CGRect)expectedDrawRect {
   {
     CGSize size;
     CGRect drawRect;
@@ -43,15 +41,14 @@ static CGRect SwappedRect(CGRect rect) {
                 maxHeight:(NSNumber*)maxHeight
                      crop:(BOOL)crop
                      size:(CGSize)expectedSize
-                 drawRect:(CGRect)expectedDrawRect
-{
+                 drawRect:(CGRect)expectedDrawRect {
   [self doCheckOriginalSize:originalSize
                    maxWidth:maxWidth
                   maxHeight:maxHeight
                        crop:crop
                        size:expectedSize
                    drawRect:expectedDrawRect];
-  
+
   [self doCheckOriginalSize:SwappedSize(originalSize)
                    maxWidth:maxHeight
                   maxHeight:maxWidth

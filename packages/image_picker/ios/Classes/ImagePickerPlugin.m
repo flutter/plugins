@@ -211,7 +211,7 @@ static const int SOURCE_GALLERY = 1;
                     crop:(BOOL)crop {
   double originalWidth = image.size.width * image.scale;
   double originalHeight = image.size.height * image.scale;
-  
+
   CGSize size;
   CGRect drawRect;
   [FLTImagePickerPlugin getSize:&size
@@ -220,7 +220,7 @@ static const int SOURCE_GALLERY = 1;
                        maxWidth:maxWidth
                       maxHeight:maxHeight
                            crop:crop];
-    
+
   UIGraphicsBeginImageContextWithOptions(size, NO, 1.0);
   [image drawInRect:drawRect];
 
@@ -230,11 +230,12 @@ static const int SOURCE_GALLERY = 1;
   return scaledImage;
 }
 
-+ (void)getSize:(CGSize*)size drawRect:(CGRect*)drawRect
-   originalSize:(CGSize)originalSize
-       maxWidth:(NSNumber*)maxWidth
-      maxHeight:(NSNumber*)maxHeight
-           crop:(BOOL)crop {
++ (void)getSize:(CGSize *)size
+        drawRect:(CGRect *)drawRect
+    originalSize:(CGSize)originalSize
+        maxWidth:(NSNumber *)maxWidth
+       maxHeight:(NSNumber *)maxHeight
+            crop:(BOOL)crop {
   bool hasMaxWidth = maxWidth != nil && maxWidth != (id)[NSNull null];
   bool hasMaxHeight = maxHeight != nil && maxHeight != (id)[NSNull null];
 
@@ -243,21 +244,21 @@ static const int SOURCE_GALLERY = 1;
 
   double scale;
   if (hasMaxWidth) {
-      if (hasMaxHeight) {
-          if (crop) {
-              scale = MAX(widthScale, heightScale);
-          } else {
-              scale = MIN(widthScale, heightScale);
-          }
+    if (hasMaxHeight) {
+      if (crop) {
+        scale = MAX(widthScale, heightScale);
       } else {
-          scale = widthScale;
+        scale = MIN(widthScale, heightScale);
       }
+    } else {
+      scale = widthScale;
+    }
   } else {
-      if (hasMaxHeight) {
-          scale = heightScale;
-      } else {
-          scale = 1.0;
-      }
+    if (hasMaxHeight) {
+      scale = heightScale;
+    } else {
+      scale = 1.0;
+    }
   }
 
   scale = MIN(scale, 1.0);
@@ -270,11 +271,11 @@ static const int SOURCE_GALLERY = 1;
 
   double drawX = (width - drawWidth) / 2;
   double drawY = (height - drawHeight) / 2;
-  
+
   if (size) {
     *size = CGSizeMake(width, height);
   }
-  
+
   if (drawRect) {
     *drawRect = CGRectMake(drawX, drawY, drawWidth, drawHeight);
   }

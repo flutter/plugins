@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,7 +26,14 @@ class ImageResizer {
     public final double drawWidth;
     public final double drawHeight;
 
-    SizeInfo(int width, int height, double scale, double drawX, double drawY, double drawWidth, double drawHeight) {
+    SizeInfo(
+        int width,
+        int height,
+        double scale,
+        double drawX,
+        double drawY,
+        double drawWidth,
+        double drawHeight) {
       this.width = width;
       this.height = height;
       this.scale = scale;
@@ -66,7 +72,8 @@ class ImageResizer {
     }
   }
 
-  public static SizeInfo computeSizeInfo(int originalWidth, int originalHeight, Double maxWidth, Double maxHeight, boolean crop) {
+  public static SizeInfo computeSizeInfo(
+      int originalWidth, int originalHeight, Double maxWidth, Double maxHeight, boolean crop) {
     boolean hasMaxWidth = maxWidth != null;
     boolean hasMaxHeight = maxHeight != null;
 
@@ -103,30 +110,33 @@ class ImageResizer {
     double drawX = (width - drawWidth) / 2;
     double drawY = (height - drawHeight) / 2;
 
-    return new SizeInfo((int)width, (int)height, scale, drawX, drawY, drawWidth, drawHeight);
+    return new SizeInfo((int) width, (int) height, scale, drawX, drawY, drawWidth, drawHeight);
   }
 
-  private File resizedImage(String path, Double maxWidth, Double maxHeight, boolean crop) throws IOException {
+  private File resizedImage(String path, Double maxWidth, Double maxHeight, boolean crop)
+      throws IOException {
     Bitmap bmp = BitmapFactory.decodeFile(path);
-    final SizeInfo info = computeSizeInfo(bmp.getWidth(), bmp.getHeight(), maxWidth, maxHeight, crop);
+    final SizeInfo info =
+        computeSizeInfo(bmp.getWidth(), bmp.getHeight(), maxWidth, maxHeight, crop);
 
     int sampleSize = 1;
-    while (sampleSize * 2 < 1/info.scale) {
+    while (sampleSize * 2 < 1 / info.scale) {
       sampleSize *= 2;
     }
 
     Bitmap.Config config = bmp.getConfig();
     if (config == null) {
-        config = Bitmap.Config.ARGB_8888;
+      config = Bitmap.Config.ARGB_8888;
     }
 
     Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 
     // First step - scale in range [0.5; 1)
     {
-      Bitmap scaledBmp = Bitmap.createBitmap(info.width * sampleSize, info.height * sampleSize, config);
+      Bitmap scaledBmp =
+          Bitmap.createBitmap(info.width * sampleSize, info.height * sampleSize, config);
       Canvas canvas = new Canvas(scaledBmp);
-      canvas.translate((float)(info.drawX * sampleSize), (float)(info.drawY * sampleSize));
+      canvas.translate((float) (info.drawX * sampleSize), (float) (info.drawY * sampleSize));
       float scale = (float) (info.scale * sampleSize);
       canvas.scale(scale, scale);
       canvas.drawBitmap(bmp, 0, 0, paint);
@@ -138,7 +148,8 @@ class ImageResizer {
     while (sampleSize > 1) {
       sampleSize /= 2;
 
-      Bitmap scaledBmp = Bitmap.createBitmap(info.width * sampleSize, info.height * sampleSize, config);
+      Bitmap scaledBmp =
+          Bitmap.createBitmap(info.width * sampleSize, info.height * sampleSize, config);
       Canvas canvas = new Canvas(scaledBmp);
       canvas.scale(0.5f, 0.5f);
       canvas.drawBitmap(bmp, 0, 0, paint);
