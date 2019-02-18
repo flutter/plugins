@@ -77,6 +77,8 @@ class WebView extends StatefulWidget {
     this.onWebViewCreated,
     this.initialUrl,
     this.javascriptMode = JavascriptMode.disabled,
+    this.username,
+    this.password,
     this.javascriptChannels,
     this.gestureRecognizers,
   })  : assert(javascriptMode != null),
@@ -101,6 +103,10 @@ class WebView extends StatefulWidget {
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
+
+  final String username;
+
+  final String password;
 
   /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
   ///
@@ -228,13 +234,20 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 }
 
 class _CreationParams {
-  _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames});
+  _CreationParams({
+    this.initialUrl,
+    this.settings,
+    this.username,
+    this.password,
+    this.javascriptChannelNames,
+  });
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
       initialUrl: widget.initialUrl,
       settings: _WebSettings.fromWidget(widget),
+      username: widget.username,
+      password: widget.password,
       javascriptChannelNames:
           _extractChannelNames(widget.javascriptChannels).toList(),
     );
@@ -244,12 +257,18 @@ class _CreationParams {
 
   final _WebSettings settings;
 
+  final String username;
+
+  final String password;
+
   final List<String> javascriptChannelNames;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'initialUrl': initialUrl,
       'settings': settings.toMap(),
+      'username': username,
+      'password': password,
       'javascriptChannelNames': javascriptChannelNames,
     };
   }

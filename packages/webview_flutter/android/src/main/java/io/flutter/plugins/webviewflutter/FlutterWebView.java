@@ -2,8 +2,11 @@ package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
 import android.view.View;
+import android.webkit.HttpAuthHandler;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -19,7 +22,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
 
   @SuppressWarnings("unchecked")
-  FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
+  FlutterWebView(
+          Context context, BinaryMessenger messenger, int id, final Map<String, Object> params) {
     webView = new WebView(context);
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
@@ -28,6 +32,17 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     methodChannel.setMethodCallHandler(this);
 
     applySettings((Map<String, Object>) params.get("settings"));
+
+    webView.setWebViewClient(new WebViewClient() {
+        @Override
+        public void onReceivedHttpAuthRequest(
+                WebView view, HttpAuthHandler handler, String host, String realm) {
+
+            if (params.containsKey("username") && params.containsKey("password")) {
+                handler.proceed((String) params.get("username"), (String) params.get("password"));
+            }
+        }
+    });
 
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
       registerJavaScriptChannelNames((List<String>) params.get(JS_CHANNEL_NAMES_FIELD));
