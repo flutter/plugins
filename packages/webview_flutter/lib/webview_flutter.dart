@@ -33,6 +33,39 @@ class JavascriptMessage {
 /// Callback type for handling messages sent from Javascript running in a web view.
 typedef void JavascriptMessageHandler(JavascriptMessage message);
 
+/// Information about a navigation action that is about to be executed.
+class NavigationRequest {
+  NavigationRequest({this.url, this.isMainFrame});
+
+  /// The URL a navigation is requested to.
+  final String url;
+
+  /// Whether the navigation request originated from the main HTML frame.
+  final bool isMainFrame;
+
+  @override
+  String toString() {
+    return 'NavigationRequest(url: $url, isMainFrame: $isMainFrame)';
+  }
+}
+
+/// A decision on how to handle a navigation request.
+enum NavigationDecision {
+  /// Prevent the navigation from taking place.
+  prevent,
+
+  /// Allow the navigation to take place.
+  navigate,
+}
+
+/// Decides how to handle a specific navigation request.
+///
+/// The returned [NavigationDecision] determines how the navigation described by
+/// `navigation` should be handled.
+///
+/// See also: [WebView.navigationDelegate].
+typedef NavigationDecision NavigationDelegate(NavigationRequest navigation);
+
 final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
 
 /// A named channel for receiving messaged from JavaScript code running inside a web view.
@@ -78,6 +111,7 @@ class WebView extends StatefulWidget {
     this.initialUrl,
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
+    this.navigationDelegate,
     this.gestureRecognizers,
   })  : assert(javascriptMode != null),
         super(key: key);
@@ -130,6 +164,20 @@ class WebView extends StatefulWidget {
   ///
   /// A null value is equivalent to an empty set.
   final Set<JavascriptChannel> javascriptChannels;
+
+  /// A delegate function that decides how to handle navigation actions.
+  ///
+  /// When a navigation is initiated by the WebView (e.g when a user clicks a link)
+  /// this delegate is called and has to decide how to proceed with the navigation.
+  ///
+  /// See [NavigationDecision] for possible decisions the delegate can take.
+  ///
+  /// When null all navigation actions are allowed.
+  ///
+  /// On Android only navigation actions originated by the main frame can be intercepted,
+  /// navigation actions originating from subframes are allowed regardless of the value
+  /// returned by this delegate.
+  final NavigationDelegate navigationDelegate;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -196,6 +244,7 @@ class _WebViewState extends State<WebView> {
     final WebViewController controller = await _controller.future;
     controller._updateSettings(settings);
     controller._updateJavascriptChannels(widget.javascriptChannels);
+    controller._navigationDelegate = widget.navigationDelegate;
   }
 
   void _onPlatformViewCreated(int id) {
@@ -203,6 +252,7 @@ class _WebViewState extends State<WebView> {
       id,
       _WebSettings.fromWidget(widget),
       widget.javascriptChannels,
+      widget.navigationDelegate,
     );
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
@@ -260,27 +310,35 @@ class _CreationParams {
 class _WebSettings {
   _WebSettings({
     this.javascriptMode,
+    this.hasNavigationDelegate,
   });
 
   static _WebSettings fromWidget(WebView widget) {
-    return _WebSettings(javascriptMode: widget.javascriptMode);
+    return _WebSettings(
+      javascriptMode: widget.javascriptMode,
+      hasNavigationDelegate: widget.navigationDelegate != null,
+    );
   }
 
   final JavascriptMode javascriptMode;
+  final bool hasNavigationDelegate;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javascriptMode.index,
+      'hasNavigationDelegate': hasNavigationDelegate,
     };
   }
 
   Map<String, dynamic> updatesMap(_WebSettings newSettings) {
-    if (javascriptMode == newSettings.javascriptMode) {
-      return null;
+    final Map<String, dynamic> updates = <String, dynamic>{};
+    if (javascriptMode != newSettings.javascriptMode) {
+      updates['jsMode'] = newSettings.javascriptMode.index;
     }
-    return <String, dynamic>{
-      'jsMode': newSettings.javascriptMode.index,
-    };
+    if (hasNavigationDelegate != newSettings.hasNavigationDelegate) {
+      updates['hasNavigationDelegate'] = newSettings.hasNavigationDelegate;
+    }
+    return updates;
   }
 }
 
@@ -290,13 +348,18 @@ class _WebSettings {
 /// callback for a [WebView] widget.
 class WebViewController {
   WebViewController._(
-      int id, this._settings, Set<JavascriptChannel> javascriptChannels)
-      : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
+    int id,
+    this._settings,
+    Set<JavascriptChannel> javascriptChannels,
+    this._navigationDelegate,
+  ) : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
     _updateJavascriptChannelsFromSet(javascriptChannels);
     _channel.setMethodCallHandler(_onMethodCall);
   }
 
   final MethodChannel _channel;
+
+  NavigationDelegate _navigationDelegate;
 
   _WebSettings _settings;
 
@@ -312,6 +375,29 @@ class WebViewController {
         _javascriptChannels[channel]
             .onMessageReceived(JavascriptMessage(message));
         break;
+      case 'navigationRequest':
+        final NavigationRequest request = NavigationRequest(
+          url: call.arguments['url'],
+          isMainFrame: call.arguments['isMainFrame'],
+        );
+
+        // _navigationDelegate can be null if the widget was rebuilt with no
+        // navigation // delegate after a navigation happened and just before we
+        // got the navigationRequest message.
+        if (_navigationDelegate == null ||
+            _navigationDelegate(request) == NavigationDecision.navigate) {
+          _completeNavigation(request, call.arguments['requestId']);
+        }
+        break;
+    }
+  }
+
+  void _completeNavigation(NavigationRequest request, int requestId) {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      if (request.isMainFrame) {
+        loadUrl(request.url);
+        return;
+      }
     }
   }
 
@@ -416,7 +502,7 @@ class WebViewController {
 
   Future<void> _updateSettings(_WebSettings setting) async {
     final Map<String, dynamic> updateMap = _settings.updatesMap(setting);
-    if (updateMap == null) {
+    if (updateMap == null || updateMap.isEmpty) {
       return null;
     }
     _settings = setting;
