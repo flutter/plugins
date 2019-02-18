@@ -28,6 +28,7 @@ class WebViewExample extends StatelessWidget {
       body: Builder(builder: (BuildContext context) {
         return WebView(
           initialUrl: 'https://flutter.io',
+          zoom: true,
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);

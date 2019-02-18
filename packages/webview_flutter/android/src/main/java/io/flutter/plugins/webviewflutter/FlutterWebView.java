@@ -137,13 +137,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       throw new UnsupportedOperationException("JavaScript string cannot be null");
     }
     webView.evaluateJavascript(
-        jsString,
-        new android.webkit.ValueCallback<String>() {
-          @Override
-          public void onReceiveValue(String value) {
-            result.success(value);
-          }
-        });
+            jsString,
+            new android.webkit.ValueCallback<String>() {
+              @Override
+              public void onReceiveValue(String value) {
+                result.success(value);
+              }
+            });
   }
 
   @SuppressWarnings("unchecked")
@@ -174,6 +174,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "jsMode":
           updateJsMode((Integer) settings.get(key));
           break;
+        case "zoom":
+          updateZoomMode((boolean) settings.get(key));
+          break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
@@ -193,10 +196,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
+  private void updateZoomMode(boolean mode) {
+    //webView.getSettings().setLoadWithOverviewMode(true);
+    webView.getSettings().setUseWideViewPort(mode);
+    webView.getSettings().setBuiltInZoomControls(mode);
+    // Pop-up zoom controls disabled. This is a temporary stop because dialog is not responding to touch events.
+    webView.getSettings().setDisplayZoomControls(false);
+  }
+
   private void registerJavaScriptChannelNames(List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.addJavascriptInterface(
-          new JavaScriptChannel(methodChannel, channelName), channelName);
+              new JavaScriptChannel(methodChannel, channelName), channelName);
     }
   }
 

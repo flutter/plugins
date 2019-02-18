@@ -14,7 +14,7 @@ typedef void WebViewCreatedCallback(WebViewController controller);
 enum JavascriptMode {
   /// JavaScript execution is disabled.
   disabled,
-
+  
   /// JavaScript execution is not restricted.
   unrestricted,
 }
@@ -25,7 +25,7 @@ class JavascriptMessage {
   ///
   /// The `message` parameter must not be null.
   const JavascriptMessage(this.message) : assert(message != null);
-
+  
   /// The contents of the message that was sent by the JavaScript code.
   final String message;
 }
@@ -41,12 +41,12 @@ class JavascriptChannel {
   ///
   /// The parameters `name` and `onMessageReceived` must not be null.
   JavascriptChannel({
-    @required this.name,
-    @required this.onMessageReceived,
-  })  : assert(name != null),
+                      @required this.name,
+                      @required this.onMessageReceived,
+                    })  : assert(name != null),
         assert(onMessageReceived != null),
         assert(_validChannelNames.hasMatch(name));
-
+  
   /// The channel's name.
   ///
   /// Passing this channel object as part of a [WebView.javascriptChannels] adds a channel object to
@@ -59,7 +59,7 @@ class JavascriptChannel {
   ///
   /// See also [WebView.javascriptChannels] for more details on the channel registration mechanism.
   final String name;
-
+  
   /// A callback that's invoked when a message is received through the channel.
   final JavascriptMessageHandler onMessageReceived;
 }
@@ -73,18 +73,19 @@ class WebView extends StatefulWidget {
   ///
   /// The `javascriptMode` parameter must not be null.
   const WebView({
-    Key key,
-    this.onWebViewCreated,
-    this.initialUrl,
-    this.javascriptMode = JavascriptMode.disabled,
-    this.javascriptChannels,
-    this.gestureRecognizers,
-  })  : assert(javascriptMode != null),
+                  Key key,
+                  this.onWebViewCreated,
+                  this.initialUrl,
+                  this.javascriptMode = JavascriptMode.disabled,
+                  this.javascriptChannels,
+                  this.gestureRecognizers,
+                  this.zoom = false,
+                })  : assert(javascriptMode != null),
         super(key: key);
-
+  
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback onWebViewCreated;
-
+  
   /// Which gestures should be consumed by the web view.
   ///
   /// It is possible for other gesture recognizers to be competing with the web view on pointer
@@ -95,13 +96,13 @@ class WebView extends StatefulWidget {
   /// When this set is empty or null, the web view will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
-
+  
   /// The initial URL to load.
   final String initialUrl;
-
+  
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
-
+  
   /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
   ///
   /// For each [JavascriptChannel] in the set, a channel object is made available for the
@@ -130,17 +131,20 @@ class WebView extends StatefulWidget {
   ///
   /// A null value is equivalent to an empty set.
   final Set<JavascriptChannel> javascriptChannels;
-
+  
+  /// Enable/Disable zoom.
+  final bool zoom;
+  
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
 
 class _WebViewState extends State<WebView> {
   final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
-
+  Completer<WebViewController>();
+  
   _WebSettings _settings;
-
+  
   @override
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -177,27 +181,27 @@ class _WebViewState extends State<WebView> {
     return Text(
         '$defaultTargetPlatform is not yet supported by the webview_flutter plugin');
   }
-
+  
   @override
   void initState() {
     super.initState();
     _assertJavascriptChannelNamesAreUnique();
   }
-
+  
   @override
   void didUpdateWidget(WebView oldWidget) {
     super.didUpdateWidget(oldWidget);
     _assertJavascriptChannelNamesAreUnique();
     _updateConfiguration(_WebSettings.fromWidget(widget));
   }
-
+  
   Future<void> _updateConfiguration(_WebSettings settings) async {
     _settings = settings;
     final WebViewController controller = await _controller.future;
     controller._updateSettings(settings);
     controller._updateJavascriptChannels(widget.javascriptChannels);
   }
-
+  
   void _onPlatformViewCreated(int id) {
     final WebViewController controller = WebViewController._(
       id,
@@ -209,7 +213,7 @@ class _WebViewState extends State<WebView> {
       widget.onWebViewCreated(controller);
     }
   }
-
+  
   void _assertJavascriptChannelNamesAreUnique() {
     if (widget.javascriptChannels == null ||
         widget.javascriptChannels.isEmpty) {
@@ -230,22 +234,22 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 class _CreationParams {
   _CreationParams(
       {this.initialUrl, this.settings, this.javascriptChannelNames});
-
+  
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
       initialUrl: widget.initialUrl,
       settings: _WebSettings.fromWidget(widget),
       javascriptChannelNames:
-          _extractChannelNames(widget.javascriptChannels).toList(),
+      _extractChannelNames(widget.javascriptChannels).toList(),
     );
   }
-
+  
   final String initialUrl;
-
+  
   final _WebSettings settings;
-
+  
   final List<String> javascriptChannelNames;
-
+  
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'initialUrl': initialUrl,
@@ -257,27 +261,31 @@ class _CreationParams {
 
 class _WebSettings {
   _WebSettings({
-    this.javascriptMode,
-  });
-
+                 this.javascriptMode,
+                 this.zoom
+               });
+  
   static _WebSettings fromWidget(WebView widget) {
-    return _WebSettings(javascriptMode: widget.javascriptMode);
+    return _WebSettings(javascriptMode: widget.javascriptMode, zoom: widget.zoom);
   }
-
+  
   final JavascriptMode javascriptMode;
-
+  final bool zoom;
+  
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javascriptMode.index,
+      'zoom': zoom,
     };
   }
-
+  
   Map<String, dynamic> updatesMap(_WebSettings newSettings) {
     if (javascriptMode == newSettings.javascriptMode) {
       return null;
     }
     return <String, dynamic>{
       'jsMode': newSettings.javascriptMode.index,
+      'zoom': newSettings.zoom,
     };
   }
 }
@@ -293,15 +301,15 @@ class WebViewController {
     _updateJavascriptChannelsFromSet(javascriptChannels);
     _channel.setMethodCallHandler(_onMethodCall);
   }
-
+  
   final MethodChannel _channel;
-
+  
   _WebSettings _settings;
-
+  
   // Maps a channel name to a channel.
   Map<String, JavascriptChannel> _javascriptChannels =
-      <String, JavascriptChannel>{};
-
+  <String, JavascriptChannel>{};
+  
   Future<void> _onMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'javascriptChannelMessage':
@@ -312,7 +320,7 @@ class WebViewController {
         break;
     }
   }
-
+  
   /// Loads the specified URL.
   ///
   /// `url` must not be null.
@@ -326,7 +334,7 @@ class WebViewController {
     // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod('loadUrl', url);
   }
-
+  
   /// Accessor to the current URL that the WebView is displaying.
   ///
   /// If [WebView.initialUrl] was never specified, returns `null`.
@@ -341,7 +349,7 @@ class WebViewController {
     final String url = await _channel.invokeMethod('currentUrl');
     return url;
   }
-
+  
   /// Checks whether there's a back history item.
   ///
   /// Note that this operation is asynchronous, and it is possible that the "canGoBack" state has
@@ -353,7 +361,7 @@ class WebViewController {
     final bool canGoBack = await _channel.invokeMethod("canGoBack");
     return canGoBack;
   }
-
+  
   /// Checks whether there's a forward history item.
   ///
   /// Note that this operation is asynchronous, and it is possible that the "canGoForward" state has
@@ -365,7 +373,7 @@ class WebViewController {
     final bool canGoForward = await _channel.invokeMethod("canGoForward");
     return canGoForward;
   }
-
+  
   /// Goes back in the history of this WebView.
   ///
   /// If there is no back history item this is a no-op.
@@ -375,7 +383,7 @@ class WebViewController {
     // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod("goBack");
   }
-
+  
   /// Goes forward in the history of this WebView.
   ///
   /// If there is no forward history item this is a no-op.
@@ -385,7 +393,7 @@ class WebViewController {
     // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod("goForward");
   }
-
+  
   /// Reloads the current URL.
   Future<void> reload() async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
@@ -393,7 +401,7 @@ class WebViewController {
     // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod("reload");
   }
-
+  
   /// Clears all caches used by the [WebView].
   ///
   /// The following caches are cleared:
@@ -411,7 +419,7 @@ class WebViewController {
     await _channel.invokeMethod("clearCache");
     return reload();
   }
-
+  
   Future<void> _updateSettings(_WebSettings setting) async {
     final Map<String, dynamic> updateMap = _settings.updatesMap(setting);
     if (updateMap == null) {
@@ -423,15 +431,15 @@ class WebViewController {
     // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod('updateSettings', updateMap);
   }
-
+  
   Future<void> _updateJavascriptChannels(
       Set<JavascriptChannel> newChannels) async {
     final Set<String> currentChannels = _javascriptChannels.keys.toSet();
     final Set<String> newChannelNames = _extractChannelNames(newChannels);
     final Set<String> channelsToAdd =
-        newChannelNames.difference(currentChannels);
+    newChannelNames.difference(currentChannels);
     final Set<String> channelsToRemove =
-        currentChannels.difference(newChannelNames);
+    currentChannels.difference(newChannelNames);
     if (channelsToRemove.isNotEmpty) {
       // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
       // https://github.com/flutter/flutter/issues/26431
@@ -447,7 +455,7 @@ class WebViewController {
     }
     _updateJavascriptChannelsFromSet(newChannels);
   }
-
+  
   void _updateJavascriptChannelsFromSet(Set<JavascriptChannel> channels) {
     _javascriptChannels.clear();
     if (channels == null) {
@@ -457,7 +465,7 @@ class WebViewController {
       _javascriptChannels[channel.name] = channel;
     }
   }
-
+  
   /// Evaluates a JavaScript expression in the context of the current page.
   ///
   /// On Android returns the evaluation result as a JSON formatted string.
@@ -482,7 +490,7 @@ class WebViewController {
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     final String result =
-        await _channel.invokeMethod('evaluateJavascript', javascriptString);
+    await _channel.invokeMethod('evaluateJavascript', javascriptString);
     return result;
   }
 }
@@ -493,22 +501,22 @@ class CookieManager {
   factory CookieManager() {
     return _instance ??= CookieManager._();
   }
-
+  
   CookieManager._();
-
+  
   static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.io/cookie_manager');
+  MethodChannel('plugins.flutter.io/cookie_manager');
   static CookieManager _instance;
-
+  
   /// Clears all cookies.
   ///
   /// This is supported for >= IOS 9.
   ///
   /// Returns true if cookies were present before clearing, else false.
   Future<bool> clearCookies() => _channel
-      // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
+  // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
       .invokeMethod('clearCookies')
       .then<bool>((dynamic result) => result);
 }
