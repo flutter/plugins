@@ -95,12 +95,12 @@ final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
 ### Supported Firebase authentication methods
 
 * `Google authentication`
-
 * `Email&Password authentication`
-
 * `Phone authentication`
-
 * `Anonymously Sign in`
+* `Github authentication`
+* `Facebook authentication`
+* `Twitter authentication`
 
 ### Phone Auth
 
