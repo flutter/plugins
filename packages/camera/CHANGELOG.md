@@ -1,6 +1,10 @@
+## 0.4.0+1
+
+* Remove categories.
+
 ## 0.4.0
 
-* **Breaking Change** Change iOS image stream format to `ImageFormatGroup.bgra8888` from 
+* **Breaking Change** Change iOS image stream format to `ImageFormatGroup.bgra8888` from
   `ImageFormatGroup.yuv420`.
 
 ## 0.3.0+4
