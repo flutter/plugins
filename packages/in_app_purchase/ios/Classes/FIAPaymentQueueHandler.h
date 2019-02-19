@@ -7,8 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const TestingProductID;
-
 typedef void (^TransactionsUpdated)(NSArray<SKPaymentTransaction *> *transactions);
 typedef void (^TransactionsRemoved)(NSArray<SKPaymentTransaction *> *transactions);
 typedef void (^RestoreTransactionFailed)(NSError *error);
@@ -29,16 +27,8 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
                    shouldAddStorePayment:(nullable ShouldAddStorePayment)shouldAddStorePayment
                         updatedDownloads:(nullable UpdatedDownloads)updatedDownloads;
 - (void)addPayment:(SKPayment *)payment;
-// Can throw exceptions, should always used in a @try block.
+// Can throw exceptions if the transaction type is purchasing, should always used in a @try block.
 - (void)finishTransaction:(SKPaymentTransaction *)transaction;
-
-// Enable testing.
-
-// Because payment object in transaction is not KVC, we cannot mock the payment object in the
-// transaction. So there is no easay way to create stubs and test the handler.
-// When set to true, we always this a constant TestingProductID as product ID
-// when storing and accessing the completion block from self.completionMap
-@property(assign, nonatomic) BOOL testing;
 
 @end
 

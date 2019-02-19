@@ -121,7 +121,6 @@
       }
       updatedDownloads:nil];
   [queue addTransactionObserver:self.plugin.paymentQueueHandler];
-  self.plugin.paymentQueueHandler.testing = YES;
   [self.plugin handleMethodCall:call
                          result:^(id r){
                          }];
@@ -158,7 +157,6 @@
       }
       updatedDownloads:nil];
   [queue addTransactionObserver:self.plugin.paymentQueueHandler];
-  self.plugin.paymentQueueHandler.testing = YES;
   [self.plugin handleMethodCall:call
                          result:^(id r){
                          }];

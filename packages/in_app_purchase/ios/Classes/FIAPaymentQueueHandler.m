@@ -4,8 +4,6 @@
 
 #import "FIAPaymentQueueHandler.h"
 
-NSString *const TestingProductID = @"testing";
-
 @interface FIAPaymentQueueHandler ()
 
 @property(strong, nonatomic) SKPaymentQueue *queue;
@@ -46,21 +44,11 @@ NSString *const TestingProductID = @"testing";
 }
 
 - (void)addPayment:(SKPayment *)payment {
-  NSString *productID = payment.productIdentifier;
-  if (self.testing) {
-    productID = TestingProductID;
-  }
   [self.queue addPayment:payment];
 }
 
 - (void)finishTransaction:(SKPaymentTransaction *)transaction {
-  @try {
     [self.queue finishTransaction:transaction];
-  } @catch (NSException *e) {
-    // finish transaction will throw exception if the transaction type is purchasing. Raise the
-    // exception so the InAppPurchasePlugin will get notified.
-    [e raise];
-  }
 }
 
 #pragma mark - observing

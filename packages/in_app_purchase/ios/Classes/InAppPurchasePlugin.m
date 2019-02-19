@@ -134,7 +134,7 @@
 - (void)createPaymentWithProductID:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (![call.arguments isKindOfClass:[NSString class]]) {
     result([FlutterError
-        errorWithCode:@"storekit_invalide_argument"
+        errorWithCode:@"storekit_invalid_argument"
               message:@"Argument type of createPaymentWithProductID is not a string."
               details:call.arguments]);
     return;
@@ -145,7 +145,7 @@
     result([FlutterError
         errorWithCode:@"storekit_product_not_found"
               message:@"Cannot find the product. To create a payment of a product, you must query "
-                      @"the product with SKProductRequestMaker.startProductRequest."
+                      @"the product with SKProductRequestMaker.startProductRequest first."
               details:call.arguments]);
     return;
   }
@@ -156,7 +156,7 @@
 
 - (void)addPayment:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (![call.arguments isKindOfClass:[NSDictionary class]]) {
-    result([FlutterError errorWithCode:@"storekit_invalide_argument"
+    result([FlutterError errorWithCode:@"storekit_invalid_argument"
                                message:@"Argument type of addPayment is not a map"
                                details:call.arguments]);
     return;
@@ -164,30 +164,29 @@
   NSDictionary *paymentMap = (NSDictionary *)call.arguments;
   NSString *productID = [paymentMap objectForKey:@"productID"];
   SKPayment *payment = [self.paymentsCache objectForKey:productID];
-  // User can use  payment object with mutable = true and add simulatesAskToBuyInSandBox = true to
+  // User can use payment object with usePaymentObject = true and add simulatesAskToBuyInSandBox = true to
   // test the payment flow.
-  if (!payment || [paymentMap[@"mutable"] boolValue] == YES) {
+  if (!payment || [paymentMap[@"usePaymentObject"] boolValue] == YES) {
     SKMutablePayment *mutablePayment = [[SKMutablePayment alloc] init];
     mutablePayment.productIdentifier = productID;
     NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
-    if (quantity) {
-      mutablePayment.quantity = quantity.integerValue;
-    }
+    mutablePayment.quantity = quantity?quantity.integerValue:1;
     NSString *applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
     mutablePayment.applicationUsername = applicationUsername;
     if (@available(iOS 8.3, *)) {
       mutablePayment.simulatesAskToBuyInSandbox =
           [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
     }
-    [self.paymentQueueHandler addPayment:payment];
+    [self.paymentQueueHandler addPayment:mutablePayment];
   } else {
     [self.paymentQueueHandler addPayment:payment];
   }
+    result(nil);
 }
 
 - (void)finishTransaction:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (![call.arguments isKindOfClass:[NSString class]]) {
-    result([FlutterError errorWithCode:@"storekit_invalide_argument"
+    result([FlutterError errorWithCode:@"storekit_invalid_argument"
                                message:@"Argument type of finishTransaction is not a string."
                                details:call.arguments]);
     return;
@@ -211,24 +210,25 @@
                                details:e.description]);
     return;
   }
+  result(nil);
 }
 
 #pragma mark - delegates
 
 - (void)handleTransactionsUpdated:(NSArray<SKPaymentTransaction *> *)transactions {
   NSMutableArray *maps = [NSMutableArray new];
-  for (SKPaymentTransaction *transcation in transactions) {
-    [maps addObject:[FIAObjectTranslator getMapFromSKPaymentTransaction:transcation]];
+  for (SKPaymentTransaction *transaction in transactions) {
+    [maps addObject:[FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]];
   }
-  [self.callbackChannel invokeMethod:@"updatedTransaction" arguments:maps];
+  [self.callbackChannel invokeMethod:@"updatedTransactions" arguments:maps];
 }
 
 - (void)handleTransactionsRemoved:(NSArray<SKPaymentTransaction *> *)transactions {
   NSMutableArray *maps = [NSMutableArray new];
-  for (SKPaymentTransaction *transcation in transactions) {
-    [maps addObject:[FIAObjectTranslator getMapFromSKPaymentTransaction:transcation]];
+  for (SKPaymentTransaction *transaction in transactions) {
+    [maps addObject:[FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]];
   }
-  [self.callbackChannel invokeMethod:@"removedTransaction" arguments:maps];
+  [self.callbackChannel invokeMethod:@"removedTransactions" arguments:maps];
 }
 
 - (void)handleTransactionRestoreFailed:(NSError *)error {
@@ -252,8 +252,8 @@
 }
 
 - (BOOL)shouldAddStorePayment:(SKPayment *)payment product:(SKProduct *)product {
-  // We alwasy return NO here. And we send the message to dart to process the payment; and we will
-  // have a incerpection method that deciding if the payment should be processed (implemented by the
+  // We always return NO here. And we send the message to dart to process the payment; and we will
+  // have a interception method that deciding if the payment should be processed (implemented by the
   // programmer).
   [self.productsCache setObject:product forKey:product.productIdentifier];
   [self.paymentsCache setObject:payment forKey:payment.productIdentifier];
