@@ -50,7 +50,7 @@ pod 'Firebase/MLVisionLabelModel'
 pod 'Firebase/MLVisionTextModel'
 ```
 
-## Using an On-device FirbaseVisionDetector
+## Using an ML Vision Detector
 
 ### 1. Create a `FirebaseVisionImage`.
 
