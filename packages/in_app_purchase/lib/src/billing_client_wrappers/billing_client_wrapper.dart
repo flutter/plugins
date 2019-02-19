@@ -99,8 +99,8 @@ class BillingClient {
 
   /// Attempt to launch the Play Billing Flow for a given [skuDetails].
   ///
-  /// [skuDetails] needs to have already been fetched in a [querySkuDetails]
-  /// call. [accountId] is an optional hashed string associated with the user
+  /// The [skuDetails] needs to have already been fetched in a [querySkuDetails]
+  /// call. The [accountId] is an optional hashed string associated with the user
   /// that's unique to your app. It's used by Google to detect unusual behavior.
   /// Do not pass in a cleartext [accountId], use your developer ID, or use the
   /// user's Google ID for this field.
