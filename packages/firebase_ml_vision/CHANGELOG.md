@@ -1,3 +1,7 @@
+## 0.5.1+2
+
+* Fixes bug where image file needs to be rotated.
+
 ## 0.5.1+1
 
 * Remove categories.
