@@ -20,7 +20,7 @@ class SKPaymentQueueWrapper {
 
   /// Returns the default payment queue.
   ///
-  /// We do not support instantiating a custom payment queue.
+  /// We do not support instantiating a custom payment queue, hence the singleton.
   factory SKPaymentQueueWrapper() {
     return _singleton;
   }
