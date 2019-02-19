@@ -6,13 +6,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-class SigninPage extends StatefulWidget {
+class SignInPage extends StatefulWidget {
   final String title = 'Registration';
   @override
-  State<StatefulWidget> createState() => SigninPageState();
+  State<StatefulWidget> createState() => SignInPageState();
 }
 
-class SigninPageState extends State<SigninPage> {
+class SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,7 +169,7 @@ class _AnonymouslySigninSectionState extends State<_AnonymouslySigninSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Container(
-          child: const Text('Test sign Anonymously'),
+          child: const Text('Test sign in anonymously'),
           padding: const EdgeInsets.all(16),
           alignment: Alignment.center,
         ),
@@ -180,7 +180,7 @@ class _AnonymouslySigninSectionState extends State<_AnonymouslySigninSection> {
             onPressed: () async {
               _signInAnonymously();
             },
-            child: const Text('Sign in Anonymously'),
+            child: const Text('Sign in anonymously'),
           ),
         ),
         Container(
@@ -245,7 +245,7 @@ class _GoogleSigninSectionState extends State<_GoogleSigninSection> {
     return Column(
       children: <Widget>[
         Container(
-          child: const Text('Test sign with Google'),
+          child: const Text('Test sign in with Google'),
           padding: const EdgeInsets.all(16),
           alignment: Alignment.center,
         ),
@@ -324,7 +324,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Container(
-          child: const Text('Test sign with Phone number'),
+          child: const Text('Test sign in with phone number'),
           padding: const EdgeInsets.all(16),
           alignment: Alignment.center,
         ),
@@ -345,12 +345,12 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
             onPressed: () async {
               _verifyPhoneNumber();
             },
-            child: const Text('Veity phone number'),
+            child: const Text('Verify phone number'),
           ),
         ),
         TextField(
           controller: _smsController,
-          decoration: InputDecoration(labelText: 'verification code'),
+          decoration: InputDecoration(labelText: 'Verification code'),
         ),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -359,7 +359,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
             onPressed: () async {
               _signInWithPhoneNumber();
             },
-            child: const Text('Sign in with Phone number'),
+            child: const Text('Sign in with phone number'),
           ),
         ),
         Container(

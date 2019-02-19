@@ -10,7 +10,7 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 ## Usage
 
 ### Configure the Google sign-in plugin
-The Google Sign-in plugin is required to use the firebase_auth plugin. Follow the [Google sign-in plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#pub-pkg-tab-installing).
+The Google Sign-in plugin is required to use the Firebase_auth plugin. Follow the [Google sign-in plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#pub-pkg-tab-installing).
 
 ### Import the firebase_auth plugin
 To use the firebase_auth plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/firebase_auth#pub-pkg-tab-installing).
@@ -85,7 +85,6 @@ _handleSignIn()
 
 ### Register a user
 
-You can now register a new user using firebase_auth, e.g.
 ```dart
 final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
       email: 'an email',
@@ -93,9 +92,15 @@ final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
     );
 ```
 
-### Supported firebase authentication methods.
+### Supported Firebase authentication methods
 
-Supported authentication methods includes `Google authentication`, `Email&Password authentication`, `Phone authentication` and `Anonymously Sign in`.
+* `Google authentication`
+
+* `Email&Password authentication`
+
+* `Phone authentication`
+
+* `Anonymously Sign in`
 
 ### Phone Auth
 
@@ -104,7 +109,7 @@ the user's phone. The user signs in using a one-time code contained in the SMS m
 
 ### After authentication
 
-After a successful authentication, you should get a FirebaseUser object. You can use this object to check if the email is verified, to update email, to send verification email and etc. See [Documentation](https://pub.dartlang.org/documentation/firebase_auth/latest/firebase_auth/FirebaseUser-class.html) for more details on the FirebaseUser Object.
+After a successful authentication, you will receive a `FirebaseUser` object. You can use this object to check if the email is verified, to update email, to send verification email and etc. See [Documentation](https://pub.dartlang.org/documentation/firebase_auth/latest/firebase_auth/FirebaseUser-class.html) for more details on the `FirebaseUser` Object.
 
 
 #### iOS setup
