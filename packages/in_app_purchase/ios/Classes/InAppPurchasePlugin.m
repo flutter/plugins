@@ -8,13 +8,6 @@
 #import "FIAPRequestHandler.h"
 #import "FIAPaymentQueueHandler.h"
 
-typedef enum : NSUInteger {
-  PaymentQueueCallbackTypeUpdate,
-  PaymentQueueCallbackTypeRemoved,
-  PaymentQueueCallbackTypeRestoreTransactionFailed,
-  PaymentQueueCallbackTypeRestoreCompletedTransactionsFinished,
-} PaymentQueueCallbackType;
-
 @interface InAppPurchasePlugin ()
 
 // Holding strong references to FIAPRequestHandlers. Remove the handlers from the set after
