@@ -102,22 +102,20 @@ void main() {
     final Set<Marker> cur = _toSet(m1: m1, m2: m2);
     final MarkerUpdates updates = MarkerUpdates.from(prev, cur);
     final MarkerUpdates expectedUpdate = MarkerUpdates.internal(
-      markerUpdates: Set<MarkerUpdate>.from(
-        <MarkerUpdate>[
-          MarkerUpdate.internal(
-            updateEventType: MarkerUpdateEventType.update,
-            markerId: m1.markerId,
-            newMarker: m1,
-            changes: m1,
-          ),
-          MarkerUpdate.internal(
-            updateEventType: MarkerUpdateEventType.update,
-            markerId: m2.markerId,
-            newMarker: m2,
-            changes: m2,
-          ),
-        ],
-      ),
+      markerUpdates: {
+        MarkerUpdate.internal(
+          updateEventType: MarkerUpdateEventType.update,
+          markerId: m1.markerId,
+          newMarker: m1,
+          changes: m1,
+        ),
+        MarkerUpdate.internal(
+          updateEventType: MarkerUpdateEventType.update,
+          markerId: m2.markerId,
+          newMarker: m2,
+          changes: m2,
+        ),
+      },
     );
 
     expect(
@@ -140,26 +138,24 @@ void main() {
 
     final MarkerUpdates updates = MarkerUpdates.from(prev, cur);
     final MarkerUpdates expectedUpdate = MarkerUpdates.internal(
-      markerUpdates: Set<MarkerUpdate>.from(
-        <MarkerUpdate>[
-          MarkerUpdate.internal(
-            updateEventType: MarkerUpdateEventType.add,
-            markerId: m1.markerId,
-            newMarker: m1,
-            changes: m1,
-          ),
-          MarkerUpdate.internal(
-            updateEventType: MarkerUpdateEventType.update,
-            markerId: m2.markerId,
-            newMarker: m2,
-            changes: m2,
-          ),
-          MarkerUpdate.internal(
-            updateEventType: MarkerUpdateEventType.remove,
-            markerId: m3.markerId,
-          ),
-        ],
-      ),
+      markerUpdates: {
+        MarkerUpdate.internal(
+          updateEventType: MarkerUpdateEventType.add,
+          markerId: m1.markerId,
+          newMarker: m1,
+          changes: m1,
+        ),
+        MarkerUpdate.internal(
+          updateEventType: MarkerUpdateEventType.update,
+          markerId: m2.markerId,
+          newMarker: m2,
+          changes: m2,
+        ),
+        MarkerUpdate.internal(
+          updateEventType: MarkerUpdateEventType.remove,
+          markerId: m3.markerId,
+        ),
+      },
     );
 
     expect(

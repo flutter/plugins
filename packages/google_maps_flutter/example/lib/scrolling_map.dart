@@ -46,12 +46,11 @@ class ScrollingMapBody extends StatelessWidget {
                         target: center,
                         zoom: 11.0,
                       ),
-                      gestureRecognizers:
-                          <Factory<OneSequenceGestureRecognizer>>[
+                      gestureRecognizers: {
                         Factory<OneSequenceGestureRecognizer>(
                           () => EagerGestureRecognizer(),
                         ),
-                      ].toSet(),
+                      },
                     ),
                   ),
                 ),
@@ -79,7 +78,7 @@ class ScrollingMapBody extends StatelessWidget {
                         target: center,
                         zoom: 11.0,
                       ),
-                      markers: Set<Marker>.of(<Marker>[
+                      markers: {
                         Marker(
                           markerId: MarkerId("test_marker_id"),
                           position: LatLng(
@@ -91,13 +90,12 @@ class ScrollingMapBody extends StatelessWidget {
                             snippet: '*',
                           ),
                         )
-                      ]),
-                      gestureRecognizers:
-                          <Factory<OneSequenceGestureRecognizer>>[
+                      },
+                      gestureRecognizers: {
                         Factory<OneSequenceGestureRecognizer>(
                           () => ScaleGestureRecognizer(),
                         ),
-                      ].toSet(),
+                      },
                     ),
                   ),
                 ),
