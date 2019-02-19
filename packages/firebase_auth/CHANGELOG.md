@@ -1,6 +1,10 @@
+## 0.8.1+2
+
+* Update README.
+
 ## 0.8.1+1
 
-* Updates README.
+* Remove categories.
 
 ## 0.8.1
 
