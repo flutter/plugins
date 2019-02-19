@@ -71,16 +71,16 @@
             [weakSelf handleTransactionsRemoved:transactions];
           }
           restoreTransactionFailed:^(NSError *_Nonnull error) {
-            [self handleTransactionRestoreFailed:error];
+            [weakSelf handleTransactionRestoreFailed:error];
           }
           restoreCompletedTransactionsFinished:^{
-            [self restoreCompletedTransactionsFinished];
+            [weakSelf restoreCompletedTransactionsFinished];
           }
           shouldAddStorePayment:^BOOL(SKPayment *payment, SKProduct *product) {
-            return [self shouldAddStorePayment:payment product:product];
+            return [weakSelf shouldAddStorePayment:payment product:product];
           }
           updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
-            [self updatedDownloads:downloads];
+            [weakSelf updatedDownloads:downloads];
           }];
   self.callbackChannel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase_callback"
