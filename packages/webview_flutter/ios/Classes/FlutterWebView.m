@@ -38,6 +38,7 @@
   int64_t _viewId;
   FlutterMethodChannel* _channel;
   NSString* _currentUrl;
+  id _Nullable _args;
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
 }
@@ -48,6 +49,7 @@
               binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
   if ([super init]) {
     _viewId = viewId;
+    _args = args;
 
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
@@ -64,6 +66,8 @@
     configuration.userContentController = userContentController;
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    _webView.navigationDelegate = self;
+      
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
@@ -77,6 +81,19 @@
     }
   }
   return self;
+}
+
+- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
+    
+    NSString* username = _args[@"username"];
+    NSString* password = _args[@"password"];
+    
+    if ([username isKindOfClass:[NSString class]] && [password isKindOfClass:[NSString class]]) {
+        NSURLCredential *credential = [NSURLCredential credentialWithUser:(username)
+                                                                 password:(password)
+                                                              persistence:NSURLCredentialPersistenceForSession];
+        completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
+    }
 }
 
 - (UIView*)view {
