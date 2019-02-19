@@ -6,6 +6,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/services.dart';
+import './sk_product_wrapper.dart';
 
 part 'sk_payment_queue_wrapper.g.dart';
 
@@ -14,9 +16,129 @@ part 'sk_payment_queue_wrapper.g.dart';
 /// The payment queue contains payment related operations. It communicates with App Store and presents
 /// a user interface for the user to process and authorize the payment.
 class SKPaymentQueueWrapper {
+  Set<SKTransactionObserverWrapper> _observers = Set();
+
+  factory SKPaymentQueueWrapper() {
+    return _singleton;
+  }
+
+  static final SKPaymentQueueWrapper _singleton = new SKPaymentQueueWrapper._();
+
+  SKPaymentQueueWrapper._();
+
   /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
   static Future<bool> canMakePayments() async =>
       await channel.invokeMethod('-[SKPaymentQueue canMakePayments:]');
+
+  /// Adds a transaction observer to listen to all the transaction events of the payment queue.
+  ///
+  /// You have to have at least one transaction observer to be added to the payment queue to handle the
+  /// payment follow.
+  void addTransactionObserver(SKTransactionObserverWrapper observer) {
+    _observers.add(observer);
+  }
+
+  // Digests a method channel call from the platform and triggers the correct observer method.
+  Future<dynamic> _handleObserverCallbacks(MethodCall call) async {
+    switch (call.method) {
+      case 'updatedTransaction':
+        {
+          final List<SKPaymentTransactionWrapper> transactions =
+              _getTransactionList(call.arguments);
+          return await Future<void>(() {
+            for (SKTransactionObserverWrapper observer in _observers) {
+              observer.updatedTransaction(transactions: transactions);
+            }
+          });
+        }
+        break;
+      case 'removedTransaction':
+        {
+          final List<SKPaymentTransactionWrapper> transactions =
+              _getTransactionList(call.arguments);
+          return await Future<void>(() {
+            for (SKTransactionObserverWrapper observer in _observers) {
+              observer.removedTransaction(transactions: transactions);
+            }
+          });
+        }
+        break;
+      case 'paymentQueueRestoreCompletedTransactionsFinished':
+        {
+          return await Future<void>(() {
+            for (SKTransactionObserverWrapper observer in _observers) {
+              observer.restoreCompletedTransactions();
+            }
+          });
+        }
+      case 'updatedDownloads':
+        {
+          final List<SKDownloadWrapper> downloads =
+              _getDownloadList(call.arguments);
+          return await Future<void>(() {
+            for (SKTransactionObserverWrapper observer in _observers) {
+              observer.updatedDownloads(downloads: downloads);
+            }
+          });
+        }
+        break;
+      case 'shouldAddStorePayment':
+        {
+          return await Future<bool>(() {
+            for (SKTransactionObserverWrapper observer in _observers) {}
+          });
+        }
+      default:
+        break;
+    }
+    return null;
+  }
+
+  // Get transaction wrapper object list from arguments.
+  List<SKPaymentTransactionWrapper> _getTransactionList(dynamic arguments) {
+    final List<Map<String, dynamic>> transactionsMap = arguments;
+    final List<SKPaymentTransactionWrapper> transactions = transactionsMap
+        .map<SKPaymentTransactionWrapper>(
+            (Map<String, dynamic> map) => SKPaymentTransactionWrapper())
+        .toList();
+    return transactions;
+  }
+
+  // Get download wrapper object list from arguments.
+  List<SKDownloadWrapper> _getDownloadList(dynamic arguments) {
+    final List<Map<String, dynamic>> downloadsMap = arguments;
+    final List<SKDownloadWrapper> downloads = downloadsMap
+        .map<SKDownloadWrapper>(
+            (Map<String, dynamic> map) => SKDownloadWrapper())
+        .toList();
+    return downloads;
+  }
+}
+
+/// This class is Dart wrapper around [SKTransactionObserver](https://developer.apple.com/documentation/storekit/skpaymenttransactionobserver?language=objc).
+///
+/// Must be subclassed and
+abstract class SKTransactionObserverWrapper {
+  /// Triggered when some transactions are updateded.
+  void updatedTransaction({List<SKPaymentTransactionWrapper> transactions});
+
+  /// Triggered when some transactions are removed from the payment queue.
+  void removedTransaction({List<SKPaymentTransactionWrapper> transactions});
+
+  /// Triggered when there is an error while restoring transactions.
+  void restoreCompletedTransactions({Error error});
+
+  /// Triggered when payment queue has finished sending restored transactions.
+  void paymentQueueRestoreCompletedTransactionsFinished();
+
+  /// Triggered when some download objects are updated.
+  void updatedDownloads({List<SKDownloadWrapper> downloads});
+
+  /// Triggered when a user initiated an in-app purchase from App Store.
+  bool shouldAddStorePayment(
+      {SKPaymentWrapper payment, SKProductWrapper product}) {
+    return true;
+  }
 }
 
 /// Dart wrapper around StoreKit's
