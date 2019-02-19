@@ -171,9 +171,9 @@ typedef enum : NSUInteger {
   NSDictionary *paymentMap = (NSDictionary *)call.arguments;
   NSString *productID = [paymentMap objectForKey:@"productID"];
   SKPayment *payment = [self.paymentsCache objectForKey:productID];
-  // User can use  payment object with mutable = true and add simulatesAskToBuyInSandBox = true to
+  // User can use  payment object with usePaymentObject = true and add simulatesAskToBuyInSandBox = true to
   // test the payment flow.
-  if (!payment || [paymentMap[@"mutable"] boolValue] == YES) {
+  if (!payment || [paymentMap[@"usePaymentObject"] boolValue] == YES) {
     SKMutablePayment *mutablePayment = [[SKMutablePayment alloc] init];
     mutablePayment.productIdentifier = productID;
     NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
@@ -267,7 +267,7 @@ typedef enum : NSUInteger {
   [self.callbackChannel invokeMethod:@"shouldAddStorePayment"
                            arguments:@{
                              @"payment" : [FIAObjectTranslator getMapFromSKPayment:payment],
-                             @"proudt" : [FIAObjectTranslator getMapFromSKProduct:product]
+                             @"product" : [FIAObjectTranslator getMapFromSKProduct:product]
                            }];
   return NO;
 }
