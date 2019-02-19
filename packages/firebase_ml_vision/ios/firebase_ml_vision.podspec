@@ -22,6 +22,7 @@ An SDK that brings Google's machine learning expertise to Android and iOS apps i
   s.dependency 'Firebase/MLVisionFaceModel'
   s.dependency 'Firebase/MLVisionLabelModel'
   s.dependency 'Firebase/MLVisionTextModel'
+  s.dependency 'GoogleAppMeasurement', '~> 5.3.0'
   s.ios.deployment_target = '8.0'
   s.static_framework = true
 end

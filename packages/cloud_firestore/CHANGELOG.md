@@ -2,6 +2,11 @@
 
 * Fix transactions on iOS when getting snapshot that doesn't exist.
 
+## 0.9.0+2
+
+* Remove categories.
+>>>>>>> 0a923c1fb7cec424e273585e6164eb5173d496c7
+
 ## 0.9.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX

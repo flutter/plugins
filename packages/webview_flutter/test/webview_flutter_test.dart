@@ -124,6 +124,24 @@ void main() {
     expect(canGoBackNoPageLoaded, false);
   });
 
+  testWidgets("Clear Cache", (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+    expect(fakePlatformViewsController.lastCreatedView.hasCache, true);
+
+    await controller.clearCache();
+
+    expect(fakePlatformViewsController.lastCreatedView.hasCache, false);
+  });
+
   testWidgets("Can't go back with no history", (WidgetTester tester) async {
     WebViewController controller;
     await tester.pumpWidget(
@@ -569,6 +587,7 @@ class FakePlatformWebView {
   List<String> history = <String>[];
   int currentPosition = -1;
   int amountOfReloadsOnCurrentUrl = 0;
+  bool hasCache = true;
 
   String get currentUrl => history.isEmpty ? null : history[currentPosition];
   JavascriptMode javascriptMode;
@@ -621,6 +640,9 @@ class FakePlatformWebView {
         javascriptChannelNames
             .removeWhere((String channel) => channelNames.contains(channel));
         break;
+      case 'clearCache':
+        hasCache = false;
+        return Future<void>.sync(() {});
     }
     return Future<void>.sync(() {});
   }
