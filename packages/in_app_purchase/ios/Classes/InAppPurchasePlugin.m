@@ -267,7 +267,7 @@ typedef enum : NSUInteger {
   [self.callbackChannel invokeMethod:@"shouldAddStorePayment"
                            arguments:@{
                              @"payment" : [FIAObjectTranslator getMapFromSKPayment:payment],
-                             @"proudt" : [FIAObjectTranslator getMapFromSKProduct:product]
+                             @"product" : [FIAObjectTranslator getMapFromSKProduct:product]
                            }];
   return NO;
 }
