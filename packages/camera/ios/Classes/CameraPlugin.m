@@ -4,17 +4,11 @@
 #import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@end
-
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
+static FlutterError *getFlutterError(NSError *error) {
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
 }
-@end
 
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
@@ -73,7 +67,7 @@
                                    error:(NSError *)error {
   selfReference = nil;
   if (error) {
-    _result([error flutterError]);
+    _result(getFlutterError(error));
     return;
   }
   NSData *data = [AVCapturePhotoOutput
@@ -146,8 +140,6 @@
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
-@property(nonatomic) vImage_Buffer destinationBuffer;
-@property(nonatomic) vImage_Buffer conversionBuffer;
 @property(nonatomic) CMMotionManager *motionManager;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
@@ -202,15 +194,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
   [_captureSession addOutput:_capturePhotoOutput];
   _motionManager = [[CMMotionManager alloc] init];
-  [_motionManager startDeviceMotionUpdatesUsingReferenceFrame:
-                      CMAttitudeReferenceFrameXArbitraryCorrectedZVertical];
+  [_motionManager startAccelerometerUpdates];
 
   [self setCaptureSessionPreset:resolutionPreset];
-
-  vImageBuffer_Init(&_destinationBuffer, _previewSize.width, _previewSize.height, 32,
-                    kvImageNoFlags);
-  vImageBuffer_Init(&_conversionBuffer, _previewSize.width, _previewSize.height, 32,
-                    kvImageNoFlags);
 
   return self;
 }
@@ -505,7 +491,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
         [NSError errorWithDomain:NSCocoaErrorDomain
                             code:NSURLErrorResourceUnavailable
                         userInfo:@{NSLocalizedDescriptionKey : @"Video is not recording!"}];
-    result([error flutterError]);
+    result(getFlutterError(error));
   }
 }
 
@@ -679,7 +665,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                                     resolutionPreset:resolutionPreset
                                                error:&error];
     if (error) {
-      result([error flutterError]);
+      result(getFlutterError(error));
     } else {
       if (_camera) {
         [_camera close];

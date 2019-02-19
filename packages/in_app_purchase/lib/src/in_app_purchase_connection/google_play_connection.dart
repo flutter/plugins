@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import '../../billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
+import 'product_details.dart';
 
 /// An [InAppPurchaseConnection] that wraps Google Play Billing.
 ///
@@ -59,4 +60,31 @@ class GooglePlayConnection
       _billingClient.startConnection(onBillingServiceDisconnected: () {});
 
   Future<void> _disconnect() => _billingClient.endConnection();
+
+  /// Query the product detail list.
+  ///
+  /// This method only returns [ProductDetailsResponse].
+  /// To get detailed Google Play sku list, use [BillingClient.querySkuDetails]
+  /// to get the [SkuDetailsResponseWrapper].
+  Future<ProductDetailsResponse> queryProductDetails(
+      Set<String> identifiers) async {
+    List<SkuDetailsResponseWrapper> responses = await Future.wait([
+      _billingClient.querySkuDetails(
+          skuType: SkuType.inapp, skusList: identifiers.toList()),
+      _billingClient.querySkuDetails(
+          skuType: SkuType.subs, skusList: identifiers.toList())
+    ]);
+    List<ProductDetails> productDetails =
+        responses.expand((SkuDetailsResponseWrapper response) {
+      return response.skuDetailsList;
+    }).map((SkuDetailsWrapper skuDetailWrapper) {
+      return skuDetailWrapper.toProductDetails();
+    }).toList();
+    Set<String> successIDS = productDetails
+        .map((ProductDetails productDetails) => productDetails.id)
+        .toSet();
+    List<String> notFoundIDS = identifiers.difference(successIDS).toList();
+    return ProductDetailsResponse(
+        productDetails: productDetails, notFoundIDs: notFoundIDS);
+  }
 }

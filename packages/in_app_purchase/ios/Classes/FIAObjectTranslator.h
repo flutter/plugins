@@ -7,64 +7,31 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SKProduct (Coder)
+@interface FIAObjectTranslator : NSObject
 
-- (nullable NSDictionary *)toMap;
++ (NSDictionary *)getMapFromSKProduct:(SKProduct *)product;
 
-@end
++ (NSDictionary *)getMapFromSKProductSubscriptionPeriod:(SKProductSubscriptionPeriod *)period
+    API_AVAILABLE(ios(11.2));
 
-@interface SKProductSubscriptionPeriod (Coder)
++ (NSDictionary *)getMapFromSKProductDiscount:(SKProductDiscount *)discount
+    API_AVAILABLE(ios(11.2));
 
-- (nullable NSDictionary *)toMap;
++ (NSDictionary *)getMapFromSKProductsResponse:(SKProductsResponse *)productResponse;
 
-@end
++ (NSDictionary *)getMapFromSKPayment:(SKPayment *)payment;
 
-@interface SKProductDiscount (Coder)
++ (NSDictionary *)getMapFromNSLocale:(NSLocale *)locale;
 
-- (nullable NSDictionary *)toMap;
++ (SKMutablePayment *)getSKMutablePaymentFromMap:(NSDictionary *)map;
 
-@end
++ (NSDictionary *)getMapFromSKPaymentTransaction:(SKPaymentTransaction *)transaction;
 
-@interface SKProductsResponse (Coder)
++ (NSDictionary *)getMapFromSKDownload:(SKDownload *)download;
 
-- (nullable NSDictionary *)toMap;
-
-@end
-
-@interface SKPayment (Coder)
-
-- (NSDictionary *)toMap;
++ (NSDictionary *)getMapFromNSError:(NSError *)error;
 
 @end
-
-@interface SKMutablePayment (Coder)
-
-- (instancetype)initWithMap:(NSDictionary *)map;
-
-@end
-
-@interface SKPaymentTransaction (Coder)
-
-- (NSDictionary *)toMap;
-
-@end
-
-@interface SKDownload (Coder)
-
-- (NSDictionary *)toMap;
-
-@end
-
-@interface NSError (Coder)
-
-- (NSDictionary *)toMap;
-
-@end
-
-@interface NSLocale (Coder)
-
-- (nullable NSDictionary *)toMap;
-
-@end
+;
 
 NS_ASSUME_NONNULL_END
