@@ -93,12 +93,12 @@ class FirebaseVisionImage {
 
   /// Construct a [FirebaseVisionImage] from a list of bytes.
   ///
-  /// Expects `android.graphics.ImageFormat.NV21` format on Android. Note:
+  /// On Android, expects `android.graphics.ImageFormat.NV21` format. Note:
   /// Concatenating the planes of `android.graphics.ImageFormat.YUV_420_888`
   /// into a single plane, converts it to `android.graphics.ImageFormat.NV21`.
   ///
-  /// Expects `kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange` or any other
-  /// planar format on iOS.
+  /// On iOS, expects `kCVPixelFormatType_32BGRA` format. However, this should
+  /// work with most formats from `kCVPixelFormatType_*`.
   factory FirebaseVisionImage.fromBytes(
     Uint8List bytes,
     FirebaseVisionImageMetadata metadata,
@@ -178,6 +178,9 @@ class FirebaseVisionImageMetadata {
             : true),
         assert(defaultTargetPlatform == TargetPlatform.iOS
             ? planeData != null
+            : true),
+        assert(defaultTargetPlatform == TargetPlatform.iOS
+            ? planeData.isNotEmpty
             : true);
 
   /// Size of the image in pixels.
@@ -227,12 +230,6 @@ class FirebaseVisionImageMetadata {
             .map((FirebaseVisionImagePlaneMetadata plane) => plane._serialize())
             .toList(),
       };
-}
-
-/// Abstract class for detectors in [FirebaseVision] API.
-abstract class FirebaseVisionDetector {
-  /// Uses machine learning model to detect objects of interest in an image.
-  Future<dynamic> detectInImage(FirebaseVisionImage visionImage);
 }
 
 String _enumToString(dynamic enumValue) {

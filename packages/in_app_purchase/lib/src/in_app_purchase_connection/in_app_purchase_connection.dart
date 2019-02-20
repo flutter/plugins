@@ -6,11 +6,15 @@ import 'dart:async';
 import 'dart:io';
 import 'app_store_connection.dart';
 import 'google_play_connection.dart';
+import 'product_details.dart';
 
 /// Basic generic API for making in app purchases across multiple platforms.
 abstract class InAppPurchaseConnection {
   /// Returns true if the payment platform is ready and available.
   Future<bool> isAvailable();
+
+  /// Query product details list that match the given set of identifiers.
+  Future<ProductDetailsResponse> queryProductDetails(Set<String> identifiers);
 
   /// The [InAppPurchaseConnection] implemented for this platform.
   ///

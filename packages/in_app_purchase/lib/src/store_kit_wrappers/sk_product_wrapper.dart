@@ -3,11 +3,19 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
+
+// WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
+// below generated file. Run `flutter packages pub run build_runner watch` to
+// rebuild and watch for further changes.
+part 'sk_product_wrapper.g.dart';
 
 /// Dart wrapper around StoreKit's [SKProductsResponse](https://developer.apple.com/documentation/storekit/skproductsresponse?language=objc).
 ///
 /// Represents the response object returned by [SKRequestMaker.startProductRequest].
 /// Contains information about a list of products and a list of invalid product identifiers.
+@JsonSerializable()
 class SkProductResponseWrapper {
   SkProductResponseWrapper(
       {@required this.products, @required this.invalidProductIdentifiers});
@@ -16,11 +24,10 @@ class SkProductResponseWrapper {
   ///
   /// This method should only be used with `map` values returned by [SKRequestMaker.startProductRequest].
   /// The `map` parameter must not be null.
-  SkProductResponseWrapper.fromMap(Map<String, List<dynamic>> map)
-      : assert(map != null),
-        products = _getListFromMapList(_getProductMapListFromResponseMap(map)),
-        invalidProductIdentifiers =
-            List.castFrom<dynamic, String>(map['invalidProductIdentifiers']);
+  factory SkProductResponseWrapper.fromJson(Map map) {
+    assert(map != null);
+    return _$SkProductResponseWrapperFromJson(map);
+  }
 
   /// Stores all matching successfully found products.
   ///
@@ -34,18 +41,6 @@ class SkProductResponseWrapper {
   /// found here https://developer.apple.com/documentation/storekit/skproductsresponse/1505985-invalidproductidentifiers?language=objc.
   /// Will be empty if all the product identifiers are valid.
   final List<String> invalidProductIdentifiers;
-
-  static List<Map<dynamic, dynamic>> _getProductMapListFromResponseMap(
-      Map<String, List<dynamic>> map) {
-    return map['products'].cast<Map<dynamic, dynamic>>();
-  }
-
-  static List<SKProductWrapper> _getListFromMapList(
-      List<Map<dynamic, dynamic>> mapList) {
-    return mapList
-        .map((Map<dynamic, dynamic> map) => SKProductWrapper.fromMap(map))
-        .toList();
-  }
 }
 
 /// Dart wrapper around StoreKit's [SKProductPeriodUnit](https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc).
@@ -54,9 +49,13 @@ class SkProductResponseWrapper {
 // The values of the enum options are matching the [SKProductPeriodUnit]'s values. Should there be an update or addition
 // in the [SKProductPeriodUnit], this need to be updated to match.
 enum SubscriptionPeriodUnit {
+  @JsonValue(0)
   day,
+  @JsonValue(1)
   week,
+  @JsonValue(2)
   month,
+  @JsonValue(3)
   year,
 }
 
@@ -64,20 +63,20 @@ enum SubscriptionPeriodUnit {
 ///
 /// A period is defined by a [numberOfUnits] and a [unit], e.g for a 3 months period [numberOfUnits] is 3 and [unit] is a month.
 /// It is used as a property in [SKProductDiscountWrapper] and [SKProductWrapper].
+@JsonSerializable(nullable: true)
 class SKProductSubscriptionPeriodWrapper {
   SKProductSubscriptionPeriodWrapper(
       {@required this.numberOfUnits, @required this.unit});
 
   /// Constructing an instance from a map from the Objective-C layer.
-  /// This method should only be used with `map` values returned by [SKProductDiscountWrapper.fromMap] or [SKProductWrapper.fromMap].
+  ///
+  /// This method should only be used with `map` values returned by [SKProductDiscountWrapper.fromJson] or [SKProductWrapper.fromJson].
   /// The `map` parameter must not be null.
-  SKProductSubscriptionPeriodWrapper.fromMap(Map<String, dynamic> map)
-      : assert(map != null &&
-            (map['numberOfUnits'] == null || map['numberOfUnits'] > 0)),
-        numberOfUnits = map['numberOfUnits'],
-        unit = (map['unit'] != null)
-            ? SubscriptionPeriodUnit.values[map['unit']]
-            : null;
+  factory SKProductSubscriptionPeriodWrapper.fromJson(Map map) {
+    assert(map != null &&
+        (map['numberOfUnits'] == null || map['numberOfUnits'] > 0));
+    return _$SKProductSubscriptionPeriodWrapperFromJson(map);
+  }
 
   /// The number of [unit] units in this period.
   ///
@@ -95,53 +94,44 @@ class SKProductSubscriptionPeriodWrapper {
 // in the [SKProductDiscountPaymentMode], this need to be updated to match.
 enum ProductDiscountPaymentMode {
   /// Allows user to pay the discounted price at each payment period.
+  @JsonValue(0)
   payAsYouGo,
 
   /// Allows user to pay the discounted price upfront and receive the product for the rest of time that was paid for.
+  @JsonValue(1)
   payUpFront,
 
   /// User pays nothing during the discounted period.
+  @JsonValue(2)
   freeTrail,
 }
 
 /// Dart wrapper around StoreKit's [SKProductDiscount](https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc).
 ///
-/// Most of the fields are identical to OBJC SKProduct.
-/// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.
 /// It is used as a property in [SKProductWrapper].
+@JsonSerializable(nullable: true)
 class SKProductDiscountWrapper {
   SKProductDiscountWrapper(
       {@required this.price,
-      @required this.currencyCode,
+      @required this.priceLocale,
       @required this.numberOfPeriods,
       @required this.paymentMode,
       @required this.subscriptionPeriod});
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
-  /// This method should only be used with `map` values returned by [SKProductWrapper.fromMap].
+  /// This method should only be used with `map` values returned by [SKProductWrapper.fromJson].
   /// The `map` parameter must not be null.
-  SKProductDiscountWrapper.fromMap(Map<String, dynamic> map)
-      : assert(map != null),
-        price = map['price'],
-        currencyCode = map['currencyCode'],
-        numberOfPeriods = map['numberOfPeriods'],
-        paymentMode = (map['paymentMode'] != null)
-            ? ProductDiscountPaymentMode.values[map['paymentMode']]
-            : null,
-        subscriptionPeriod = map['subscriptionPeriod'] != null
-            ? SKProductSubscriptionPeriodWrapper.fromMap(
-                map['subscriptionPeriod'].cast<String, dynamic>())
-            : null;
+  factory SKProductDiscountWrapper.fromJson(Map map) {
+    assert(map != null);
+    return _$SKProductDiscountWrapperFromJson(map);
+  }
 
-  /// The discounted price, in the currency that is defined in [currencyCode].
+  /// The discounted price, in the currency that is defined in [priceLocale].
   final double price;
 
-  // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded to
-  //                 a map. Matching android to only get the currencyCode for now.
-  //                 https://github.com/flutter/flutter/issues/26610
-  /// The currencyCode for the [price], e.g USD for U.S. dollars.
-  final String currencyCode;
+  /// Includes locale information about the price, e.g. `$` as the currency symbol for US locale.
+  final PriceLocaleWrapper priceLocale;
 
   /// The object represent the discount period length.
   ///
@@ -160,16 +150,15 @@ class SKProductDiscountWrapper {
 
 /// Dart wrapper around StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).
 ///
-/// Most of the fields are identical to OBJC SKProduct.
-/// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.
 /// A list of [SKProductWrapper] is returned in the [SKRequestMaker.startProductRequest] method, and
 /// should be stored for use when making a payment.
+@JsonSerializable(nullable: true)
 class SKProductWrapper {
   SKProductWrapper({
     @required this.productIdentifier,
     @required this.localizedTitle,
     @required this.localizedDescription,
-    @required this.currencyCode,
+    @required this.priceLocale,
     @required this.downloadContentVersion,
     @required this.subscriptionGroupIdentifier,
     @required this.price,
@@ -181,28 +170,12 @@ class SKProductWrapper {
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
-  /// This method should only be used with `map` values returned by [SkProductResponseWrapper.fromMap].
+  /// This method should only be used with `map` values returned by [SkProductResponseWrapper.fromJson].
   /// The `map` parameter must not be null.
-  SKProductWrapper.fromMap(Map<dynamic, dynamic> map)
-      : assert(map != null),
-        productIdentifier = map['productIdentifier'],
-        localizedTitle = map['localizedTitle'],
-        localizedDescription = map['localizedDescription'],
-        currencyCode = map['currencyCode'],
-        downloadContentVersion = map['downloadContentVersion'],
-        subscriptionGroupIdentifier = map['subscriptionGroupIdentifier'],
-        price = map['price'],
-        downloadable = map['downloadable'],
-        downloadContentLengths =
-            List.castFrom<dynamic, int>(map['downloadContentLengths']),
-        subscriptionPeriod = map['subscriptionPeriod'] != null
-            ? SKProductSubscriptionPeriodWrapper.fromMap(
-                map['subscriptionPeriod'].cast<String, dynamic>())
-            : null,
-        introductoryPrice = (map['introductoryPrice'] != null)
-            ? SKProductDiscountWrapper.fromMap(
-                map['introductoryPrice'].cast<String, dynamic>())
-            : null;
+  factory SKProductWrapper.fromJson(Map map) {
+    assert(map != null);
+    return _$SKProductWrapperFromJson(map);
+  }
 
   /// The unique identifier of the product.
   final String productIdentifier;
@@ -217,11 +190,8 @@ class SKProductWrapper {
   /// It is localized based on the current locale.
   final String localizedDescription;
 
-  // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded to
-  //                 a map. Matching android to only get the currencyCode for now.
-  //                 https://github.com/flutter/flutter/issues/26610
-  /// The currencyCode for the price, e.g USD for U.S. dollars.
-  final String currencyCode;
+  /// Includes locale information about the price, e.g. `$` as the currency symbol for US locale.
+  final PriceLocaleWrapper priceLocale;
 
   /// The version of the downloadable content.
   ///
@@ -235,7 +205,7 @@ class SKProductWrapper {
   /// Check [SubscriptionGroup](https://developer.apple.com/app-store/subscriptions/) for more details about subscription group.
   final String subscriptionGroupIdentifier;
 
-  /// The price of the product, in the currency that is defined in [currencyCode].
+  /// The price of the product, in the currency that is defined in [priceLocale].
   final double price;
 
   /// Whether the AppStore has downloadable content for this product.
@@ -262,4 +232,37 @@ class SKProductWrapper {
   /// The [subscriptionPeriod] of the discount is independent of the product's [subscriptionPeriod],
   /// and their units and duration do not have to be matched.
   final SKProductDiscountWrapper introductoryPrice;
+
+  /// Method to convert to the wrapper to the consolidated [ProductDetails] class.
+  ProductDetails toProductDetails() {
+    return ProductDetails(
+      id: productIdentifier,
+      title: localizedTitle,
+      description: localizedDescription,
+      price: priceLocale.currencySymbol + price.toString(),
+    );
+  }
+}
+
+/// Object that indicates the locale of the price
+///
+/// It is a thin wrapper of [NSLocale](https://developer.apple.com/documentation/foundation/nslocale?language=objc).
+// TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded.
+//                 Matching android to only get the currencySymbol for now.
+//                 https://github.com/flutter/flutter/issues/26610
+@JsonSerializable()
+class PriceLocaleWrapper {
+  PriceLocaleWrapper({@required this.currencySymbol});
+
+  /// Constructing an instance from a map from the Objective-C layer.
+  ///
+  /// This method should only be used with `map` values returned by [SKProductWrapper.fromJson] and [SKProductDiscountWrapper.fromJson].
+  /// The `map` parameter must not be null.
+  factory PriceLocaleWrapper.fromJson(Map map) {
+    assert(map != null);
+    return _$PriceLocaleWrapperFromJson(map);
+  }
+
+  ///The currency symbol for the locale, e.g. $ for US locale.
+  final String currencySymbol;
 }
