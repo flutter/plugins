@@ -102,6 +102,8 @@ void main() {
     final Set<Marker> cur = _toSet(m1: m1, m2: m2);
     final MarkerUpdates updates = MarkerUpdates.from(prev, cur);
     final MarkerUpdates expectedUpdate = MarkerUpdates.internal(
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // ignore: prefer_collection_literals
       markerUpdates: Set<MarkerUpdate>.from(
         <MarkerUpdate>[
           MarkerUpdate.internal(
@@ -140,6 +142,8 @@ void main() {
 
     final MarkerUpdates updates = MarkerUpdates.from(prev, cur);
     final MarkerUpdates expectedUpdate = MarkerUpdates.internal(
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // ignore: prefer_collection_literals
       markerUpdates: Set<MarkerUpdate>.from(
         <MarkerUpdate>[
           MarkerUpdate.internal(
