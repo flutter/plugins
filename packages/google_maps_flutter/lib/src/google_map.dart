@@ -104,9 +104,8 @@ class GoogleMap extends StatefulWidget {
 class _GoogleMapState extends State<GoogleMap> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
-  final Completer<MarkerControllers> _markerControllers =
-      Completer<MarkerControllers>();
 
+  Map<MarkerId, Marker> _markers;
   _GoogleMapOptions _googleMapOptions;
 
   @override
@@ -114,6 +113,7 @@ class _GoogleMapState extends State<GoogleMap> {
     final Map<String, dynamic> creationParams = <String, dynamic>{
       'initialCameraPosition': widget.initialCameraPosition?._toMap(),
       'options': _GoogleMapOptions.fromWidget(widget).toMap(),
+      'markerUpdates': MarkerUpdates.from(null, widget.markers)._toJson(),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
@@ -141,45 +141,79 @@ class _GoogleMapState extends State<GoogleMap> {
   void initState() {
     super.initState();
     _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
+    _markers = _createMarkerIdMarkerMap(widget.markers);
   }
 
   @override
   void didUpdateWidget(GoogleMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final _GoogleMapOptions newOptions = _GoogleMapOptions.fromWidget(widget);
-    final MarkerUpdates markerUpdates =
-        MarkerUpdates.from(_googleMapOptions.markers, newOptions.markers);
-    final Map<String, dynamic> updates =
-        _googleMapOptions.updatesMap(newOptions, markerUpdates);
-    _updateOptions(updates, markerUpdates);
-    _googleMapOptions = newOptions;
+    _updateOptions();
+    _updateMarkers(oldWidget);
   }
 
-  void _updateOptions(
-      Map<String, dynamic> updates, MarkerUpdates markerUpdates) async {
+  void _updateOptions() async {
+    final _GoogleMapOptions newOptions = _GoogleMapOptions.fromWidget(widget);
+    final Map<String, dynamic> updates =
+        _googleMapOptions.updatesMap(newOptions);
     if (updates.isEmpty) {
       return;
     }
     final GoogleMapController controller = await _controller.future;
     controller._updateMapOptions(updates);
-    final MarkerControllers markerControllers = await _markerControllers.future;
-    markerControllers.update(markerUpdates);
+    _googleMapOptions = newOptions;
+  }
+
+  void _updateMarkers(GoogleMap oldWidget) async {
+    final MarkerUpdates markerUpdates =
+        MarkerUpdates.from(oldWidget.markers, widget.markers);
+    final GoogleMapController controller = await _controller.future;
+    controller._updateMarkers(markerUpdates._toJson());
+    _markers = _createMarkerIdMarkerMap(widget.markers);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
-    final GoogleMapController controller =
-        await GoogleMapController.init(id, widget.initialCameraPosition);
+    final GoogleMapController controller = await GoogleMapController.init(
+      id,
+      widget.initialCameraPosition,
+      _onMarkerTap(),
+      _onInfoWindowTap(),
+    );
     _controller.complete(controller);
-    _createMarkerControllers();
     if (widget.onMapCreated != null) {
       widget.onMapCreated(controller);
     }
   }
 
-  void _createMarkerControllers() {
-    final MarkerControllers markerControllers = MarkerControllers();
-    markerControllers.update(MarkerUpdates.from(null, widget.markers));
-    _markerControllers.complete(markerControllers);
+  ValueChanged<String> _onMarkerTap() {
+    return (String markerIdParam) {
+      if (markerIdParam == null) {
+        return;
+      }
+      final MarkerId markerId = MarkerId(markerIdParam);
+      _markers[markerId]?.onTap();
+    };
+  }
+
+  ValueChanged<String> _onInfoWindowTap() {
+    return (String markerIdParam) {
+      if (markerIdParam == null) {
+        return;
+      }
+      final MarkerId markerId = MarkerId(markerIdParam);
+      _markers[markerId]?.infoWindow?.onTap();
+    };
+  }
+
+  static Map<MarkerId, Marker> _createMarkerIdMarkerMap(Set<Marker> markers) {
+    // ignore: prefer_collection_literals
+    final Map<MarkerId, Marker> result = Map<MarkerId, Marker>();
+    if (markers == null) {
+      return result;
+    }
+    markers.forEach((Marker m) {
+      result[m.markerId] = m;
+    });
+    return result;
   }
 }
 
@@ -199,7 +233,6 @@ class _GoogleMapOptions {
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
-    this.markers,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -214,7 +247,6 @@ class _GoogleMapOptions {
       trackCameraPosition: map.trackCameraPosition,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
-      markers: map.markers,
     );
   }
 
@@ -238,8 +270,6 @@ class _GoogleMapOptions {
 
   final bool myLocationEnabled;
 
-  final Set<Marker> markers;
-
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -259,25 +289,15 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
-    addIfNonNull('markers', _markersToJson());
 
     return optionsMap;
   }
 
-  dynamic _markersToJson() {
-    if (markers == null) {
-      return null;
-    }
-    return markers.map<dynamic>((Marker marker) => marker._toJson())?.toList();
-  }
-
-  Map<String, dynamic> updatesMap(
-      _GoogleMapOptions newOptions, MarkerUpdates markerUpdates) {
+  Map<String, dynamic> updatesMap(_GoogleMapOptions newOptions) {
     final Map<String, dynamic> prevOptionsMap = toMap();
 
     return newOptions.toMap()
-      ..remove('markers')
-      ..removeWhere((String key, dynamic value) => prevOptionsMap[key] == value)
-      ..putIfAbsent('markerUpdates', () => markerUpdates._toJson());
+      ..removeWhere(
+          (String key, dynamic value) => prevOptionsMap[key] == value);
   }
 }
