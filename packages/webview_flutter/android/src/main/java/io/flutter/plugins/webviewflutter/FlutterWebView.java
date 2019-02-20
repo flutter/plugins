@@ -35,17 +35,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
-  }
 
     if (params.containsKey("enableJavascriptRedirects")) {
-    boolean enableJavascriptRedirects = (boolean) params.get("enableJavascriptRedirects");
-    if(enableJavascriptRedirects) {
-      webView.setWebViewClient(new WebViewClient() {
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-          return false;
-        }
-      });
+      boolean enableJavascriptRedirects = (boolean) params.get("enableJavascriptRedirects");
+      if (enableJavascriptRedirects) {
+        webView.setWebViewClient(
+            new WebViewClient() {
+              @Override
+              public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+              }
+            });
+      }
     }
   }
 
