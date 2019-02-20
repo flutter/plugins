@@ -226,8 +226,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                 target: LatLng(-33.852, 151.211),
                 zoom: 11.0,
               ),
-              // TODO (iskakaushik) remove this when collection literals make
-              // it to stable.
+              // TODO(iskakaushik): Remove this when collection literals makes it to stable.
               // ignore: prefer_collection_literals
               markers: Set<Marker>.of(markers.values),
             ),

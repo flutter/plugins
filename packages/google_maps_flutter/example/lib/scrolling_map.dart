@@ -47,8 +47,7 @@ class ScrollingMapBody extends StatelessWidget {
                         zoom: 11.0,
                       ),
                       gestureRecognizers:
-                          // TODO (iskakaushik) remove this when collection literals make
-                          // it to stable.
+                          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
                           // ignore: prefer_collection_literals
                           <Factory<OneSequenceGestureRecognizer>>[
                         Factory<OneSequenceGestureRecognizer>(
@@ -83,8 +82,7 @@ class ScrollingMapBody extends StatelessWidget {
                         zoom: 11.0,
                       ),
                       markers:
-                          // TODO (iskakaushik) remove this when collection literals make
-                          // it to stable.
+                          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
                           // ignore: prefer_collection_literals
                           Set<Marker>.of(
                         <Marker>[
@@ -102,8 +100,7 @@ class ScrollingMapBody extends StatelessWidget {
                         ],
                       ),
                       gestureRecognizers:
-                          // TODO (iskakaushik) remove this when collection literals make
-                          // it to stable.
+                          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
                           // ignore: prefer_collection_literals
                           <Factory<OneSequenceGestureRecognizer>>[
                         Factory<OneSequenceGestureRecognizer>(

@@ -126,7 +126,7 @@ class MarkerUpdate {
     );
   }
 
-  /// TODO (kaushik) diff is sufficient, don't need to send the whole update.
+  /// TODO(iskakaushik): Diff is sufficient, don't need to send the whole update.
   factory MarkerUpdate._update({
     @required Marker oldMarker,
     @required Marker newMarker,
