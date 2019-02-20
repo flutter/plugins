@@ -77,6 +77,15 @@ class SKPaymentQueueWrapper {
     );
   }
 
+  /// Finishes a transaction, remove it from the queue.
+  ///
+  /// This method should be called from a observer callback when receiving notification from the payment queue. You should only
+  /// call this method after the transaction is successfully processed and the functionality purchased by the user is unlocked.
+  /// Itt will throw a Platform exception if the [SKPaymentTransactionWrapper.transactionState] is [SKPaymentTransactionStateWrapper.purchasing].
+  Future<void> finishTransaction(SKPaymentTransactionWrapper transaction) async {
+    await channel.invokeMethod('-[InAppPurchasePlugin finishTransaction:result:]', transaction.transactionIdentifier);
+  }
+
   // Triage a method channel call from the platform and triggers the correct observer method.
   Future<dynamic> _handleObserverCallbacks(MethodCall call) async {
     assert(_observer != null, 'in_app_purchase]: (Fatal)The observer has not been set but we received a purchase transaction notification. Please ensure the observer has been set using `setTransactionObserver`. One of the major reasons this can happen is when user started a purchase flow from the App Store, iOS then opens your app automatically to finish the transaction. Make sure you added the transaction observer right at the app launches to handle this scenario.');
@@ -316,7 +325,7 @@ enum SKDownloadState {
 /// When the product is purchased, a List of [SKDownloadWrapper] object will be present in an [SKPaymentTransactionWrapper] object.
 /// To download the content, add the [SKDownloadWrapper] objects to the payment queue and wait for the content to be downloaded.
 /// You can also read the [contentURL] to get the URL of the downloaded content after the download completes.
-/// Note that all downloaded files must be processed before the completion of the [SKPaymentTransactionWrapper].
+/// Note that all downloaded files must be processed before the completion of the [SKPaymentTransactionWrapper]([SKPaymentQueueWrapper.finishTransaction] is called).
 /// After the transaction is complete, any [SKDownloadWrapper] object in the transaction will not be able to be added to the payment queue
 /// and the [contentURL ]of the [SKDownloadWrapper] object will be invalid.
 @JsonSerializable()
