@@ -193,7 +193,7 @@ class _MarkerUpdateHandler {
 
   dynamic update(Set<Marker> newMarkers) {
     final MarkerUpdates updates =
-        MarkerUpdates.from(_markers?.values, newMarkers);
+        MarkerUpdates.from(_markers?.values?.toSet(), newMarkers);
     _markers = _createMarkerIdMarkerMap(newMarkers);
     return updates._toJson();
   }
