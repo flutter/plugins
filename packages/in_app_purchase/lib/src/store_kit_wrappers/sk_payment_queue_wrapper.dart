@@ -74,7 +74,7 @@ class SKPaymentQueueWrapper {
   // Digests a method channel call from the platform and triggers the correct observer method.
   Future<dynamic> _handleObserverCallbacks(MethodCall call) async {
     switch (call.method) {
-      case 'updatedTransaction':
+      case 'updatedTransactions':
         {
           final List<SKPaymentTransactionWrapper> transactions =
               _getTransactionList(call.arguments);
@@ -84,7 +84,7 @@ class SKPaymentQueueWrapper {
             }
           });
         }
-      case 'removedTransaction':
+      case 'removedTransactions':
         {
           final List<SKPaymentTransactionWrapper> transactions =
               _getTransactionList(call.arguments);
