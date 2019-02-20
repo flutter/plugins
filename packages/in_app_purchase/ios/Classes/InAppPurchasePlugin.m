@@ -164,7 +164,7 @@
   NSDictionary *paymentMap = (NSDictionary *)call.arguments;
   NSString *productID = [paymentMap objectForKey:@"productID"];
   SKPayment *payment = [self.paymentsCache objectForKey:productID];
-  // User can use  payment object with usePaymentObject = true and add simulatesAskToBuyInSandBox = true to
+  // User can use payment object with usePaymentObject = true and add simulatesAskToBuyInSandBox = true to
   // test the payment flow.
   if (!payment || [paymentMap[@"usePaymentObject"] boolValue] == YES) {
     SKMutablePayment *mutablePayment = [[SKMutablePayment alloc] init];
