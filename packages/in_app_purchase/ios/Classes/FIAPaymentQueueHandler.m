@@ -66,32 +66,32 @@
 // Sent when transactions are removed from the queue (via finishTransaction:).
 - (void)paymentQueue:(SKPaymentQueue *)queue
     removedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
-    self.transactionsRemoved(transactions);
+  self.transactionsRemoved(transactions);
 }
 
 // Sent when an error is encountered while adding transactions from the user's purchase history back
 // to the queue.
 - (void)paymentQueue:(SKPaymentQueue *)queue
     restoreCompletedTransactionsFailedWithError:(NSError *)error {
-    self.restoreTransactionFailed(error);
+  self.restoreTransactionFailed(error);
 }
 
 // Sent when all transactions from the user's purchase history have successfully been added back to
 // the queue.
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue {
-    self.paymentQueueRestoreCompletedTransactionsFinished();
+  self.paymentQueueRestoreCompletedTransactionsFinished();
 }
 
 // Sent when the download state has changed.
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedDownloads:(NSArray<SKDownload *> *)downloads {
-    self.updatedDownloads(downloads);
+  self.updatedDownloads(downloads);
 }
 
 // Sent when a user initiates an IAP buy from the App Store
 - (BOOL)paymentQueue:(SKPaymentQueue *)queue
     shouldAddStorePayment:(SKPayment *)payment
                forProduct:(SKProduct *)product {
-    return (self.shouldAddStorePayment(payment, product));
+  return (self.shouldAddStorePayment(payment, product));
 }
 
 #pragma mark - getter
