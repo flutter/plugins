@@ -46,8 +46,8 @@ class SignInPageState extends State<SignInPage> {
           scrollDirection: Axis.vertical,
           children: <Widget>[
             _EmailPasswordForm(),
-            _AnonymouslySigninSection(),
-            _GoogleSigninSection(),
+            _AnonymouslySignInSection(),
+            _GoogleSignInSection(),
             _PhoneSignInSection(Scaffold.of(context)),
           ],
         );
@@ -155,12 +155,12 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
   }
 }
 
-class _AnonymouslySigninSection extends StatefulWidget {
+class _AnonymouslySignInSection extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _AnonymouslySigninSectionState();
+  State<StatefulWidget> createState() => _AnonymouslySignInSectionState();
 }
 
-class _AnonymouslySigninSectionState extends State<_AnonymouslySigninSection> {
+class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
   bool _success;
   String _userID;
   @override
@@ -232,12 +232,12 @@ class _AnonymouslySigninSectionState extends State<_AnonymouslySigninSection> {
   }
 }
 
-class _GoogleSigninSection extends StatefulWidget {
+class _GoogleSignInSection extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _GoogleSigninSectionState();
+  State<StatefulWidget> createState() => _GoogleSignInSectionState();
 }
 
-class _GoogleSigninSectionState extends State<_GoogleSigninSection> {
+class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
   bool _success;
   String _userID;
   @override
