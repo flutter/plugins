@@ -100,7 +100,8 @@
                                         arguments:@{
                                           @"productID" : @"123",
                                           @"quantity" : @(1),
-                                          @"simulatesAskToBuyInSandBox" : @YES
+                                          @"simulatesAskToBuyInSandBox" : @YES,
+                                          @"usePaymentObject" : @YES
                                         }];
   SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
   queue.testState = SKPaymentTransactionStateFailed;
@@ -136,7 +137,8 @@
                                         arguments:@{
                                           @"productID" : @"123",
                                           @"quantity" : @(1),
-                                          @"simulatesAskToBuyInSandBox" : @YES
+                                          @"simulatesAskToBuyInSandBox" : @YES,
+                                          @"usePaymentObject" : @YES
                                         }];
   SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
   queue.testState = SKPaymentTransactionStatePurchased;
