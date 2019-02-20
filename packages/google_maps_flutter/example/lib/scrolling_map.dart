@@ -47,6 +47,9 @@ class ScrollingMapBody extends StatelessWidget {
                         zoom: 11.0,
                       ),
                       gestureRecognizers:
+                          // TODO (iskakaushik) remove this when collection literals make
+                          // it to stable.
+                          // ignore: prefer_collection_literals
                           <Factory<OneSequenceGestureRecognizer>>[
                         Factory<OneSequenceGestureRecognizer>(
                           () => EagerGestureRecognizer(),
@@ -79,20 +82,29 @@ class ScrollingMapBody extends StatelessWidget {
                         target: center,
                         zoom: 11.0,
                       ),
-                      markers: Set<Marker>.of(<Marker>[
-                        Marker(
-                          markerId: MarkerId("test_marker_id"),
-                          position: LatLng(
-                            center.latitude,
-                            center.longitude,
-                          ),
-                          infoWindow: const InfoWindow(
-                            title: 'An interesting location',
-                            snippet: '*',
-                          ),
-                        )
-                      ]),
+                      markers:
+                          // TODO (iskakaushik) remove this when collection literals make
+                          // it to stable.
+                          // ignore: prefer_collection_literals
+                          Set<Marker>.of(
+                        <Marker>[
+                          Marker(
+                            markerId: MarkerId("test_marker_id"),
+                            position: LatLng(
+                              center.latitude,
+                              center.longitude,
+                            ),
+                            infoWindow: const InfoWindow(
+                              title: 'An interesting location',
+                              snippet: '*',
+                            ),
+                          )
+                        ],
+                      ),
                       gestureRecognizers:
+                          // TODO (iskakaushik) remove this when collection literals make
+                          // it to stable.
+                          // ignore: prefer_collection_literals
                           <Factory<OneSequenceGestureRecognizer>>[
                         Factory<OneSequenceGestureRecognizer>(
                           () => ScaleGestureRecognizer(),

@@ -205,6 +205,8 @@ class _GoogleMapState extends State<GoogleMap> {
   }
 
   static Map<MarkerId, Marker> _createMarkerIdMarkerMap(Set<Marker> markers) {
+    // TODO (iskakaushik) remove this when collection literals make
+    // it to stable.
     // ignore: prefer_collection_literals
     final Map<MarkerId, Marker> result = Map<MarkerId, Marker>();
     if (markers == null) {
