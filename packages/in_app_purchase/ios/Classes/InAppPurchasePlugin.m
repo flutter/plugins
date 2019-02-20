@@ -164,9 +164,26 @@
   NSDictionary *paymentMap = (NSDictionary *)call.arguments;
   NSString *productID = [paymentMap objectForKey:@"productID"];
   SKPayment *payment = [self.paymentsCache objectForKey:productID];
-  // User can use payment object with usePaymentObject = true and add simulatesAskToBuyInSandBox =
-  // true to test the payment flow.
-  if (!payment || [paymentMap[@"usePaymentObject"] boolValue] == YES) {
+  // Use the payment object if we find a cached payment object associate with the productID. (Used
+  // for App Store payment flow
+  // https://developer.apple.com/documentation/storekit/skpaymenttransactionobserver/2877502-paymentqueue?language=objc)
+  if (payment) {
+    [self.paymentQueueHandler addPayment:payment];
+    result(nil);
+    return;
+  }
+  // The regular payment flow: when a product is already fetched, we create a payment object with
+  // the product to process the payment.
+  SKProduct *product = [self.productsCache objectForKey:productID];
+  if (product) {
+    payment = [SKPayment paymentWithProduct:product];
+    [self.paymentQueueHandler addPayment:payment];
+    result(nil);
+    return;
+  }
+  // User can also use payment object with usePaymentObject = true and add
+  // simulatesAskToBuyInSandBox = true to test the payment flow.
+  if ([paymentMap[@"usePaymentObject"] boolValue] == YES) {
     SKMutablePayment *mutablePayment = [[SKMutablePayment alloc] init];
     mutablePayment.productIdentifier = productID;
     NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
@@ -178,10 +195,20 @@
           [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
     }
     [self.paymentQueueHandler addPayment:mutablePayment];
-  } else {
-    [self.paymentQueueHandler addPayment:payment];
+    result(nil);
+    return;
   }
-  result(nil);
+  result([FlutterError
+      errorWithCode:@"storekit_invalid_payment_object"
+            message:
+                @"You have requested a payment with an invalid payment object. A valid payment "
+                @"object should be one of the following. 1. Payment object that is automatically "
+                @"handled when the user starts an in-app purchase in the App Store; and you "
+                @"returned true to the `shouldAddStorePayment` method or manually request a "
+                @"payment with the productID that is provided in the `shouldAddStorePayment` "
+                @"method. 2. A payment requested for a product that has been fetched. 3. A custom "
+                @"payment object. This is not an error for a payment failure."
+            details:call.arguments]);
 }
 
 - (void)finishTransaction:(FlutterMethodCall *)call result:(FlutterResult)result {
