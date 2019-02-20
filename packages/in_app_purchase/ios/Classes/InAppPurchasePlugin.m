@@ -164,13 +164,13 @@
   NSDictionary *paymentMap = (NSDictionary *)call.arguments;
   NSString *productID = [paymentMap objectForKey:@"productID"];
   SKPayment *payment = [self.paymentsCache objectForKey:productID];
-  // User can use payment object with usePaymentObject = true and add simulatesAskToBuyInSandBox = true to
-  // test the payment flow.
+  // User can use payment object with usePaymentObject = true and add simulatesAskToBuyInSandBox =
+  // true to test the payment flow.
   if (!payment || [paymentMap[@"usePaymentObject"] boolValue] == YES) {
     SKMutablePayment *mutablePayment = [[SKMutablePayment alloc] init];
     mutablePayment.productIdentifier = productID;
     NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
-    mutablePayment.quantity = quantity?quantity.integerValue:1;
+    mutablePayment.quantity = quantity ? quantity.integerValue : 1;
     NSString *applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
     mutablePayment.applicationUsername = applicationUsername;
     if (@available(iOS 8.3, *)) {
@@ -181,7 +181,7 @@
   } else {
     [self.paymentQueueHandler addPayment:payment];
   }
-    result(nil);
+  result(nil);
 }
 
 - (void)finishTransaction:(FlutterMethodCall *)call result:(FlutterResult)result {

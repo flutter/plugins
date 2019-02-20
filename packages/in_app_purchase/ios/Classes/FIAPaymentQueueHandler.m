@@ -48,7 +48,7 @@
 }
 
 - (void)finishTransaction:(SKPaymentTransaction *)transaction {
-    [self.queue finishTransaction:transaction];
+  [self.queue finishTransaction:transaction];
 }
 
 #pragma mark - observing
