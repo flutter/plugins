@@ -62,6 +62,8 @@ static FlutterError *getFlutterError(NSError *error) {
     [self setMaxUploadRetryTime:call result:result];
   } else if ([@"FirebaseStorage#setMaxOperationRetryTime" isEqualToString:call.method]) {
     [self setMaxOperationRetryTime:call result:result];
+  } else if ([@"FirebaseStorage#getReferenceFromUrl" isEqualToString:call.method]) {
+    [self getReferenceFromUrl:call result:result];
   } else if ([@"StorageReference#putFile" isEqualToString:call.method]) {
     [self putFile:call result:result];
   } else if ([@"StorageReference#putData" isEqualToString:call.method]) {
@@ -170,6 +172,11 @@ static FlutterError *getFlutterError(NSError *error) {
   NSNumber *time = call.arguments[@"time"];
   storage.maxOperationRetryTime = [time longLongValue] / 1000.0;
   result(nil);
+}
+
+- (void)getReferenceFromUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *fullUrl = call.arguments[@"fullUrl"];
+  result([storage referenceForURL:fullUrl].fullPath);
 }
 
 - (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {
