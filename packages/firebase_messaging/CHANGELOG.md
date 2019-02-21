@@ -1,3 +1,7 @@
+## 4.0.0
+
+*  **Breaking Change** Update message structure for onMessage to match onLaunch and onResume
+
 ## 3.0.1
 
 * Log a more detailed warning at build time about the previous AndroidX
