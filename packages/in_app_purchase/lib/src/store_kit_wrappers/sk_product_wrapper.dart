@@ -25,7 +25,7 @@ class SkProductResponseWrapper {
   /// This method should only be used with `map` values returned by [SKRequestMaker.startProductRequest].
   /// The `map` parameter must not be null.
   factory SkProductResponseWrapper.fromJson(Map map) {
-    assert(map != null);
+    assert(map != null, 'map must not be null.');
     return _$SkProductResponseWrapperFromJson(map);
   }
 
@@ -73,7 +73,7 @@ class SKProductSubscriptionPeriodWrapper {
   /// This method should only be used with `map` values returned by [SKProductDiscountWrapper.fromJson] or [SKProductWrapper.fromJson].
   /// The `map` parameter must not be null.
   factory SKProductSubscriptionPeriodWrapper.fromJson(Map map) {
-    assert(map != null, 'map must not be null' );
+    assert(map != null, 'map must not be null.');
     return _$SKProductSubscriptionPeriodWrapperFromJson(map);
   }
 
@@ -122,11 +122,12 @@ class SKProductDiscountWrapper {
   /// This method should only be used with `map` values returned by [SKProductWrapper.fromJson].
   /// The `map` parameter must not be null.
   factory SKProductDiscountWrapper.fromJson(Map map) {
-    assert(map != null);
+    assert(map != null, 'map must not be null.');
     return _$SKProductDiscountWrapperFromJson(map);
   }
 
   /// The discounted price, in the currency that is defined in [priceLocale].
+  @JsonKey(fromJson: _priceFromJson)
   final double price;
 
   /// Includes locale information about the price, e.g. `$` as the currency symbol for US locale.
@@ -145,6 +146,8 @@ class SKProductDiscountWrapper {
   /// The [subscriptionPeriod] of the discount is independent of the product's [subscriptionPeriod],
   /// and their units and duration do not have to be matched.
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
+
+  static _priceFromJson(double price) => num.parse(price.toStringAsFixed(2));
 }
 
 /// Dart wrapper around StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).
@@ -205,6 +208,7 @@ class SKProductWrapper {
   final String subscriptionGroupIdentifier;
 
   /// The price of the product, in the currency that is defined in [priceLocale].
+  @JsonKey(fromJson: _priceFromJson)
   final double price;
 
   /// Whether the AppStore has downloadable content for this product.
@@ -241,6 +245,8 @@ class SKProductWrapper {
       price: priceLocale.currencySymbol + price.toString(),
     );
   }
+
+  static _priceFromJson(double price) => num.parse(price.toStringAsFixed(2));
 }
 
 /// Object that indicates the locale of the price
@@ -258,7 +264,7 @@ class PriceLocaleWrapper {
   /// This method should only be used with `map` values returned by [SKProductWrapper.fromJson] and [SKProductDiscountWrapper.fromJson].
   /// The `map` parameter must not be null.
   factory PriceLocaleWrapper.fromJson(Map map) {
-    assert(map != null);
+    assert(map != null, 'map must not be null.');
     return _$PriceLocaleWrapperFromJson(map);
   }
 
