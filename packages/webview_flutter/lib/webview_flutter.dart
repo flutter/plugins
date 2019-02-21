@@ -112,7 +112,7 @@ class WebView extends StatefulWidget {
   /// For example for the following JavascriptChannel:
   ///
   /// ```dart
-  /// JavascriptChannel(name: 'Print', onMessageReceived: (String message) { print(message); });
+  /// JavascriptChannel(name: 'Print', onMessageReceived: (JavascriptMessage message) { print(message); });
   /// ```
   ///
   /// JavaScript code can call:

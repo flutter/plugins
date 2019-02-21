@@ -1,6 +1,10 @@
-## 0.9.3+1
+## 0.9.4+1
 
 * Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.9.4
+
+* No longer sends empty snapshot events on iOS when encountering errors.
 
 ## 0.9.3
 
@@ -8,7 +12,7 @@
 
 ## 0.9.2
 
-* Fix IllegalStateException errors when using transactions on Android
+* Fix IllegalStateException errors when using transactions on Android.
 
 ## 0.9.1
 
