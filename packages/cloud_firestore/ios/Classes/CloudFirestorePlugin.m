@@ -337,9 +337,7 @@ const UInt8 TIMESTAMP = 136;
           @"data" : snapshot.exists ? snapshot.data : [NSNull null]
         });
       } else {
-        result([FlutterError errorWithCode:@"DOCUMENT_NOT_FOUND"
-                                   message:@"Document not found."
-                                   details:nil]);
+        result(nil);
       }
     });
   } else if ([@"Transaction#update" isEqualToString:call.method]) {
@@ -409,7 +407,10 @@ const UInt8 TIMESTAMP = 136;
     }
     id<FIRListenerRegistration> listener = [query
         addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
-          if (error) result(getFlutterError(error));
+          if (error) {
+            result(getFlutterError(error));
+            return;
+          }
           NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
           [arguments setObject:handle forKey:@"handle"];
           [self.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
@@ -421,7 +422,10 @@ const UInt8 TIMESTAMP = 136;
     FIRDocumentReference *document = getDocumentReference(call.arguments);
     id<FIRListenerRegistration> listener =
         [document addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
-          if (error) result(getFlutterError(error));
+          if (error) {
+            result(getFlutterError(error));
+            return;
+          }
           [self.channel invokeMethod:@"DocumentSnapshot"
                            arguments:@{
                              @"handle" : handle,
