@@ -7,8 +7,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase_connection.dart';
 
-import 'package:in_app_purchase/store_kit_wrappers.dart';
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
@@ -20,7 +18,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    SKPaymentQueueWrapper().setTransactionObserver(MyObserver());
   }
 
   @override
@@ -123,15 +120,6 @@ class _MyAppState extends State<MyApp> {
             productDetails.description,
           ),
           trailing: Text(productDetails.price),
-          onTap: () {
-            SKPaymentWrapper payment = SKPaymentWrapper(
-                productIdentifier: productDetails.id,
-                applicationUsername: '',
-                quantity: 1,
-                simulatesAskToBuyInSandbox: true,
-                requestData: null);
-            SKPaymentQueueWrapper().addPayment(payment);
-          },
         ));
       },
     ).toList();
@@ -140,32 +128,4 @@ class _MyAppState extends State<MyApp> {
 
   static ListTile buildListCard(ListTile innerTile) =>
       ListTile(title: Card(child: innerTile));
-}
-
-class MyObserver extends SKTransactionObserverWrapper {
-  void updatedTransaction({List<SKPaymentTransactionWrapper> transactions}) {
-    print('updatedTransaction');
-  }
-
-  void removedTransaction({List<SKPaymentTransactionWrapper> transactions}) {
-    print('removedTransaction');
-  }
-
-  void restoreCompletedTransactions({Error error}) {
-    print('restoreCompletedTransactions');
-  }
-
-  void paymentQueueRestoreCompletedTransactionsFinished() {
-    print('restore completed transactions finished');
-  }
-
-  void updatedDownloads({List<SKDownloadWrapper> downloads}) {
-    print('updatedDownloads');
-  }
-
-  bool shouldAddStorePayment(
-      {SKPaymentWrapper payment, SKProductWrapper product}) {
-    print('shouldAddStorePayment');
-    return true;
-  }
 }
