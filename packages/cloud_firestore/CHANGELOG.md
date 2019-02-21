@@ -1,3 +1,7 @@
+## 0.9.1
+
+* Fixed Firebase multiple app support in transactions and document snapshots.
+
 ## 0.9.0+2
 
 * Remove categories.
