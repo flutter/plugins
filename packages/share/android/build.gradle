@@ -35,7 +35,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 16
@@ -49,5 +49,8 @@ android {
 dependencies {
     // use support-compat starting from 28.0.0
     implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
+    implementation 'androidx.core:core:1.0.1'
+//    implementation 'androidx.core.content:1.0.0'
+//    compile 'androidx:support-v4:28.1.0'
 //    implementation 'com.android.support:support-core-utils:27.1.1'
 }
