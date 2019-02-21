@@ -1,3 +1,6 @@
+## 5.0.2
+* Fixes `closeWebView` failure on iOS.
+
 ## 5.0.1
 
 * Log a more detailed warning at build time about the previous AndroidX

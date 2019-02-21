@@ -27,51 +27,103 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('IAP Example'),
         ),
-        body: Center(
-            child: FutureBuilder<List<Widget>>(
-                future: buildStorefront(),
+        body: Column(
+          children: [
+            FutureBuilder(
+              future: _buildConnectionCheckTile(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (!snapshot.hasData) {
+                  return Column(children: <Widget>[
+                    buildListCard(
+                        ListTile(title: const Text('Trying to connect...')))
+                  ]);
+                } else if (snapshot.error != null) {
+                  return Column(children: <Widget>[
+                    buildListCard(ListTile(
+                        title: Text(
+                            'Error connecting: ' + snapshot.error.toString())))
+                  ]);
+                }
+                return Column(
+                  children: snapshot.data,
+                );
+              },
+            ),
+            Expanded(
+              child: FutureBuilder(
+                future: InAppPurchaseConnection.instance.queryProductDetails(
+                    <String>['consumable', 'upgrade', 'subscription'].toSet()),
                 builder: (BuildContext context,
-                    AsyncSnapshot<List<Widget>> snapshot) {
+                    AsyncSnapshot<ProductDetailsResponse> snapshot) {
                   if (!snapshot.hasData) {
-                    return ListView(children: <Widget>[
-                      buildListCard(
-                          ListTile(title: const Text('Trying to connect...')))
+                    return Column(children: <Widget>[
+                      buildListCard(ListTile(title: const Text('Loading...')))
                     ]);
                   } else if (snapshot.error != null) {
-                    return ListView(children: <Widget>[
-                      buildListCard(ListTile(
-                          title: Text('Error connecting: ' +
-                              snapshot.error.toString())))
-                    ]);
+                    return Center(
+                      child: Text('Error: ' + snapshot.error.toString()),
+                    );
                   }
-
-                  return ListView(children: snapshot.data);
-                })),
+                  return Column(
+                    children: <Widget>[
+                      Center(child: Text('Products')),
+                      Expanded(
+                        child: ListView(
+                          children: _buildProductList(snapshot.data),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Future<List<Widget>> buildStorefront() async {
+  Future<List<ListTile>> _buildConnectionCheckTile() async {
     final bool available = await InAppPurchaseConnection.instance.isAvailable();
-    final Widget storeHeader = buildListCard(ListTile(
+    final Widget storeHeader = buildListCard(
+      ListTile(
         leading: Icon(available ? Icons.check : Icons.block),
-        title: Text('The store is ' +
-            (available ? 'available' : 'unavailable') +
-            '.')));
-    final List<Widget> children = <Widget>[storeHeader];
+        title: Text(
+            'The store is ' + (available ? 'available' : 'unavailable') + '.'),
+      ),
+    );
+    final List<ListTile> children = <ListTile>[storeHeader];
 
     if (!available) {
-      children.add(buildListCard(ListTile(
-          title: Text('Not connected',
-              style: TextStyle(color: ThemeData.light().errorColor)),
-          subtitle: const Text(
-              'Unable to connect to the payments processor. Has this app been configured correctly? See the example README for instructions.'))));
-    } else {
       children.add(
-          buildListCard(ListTile(title: const Text('Nothing to see yet.'))));
+        buildListCard(
+          ListTile(
+            title: Text('Not connected',
+                style: TextStyle(color: ThemeData.light().errorColor)),
+            subtitle: const Text(
+                'Unable to connect to the payments processor. Has this app been configured correctly? See the example README for instructions.'),
+          ),
+        ),
+      );
     }
-
     return children;
+  }
+
+  List<ListTile> _buildProductList(ProductDetailsResponse response) {
+    List<ListTile> productDetailsCards = response.productDetails.map(
+      (ProductDetails productDetails) {
+        return buildListCard(ListTile(
+          title: Text(
+            productDetails.title,
+          ),
+          subtitle: Text(
+            productDetails.description,
+          ),
+          trailing: Text(productDetails.price),
+        ));
+      },
+    ).toList();
+    return productDetailsCards;
   }
 
   static ListTile buildListCard(ListTile innerTile) =>

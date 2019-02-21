@@ -1,3 +1,23 @@
+## 0.9.4
+
+* No longer sends empty snapshot events on iOS when encountering errors.
+
+## 0.9.3
+
+* Fix transactions on iOS when getting snapshot that doesn't exist.
+
+## 0.9.2
+
+* Fix IllegalStateException errors when using transactions on Android.
+
+## 0.9.1
+
+* Fixed Firebase multiple app support in transactions and document snapshots.
+
+## 0.9.0+2
+
+* Remove categories.
+
 ## 0.9.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX

@@ -1,6 +1,10 @@
-## 3.0.2
+## 2.1.0
 
 * Added support for getReferenceFromUrl.
+
+## 2.0.1+1
+
+* Remove categories.
 
 ## 2.0.1
 
