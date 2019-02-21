@@ -25,7 +25,6 @@
 
 * Fixes `FIRAnalyticsVersionMismatch` compilation error on iOS. Please run `pod update` in directory
   containing `Podfile`.
->>>>>>> 3b9a34192561a45ed175492ab10d6e0ef90f4c95
 
 ## 0.5.0
 
