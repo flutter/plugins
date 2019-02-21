@@ -153,7 +153,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
   private void getReferenceFromUrl(MethodCall call, Result result) {
     String fullUrl = call.argument("fullUrl");
     StorageReference ref = firebaseStorage.getReferenceFromUrl(fullUrl);
-    result.success(ref != null ? ref.path : null);
+    result.success(ref != null ? ref.path() : null);
   }
 
   private void getMetadata(MethodCall call, final Result result) {
