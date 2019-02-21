@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Support for regions and multiple apps
+
 ## 0.1.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
