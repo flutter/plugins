@@ -73,8 +73,7 @@ class SKProductSubscriptionPeriodWrapper {
   /// This method should only be used with `map` values returned by [SKProductDiscountWrapper.fromJson] or [SKProductWrapper.fromJson].
   /// The `map` parameter must not be null.
   factory SKProductSubscriptionPeriodWrapper.fromJson(Map map) {
-    assert(map != null &&
-        (map['numberOfUnits'] == null || map['numberOfUnits'] > 0));
+    assert(map != null, 'map must not be null' );
     return _$SKProductSubscriptionPeriodWrapperFromJson(map);
   }
 
@@ -173,7 +172,7 @@ class SKProductWrapper {
   /// This method should only be used with `map` values returned by [SkProductResponseWrapper.fromJson].
   /// The `map` parameter must not be null.
   factory SKProductWrapper.fromJson(Map map) {
-    assert(map != null);
+    assert(map != null, 'map must not be null.');
     return _$SKProductWrapperFromJson(map);
   }
 
