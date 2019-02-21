@@ -338,9 +338,7 @@ const UInt8 TIMESTAMP = 136;
           @"data" : snapshot.exists ? snapshot.data : [NSNull null]
         });
       } else {
-        result([FlutterError errorWithCode:@"DOCUMENT_NOT_FOUND"
-                                   message:@"Document not found."
-                                   details:nil]);
+        result(nil);
       }
     });
   } else if ([@"Transaction#update" isEqualToString:call.method]) {
