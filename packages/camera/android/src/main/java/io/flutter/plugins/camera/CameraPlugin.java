@@ -732,6 +732,12 @@ public class CameraPlugin implements MethodCallHandler {
 
       Surface previewSurface = new Surface(surfaceTexture);
       surfaces.add(previewSurface);
+
+      // fix to prevent camera crashes when starting the preview
+      if(surfaces == null || imageReader == null){
+        return;
+      }
+
       captureRequestBuilder.addTarget(previewSurface);
 
       surfaces.add(pictureImageReader.getSurface());
