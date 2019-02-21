@@ -1,3 +1,7 @@
+## 0.2.0+3
+
+* Fixed a memory leak on Android - the map was not properly disposed.
+
 ## 0.2.0+2
 
 * Log a more detailed warning at build time about the previous AndroidX

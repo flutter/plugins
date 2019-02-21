@@ -4,6 +4,7 @@
 
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
 
 void main() {
   final Map<String, dynamic> localeMap = <String, dynamic>{
@@ -151,6 +152,16 @@ void main() {
       expect(wrapper.price, null);
       expect(wrapper.downloadable, null);
       expect(wrapper.subscriptionPeriod, null);
+    });
+
+    test('toProductDetails() should return correct Product object', () {
+      final SKProductWrapper wrapper = SKProductWrapper.fromJson(productMap);
+      final ProductDetails product = wrapper.toProductDetails();
+      expect(product.title, wrapper.localizedTitle);
+      expect(product.description, wrapper.localizedDescription);
+      expect(product.id, wrapper.productIdentifier);
+      expect(product.price,
+          wrapper.priceLocale.currencySymbol + wrapper.price.toString());
     });
 
     test('SKProductResponse wrapper should match', () {

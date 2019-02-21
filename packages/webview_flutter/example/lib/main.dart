@@ -32,6 +32,8 @@ class WebViewExample extends StatelessWidget {
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
           },
+          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+          // ignore: prefer_collection_literals
           javascriptChannels: <JavascriptChannel>[
             _toasterJavascriptChannel(context),
           ].toSet(),
@@ -77,6 +79,9 @@ enum MenuOptions {
   toast,
   listCookies,
   clearCookies,
+  addToCache,
+  listCache,
+  clearCache,
 }
 
 class SampleMenu extends StatelessWidget {
@@ -110,6 +115,15 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.clearCookies:
                 _onClearCookies(context);
                 break;
+              case MenuOptions.addToCache:
+                _onAddToCache(controller.data, context);
+                break;
+              case MenuOptions.listCache:
+                _onListCache(controller.data, context);
+                break;
+              case MenuOptions.clearCache:
+                _onClearCache(controller.data, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
@@ -129,6 +143,18 @@ class SampleMenu extends StatelessWidget {
                 const PopupMenuItem<MenuOptions>(
                   value: MenuOptions.clearCookies,
                   child: Text('Clear cookies'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.addToCache,
+                  child: Text('Add to cache'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.listCache,
+                  child: Text('List cache'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.clearCache,
+                  child: Text('Clear cache'),
                 ),
               ],
         );
@@ -157,6 +183,27 @@ class SampleMenu extends StatelessWidget {
           _getCookieList(cookies),
         ],
       ),
+    ));
+  }
+
+  void _onAddToCache(WebViewController controller, BuildContext context) async {
+    await controller.evaluateJavascript(
+        'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
+    Scaffold.of(context).showSnackBar(const SnackBar(
+      content: Text('Added a test entry to cache.'),
+    ));
+  }
+
+  void _onListCache(WebViewController controller, BuildContext context) async {
+    await controller.evaluateJavascript('caches.keys()'
+        '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
+        '.then((caches) => Toaster.postMessage(caches))');
+  }
+
+  void _onClearCache(WebViewController controller, BuildContext context) async {
+    await controller.clearCache();
+    Scaffold.of(context).showSnackBar(const SnackBar(
+      content: Text("Cache cleared."),
     ));
   }
 
