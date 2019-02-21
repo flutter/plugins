@@ -19,7 +19,7 @@ static FlutterError *getFlutterError(NSError *error) {
 @implementation FLTFirebaseStoragePlugin {
   NSMutableDictionary<NSString * /* app name */,
                       NSMutableDictionary<NSString * /* bucket */, FIRStorage *> *> *_storageMap;
-  FIRStorage *storage;	
+  FIRStorage *storage;
   int _nextUploadHandle;
   NSMutableDictionary<NSNumber *, FIRStorageUploadTask *> *_uploadTasks;
 }
