@@ -329,6 +329,17 @@ class WebViewController {
     return _channel.invokeMethod('loadUrl', url);
   }
 
+  /// Loads the specified file.
+  ///
+  /// `url` must not be null.
+  Future<void> loadAssetFile(String url) async {
+    assert(url != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    return _channel.invokeMethod('loadAssetFile', url);
+  }
+
   /// Accessor to the current URL that the WebView is displaying.
   ///
   /// If [WebView.initialUrl] was never specified, returns `null`.
