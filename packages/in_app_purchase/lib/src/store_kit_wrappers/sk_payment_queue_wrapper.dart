@@ -159,7 +159,7 @@ class SKPaymentQueueWrapper {
     final List<Map<String, dynamic>> transactionsMap = arguments;
     final List<SKPaymentTransactionWrapper> transactions = transactionsMap
         .map<SKPaymentTransactionWrapper>(
-            (Map<String, dynamic> map) => SKPaymentTransactionWrapper())
+            (Map<String, dynamic> map) => SKPaymentTransactionWrapper.fromJson(map))
         .toList();
     return transactions;
   }
@@ -169,7 +169,7 @@ class SKPaymentQueueWrapper {
     final List<Map<String, dynamic>> downloadsMap = arguments;
     final List<SKDownloadWrapper> downloads = downloadsMap
         .map<SKDownloadWrapper>(
-            (Map<String, dynamic> map) => SKDownloadWrapper())
+            (Map<String, dynamic> map) => SKDownloadWrapper.fromJson(map))
         .toList();
     return downloads;
   }
