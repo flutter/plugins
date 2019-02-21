@@ -105,7 +105,7 @@ class _GoogleMapState extends State<GoogleMap> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
-  _MarkerUpdateHandler _markerUpdateHandler;
+  Map<MarkerId, Marker> _markers;
   _GoogleMapOptions _googleMapOptions;
 
   @override
@@ -113,7 +113,7 @@ class _GoogleMapState extends State<GoogleMap> {
     final Map<String, dynamic> creationParams = <String, dynamic>{
       'initialCameraPosition': widget.initialCameraPosition?._toMap(),
       'options': _googleMapOptions.toMap(),
-      'markerUpdates': _markerUpdateHandler.update(widget.markers),
+      'markersToAdd': _serializeMarkerSet(widget.markers),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
@@ -141,7 +141,7 @@ class _GoogleMapState extends State<GoogleMap> {
   void initState() {
     super.initState();
     _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
-    _markerUpdateHandler = _MarkerUpdateHandler.init(null);
+    _markers = keyByMarkerId(widget.markers);
   }
 
   @override
@@ -165,70 +165,37 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void _updateMarkers() async {
     final GoogleMapController controller = await _controller.future;
-    controller._updateMarkers(_markerUpdateHandler.update(widget.markers));
+    controller._updateMarkers(
+        MarkerUpdates.from(_markers.values.toSet(), widget.markers));
+    _markers = keyByMarkerId(widget.markers);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
     final GoogleMapController controller = await GoogleMapController.init(
       id,
       widget.initialCameraPosition,
-      _markerUpdateHandler._onMarkerTap(),
-      _markerUpdateHandler._onInfoWindowTap(),
+      this,
     );
     _controller.complete(controller);
     if (widget.onMapCreated != null) {
       widget.onMapCreated(controller);
     }
   }
-}
 
-class _MarkerUpdateHandler {
-  _MarkerUpdateHandler._(this._markers);
-
-  factory _MarkerUpdateHandler.init(Set<Marker> markers) {
-    return _MarkerUpdateHandler._(_createMarkerIdMarkerMap(markers));
-  }
-
-  Map<MarkerId, Marker> _markers;
-
-  dynamic update(Set<Marker> newMarkers) {
-    final MarkerUpdates updates =
-        MarkerUpdates.from(_markers?.values?.toSet(), newMarkers);
-    _markers = _createMarkerIdMarkerMap(newMarkers);
-    return updates._toJson();
-  }
-
-  static Map<MarkerId, Marker> _createMarkerIdMarkerMap(Set<Marker> markers) {
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // ignore: prefer_collection_literals
-    final Map<MarkerId, Marker> result = Map<MarkerId, Marker>();
-    if (markers == null) {
-      return result;
+  void onMarkerTap(String markerIdParam) {
+    if (markerIdParam == null) {
+      return;
     }
-    markers.forEach((Marker m) {
-      result[m.markerId] = m;
-    });
-    return result;
+    final MarkerId markerId = MarkerId(markerIdParam);
+    _markers[markerId]?.onTap();
   }
 
-  ValueChanged<String> _onMarkerTap() {
-    return (String markerIdParam) {
-      if (markerIdParam == null) {
-        return;
-      }
-      final MarkerId markerId = MarkerId(markerIdParam);
-      _markers[markerId]?.onTap();
-    };
-  }
-
-  ValueChanged<String> _onInfoWindowTap() {
-    return (String markerIdParam) {
-      if (markerIdParam == null) {
-        return;
-      }
-      final MarkerId markerId = MarkerId(markerIdParam);
-      _markers[markerId]?.infoWindow?.onTap();
-    };
+  void onInfoWindowTap(String markerIdParam) {
+    if (markerIdParam == null) {
+      return;
+    }
+    final MarkerId markerId = MarkerId(markerIdParam);
+    _markers[markerId]?.infoWindow?.onTap();
   }
 }
 

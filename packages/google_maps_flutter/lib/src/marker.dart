@@ -286,3 +286,12 @@ class Marker {
         'visible: $visible, zIndex: $zIndex, onTap: $onTap}';
   }
 }
+
+Map<MarkerId, Marker> keyByMarkerId(Iterable<Marker> markers) {
+  return Map<MarkerId, Marker>.fromEntries(markers.map(
+      (Marker marker) => MapEntry<MarkerId, Marker>(marker.markerId, marker)));
+}
+
+dynamic _serializeMarkerSet(Set<Marker> markers) {
+  return markers.map<dynamic>((Marker m) => m._toJson()).toList();
+}

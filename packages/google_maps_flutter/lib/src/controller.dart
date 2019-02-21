@@ -17,8 +17,7 @@ class GoogleMapController extends ChangeNotifier {
   GoogleMapController._(
     MethodChannel channel,
     CameraPosition initialCameraPosition,
-    this._markerTap,
-    this._infoWindowTap,
+    this._googleMapState,
   )   : assert(channel != null),
         _channel = channel {
     _cameraPosition = initialCameraPosition;
@@ -28,8 +27,7 @@ class GoogleMapController extends ChangeNotifier {
   static Future<GoogleMapController> init(
     int id,
     CameraPosition initialCameraPosition,
-    ValueChanged<String> markerTap,
-    ValueChanged<String> infoWindowTap,
+    _GoogleMapState googleMapState,
   ) async {
     assert(id != null);
     final MethodChannel channel =
@@ -41,8 +39,7 @@ class GoogleMapController extends ChangeNotifier {
     return GoogleMapController._(
       channel,
       initialCameraPosition,
-      markerTap,
-      infoWindowTap,
+      googleMapState,
     );
   }
 
@@ -52,8 +49,7 @@ class GoogleMapController extends ChangeNotifier {
   bool get isCameraMoving => _isCameraMoving;
   bool _isCameraMoving = false;
 
-  final ValueChanged<String> _markerTap;
-  final ValueChanged<String> _infoWindowTap;
+  final _GoogleMapState _googleMapState;
 
   /// Returns the most recent camera position reported by the platform side.
   /// Will be null, if [GoogleMap.trackCameraPosition] is false.
@@ -75,14 +71,10 @@ class GoogleMapController extends ChangeNotifier {
         notifyListeners();
         break;
       case 'marker#onTap':
-        if (_markerTap != null) {
-          _markerTap(call.arguments['markerId']);
-        }
+        _googleMapState.onMarkerTap(call.arguments['markerId']);
         break;
       case 'infoWindow#onTap':
-        if (_infoWindowTap != null) {
-          _infoWindowTap(call.arguments['markerId']);
-        }
+        _googleMapState.onInfoWindowTap(call.arguments['markerId']);
         break;
       default:
         throw MissingPluginException();
@@ -116,16 +108,14 @@ class GoogleMapController extends ChangeNotifier {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateMarkers(dynamic markerUpdates) async {
+  Future<void> _updateMarkers(MarkerUpdates markerUpdates) async {
     assert(markerUpdates != null);
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod(
       'markers#update',
-      <String, dynamic>{
-        'markerUpdates': markerUpdates,
-      },
+      markerUpdates._toMap(),
     );
     notifyListeners();
   }

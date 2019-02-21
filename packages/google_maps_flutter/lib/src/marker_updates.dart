@@ -4,35 +4,17 @@
 
 part of google_maps_flutter;
 
-/// Types of [Marker] updates.
-enum MarkerUpdateEventType {
-  add,
-  update,
-  remove,
-}
-
-Map<MarkerId, Marker> _toMap(Set<Marker> markers) {
-  final Map<MarkerId, Marker> result = <MarkerId, Marker>{};
-  if (markers == null) {
-    return null;
-  }
-  markers.forEach((Marker marker) {
-    if (marker != null) {
-      result[marker.markerId] = marker;
-    }
-  });
-  return result;
-}
-
 /// [Marker] update events to be applied to the [GoogleMap].
 ///
 /// Used in [GoogleMapController] when the map is updated.
-@immutable
 class MarkerUpdates {
-  @visibleForTesting
   MarkerUpdates.internal({
-    @required this.markerUpdates,
-  }) : assert(markerUpdates != null);
+    @required this.markersToAdd,
+    @required this.markerIdsToRemove,
+    @required this.markersToChange,
+  })  : assert(markersToAdd != null),
+        assert(markerIdsToRemove != null),
+        assert(markersToChange != null);
 
   /// Computes [MarkerUpdates] given previous and current [Marker]s.
   factory MarkerUpdates.from(Set<Marker> previous, Set<Marker> current) {
@@ -44,106 +26,37 @@ class MarkerUpdates {
       current = Set<Marker>.identity();
     }
 
-    final Map<MarkerId, Marker> previousMarkers = _toMap(previous);
-    final Map<MarkerId, Marker> currentMarkers = _toMap(current);
+    final Map<MarkerId, Marker> previousMarkers = keyByMarkerId(previous);
+    final Map<MarkerId, Marker> currentMarkers = keyByMarkerId(current);
 
-    final Set<MarkerId> allMarkerIds =
-        previousMarkers.keys.toSet().union(currentMarkers.keys.toSet());
+    final Set<MarkerId> prevMarkerIds = previousMarkers.keys.toSet();
+    final Set<MarkerId> currentMarkerIds = currentMarkers.keys.toSet();
 
-    final Set<MarkerUpdate> markerUpdates = allMarkerIds.map(
-      (MarkerId markerId) {
-        final bool inCurrent = currentMarkers.containsKey(markerId);
-        final bool inPrevious = previousMarkers.containsKey(markerId);
+    Marker idToCurrentMarker(MarkerId id) {
+      return currentMarkers[id];
+    }
 
-        if (inCurrent && inPrevious) {
-          return MarkerUpdate._update(
-            oldMarker: previousMarkers[markerId],
-            newMarker: currentMarkers[markerId],
-          );
-        } else if (inCurrent) {
-          return MarkerUpdate._add(currentMarkers[markerId]);
-        } else if (inPrevious) {
-          return MarkerUpdate._remove(markerId);
-        } else {
-          throw FlutterError("Unknown markerId: " + markerId.value);
-        }
-      },
-    ).toSet();
+    final Set<MarkerId> markerIdsToRemove =
+        prevMarkerIds.difference(currentMarkerIds);
+    final Set<Marker> markersToAdd = currentMarkerIds
+        .difference(prevMarkerIds)
+        .map(idToCurrentMarker)
+        .toSet();
+    final Set<Marker> markersToChange = currentMarkerIds
+        .intersection(prevMarkerIds)
+        .map(idToCurrentMarker)
+        .toSet();
 
-    return MarkerUpdates.internal(markerUpdates: markerUpdates);
-  }
-
-  final Set<MarkerUpdate> markerUpdates;
-
-  dynamic _toJson() {
-    return markerUpdates
-        .map<dynamic>((MarkerUpdate update) => update._toMap())
-        .toList();
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is MarkerUpdates &&
-          runtimeType == other.runtimeType &&
-          markerUpdates == other.markerUpdates;
-
-  @override
-  int get hashCode => markerUpdates.hashCode;
-
-  @override
-  String toString() {
-    return 'MarkerUpdates{markerUpdates: $markerUpdates}';
-  }
-}
-
-/// [Marker] update event with the changes.
-@immutable
-class MarkerUpdate {
-  @visibleForTesting
-  MarkerUpdate.internal({
-    @required this.updateEventType,
-    @required this.markerId,
-    this.changes,
-    this.newMarker,
-  })  : assert(updateEventType != null),
-        assert(markerId != null),
-        assert(markerId.value != null);
-
-  factory MarkerUpdate._remove(MarkerId markerId) {
-    return MarkerUpdate.internal(
-      updateEventType: MarkerUpdateEventType.remove,
-      markerId: markerId,
+    return MarkerUpdates.internal(
+      markersToAdd: markersToAdd,
+      markerIdsToRemove: markerIdsToRemove,
+      markersToChange: markersToChange,
     );
   }
 
-  factory MarkerUpdate._add(Marker newMarker) {
-    return MarkerUpdate.internal(
-      updateEventType: MarkerUpdateEventType.add,
-      markerId: newMarker.markerId,
-      changes: newMarker,
-      newMarker: newMarker,
-    );
-  }
-
-  /// TODO(iskakaushik): Diff is sufficient, don't need to send the whole update.
-  factory MarkerUpdate._update({
-    @required Marker oldMarker,
-    @required Marker newMarker,
-  }) {
-    assert(oldMarker.markerId == newMarker.markerId);
-    return MarkerUpdate.internal(
-      updateEventType: MarkerUpdateEventType.update,
-      markerId: newMarker.markerId,
-      changes: newMarker,
-      newMarker: newMarker,
-    );
-  }
-
-  final MarkerUpdateEventType updateEventType;
-  final MarkerId markerId;
-  final Marker changes;
-  final Marker newMarker;
+  Set<Marker> markersToAdd;
+  Set<MarkerId> markerIdsToRemove;
+  Set<Marker> markersToChange;
 
   Map<String, dynamic> _toMap() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
@@ -154,9 +67,10 @@ class MarkerUpdate {
       }
     }
 
-    addIfNonNull('updateEventType', updateEventType.toString());
-    addIfNonNull('markerId', markerId.value);
-    addIfNonNull('changes', changes?._toJson());
+    addIfNonNull('markersToAdd', _serializeMarkerSet(markersToAdd));
+    addIfNonNull('markersToChange', _serializeMarkerSet(markersToChange));
+    addIfNonNull('markerIdsToRemove',
+        markerIdsToRemove.map<dynamic>((MarkerId m) => m.value));
 
     return updateMap;
   }
@@ -164,23 +78,22 @@ class MarkerUpdate {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is MarkerUpdate &&
+      other is MarkerUpdates &&
           runtimeType == other.runtimeType &&
-          updateEventType == other.updateEventType &&
-          markerId == other.markerId &&
-          changes == other.changes &&
-          newMarker == other.newMarker;
+          setEquals(markersToAdd, other.markersToAdd) &&
+          setEquals(markerIdsToRemove, other.markerIdsToRemove) &&
+          setEquals(markersToChange, other.markersToChange);
 
   @override
   int get hashCode =>
-      updateEventType.hashCode ^
-      markerId.hashCode ^
-      changes.hashCode ^
-      newMarker.hashCode;
+      markersToAdd.hashCode ^
+      markerIdsToRemove.hashCode ^
+      markersToChange.hashCode;
 
   @override
   String toString() {
-    return 'MarkerUpdate{updateEventType: $updateEventType, markerId: $markerId, '
-        'changes: $changes, newMarker: $newMarker}';
+    return '_MarkerUpdates{markersToAdd: $markersToAdd, '
+        'markerIdsToRemove: $markerIdsToRemove, '
+        'markersToChange: $markersToChange}';
   }
 }
