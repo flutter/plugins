@@ -65,7 +65,7 @@ class FileUtils {
           try {
             final Uri contentUri =
                 ContentUris.withAppendedId(
-                    Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                    Uri.parse(Environment.DIRECTORY_DOWNLOADS), Long.valueOf(id));
             return getDataColumn(context, contentUri, null, null);
           } catch (NumberFormatException e) {
             return null;

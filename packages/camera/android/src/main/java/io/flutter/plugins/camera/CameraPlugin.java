@@ -24,12 +24,12 @@ import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Size;
 import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.Surface;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -148,12 +148,6 @@ public class CameraPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
     switch (call.method) {
-      case "init":
-        if (camera != null) {
-          camera.close();
-        }
-        result.success(null);
-        break;
       case "availableCameras":
         try {
           String[] cameraNames = cameraManager.getCameraIdList();
@@ -298,16 +292,16 @@ public class CameraPlugin implements MethodCallHandler {
       registerEventChannel();
 
       try {
-        Size minPreviewSize;
+        int minHeight;
         switch (resolutionPreset) {
           case "high":
-            minPreviewSize = new Size(1024, 768);
+            minHeight = 720;
             break;
           case "medium":
-            minPreviewSize = new Size(640, 480);
+            minHeight = 480;
             break;
           case "low":
-            minPreviewSize = new Size(320, 240);
+            minHeight = 240;
             break;
           default:
             throw new IllegalArgumentException("Unknown preset: " + resolutionPreset);
@@ -323,7 +317,7 @@ public class CameraPlugin implements MethodCallHandler {
             characteristics.get(CameraCharacteristics.LENS_FACING)
                 == CameraMetadata.LENS_FACING_FRONT;
         computeBestCaptureSize(streamConfigurationMap);
-        computeBestPreviewAndRecordingSize(streamConfigurationMap, minPreviewSize, captureSize);
+        computeBestPreviewAndRecordingSize(streamConfigurationMap, minHeight, captureSize);
 
         if (cameraPermissionContinuation != null) {
           result.error("cameraPermission", "Camera permission request ongoing", null);
@@ -396,7 +390,7 @@ public class CameraPlugin implements MethodCallHandler {
     }
 
     private void computeBestPreviewAndRecordingSize(
-        StreamConfigurationMap streamConfigurationMap, Size minPreviewSize, Size captureSize) {
+        StreamConfigurationMap streamConfigurationMap, int minHeight, Size captureSize) {
       Size[] sizes = streamConfigurationMap.getOutputSizes(SurfaceTexture.class);
 
       // Preview size and video size should not be greater than screen resolution or 1080.
@@ -410,8 +404,7 @@ public class CameraPlugin implements MethodCallHandler {
 
       List<Size> goodEnough = new ArrayList<>();
       for (Size s : sizes) {
-        if (minPreviewSize.getWidth() < s.getWidth()
-            && minPreviewSize.getHeight() < s.getHeight()
+        if (minHeight <= s.getHeight()
             && s.getWidth() <= screenWidth
             && s.getHeight() <= screenHeight
             && s.getHeight() <= 1080) {
@@ -498,6 +491,9 @@ public class CameraPlugin implements MethodCallHandler {
                     startPreview();
                   } catch (CameraAccessException e) {
                     if (result != null) result.error("CameraAccess", e.getMessage(), null);
+                    cameraDevice.close();
+                    Camera.this.cameraDevice = null;
+                    return;
                   }
 
                   if (result != null) {
