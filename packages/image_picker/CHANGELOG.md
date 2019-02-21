@@ -1,3 +1,7 @@
+## 0.5.0+4
+
+* Fixed record video has two files on IOS.
+
 ## 0.5.0+3
 
 * Fixed am Android crash when Image Picker is registered without an activity.
