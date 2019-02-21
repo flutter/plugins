@@ -260,13 +260,10 @@ class _CreationParams {
 }
 
 class _WebSettings {
-  _WebSettings({
-    this.javascriptMode,
-    this.zoom
-  });
-
+  _WebSettings({this.javascriptMode,this.zoom});
   static _WebSettings fromWidget(WebView widget) {
-    return _WebSettings(javascriptMode: widget.javascriptMode, zoom: widget.zoom);
+    return _WebSettings(
+        javascriptMode: widget.javascriptMode, zoom: widget.zoom);
   }
 
   final JavascriptMode javascriptMode;
