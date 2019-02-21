@@ -1,6 +1,10 @@
-## 0.9.2+1
+## 0.9.3+1
 
 * Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.9.3
+
+* Fix transactions on iOS when getting snapshot that doesn't exist.
 
 ## 0.9.2
 
@@ -13,7 +17,6 @@
 ## 0.9.0+2
 
 * Remove categories.
->>>>>>> 3b9a34192561a45ed175492ab10d6e0ef90f4c95
 
 ## 0.9.0+1
 
