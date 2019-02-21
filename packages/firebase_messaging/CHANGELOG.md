@@ -1,3 +1,7 @@
+## 4.0.0
+
+*  **Breaking Change** Update message structure for onMessage to match onLaunch and onResume
+
 ## 3.0.1
 
 * Log a more detailed warning at build time about the previous AndroidX
@@ -32,6 +36,7 @@
   requires any Android apps using this plugin to [also
   migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
   using the original support library.
+>>>>>>> origin/master
 
 ## 2.1.0
 
