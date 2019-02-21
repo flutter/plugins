@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #import <Flutter/Flutter.h>
+@class FIAPaymentQueueHandler;
 
 @interface InAppPurchasePlugin : NSObject <FlutterPlugin>
+
+@property(strong, nonatomic) FIAPaymentQueueHandler *paymentQueueHandler;
+
 @end
