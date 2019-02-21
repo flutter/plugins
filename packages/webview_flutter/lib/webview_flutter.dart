@@ -222,6 +222,8 @@ class _WebViewState extends State<WebView> {
 
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
   final Set<String> channelNames = channels == null
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // ignore: prefer_collection_literals
       ? Set<String>()
       : channels.map((JavascriptChannel channel) => channel.name).toSet();
   return channelNames;
@@ -392,6 +394,24 @@ class WebViewController {
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod("reload");
+  }
+
+  /// Clears all caches used by the [WebView].
+  ///
+  /// The following caches are cleared:
+  ///	1. Browser HTTP Cache.
+  ///	2. [Cache API](https://developers.google.com/web/fundamentals/instant-and-offline/web-storage/cache-api) caches.
+  ///    These are not yet supported in iOS WkWebView. Service workers tend to use this cache.
+  ///	3. Application cache.
+  ///	4. Local Storage.
+  ///
+  /// Note: Calling this method also triggers a reload.
+  Future<void> clearCache() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod("clearCache");
+    return reload();
   }
 
   Future<void> _updateSettings(_WebSettings setting) async {

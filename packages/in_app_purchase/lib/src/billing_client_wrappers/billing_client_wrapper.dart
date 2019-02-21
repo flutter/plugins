@@ -97,6 +97,41 @@ class BillingClient {
         arguments));
   }
 
+  /// Attempt to launch the Play Billing Flow for a given [skuDetails].
+  ///
+  /// The [skuDetails] needs to have already been fetched in a [querySkuDetails]
+  /// call. The [accountId] is an optional hashed string associated with the user
+  /// that's unique to your app. It's used by Google to detect unusual behavior.
+  /// Do not pass in a cleartext [accountId], use your developer ID, or use the
+  /// user's Google ID for this field.
+  ///
+  /// Calling this attemps to show the Google Play purchase UI. The user is free
+  /// to complete the transaction there.
+  ///
+  /// This method returns a [BillingResponse] representing the initial attempt
+  /// to show the Google Play purchase screen.
+  /// TODO(mklim, flutter/flutter#26326): Expose onPurchasesUpdated() result.
+  ///
+  /// This method calls through to
+  /// [`BillingClient#launchBillingFlow`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#launchbillingflow).
+  /// It constructs a
+  /// [`BillingFlowParams`](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams)
+  /// instance by [setting the given
+  /// skuDetails](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder.html#setskudetails)
+  /// and [the given
+  /// accountId](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder.html#setAccountId(java.lang.String)).
+  Future<BillingResponse> launchBillingFlow(
+      {@required SkuDetailsWrapper skuDetails, String accountId}) async {
+    assert(skuDetails != null);
+    final Map<String, dynamic> arguments = <String, dynamic>{
+      'sku': skuDetails.sku,
+      'accountId': accountId,
+    };
+    return BillingResponseConverter().fromJson(await channel.invokeMethod(
+        'BillingClient#launchBillingFlow(Activity, BillingFlowParams)',
+        arguments));
+  }
+
   Future<void> _callHandler(MethodCall call) async {
     switch (call.method) {
       case 'BillingClientStateListener#onBillingServiceDisconnected()':

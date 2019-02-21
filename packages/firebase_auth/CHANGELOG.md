@@ -1,3 +1,7 @@
+## 0.8.1+1
+
+* Remove categories.
+
 ## 0.8.1
 
 * Fixes Firebase auth phone sign-in for Android.

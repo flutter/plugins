@@ -2,6 +2,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
 import android.view.View;
+import android.webkit.WebStorage;
 import android.webkit.WebView;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -20,6 +21,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @SuppressWarnings("unchecked")
   FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
+    // Allow local storage.
+    webView.getSettings().setDomStorageEnabled(true);
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
@@ -76,6 +79,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         break;
       case "removeJavascriptChannels":
         removeJavaScriptChannels(methodCall, result);
+        break;
+      case "clearCache":
+        clearCache(result);
         break;
       default:
         result.notImplemented();
@@ -156,6 +162,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(null);
   }
 
+  private void clearCache(Result result) {
+    webView.clearCache(true);
+    WebStorage.getInstance().deleteAllData();
+    result.success(null);
+  }
+
   private void applySettings(Map<String, Object> settings) {
     for (String key : settings.keySet()) {
       switch (key) {
@@ -189,5 +201,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   @Override
-  public void dispose() {}
+  public void dispose() {
+    methodChannel.setMethodCallHandler(null);
+  }
 }
