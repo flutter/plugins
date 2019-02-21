@@ -174,8 +174,7 @@ static FlutterError *getFlutterError(NSError *error) {
 
 - (void)getReferenceFromUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *fullUrl = call.arguments[@"fullUrl"];
-  FIRStorageRef *reference = [storage referenceFromUrl:fullUrl];
-  result(reference.fullPath);
+  result([storage referenceForURL:fullUrl].fullPath);
 }
 
 - (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {
