@@ -126,6 +126,8 @@ class FirebaseStorage {
     });
   }
 
+  /// Creates a [StorageReference] given a gs:// or // URL pointing to a Firebase
+  /// Storage location. 
   Future<StorageReference> getReferenceFromUrl(String fullUrl) async {
     String path = await channel.invokeMethod(
         "FirebaseStorage#getReferenceFromUrl", <String, dynamic>{
