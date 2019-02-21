@@ -12,6 +12,7 @@ After importing this plugin to your project as usual, add the following to your
 
 ```xml
 <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+<uses-permission android:name="android.permission.WAKE_LOCK"/>
 ```
 
 Next, within the `<application></application>` tags, add:
