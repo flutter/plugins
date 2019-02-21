@@ -147,6 +147,7 @@ id roundDoubles(id value) {
     if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
       NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
     self.updatedSnapshots = [NSMutableDictionary new];
   }

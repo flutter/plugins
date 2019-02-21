@@ -26,6 +26,7 @@
     if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
       NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
 
     _traces = [[NSMutableDictionary alloc] init];
