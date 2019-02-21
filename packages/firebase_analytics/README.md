@@ -18,12 +18,12 @@ To track `PageRoute` transitions, add a `FirebaseAnalyticsObserver` to the list 
 
 ```dart
 
-FirebaseAnalytics analytics = new FirebaseAnalytics();
+FirebaseAnalytics analytics = FirebaseAnalytics();
 
 MaterialApp(
-  home: new MyAppHome(),
+  home: MyAppHome(),
   navigatorObservers: [
-    new FirebaseAnalyticsObserver(analytics: analytics),
+    FirebaseAnalyticsObserver(analytics: analytics),
   ],
 );
 ```

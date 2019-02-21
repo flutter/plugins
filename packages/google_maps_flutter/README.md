@@ -1,34 +1,32 @@
-# Google Maps for Flutter
+# Google Maps for Flutter (Developers Preview)
 
 [![pub package](https://img.shields.io/pub/v/google_maps_flutter.svg)](https://pub.dartlang.org/packages/google_maps_flutter)
 
-A Flutter plugin to use [Google Maps](https://developers.google.com/maps/).
+A Flutter plugin that provides a [Google Maps](https://developers.google.com/maps/) widget.
 
-## Caveat
+## Developers Preview Status
+The plugin relies on Flutter's new mechanism for embedding Android and iOS views.
+As that mechanism is currently in a developers preview, this plugin should also be
+considered a developers preview.
 
-This plugin provides an *unpublished preview* of the Flutter API for Google Maps:
-* Dart APIs for controlling and interacting with a GoogleMap view from Flutter
-  code are still being consolidated and expanded. The intention is to grow
-  current coverage into a complete offering. Issues and pull requests aimed to
-  help us prioritize and speed up this effort are very welcome.
-* Currently the plugin only supports Android as it embeds a platform view in the
-  Flutter hierarchy which is currently only supported for Android ([tracking
-  issue](https://github.com/flutter/flutter/issues/19030)).
+Known issues are tagged with the [platform-views](https://github.com/flutter/flutter/labels/a%3A%20platform-views) and/or [maps](https://github.com/flutter/flutter/labels/p%3A%20maps) labels.
+
+To use this plugin on iOS you need to opt-in for the embedded views preview by
+adding a boolean property to the app's `Info.plist` file, with the key `io.flutter.embedded_views_preview`
+and the value `YES`.
+
+The API exposed by this plugin is not yet stable, and we expect some breaking changes to land soon.
+
 
 ## Usage
 
-To use this plugin, add
-```yaml
- google_maps_flutter:
-   git:
-     url: git://github.com/flutter/plugins
-     path: packages/google_maps_flutter
-```
-as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+To use this plugin, add `google_maps_flutter` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ## Getting Started
 
 Get an API key at <https://cloud.google.com/maps-platform/>.
+
+### Android
 
 Specify your API key in the application manifest `android/app/src/main/AndroidManifest.xml`:
 
@@ -38,6 +36,51 @@ Specify your API key in the application manifest `android/app/src/main/AndroidMa
     <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="YOUR KEY HERE"/>
 ```
+
+### iOS
+
+Specify your API key in the application delegate `ios/Runner/AppDelegate.m`:
+
+```objectivec
+#include "AppDelegate.h"
+#include "GeneratedPluginRegistrant.h"
+#import "GoogleMaps/GoogleMaps.h"
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+  [GMSServices provideAPIKey:@"YOUR KEY HERE"];
+  [GeneratedPluginRegistrant registerWithRegistry:self];
+  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
+@end
+```
+
+Or in your swift code, specify your API key in the application delegate `ios/Runner/AppDelegate.swift`:
+
+```swift
+import UIKit
+import Flutter
+import GoogleMaps
+
+@UIApplicationMain
+@objc class AppDelegate: FlutterAppDelegate {
+  override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
+  ) -> Bool {
+    GMSServices.provideAPIKey("YOUR KEY HERE")
+    GeneratedPluginRegistrant.register(with: self)
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+}
+```
+Opt-in to the embedded views preview by adding a boolean property to the app's `Info.plist` file
+with the key `io.flutter.embedded_views_preview` and the value `YES`.
+
+### Both
+
 
 You can now add a `GoogleMap` widget to your widget tree.
 
@@ -50,7 +93,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: new Scaffold(
+    home: Scaffold(
       appBar: AppBar(title: const Text('Google Maps demo')),
       body: MapsDemo(),
     ),

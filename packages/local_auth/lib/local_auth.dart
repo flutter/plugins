@@ -11,6 +11,8 @@ import 'package:meta/meta.dart';
 import 'auth_strings.dart';
 import 'error_codes.dart';
 
+enum BiometricType { face, fingerprint, iris }
+
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/local_auth');
 
 /// A Flutter plugin for authenticating the user identity locally.
@@ -70,6 +72,49 @@ class LocalAuthentication {
               'operating systems.',
           details: 'Your operating system is ${Platform.operatingSystem}');
     }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return await _channel.invokeMethod('authenticateWithBiometrics', args);
+  }
+
+  /// Returns true if device is capable of checking biometrics
+  ///
+  /// Returns a [Future] bool true or false:
+  Future<bool> get canCheckBiometrics async =>
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
+      (await _channel.invokeMethod('getAvailableBiometrics')).isNotEmpty;
+
+  /// Returns a list of enrolled biometrics
+  ///
+  /// Returns a [Future] List<BiometricType> with the following possibilities:
+  /// - BiometricType.face
+  /// - BiometricType.fingerprint
+  /// - BiometricType.iris (not yet implemented)
+  Future<List<BiometricType>> getAvailableBiometrics() async {
+    final List<String> result =
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
+        (await _channel.invokeMethod('getAvailableBiometrics')).cast<String>();
+    final List<BiometricType> biometrics = <BiometricType>[];
+    result.forEach((String value) {
+      switch (value) {
+        case 'face':
+          biometrics.add(BiometricType.face);
+          break;
+        case 'fingerprint':
+          biometrics.add(BiometricType.fingerprint);
+          break;
+        case 'iris':
+          biometrics.add(BiometricType.iris);
+          break;
+        case 'undefined':
+          break;
+      }
+    });
+    return biometrics;
   }
 }

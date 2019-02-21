@@ -12,7 +12,7 @@ Sample usage to check current status:
 ```dart
 import 'package:connectivity/connectivity.dart';
 
-var connectivityResult = await (new Connectivity().checkConnectivity());
+var connectivityResult = await (Connectivity().checkConnectivity());
 if (connectivityResult == ConnectivityResult.mobile) {
   // I am connected to a mobile network.
 } else if (connectivityResult == ConnectivityResult.wifi) {
@@ -31,7 +31,7 @@ exposed by connectivity plugin:
 import 'package:connectivity/connectivity.dart';
 
 initState() {
-  subscription = new Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+  subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
     // Got a new connectivity status!
   })
 }

@@ -7,7 +7,7 @@
 #import "Firebase/Firebase.h"
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-@interface FLTFirebaseMessagingPlugin ()<FIRMessagingDelegate>
+@interface FLTFirebaseMessagingPlugin () <FIRMessagingDelegate>
 @end
 #endif
 
@@ -33,8 +33,10 @@
   if (self) {
     _channel = channel;
     _resumingFromBackground = NO;
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
     [FIRMessaging messaging].delegate = self;
   }
@@ -46,13 +48,13 @@
   if ([@"requestNotificationPermissions" isEqualToString:method]) {
     UIUserNotificationType notificationTypes = 0;
     NSDictionary *arguments = call.arguments;
-    if (arguments[@"sound"]) {
+    if ([arguments[@"sound"] boolValue]) {
       notificationTypes |= UIUserNotificationTypeSound;
     }
-    if (arguments[@"alert"]) {
+    if ([arguments[@"alert"] boolValue]) {
       notificationTypes |= UIUserNotificationTypeAlert;
     }
-    if (arguments[@"badge"]) {
+    if ([arguments[@"badge"] boolValue]) {
       notificationTypes |= UIUserNotificationTypeBadge;
     }
     UIUserNotificationSettings *settings =
@@ -73,6 +75,34 @@
   } else if ([@"unsubscribeFromTopic" isEqualToString:method]) {
     NSString *topic = call.arguments;
     [[FIRMessaging messaging] unsubscribeFromTopic:topic];
+    result(nil);
+  } else if ([@"getToken" isEqualToString:method]) {
+    [[FIRInstanceID instanceID]
+        instanceIDWithHandler:^(FIRInstanceIDResult *_Nullable instanceIDResult,
+                                NSError *_Nullable error) {
+          if (error != nil) {
+            NSLog(@"getToken, error fetching instanceID: %@", error);
+            result(nil);
+          } else {
+            result(instanceIDResult.token);
+          }
+        }];
+  } else if ([@"deleteInstanceID" isEqualToString:method]) {
+    [[FIRInstanceID instanceID] deleteIDWithHandler:^void(NSError *_Nullable error) {
+      if (error.code != 0) {
+        NSLog(@"deleteInstanceID, error: %@", error);
+        result([NSNumber numberWithBool:NO]);
+      } else {
+        [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+        result([NSNumber numberWithBool:YES]);
+      }
+    }];
+  } else if ([@"autoInitEnabled" isEqualToString:method]) {
+    BOOL *value = [[FIRMessaging messaging] isAutoInitEnabled];
+    result([NSNumber numberWithBool:value]);
+  } else if ([@"setAutoInitEnabled" isEqualToString:method]) {
+    NSNumber *value = call.arguments;
+    [FIRMessaging messaging].autoInitEnabled = value.boolValue;
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);

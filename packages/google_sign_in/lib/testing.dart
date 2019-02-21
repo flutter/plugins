@@ -15,9 +15,9 @@ import 'package:flutter/services.dart' show MethodCall;
 /// FakeSignInBackend fakeSignInBackend;
 ///
 /// setUp(() {
-///   googleSignIn = new GoogleSignIn();
-///   fakeSignInBackend = new FakeSignInBackend();
-///   fakeSignInBackend.user = new FakeUser(
+///   googleSignIn = GoogleSignIn();
+///   fakeSignInBackend = FakeSignInBackend();
+///   fakeSignInBackend.user = FakeUser(
 ///     id: 123,
 ///     email: 'jdoe@example.org',
 ///   );

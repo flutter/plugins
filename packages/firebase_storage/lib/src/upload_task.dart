@@ -5,11 +5,12 @@
 part of firebase_storage;
 
 abstract class StorageUploadTask {
+  StorageUploadTask._(this._firebaseStorage, this._ref, this._metadata);
+
   final FirebaseStorage _firebaseStorage;
   final StorageReference _ref;
   final StorageMetadata _metadata;
 
-  StorageUploadTask._(this._firebaseStorage, this._ref, this._metadata);
   Future<dynamic> _platformStart();
 
   int _handle;
@@ -88,6 +89,9 @@ abstract class StorageUploadTask {
   }
 
   /// Pause the upload
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   void pause() => FirebaseStorage.channel.invokeMethod(
         'UploadTask#pause',
         <String, dynamic>{
@@ -98,6 +102,9 @@ abstract class StorageUploadTask {
       );
 
   /// Resume the upload
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   void resume() => FirebaseStorage.channel.invokeMethod(
         'UploadTask#resume',
         <String, dynamic>{
@@ -108,6 +115,9 @@ abstract class StorageUploadTask {
       );
 
   /// Cancel the upload
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   void cancel() => FirebaseStorage.channel.invokeMethod(
         'UploadTask#cancel',
         <String, dynamic>{
@@ -119,13 +129,17 @@ abstract class StorageUploadTask {
 }
 
 class _StorageFileUploadTask extends StorageUploadTask {
-  final File _file;
   _StorageFileUploadTask._(this._file, FirebaseStorage firebaseStorage,
       StorageReference ref, StorageMetadata metadata)
       : super._(firebaseStorage, ref, metadata);
 
+  final File _file;
+
   @override
   Future<dynamic> _platformStart() {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return FirebaseStorage.channel.invokeMethod(
       'StorageReference#putFile',
       <String, dynamic>{
@@ -141,13 +155,17 @@ class _StorageFileUploadTask extends StorageUploadTask {
 }
 
 class _StorageDataUploadTask extends StorageUploadTask {
-  final Uint8List _bytes;
   _StorageDataUploadTask._(this._bytes, FirebaseStorage firebaseStorage,
       StorageReference ref, StorageMetadata metadata)
       : super._(firebaseStorage, ref, metadata);
 
+  final Uint8List _bytes;
+
   @override
   Future<dynamic> _platformStart() {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return FirebaseStorage.channel.invokeMethod(
       'StorageReference#putData',
       <String, dynamic>{

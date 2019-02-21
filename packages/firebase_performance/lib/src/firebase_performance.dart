@@ -30,6 +30,9 @@ class FirebasePerformance {
   /// does not reflect whether instrumentation is enabled/disabled.
   Future<bool> isPerformanceCollectionEnabled() async {
     final bool isEnabled = await channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         .invokeMethod('FirebasePerformance#isPerformanceCollectionEnabled');
     return isEnabled;
   }
@@ -39,6 +42,9 @@ class FirebasePerformance {
   /// This setting is persisted and applied on future invocations of your
   /// application. By default, performance monitoring is enabled.
   Future<void> setPerformanceCollectionEnabled(bool enable) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod(
         'FirebasePerformance#setPerformanceCollectionEnabled', enable);
   }
