@@ -202,9 +202,15 @@
       errorWithCode:@"storekit_invalid_payment_object"
             message:
                 @"You have requested a payment with an invalid payment object. A valid payment "
+<<<<<<< HEAD
                 @"object should be one of the following. 1. Payment object that is automatically "
                 @"handled when the user starts an in-app purchase in the App Store; and you "
                 @"returned true to the `shouldAddStorePayment` method or manually request a "
+=======
+                @"object should be one of the following: 1. Payment object that is automatically "
+                @"handled when the user starts an in-app purchase in the App Store and you "
+                @"returned true to the `shouldAddStorePayment` method or manually requested a "
+>>>>>>> master
                 @"payment with the productID that is provided in the `shouldAddStorePayment` "
                 @"method. 2. A payment requested for a product that has been fetched. 3. A custom "
                 @"payment object. This is not an error for a payment failure."
