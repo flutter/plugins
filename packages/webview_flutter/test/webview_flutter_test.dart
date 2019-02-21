@@ -408,6 +408,8 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
+        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+        // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
@@ -445,6 +447,8 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
+        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+        // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
           JavascriptChannel(
               name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
@@ -460,6 +464,8 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
+        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+        // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
@@ -472,6 +478,8 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
+        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+        // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
@@ -499,6 +507,8 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
+        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+        // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
@@ -515,6 +525,8 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
+        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+        // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
@@ -535,6 +547,8 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
+        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+        // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
           JavascriptChannel(
               name: 'Tts',
