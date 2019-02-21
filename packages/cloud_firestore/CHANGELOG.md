@@ -1,3 +1,7 @@
+## 0.9.5+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
 ## 0.9.5
 
 * Fix an issue on some iOS devices that results in reading incorrect dates.
