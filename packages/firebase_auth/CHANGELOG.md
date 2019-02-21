@@ -1,6 +1,10 @@
-## 0.8.1+1
+## 0.8.1+2
 
 * Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.8.1+1
+
+* Remove categories.
 
 ## 0.8.1
 

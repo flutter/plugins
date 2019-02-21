@@ -1,6 +1,15 @@
-## 0.9.0+2
+## 0.9.1+1
 
 * Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.9.1
+
+* Fixed Firebase multiple app support in transactions and document snapshots.
+
+## 0.9.0+2
+
+* Remove categories.
+>>>>>>> 3b9a34192561a45ed175492ab10d6e0ef90f4c95
 
 ## 0.9.0+1
 

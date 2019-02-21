@@ -13,6 +13,20 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 To use this plugin, add `firebase_ml_vision` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure Firebase for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
 
 ### Android
+If you're using the on-device `LabelDetector`, include the latest matching [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android) dependency in your app-level build.gradle file.
+
+```
+android {
+    dependencies {
+        // ...
+
+        api 'com.google.firebase:firebase-ml-vision-image-label-model:16.2.0'
+    }
+}
+```
+
+If you receive compilation errors, try an earlier version of [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android).
+
 Optional but recommended: If you use the on-device API, configure your app to automatically download the ML model to the device after your app is installed from the Play Store. To do so, add the following declaration to your app's AndroidManifest.xml file:
 
 ```xml
@@ -25,7 +39,18 @@ Optional but recommended: If you use the on-device API, configure your app to au
 </application>
 ```
 
-## Using an On-device FirbaseVisionDetector
+### iOS
+If you're using one of the on-device APIs, include the corresponding ML Kit library model in your
+`Podfile`. Then run `pod update` in a terminal within the same directory as your `Podfile`.
+
+```
+pod 'Firebase/MLVisionBarcodeModel'
+pod 'Firebase/MLVisionFaceModel'
+pod 'Firebase/MLVisionLabelModel'
+pod 'Firebase/MLVisionTextModel'
+```
+
+## Using an ML Vision Detector
 
 ### 1. Create a `FirebaseVisionImage`.
 
@@ -61,9 +86,9 @@ final LabelDetector detector = FirebaseVision.instance.labelDetector(
 ```dart
 final List<Barcode> barcodes = await barcodeDetector.detectInImage(visionImage);
 final List<Label> labels = await cloudLabelDetector.detectInImage(visionImage);
-final List<Face> faces = await faceDetector.detectInImage(visionImage);
+final List<Face> faces = await faceDetector.processImage(visionImage);
 final List<Label> labels = await labelDetector.detectInImage(visionImage);
-final VisionText visionText = await textRecognizer.detectInImage(visionImage);
+final VisionText visionText = await textRecognizer.processImage(visionImage);
 ```
 
 ### 4. Extract data.

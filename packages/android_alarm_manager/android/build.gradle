@@ -48,4 +48,5 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0'
+    api 'androidx.core:core:1.0.1'
 }

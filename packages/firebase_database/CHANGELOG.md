@@ -1,6 +1,10 @@
 ## 2.0.1+1
 
+<<<<<<< HEAD
 * Log messages about automatic configuration of the default app are now less confusing.
+=======
+* Remove categories.
+>>>>>>> 3b9a34192561a45ed175492ab10d6e0ef90f4c95
 
 ## 2.0.1
 

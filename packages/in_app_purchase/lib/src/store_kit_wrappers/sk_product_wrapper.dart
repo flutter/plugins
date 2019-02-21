@@ -4,6 +4,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
 // below generated file. Run `flutter packages pub run build_runner watch` to
@@ -231,6 +232,16 @@ class SKProductWrapper {
   /// The [subscriptionPeriod] of the discount is independent of the product's [subscriptionPeriod],
   /// and their units and duration do not have to be matched.
   final SKProductDiscountWrapper introductoryPrice;
+
+  /// Method to convert to the wrapper to the consolidated [ProductDetails] class.
+  ProductDetails toProductDetails() {
+    return ProductDetails(
+      id: productIdentifier,
+      title: localizedTitle,
+      description: localizedDescription,
+      price: priceLocale.currencySymbol + price.toString(),
+    );
+  }
 }
 
 /// Object that indicates the locale of the price
