@@ -20,6 +20,7 @@ ServiceDefinitions.json
 xcuserdata/
 
 local.properties
+keystore.properties
 .gradle/
 gradlew
 gradlew.bat
@@ -31,3 +32,4 @@ GeneratedPluginRegistrant.m
 GeneratedPluginRegistrant.java
 build/
 .flutter-plugins
+

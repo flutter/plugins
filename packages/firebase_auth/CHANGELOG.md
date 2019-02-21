@@ -1,3 +1,53 @@
+## 0.8.1+1
+
+* Remove categories.
+
+## 0.8.1
+
+* Fixes Firebase auth phone sign-in for Android.
+
+## 0.8.0+3
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.8.0+2
+
+* Update Google sign-in example in the README.
+
+## 0.8.0+1
+
+* Update a broken dependency.
+
+## 0.8.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.7.0
+
+* Introduce third-party auth provider classes that generate `AuthCredential`s
+* **Breaking Change** Signing in, linking, and reauthenticating now require an `AuthCredential`
+* **Breaking Change** Unlinking now uses providerId
+* **Breaking Change** Moved reauthentication to FirebaseUser
+
+## 0.6.7
+
+* `FirebaseAuth` and `FirebaseUser` are now fully documented.
+* `PlatformExceptions` now report error codes as stated in docs.
+* Credentials can now be unlinked from Accounts with new methods on `FirebaseUser`.
+
+## 0.6.6
+
+* Users can now reauthenticate in response to operations that require a recent sign-in.
+
+## 0.6.5
+
+* Fixing async method `verifyPhoneNumber`, that would never return even in a successful call.
+
 ## 0.6.4
 
 * Added support for Github signin and linking Github accounts to existing users.

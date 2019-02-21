@@ -4,8 +4,6 @@
 
 #import "GoogleMapController.h"
 
-static uint64_t _nextMapId = 0;
-
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static id positionToJson(GMSCameraPosition* position);
@@ -51,6 +49,11 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   FlutterMethodChannel* _channel;
   BOOL _trackCameraPosition;
   NSObject<FlutterPluginRegistrar>* _registrar;
+  // Used for the temporary workaround for a bug that the camera is not properly positioned at
+  // initialization. https://github.com/flutter/flutter/issues/24806
+  // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
+  // https://github.com/flutter/flutter/issues/27550
+  BOOL _cameraDidInitialSetup;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -60,12 +63,11 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   if ([super init]) {
     _viewId = viewId;
 
-    NSDictionary* options = args[@"options"];
-    GMSCameraPosition* camera = toOptionalCameraPosition(options[@"cameraPosition"]);
+    GMSCameraPosition* camera = toOptionalCameraPosition(args[@"initialCameraPosition"]);
     _mapView = [GMSMapView mapWithFrame:frame camera:camera];
     _markers = [NSMutableDictionary dictionaryWithCapacity:1];
     _trackCameraPosition = NO;
-    interpretMapOptions(options, self);
+    interpretMapOptions(args[@"options"], self);
     NSString* channelName =
         [NSString stringWithFormat:@"plugins.flutter.io/google_maps_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName
@@ -76,6 +78,9 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
         [weakSelf onMethodCall:call result:result];
       }
     }];
+    _mapView.delegate = weakSelf;
+    _registrar = registrar;
+    _cameraDidInitialSetup = NO;
   }
   return self;
 }
@@ -117,17 +122,6 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   } else {
     result(FlutterMethodNotImplemented);
   }
-}
-
-- (void)addToView:(UIView*)view {
-  _mapView.hidden = YES;
-  _mapView.delegate = self;
-  [view addSubview:_mapView];
-}
-
-- (void)removeFromView {
-  [_mapView removeFromSuperview];
-  _mapView.delegate = nil;
 }
 
 - (void)showAtX:(CGFloat)x Y:(CGFloat)y {
@@ -217,32 +211,48 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   _mapView.settings.zoomGestures = enabled;
 }
 
+- (void)setMyLocationEnabled:(BOOL)enabled {
+  _mapView.myLocationEnabled = enabled;
+  _mapView.settings.myLocationButton = enabled;
+}
+
 #pragma mark - GMSMapViewDelegate methods
 
 - (void)mapView:(GMSMapView*)mapView willMove:(BOOL)gesture {
-  [_delegate onCameraMoveStartedOnMap:_mapId gesture:gesture];
+  [_channel invokeMethod:@"camera#onMoveStarted" arguments:@{@"isGesture" : @(gesture)}];
 }
 
 - (void)mapView:(GMSMapView*)mapView didChangeCameraPosition:(GMSCameraPosition*)position {
+  if (!_cameraDidInitialSetup) {
+    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
+    // initialization. https://github.com/flutter/flutter/issues/24806
+    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
+    // still being investigated.
+    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
+    // https://github.com/flutter/flutter/issues/27550
+    _cameraDidInitialSetup = YES;
+    [mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
+  }
   if (_trackCameraPosition) {
-    [_delegate onCameraMoveOnMap:_mapId cameraPosition:position];
+    [_channel invokeMethod:@"camera#onMove" arguments:@{@"position" : positionToJson(position)}];
   }
 }
 
 - (void)mapView:(GMSMapView*)mapView idleAtCameraPosition:(GMSCameraPosition*)position {
-  [_delegate onCameraIdleOnMap:_mapId];
+  [_channel invokeMethod:@"camera#onIdle" arguments:@{}];
 }
 
 - (BOOL)mapView:(GMSMapView*)mapView didTapMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
-  [_delegate onMarkerTappedOnMap:_mapId marker:markerId];
+  [_channel invokeMethod:@"marker#onTap" arguments:@{@"marker" : markerId}];
   return [marker.userData[1] boolValue];
 }
 
-- (void)mapView:(GMSMapView*)mapView didTapInfoWindow:(GMSMarker*)marker {
+- (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
-  [_delegate onInfoWindowTappedOnMap:_mapId marker:markerId];
+  [_channel invokeMethod:@"infoWindow#onTap" arguments:@{@"marker" : markerId}];
 }
+
 @end
 
 #pragma mark - Implementations of JSON conversion functions.
@@ -352,10 +362,6 @@ static GMSCameraUpdate* toCameraUpdate(id json) {
 
 static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   NSDictionary* data = json;
-  id cameraPosition = data[@"cameraPosition"];
-  if (cameraPosition) {
-    [sink setCamera:toCameraPosition(cameraPosition)];
-  }
   id cameraTargetBounds = data[@"cameraTargetBounds"];
   if (cameraTargetBounds) {
     [sink setCameraTargetBounds:toOptionalBounds(cameraTargetBounds)];
@@ -395,6 +401,10 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   if (zoomGesturesEnabled) {
     [sink setZoomGesturesEnabled:toBool(zoomGesturesEnabled)];
   }
+  id myLocationEnabled = data[@"myLocationEnabled"];
+  if (myLocationEnabled) {
+    [sink setMyLocationEnabled:toBool(myLocationEnabled)];
+  }
 }
 
 static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
@@ -426,8 +436,8 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
       if (iconData.count == 2) {
         image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
       } else {
-        image =
-            [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1] fromPackage:iconData[2]]];
+        image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]
+                                                     fromPackage:iconData[2]]];
       }
     }
     [sink setIcon:image];

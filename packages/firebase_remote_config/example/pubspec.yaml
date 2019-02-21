@@ -10,7 +10,7 @@ dependencies:
   cupertino_icons: ^0.1.0
   firebase_remote_config:
     path: ../
-  firebase_core: ^0.2.5+1
+  firebase_core: ^0.3.0
 
 dev_dependencies:
   flutter_test:

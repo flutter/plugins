@@ -5,9 +5,9 @@
 package io.flutter.plugins.firebase.cloudfirestore;
 
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.SparseArray;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -286,14 +286,16 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                             @SuppressWarnings("unchecked")
                             @Override
                             public void success(Object doTransactionResult) {
-                              transactionTCS.setResult((Map<String, Object>) doTransactionResult);
+                              transactionTCS.trySetResult(
+                                  (Map<String, Object>) doTransactionResult);
                             }
 
                             @Override
                             public void error(
                                 String errorCode, String errorMessage, Object errorDetails) {
                               // result.error(errorCode, errorMessage, errorDetails);
-                              transactionTCS.setException(new Exception("Do transaction failed."));
+                              transactionTCS.trySetException(
+                                  new Exception("Do transaction failed."));
                             }
 
                             @Override

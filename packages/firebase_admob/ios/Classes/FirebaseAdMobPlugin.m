@@ -10,18 +10,6 @@
 #import "FLTRewardedVideoAdWrapper.h"
 #import "Firebase/Firebase.h"
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@end
-
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", (long)self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
-}
-@end
-
 @interface FLTFirebaseAdMobPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @property(nonatomic, strong) FLTRewardedVideoAdWrapper *rewardedWrapper;
@@ -271,10 +259,9 @@
 
   NSNumber *mobileAdId = (NSNumber *)call.arguments[@"id"];
   if (mobileAdId == nil) {
-    NSString *message =
-        @"FirebaseAdMobPlugin method calls for banners and "
-        @"interstitials must specify an "
-        @"integer mobile ad id";
+    NSString *message = @"FirebaseAdMobPlugin method calls for banners and "
+                        @"interstitials must specify an "
+                        @"integer mobile ad id";
     result([FlutterError errorWithCode:@"no_id" message:message details:nil]);
     return;
   }
