@@ -1,11 +1,7 @@
 ## 0.8.1+2
 
 * Update README.
-* Update the example app. The example app now have two separate pages includes a `Registration` page and a `SignIn/SignOut` page. The SignIn methods included in the `SignIn/SignOut` page are:
-    * `Google authentication`
-    * `Email&Password authentication`
-    * `Phone authentication`
-    * `Anonymously Sign in`
+* Update the example app with separate pages for registration and sign-in.
 
 ## 0.8.1+1
 
