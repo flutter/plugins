@@ -108,7 +108,6 @@
 @property(nonatomic) vImage_Buffer conversionBuffer;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
-                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error;
 
 - (void)start;
@@ -129,11 +128,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
-                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
-  _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
   AVCaptureSessionPreset preset;
   if ([resolutionPreset isEqualToString:@"high"]) {
@@ -584,11 +581,14 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   NSAssert(self, @"super init cannot be nil");
   _registry = registry;
   _messenger = messenger;
-  _dispatchQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
   return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  if _dispatchQueue == nil {
+    _dispatchQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
+  }
+
   // Invoke the plugin on another dispatch queue to avoid blocking the UI.
   dispatch_async(_dispatchQueue, ^{
     [self handleMethodCallAsync:call result:result];
@@ -634,7 +634,6 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
     NSError *error;
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
-                                       dispatchQueue:_dispatchQueue
                                                error:&error];
     if (error) {
       result([error flutterError]);
