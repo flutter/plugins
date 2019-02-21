@@ -244,7 +244,7 @@ class Marker {
     );
   }
 
-  dynamic _toJson() {
+  Map<String, dynamic> _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
     void addIfPresent(String fieldName, dynamic value) {
@@ -288,10 +288,16 @@ class Marker {
 }
 
 Map<MarkerId, Marker> keyByMarkerId(Iterable<Marker> markers) {
+  if (markers == null) {
+    return <MarkerId, Marker>{};
+  }
   return Map<MarkerId, Marker>.fromEntries(markers.map(
       (Marker marker) => MapEntry<MarkerId, Marker>(marker.markerId, marker)));
 }
 
 dynamic _serializeMarkerSet(Set<Marker> markers) {
+  if (markers == null) {
+    return null;
+  }
   return markers.map<dynamic>((Marker m) => m._toJson()).toList();
 }

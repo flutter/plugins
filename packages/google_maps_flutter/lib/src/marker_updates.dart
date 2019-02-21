@@ -70,7 +70,7 @@ class MarkerUpdates {
     addIfNonNull('markersToAdd', _serializeMarkerSet(markersToAdd));
     addIfNonNull('markersToChange', _serializeMarkerSet(markersToChange));
     addIfNonNull('markerIdsToRemove',
-        markerIdsToRemove.map<dynamic>((MarkerId m) => m.value));
+        markerIdsToRemove.map<dynamic>((MarkerId m) => m.value).toList());
 
     return updateMap;
   }

@@ -105,7 +105,7 @@ class _GoogleMapState extends State<GoogleMap> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
-  Map<MarkerId, Marker> _markers;
+  Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
   _GoogleMapOptions _googleMapOptions;
 
   @override
