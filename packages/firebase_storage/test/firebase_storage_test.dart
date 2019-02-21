@@ -199,8 +199,10 @@ void main() {
       });
 
       test('invokes correct method', () async {
-        String url = 'https://firebasestorage.googleapis.com/v0/b/fake-21c50.appspot.com/o/';
-        StorageReference reference = await storage.getReferenceFromUrl(url);
+        final String url =
+            'https://firebasestorage.googleapis.com/v0/b/fake-21c50.appspot.com/o/';
+        final StorageReference reference =
+            await storage.getReferenceFromUrl(url);
         expect(reference.path, 'foo');
         expect(log, <Matcher>[
           isMethodCall(
