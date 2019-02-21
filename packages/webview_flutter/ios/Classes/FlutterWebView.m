@@ -106,6 +106,8 @@
     [self onAddJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"removeJavascriptChannels"]) {
     [self onRemoveJavaScriptChannels:call result:result];
+  } else if ([[call method] isEqualToString:@"clearCache"]) {
+    [self clearCache:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -204,6 +206,22 @@
   [self registerJavaScriptChannels:_javaScriptChannelNames
                         controller:_webView.configuration.userContentController];
   result(nil);
+}
+
+- (void)clearCache:(FlutterResult)result {
+  if (@available(iOS 9.0, *)) {
+    NSSet* cacheDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+    WKWebsiteDataStore* dataStore = [WKWebsiteDataStore defaultDataStore];
+    NSDate* dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+    [dataStore removeDataOfTypes:cacheDataTypes
+                   modifiedSince:dateFrom
+               completionHandler:^{
+                 result(nil);
+               }];
+  } else {
+    // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
+    NSLog(@"Clearing cache is not supported for Flutter WebViews prior to iOS 9.");
+  }
 }
 
 - (void)applySettings:(NSDictionary<NSString*, id>*)settings {

@@ -130,6 +130,26 @@
 
 @end
 
+@interface SKPaymentQueueStub ()
+
+@property(strong, nonatomic) id<SKPaymentTransactionObserver> observer;
+
+@end
+
+@implementation SKPaymentQueueStub
+
+- (void)addTransactionObserver:(id<SKPaymentTransactionObserver>)observer {
+  self.observer = observer;
+}
+
+- (void)addPayment:(SKPayment *)payment {
+  SKPaymentTransactionStub *transaction =
+      [[SKPaymentTransactionStub alloc] initWithState:self.testState];
+  [self.observer paymentQueue:self updatedTransactions:@[ transaction ]];
+}
+
+@end
+
 @implementation SKPaymentTransactionStub
 
 - (instancetype)initWithID:(NSString *)identifier {
@@ -159,6 +179,15 @@
       [downloads addObject:[[SKDownloadStub alloc] initWithMap:downloadMap]];
     }
     [self setValue:downloads forKey:@"downloads"];
+  }
+  return self;
+}
+
+- (instancetype)initWithState:(SKPaymentTransactionState)state {
+  self = [super init];
+  if (self) {
+    [self setValue:@"fakeID" forKey:@"transactionIdentifier"];
+    [self setValue:@(state) forKey:@"transactionState"];
   }
   return self;
 }
