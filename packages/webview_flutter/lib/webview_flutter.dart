@@ -131,10 +131,10 @@ class WebView extends StatefulWidget {
   ///
   /// A null value is equivalent to an empty set.
   final Set<JavascriptChannel> javascriptChannels;
- 
+  
   /// Enable/Disable zoom.
   final bool zoom;
- 
+  
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -268,7 +268,7 @@ class _WebSettings {
 
   final JavascriptMode javascriptMode;
   final bool zoom;
- 
+  
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javascriptMode.index,
