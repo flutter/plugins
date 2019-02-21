@@ -32,16 +32,16 @@ class _MyAppState extends State<MyApp> {
             FutureBuilder(
               future: _buildConnectionCheckTile(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (!snapshot.hasData) {
-                  return Column(children: <Widget>[
-                    buildListCard(
-                        ListTile(title: const Text('Trying to connect...')))
-                  ]);
-                } else if (snapshot.error != null) {
+                if (snapshot.error != null) {
                   return Column(children: <Widget>[
                     buildListCard(ListTile(
                         title: Text(
                             'Error connecting: ' + snapshot.error.toString())))
+                  ]);
+                } else if (!snapshot.hasData) {
+                  return Column(children: <Widget>[
+                    buildListCard(
+                        ListTile(title: const Text('Trying to connect...')))
                   ]);
                 }
                 return Column(
@@ -55,14 +55,14 @@ class _MyAppState extends State<MyApp> {
                     <String>['consumable', 'upgrade', 'subscription'].toSet()),
                 builder: (BuildContext context,
                     AsyncSnapshot<ProductDetailsResponse> snapshot) {
-                  if (!snapshot.hasData) {
-                    return Column(children: <Widget>[
-                      buildListCard(ListTile(title: const Text('Loading...')))
-                    ]);
-                  } else if (snapshot.error != null) {
+                  if (snapshot.error != null) {
                     return Center(
                       child: Text('Error: ' + snapshot.error.toString()),
                     );
+                  } else if (!snapshot.hasData) {
+                    return Column(children: <Widget>[
+                      buildListCard(ListTile(title: const Text('Loading...')))
+                    ]);
                   }
                   return Column(
                     children: <Widget>[
