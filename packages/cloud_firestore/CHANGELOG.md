@@ -1,3 +1,7 @@
+## 0.9.2
+
+* Fix IllegalStateException errors when using transactions on Android
+
 ## 0.9.1
 
 * Fixed Firebase multiple app support in transactions and document snapshots.
