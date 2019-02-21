@@ -141,7 +141,7 @@ class WebView extends StatefulWidget {
 
 class _WebViewState extends State<WebView> {
   final Completer<WebViewController> _controller =
-  Completer<WebViewController>();
+      Completer<WebViewController>();
 
   _WebSettings _settings;
 
@@ -240,7 +240,7 @@ class _CreationParams {
       initialUrl: widget.initialUrl,
       settings: _WebSettings.fromWidget(widget),
       javascriptChannelNames:
-      _extractChannelNames(widget.javascriptChannels).toList(),
+          _extractChannelNames(widget.javascriptChannels).toList(),
     );
   }
 
@@ -264,7 +264,7 @@ class _WebSettings {
     this.javascriptMode,
     this.zoom
   });
-  
+
   static _WebSettings fromWidget(WebView widget) {
     return _WebSettings(javascriptMode: widget.javascriptMode, zoom: widget.zoom);
   }
@@ -308,7 +308,7 @@ class WebViewController {
 
   // Maps a channel name to a channel.
   Map<String, JavascriptChannel> _javascriptChannels =
-  <String, JavascriptChannel>{};
+      <String, JavascriptChannel>{};
 
   Future<void> _onMethodCall(MethodCall call) async {
     switch (call.method) {
@@ -349,7 +349,7 @@ class WebViewController {
     final String url = await _channel.invokeMethod('currentUrl');
     return url;
   }
-  
+
   /// Checks whether there's a back history item.
   ///
   /// Note that this operation is asynchronous, and it is possible that the "canGoBack" state has
@@ -437,9 +437,9 @@ class WebViewController {
     final Set<String> currentChannels = _javascriptChannels.keys.toSet();
     final Set<String> newChannelNames = _extractChannelNames(newChannels);
     final Set<String> channelsToAdd =
-    newChannelNames.difference(currentChannels);
+        newChannelNames.difference(currentChannels);
     final Set<String> channelsToRemove =
-    currentChannels.difference(newChannelNames);
+        currentChannels.difference(newChannelNames);
     if (channelsToRemove.isNotEmpty) {
       // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
       // https://github.com/flutter/flutter/issues/26431
@@ -490,7 +490,7 @@ class WebViewController {
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     final String result =
-    await _channel.invokeMethod('evaluateJavascript', javascriptString);
+        await _channel.invokeMethod('evaluateJavascript', javascriptString);
     return result;
   }
 }
