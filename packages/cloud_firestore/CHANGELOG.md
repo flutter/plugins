@@ -1,3 +1,7 @@
+## 0.9.3
+
+* Fix transactions on iOS when getting snapshot that doesn't exist.
+
 ## 0.9.2
 
 * Fix IllegalStateException errors when using transactions on Android
