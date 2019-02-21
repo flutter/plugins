@@ -17,7 +17,7 @@
     @"localizedTitle" : product.localizedTitle ?: [NSNull null],
     @"productIdentifier" : product.productIdentifier ?: [NSNull null],
     @"downloadable" : @(product.downloadable),
-    @"price" : product.price ?: [NSNull null],
+    @"price" : product.price.description ?: [NSNull null],
     @"downloadContentLengths" : product.downloadContentLengths ?: [NSNull null],
     @"downloadContentVersion" : product.downloadContentVersion ?: [NSNull null]
 
@@ -57,7 +57,7 @@
     return nil;
   }
   NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
-    @"price" : discount.price ?: [NSNull null],
+    @"price" : discount.price.description ?: [NSNull null],
     @"numberOfPeriods" : @(discount.numberOfPeriods),
     @"subscriptionPeriod" :
             [FIAObjectTranslator getMapFromSKProductSubscriptionPeriod:discount.subscriptionPeriod]

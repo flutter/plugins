@@ -127,8 +127,7 @@ class SKProductDiscountWrapper {
   }
 
   /// The discounted price, in the currency that is defined in [priceLocale].
-  @JsonKey(fromJson: _priceFromJson)
-  final double price;
+  final String price;
 
   /// Includes locale information about the price, e.g. `$` as the currency symbol for US locale.
   final PriceLocaleWrapper priceLocale;
@@ -146,8 +145,6 @@ class SKProductDiscountWrapper {
   /// The [subscriptionPeriod] of the discount is independent of the product's [subscriptionPeriod],
   /// and their units and duration do not have to be matched.
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
-
-  static _priceFromJson(double price) => num.parse(price.toStringAsFixed(2));
 }
 
 /// Dart wrapper around StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).
@@ -208,8 +205,7 @@ class SKProductWrapper {
   final String subscriptionGroupIdentifier;
 
   /// The price of the product, in the currency that is defined in [priceLocale].
-  @JsonKey(fromJson: _priceFromJson)
-  final double price;
+  final String price;
 
   /// Whether the AppStore has downloadable content for this product.
   ///
@@ -242,11 +238,9 @@ class SKProductWrapper {
       id: productIdentifier,
       title: localizedTitle,
       description: localizedDescription,
-      price: priceLocale.currencySymbol + price.toString(),
+      price: priceLocale.currencySymbol + price,
     );
   }
-
-  static _priceFromJson(double price) => num.parse(price.toStringAsFixed(2));
 }
 
 /// Object that indicates the locale of the price

@@ -28,6 +28,7 @@ class SKRequestMaker {
       '-[InAppPurchasePlugin startProductRequest:result:]',
       productIdentifiers,
     );
+    print(productResponseMap);
     if (productResponseMap == null) {
       throw PlatformException(
         code: 'storekit_no_response',
