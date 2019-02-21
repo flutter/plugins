@@ -75,7 +75,7 @@ class SKPaymentQueueWrapper {
         '[in_app_purchase]: Trying to add a payment without an observer. Observer must be set using `setTransactionObserver` before adding a payment `setTransactionObserver`. It is mandatory to set the observer at the moment when app launches.');
     await channel.invokeMethod(
       '-[InAppPurchasePlugin addPayment:result:]',
-      <String, String>{'productID': productIdentifier},
+      <String, String>{'productIdentifier': productIdentifier},
     );
   }
 
@@ -158,8 +158,8 @@ class SKPaymentQueueWrapper {
   List<SKPaymentTransactionWrapper> _getTransactionList(dynamic arguments) {
     final List<Map<String, dynamic>> transactionsMap = arguments;
     final List<SKPaymentTransactionWrapper> transactions = transactionsMap
-        .map<SKPaymentTransactionWrapper>(
-            (Map<String, dynamic> map) => SKPaymentTransactionWrapper.fromJson(map))
+        .map<SKPaymentTransactionWrapper>((Map<String, dynamic> map) =>
+            SKPaymentTransactionWrapper.fromJson(map))
         .toList();
     return transactions;
   }
