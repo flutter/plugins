@@ -1,3 +1,7 @@
+## 0.1.1+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
 ## 0.1.1
 
 * Support for regions and multiple apps

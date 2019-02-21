@@ -1,3 +1,7 @@
+## 2.0.2+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
 ## 2.0.2
 
 * Enable setAnalyticsCollectionEnabled support for iOS
