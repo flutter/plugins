@@ -1,6 +1,10 @@
-## 3.0.1+1
+## 4.0.1+1
 
 * Log messages about automatic configuration of the default app are now less confusing.
+
+## 4.0.0
+
+*  **Breaking Change** Update message structure for onMessage to match onLaunch and onResume
 
 ## 3.0.1
 
@@ -36,6 +40,7 @@
   requires any Android apps using this plugin to [also
   migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
   using the original support library.
+>>>>>>> origin/master
 
 ## 2.1.0
 
