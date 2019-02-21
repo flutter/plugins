@@ -137,13 +137,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       throw new UnsupportedOperationException("JavaScript string cannot be null");
     }
     webView.evaluateJavascript(
-            jsString,
-            new android.webkit.ValueCallback<String>() {
-              @Override
-              public void onReceiveValue(String value) {
-                result.success(value);
-              }
-            });
+        jsString,
+        new android.webkit.ValueCallback<String>() {
+          @Override
+          public void onReceiveValue(String value) {
+            result.success(value);
+          }
+        });
   }
 
   @SuppressWarnings("unchecked")
@@ -207,7 +207,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private void registerJavaScriptChannelNames(List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.addJavascriptInterface(
-              new JavaScriptChannel(methodChannel, channelName), channelName);
+          new JavaScriptChannel(methodChannel, channelName), channelName);
     }
   }
 
