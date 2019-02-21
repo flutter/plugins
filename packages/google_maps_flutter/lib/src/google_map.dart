@@ -183,19 +183,15 @@ class _GoogleMapState extends State<GoogleMap> {
   }
 
   void onMarkerTap(String markerIdParam) {
-    if (markerIdParam == null) {
-      return;
-    }
+    assert(markerIdParam != null);
     final MarkerId markerId = MarkerId(markerIdParam);
-    _markers[markerId]?.onTap();
+    _markers[markerId].onTap();
   }
 
   void onInfoWindowTap(String markerIdParam) {
-    if (markerIdParam == null) {
-      return;
-    }
+    assert(markerIdParam != null);
     final MarkerId markerId = MarkerId(markerIdParam);
-    _markers[markerId]?.infoWindow?.onTap();
+    _markers[markerId].infoWindow.onTap();
   }
 }
 

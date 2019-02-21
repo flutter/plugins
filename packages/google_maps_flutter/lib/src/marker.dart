@@ -121,9 +121,10 @@ class MarkerId {
 }
 
 /// An icon placed at a particular geographical location on the map's surface.
-/// A marker icon is drawn oriented against the device's screen rather than the
-/// map's surface; that is, it will not necessarily change orientation due to
-/// map rotations, tilting, or zooming.
+///
+/// Marks a geographical location on the map. A marker icon is drawn oriented
+/// against the device's screen rather than the map's surface; that is, it will
+/// not necessarily change orientation due to map rotations, tilting, or zooming.
 @immutable
 class Marker {
   /// Creates a set of marker configuration options.
@@ -159,7 +160,7 @@ class Marker {
     this.onTap,
   }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
 
-  /// Used to uniquely identify the [Marker].
+  /// Uniquely identifies a [Marker].
   final MarkerId markerId;
 
   /// The opacity of the marker, between 0.0 and 1.0 inclusive.
@@ -189,7 +190,9 @@ class Marker {
   /// A description of the bitmap used to draw the marker icon.
   final BitmapDescriptor icon;
 
-  /// Window displayed onTap for a marker.
+  /// A Google Maps InfoWindow.
+  ///
+  /// The window is displayed when the marker is tapped.
   final InfoWindow infoWindow;
 
   /// Geographical location of the marker.

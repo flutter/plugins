@@ -7,6 +7,7 @@ part of google_maps_flutter;
 /// [Marker] update events to be applied to the [GoogleMap].
 ///
 /// Used in [GoogleMapController] when the map is updated.
+@visibleForTesting
 class MarkerUpdates {
   MarkerUpdates.internal({
     @required this.markersToAdd,
