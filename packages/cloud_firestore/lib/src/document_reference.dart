@@ -88,7 +88,7 @@ class DocumentReference {
     return DocumentSnapshot._(
       data['path'],
       _asStringKeyedMap(data['data']),
-      Firestore.instance,
+      firestore,
     );
   }
 
