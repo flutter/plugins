@@ -1,10 +1,14 @@
+## 0.9.4
+
+* No longer sends empty snapshot events on iOS when encountering errors.
+
 ## 0.9.3
 
 * Fix transactions on iOS when getting snapshot that doesn't exist.
 
 ## 0.9.2
 
-* Fix IllegalStateException errors when using transactions on Android
+* Fix IllegalStateException errors when using transactions on Android.
 
 ## 0.9.1
 
