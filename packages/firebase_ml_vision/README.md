@@ -102,7 +102,7 @@ for (Barcode barcode in barcodes) {
 
   final String rawValue = barcode.rawValue;
 
-  final BarcordeValueType valueType = barcode.valueType;
+  final BarcodeValueType valueType = barcode.valueType;
 
   // See API reference for complete list of supported types
   switch (valueType) {
