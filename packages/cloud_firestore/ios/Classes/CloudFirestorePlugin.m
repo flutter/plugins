@@ -183,8 +183,7 @@ const UInt8 TIMESTAMP = 136;
     case DATE_TIME: {
       SInt64 value;
       [self readBytes:&value length:8];
-      NSTimeInterval time = [NSNumber numberWithLong:value].doubleValue / 1000.0;
-      return [NSDate dateWithTimeIntervalSince1970:time];
+      return [NSDate dateWithTimeIntervalSince1970:(value / 1000.0)];
     }
     case TIMESTAMP: {
       SInt64 seconds;

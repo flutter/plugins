@@ -1,3 +1,7 @@
+## 0.9.5
+
+* Fix an issue on some iOS devices that results in reading incorrect dates.
+
 ## 0.9.4
 
 * No longer sends empty snapshot events on iOS when encountering errors.
