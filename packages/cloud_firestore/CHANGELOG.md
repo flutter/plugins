@@ -1,6 +1,10 @@
-## 0.9.1+1
+## 0.9.2+1
 
 * Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.9.2
+
+* Fix IllegalStateException errors when using transactions on Android
 
 ## 0.9.1
 
