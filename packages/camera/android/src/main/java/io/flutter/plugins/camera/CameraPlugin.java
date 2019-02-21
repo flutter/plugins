@@ -100,14 +100,12 @@ public class CameraPlugin implements MethodCallHandler {
             if (requestingPermission) {
               requestingPermission = false;
             }
-            if (activity == CameraPlugin.this.activity) {
-              orientationEventListener.enable();
-
-              if (wasRequestingPermission) return;
-
-              if (camera != null) {
-                camera.open(null);
-              }
+            if (activity != CameraPlugin.this.activity) {
+              return;
+            }
+            orientationEventListener.enable();
+            if (camera != null && !wasRequestingPermission) {
+              camera.open(null);
             }
           }
 
