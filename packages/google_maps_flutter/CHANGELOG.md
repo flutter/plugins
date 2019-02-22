@@ -1,3 +1,7 @@
+## 0.2.0+5
+
+* Skip the Gradle Android permissions lint for MyLocation (https://github.com/flutter/flutter/issues/28339)
+
 ## 0.2.0+4
 
 * Fixed a crash when the plugin is registered by a background FlutterView.
