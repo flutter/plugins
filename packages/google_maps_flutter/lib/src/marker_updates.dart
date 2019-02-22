@@ -76,19 +76,20 @@ class _MarkerUpdates {
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is _MarkerUpdates &&
-          runtimeType == other.runtimeType &&
-          setEquals(markersToAdd, other.markersToAdd) &&
-          setEquals(markerIdsToRemove, other.markerIdsToRemove) &&
-          setEquals(markersToChange, other.markersToChange);
+  bool operator ==(Object other) {
+    if (identical(this, other))
+      return true;
+    if (other.runtimeType != runtimeType)
+      return false;
+    final _MarkerUpdates typedOther = other;
+    return setEquals(markersToAdd, typedOther.markersToAdd) &&
+        setEquals(markerIdsToRemove, typedOther.markerIdsToRemove) &&
+        setEquals(markersToChange, typedOther.markersToChange);
+  }
 
   @override
   int get hashCode =>
-      markersToAdd.hashCode ^
-      markerIdsToRemove.hashCode ^
-      markersToChange.hashCode;
+      hashValues(markersToAdd, markerIdsToRemove, markersToChange);
 
   @override
   String toString() {

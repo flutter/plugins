@@ -89,7 +89,7 @@ class FakePlatformGoogleMap {
     final List<dynamic> markersData = markers;
     // TODO(iskakaushik): Remove this when collection literals makes it to stable.
     // ignore: prefer_collection_literals
-    final Set<Marker> result =  Set<Marker>();
+    final Set<Marker> result = Set<Marker>();
     for (Map<dynamic, dynamic> markerData in markersData) {
       final String markerId = markerData['markerId'];
       final bool draggable = markerData['draggable'];

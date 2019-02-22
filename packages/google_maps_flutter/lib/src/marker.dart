@@ -77,16 +77,17 @@ class InfoWindow {
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is InfoWindow &&
-          runtimeType == other.runtimeType &&
-          title == other.title &&
-          snippet == other.snippet &&
-          anchor == other.anchor;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    final InfoWindow typedOther = other;
+    return title == typedOther.title &&
+        snippet == typedOther.snippet &&
+        anchor == typedOther.anchor;
+  }
 
   @override
-  int get hashCode => title.hashCode ^ snippet.hashCode ^ anchor.hashCode;
+  int get hashCode => hashValues(title.hashCode, snippet, anchor);
 
   @override
   String toString() {
@@ -105,11 +106,12 @@ class MarkerId {
   final String value;
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is MarkerId &&
-          runtimeType == other.runtimeType &&
-          value == other.value;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    final MarkerId typedOther = other;
+    return value == typedOther.value;
+  }
 
   @override
   int get hashCode => value.hashCode;
@@ -272,11 +274,12 @@ class Marker {
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Marker &&
-          runtimeType == other.runtimeType &&
-          markerId == other.markerId;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    final Marker typedOther = other;
+    return markerId == typedOther.markerId;
+  }
 
   @override
   int get hashCode => markerId.hashCode;
@@ -298,7 +301,7 @@ Map<MarkerId, Marker> _keyByMarkerId(Iterable<Marker> markers) {
       (Marker marker) => MapEntry<MarkerId, Marker>(marker.markerId, marker)));
 }
 
-dynamic _serializeMarkerSet(Set<Marker> markers) {
+List<dynamic> _serializeMarkerSet(Set<Marker> markers) {
   if (markers == null) {
     return null;
   }
