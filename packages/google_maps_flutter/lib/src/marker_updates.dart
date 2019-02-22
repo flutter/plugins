@@ -17,7 +17,7 @@ class _MarkerUpdates {
         assert(markersToChange != null);
 
   /// Computes [_MarkerUpdates] given previous and current [Marker]s.
-  factory _MarkerUpdates.from(Set<Marker> previous, Set<Marker> current) {
+  _MarkerUpdates.from(Set<Marker> previous, Set<Marker> current) {
     if (previous == null) {
       previous = Set<Marker>.identity();
     }
@@ -36,24 +36,22 @@ class _MarkerUpdates {
       return currentMarkers[id];
     }
 
-    final Set<MarkerId> markerIdsToRemove =
+    final Set<MarkerId> _markerIdsToRemove =
         prevMarkerIds.difference(currentMarkerIds);
 
-    final Set<Marker> markersToAdd = currentMarkerIds
+    final Set<Marker> _markersToAdd = currentMarkerIds
         .difference(prevMarkerIds)
         .map(idToCurrentMarker)
         .toSet();
 
-    final Set<Marker> markersToChange = currentMarkerIds
+    final Set<Marker> _markersToChange = currentMarkerIds
         .intersection(prevMarkerIds)
         .map(idToCurrentMarker)
         .toSet();
 
-    return _MarkerUpdates._(
-      markersToAdd: markersToAdd,
-      markerIdsToRemove: markerIdsToRemove,
-      markersToChange: markersToChange,
-    );
+    markersToAdd = _markersToAdd;
+    markerIdsToRemove = _markerIdsToRemove;
+    markersToChange = _markersToChange;
   }
 
   Set<Marker> markersToAdd;
