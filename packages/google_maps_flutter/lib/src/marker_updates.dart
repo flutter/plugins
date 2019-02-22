@@ -8,14 +8,6 @@ part of google_maps_flutter;
 ///
 /// Used in [GoogleMapController] when the map is updated.
 class _MarkerUpdates {
-  _MarkerUpdates._({
-    @required this.markersToAdd,
-    @required this.markerIdsToRemove,
-    @required this.markersToChange,
-  })  : assert(markersToAdd != null),
-        assert(markerIdsToRemove != null),
-        assert(markersToChange != null);
-
   /// Computes [_MarkerUpdates] given previous and current [Marker]s.
   _MarkerUpdates.from(Set<Marker> previous, Set<Marker> current) {
     if (previous == null) {

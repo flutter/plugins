@@ -103,14 +103,14 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   void _changePosition() {
-    final Marker m = markers[selectedMarker];
-    final LatLng current = m.position;
+    final Marker marker = markers[selectedMarker];
+    final LatLng current = marker.position;
     final Offset offset = Offset(
       center.latitude - current.latitude,
       center.longitude - current.longitude,
     );
     setState(() {
-      markers[selectedMarker] = m.copyWith(
+      markers[selectedMarker] = marker.copyWith(
         positionParam: LatLng(
           center.latitude + offset.dy,
           center.longitude + offset.dx,
@@ -120,23 +120,23 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   void _changeAnchor() {
-    final Marker m = markers[selectedMarker];
-    final Offset currentAnchor = m.anchor;
+    final Marker marker = markers[selectedMarker];
+    final Offset currentAnchor = marker.anchor;
     final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
     setState(() {
-      markers[selectedMarker] = m.copyWith(
+      markers[selectedMarker] = marker.copyWith(
         anchorParam: newAnchor,
       );
     });
   }
 
   Future<void> _changeInfoAnchor() async {
-    final Marker m = markers[selectedMarker];
-    final Offset currentAnchor = m.infoWindow.anchor;
+    final Marker marker = markers[selectedMarker];
+    final Offset currentAnchor = marker.infoWindow.anchor;
     final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
     setState(() {
-      markers[selectedMarker] = m.copyWith(
-        infoWindowParam: m.infoWindow.copyWith(
+      markers[selectedMarker] = marker.copyWith(
+        infoWindowParam: marker.infoWindow.copyWith(
           anchorParam: newAnchor,
         ),
       );
@@ -144,29 +144,29 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   Future<void> _toggleDraggable() async {
-    final Marker m = markers[selectedMarker];
+    final Marker marker = markers[selectedMarker];
     setState(() {
-      markers[selectedMarker] = m.copyWith(
-        draggableParam: !m.draggable,
+      markers[selectedMarker] = marker.copyWith(
+        draggableParam: !marker.draggable,
       );
     });
   }
 
   Future<void> _toggleFlat() async {
-    final Marker m = markers[selectedMarker];
+    final Marker marker = markers[selectedMarker];
     setState(() {
-      markers[selectedMarker] = m.copyWith(
-        flatParam: !m.flat,
+      markers[selectedMarker] = marker.copyWith(
+        flatParam: !marker.flat,
       );
     });
   }
 
   Future<void> _changeInfo() async {
-    final Marker m = markers[selectedMarker];
-    final String newSnippet = m.infoWindow.snippet + '*';
+    final Marker marker = markers[selectedMarker];
+    final String newSnippet = marker.infoWindow.snippet + '*';
     setState(() {
-      markers[selectedMarker] = m.copyWith(
-        infoWindowParam: m.infoWindow.copyWith(
+      markers[selectedMarker] = marker.copyWith(
+        infoWindowParam: marker.infoWindow.copyWith(
           snippetParam: newSnippet,
         ),
       );
@@ -174,39 +174,39 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   Future<void> _changeAlpha() async {
-    final Marker m = markers[selectedMarker];
-    final double current = m.alpha;
+    final Marker marker = markers[selectedMarker];
+    final double current = marker.alpha;
     setState(() {
-      markers[selectedMarker] = m.copyWith(
+      markers[selectedMarker] = marker.copyWith(
         alphaParam: current < 0.1 ? 1.0 : current * 0.75,
       );
     });
   }
 
   Future<void> _changeRotation() async {
-    final Marker m = markers[selectedMarker];
-    final double current = m.rotation;
+    final Marker marker = markers[selectedMarker];
+    final double current = marker.rotation;
     setState(() {
-      markers[selectedMarker] = m.copyWith(
+      markers[selectedMarker] = marker.copyWith(
         rotationParam: current == 330.0 ? 0.0 : current + 30.0,
       );
     });
   }
 
   Future<void> _toggleVisible() async {
-    final Marker m = markers[selectedMarker];
+    final Marker marker = markers[selectedMarker];
     setState(() {
-      markers[selectedMarker] = m.copyWith(
-        visibleParam: !m.visible,
+      markers[selectedMarker] = marker.copyWith(
+        visibleParam: !marker.visible,
       );
     });
   }
 
   Future<void> _changeZIndex() async {
-    final Marker m = markers[selectedMarker];
-    final double current = m.zIndex;
+    final Marker marker = markers[selectedMarker];
+    final double current = marker.zIndex;
     setState(() {
-      markers[selectedMarker] = m.copyWith(
+      markers[selectedMarker] = marker.copyWith(
         zIndexParam: current == 12.0 ? 0.0 : current + 1.0,
       );
     });
