@@ -1,3 +1,11 @@
+## 2.1.0
+
+* Added support for getReferenceFromUrl.
+
+## 2.0.1+2
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
 ## 2.0.1+1
 
 * Remove categories.

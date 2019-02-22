@@ -7,6 +7,7 @@ package io.flutter.plugins.firebase.cloudfunctions.cloudfunctions;
 import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.HttpsCallableReference;
@@ -32,9 +33,17 @@ public class CloudFunctionsPlugin implements MethodCallHandler {
     switch (call.method) {
       case "CloudFunctions#call":
         String functionName = call.argument("functionName");
-        HttpsCallableReference httpsCallableReference =
-            FirebaseFunctions.getInstance().getHttpsCallable(functionName);
         Map<String, Object> parameters = call.argument("parameters");
+        String appName = call.argument("app");
+        FirebaseApp app = FirebaseApp.getInstance(appName);
+        String region = call.argument("region");
+        FirebaseFunctions functions;
+        if (region != null) {
+          functions = FirebaseFunctions.getInstance(app, region);
+        } else {
+          functions = FirebaseFunctions.getInstance(app);
+        }
+        HttpsCallableReference httpsCallableReference = functions.getHttpsCallable(functionName);
         httpsCallableReference
             .call(parameters)
             .addOnCompleteListener(
