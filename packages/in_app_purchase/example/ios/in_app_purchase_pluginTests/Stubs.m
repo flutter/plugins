@@ -22,7 +22,8 @@
 - (instancetype)initWithMap:(NSDictionary *)map {
   self = [super init];
   if (self) {
-    [self setValue:map[@"price"] ?: [NSNull null] forKey:@"price"];
+    [self setValue:[[NSDecimalNumber alloc] initWithString:map[@"price"]] ?: [NSNull null]
+            forKey:@"price"];
     NSLocale *locale = NSLocale.systemLocale;
     [self setValue:locale ?: [NSNull null] forKey:@"priceLocale"];
     [self setValue:map[@"numberOfPeriods"] ?: @(0) forKey:@"numberOfPeriods"];
@@ -45,7 +46,8 @@
     [self setValue:map[@"localizedDescription"] ?: [NSNull null] forKey:@"localizedDescription"];
     [self setValue:map[@"localizedTitle"] ?: [NSNull null] forKey:@"localizedTitle"];
     [self setValue:map[@"downloadable"] ?: @NO forKey:@"downloadable"];
-    [self setValue:map[@"price"] ?: [NSNull null] forKey:@"price"];
+    [self setValue:[[NSDecimalNumber alloc] initWithString:map[@"price"]] ?: [NSNull null]
+            forKey:@"price"];
     NSLocale *locale = NSLocale.systemLocale;
     [self setValue:locale ?: [NSNull null] forKey:@"priceLocale"];
     [self setValue:map[@"downloadContentLengths"] ?: @(0) forKey:@"downloadContentLengths"];
