@@ -77,10 +77,8 @@ class _MarkerUpdates {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other))
-      return true;
-    if (other.runtimeType != runtimeType)
-      return false;
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
     final _MarkerUpdates typedOther = other;
     return setEquals(markersToAdd, typedOther.markersToAdd) &&
         setEquals(markerIdsToRemove, typedOther.markerIdsToRemove) &&
