@@ -1,3 +1,7 @@
+## 0.2.0+4
+
+* Fixed a crash when the plugin is registered by a background FlutterView.
+
 ## 0.2.0+3
 
 * Fixed a memory leak on Android - the map was not properly disposed.
