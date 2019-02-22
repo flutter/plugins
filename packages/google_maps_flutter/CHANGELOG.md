@@ -1,6 +1,7 @@
 ## 0.2.0+5
 
 * Skip the Gradle Android permissions lint for MyLocation (https://github.com/flutter/flutter/issues/28339)
+* Suppress unchecked cast warning for the PlatformViewFactory creation parameters.
 
 ## 0.2.0+4
 
