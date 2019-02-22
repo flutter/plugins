@@ -96,15 +96,16 @@ public class CameraPlugin implements MethodCallHandler {
 
           @Override
           public void onActivityResumed(Activity activity) {
+            boolean wasRequestingPermission = requestingPermission;
             if (requestingPermission) {
               requestingPermission = false;
+            }
+            if (activity != CameraPlugin.this.activity) {
               return;
             }
-            if (activity == CameraPlugin.this.activity) {
-              orientationEventListener.enable();
-              if (camera != null) {
-                camera.open(null);
-              }
+            orientationEventListener.enable();
+            if (camera != null && !wasRequestingPermission) {
+              camera.open(null);
             }
           }
 
