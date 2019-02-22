@@ -77,15 +77,15 @@ class SKPaymentQueueWrapper {
   }
 
   // Triage a method channel call from the platform and triggers the correct observer method.
-  Future<dynamic> _handleObserverCallbacks(MethodCall call) async {
+  Future<dynamic> _handleObserverCallbacks(MethodCall call) {
     assert(_observer != null,
-        'in_app_purchase]: (Fatal)The observer has not been set but we received a purchase transaction notification. Please ensure the observer has been set using `setTransactionObserver`. One of the major reasons this can happen is when user started a purchase flow from the App Store, iOS then opens your app automatically to finish the transaction. Make sure you added the transaction observer right at the app launches to handle this scenario.');
+        'in_app_purchase]: (Fatal)The observer has not been set but we received a purchase transaction notification. Please ensure the observer has been set using `setTransactionObserver`. Make sure the observer is added right at the App Launch.');
     switch (call.method) {
       case 'updatedTransactions':
         {
           final List<SKPaymentTransactionWrapper> transactions =
               _getTransactionList(call.arguments);
-          return await Future<void>(() {
+          return Future<void>(() {
             _observer.updatedTransactions(transactions: transactions);
           });
         }
@@ -93,20 +93,20 @@ class SKPaymentQueueWrapper {
         {
           final List<SKPaymentTransactionWrapper> transactions =
               _getTransactionList(call.arguments);
-          return await Future<void>(() {
+          return Future<void>(() {
             _observer.removedTransactions(transactions: transactions);
           });
         }
       case 'restoreCompletedTransactions':
         {
           final Error error = call.arguments;
-          return await Future<void>(() {
+          return Future<void>(() {
             _observer.restoreCompletedTransactions(error: error);
           });
         }
       case 'paymentQueueRestoreCompletedTransactionsFinished':
         {
-          return await Future<void>(() {
+          return Future<void>(() {
             _observer.paymentQueueRestoreCompletedTransactionsFinished();
           });
         }
@@ -114,7 +114,7 @@ class SKPaymentQueueWrapper {
         {
           final List<SKDownloadWrapper> downloads =
               _getDownloadList(call.arguments);
-          return await Future<void>(() {
+          return Future<void>(() {
             _observer.updatedDownloads(downloads: downloads);
           });
         }
@@ -124,7 +124,7 @@ class SKPaymentQueueWrapper {
               SKPaymentWrapper.fromJson(call.arguments['payment']);
           SKProductWrapper product =
               SKProductWrapper.fromJson(call.arguments['product']);
-          return await Future<void>(() {
+          return Future<void>(() {
             if (_observer.shouldAddStorePayment(
                     payment: payment, product: product) ==
                 true) {
@@ -140,9 +140,8 @@ class SKPaymentQueueWrapper {
 
   // Get transaction wrapper object list from arguments.
   List<SKPaymentTransactionWrapper> _getTransactionList(dynamic arguments) {
-    final List<Map<String, dynamic>> transactionsMap = arguments;
-    final List<SKPaymentTransactionWrapper> transactions = transactionsMap
-        .map<SKPaymentTransactionWrapper>((Map<String, dynamic> map) =>
+    final List<SKPaymentTransactionWrapper> transactions = arguments
+        .map<SKPaymentTransactionWrapper>((dynamic map) =>
             SKPaymentTransactionWrapper.fromJson(map))
         .toList();
     return transactions;
@@ -150,10 +149,9 @@ class SKPaymentQueueWrapper {
 
   // Get download wrapper object list from arguments.
   List<SKDownloadWrapper> _getDownloadList(dynamic arguments) {
-    final List<Map<String, dynamic>> downloadsMap = arguments;
-    final List<SKDownloadWrapper> downloads = downloadsMap
+    final List<SKDownloadWrapper> downloads = arguments
         .map<SKDownloadWrapper>(
-            (Map<String, dynamic> map) => SKDownloadWrapper.fromJson(map))
+            (dynamic map) => SKDownloadWrapper.fromJson(map))
         .toList();
     return downloads;
   }
@@ -219,7 +217,7 @@ enum SKPaymentTransactionStateWrapper {
 ///
 /// Created when a payment is added to the [SKPaymentQueueWrapper]. Transactions are delivered to your app when a payment is finished processing.
 /// Completed transactions provide a receipt and a transaction identifier that the app can use to save a permanent record of the processed payment.
-@JsonSerializable()
+@JsonSerializable(nullable: true)
 class SKPaymentTransactionWrapper {
   SKPaymentTransactionWrapper({
     @required this.payment,
@@ -319,7 +317,7 @@ enum SKDownloadState {
 /// Note that all downloaded files must be processed before the completion of the [SKPaymentTransactionWrapper]([SKPaymentQueueWrapper.finishTransaction] is called).
 /// After the transaction is complete, any [SKDownloadWrapper] object in the transaction will not be able to be added to the payment queue
 /// and the [contentURL ]of the [SKDownloadWrapper] object will be invalid.
-@JsonSerializable()
+@JsonSerializable(nullable: true)
 class SKDownloadWrapper {
   SKDownloadWrapper({
     @required this.contentIdentifier,
@@ -383,7 +381,7 @@ class SKDownloadWrapper {
 }
 
 /// Dart wrapper around StoreKit's [NSError](https://developer.apple.com/documentation/foundation/nserror?language=objc).
-@JsonSerializable()
+@JsonSerializable(nullable: true)
 class SKError {
   SKError(
       {@required this.code, @required this.domain, @required this.userInfo});
@@ -414,7 +412,7 @@ class SKError {
 /// Used as the parameter to initiate a payment.
 /// In general, a developer should not need to create the payment object explicitly; instead, use
 /// [SKPaymentQueueWrapper.addPayment] directly with a product identifier to initiate a payment.
-@JsonSerializable()
+@JsonSerializable(nullable: true)
 class SKPaymentWrapper {
   SKPaymentWrapper(
       {@required this.productIdentifier,
