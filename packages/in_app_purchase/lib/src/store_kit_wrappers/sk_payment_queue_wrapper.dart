@@ -86,7 +86,7 @@ class SKPaymentQueueWrapper {
           final List<SKPaymentTransactionWrapper> transactions =
               _getTransactionList(call.arguments);
           return await Future<void>(() {
-            _observer.updatedTransaction(transactions: transactions);
+            _observer.updatedTransactions(transactions: transactions);
           });
         }
       case 'removedTransactions':
@@ -94,7 +94,7 @@ class SKPaymentQueueWrapper {
           final List<SKPaymentTransactionWrapper> transactions =
               _getTransactionList(call.arguments);
           return await Future<void>(() {
-            _observer.removedTransaction(transactions: transactions);
+            _observer.removedTransactions(transactions: transactions);
           });
         }
       case 'restoreCompletedTransactions':
@@ -128,8 +128,7 @@ class SKPaymentQueueWrapper {
             if (_observer.shouldAddStorePayment(
                     payment: payment, product: product) ==
                 true) {
-              SKPaymentQueueWrapper()
-                  .addPayment(payment);
+              SKPaymentQueueWrapper().addPayment(payment);
             }
           });
         }
@@ -165,10 +164,10 @@ class SKPaymentQueueWrapper {
 /// Must be subclassed and
 abstract class SKTransactionObserverWrapper {
   /// Triggered when any transactions are updated.
-  void updatedTransaction({List<SKPaymentTransactionWrapper> transactions});
+  void updatedTransactions({List<SKPaymentTransactionWrapper> transactions});
 
   /// Triggered when any transactions are removed from the payment queue.
-  void removedTransaction({List<SKPaymentTransactionWrapper> transactions});
+  void removedTransactions({List<SKPaymentTransactionWrapper> transactions});
 
   /// Triggered when there is an error while restoring transactions.
   void restoreCompletedTransactions({Error error});
