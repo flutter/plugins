@@ -189,15 +189,15 @@ final class GoogleMapController
           break;
         }
       case "markers#update":
-      {
-        Object markersToAdd = call.argument("markersToAdd");
-        markersController.addMarkers((List<Object>) markersToAdd);
-        Object markersToChange = call.argument("markersToChange");
-        markersController.changeMarkers((List<Object>) markersToChange);
-        Object markerIdsToRemove = call.argument("markerIdsToRemove");
-        markersController.removeMarkers((List<Object>) markerIdsToRemove);
-        break;
-      }
+        {
+          Object markersToAdd = call.argument("markersToAdd");
+          markersController.addMarkers((List<Object>) markersToAdd);
+          Object markersToChange = call.argument("markersToChange");
+          markersController.changeMarkers((List<Object>) markersToChange);
+          Object markerIdsToRemove = call.argument("markerIdsToRemove");
+          markersController.removeMarkers((List<Object>) markerIdsToRemove);
+          break;
+        }
       default:
         result.notImplemented();
     }

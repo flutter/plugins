@@ -8,18 +8,14 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
-/**
- * Controller of a single Marker on the map.
- */
+/** Controller of a single Marker on the map. */
 class MarkerController implements MarkerOptionsSink {
 
   private final Marker marker;
   private final String googleMapsMarkerId;
   private boolean consumeTapEvents;
 
-  MarkerController(
-      Marker marker,
-      boolean consumeTapEvents) {
+  MarkerController(Marker marker, boolean consumeTapEvents) {
     this.marker = marker;
     this.consumeTapEvents = consumeTapEvents;
     this.googleMapsMarkerId = marker.getId();

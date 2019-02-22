@@ -91,5 +91,4 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   public void setInitialMarkers(Object initialMarkers) {
     this.initialMarkers = initialMarkers;
   }
-
 }

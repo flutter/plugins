@@ -90,8 +90,7 @@ class MarkersController {
 
   private void addMarker(MarkerId markerId, MarkerOptions markerOptions, boolean consumeTapEvents) {
     final Marker marker = googleMap.addMarker(markerOptions);
-    MarkerController controller =
-        new MarkerController(marker, consumeTapEvents);
+    MarkerController controller = new MarkerController(marker, consumeTapEvents);
     markerIdToController.put(markerId, controller);
     googleMapsMarkerIdToDartMarkerId.put(marker.getId(), markerId);
   }
@@ -113,5 +112,4 @@ class MarkersController {
     String markerId = (String) markerMap.get("markerId");
     return new MarkerId(markerId);
   }
-
 }

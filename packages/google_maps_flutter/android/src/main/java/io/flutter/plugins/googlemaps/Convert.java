@@ -15,14 +15,10 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import io.flutter.view.FlutterMain;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-/**
- * Conversions between JSON-like values and GoogleMaps data types.
- */
+/** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
 
   private static BitmapDescriptor toBitmapDescriptor(Object o) {
