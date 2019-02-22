@@ -77,6 +77,8 @@
     [self addPayment:call result:result];
   } else if ([@"-[InAppPurchasePlugin finishTransaction:result:]" isEqualToString:call.method]) {
     [self finishTransaction:call result:result];
+  } else if ([@"-[InAppPurchasePlugin observerDidSet:]" isEqualToString:call.method]) {
+    [self observerDidSet:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -190,6 +192,11 @@
                                details:e.description]);
     return;
   }
+  result(nil);
+}
+
+- (void)observerDidSet:(FlutterMethodCall *)call result:(FlutterResult)result {
+  self.paymentQueueHandler.observerDidSet = YES;
   result(nil);
 }
 

@@ -17,6 +17,13 @@
 
 @property(strong, nonatomic) NSMutableDictionary *transactionsSetter;
 
+// Store in cache and flush to the dart later after we are sure the observer is set in dart.
+// This should only handle the case when app launches and there are unfinished transactions or
+// the case when user initiated the payment flow from App Store.
+@property(copy, nonatomic) NSArray *transactionsToUpdate;
+@property(strong, nonatomic) SKPayment *paymentShouldBeAdded;
+@property(strong, nonatomic) SKProduct *productShouldBePaied;
+
 @end
 
 @implementation FIAPaymentQueueHandler
@@ -52,11 +59,34 @@
   [self.queue finishTransaction:transaction];
 }
 
+- (void)setObserverDidSet:(BOOL)observerDidSet {
+  _observerDidSet = observerDidSet;
+  if (observerDidSet) {
+    if (self.transactionsUpdated) {
+      [self paymentQueue:self.queue updatedTransactions:self.transactionsToUpdate];
+      self.transactionsToUpdate = nil;
+    }
+    if (@available(iOS 11.0, *)) {
+      if (self.paymentShouldBeAdded && self.productShouldBePaied) {
+        [self paymentQueue:self.queue
+            shouldAddStorePayment:self.paymentShouldBeAdded
+                       forProduct:self.productShouldBePaied];
+        self.paymentShouldBeAdded = nil;
+        self.productShouldBePaied = nil;
+      }
+    }
+  }
+}
+
 #pragma mark - observing
 // Sent when the transaction array has changed (additions or state changes).  Client should check
 // state of transactions and finish as appropriate.
 - (void)paymentQueue:(SKPaymentQueue *)queue
     updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
+  if (!self.observerDidSet) {
+    self.transactionsToUpdate = transactions;
+    return;
+  }
   for (SKPaymentTransaction *transaction in transactions) {
     if (transaction.transactionIdentifier) {
       [self.transactionsSetter setObject:transaction forKey:transaction.transactionIdentifier];
@@ -94,6 +124,11 @@
 - (BOOL)paymentQueue:(SKPaymentQueue *)queue
     shouldAddStorePayment:(SKPayment *)payment
                forProduct:(SKProduct *)product {
+  if (!self.observerDidSet) {
+    self.paymentShouldBeAdded = payment;
+    self.productShouldBePaied = product;
+    return NO;
+  }
   return (self.shouldAddStorePayment(payment, product));
 }
 

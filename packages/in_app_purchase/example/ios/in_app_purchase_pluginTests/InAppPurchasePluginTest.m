@@ -99,6 +99,8 @@
       }
       updatedDownloads:nil];
   [queue addTransactionObserver:self.plugin.paymentQueueHandler];
+  self.plugin.paymentQueueHandler.observerDidSet = YES;
+
   [self.plugin handleMethodCall:call
                          result:^(id r){
                          }];
@@ -134,11 +136,79 @@
         return YES;
       }
       updatedDownloads:nil];
+  self.plugin.paymentQueueHandler.observerDidSet = YES;
   [queue addTransactionObserver:self.plugin.paymentQueueHandler];
   [self.plugin handleMethodCall:call
                          result:^(id r){
                          }];
   [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertEqual(transactionForUpdateBlock.transactionState, SKPaymentTransactionStatePurchased);
+}
+
+- (void)testSetObserver {
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[InAppPurchasePlugin observerDidSet:]"
+                                        arguments:nil];
+  SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
+  queue.testState = SKPaymentTransactionStatePurchased;
+  self.plugin.paymentQueueHandler =
+      [[FIAPaymentQueueHandler alloc] initWithQueue:queue
+                                transactionsUpdated:nil
+                                 transactionRemoved:nil
+                           restoreTransactionFailed:nil
+               restoreCompletedTransactionsFinished:nil
+                              shouldAddStorePayment:^BOOL(SKPayment* _Nonnull payment,
+                                                          SKProduct* _Nonnull product) {
+                                return YES;
+                              }
+                                   updatedDownloads:nil];
+  [queue addTransactionObserver:self.plugin.paymentQueueHandler];
+  [self.plugin handleMethodCall:call
+                         result:^(id r){
+                         }];
+  [self waitForExpectations:@[ exceptToBeTrue ] timeout:5];
+  XCTAssertTrue(self.plugin.paymentQueueHandler.observerDidSet);
+}
+
+- (void)testSetObserverFlushesStoredTransactionAndPaymentAndProducts {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"result should return success state"];
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[InAppPurchasePlugin addPayment:result:]"
+                                        arguments:@{
+                                          @"productIdentifier" : @"123",
+                                          @"quantity" : @(1),
+                                          @"simulatesAskToBuyInSandBox" : @YES,
+                                        }];
+  SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
+  queue.testState = SKPaymentTransactionStatePurchased;
+  __block SKPaymentTransaction* transactionForUpdateBlock;
+  self.plugin.paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
+      transactionsUpdated:^(NSArray<SKPaymentTransaction*>* _Nonnull transactions) {
+        SKPaymentTransaction* transaction = transactions[0];
+        if (transaction.transactionState == SKPaymentTransactionStatePurchased) {
+          transactionForUpdateBlock = transaction;
+          [expectation fulfill];
+        }
+      }
+      transactionRemoved:nil
+      restoreTransactionFailed:nil
+      restoreCompletedTransactionsFinished:nil
+      shouldAddStorePayment:^BOOL(SKPayment* _Nonnull payment, SKProduct* _Nonnull product) {
+        return YES;
+      }
+      updatedDownloads:nil];
+  [queue addTransactionObserver:self.plugin.paymentQueueHandler];
+  [self.plugin handleMethodCall:call
+                         result:^(id r){
+                         }];
+  FlutterMethodCall* setObserverCall =
+      [FlutterMethodCall methodCallWithMethodName:@"-[InAppPurchasePlugin observerDidSet:]"
+                                        arguments:nil];
+  [self.plugin handleMethodCall:setObserverCall
+                         result:^(id r){
+                         }];
+  [self waitForExpectations:@[ expectation, exceptToBeTrue ] timeout:5];
   XCTAssertEqual(transactionForUpdateBlock.transactionState, SKPaymentTransactionStatePurchased);
 }
 
