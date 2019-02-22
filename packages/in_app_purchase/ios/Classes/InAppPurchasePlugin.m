@@ -79,6 +79,8 @@
     [self finishTransaction:call result:result];
   } else if ([@"-[InAppPurchasePlugin restoreTransactions:result:]" isEqualToString:call.method]) {
     [self restoreTransactions:call result:result];
+  } else if ([@"-[InAppPurchasePlugin observerDidSet:]" isEqualToString:call.method]) {
+    [self observerDidSet:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -204,6 +206,10 @@
     return;
   }
   [self.paymentQueueHandler restoreTransactions:call.arguments];
+}
+
+- (void)observerDidSet:(FlutterMethodCall *)call result:(FlutterResult)result {
+  self.paymentQueueHandler.observerDidSet = YES;
   result(nil);
 }
 
