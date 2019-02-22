@@ -22,6 +22,9 @@ void main() {
 
   test('requestNotificationPermissions on ios with default permissions', () {
     firebaseMessaging.requestNotificationPermissions();
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('requestNotificationPermissions',
         <String, bool>{'sound': true, 'badge': true, 'alert': true}));
   });
@@ -29,6 +32,9 @@ void main() {
   test('requestNotificationPermissions on ios with custom permissions', () {
     firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(sound: false));
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('requestNotificationPermissions',
         <String, bool>{'sound': false, 'badge': true, 'alert': true}));
   });
@@ -52,6 +58,9 @@ void main() {
   test('configure', () {
     firebaseMessaging.configure();
     verify(mockChannel.setMethodCallHandler(any));
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('configure'));
   });
 
@@ -125,26 +134,41 @@ void main() {
 
   test('subscribe to topic', () {
     firebaseMessaging.subscribeToTopic(myTopic);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('subscribeToTopic', myTopic));
   });
 
   test('unsubscribe from topic', () {
     firebaseMessaging.unsubscribeFromTopic(myTopic);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('unsubscribeFromTopic', myTopic));
   });
 
   test('getToken', () {
     firebaseMessaging.getToken();
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('getToken'));
   });
 
   test('deleteInstanceID', () {
     firebaseMessaging.deleteInstanceID();
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('deleteInstanceID'));
   });
 
   test('autoInitEnabled', () {
     firebaseMessaging.autoInitEnabled();
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('autoInitEnabled'));
   });
 
@@ -155,6 +179,9 @@ void main() {
     firebaseMessaging.setAutoInitEnabled(true);
 
     // assert we called the method with enabled = true
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('setAutoInitEnabled', true));
 
     // assert that enabled = false was not yet called
@@ -163,6 +190,9 @@ void main() {
     firebaseMessaging.setAutoInitEnabled(false);
 
     // assert call with enabled = false was properly done
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('setAutoInitEnabled', false));
   });
 }

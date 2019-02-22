@@ -58,6 +58,9 @@ class FirebaseStorage {
   StorageReference ref() => StorageReference._(const <String>[], this);
 
   Future<int> getMaxDownloadRetryTimeMillis() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return await channel.invokeMethod(
         "FirebaseStorage#getMaxDownloadRetryTime", <String, dynamic>{
       'app': app?.name,
@@ -66,6 +69,9 @@ class FirebaseStorage {
   }
 
   Future<int> getMaxUploadRetryTimeMillis() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return await channel.invokeMethod(
         "FirebaseStorage#getMaxUploadRetryTime", <String, dynamic>{
       'app': app?.name,
@@ -74,6 +80,9 @@ class FirebaseStorage {
   }
 
   Future<int> getMaxOperationRetryTimeMillis() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return await channel.invokeMethod(
         "FirebaseStorage#getMaxOperationRetryTime", <String, dynamic>{
       'app': app?.name,
@@ -82,6 +91,9 @@ class FirebaseStorage {
   }
 
   Future<void> setMaxDownloadRetryTimeMillis(int time) {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return channel.invokeMethod(
         "FirebaseStorage#setMaxDownloadRetryTime", <String, dynamic>{
       'app': app?.name,
@@ -91,6 +103,9 @@ class FirebaseStorage {
   }
 
   Future<void> setMaxUploadRetryTimeMillis(int time) {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return channel.invokeMethod(
         "FirebaseStorage#setMaxUploadRetryTime", <String, dynamic>{
       'app': app?.name,
@@ -100,12 +115,31 @@ class FirebaseStorage {
   }
 
   Future<void> setMaxOperationRetryTimeMillis(int time) {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return channel.invokeMethod(
         "FirebaseStorage#setMaxOperationRetryTime", <String, dynamic>{
       'app': app?.name,
       'bucket': storageBucket,
       'time': time,
     });
+  }
+
+  /// Creates a [StorageReference] given a gs:// or // URL pointing to a Firebase
+  /// Storage location.
+  Future<StorageReference> getReferenceFromUrl(String fullUrl) async {
+    final String path = await channel.invokeMethod(
+        "FirebaseStorage#getReferenceFromUrl", <String, dynamic>{
+      'app': app?.name,
+      'bucket': storageBucket,
+      'fullUrl': fullUrl
+    });
+    if (path != null) {
+      return ref().child(path);
+    } else {
+      return null;
+    }
   }
 }
 
@@ -118,6 +152,9 @@ class StorageFileDownloadTask {
   final File _file;
 
   Future<void> _start() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final int totalByteCount = await FirebaseStorage.channel.invokeMethod(
       "StorageReference#writeToFile",
       <String, dynamic>{

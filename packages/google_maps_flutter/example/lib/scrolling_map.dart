@@ -43,13 +43,14 @@ class ScrollingMapBody extends StatelessWidget {
                     height: 300.0,
                     child: GoogleMap(
                       onMapCreated: onMapCreated,
-                      options: GoogleMapOptions(
-                        cameraPosition: CameraPosition(
-                          target: center,
-                          zoom: 11.0,
-                        ),
+                      initialCameraPosition: CameraPosition(
+                        target: center,
+                        zoom: 11.0,
                       ),
                       gestureRecognizers:
+                          // TODO(mklim): Remove this when collection literals
+                          // makes it to stable.
+                          // ignore: prefer_collection_literals
                           <Factory<OneSequenceGestureRecognizer>>[
                         Factory<OneSequenceGestureRecognizer>(
                           () => EagerGestureRecognizer(),
@@ -79,13 +80,14 @@ class ScrollingMapBody extends StatelessWidget {
                     height: 300.0,
                     child: GoogleMap(
                       onMapCreated: onMapCreated,
-                      options: GoogleMapOptions(
-                        cameraPosition: CameraPosition(
-                          target: center,
-                          zoom: 11.0,
-                        ),
+                      initialCameraPosition: CameraPosition(
+                        target: center,
+                        zoom: 11.0,
                       ),
                       gestureRecognizers:
+                          // TODO(mklim): Remove this when collection literals
+                          // makes it to stable.
+                          // ignore: prefer_collection_literals
                           <Factory<OneSequenceGestureRecognizer>>[
                         Factory<OneSequenceGestureRecognizer>(
                           () => ScaleGestureRecognizer(),

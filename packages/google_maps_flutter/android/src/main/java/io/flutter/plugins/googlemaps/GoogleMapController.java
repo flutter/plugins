@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
@@ -290,6 +289,7 @@ final class GoogleMapController
       return;
     }
     disposed = true;
+    methodChannel.setMethodCallHandler(null);
     mapView.onDestroy();
     registrar.activity().getApplication().unregisterActivityLifecycleCallbacks(this);
   }
@@ -351,11 +351,6 @@ final class GoogleMapController
   }
 
   // GoogleMapOptionsSink methods
-
-  @Override
-  public void setCameraPosition(CameraPosition position) {
-    googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
-  }
 
   @Override
   public void setCameraTargetBounds(LatLngBounds bounds) {

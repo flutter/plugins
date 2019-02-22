@@ -82,10 +82,6 @@ void main() {
           ),
           isMethodCall(
             'FirebaseApp#appNamed',
-            arguments: 'testApp',
-          ),
-          isMethodCall(
-            'FirebaseApp#appNamed',
             arguments: 'newApp',
           ),
           isMethodCall(
