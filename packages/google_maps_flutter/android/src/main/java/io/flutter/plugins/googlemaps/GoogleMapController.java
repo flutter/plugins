@@ -153,7 +153,7 @@ final class GoogleMapController
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
     updateMyLocationEnabled();
-    this.markersController.setGoogleMap(googleMap);
+    markersController.setGoogleMap(googleMap);
   }
 
   @Override

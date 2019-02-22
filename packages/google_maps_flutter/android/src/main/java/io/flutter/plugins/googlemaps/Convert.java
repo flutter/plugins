@@ -118,12 +118,12 @@ class Convert {
     return data;
   }
 
-  static Object toJson(MarkerId markerId) {
+  static Object toJson(String markerId) {
     if (markerId == null) {
       return null;
     }
     final Map<String, Object> data = new HashMap<>(1);
-    data.put("markerId", markerId.getValue());
+    data.put("markerId", markerId);
     return data;
   }
 
@@ -217,7 +217,8 @@ class Convert {
     }
   }
 
-  static MarkerId interpretMarkerOptions(Object o, MarkerOptionsSink sink) {
+  /** Returns the dartMarkerId of the interpreted marker. */
+  static String interpretMarkerOptions(Object o, MarkerOptionsSink sink) {
     final Map<?, ?> data = toMap(o);
     final Object alpha = data.get("alpha");
     if (alpha != null) {
@@ -267,9 +268,9 @@ class Convert {
     }
     final String markerId = (String) data.get("markerId");
     if (markerId == null) {
-      throw new IllegalArgumentException("MarkerId was null");
+      throw new IllegalArgumentException("markerId was null");
     } else {
-      return new MarkerId(markerId);
+      return markerId;
     }
   }
 

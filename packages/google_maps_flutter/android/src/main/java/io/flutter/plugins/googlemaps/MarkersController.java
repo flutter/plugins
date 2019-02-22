@@ -10,8 +10,8 @@ import java.util.Map;
 
 class MarkersController {
 
-  private final Map<MarkerId, MarkerController> markerIdToController;
-  private final Map<String, MarkerId> googleMapsMarkerIdToDartMarkerId;
+  private final Map<String, MarkerController> markerIdToController;
+  private final Map<String, String> googleMapsMarkerIdToDartMarkerId;
   private final MethodChannel methodChannel;
   private GoogleMap googleMap;
 
@@ -46,19 +46,20 @@ class MarkersController {
       return;
     }
     for (Object rawMarkerId : markerIdsToRemove) {
-      if (rawMarkerId != null) {
-        MarkerId markerId = new MarkerId((String) rawMarkerId);
-        final MarkerController markerController = markerIdToController.remove(markerId);
-        if (markerController != null) {
-          markerController.remove();
-          googleMapsMarkerIdToDartMarkerId.remove(markerController.getGoogleMapsMarkerId());
-        }
+      if (rawMarkerId == null) {
+        continue;
+      }
+      String markerId = (String) rawMarkerId;
+      final MarkerController markerController = markerIdToController.remove(markerId);
+      if (markerController != null) {
+        markerController.remove();
+        googleMapsMarkerIdToDartMarkerId.remove(markerController.getGoogleMapsMarkerId());
       }
     }
   }
 
   boolean onMarkerTap(String googleMarkerId) {
-    MarkerId markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
+    String markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
     if (markerId == null) {
       return false;
     }
@@ -71,7 +72,7 @@ class MarkersController {
   }
 
   void onInfoWindowTap(String googleMarkerId) {
-    MarkerId markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
+    String markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
     if (markerId == null) {
       return;
     }
@@ -83,12 +84,12 @@ class MarkersController {
       return;
     }
     MarkerBuilder markerBuilder = new MarkerBuilder();
-    MarkerId markerId = Convert.interpretMarkerOptions(marker, markerBuilder);
+    String markerId = Convert.interpretMarkerOptions(marker, markerBuilder);
     MarkerOptions options = markerBuilder.build();
     addMarker(markerId, options, markerBuilder.consumeTapEvents());
   }
 
-  private void addMarker(MarkerId markerId, MarkerOptions markerOptions, boolean consumeTapEvents) {
+  private void addMarker(String markerId, MarkerOptions markerOptions, boolean consumeTapEvents) {
     final Marker marker = googleMap.addMarker(markerOptions);
     MarkerController controller = new MarkerController(marker, consumeTapEvents);
     markerIdToController.put(markerId, controller);
@@ -99,7 +100,7 @@ class MarkersController {
     if (marker == null) {
       return;
     }
-    MarkerId markerId = getMarkerId(marker);
+    String markerId = getMarkerId(marker);
     MarkerController markerController = markerIdToController.get(markerId);
     if (markerController != null) {
       Convert.interpretMarkerOptions(marker, markerController);
@@ -107,9 +108,8 @@ class MarkersController {
   }
 
   @SuppressWarnings("unchecked")
-  private static MarkerId getMarkerId(Object marker) {
+  private static String getMarkerId(Object marker) {
     Map<String, Object> markerMap = (Map<String, Object>) marker;
-    String markerId = (String) markerMap.get("markerId");
-    return new MarkerId(markerId);
+    return (String) markerMap.get("markerId");
   }
 }
