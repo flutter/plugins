@@ -305,5 +305,5 @@ List<Map<String, dynamic>> _serializeMarkerSet(Set<Marker> markers) {
   if (markers == null) {
     return null;
   }
-  return markers.map<dynamic>((Marker m) => m._toJson()).toList();
+  return markers.map<Map<String, dynamic>>((Marker m) => m._toJson()).toList();
 }
