@@ -64,7 +64,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
 
     final String markerIdVal = 'marker_id_$_markerIdCounter';
     _markerIdCounter++;
-    print(markerIdVal);
     final MarkerId markerId = MarkerId(markerIdVal);
 
     void _onMarkerTapped() {

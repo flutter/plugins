@@ -7,9 +7,8 @@ part of google_maps_flutter;
 /// [Marker] update events to be applied to the [GoogleMap].
 ///
 /// Used in [GoogleMapController] when the map is updated.
-@visibleForTesting
-class MarkerUpdates {
-  MarkerUpdates.internal({
+class _MarkerUpdates {
+  _MarkerUpdates._({
     @required this.markersToAdd,
     @required this.markerIdsToRemove,
     @required this.markersToChange,
@@ -17,8 +16,8 @@ class MarkerUpdates {
         assert(markerIdsToRemove != null),
         assert(markersToChange != null);
 
-  /// Computes [MarkerUpdates] given previous and current [Marker]s.
-  factory MarkerUpdates.from(Set<Marker> previous, Set<Marker> current) {
+  /// Computes [_MarkerUpdates] given previous and current [Marker]s.
+  factory _MarkerUpdates.from(Set<Marker> previous, Set<Marker> current) {
     if (previous == null) {
       previous = Set<Marker>.identity();
     }
@@ -27,8 +26,8 @@ class MarkerUpdates {
       current = Set<Marker>.identity();
     }
 
-    final Map<MarkerId, Marker> previousMarkers = keyByMarkerId(previous);
-    final Map<MarkerId, Marker> currentMarkers = keyByMarkerId(current);
+    final Map<MarkerId, Marker> previousMarkers = _keyByMarkerId(previous);
+    final Map<MarkerId, Marker> currentMarkers = _keyByMarkerId(current);
 
     final Set<MarkerId> prevMarkerIds = previousMarkers.keys.toSet();
     final Set<MarkerId> currentMarkerIds = currentMarkers.keys.toSet();
@@ -48,7 +47,7 @@ class MarkerUpdates {
         .map(idToCurrentMarker)
         .toSet();
 
-    return MarkerUpdates.internal(
+    return _MarkerUpdates._(
       markersToAdd: markersToAdd,
       markerIdsToRemove: markerIdsToRemove,
       markersToChange: markersToChange,
@@ -79,7 +78,7 @@ class MarkerUpdates {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is MarkerUpdates &&
+      other is _MarkerUpdates &&
           runtimeType == other.runtimeType &&
           setEquals(markersToAdd, other.markersToAdd) &&
           setEquals(markerIdsToRemove, other.markerIdsToRemove) &&

@@ -290,7 +290,7 @@ class Marker {
   }
 }
 
-Map<MarkerId, Marker> keyByMarkerId(Iterable<Marker> markers) {
+Map<MarkerId, Marker> _keyByMarkerId(Iterable<Marker> markers) {
   if (markers == null) {
     return <MarkerId, Marker>{};
   }

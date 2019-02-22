@@ -141,7 +141,7 @@ class _GoogleMapState extends State<GoogleMap> {
   void initState() {
     super.initState();
     _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
-    _markers = keyByMarkerId(widget.markers);
+    _markers = _keyByMarkerId(widget.markers);
   }
 
   @override
@@ -166,8 +166,8 @@ class _GoogleMapState extends State<GoogleMap> {
   void _updateMarkers() async {
     final GoogleMapController controller = await _controller.future;
     controller._updateMarkers(
-        MarkerUpdates.from(_markers.values.toSet(), widget.markers));
-    _markers = keyByMarkerId(widget.markers);
+        _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
+    _markers = _keyByMarkerId(widget.markers);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
