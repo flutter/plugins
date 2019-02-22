@@ -18,7 +18,6 @@
 // for purchase.
 @property(copy, nonatomic) NSMutableDictionary *productsCache;
 
-
 // Call back channel to dart used for when a listener function is triggered.
 @property(strong, nonatomic) FlutterMethodChannel *callbackChannel;
 @property(strong, nonatomic) NSObject<FlutterTextureRegistry> *registry;
@@ -78,6 +77,8 @@
     [self addPayment:call result:result];
   } else if ([@"-[InAppPurchasePlugin finishTransaction:result:]" isEqualToString:call.method]) {
     [self finishTransaction:call result:result];
+  } else if ([@"-[InAppPurchasePlugin restoreTransactions:result:]" isEqualToString:call.method]) {
+    [self restoreTransactions:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -145,7 +146,7 @@
     payment.quantity = quantity ? quantity.integerValue : 1;
     if (@available(iOS 8.3, *)) {
       payment.simulatesAskToBuyInSandbox =
-      [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
+          [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
     }
     [self.paymentQueueHandler addPayment:payment];
     result(nil);
@@ -153,8 +154,9 @@
   }
   result([FlutterError
       errorWithCode:@"storekit_invalid_payment_object"
-            message:
-                @"You have requested a payment for an invalid product. Either the `productIdentifier` of the payment is not valid or the product has not been fetched before adding the payment to the payment queue."
+            message:@"You have requested a payment for an invalid product. Either the "
+                    @"`productIdentifier` of the payment is not valid or the product has not been "
+                    @"fetched before adding the payment to the payment queue."
             details:call.arguments]);
 }
 
@@ -190,6 +192,18 @@
                                details:e.description]);
     return;
   }
+  result(nil);
+}
+
+- (void)restoreTransactions:(FlutterMethodCall *)call result:(FlutterResult)result {
+  if (call.arguments && ![call.arguments isKindOfClass:[NSString class]]) {
+    result([FlutterError
+        errorWithCode:@"storekit_invalid_argument"
+              message:@"Argument is not nil and the type of finishTransaction is not a string."
+              details:call.arguments]);
+    return;
+  }
+  [self.paymentQueueHandler restoreTransactions:call.arguments];
   result(nil);
 }
 

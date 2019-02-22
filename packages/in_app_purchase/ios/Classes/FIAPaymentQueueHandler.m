@@ -52,6 +52,14 @@
   [self.queue finishTransaction:transaction];
 }
 
+- (void)restoreTransactions:(nullable NSString *)applicationName {
+  if (applicationName) {
+    [self.queue restoreCompletedTransactionsWithApplicationUsername:applicationName];
+  } else {
+    [self.queue restoreCompletedTransactions];
+  }
+}
+
 #pragma mark - observing
 // Sent when the transaction array has changed (additions or state changes).  Client should check
 // state of transactions and finish as appropriate.

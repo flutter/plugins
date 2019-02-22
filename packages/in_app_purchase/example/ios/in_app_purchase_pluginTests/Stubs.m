@@ -154,6 +154,10 @@
   [self.observer paymentQueue:self updatedTransactions:@[ transaction ]];
 }
 
+- (void)restoreCompletedTransactions {
+  [self.observer paymentQueueRestoreCompletedTransactionsFinished:self];
+}
+
 @end
 
 @implementation SKPaymentTransactionStub

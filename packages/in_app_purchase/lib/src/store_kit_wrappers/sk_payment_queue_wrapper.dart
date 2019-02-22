@@ -76,6 +76,18 @@ class SKPaymentQueueWrapper {
         transaction.transactionIdentifier);
   }
 
+  /// Restore transactions to maintain access to content that customers have already purchased.
+  ///
+  /// For example, when a user upgrade to a new phone, they want to keep the content they purchased in the old phone.
+  /// This call will invoke the [SKTransactionObserverWrapper.restoreCompletedTransactions] or [SKTransactionObserverWrapper.paymentQueueRestoreCompletedTransactionsFinished] as well as [SKTransactionObserverWrapper.updatedTransaction]
+  /// in the [SKTransactionObserverWrapper]. If you keep the download content in your own server, in the observer methods, you can simply finish the transaction by calling [finishTransaction] and
+  /// download the content from your own server.
+  /// If you keep the download content on Apple's server, you can access the download content in the transaction object that you get from [SKTransactionObserverWrapper.updatedTransaction] when the [SKPaymentTransactionWrapper.transactionState] is [SKPaymentTransactionStateWrapper.restored].
+  Future<void> restoreTransactions({String applicationName}) async {
+    await channel.invokeMethod(
+        '-[InAppPurchasePlugin restoreTransactions:result:]', applicationName);
+  }
+
   // Triage a method channel call from the platform and triggers the correct observer method.
   Future<dynamic> _handleObserverCallbacks(MethodCall call) async {
     assert(_observer != null,
@@ -128,8 +140,7 @@ class SKPaymentQueueWrapper {
             if (_observer.shouldAddStorePayment(
                     payment: payment, product: product) ==
                 true) {
-              SKPaymentQueueWrapper()
-                  .addPayment(payment);
+              SKPaymentQueueWrapper().addPayment(payment);
             }
           });
         }
@@ -183,8 +194,9 @@ abstract class SKTransactionObserverWrapper {
   ///
   /// Return `true` to continue the transaction in your app. If you have multiple [SKTransactionObserverWrapper]s, the transaction
   /// will continue if one [SKTransactionObserverWrapper] has [shouldAddStorePayment] returning `true`.
-  /// Return `false` to defer or cancel the transaction. You can also continue the transaction later by calling
-  /// [addPayment] with the product you get from this method.
+  /// Return `false` to defer or cancel the transaction. For example, you may need to defer a transaction if the user is in the middle of onboarding.
+  /// You can also continue the transaction later by calling
+  /// [addPayment] with the [SKPaymentWrapper] object you get from this method.
   bool shouldAddStorePayment(
       {SKPaymentWrapper payment, SKProductWrapper product});
 }
