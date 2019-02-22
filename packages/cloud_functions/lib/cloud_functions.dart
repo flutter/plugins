@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
@@ -19,12 +20,20 @@ class CloudFunctionsException implements Exception {
 ///
 /// You can get an instance by calling [CloudFunctions.instance].
 class CloudFunctions {
+  CloudFunctions({FirebaseApp app, String region})
+      : _app = app ?? FirebaseApp.instance,
+        _region = region;
+
   @visibleForTesting
   static const MethodChannel channel = MethodChannel('cloud_functions');
 
   static CloudFunctions _instance = CloudFunctions();
 
   static CloudFunctions get instance => _instance;
+
+  final FirebaseApp _app;
+
+  final String _region;
 
   /// Executes this Callable HTTPS trigger asynchronously.
   ///
@@ -38,6 +47,8 @@ class CloudFunctions {
           // https://github.com/flutter/flutter/issues/26431
           // ignore: strong_mode_implicit_dynamic_method
           await channel.invokeMethod('CloudFunctions#call', <String, dynamic>{
+        'app': _app.name,
+        'region': _region,
         'functionName': functionName,
         'parameters': parameters,
       });

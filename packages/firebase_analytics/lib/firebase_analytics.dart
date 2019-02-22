@@ -64,6 +64,20 @@ class FirebaseAnalytics {
     });
   }
 
+  /// Sets whether analytics collection is enabled for this app on this device.
+  ///
+  /// This setting is persisted across app sessions. By default it is enabled.
+  Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
+    if (enabled == null) {
+      throw ArgumentError.notNull('enabled');
+    }
+
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod('setAnalyticsCollectionEnabled', enabled);
+  }
+
   /// Sets the user ID property.
   ///
   /// This feature must be used in accordance with [Google's Privacy Policy][1].
@@ -794,6 +808,8 @@ class FirebaseAnalyticsAndroid {
   /// Sets whether analytics collection is enabled for this app on this device.
   ///
   /// This setting is persisted across app sessions. By default it is enabled.
+  /// Deprecated: Use [FirebaseAnalytics.setAnalyticsCollectionEnabled] instead.
+  @deprecated
   Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
     if (enabled == null) {
       throw ArgumentError.notNull('enabled');

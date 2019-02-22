@@ -1,6 +1,10 @@
 ## 0.3.1
 
-* Bump firebase-core dependency on Android to 16.0.7.
+* Remove an assertion that can interfere with hot-restart.
+
+## 0.3.0+2
+
+* Remove categories.
 
 ## 0.3.0+1
 
