@@ -71,9 +71,6 @@
   return self;
 }
 
-- (void)applicationDidBecomeActive:(UIApplication *)application {
-}
-
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"-[SKPaymentQueue canMakePayments:]" isEqualToString:call.method]) {
     [self canMakePayments:result];
