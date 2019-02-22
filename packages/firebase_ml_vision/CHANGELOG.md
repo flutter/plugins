@@ -1,3 +1,7 @@
+## 0.6.0+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
 ## 0.6.0
 
 * **Breaking Change** Removed on-device model dependencies from plugin.
