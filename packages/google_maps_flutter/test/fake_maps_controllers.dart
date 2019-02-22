@@ -74,6 +74,7 @@ class FakePlatformGoogleMap {
   Set<MarkerId> _deserializeMarkerIds(List<dynamic> markerIds) {
     if (markerIds == null) {
       // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
       // ignore: prefer_collection_literals
       return Set<MarkerId>();
     }
@@ -83,11 +84,13 @@ class FakePlatformGoogleMap {
   Set<Marker> _deserializeMarkers(dynamic markers) {
     if (markers == null) {
       // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
       // ignore: prefer_collection_literals
       return Set<Marker>();
     }
     final List<dynamic> markersData = markers;
     // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+    // https://github.com/flutter/flutter/issues/28312
     // ignore: prefer_collection_literals
     final Set<Marker> result = Set<Marker>();
     for (Map<dynamic, dynamic> markerData in markersData) {

@@ -143,9 +143,7 @@ void main() {
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformGoogleMap.markersToChange.length, 2);
-    expect(platformGoogleMap.markersToChange, equals(cur));
-
+    expect(platformGoogleMap.markersToChange, cur);
     expect(platformGoogleMap.markerIdsToRemove.isEmpty, true);
     expect(platformGoogleMap.markersToAdd.isEmpty, true);
   });

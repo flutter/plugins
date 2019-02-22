@@ -38,10 +38,12 @@ class _MarkerUpdates {
 
     final Set<MarkerId> markerIdsToRemove =
         prevMarkerIds.difference(currentMarkerIds);
+
     final Set<Marker> markersToAdd = currentMarkerIds
         .difference(prevMarkerIds)
         .map(idToCurrentMarker)
         .toSet();
+
     final Set<Marker> markersToChange = currentMarkerIds
         .intersection(prevMarkerIds)
         .map(idToCurrentMarker)

@@ -46,13 +46,24 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     super.dispose();
   }
 
-  void _updateSelectedMarker(MarkerUpdateAction update) {
-    setState(() {
-      if (markers.containsKey(selectedMarker)) {
-        final Marker newMarker = update(markers[selectedMarker]);
-        markers[selectedMarker] = newMarker;
-      }
-    });
+  void _onMarkerTapped(MarkerId markerId) {
+    final Marker tappedMarker = markers[markerId];
+    if (tappedMarker != null) {
+      setState(() {
+        if (markers.containsKey(selectedMarker)) {
+          final Marker resetOld = markers[selectedMarker]
+              .copyWith(iconParam: BitmapDescriptor.defaultMarker);
+          markers[selectedMarker] = resetOld;
+        }
+        selectedMarker = markerId;
+        final Marker newMarker = tappedMarker.copyWith(
+          iconParam: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueGreen,
+          ),
+        );
+        markers[markerId] = newMarker;
+      });
+    }
   }
 
   void _add() {
@@ -66,26 +77,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     _markerIdCounter++;
     final MarkerId markerId = MarkerId(markerIdVal);
 
-    void _onMarkerTapped() {
-      final Marker tappedMarker = markers[markerId];
-      if (tappedMarker != null) {
-        setState(() {
-          if (markers.containsKey(selectedMarker)) {
-            final Marker resetOld = markers[selectedMarker]
-                .copyWith(iconParam: BitmapDescriptor.defaultMarker);
-            markers[selectedMarker] = resetOld;
-          }
-          selectedMarker = markerId;
-          final Marker newMarker = tappedMarker.copyWith(
-            iconParam: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueGreen,
-            ),
-          );
-          markers[markerId] = newMarker;
-        });
-      }
-    }
-
     final Marker marker = Marker(
       markerId: markerId,
       position: LatLng(
@@ -93,7 +84,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
         center.longitude + cos(_markerIdCounter * pi / 6.0) / 20.0,
       ),
       infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
-      onTap: _onMarkerTapped,
+      onTap: () => _onMarkerTapped(markerId),
     );
 
     setState(() {
@@ -110,13 +101,14 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   void _changePosition() {
-    _updateSelectedMarker((Marker m) {
-      final LatLng current = m.position;
-      final Offset offset = Offset(
-        center.latitude - current.latitude,
-        center.longitude - current.longitude,
-      );
-      return m.copyWith(
+    final Marker m = markers[selectedMarker];
+    final LatLng current = m.position;
+    final Offset offset = Offset(
+      center.latitude - current.latitude,
+      center.longitude - current.longitude,
+    );
+    setState(() {
+      markers[selectedMarker] = m.copyWith(
         positionParam: LatLng(
           center.latitude + offset.dy,
           center.longitude + offset.dx,
@@ -126,20 +118,22 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   void _changeAnchor() {
-    _updateSelectedMarker((Marker m) {
-      final Offset currentAnchor = m.anchor;
-      final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
-      return m.copyWith(
+    final Marker m = markers[selectedMarker];
+    final Offset currentAnchor = m.anchor;
+    final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
+    setState(() {
+      markers[selectedMarker] = m.copyWith(
         anchorParam: newAnchor,
       );
     });
   }
 
   Future<void> _changeInfoAnchor() async {
-    _updateSelectedMarker((Marker m) {
-      final Offset currentAnchor = m.infoWindow.anchor;
-      final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
-      return m.copyWith(
+    final Marker m = markers[selectedMarker];
+    final Offset currentAnchor = m.infoWindow.anchor;
+    final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
+    setState(() {
+      markers[selectedMarker] = m.copyWith(
         infoWindowParam: m.infoWindow.copyWith(
           anchorParam: newAnchor,
         ),
@@ -148,25 +142,28 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   Future<void> _toggleDraggable() async {
-    _updateSelectedMarker((Marker m) {
-      return m.copyWith(
+    final Marker m = markers[selectedMarker];
+    setState(() {
+      markers[selectedMarker] = m.copyWith(
         draggableParam: !m.draggable,
       );
     });
   }
 
   Future<void> _toggleFlat() async {
-    _updateSelectedMarker((Marker m) {
-      return m.copyWith(
+    final Marker m = markers[selectedMarker];
+    setState(() {
+      markers[selectedMarker] = m.copyWith(
         flatParam: !m.flat,
       );
     });
   }
 
   Future<void> _changeInfo() async {
-    _updateSelectedMarker((Marker m) {
-      final String newSnippet = m.infoWindow.snippet + '*';
-      return m.copyWith(
+    final Marker m = markers[selectedMarker];
+    final String newSnippet = m.infoWindow.snippet + '*';
+    setState(() {
+      markers[selectedMarker] = m.copyWith(
         infoWindowParam: m.infoWindow.copyWith(
           snippetParam: newSnippet,
         ),
@@ -175,35 +172,39 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   Future<void> _changeAlpha() async {
-    _updateSelectedMarker((Marker m) {
-      final double current = m.alpha;
-      return m.copyWith(
+    final Marker m = markers[selectedMarker];
+    final double current = m.alpha;
+    setState(() {
+      markers[selectedMarker] = m.copyWith(
         alphaParam: current < 0.1 ? 1.0 : current * 0.75,
       );
     });
   }
 
   Future<void> _changeRotation() async {
-    _updateSelectedMarker((Marker m) {
-      final double current = m.rotation;
-      return m.copyWith(
+    final Marker m = markers[selectedMarker];
+    final double current = m.rotation;
+    setState(() {
+      markers[selectedMarker] = m.copyWith(
         rotationParam: current == 330.0 ? 0.0 : current + 30.0,
       );
     });
   }
 
   Future<void> _toggleVisible() async {
-    _updateSelectedMarker((Marker m) {
-      return m.copyWith(
+    final Marker m = markers[selectedMarker];
+    setState(() {
+      markers[selectedMarker] = m.copyWith(
         visibleParam: !m.visible,
       );
     });
   }
 
   Future<void> _changeZIndex() async {
-    _updateSelectedMarker((Marker m) {
-      final double current = m.zIndex;
-      return m.copyWith(
+    final Marker m = markers[selectedMarker];
+    final double current = m.zIndex;
+    setState(() {
+      markers[selectedMarker] = m.copyWith(
         zIndexParam: current == 12.0 ? 0.0 : current + 1.0,
       );
     });
@@ -226,6 +227,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                 zoom: 11.0,
               ),
               // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+              // https://github.com/flutter/flutter/issues/28312
               // ignore: prefer_collection_literals
               markers: Set<Marker>.of(markers.values),
             ),

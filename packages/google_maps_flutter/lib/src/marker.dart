@@ -122,11 +122,11 @@ class MarkerId {
   }
 }
 
-/// An icon placed at a particular geographical location on the map's surface.
+/// Marks a geographical location on the map.
 ///
-/// Marks a geographical location on the map. A marker icon is drawn oriented
-/// against the device's screen rather than the map's surface; that is, it will
-/// not necessarily change orientation due to map rotations, tilting, or zooming.
+/// A marker icon is drawn oriented against the device's screen rather than
+/// the map's surface; that is, it will not necessarily change orientation
+/// due to map rotations, tilting, or zooming.
 @immutable
 class Marker {
   /// Creates a set of marker configuration options.
@@ -301,7 +301,7 @@ Map<MarkerId, Marker> _keyByMarkerId(Iterable<Marker> markers) {
       (Marker marker) => MapEntry<MarkerId, Marker>(marker.markerId, marker)));
 }
 
-List<dynamic> _serializeMarkerSet(Set<Marker> markers) {
+List<Map<String, dynamic>> _serializeMarkerSet(Set<Marker> markers) {
   if (markers == null) {
     return null;
   }
