@@ -54,7 +54,8 @@
     _registrar = registrar;
 
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
-    _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:registrar.messenger];
+    _channel = [FlutterMethodChannel methodChannelWithName:channelName
+                                           binaryMessenger:registrar.messenger];
     _javaScriptChannelNames = [[NSMutableSet alloc] init];
 
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
