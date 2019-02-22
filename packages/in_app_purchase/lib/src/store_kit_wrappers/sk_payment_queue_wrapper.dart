@@ -141,8 +141,8 @@ class SKPaymentQueueWrapper {
   // Get transaction wrapper object list from arguments.
   List<SKPaymentTransactionWrapper> _getTransactionList(dynamic arguments) {
     final List<SKPaymentTransactionWrapper> transactions = arguments
-        .map<SKPaymentTransactionWrapper>((dynamic map) =>
-            SKPaymentTransactionWrapper.fromJson(map))
+        .map<SKPaymentTransactionWrapper>(
+            (dynamic map) => SKPaymentTransactionWrapper.fromJson(map))
         .toList();
     return transactions;
   }
