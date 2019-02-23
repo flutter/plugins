@@ -11,8 +11,8 @@ static FlutterError *getFlutterError(NSError *error) {
     return nil;
   } else {
     return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
-                                   message:error.domain
-                                   details:error.localizedDescription];
+                               message:error.domain
+                               details:error.localizedDescription];
   }
 }
 
