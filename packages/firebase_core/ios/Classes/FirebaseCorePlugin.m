@@ -73,7 +73,12 @@ static NSDictionary *getDictionaryFromFIRApp(FIRApp *app) {
   } else if ([@"FirebaseApp#appNamed" isEqualToString:call.method]) {
     NSString *name = call.arguments;
     FIRApp *app = [FIRApp appNamed:name];
-    result(getDictionaryFromFIRApp(app));
+    if (app == nil) {
+      NSLog(@"No app found with name '%@'", name);
+      result(nil);
+    } else {
+      result(getDictionaryFromFIRApp(app));
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }

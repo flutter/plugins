@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Fixed crash on iOS related to `getDictionaryFromFIRApp`.
+
 ## 0.3.1
 
 * Remove an assertion that can interfere with hot-restart.
