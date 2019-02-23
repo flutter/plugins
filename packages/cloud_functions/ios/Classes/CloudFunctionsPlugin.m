@@ -9,6 +9,7 @@
 
 @interface CloudFunctionsPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *_channel;
+@property(strong, nonatomic) FIRFunctions *functions;
 @end
 
 @implementation CloudFunctionsPlugin
@@ -46,9 +47,9 @@
     } else {
       functions = [FIRFunctions functionsForApp:app];
     }
-    [functions callFunction:functionName
-                 withObject:parameters
-                 completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
+    [[functions HTTPSCallableWithName:functionName] 
+                callWithObject:parameters 
+                completion:^(FIRHTTPSCallableResult * _Nullable callableResult, NSError * _Nullable error) {
                    if (error) {
                      FlutterError *flutterError;
                      if (error.domain == FIRFunctionsErrorDomain) {
