@@ -9,6 +9,7 @@
 
 @interface CloudFunctionsPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *_channel;
+@property(strong, nonatomic) FIRFunctions *functions;
 @end
 
 @implementation CloudFunctionsPlugin
@@ -29,6 +30,7 @@
       [FIRApp configure];
       NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
+    self.functions = [FIRFunctions functions];
   }
   return self;
 }
@@ -37,18 +39,18 @@
   if ([@"CloudFunctions#call" isEqualToString:call.method]) {
     NSString *functionName = call.arguments[@"functionName"];
     NSObject *parameters = call.arguments[@"parameters"];
-    NSString *appName = call.arguments[@"app"];
-    NSString *region = call.arguments[@"region"];
-    FIRApp *app = [FIRApp appNamed:appName];
-    FIRFunctions *functions;
-    if (region != nil) {
-      functions = [FIRFunctions functionsForApp:app region:region];
-    } else {
-      functions = [FIRFunctions functionsForApp:app];
-    }
-    [functions callFunction:functionName
-                 withObject:parameters
-                 completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
+    //NSString *appName = call.arguments[@"app"];
+    //NSString *region = call.arguments[@"region"];
+    //FIRApp *app = [FIRApp appNamed:appName];
+    //FIRFunctions *functions;
+    //if (region != nil) {
+    //  functions = [FIRFunctions functionsForApp:app region:region];
+    //} else {
+    //  functions = [FIRFunctions functionsForApp:app];
+    //}
+    [[_functions HTTPSCallableWithName:functionName] 
+            callWithObject:parameters 
+            completion:^(FIRHTTPSCallableResult * _Nullable callableResult, NSError * _Nullable error) {
                    if (error) {
                      FlutterError *flutterError;
                      if (error.domain == FIRFunctionsErrorDomain) {
