@@ -128,8 +128,7 @@ class SKPaymentQueueWrapper {
             if (_observer.shouldAddStorePayment(
                     payment: payment, product: product) ==
                 true) {
-              SKPaymentQueueWrapper()
-                  .addPayment(payment);
+              SKPaymentQueueWrapper().addPayment(payment);
             }
           });
         }
@@ -165,6 +164,8 @@ class SKPaymentQueueWrapper {
 /// Must be subclassed and
 abstract class SKTransactionObserverWrapper {
   /// Triggered when any transactions are updated.
+  ///
+  /// See [SKPaymentTransactionStateWrapper] for how to handle transactions in different states.
   void updatedTransaction({List<SKPaymentTransactionWrapper> transactions});
 
   /// Triggered when any transactions are removed from the payment queue.
@@ -195,6 +196,9 @@ abstract class SKTransactionObserverWrapper {
 /// Presents the state of a transaction. Used for handling a transaction based on different state.
 enum SKPaymentTransactionStateWrapper {
   /// Indicates the transaction is being processed in App Store.
+  ///
+  /// You should update your UI to indicate the process and waiting for the transaction to update to the next state.
+  /// Never complte a transaction that is in purchasing state.
   @JsonValue(0)
   purchasing,
 
@@ -212,6 +216,8 @@ enum SKPaymentTransactionStateWrapper {
   restored,
 
   /// The transaction is in the queue but pending external action. Wait for another callback to get the final state.
+  ///
+  /// You should update your UI to indicate the process and waiting for the transaction to update to the next state.
   @JsonValue(4)
   deferred,
 }
