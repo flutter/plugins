@@ -187,6 +187,7 @@ class FileUtils {
   }
 
   private static boolean isGooglePhotosUri(Uri uri) {
-    return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    String authority = uri.getAuthority();
+    return authority != null && authority.startsWith("com.google.android.apps.photos.content");
   }
 }
