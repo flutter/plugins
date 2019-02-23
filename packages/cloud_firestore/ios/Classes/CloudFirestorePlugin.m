@@ -7,9 +7,13 @@
 #import <Firebase/Firebase.h>
 
 static FlutterError *getFlutterError(NSError *error) {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
-                             message:error.domain
-                             details:error.localizedDescription];
+  if (error == nil) {
+    return nil;
+  } else {
+    return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+                                   message:error.domain
+                                   details:error.localizedDescription];
+  }
 }
 
 FIRFirestore *getFirestore(NSDictionary *arguments) {
