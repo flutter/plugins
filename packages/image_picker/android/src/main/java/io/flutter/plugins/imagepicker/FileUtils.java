@@ -29,6 +29,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -133,9 +134,11 @@ class FileUtils {
     InputStream inputStream = null;
     OutputStream outputStream = null;
     boolean success = false;
+    String extension = getImageExtension(context, uri);
+    String extensionWithDot = TextUtils.isEmpty(extension) ? "" : "." + extension;
     try {
       inputStream = context.getContentResolver().openInputStream(uri);
-      file = File.createTempFile("image_picker", "jpg", context.getCacheDir());
+      file = File.createTempFile("image_picker", extensionWithDot, context.getCacheDir());
       outputStream = new FileOutputStream(file);
       if (inputStream != null) {
         copy(inputStream, outputStream);
@@ -157,6 +160,30 @@ class FileUtils {
       }
     }
     return success ? file.getPath() : null;
+  }
+
+  private static String getImageExtension(Context context, Uri uriImage) {
+    String extension = "";
+    Cursor cursor = null;
+
+    try {
+      cursor = context.getContentResolver().query(uriImage,
+              new String[]{MediaStore.MediaColumns.MIME_TYPE},
+              null, null, null);
+
+      if (cursor != null && cursor.moveToNext()) {
+        String mimeType = cursor.getString(0);
+
+        extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+      }
+    } catch (Exception ignored) {
+
+    } finally {
+      if (cursor != null) {
+        cursor.close();
+      }
+    }
+    return extension;
   }
 
   private static void copy(InputStream in, OutputStream out) throws IOException {
