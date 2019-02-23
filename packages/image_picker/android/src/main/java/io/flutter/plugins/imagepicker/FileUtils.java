@@ -119,6 +119,9 @@ class FileUtils {
         final int column_index = cursor.getColumnIndexOrThrow(column);
         return cursor.getString(column_index);
       }
+    } catch (Exception ignored) {
+      //catch exception, if uri from yandex.disk for example
+      //return null and try get from remote Uri
     } finally {
       if (cursor != null) {
         cursor.close();
