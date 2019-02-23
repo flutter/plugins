@@ -58,6 +58,7 @@ Future<List<CameraDescription>> availableCameras() async {
       return CameraDescription(
         name: camera['name'],
         lensDirection: _parseCameraLensDirection(camera['lensFacing']),
+        sensorOrientation: camera['sensorOrientation'],
       );
     }).toList();
   } on PlatformException catch (e) {
@@ -66,10 +67,11 @@ Future<List<CameraDescription>> availableCameras() async {
 }
 
 class CameraDescription {
-  CameraDescription({this.name, this.lensDirection});
+  CameraDescription({this.name, this.lensDirection, this.sensorOrientation});
 
   final String name;
   final CameraLensDirection lensDirection;
+  final int sensorOrientation;
 
   @override
   bool operator ==(Object o) {
@@ -85,7 +87,7 @@ class CameraDescription {
 
   @override
   String toString() {
-    return '$runtimeType($name, $lensDirection)';
+    return '$runtimeType($name, $lensDirection, $sensorOrientation)';
   }
 }
 
