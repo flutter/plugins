@@ -72,7 +72,7 @@
 
   NSDictionary *counters = call.arguments[@"counters"];
   [counters enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSNumber *value, BOOL *stop) {
-    [trace incrementCounterNamed:key by:[value integerValue]];
+    [trace setIntValue:(int64_t) value forMetric:key];
   }];
 
   NSDictionary *attributes = call.arguments[@"attributes"];
