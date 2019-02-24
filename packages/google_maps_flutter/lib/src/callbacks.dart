@@ -54,9 +54,6 @@ class ArgumentCallbacks<T> {
   bool get isNotEmpty => _callbacks.isNotEmpty;
 }
 
-
-
-
 /// Mutable collection of [VoidCallback] instances.
 ///
 /// Additions and removals happening during a single [call] invocation do not
@@ -77,8 +74,7 @@ class VoidCallbacks {
     if (length == 1) {
       _callbacks[0].call();
     } else if (0 < length) {
-      for (VoidCallback callback
-          in List<VoidCallback>.from(_callbacks)) {
+      for (VoidCallback callback in List<VoidCallback>.from(_callbacks)) {
         callback();
       }
     }

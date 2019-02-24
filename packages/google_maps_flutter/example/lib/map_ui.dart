@@ -205,7 +205,8 @@ class MapUiBodyState extends State<MapUiBody> {
 
   Widget _myLocationButtonToggler() {
     return FlatButton(
-      child: Text('${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
+      child: Text(
+          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
       onPressed: () {
         setState(() {
           _myLocationButtonEnabled = !_myLocationButtonEnabled;
@@ -217,20 +218,19 @@ class MapUiBodyState extends State<MapUiBody> {
   @override
   Widget build(BuildContext context) {
     final GoogleMap googleMap = GoogleMap(
-      onMapCreated: onMapCreated,
-      initialCameraPosition: _kInitialPosition,
-      trackCameraPosition: true,
-      compassEnabled: _compassEnabled,
-      cameraTargetBounds: _cameraTargetBounds,
-      minMaxZoomPreference: _minMaxZoomPreference,
-      mapType: _mapType,
-      rotateGesturesEnabled: _rotateGesturesEnabled,
-      scrollGesturesEnabled: _scrollGesturesEnabled,
-      tiltGesturesEnabled: _tiltGesturesEnabled,
-      zoomGesturesEnabled: _zoomGesturesEnabled,
-      myLocationEnabled: _myLocationEnabled,
-      myLocationButtonEnabled: _myLocationButtonEnabled
-    );
+        onMapCreated: onMapCreated,
+        initialCameraPosition: _kInitialPosition,
+        trackCameraPosition: true,
+        compassEnabled: _compassEnabled,
+        cameraTargetBounds: _cameraTargetBounds,
+        minMaxZoomPreference: _minMaxZoomPreference,
+        mapType: _mapType,
+        rotateGesturesEnabled: _rotateGesturesEnabled,
+        scrollGesturesEnabled: _scrollGesturesEnabled,
+        tiltGesturesEnabled: _tiltGesturesEnabled,
+        zoomGesturesEnabled: _zoomGesturesEnabled,
+        myLocationEnabled: _myLocationEnabled,
+        myLocationButtonEnabled: _myLocationButtonEnabled);
 
     final List<Widget> columnChildren = <Widget>[
       Padding(
@@ -257,7 +257,8 @@ class MapUiBodyState extends State<MapUiBody> {
               Text('camera zoom: ${_position.zoom}'),
               Text('camera tilt: ${_position.tilt}'),
               Text('location button clicked: $_locationButton'),
-              Text('my location tapped: ${_tappedLocation.latitude} ${_tappedLocation.longitude}'),
+              Text(
+                  'my location tapped: ${_tappedLocation.latitude} ${_tappedLocation.longitude}'),
               Text('map tapped: ${_tapped.latitude} ${_tapped.longitude}'),
               Text(
                   'map long tapped: ${_tappedLong.latitude} ${_tappedLong.longitude}'),

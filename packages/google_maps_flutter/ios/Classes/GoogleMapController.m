@@ -320,11 +320,9 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
          arguments:@{@"latitude" : @(coordinate.latitude), @"longitude" : @(coordinate.longitude)}];
 }
 
-- (BOOL)didTapMyLocationButtonForMapView:(GMSMapView *)mapView {
-  [_channel
-      invokeMethod:@"location#buttonClick"
-         arguments:@{}];
-   return false;      
+- (BOOL)didTapMyLocationButtonForMapView:(GMSMapView*)mapView {
+  [_channel invokeMethod:@"location#buttonClick" arguments:@{}];
+  return false;
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapMyLocation:(CLLocationCoordinate2D)location {

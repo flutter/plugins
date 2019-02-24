@@ -384,7 +384,8 @@ void main() {
     expect(platformGoogleMap.myLocationEnabled, true);
   });
 
-  testWidgets('Can update myLocationButtonEnabled', (WidgetTester tester) async {
+  testWidgets('Can update myLocationButtonEnabled',
+      (WidgetTester tester) async {
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -410,7 +411,7 @@ void main() {
       ),
     );
 
-    expect(platformGoogleMap.myLocationEnabled, true);
+    expect(platformGoogleMap.myLocationButtonEnabled, true);
   });
 }
 
@@ -494,9 +495,8 @@ class FakePlatformGoogleMap {
     if (options.containsKey('myLocationEnabled')) {
       myLocationEnabled = options['myLocationEnabled'];
     }
-
     if (options.containsKey('myLocationButtonEnabled')) {
-      myLocationEnabled = options['myLocationButtonEnabled'];
+      myLocationButtonEnabled = options['myLocationButtonEnabled'];
     }
   }
 }

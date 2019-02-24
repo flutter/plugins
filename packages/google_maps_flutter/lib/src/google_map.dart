@@ -5,6 +5,7 @@
 part of google_maps_flutter;
 
 typedef void MapCreatedCallback(GoogleMapController controller);
+
 class GoogleMap extends StatefulWidget {
   const GoogleMap({
     @required this.initialCameraPosition,
@@ -84,6 +85,7 @@ class GoogleMap extends StatefulWidget {
 
   /// myLocationEnabled must be true for this button to be displayed, if myLocationButtonEnabled is true the location button is displayed else it is not.
   final bool myLocationButtonEnabled;
+
   /// Which gestures should be consumed by the map.
   ///
   /// It is possible for other gesture recognizers to be competing with the map on pointer
