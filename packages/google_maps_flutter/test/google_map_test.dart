@@ -383,6 +383,35 @@ void main() {
 
     expect(platformGoogleMap.myLocationEnabled, true);
   });
+
+  testWidgets('Can update myLocationButtonEnabled', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          myLocationButtonEnabled: false,
+        ),
+      ),
+    );
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.myLocationButtonEnabled, false);
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          myLocationButtonEnabled: true,
+        ),
+      ),
+    );
+
+    expect(platformGoogleMap.myLocationEnabled, true);
+  });
 }
 
 class FakePlatformGoogleMap {
@@ -417,6 +446,8 @@ class FakePlatformGoogleMap {
   bool trackCameraPosition;
 
   bool myLocationEnabled;
+
+  bool myLocationButtonEnabled;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -462,6 +493,10 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('myLocationEnabled')) {
       myLocationEnabled = options['myLocationEnabled'];
+    }
+
+    if (options.containsKey('myLocationButtonEnabled')) {
+      myLocationEnabled = options['myLocationButtonEnabled'];
     }
   }
 }

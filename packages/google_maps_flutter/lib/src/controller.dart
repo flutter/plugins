@@ -53,6 +53,12 @@ class GoogleMapController extends ChangeNotifier {
   /// Callbacks to receive tap events for markers placed on this map.
   final ArgumentCallbacks<LatLng> onMapLongTapped = ArgumentCallbacks<LatLng>();
 
+  /// Callbacks to receive location click, ie when a user taps on the blue location circle the lat lon is returned.
+  final ArgumentCallbacks<LatLng> onLocationClick = ArgumentCallbacks<LatLng>();
+
+  /// Callbacks to receive click on the location button. The button must be enabled and mylocation must also be enabled.
+  final VoidCallbacks onLocationButtonClick = VoidCallbacks();
+
   /// Callbacks to receive tap events for info windows on markers
   final ArgumentCallbacks<Marker> onInfoWindowTapped =
       ArgumentCallbacks<Marker>();
@@ -122,6 +128,20 @@ class GoogleMapController extends ChangeNotifier {
         if (latLng != null) {
           onMapLongTapped(latLng);
         }
+        break;
+
+      case 'location#locationClick':
+        final double latitude = call.arguments['latitude'];
+        final double longitude = call.arguments['longitude'];
+        final LatLng latLng = LatLng(latitude, longitude);
+        if (latLng != null) {
+          onLocationClick(latLng);
+        }
+        break;
+
+      case 'location#buttonClick':
+        print('location#buttonClick!!!!!!!!!!!!!!!!!');
+        onLocationButtonClick();
         break;
 
       case 'camera#onMoveStarted':

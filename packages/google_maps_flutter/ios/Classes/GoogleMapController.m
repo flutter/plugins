@@ -252,6 +252,14 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   _mapView.settings.myLocationButton = enabled;
 }
 
+- (void)setMapToolbarEnabled:(BOOL)enabled {
+  //_mapView.settings. = enabled;
+}
+
+- (void)setMyLocationButtonEnabled:(BOOL)enabled {
+  _mapView.settings.myLocationButton = enabled;
+}
+
 #pragma mark - GMSMapViewDelegate methods
 
 - (void)mapView:(GMSMapView*)mapView willMove:(BOOL)gesture {
@@ -294,6 +302,19 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   [_channel
       invokeMethod:@"map#onLongTap"
          arguments:@{@"latitude" : @(coordinate.latitude), @"longitude" : @(coordinate.longitude)}];
+}
+
+- (BOOL)didTapMyLocationButtonForMapView:(GMSMapView *)mapView {
+  [_channel
+      invokeMethod:@"location#buttonClick"
+         arguments:@{}];
+   return false;      
+}
+
+- (void)mapView:(GMSMapView*)mapView didTapMyLocation:(CLLocationCoordinate2D)location {
+  [_channel
+      invokeMethod:@"location#locationClick"
+         arguments:@{@"latitude" : @(location.latitude), @"longitude" : @(location.longitude)}];
 }
 
 @end
@@ -457,6 +478,10 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   id myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
     [sink setMyLocationEnabled:toBool(myLocationEnabled)];
+  }
+  id myLocationButtonEnabled = data[@"myLocationButtonEnabled"];
+  if (myLocationButtonEnabled) {
+    [sink setMyLocationButtonEnabled:toBool(myLocationButtonEnabled)];
   }
 }
 

@@ -276,6 +276,14 @@ class Convert {
     if (myLocationEnabled != null) {
       sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
     }
+    final Object myLocationButtonEnabled = data.get("myLocationButtonEnabled");
+    if (myLocationButtonEnabled != null) {
+      sink.setMyLocationButtonEnabled(toBoolean(myLocationButtonEnabled));
+    }
+    final Object mapToolbarEnabled = data.get("mapToolbarEnabled");
+    if (mapToolbarEnabled != null) {
+      sink.setMapToolbarEnabled(toBoolean(mapToolbarEnabled));
+    }
   }
 
   static void interpretMarkerOptions(Object o, MarkerOptionsSink sink) {

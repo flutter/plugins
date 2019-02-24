@@ -16,7 +16,9 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import com.google.android.gms.maps.CameraUpdate;
@@ -51,6 +53,8 @@ final class GoogleMapController
         GoogleMap.OnPolylineClickListener,
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnMyLocationButtonClickListener,
+        GoogleMap.OnMyLocationClickListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
@@ -214,6 +218,8 @@ final class GoogleMapController
     googleMap.setOnPolylineClickListener(this);
     googleMap.setOnMapLongClickListener(this);
     googleMap.setOnMapClickListener(this);
+    googleMap.setOnMyLocationButtonClickListener(this);
+    googleMap.setOnMyLocationClickListener(this);
     updateMyLocationEnabled();
   }
 
@@ -361,6 +367,21 @@ final class GoogleMapController
   }
 
   @Override
+  public boolean onMyLocationButtonClick() {
+    final Map<String, Object> arguments = new HashMap<>();
+    methodChannel.invokeMethod("location#buttonClick", arguments);
+    return false;
+  }
+
+  @Override
+  public void onMyLocationClick(@NonNull Location location) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("latitude", location.getLatitude());
+    arguments.put("longitude", location.getLongitude());
+    methodChannel.invokeMethod("location#locationClick", arguments);
+  }
+
+  @Override
   public boolean onMarkerClick(Marker marker) {
     final MarkerController markerController = markers.get(marker.getId());
     return (markerController != null && markerController.onTap());
@@ -473,6 +494,16 @@ final class GoogleMapController
   @Override
   public void setTiltGesturesEnabled(boolean tiltGesturesEnabled) {
     googleMap.getUiSettings().setTiltGesturesEnabled(tiltGesturesEnabled);
+  }
+
+  @Override
+  public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
+    googleMap.getUiSettings().setMapToolbarEnabled(mapToolbarEnabled);
+  }
+
+  @Override
+  public void setMyLocationButtonEnabled(boolean myLocationButtonEnabled) {
+    googleMap.getUiSettings().setMyLocationButtonEnabled(myLocationButtonEnabled);
   }
 
   @Override
