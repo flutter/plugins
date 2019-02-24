@@ -7,6 +7,14 @@
 #import "FIAObjectTranslator.h"
 #import "FIAPRequestHandler.h"
 
+@interface InAppPurchasePlugin ()
+
+// Holding strong references to FIAPRequestHandlers. Remove the handlers from the set after
+// the request is finished.
+@property(strong, nonatomic) NSMutableSet *requestHandlers;
+
+@end
+
 @implementation InAppPurchasePlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -42,6 +50,8 @@
   SKProductsRequest *request =
       [self getProductRequestWithIdentifiers:[NSSet setWithArray:productIdentifiers]];
   FIAPRequestHandler *handler = [[FIAPRequestHandler alloc] initWithRequest:request];
+  [self.requestHandlers addObject:handler];
+  __weak typeof(self) weakSelf = self;
   [handler startProductRequestWithCompletionHandler:^(SKProductsResponse *_Nullable response,
                                                       NSError *_Nullable error) {
     if (error) {
@@ -60,12 +70,22 @@
                                  details:call.arguments]);
       return;
     }
-    result([response toMap]);
+    result([FIAObjectTranslator getMapFromSKProductsResponse:response]);
+    [weakSelf.requestHandlers removeObject:handler];
   }];
 }
 
 - (SKProductsRequest *)getProductRequestWithIdentifiers:(NSSet *)identifiers {
   return [[SKProductsRequest alloc] initWithProductIdentifiers:identifiers];
+}
+
+#pragma mark - getter
+
+- (NSSet *)requestHandlers {
+  if (!_requestHandlers) {
+    _requestHandlers = [NSMutableSet new];
+  }
+  return _requestHandlers;
 }
 
 @end

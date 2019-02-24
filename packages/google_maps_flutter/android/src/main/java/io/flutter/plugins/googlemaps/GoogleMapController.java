@@ -399,6 +399,7 @@ final class GoogleMapController
       return;
     }
     disposed = true;
+    methodChannel.setMethodCallHandler(null);
     mapView.onDestroy();
     registrar.activity().getApplication().unregisterActivityLifecycleCallbacks(this);
   }
