@@ -7,6 +7,8 @@ import 'dart:ui' show hashValues;
 
 import 'package:flutter/services.dart' show MethodChannel, PlatformException;
 import 'package:meta/meta.dart' show visibleForTesting;
+import 'package:http/http.dart';
+import 'package:http/io_client.dart';
 
 import 'src/common.dart';
 
@@ -28,6 +30,20 @@ class GoogleSignInAuthentication {
 
   @override
   String toString() => 'GoogleSignInAuthentication:$_data';
+}
+
+class GoogleHttpClient extends IOClient {
+  GoogleHttpClient._(this._headers) : super();
+
+  Map<String, String> _headers;
+
+  @override
+  Future<StreamedResponse> send(BaseRequest request) =>
+      super.send(request..headers.addAll(_headers));
+
+  @override
+  Future<Response> head(Object url, {Map<String, String> headers}) =>
+      super.head(url, headers: headers..addAll(_headers));
 }
 
 class GoogleSignInAccount implements GoogleIdentity {
@@ -95,6 +111,15 @@ class GoogleSignInAccount implements GoogleIdentity {
       response['idToken'] = _idToken;
     }
     return GoogleSignInAuthentication._(response);
+  }
+
+  Future<GoogleHttpClient> get httpClient async {
+    final String token = (await authentication).accessToken;
+    final Map<String, String> headers = <String, String>{
+      "Authorization": "Bearer $token",
+      "X-Goog-AuthUser": "0",
+    };
+    return GoogleHttpClient._(headers);
   }
 
   Future<Map<String, String>> get authHeaders async {
