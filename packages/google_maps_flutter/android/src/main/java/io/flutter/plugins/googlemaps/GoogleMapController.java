@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import com.google.android.gms.maps.CameraUpdate;
@@ -374,7 +373,7 @@ final class GoogleMapController
   }
 
   @Override
-  public void onMyLocationClick(@NonNull Location location) {
+  public void onMyLocationClick(Location location) {
     final Map<String, Object> arguments = new HashMap<>(2);
     arguments.put("latitude", location.getLatitude());
     arguments.put("longitude", location.getLongitude());
