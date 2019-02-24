@@ -14,6 +14,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.HashMap;
 import java.util.Map;
+import android.os.Build;
 
 /** PackageInfoPlugin */
 public class PackageInfoPlugin implements MethodCallHandler {
@@ -42,7 +43,7 @@ public class PackageInfoPlugin implements MethodCallHandler {
         map.put("appName", info.applicationInfo.loadLabel(pm).toString());
         map.put("packageName", context.getPackageName());
         map.put("version", info.versionName);
-        map.put("buildNumber", String.valueOf(info.versionCode));
+        map.put("buildNumber", String.valueOf(getLongVersionCode(info)));
 
         result.success(map);
       } else {
@@ -51,5 +52,13 @@ public class PackageInfoPlugin implements MethodCallHandler {
     } catch (PackageManager.NameNotFoundException ex) {
       result.error("Name not found", ex.getMessage(), null);
     }
+  }
+
+  private static long getLongVersionCode(PackageInfo info) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      return info.getLongVersionCode();
+    }
+    //noinspection deprecation
+    return info.versionCode;
   }
 }
