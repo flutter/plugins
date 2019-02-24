@@ -25,14 +25,14 @@
 - (void)setUp {
   self.periodMap = @{@"numberOfUnits" : @(0), @"unit" : @(0)};
   self.discountMap = @{
-    @"price" : @1.0,
+    @"price" : @"1",
     @"priceLocale" : [FIAObjectTranslator getMapFromNSLocale:NSLocale.systemLocale],
     @"numberOfPeriods" : @1,
     @"subscriptionPeriod" : self.periodMap,
     @"paymentMode" : @1
   };
   self.productMap = @{
-    @"price" : @1.0,
+    @"price" : @"1",
     @"priceLocale" : [FIAObjectTranslator getMapFromNSLocale:NSLocale.systemLocale],
     @"productIdentifier" : @"123",
     @"localizedTitle" : @"title",

@@ -1,3 +1,11 @@
+## 0.3.1
+
+* Remove an assertion that can interfere with hot-restart.
+
+## 0.3.0+2
+
+* Remove categories.
+
 ## 0.3.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX

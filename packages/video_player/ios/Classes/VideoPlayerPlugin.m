@@ -153,7 +153,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   // displays the video https://github.com/flutter/flutter/issues/17606#issuecomment-413473181
   if (transform.tx == 0 && transform.ty == 0) {
     NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
-    NSLog(@"TX and TY are 0. Rotation: %d. Natural width,height: %f, %f", rotationDegrees,
+    NSLog(@"TX and TY are 0. Rotation: %ld. Natural width,height: %f, %f", (long)rotationDegrees,
           videoTrack.naturalSize.width, videoTrack.naturalSize.height);
     if (rotationDegrees == 90) {
       NSLog(@"Setting transform tx");
@@ -185,8 +185,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
           if (_disposed) return;
           if ([videoTrack statusOfValueForKey:@"preferredTransform"
                                         error:nil] == AVKeyValueStatusLoaded) {
-            CGSize size = videoTrack.naturalSize;
-
             // Rotate the video by using a videoComposition and the preferredTransform
             _preferredTransform = [self fixTransform:videoTrack];
             // Note:
@@ -208,8 +206,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 
   _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-
-  CGSize size = item.presentationSize;
 
   [self createVideoOutputAndDisplayLink:frameUpdater];
 

@@ -6,36 +6,25 @@
 
 #import <Firebase/Firebase.h>
 
-@interface FIROptions (FLTFirebaseCorePlugin)
-@property(readonly, nonatomic) NSDictionary *dictionary;
-@end
-
-@implementation FIROptions (FLTFirebaseCorePlugin)
-- (NSDictionary *)flutterDictionary {
+static NSDictionary *getDictionaryFromFIROptions(FIROptions *options) {
   return @{
-    @"googleAppID" : self.googleAppID ?: [NSNull null],
-    @"bundleID" : self.bundleID ?: [NSNull null],
-    @"GCMSenderID" : self.GCMSenderID ?: [NSNull null],
-    @"APIKey" : self.APIKey ?: [NSNull null],
-    @"clientID" : self.clientID ?: [NSNull null],
-    @"trackingID" : self.trackingID ?: [NSNull null],
-    @"projectID" : self.projectID ?: [NSNull null],
-    @"androidClientID" : self.androidClientID ?: [NSNull null],
-    @"databaseUrl" : self.databaseURL ?: [NSNull null],
-    @"storageBucket" : self.storageBucket ?: [NSNull null],
-    @"deepLinkURLScheme" : self.deepLinkURLScheme ?: [NSNull null],
+    @"googleAppID" : options.googleAppID ?: [NSNull null],
+    @"bundleID" : options.bundleID ?: [NSNull null],
+    @"GCMSenderID" : options.GCMSenderID ?: [NSNull null],
+    @"APIKey" : options.APIKey ?: [NSNull null],
+    @"clientID" : options.clientID ?: [NSNull null],
+    @"trackingID" : options.trackingID ?: [NSNull null],
+    @"projectID" : options.projectID ?: [NSNull null],
+    @"androidClientID" : options.androidClientID ?: [NSNull null],
+    @"databaseUrl" : options.databaseURL ?: [NSNull null],
+    @"storageBucket" : options.storageBucket ?: [NSNull null],
+    @"deepLinkURLScheme" : options.deepLinkURLScheme ?: [NSNull null],
   };
 }
-@end
 
-@implementation FIRApp (FLTFirebaseCorePlugin)
-- (NSDictionary *)flutterDictionary {
-  return @{
-    @"name" : self.name,
-    @"options" : self.options.flutterDictionary,
-  };
+static NSDictionary *getDictionaryFromFIRApp(FIRApp *app) {
+  return @{@"name" : app.name, @"options" : getDictionaryFromFIROptions(app.options)};
 }
-@end
 
 @implementation FLTFirebaseCorePlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -78,13 +67,13 @@
     NSMutableArray *appsList = [NSMutableArray array];
     for (NSString *name in allApps) {
       FIRApp *app = allApps[name];
-      [appsList addObject:app.flutterDictionary];
+      [appsList addObject:getDictionaryFromFIRApp(app)];
     }
     result(appsList.count > 0 ? appsList : nil);
   } else if ([@"FirebaseApp#appNamed" isEqualToString:call.method]) {
     NSString *name = call.arguments;
     FIRApp *app = [FIRApp appNamed:name];
-    result(app.flutterDictionary);
+    result(getDictionaryFromFIRApp(app));
   } else {
     result(FlutterMethodNotImplemented);
   }
