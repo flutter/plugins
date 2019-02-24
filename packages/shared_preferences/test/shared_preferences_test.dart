@@ -146,5 +146,18 @@ void main() {
       // ignore: strong_mode_implicit_dynamic_method
       expect(await channel.invokeMethod('getAll'), kTestValues2);
     });
+
+    test('writing copy of strings list', () async {
+      final List<String> myList = <String>[];
+      await preferences.setStringList("myList", myList);
+      myList.add("foobar");
+
+      final List<String> cachedList = preferences.getStringList('myList');
+      expect(cachedList, <String>[]);
+
+      cachedList.add("foobar2");
+
+      expect(preferences.getStringList('myList'), <String>[]);
+    });
   });
 }

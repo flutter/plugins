@@ -78,7 +78,8 @@ class SharedPreferences {
       list = list.cast<String>().toList();
       _preferenceCache[key] = list;
     }
-    return list;
+    //copying list for prevent mutate from outside
+    return list?.toList();
   }
 
   /// Saves a boolean [value] to persistent storage in the background.
@@ -127,7 +128,7 @@ class SharedPreferences {
           .invokeMethod('remove', params)
           .then<bool>((dynamic result) => result);
     } else {
-      _preferenceCache[key] = value;
+      _putToCache(key, value);
       params['value'] = value;
       return _kChannel
           // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
@@ -136,6 +137,15 @@ class SharedPreferences {
           .invokeMethod('set$valueType', params)
           .then<bool>((dynamic result) => result);
     }
+  }
+
+  void _putToCache(String key, Object value) {
+    if (value is List<String>) {
+      //copying list for prevent mutate from outside
+      _preferenceCache[key] = value.toList();
+      return;
+    }
+    _preferenceCache[key] = value;
   }
 
   /// Always returns true.
