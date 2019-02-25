@@ -1,3 +1,7 @@
+## 0.9.5+2
+
+* Fixing PlatformException(Error 0, null, null) which happened when a successful operation was performed.
+
 ## 0.9.5+1
 
 * Log messages about automatic configuration of the default app are now less confusing.
