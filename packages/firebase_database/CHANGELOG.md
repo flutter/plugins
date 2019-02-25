@@ -1,3 +1,7 @@
+## 2.0.1+3
+
+* Fixing DatabaseReference.set unhandled exception which happened when a successful operation was performed.
+
 ## 2.0.1+2
 
 * Log messages about automatic configuration of the default app are now less confusing.
