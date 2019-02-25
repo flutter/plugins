@@ -1,3 +1,7 @@
+## 0.2.0+6
+
+* Updated the sample app in README.md.
+
 ## 0.2.0+5
 
 * Skip the Gradle Android permissions lint for MyLocation (https://github.com/flutter/flutter/issues/28339)
