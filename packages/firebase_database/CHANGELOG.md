@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Fix the issue that `getDictionaryFromError` always returns non nil result even when the parameter is nil.
+
 ## 2.0.1+3
 
 * Fixing DatabaseReference.set unhandled exception which happened when a successful operation was performed.
