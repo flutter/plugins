@@ -109,7 +109,7 @@ the user's phone. The user signs in using a one-time code contained in the SMS m
 
 ### After authentication
 
-After a successful authentication, you will receive a `FirebaseUser` object. You can use this object to check if the email is verified, to update email, to send verification email and so on. See the [FirebaseUser](https://pub.dartlang.org/documentation/firebase_auth/latest/firebase_auth/FirebaseUser-class.html) API documentation for more details on the `FirebaseUser` Object.
+After a successful authentication, you will receive a `FirebaseUser` object. You can use this object to check if the email is verified, to update email, to send verification email and so on. See the [FirebaseUser](https://pub.dartlang.org/documentation/firebase_auth/latest/firebase_auth/FirebaseUser-class.html) API documentation for more details on the `FirebaseUser` object.
 
 
 #### iOS setup
