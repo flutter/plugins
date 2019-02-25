@@ -1,3 +1,16 @@
+## 0.2.0+6
+
+* Updated the sample app in README.md.
+
+## 0.2.0+5
+
+* Skip the Gradle Android permissions lint for MyLocation (https://github.com/flutter/flutter/issues/28339)
+* Suppress unchecked cast warning for the PlatformViewFactory creation parameters.
+
+## 0.2.0+4
+
+* Fixed a crash when the plugin is registered by a background FlutterView.
+
 ## 0.2.0+3
 
 * Fixed a memory leak on Android - the map was not properly disposed.

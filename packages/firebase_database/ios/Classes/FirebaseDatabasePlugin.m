@@ -7,12 +7,17 @@
 #import <Firebase/Firebase.h>
 
 static FlutterError *getFlutterError(NSError *error) {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+  if (error == nil) return nil;
+
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
                              message:error.domain
                              details:error.localizedDescription];
 }
 
 static NSDictionary *getDictionaryFromError(NSError *error) {
+  if (!error) {
+    return nil;
+  }
   return @{
     @"code" : @(error.code),
     @"message" : error.domain ?: [NSNull null],
