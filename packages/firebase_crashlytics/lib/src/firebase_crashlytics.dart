@@ -9,8 +9,9 @@ part of firebase_crashlytics;
 class Crashlytics {
   static final Crashlytics instance = Crashlytics();
 
-  /// Set to true to have Errors sent to Crashlytics while in debug mode.
-  bool reportInDevMode = false;
+  /// Set to true to have errors sent to Crashlytics while in debug mode. By
+  /// default this is false.
+  bool enableInDevMode = false;
 
   /// Keys to be included with report.
   @visibleForTesting
@@ -19,11 +20,11 @@ class Crashlytics {
   /// Logs to be included with report.
   @visibleForTesting
   final ListQueue<String> logs = ListQueue<String>(15);
-  int logSize = 0;
+  int _logSize = 0;
 
   bool get isInDebugMode {
     bool _inDebugMode = false;
-    if (!reportInDevMode) {
+    if (!enableInDevMode) {
       assert(_inDebugMode = true);
     }
     return _inDebugMode;
@@ -34,7 +35,7 @@ class Crashlytics {
 
   Future<void> onError(FlutterErrorDetails details) async {
     print('Error caught by Crashlytics plugin:');
-    if (isInDebugMode && !reportInDevMode) {
+    if (isInDebugMode && !enableInDevMode) {
       print(Trace.format(details.stack).trimRight().split('\n'));
     } else {
       // Send logs
@@ -64,6 +65,8 @@ class Crashlytics {
     throw StateError('Error thrown by Crashlytics plugin');
   }
 
+  /// Reports the global value for debug mode.
+  /// TODO(kroikie): Clarify what this means in context of both Android and iOS.
   Future<bool> isDebuggable() async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
@@ -80,13 +83,15 @@ class Crashlytics {
     return result;
   }
 
+  /// Add text logging that will be sent with your next report. `msg` will be
+  /// printed to the console when in debug mode.
   void log(String msg) {
-    logSize += Uint8List.fromList(msg.codeUnits).length;
+    _logSize += Uint8List.fromList(msg.codeUnits).length;
     logs.add(msg);
     // Remove oldest log till logSize is no more than 64K.
-    while (logSize > 65536) {
+    while (_logSize > 65536) {
       final String first = logs.removeFirst();
-      logSize -= Uint8List.fromList(first.codeUnits).length;
+      _logSize -= Uint8List.fromList(first.codeUnits).length;
     }
   }
 

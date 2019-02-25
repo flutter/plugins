@@ -79,9 +79,10 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 Setup `Crashlytics`:
 ```dart
 void main() {
-  // Set reportInDevMode to true to see reports while in debug mode
+  // Set `enableInDevMode` to true to see reports while in debug mode
   // This is only to be used for confirming that reports are being
-  // submitted as expected. It is not intended to be used in production.
+  // submitted as expected. It is not intended to be used for everyday
+  // development.
   Crashlytics.instance.reportInDevMode = true;
 
   // Pass all uncaught errors to Crashlytics.

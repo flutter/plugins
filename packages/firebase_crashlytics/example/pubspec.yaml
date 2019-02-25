@@ -10,10 +10,6 @@ dependencies:
 
   cupertino_icons: ^0.1.2
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
   firebase_crashlytics:
     path: ../
 

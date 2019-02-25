@@ -44,9 +44,9 @@ void main() {
     });
 
     test('isInDebugMode', () {
-      crashlytics.reportInDevMode = true;
+      crashlytics.enableInDevMode = true;
       expect(crashlytics.isInDebugMode, false);
-      crashlytics.reportInDevMode = false;
+      crashlytics.enableInDevMode = false;
       expect(crashlytics.isInDebugMode, true);
     });
 
