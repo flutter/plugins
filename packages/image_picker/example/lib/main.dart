@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   VideoPlayerController _controller;
   VoidCallback listener;
 
-  void _onImageButtonPressed(ImageSource source) {
+  void _onRightImageButtonPressed(ImageSource source) {
     setState(() {
       if (_controller != null) {
         _controller.setVolume(0.0);
@@ -60,6 +60,30 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         _imageFile = ImagePicker.pickImage(source: source);
       }
+    });
+  }
+
+  void _generateThumbnailsFromImageButtonPressed(ImageSource source) {
+    ImagePicker.pickImageWithThumbnail(
+      source: source,
+      thumbnailWidth: 200,
+      thumbnailHeight: 200,
+    ).then((ImageWithThumbnail result) {
+      setState(() {
+        _imageFile = Future<File>.value(result.thumbnail);
+      });
+    });
+  }
+
+  void _generateThumbnailsFromVideoButtonPressed(ImageSource source) {
+    ImagePicker.pickVideoWithThumbnail(
+      source: source,
+      thumbnailWidth: 200,
+      thumbnailHeight: 200,
+    ).then((ImageWithThumbnail result) {
+      setState(() {
+        _imageFile = Future<File>.value(result.thumbnail);
+      });
     });
   }
 
@@ -131,19 +155,36 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: isVideo ? _previewVideo(_controller) : _previewImage(),
-      ),
-      floatingActionButton: Column(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: Stack(children: <Widget>[
+          Center(
+            child: isVideo ? _previewVideo(_controller) : _previewImage(),
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: leftButtons(),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: rightButtons(),
+          ),
+        ],
+        )
+    );
+  }
+
+  Widget rightButtons() {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           FloatingActionButton(
             onPressed: () {
               isVideo = false;
-              _onImageButtonPressed(ImageSource.gallery);
+              _onRightImageButtonPressed(ImageSource.gallery);
             },
             heroTag: 'image0',
             tooltip: 'Pick Image from gallery',
@@ -154,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton(
               onPressed: () {
                 isVideo = false;
-                _onImageButtonPressed(ImageSource.camera);
+                _onRightImageButtonPressed(ImageSource.camera);
               },
               heroTag: 'image1',
               tooltip: 'Take a Photo',
@@ -167,7 +208,7 @@ class _MyHomePageState extends State<MyHomePage> {
               backgroundColor: Colors.red,
               onPressed: () {
                 isVideo = true;
-                _onImageButtonPressed(ImageSource.gallery);
+                _onRightImageButtonPressed(ImageSource.gallery);
               },
               heroTag: 'video0',
               tooltip: 'Pick Video from gallery',
@@ -180,7 +221,69 @@ class _MyHomePageState extends State<MyHomePage> {
               backgroundColor: Colors.red,
               onPressed: () {
                 isVideo = true;
-                _onImageButtonPressed(ImageSource.camera);
+                _onRightImageButtonPressed(ImageSource.camera);
+              },
+              heroTag: 'video1',
+              tooltip: 'Take a Video',
+              child: const Icon(Icons.videocam),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget leftButtons() {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          const Padding(
+            padding: EdgeInsets.all(15.0),
+            child: Text('Thumbnails'),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              isVideo = false;
+              _generateThumbnailsFromImageButtonPressed(ImageSource.gallery);
+            },
+            heroTag: 'image0',
+            tooltip: 'Pick Image from gallery',
+            child: const Icon(Icons.photo_library),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: FloatingActionButton(
+              onPressed: () {
+                isVideo = false;
+                _generateThumbnailsFromImageButtonPressed(ImageSource.camera);
+              },
+              heroTag: 'image1',
+              tooltip: 'Take a Photo',
+              child: const Icon(Icons.camera_alt),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: FloatingActionButton(
+              backgroundColor: Colors.red,
+              onPressed: () {
+                isVideo = false;
+                _generateThumbnailsFromVideoButtonPressed(ImageSource.gallery);
+              },
+              heroTag: 'video0',
+              tooltip: 'Pick Video from gallery',
+              child: const Icon(Icons.video_library),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: FloatingActionButton(
+              backgroundColor: Colors.red,
+              onPressed: () {
+                isVideo = false;
+                _generateThumbnailsFromVideoButtonPressed(ImageSource.camera);
               },
               heroTag: 'video1',
               tooltip: 'Take a Video',
