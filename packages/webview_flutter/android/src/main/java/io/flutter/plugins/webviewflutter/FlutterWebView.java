@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
+import android.webkit.WebViewDatabase;
+
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -28,6 +30,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     methodChannel.setMethodCallHandler(this);
 
     applySettings((Map<String, Object>) params.get("settings"));
+    webView.setWebViewClient(new FlutterWebViewClient(methodChannel));
 
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
       registerJavaScriptChannelNames((List<String>) params.get(JS_CHANNEL_NAMES_FIELD));
@@ -173,6 +176,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       switch (key) {
         case "jsMode":
           updateJsMode((Integer) settings.get(key));
+          break;
+        case "userAgent":
+          Object agent = settings.get(key);
+          if (agent != null) {
+            webView.getSettings().setUserAgentString(agent.toString());
+          }
           break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);

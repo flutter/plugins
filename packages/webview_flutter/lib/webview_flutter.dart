@@ -79,6 +79,7 @@ class WebView extends StatefulWidget {
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.gestureRecognizers,
+    this.userAgent,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -101,6 +102,9 @@ class WebView extends StatefulWidget {
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
+
+  /// User Agent String for the webview.
+  final String userAgent;
 
   /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
   ///
@@ -260,17 +264,20 @@ class _CreationParams {
 class _WebSettings {
   _WebSettings({
     this.javascriptMode,
+    this.userAgent
   });
 
   static _WebSettings fromWidget(WebView widget) {
-    return _WebSettings(javascriptMode: widget.javascriptMode);
+    return _WebSettings(javascriptMode: widget.javascriptMode, userAgent: widget.userAgent);
   }
 
   final JavascriptMode javascriptMode;
+  final String userAgent;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javascriptMode.index,
+      'userAgent': userAgent
     };
   }
 
@@ -283,6 +290,14 @@ class _WebSettings {
     };
   }
 }
+
+class AuthInfo {
+  final String username;
+  final String password;
+
+  AuthInfo(this.username, this.password);
+}
+typedef Future<AuthInfo> AuthHandler(String host, String realm);
 
 /// Controls a [WebView].
 ///
@@ -300,17 +315,30 @@ class WebViewController {
 
   _WebSettings _settings;
 
+  AuthHandler authHandler;
+
   // Maps a channel name to a channel.
   Map<String, JavascriptChannel> _javascriptChannels =
       <String, JavascriptChannel>{};
 
-  Future<void> _onMethodCall(MethodCall call) async {
+  Future<dynamic> _onMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'javascriptChannelMessage':
         final String channel = call.arguments['channel'];
         final String message = call.arguments['message'];
         _javascriptChannels[channel]
             .onMessageReceived(JavascriptMessage(message));
+        break;
+      case 'onReceivedHttpAuthRequest':
+        if (authHandler != null) {
+          final String host = call.arguments['host'];
+          final String realm = call.arguments['realm'];
+          final handled = await authHandler(host, realm);
+          return {
+            'username': handled.username,
+            'password': handled.password,
+          };
+        }
         break;
     }
   }
