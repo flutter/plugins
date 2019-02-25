@@ -107,6 +107,11 @@ class ImagePicker {
         maxWidth: maxWidth
     );
 
+    //return null if cancel
+    if (image == null) {
+      return Future<ImageWithThumbnail>.value(null);
+    }
+
     final File thumbnail = await _generateImageThumbnail(
         image: image,
         height: thumbnailHeight,
@@ -137,6 +142,11 @@ class ImagePicker {
     final File image = await pickVideo(
         source: source,
     );
+
+    //return null if cancel
+    if (image == null) {
+      return Future<ImageWithThumbnail>.value(null);
+    }
 
     final File thumbnail = await _generateVideoThumbnail(
       video: image,

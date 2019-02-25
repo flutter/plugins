@@ -70,6 +70,9 @@ class _MyHomePageState extends State<MyHomePage> {
       thumbnailHeight: 200,
     ).then((ImageWithThumbnail result) {
       setState(() {
+        if (result == null) {
+          return;
+        }
         _imageFile = Future<File>.value(result.thumbnail);
       });
     });
@@ -82,6 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
       thumbnailHeight: 200,
     ).then((ImageWithThumbnail result) {
       setState(() {
+        if (result == null) {
+          return;
+        }
         _imageFile = Future<File>.value(result.thumbnail);
       });
     });
