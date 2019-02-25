@@ -1,4 +1,4 @@
-## 0.9.6
+## 0.9.5+2
 
 * Fixing PlatformException(Error 0, null, null) which happened when a successful operation was performed.
 
