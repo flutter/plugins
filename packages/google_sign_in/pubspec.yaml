@@ -18,7 +18,6 @@ dependencies:
   http: ^0.12.0
 
 dev_dependencies:
-  http: ^0.12.0
   flutter_test:
     sdk: flutter
 
