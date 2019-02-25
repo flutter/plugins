@@ -21,6 +21,7 @@ public class GoogleMapFactory extends PlatformViewFactory {
     mPluginRegistrar = registrar;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public PlatformView create(Context context, int id, Object args) {
     Map<String, Object> params = (Map<String, Object>) args;

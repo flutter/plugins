@@ -81,6 +81,9 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
       case "FirebaseStorage#setMaxOperationRetryTime":
         setMaxOperationTimeMillis(call, result);
         break;
+      case "FirebaseStorage#getReferenceFromUrl":
+        getReferenceFromUrl(call, result);
+        break;
       case "StorageReference#putFile":
         putFile(call, result);
         break;
@@ -145,6 +148,12 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     Number time = call.argument("time");
     firebaseStorage.setMaxOperationRetryTimeMillis(time.longValue());
     result.success(null);
+  }
+
+  private void getReferenceFromUrl(MethodCall call, Result result) {
+    String fullUrl = call.argument("fullUrl");
+    StorageReference ref = firebaseStorage.getReferenceFromUrl(fullUrl);
+    result.success(ref != null ? ref.getPath() : null);
   }
 
   private void getMetadata(MethodCall call, final Result result) {

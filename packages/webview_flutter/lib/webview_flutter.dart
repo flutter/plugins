@@ -112,7 +112,7 @@ class WebView extends StatefulWidget {
   /// For example for the following JavascriptChannel:
   ///
   /// ```dart
-  /// JavascriptChannel(name: 'Print', onMessageReceived: (String message) { print(message); });
+  /// JavascriptChannel(name: 'Print', onMessageReceived: (JavascriptMessage message) { print(message); });
   /// ```
   ///
   /// JavaScript code can call:
@@ -222,6 +222,8 @@ class _WebViewState extends State<WebView> {
 
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
   final Set<String> channelNames = channels == null
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // ignore: prefer_collection_literals
       ? Set<String>()
       : channels.map((JavascriptChannel channel) => channel.name).toSet();
   return channelNames;

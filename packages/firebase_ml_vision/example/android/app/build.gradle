@@ -45,6 +45,10 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    dependencies {
+        api 'com.google.firebase:firebase-ml-vision-image-label-model:16.2.0'
+    }
 }
 
 flutter {

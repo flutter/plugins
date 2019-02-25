@@ -1,3 +1,11 @@
+## 0.1.1+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.1.1
+
+* Support for regions and multiple apps
+
 ## 0.1.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX

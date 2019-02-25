@@ -1,10 +1,18 @@
+## 0.4.0+3
+
+* Fixed a crash when the plugin is registered by a background FlutterView.
+
+## 0.4.0+2
+
+* Fix orientation of captured photos when camera is used for the first time on Android.
+
 ## 0.4.0+1
 
 * Remove categories.
 
 ## 0.4.0
 
-* **Breaking Change** Change iOS image stream format to `ImageFormatGroup.bgra8888` from 
+* **Breaking Change** Change iOS image stream format to `ImageFormatGroup.bgra8888` from
   `ImageFormatGroup.yuv420`.
 
 ## 0.3.0+4
