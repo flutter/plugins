@@ -15,6 +15,9 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 
 static NSDictionary *getDictionaryFromError(NSError *error) {
+  if (!error) {
+    return nil;
+  }
   return @{
     @"code" : @(error.code),
     @"message" : error.domain ?: [NSNull null],
