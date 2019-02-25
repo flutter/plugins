@@ -18,7 +18,6 @@
 // for purchase.
 @property(copy, nonatomic) NSMutableDictionary *productsCache;
 
-
 // Call back channel to dart used for when a listener function is triggered.
 @property(strong, nonatomic) FlutterMethodChannel *callbackChannel;
 @property(strong, nonatomic) NSObject<FlutterTextureRegistry> *registry;
@@ -145,7 +144,7 @@
     payment.quantity = quantity ? quantity.integerValue : 1;
     if (@available(iOS 8.3, *)) {
       payment.simulatesAskToBuyInSandbox =
-      [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
+          [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
     }
     [self.paymentQueueHandler addPayment:payment];
     result(nil);
@@ -153,8 +152,9 @@
   }
   result([FlutterError
       errorWithCode:@"storekit_invalid_payment_object"
-            message:
-                @"You have requested a payment for an invalid product. Either the `productIdentifier` of the payment is not valid or the product has not been fetched before adding the payment to the payment queue."
+            message:@"You have requested a payment for an invalid product. Either the "
+                    @"`productIdentifier` of the payment is not valid or the product has not been "
+                    @"fetched before adding the payment to the payment queue."
             details:call.arguments]);
 }
 
