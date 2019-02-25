@@ -77,6 +77,7 @@ public class ImagePickerDelegate
   private final Activity activity;
   private final File externalFilesDirectory;
   private final ImageResizer imageResizer;
+  private final ThumbnailCreator thumbnailCreator;
   private final PermissionManager permissionManager;
   private final IntentResolver intentResolver;
   private final FileUriResolver fileUriResolver;
@@ -173,6 +174,7 @@ public class ImagePickerDelegate
     this.activity = activity;
     this.externalFilesDirectory = externalFilesDirectory;
     this.imageResizer = imageResizer;
+    this.thumbnailCreator = new ThumbnailCreator(imageResizer, externalFilesDirectory);
     this.fileProviderName = activity.getPackageName() + ".flutter.image_provider";
     this.pendingResult = result;
     this.methodCall = methodCall;
@@ -211,6 +213,24 @@ public class ImagePickerDelegate
     }
 
     launchTakeVideoWithCameraIntent();
+  }
+
+  public void generateImageThumbnail(MethodCall methodCall, MethodChannel.Result result) {
+    String originalImagePath = methodCall.argument("originalImagePath");
+    Double width = methodCall.argument("width");
+    Double height = methodCall.argument("height");
+
+    String finalThumbnailPath = thumbnailCreator.generateImageThumbnail(originalImagePath, width, height);
+    result.success(finalThumbnailPath);
+  }
+
+  public void generateVideoThumbnail(MethodCall methodCall, MethodChannel.Result result) {
+    String originalVideoPath = methodCall.argument("originalVideoPath");
+    Double width = methodCall.argument("width");
+    Double height = methodCall.argument("height");
+
+    String finalThumbnailPath = thumbnailCreator.generateVideoThumbnail(originalVideoPath, width, height);
+    result.success(finalThumbnailPath);
   }
 
   private void launchTakeVideoWithCameraIntent() {

@@ -78,6 +78,10 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
         default:
           throw new IllegalArgumentException("Invalid video source: " + imageSource);
       }
+    } else if (call.method.equals("generateImageThumbnail")) {
+      delegate.generateImageThumbnail(call, result);
+    } else if (call.method.equals("generateVideoThumbnail")) {
+      delegate.generateVideoThumbnail(call, result);
     } else {
       throw new IllegalArgumentException("Unknown method " + call.method);
     }
