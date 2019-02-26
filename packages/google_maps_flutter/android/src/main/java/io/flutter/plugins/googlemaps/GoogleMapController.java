@@ -416,6 +416,11 @@ final class GoogleMapController
 
   private void updateMyLocationEnabled() {
     if (hasLocationPermission()) {
+      // The plugin doesn't add the location permission by default so that apps that don't need
+      // the feature won't require the permission.
+      // Gradle is doing a static check for missing permission and in some configurations will
+      // fail the build if the permission is missing. The following disables the Gradle lint.
+      //noinspection ResourceType
       googleMap.setMyLocationEnabled(myLocationEnabled);
     } else {
       // TODO(amirh): Make the options update fail.
