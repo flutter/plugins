@@ -112,7 +112,7 @@ class ImagePicker {
       return Future<PickingResult>.value(null);
     }
 
-    final File thumbnail = await _generateImageThumbnail(
+    final File thumbnail = await generateImageThumbnail(
         image: image,
         height: thumbnailHeight,
         width: thumbnailWidth,
@@ -161,7 +161,7 @@ class ImagePicker {
         ));
   }
 
-  static Future<File> _generateImageThumbnail({
+  static Future<File> generateImageThumbnail({
     @required File image,
     double width,
     double height,

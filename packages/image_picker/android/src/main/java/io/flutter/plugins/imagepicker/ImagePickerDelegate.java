@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.util.Consumer;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -217,22 +218,30 @@ public class ImagePickerDelegate
     launchTakeVideoWithCameraIntent();
   }
 
-  public void generateImageThumbnail(MethodCall methodCall, MethodChannel.Result result) {
+  public void generateImageThumbnail(MethodCall methodCall, final MethodChannel.Result result) {
     String originalImagePath = methodCall.argument("originalImagePath");
     Double width = methodCall.argument("width");
     Double height = methodCall.argument("height");
 
-    String finalThumbnailPath = thumbnailCreator.generateImageThumbnail(originalImagePath, width, height);
-    result.success(finalThumbnailPath);
+    thumbnailCreator.generateImageThumbnailAsync(originalImagePath, width, height, new Consumer<String>() {
+      @Override
+      public void accept(String finalThumbnailPath) {
+        result.success(finalThumbnailPath);
+      }
+    });
   }
 
-  public void generateVideoThumbnail(MethodCall methodCall, MethodChannel.Result result) {
+  public void generateVideoThumbnail(MethodCall methodCall, final MethodChannel.Result result) {
     String originalVideoPath = methodCall.argument("originalVideoPath");
     Double width = methodCall.argument("width");
     Double height = methodCall.argument("height");
 
-    String finalThumbnailPath = thumbnailCreator.generateVideoThumbnail(originalVideoPath, width, height);
-    result.success(finalThumbnailPath);
+    thumbnailCreator.generateVideoThumbnailAsync(originalVideoPath, width, height, new Consumer<String>() {
+      @Override
+      public void accept(String finalThumbnailPath) {
+        result.success(finalThumbnailPath);
+      }
+    });
   }
 
   private void launchTakeVideoWithCameraIntent() {
