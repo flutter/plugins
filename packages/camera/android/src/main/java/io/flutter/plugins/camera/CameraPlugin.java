@@ -222,7 +222,7 @@ public class CameraPlugin implements MethodCallHandler {
             result.success(null);
           } catch (CameraAccessException e) {
             result.error("CameraAccess", e.getMessage(), null);
-          }catch (Exception e) {
+          } catch (Exception e) {
             result.error("exception", e.getMessage(), null);
           }
           break;
@@ -234,7 +234,7 @@ public class CameraPlugin implements MethodCallHandler {
             result.success(null);
           } catch (CameraAccessException e) {
             result.error("CameraAccess", e.getMessage(), null);
-          }catch (Exception e) {
+          } catch (Exception e) {
             result.error("exception", e.getMessage(), null);
           }
           break;
@@ -369,7 +369,7 @@ public class CameraPlugin implements MethodCallHandler {
         result.error("CameraAccess", e.getMessage(), null);
       } catch (IllegalArgumentException e) {
         result.error("IllegalArgumentException", e.getMessage(), null);
-      }catch (Exception e) {
+      } catch (Exception e) {
         result.error("Exception", e.getMessage(), null);
       }
     }
@@ -508,7 +508,7 @@ public class CameraPlugin implements MethodCallHandler {
                     cameraDevice.close();
                     Camera.this.cameraDevice = null;
                     return;
-                  }catch (Exception e) {
+                  } catch (Exception e) {
                     if (result != null) result.error("exception", e.getMessage(), null);
                     cameraDevice.close();
                     Camera.this.cameraDevice = null;
@@ -572,7 +572,7 @@ public class CameraPlugin implements MethodCallHandler {
               null);
         } catch (CameraAccessException e) {
           if (result != null) result.error("cameraAccess", e.getMessage(), null);
-        }catch (Exception e) {
+        } catch (Exception e) {
           if (result != null) result.error("exception", e.getMessage(), null);
         }
       }
@@ -643,7 +643,7 @@ public class CameraPlugin implements MethodCallHandler {
             null);
       } catch (CameraAccessException e) {
         result.error("cameraAccess", e.getMessage(), null);
-      }catch (Exception e) {
+      } catch (Exception e) {
         result.error("exception", e.getMessage(), null);
       }
     }
@@ -719,7 +719,7 @@ public class CameraPlugin implements MethodCallHandler {
             null);
       } catch (CameraAccessException | IOException e) {
         result.error("videoRecordingFailed", e.getMessage(), null);
-      }catch (Exception e) {
+      } catch (Exception e) {
         result.error("videoRecordingFailed", e.getMessage(), null);
       }
     }
