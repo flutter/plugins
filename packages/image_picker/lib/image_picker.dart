@@ -76,7 +76,7 @@ class ImagePicker {
     return path == null ? null : File(path);
   }
 
-  static Future<ImageWithThumbnail> pickImageWithThumbnail({
+  static Future<PickingResult> pickImageWithThumbnail({
     @required ImageSource source,
     double maxWidth,
     double maxHeight,
@@ -109,7 +109,7 @@ class ImagePicker {
 
     //return null if cancel
     if (image == null) {
-      return Future<ImageWithThumbnail>.value(null);
+      return Future<PickingResult>.value(null);
     }
 
     final File thumbnail = await _generateImageThumbnail(
@@ -118,14 +118,14 @@ class ImagePicker {
         width: thumbnailWidth,
     );
 
-    return Future<ImageWithThumbnail>.value(
-        ImageWithThumbnail(
-        image: image,
+    return Future<PickingResult>.value(
+        PickingResult(
+        originalFile: image,
         thumbnail: thumbnail
     ));
   }
 
-  static Future<ImageWithThumbnail> pickVideoWithThumbnail({
+  static Future<PickingResult> pickVideoWithThumbnail({
     @required ImageSource source,
     @required double thumbnailWidth,
     @required double thumbnailHeight,
@@ -145,7 +145,7 @@ class ImagePicker {
 
     //return null if cancel
     if (image == null) {
-      return Future<ImageWithThumbnail>.value(null);
+      return Future<PickingResult>.value(null);
     }
 
     final File thumbnail = await _generateVideoThumbnail(
@@ -154,9 +154,9 @@ class ImagePicker {
       width: thumbnailWidth,
     );
 
-    return Future<ImageWithThumbnail>.value(
-        ImageWithThumbnail(
-            image: image,
+    return Future<PickingResult>.value(
+        PickingResult(
+            originalFile: image,
             thumbnail: thumbnail
         ));
   }
@@ -214,13 +214,16 @@ class ImagePicker {
   }
 }
 
-class ImageWithThumbnail {
+class PickingResult {
 
-  const ImageWithThumbnail({
-    @required this.image,
+  const PickingResult({
+    @required this.originalFile,
     @required this.thumbnail
   });
 
-  final File image;
+  ///
+  /// original file of video or image
+  ///
+  final File originalFile;
   final File thumbnail;
 }

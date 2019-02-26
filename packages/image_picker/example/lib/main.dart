@@ -68,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
       source: source,
       thumbnailWidth: 200,
       thumbnailHeight: 200,
-    ).then((ImageWithThumbnail result) {
+    ).then((PickingResult result) {
       setState(() {
         if (result == null) {
           return;
@@ -83,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
       source: source,
       thumbnailWidth: 200,
       thumbnailHeight: 200,
-    ).then((ImageWithThumbnail result) {
+    ).then((PickingResult result) {
       setState(() {
         if (result == null) {
           return;
