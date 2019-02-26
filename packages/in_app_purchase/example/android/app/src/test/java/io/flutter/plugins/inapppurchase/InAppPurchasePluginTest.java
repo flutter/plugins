@@ -36,7 +36,6 @@ import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
-import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
@@ -134,7 +133,8 @@ public class InAppPurchasePluginTest {
     MethodCall disconnectCall = new MethodCall(END_CONNECTION, null);
     plugin.onMethodCall(disconnectCall, result);
 
-    // Verify that the client is disconnected and that the OnDisconnect callback has been triggered
+    // Verify that the client is disconnected and that the OnDisconnect callback has
+    // been triggered
     verify(result, times(1)).success(any());
     verify(mockBillingClient, times(1)).endConnection();
     stateListener.onBillingServiceDisconnected();
@@ -146,7 +146,7 @@ public class InAppPurchasePluginTest {
   @Test
   public void querySkuDetailsAsync() {
     // Connect a billing client and set up the SKU query listeners
-    establishConnectedBillingClient(/*arguments=*/ null, /*result=*/ null);
+    establishConnectedBillingClient(/* arguments= */ null, /* result= */ null);
     String skuType = BillingClient.SkuType.INAPP;
     List<String> skusList = asList("id1", "id2");
     HashMap<String, Object> arguments = new HashMap<>();
@@ -369,7 +369,9 @@ public class InAppPurchasePluginTest {
     int responseCode = BillingResponse.OK;
     List<Purchase> purchasesList = asList(buildPurchase("foo"));
     ArgumentCaptor<HashMap<String, Object>> resultCaptor = ArgumentCaptor.forClass(HashMap.class);
-    doNothing().when(mockMethodChannel).invokeMethod(eq(ON_PURCHASES_UPDATED), resultCaptor.capture());
+    doNothing()
+        .when(mockMethodChannel)
+        .invokeMethod(eq(ON_PURCHASES_UPDATED), resultCaptor.capture());
     listener.onPurchasesUpdated(responseCode, purchasesList);
 
     HashMap<String, Object> resultData = resultCaptor.getValue();
@@ -393,7 +395,7 @@ public class InAppPurchasePluginTest {
 
   private void queryForSkus(List<String> skusList) {
     // Set up the query method call
-    establishConnectedBillingClient(/*arguments=*/ null, /*result=*/ null);
+    establishConnectedBillingClient(/* arguments= */ null, /* result= */ null);
     HashMap<String, Object> arguments = new HashMap<>();
     String skuType = SkuType.INAPP;
     arguments.put("skuType", skuType);
