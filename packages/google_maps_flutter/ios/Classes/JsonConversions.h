@@ -5,7 +5,7 @@
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
 
-@interface FLTGoogleMapJsonConversions
+@interface FLTGoogleMapJsonConversions : NSObject
 + (bool)toBool:(NSNumber*)data;
 + (int)toInt:(NSNumber*)data;
 + (double)toDouble:(NSNumber*)data;
