@@ -245,29 +245,19 @@ static id PositionToJson(GMSCameraPosition* position) {
   };
 }
 
-static double ToDouble(id data) {
-  return [FLTGoogleMapJsonConversions toDouble:data];
-}
+static double ToDouble(id data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
 
-static float ToFloat(id data) {
-  return [FLTGoogleMapJsonConversions toFloat:data];
-}
+static float ToFloat(id data) { return [FLTGoogleMapJsonConversions toFloat:data]; }
 
 static CLLocationCoordinate2D ToLocation(id data) {
   return [FLTGoogleMapJsonConversions toLocation:data];
 }
 
-static int ToInt(id data) {
-  return [FLTGoogleMapJsonConversions toInt:data];
-}
+static int ToInt(id data) { return [FLTGoogleMapJsonConversions toInt:data]; }
 
-static BOOL ToBool(id data) {
-  return [FLTGoogleMapJsonConversions toBool:data];
-}
+static BOOL ToBool(id data) { return [FLTGoogleMapJsonConversions toBool:data]; }
 
-static CGPoint ToPoint(id data) {
-  return [FLTGoogleMapJsonConversions toPoint:data];
-}
+static CGPoint ToPoint(id data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
 
 static GMSCameraPosition* ToCameraPosition(id json) {
   NSDictionary* data = json;

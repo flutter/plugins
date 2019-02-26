@@ -21,7 +21,7 @@ static void InterpretInfoWindow(id<FLTGoogleMapMarkerOptionsSink> sink, NSDictio
     _marker = [GMSMarker markerWithPosition:position];
     _mapView = mapView;
     _markerId = markerId;
-    _marker.userData = @[_markerId];
+    _marker.userData = @[ _markerId ];
     _consumeTapEvents = NO;
   }
   return self;
@@ -74,29 +74,19 @@ static void InterpretInfoWindow(id<FLTGoogleMapMarkerOptionsSink> sink, NSDictio
 }
 @end
 
-static double ToDouble(id data) {
-  return [FLTGoogleMapJsonConversions toDouble:data];
-}
+static double ToDouble(id data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
 
-static float ToFloat(id data) {
-  return [FLTGoogleMapJsonConversions toFloat:data];
-}
+static float ToFloat(id data) { return [FLTGoogleMapJsonConversions toFloat:data]; }
 
 static CLLocationCoordinate2D ToLocation(id data) {
   return [FLTGoogleMapJsonConversions toLocation:data];
 }
 
-static int ToInt(id data) {
-  return [FLTGoogleMapJsonConversions toInt:data];
-}
+static int ToInt(id data) { return [FLTGoogleMapJsonConversions toInt:data]; }
 
-static BOOL ToBool(id data) {
-  return [FLTGoogleMapJsonConversions toBool:data];
-}
+static BOOL ToBool(id data) { return [FLTGoogleMapJsonConversions toBool:data]; }
 
-static CGPoint ToPoint(id data) {
-  return [FLTGoogleMapJsonConversions toPoint:data];
-}
+static CGPoint ToPoint(id data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
 
 static void interpretMarkerOptions(NSDictionary* data, id<FLTGoogleMapMarkerOptionsSink> sink,
                                    NSObject<FlutterPluginRegistrar>* registrar) {
@@ -237,12 +227,12 @@ static UIImage* extractIcon(NSObject<FlutterPluginRegistrar>* registrar, id icon
   if (!controller) {
     return NO;
   }
-  [_methodChannel invokeMethod:@"marker#onTap" arguments:@{@"markerId": markerId}];
+  [_methodChannel invokeMethod:@"marker#onTap" arguments:@{@"markerId" : markerId}];
   return controller.consumeTapEvents;
 }
 - (void)onInfoWindowTap:(NSString*)markerId {
   if (markerId && _markerIdToController[markerId]) {
-    [_methodChannel invokeMethod:@"infoWindow#onTap" arguments:@{@"markerId": markerId}];
+    [_methodChannel invokeMethod:@"infoWindow#onTap" arguments:@{@"markerId" : markerId}];
   }
 }
 
