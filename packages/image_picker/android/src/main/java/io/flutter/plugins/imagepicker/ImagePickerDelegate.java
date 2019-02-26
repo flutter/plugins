@@ -115,6 +115,7 @@ public class ImagePickerDelegate
         imageResizer,
         null,
         null,
+        new ThumbnailCreator(imageResizer, externalFilesDirectory),
         new PermissionManager() {
           @Override
           public boolean isPermissionGranted(String permissionName) {
@@ -167,6 +168,7 @@ public class ImagePickerDelegate
       ImageResizer imageResizer,
       MethodChannel.Result result,
       MethodCall methodCall,
+      ThumbnailCreator thumbnailCreator,
       PermissionManager permissionManager,
       IntentResolver intentResolver,
       FileUriResolver fileUriResolver,
@@ -174,7 +176,7 @@ public class ImagePickerDelegate
     this.activity = activity;
     this.externalFilesDirectory = externalFilesDirectory;
     this.imageResizer = imageResizer;
-    this.thumbnailCreator = new ThumbnailCreator(imageResizer, externalFilesDirectory);
+    this.thumbnailCreator = thumbnailCreator;
     this.fileProviderName = activity.getPackageName() + ".flutter.image_provider";
     this.pendingResult = result;
     this.methodCall = methodCall;
