@@ -291,28 +291,51 @@ class _WebSettings {
   }
 }
 
+/**
+ * Simple credentials wrapper for authorization requests returned by [WebViewClient.onReceivedHttpAuthRequest].
+ */
 class AuthInfo {
   final String username;
   final String password;
 
   AuthInfo(this.username, this.password);
 }
+
 typedef Future<AuthInfo> AuthHandler(String host, String realm);
 
+/**
+ * Generic error during loading page in [WebView] and passed to [WebViewClient.onReceivedError].
+ */
 class WebViewError {
+  /// URL of the page when the error happened. (might be null if unknown)
   final String url;
+
+  /// Localized description of the error.
   final String description;
+
   WebViewError({this.url, this.description});
 }
 
+/**
+ * Allows listening for [WebView] events and customize behavior.
+ */
 class WebViewClient {
+
+  /**
+   * Called for authorization requests (basic authorization) Expected to return username/password,
+   * or null if it should cancel the request.
+   */
   Future<AuthInfo> onReceivedHttpAuthRequest(String host, String realm) async {
     return null;
   }
 
-  void onReceivedError(WebViewError) {}
+  /// Notification of an error while loading the current page.
+  void onReceivedError(WebViewError error) {}
 
+  /// Notification of the main page in the [WebView] finished loading.
   void onPageFinished(String url) {}
+
+  /// Notification when the main frame starts loading. (url might be null if unknown)
   void onPageStarted(String url) {}
 }
 

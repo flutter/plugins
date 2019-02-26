@@ -231,10 +231,13 @@
       NSNumber* mode = settings[key];
       [self updateJsMode:mode];
     } else if ([key isEqualToString:@"userAgent"]) {
-      if (@available(iOS 9.0, *)) {
-        _webView.customUserAgent = settings[key];
-      } else {
-        NSLog(@"webview_flutter: prior to iOS 9.0, a custom userAgent is not supported.");
+      id userAgent = settings[key];
+      if (userAgent && ![userAgent isEqual:[NSNull null]]) {
+        if (@available(iOS 9.0, *)) {
+          _webView.customUserAgent = settings[key];
+        } else {
+          NSLog(@"webview_flutter: prior to iOS 9.0, a custom userAgent is not supported.");
+        }
       }
     } else {
       NSLog(@"webview_flutter: unknown setting key: %@", key);
