@@ -51,9 +51,9 @@ public class InAppPurchasePlugin implements MethodCallHandler {
         "BillingClient#launchBillingFlow(Activity, BillingFlowParams)";
     static final String ON_PURCHASES_UPDATED =
         "PurchasesUpdatedListener#onPurchasesUpdated(int, List<Purchase>)";
-    static final String QUERY_PURCHASES = "queryPurchases(String)";
+    static final String QUERY_PURCHASES = "BillingClient#queryPurchases(String)";
     static final String QUERY_PURCHASE_HISTORY_ASYNC =
-        "queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)";
+        "BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)";
 
     private MethodNames() {};
   }
@@ -259,7 +259,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> purchases) {
       final Map<String, Object> callbackArgs = new HashMap<>();
       callbackArgs.put("responseCode", responseCode);
-      callbackArgs.put("purchases", fromPurchasesList(purchases));
+      callbackArgs.put("purchasesList", fromPurchasesList(purchases));
       channel.invokeMethod(MethodNames.ON_PURCHASES_UPDATED, callbackArgs);
     }
   }
