@@ -299,6 +299,23 @@ class AuthInfo {
 }
 typedef Future<AuthInfo> AuthHandler(String host, String realm);
 
+class WebViewError {
+  final String url;
+  final String description;
+  WebViewError({this.url, this.description});
+}
+
+class WebViewClient {
+  Future<AuthInfo> onReceivedHttpAuthRequest(String host, String realm) async {
+    return null;
+  }
+
+  void onReceivedError(WebViewError) {}
+
+  void onPageFinished(String url) {}
+  void onPageStarted(String url) {}
+}
+
 /// Controls a [WebView].
 ///
 /// A [WebViewController] instance can be obtained by setting the [WebView.onWebViewCreated]
@@ -315,7 +332,7 @@ class WebViewController {
 
   _WebSettings _settings;
 
-  AuthHandler authHandler;
+  WebViewClient webViewClient = WebViewClient();
 
   // Maps a channel name to a channel.
   Map<String, JavascriptChannel> _javascriptChannels =
@@ -330,15 +347,25 @@ class WebViewController {
             .onMessageReceived(JavascriptMessage(message));
         break;
       case 'onReceivedHttpAuthRequest':
-        if (authHandler != null) {
-          final String host = call.arguments['host'];
-          final String realm = call.arguments['realm'];
-          final handled = await authHandler(host, realm);
-          return {
-            'username': handled.username,
-            'password': handled.password,
-          };
-        }
+        final String host = call.arguments['host'];
+        final String realm = call.arguments['realm'];
+        final handled = await webViewClient.onReceivedHttpAuthRequest(host, realm);
+        return {
+          'username': handled.username,
+          'password': handled.password,
+        };
+        break;
+      case 'onPageFinished':
+        webViewClient.onPageFinished(call.arguments['url']);
+        break;
+      case 'onPageStarted':
+        webViewClient.onPageStarted(call.arguments['url']);
+        break;
+      case 'onReceivedError':
+        webViewClient.onReceivedError(WebViewError(
+          url: call.arguments['url'],
+          description: call.arguments['description'],
+        ));
         break;
     }
   }

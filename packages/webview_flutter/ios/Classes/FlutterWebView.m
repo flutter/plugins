@@ -64,6 +64,7 @@
     configuration.userContentController = userContentController;
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    _webView.navigationDelegate = self;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
@@ -229,6 +230,12 @@
     if ([key isEqualToString:@"jsMode"]) {
       NSNumber* mode = settings[key];
       [self updateJsMode:mode];
+    } else if ([key isEqualToString:@"userAgent"]) {
+      if (@available(iOS 9.0, *)) {
+        _webView.customUserAgent = settings[key];
+      } else {
+        NSLog(@"webview_flutter: prior to iOS 9.0, a custom userAgent is not supported.");
+      }
     } else {
       NSLog(@"webview_flutter: unknown setting key: %@", key);
     }
@@ -274,6 +281,43 @@
                             forMainFrameOnly:NO];
     [userContentController addUserScript:wrapperScript];
   }
+}
+
+#pragma mark WKNavigationDelegate
+
+- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential *_Nullable))completionHandler {
+  NSURLProtectionSpace *ps = challenge.protectionSpace;
+  [_channel invokeMethod:@"onReceivedHttpAuthRequest"
+               arguments:@{@"host": ps.host, @"realm": ps.realm ? ps.realm : @""}
+                  result:^(id _Nullable result) {
+                      if (result && [result isKindOfClass:[NSDictionary class]]) {
+                        id username = result[@"username"];
+                        id password = result[@"password"];
+                        if (username && password) {
+                          completionHandler(
+                                  NSURLSessionAuthChallengeUseCredential,
+                                  [NSURLCredential credentialWithUser:username password:password persistence:NSURLCredentialPersistenceForSession]);
+                          return;
+                        }
+                      }
+                      completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+                  }];
+}
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+  [_channel invokeMethod:@"onPageFinished" arguments:@{@"url": _webView.URL.absoluteString}];
+}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+  [_channel invokeMethod:@"onReceivedError" arguments:@{@"url": _webView.URL, @"description": [error localizedDescription]}];
+}
+
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+  [_channel invokeMethod:@"onReceivedError" arguments:@{@"url": _webView.URL, @"description": [error localizedDescription]}];
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+  decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 @end
