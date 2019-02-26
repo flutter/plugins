@@ -699,14 +699,11 @@ public class CameraPlugin implements MethodCallHandler {
                   result.success(null);
                 } catch (CameraAccessException e) {
                   result.error("cameraAccess", e.getMessage(), null);
-                }
-                catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                   result.error("illegalArgumentException", e.getMessage(), null);
-                }
-                catch (IllegalStateException e) {
+                } catch (IllegalStateException e) {
                   result.error("illegalStateException", e.getMessage(), null);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                   result.error("exception", e.getMessage(), null);
                 }
               }
@@ -775,14 +772,11 @@ public class CameraPlugin implements MethodCallHandler {
                 cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               } catch (CameraAccessException e) {
                 sendErrorEvent(e.getMessage());
-              }
-              catch (IllegalArgumentException e) {
+              } catch (IllegalArgumentException e) {
                 sendErrorEvent("illegalArgumentException: " + e.getMessage());
-              }
-              catch (IllegalStateException e) {
+              } catch (IllegalStateException e) {
                 sendErrorEvent("illegalStateException: " + e.getMessage());
-              }
-              catch (Exception e) {
+              } catch (Exception e) {
                 sendErrorEvent("exception: " + e.getMessage());
               }
             }
@@ -829,14 +823,11 @@ public class CameraPlugin implements MethodCallHandler {
                 cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               } catch (CameraAccessException e) {
                 sendErrorEvent(e.getMessage());
-              }
-              catch (IllegalArgumentException e) {
+              } catch (IllegalArgumentException e) {
                 sendErrorEvent("illegalArgumentException: " + e.getMessage());
-              }
-              catch (IllegalStateException e) {
+              } catch (IllegalStateException e) {
                 sendErrorEvent("illegalStateException: " + e.getMessage());
-              }
-              catch (Exception e) {
+              } catch (Exception e) {
                 sendErrorEvent("exception: " + e.getMessage());
               }
             }
