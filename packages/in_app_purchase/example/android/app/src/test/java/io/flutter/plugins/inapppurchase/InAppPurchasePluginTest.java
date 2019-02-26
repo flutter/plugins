@@ -376,7 +376,7 @@ public class InAppPurchasePluginTest {
 
     HashMap<String, Object> resultData = resultCaptor.getValue();
     assertEquals(responseCode, resultData.get("responseCode"));
-    assertEquals(fromPurchasesList(purchasesList), resultData.get("purchases"));
+    assertEquals(fromPurchasesList(purchasesList), resultData.get("purchasesList"));
   }
 
   private void establishConnectedBillingClient(
