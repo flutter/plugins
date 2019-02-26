@@ -130,7 +130,7 @@ int nextHandle = 0;
     [actionCodeSettings setAndroidPackageName:call.arguments[@"androidPackageName"]
                         installIfNotAvailable:call.arguments[@"androidInstallIfNotAvailable"]
                                minimumVersion:call.arguments[@"androidMinimumVersion"]];
-    actionCodeSettings.dynamicLinkDomain = call.arguments[@"dynamicLinkDomain"];
+    //actionCodeSettings.dynamicLinkDomain = call.arguments[@"dynamicLinkDomain"];
     [[self getAuth:call.arguments] sendSignInLinkToEmail:email
                                       actionCodeSettings:actionCodeSettings
                                               completion:^(NSError *_Nullable error) {
