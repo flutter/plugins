@@ -5,14 +5,11 @@
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
 
-bool toBool(id json);
-
-int toInt(id json);
-
-double toDouble(id json);
-
-float toFloat(id json);
-
-CLLocationCoordinate2D toLocation(id json);
-
-CGPoint toPoint(id json);
+@interface FLTGoogleMapJsonConversions
++ (bool)toBool:(id)json;
++ (int)toInt:(id)json;
++ (double)toDouble:(id)json;
++ (float)toFloat:(id)json;
++ (CLLocationCoordinate2D)toLocation:(id)json;
++ (CGPoint)toPoint:(id)json;
+@end

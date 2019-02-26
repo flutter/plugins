@@ -25,18 +25,18 @@
 // Defines marker controllable by Flutter.
 @interface FLTGoogleMapMarkerController : NSObject <FLTGoogleMapMarkerOptionsSink>
 @property(atomic, readonly) NSString* markerId;
-- (instancetype)initWithPositionAndId:(CLLocationCoordinate2D)position
-                             markerId:(NSString*)markerId
-                              mapView:(GMSMapView*)mapView;
+- (instancetype)initMarkerWithPosition:(CLLocationCoordinate2D)position
+                              markerId:(NSString*)markerId
+                               mapView:(GMSMapView*)mapView;
 - (BOOL)consumeTapEvents;
 - (void)removeMarker;
 @end
 
 @interface FLTMarkersController : NSObject
 - (instancetype)init:(FlutterMethodChannel*)methodChannel mapView:(GMSMapView*)mapView;
-- (void)addMarkers:(id)markersToAdd;
-- (void)changeMarkers:(id)markersToChange;
-- (void)removeMarkerIds:(id)markerIdsToRemove;
+- (void)addMarkers:(NSArray*)markersToAdd;
+- (void)changeMarkers:(NSArray*)markersToChange;
+- (void)removeMarkerIds:(NSArray*)markerIdsToRemove;
 - (BOOL)onMarkerTap:(NSString*)markerId;
 - (void)onInfoWindowTap:(NSString*)markerId;
 @end

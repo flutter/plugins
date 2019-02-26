@@ -7,11 +7,11 @@
 
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
-static id positionToJson(GMSCameraPosition* position);
-static GMSCameraPosition* toOptionalCameraPosition(id json);
-static GMSCoordinateBounds* toOptionalBounds(id json);
-static GMSCameraUpdate* toCameraUpdate(id json);
-static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
+static id PositionToJson(GMSCameraPosition* position);
+static GMSCameraPosition* ToOptionalCameraPosition(NSArray* json);
+static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
+static GMSCameraUpdate* ToCameraUpdate(NSArray* data);
+static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> sink);
 
 @implementation FLTGoogleMapFactory {
   NSObject<FlutterPluginRegistrar>* _registrar;
@@ -60,10 +60,10 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
   if ([super init]) {
     _viewId = viewId;
 
-    GMSCameraPosition* camera = toOptionalCameraPosition(args[@"initialCameraPosition"]);
+    GMSCameraPosition* camera = ToOptionalCameraPosition(args[@"initialCameraPosition"]);
     _mapView = [GMSMapView mapWithFrame:frame camera:camera];
     _trackCameraPosition = NO;
-    interpretMapOptions(args[@"options"], self);
+    InterpretMapOptions(args[@"options"], self);
     NSString* channelName =
         [NSString stringWithFormat:@"plugins.flutter.io/google_maps_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName
@@ -90,29 +90,26 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
 
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"map#show"]) {
-    [self showAtX:toDouble(call.arguments[@"x"]) Y:toDouble(call.arguments[@"y"])];
+    [self showAtX:ToDouble(call.arguments[@"x"]) Y:ToDouble(call.arguments[@"y"])];
     result(nil);
   } else if ([call.method isEqualToString:@"map#hide"]) {
     [self hide];
     result(nil);
   } else if ([call.method isEqualToString:@"camera#animate"]) {
-    [self animateWithCameraUpdate:toCameraUpdate(call.arguments[@"cameraUpdate"])];
+    [self animateWithCameraUpdate:ToCameraUpdate(call.arguments[@"cameraUpdate"])];
     result(nil);
   } else if ([call.method isEqualToString:@"camera#move"]) {
-    [self moveWithCameraUpdate:toCameraUpdate(call.arguments[@"cameraUpdate"])];
+    [self moveWithCameraUpdate:ToCameraUpdate(call.arguments[@"cameraUpdate"])];
     result(nil);
   } else if ([call.method isEqualToString:@"map#update"]) {
-    interpretMapOptions(call.arguments[@"options"], self);
-    result(positionToJson([self cameraPosition]));
+    InterpretMapOptions(call.arguments[@"options"], self);
+    result(PositionToJson([self cameraPosition]));
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
     result(nil);
   } else if ([call.method isEqualToString:@"markers#update"]) {
-    id markersToAdd = call.arguments[@"markersToAdd"];
-    [_markersController addMarkers:markersToAdd];
-    id markersToChange = call.arguments[@"markersToChange"];
-    [_markersController changeMarkers:markersToChange];
-    id markerIdsToRemove = call.arguments[@"markerIdsToRemove"];
-    [_markersController removeMarkerIds:markerIdsToRemove];
+    [_markersController addMarkers:call.arguments[@"markersToAdd"]];
+    [_markersController changeMarkers:call.arguments[@"markersToChange"]];
+    [_markersController removeMarkerIds:call.arguments[@"markerIdsToRemove"]];
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);
@@ -210,7 +207,7 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
     [mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
   }
   if (_trackCameraPosition) {
-    [_channel invokeMethod:@"camera#onMove" arguments:@{@"position" : positionToJson(position)}];
+    [_channel invokeMethod:@"camera#onMove" arguments:@{@"position" : PositionToJson(position)}];
   }
 }
 
@@ -232,122 +229,143 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
 
 #pragma mark - Implementations of JSON conversion functions.
 
-static id locationToJson(CLLocationCoordinate2D position) {
+static id LocationToJson(CLLocationCoordinate2D position) {
   return @[ @(position.latitude), @(position.longitude) ];
 }
 
-static id positionToJson(GMSCameraPosition* position) {
+static id PositionToJson(GMSCameraPosition* position) {
   if (!position) {
     return nil;
   }
   return @{
-    @"target" : locationToJson([position target]),
+    @"target" : LocationToJson([position target]),
     @"zoom" : @([position zoom]),
     @"bearing" : @([position bearing]),
     @"tilt" : @([position viewingAngle]),
   };
 }
 
-static GMSCameraPosition* toCameraPosition(id json) {
+static double ToDouble(id data) {
+  return [FLTGoogleMapJsonConversions toDouble:data];
+}
+
+static float ToFloat(id data) {
+  return [FLTGoogleMapJsonConversions toFloat:data];
+}
+
+static CLLocationCoordinate2D ToLocation(id data) {
+  return [FLTGoogleMapJsonConversions toLocation:data];
+}
+
+static int ToInt(id data) {
+  return [FLTGoogleMapJsonConversions toInt:data];
+}
+
+static BOOL ToBool(id data) {
+  return [FLTGoogleMapJsonConversions toBool:data];
+}
+
+static CGPoint ToPoint(id data) {
+  return [FLTGoogleMapJsonConversions toPoint:data];
+}
+
+static GMSCameraPosition* ToCameraPosition(id json) {
   NSDictionary* data = json;
-  return [GMSCameraPosition cameraWithTarget:toLocation(data[@"target"])
-                                        zoom:toFloat(data[@"zoom"])
-                                     bearing:toDouble(data[@"bearing"])
-                                viewingAngle:toDouble(data[@"tilt"])];
+  return [GMSCameraPosition cameraWithTarget:ToLocation(data[@"target"])
+                                        zoom:ToFloat(data[@"zoom"])
+                                     bearing:ToDouble(data[@"bearing"])
+                                viewingAngle:ToDouble(data[@"tilt"])];
 }
 
-static GMSCameraPosition* toOptionalCameraPosition(id json) {
-  return json ? toCameraPosition(json) : nil;
+static GMSCameraPosition* ToOptionalCameraPosition(NSArray* json) {
+  return json ? ToCameraPosition(json) : nil;
 }
 
-static GMSCoordinateBounds* toBounds(id json) {
+static GMSCoordinateBounds* ToBounds(id json) {
   NSArray* data = json;
-  return [[GMSCoordinateBounds alloc] initWithCoordinate:toLocation(data[0])
-                                              coordinate:toLocation(data[1])];
+  return [[GMSCoordinateBounds alloc] initWithCoordinate:ToLocation(data[0])
+                                              coordinate:ToLocation(data[1])];
 }
 
-static GMSCoordinateBounds* toOptionalBounds(id json) {
-  NSArray* data = json;
-  return (data[0] == [NSNull null]) ? nil : toBounds(data[0]);
+static GMSCoordinateBounds* ToOptionalBounds(NSArray* data) {
+  return (data[0] == [NSNull null]) ? nil : ToBounds(data[0]);
 }
 
-static GMSMapViewType toMapViewType(id json) {
-  int value = toInt(json);
+static GMSMapViewType ToMapViewType(id json) {
+  int value = ToInt(json);
   return (GMSMapViewType)(value == 0 ? 5 : value);
 }
 
-static GMSCameraUpdate* toCameraUpdate(id json) {
-  NSArray* data = json;
+static GMSCameraUpdate* ToCameraUpdate(NSArray* data) {
   NSString* update = data[0];
   if ([update isEqualToString:@"newCameraPosition"]) {
-    return [GMSCameraUpdate setCamera:toCameraPosition(data[1])];
+    return [GMSCameraUpdate setCamera:ToCameraPosition(data[1])];
   } else if ([update isEqualToString:@"newLatLng"]) {
-    return [GMSCameraUpdate setTarget:toLocation(data[1])];
+    return [GMSCameraUpdate setTarget:ToLocation(data[1])];
   } else if ([update isEqualToString:@"newLatLngBounds"]) {
-    return [GMSCameraUpdate fitBounds:toBounds(data[1]) withPadding:toDouble(data[2])];
+    return [GMSCameraUpdate fitBounds:ToBounds(data[1]) withPadding:ToDouble(data[2])];
   } else if ([update isEqualToString:@"newLatLngZoom"]) {
-    return [GMSCameraUpdate setTarget:toLocation(data[1]) zoom:toFloat(data[2])];
+    return [GMSCameraUpdate setTarget:ToLocation(data[1]) zoom:ToFloat(data[2])];
   } else if ([update isEqualToString:@"scrollBy"]) {
-    return [GMSCameraUpdate scrollByX:toDouble(data[1]) Y:toDouble(data[2])];
+    return [GMSCameraUpdate scrollByX:ToDouble(data[1]) Y:ToDouble(data[2])];
   } else if ([update isEqualToString:@"zoomBy"]) {
     if (data.count == 2) {
-      return [GMSCameraUpdate zoomBy:toFloat(data[1])];
+      return [GMSCameraUpdate zoomBy:ToFloat(data[1])];
     } else {
-      return [GMSCameraUpdate zoomBy:toFloat(data[1]) atPoint:toPoint(data[2])];
+      return [GMSCameraUpdate zoomBy:ToFloat(data[1]) atPoint:ToPoint(data[2])];
     }
   } else if ([update isEqualToString:@"zoomIn"]) {
     return [GMSCameraUpdate zoomIn];
   } else if ([update isEqualToString:@"zoomOut"]) {
     return [GMSCameraUpdate zoomOut];
   } else if ([update isEqualToString:@"zoomTo"]) {
-    return [GMSCameraUpdate zoomTo:toFloat(data[1])];
+    return [GMSCameraUpdate zoomTo:ToFloat(data[1])];
   }
   return nil;
 }
 
-static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
-  NSDictionary* data = json;
+static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> sink) {
   id cameraTargetBounds = data[@"cameraTargetBounds"];
   if (cameraTargetBounds) {
-    [sink setCameraTargetBounds:toOptionalBounds(cameraTargetBounds)];
+    [sink setCameraTargetBounds:ToOptionalBounds(cameraTargetBounds)];
   }
   id compassEnabled = data[@"compassEnabled"];
   if (compassEnabled) {
-    [sink setCompassEnabled:toBool(compassEnabled)];
+    [sink setCompassEnabled:ToBool(compassEnabled)];
   }
   id mapType = data[@"mapType"];
   if (mapType) {
-    [sink setMapType:toMapViewType(mapType)];
+    [sink setMapType:ToMapViewType(mapType)];
   }
   id minMaxZoomPreference = data[@"minMaxZoomPreference"];
   if (minMaxZoomPreference) {
     NSArray* zoomData = minMaxZoomPreference;
-    float minZoom = (zoomData[0] == [NSNull null]) ? kGMSMinZoomLevel : toFloat(zoomData[0]);
-    float maxZoom = (zoomData[1] == [NSNull null]) ? kGMSMaxZoomLevel : toFloat(zoomData[1]);
+    float minZoom = (zoomData[0] == [NSNull null]) ? kGMSMinZoomLevel : ToFloat(zoomData[0]);
+    float maxZoom = (zoomData[1] == [NSNull null]) ? kGMSMaxZoomLevel : ToFloat(zoomData[1]);
     [sink setMinZoom:minZoom maxZoom:maxZoom];
   }
   id rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
   if (rotateGesturesEnabled) {
-    [sink setRotateGesturesEnabled:toBool(rotateGesturesEnabled)];
+    [sink setRotateGesturesEnabled:ToBool(rotateGesturesEnabled)];
   }
   id scrollGesturesEnabled = data[@"scrollGesturesEnabled"];
   if (scrollGesturesEnabled) {
-    [sink setScrollGesturesEnabled:toBool(scrollGesturesEnabled)];
+    [sink setScrollGesturesEnabled:ToBool(scrollGesturesEnabled)];
   }
   id tiltGesturesEnabled = data[@"tiltGesturesEnabled"];
   if (tiltGesturesEnabled) {
-    [sink setTiltGesturesEnabled:toBool(tiltGesturesEnabled)];
+    [sink setTiltGesturesEnabled:ToBool(tiltGesturesEnabled)];
   }
   id trackCameraPosition = data[@"trackCameraPosition"];
   if (trackCameraPosition) {
-    [sink setTrackCameraPosition:toBool(trackCameraPosition)];
+    [sink setTrackCameraPosition:ToBool(trackCameraPosition)];
   }
   id zoomGesturesEnabled = data[@"zoomGesturesEnabled"];
   if (zoomGesturesEnabled) {
-    [sink setZoomGesturesEnabled:toBool(zoomGesturesEnabled)];
+    [sink setZoomGesturesEnabled:ToBool(zoomGesturesEnabled)];
   }
   id myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
-    [sink setMyLocationEnabled:toBool(myLocationEnabled)];
+    [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
   }
 }
