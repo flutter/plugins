@@ -6,34 +6,28 @@
 
 @implementation FLTGoogleMapJsonConversions
 
-+ (bool)toBool:(id)json {
-  NSNumber* data = json;
++ (bool)toBool:(NSNumber*)data {
   return data.boolValue;
 }
 
-+ (int)toInt:(id)json {
-  NSNumber* data = json;
++ (int)toInt:(NSNumber*)data {
   return data.intValue;
 }
 
-+ (double)toDouble:(id)json {
-  NSNumber* data = json;
++ (double)toDouble:(NSNumber*)data {
   return data.doubleValue;
 }
 
-+ (float)toFloat:(id)json {
-  NSNumber* data = json;
++ (float)toFloat:(NSNumber*)data {
   return data.floatValue;
 }
 
-+ (CLLocationCoordinate2D)toLocation:(id)json {
-  NSArray* data = json;
++ (CLLocationCoordinate2D)toLocation:(NSArray*)data {
   return CLLocationCoordinate2DMake([FLTGoogleMapJsonConversions toDouble:data[0]],
                                     [FLTGoogleMapJsonConversions toDouble:data[1]]);
 }
 
-+ (CGPoint)toPoint:(id)json {
-  NSArray* data = json;
++ (CGPoint)toPoint:(NSArray*)data {
   return CGPointMake([FLTGoogleMapJsonConversions toDouble:data[0]],
                      [FLTGoogleMapJsonConversions toDouble:data[1]]);
 }

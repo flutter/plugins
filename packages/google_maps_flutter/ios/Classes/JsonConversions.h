@@ -6,10 +6,10 @@
 #import <GoogleMaps/GoogleMaps.h>
 
 @interface FLTGoogleMapJsonConversions
-+ (bool)toBool:(id)json;
-+ (int)toInt:(id)json;
-+ (double)toDouble:(id)json;
-+ (float)toFloat:(id)json;
-+ (CLLocationCoordinate2D)toLocation:(id)json;
-+ (CGPoint)toPoint:(id)json;
++ (bool)toBool:(NSNumber*)data;
++ (int)toInt:(NSNumber*)data;
++ (double)toDouble:(NSNumber*)data;
++ (float)toFloat:(NSNumber*)data;
++ (CLLocationCoordinate2D)toLocation:(NSArray*)data;
++ (CGPoint)toPoint:(NSArray*)data;
 @end

@@ -5,7 +5,7 @@
 #import "GoogleMapMarkerController.h"
 #import "JsonConversions.h"
 
-static UIImage* extractIcon(NSObject<FlutterPluginRegistrar>* registrar, id icon);
+static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray* icon);
 static void InterpretInfoWindow(id<FLTGoogleMapMarkerOptionsSink> sink, NSDictionary* data);
 
 @implementation FLTGoogleMapMarkerController {
@@ -74,83 +74,82 @@ static void InterpretInfoWindow(id<FLTGoogleMapMarkerOptionsSink> sink, NSDictio
 }
 @end
 
-static double ToDouble(id data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
+static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
 
-static float ToFloat(id data) { return [FLTGoogleMapJsonConversions toFloat:data]; }
+static float ToFloat(NSNumber* data) { return [FLTGoogleMapJsonConversions toFloat:data]; }
 
-static CLLocationCoordinate2D ToLocation(id data) {
+static CLLocationCoordinate2D ToLocation(NSArray* data) {
   return [FLTGoogleMapJsonConversions toLocation:data];
 }
 
-static int ToInt(id data) { return [FLTGoogleMapJsonConversions toInt:data]; }
+static int ToInt(NSNumber* data) { return [FLTGoogleMapJsonConversions toInt:data]; }
 
-static BOOL ToBool(id data) { return [FLTGoogleMapJsonConversions toBool:data]; }
+static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:data]; }
 
-static CGPoint ToPoint(id data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
+static CGPoint ToPoint(NSArray* data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
 
-static void interpretMarkerOptions(NSDictionary* data, id<FLTGoogleMapMarkerOptionsSink> sink,
+static void InterpretMarkerOptions(NSDictionary* data, id<FLTGoogleMapMarkerOptionsSink> sink,
                                    NSObject<FlutterPluginRegistrar>* registrar) {
-  id alpha = data[@"alpha"];
+  NSNumber* alpha = data[@"alpha"];
   if (alpha) {
     [sink setAlpha:ToFloat(alpha)];
   }
-  id anchor = data[@"anchor"];
+  NSArray* anchor = data[@"anchor"];
   if (anchor) {
     [sink setAnchor:ToPoint(anchor)];
   }
-  id draggable = data[@"draggable"];
+  NSNumber* draggable = data[@"draggable"];
   if (draggable) {
     [sink setDraggable:ToBool(draggable)];
   }
-  id icon = data[@"icon"];
+  NSArray* icon = data[@"icon"];
   if (icon) {
-    UIImage* image = extractIcon(registrar, icon);
+    UIImage* image = ExtractIcon(registrar, icon);
     [sink setIcon:image];
   }
-  id flat = data[@"flat"];
+  NSNumber* flat = data[@"flat"];
   if (flat) {
     [sink setFlat:ToBool(flat)];
   }
-  id consumeTapEvents = data[@"consumeTapEvents"];
+  NSNumber* consumeTapEvents = data[@"consumeTapEvents"];
   if (consumeTapEvents) {
     [sink setConsumeTapEvents:ToBool(consumeTapEvents)];
   }
   InterpretInfoWindow(sink, data);
-  id position = data[@"position"];
+  NSArray* position = data[@"position"];
   if (position) {
     [sink setPosition:ToLocation(position)];
   }
-  id rotation = data[@"rotation"];
+  NSNumber* rotation = data[@"rotation"];
   if (rotation) {
     [sink setRotation:ToDouble(rotation)];
   }
-  id visible = data[@"visible"];
+  NSNumber* visible = data[@"visible"];
   if (visible) {
     [sink setVisible:ToBool(visible)];
   }
-  id zIndex = data[@"zIndex"];
+  NSNumber* zIndex = data[@"zIndex"];
   if (zIndex) {
     [sink setZIndex:ToInt(zIndex)];
   }
 }
 
 static void InterpretInfoWindow(id<FLTGoogleMapMarkerOptionsSink> sink, NSDictionary* data) {
-  id infoWindow = data[@"infoWindow"];
+  NSDictionary* infoWindow = data[@"infoWindow"];
   if (infoWindow) {
     NSString* title = infoWindow[@"title"];
     NSString* snippet = infoWindow[@"snippet"];
     if (title) {
       [sink setInfoWindowTitle:title snippet:snippet];
     }
-    id infoWindowAnchor = infoWindow[@"infoWindowAnchor"];
+    NSArray* infoWindowAnchor = infoWindow[@"infoWindowAnchor"];
     if (infoWindowAnchor) {
       [sink setInfoWindowAnchor:ToPoint(infoWindowAnchor)];
     }
   }
 }
 
-static UIImage* extractIcon(NSObject<FlutterPluginRegistrar>* registrar, id icon) {
-  NSArray* iconData = icon;
+static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray* iconData) {
   UIImage* image;
   if ([iconData.firstObject isEqualToString:@"defaultMarker"]) {
     CGFloat hue = (iconData.count == 1) ? 0.0f : ToDouble(iconData[1]);
@@ -185,29 +184,29 @@ static UIImage* extractIcon(NSObject<FlutterPluginRegistrar>* registrar, id icon
   return self;
 }
 - (void)addMarkers:(NSArray*)markersToAdd {
-  for (id marker in markersToAdd) {
+  for (NSDictionary* marker in markersToAdd) {
     CLLocationCoordinate2D position = [FLTMarkersController getPosition:marker];
     NSString* markerId = [FLTMarkersController getMarkerId:marker];
     FLTGoogleMapMarkerController* controller =
         [[FLTGoogleMapMarkerController alloc] initMarkerWithPosition:position
                                                             markerId:markerId
                                                              mapView:_mapView];
-    interpretMarkerOptions(marker, controller, _registrar);
+    InterpretMarkerOptions(marker, controller, _registrar);
     _markerIdToController[markerId] = controller;
   }
 }
 - (void)changeMarkers:(NSArray*)markersToChange {
-  for (id marker in markersToChange) {
+  for (NSDictionary* marker in markersToChange) {
     NSString* markerId = [FLTMarkersController getMarkerId:marker];
     FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
     if (!controller) {
       continue;
     }
-    interpretMarkerOptions(marker, controller, _registrar);
+    InterpretMarkerOptions(marker, controller, _registrar);
   }
 }
 - (void)removeMarkerIds:(NSArray*)markerIdsToRemove {
-  for (id markerId in markerIdsToRemove) {
+  for (NSString* markerId in markerIdsToRemove) {
     if (!markerId) {
       continue;
     }
@@ -236,13 +235,11 @@ static UIImage* extractIcon(NSObject<FlutterPluginRegistrar>* registrar, id icon
   }
 }
 
-+ (CLLocationCoordinate2D)getPosition:(id)rawMarker {
-  NSDictionary* marker = rawMarker;
-  id position = marker[@"position"];
++ (CLLocationCoordinate2D)getPosition:(NSDictionary*)marker {
+  NSArray* position = marker[@"position"];
   return ToLocation(position);
 }
-+ (NSString*)getMarkerId:(id)rawMarker {
-  NSDictionary* marker = rawMarker;
++ (NSString*)getMarkerId:(NSDictionary*)marker {
   return marker[@"markerId"];
 }
 @end

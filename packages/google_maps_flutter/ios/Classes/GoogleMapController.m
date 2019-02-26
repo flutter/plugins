@@ -7,7 +7,7 @@
 
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
-static id PositionToJson(GMSCameraPosition* position);
+static NSDictionary* PositionToJson(GMSCameraPosition* position);
 static GMSCameraPosition* ToOptionalCameraPosition(NSArray* json);
 static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
 static GMSCameraUpdate* ToCameraUpdate(NSArray* data);
@@ -78,8 +78,7 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
     _registrar = registrar;
     _cameraDidInitialSetup = NO;
     _markersController = [[FLTMarkersController alloc] init:_channel mapView:_mapView];
-    id markersToAdd = args[@"markersToAdd"];
-    [_markersController addMarkers:markersToAdd];
+    [_markersController addMarkers:args[@"markersToAdd"]];
   }
   return self;
 }
@@ -229,11 +228,11 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
 
 #pragma mark - Implementations of JSON conversion functions.
 
-static id LocationToJson(CLLocationCoordinate2D position) {
+static NSArray* LocationToJson(CLLocationCoordinate2D position) {
   return @[ @(position.latitude), @(position.longitude) ];
 }
 
-static id PositionToJson(GMSCameraPosition* position) {
+static NSDictionary* PositionToJson(GMSCameraPosition* position) {
   if (!position) {
     return nil;
   }
@@ -245,22 +244,21 @@ static id PositionToJson(GMSCameraPosition* position) {
   };
 }
 
-static double ToDouble(id data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
+static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
 
-static float ToFloat(id data) { return [FLTGoogleMapJsonConversions toFloat:data]; }
+static float ToFloat(NSNumber* data) { return [FLTGoogleMapJsonConversions toFloat:data]; }
 
-static CLLocationCoordinate2D ToLocation(id data) {
+static CLLocationCoordinate2D ToLocation(NSArray* data) {
   return [FLTGoogleMapJsonConversions toLocation:data];
 }
 
-static int ToInt(id data) { return [FLTGoogleMapJsonConversions toInt:data]; }
+static int ToInt(NSNumber* data) { return [FLTGoogleMapJsonConversions toInt:data]; }
 
-static BOOL ToBool(id data) { return [FLTGoogleMapJsonConversions toBool:data]; }
+static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:data]; }
 
-static CGPoint ToPoint(id data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
+static CGPoint ToPoint(NSArray* data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
 
-static GMSCameraPosition* ToCameraPosition(id json) {
-  NSDictionary* data = json;
+static GMSCameraPosition* ToCameraPosition(NSDictionary* data) {
   return [GMSCameraPosition cameraWithTarget:ToLocation(data[@"target"])
                                         zoom:ToFloat(data[@"zoom"])
                                      bearing:ToDouble(data[@"bearing"])
@@ -271,8 +269,7 @@ static GMSCameraPosition* ToOptionalCameraPosition(NSArray* json) {
   return json ? ToCameraPosition(json) : nil;
 }
 
-static GMSCoordinateBounds* ToBounds(id json) {
-  NSArray* data = json;
+static GMSCoordinateBounds* ToBounds(NSArray* data) {
   return [[GMSCoordinateBounds alloc] initWithCoordinate:ToLocation(data[0])
                                               coordinate:ToLocation(data[1])];
 }
@@ -281,7 +278,7 @@ static GMSCoordinateBounds* ToOptionalBounds(NSArray* data) {
   return (data[0] == [NSNull null]) ? nil : ToBounds(data[0]);
 }
 
-static GMSMapViewType ToMapViewType(id json) {
+static GMSMapViewType ToMapViewType(NSNumber* json) {
   int value = ToInt(json);
   return (GMSMapViewType)(value == 0 ? 5 : value);
 }
@@ -315,46 +312,45 @@ static GMSCameraUpdate* ToCameraUpdate(NSArray* data) {
 }
 
 static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> sink) {
-  id cameraTargetBounds = data[@"cameraTargetBounds"];
+  NSArray* cameraTargetBounds = data[@"cameraTargetBounds"];
   if (cameraTargetBounds) {
     [sink setCameraTargetBounds:ToOptionalBounds(cameraTargetBounds)];
   }
-  id compassEnabled = data[@"compassEnabled"];
+  NSNumber* compassEnabled = data[@"compassEnabled"];
   if (compassEnabled) {
     [sink setCompassEnabled:ToBool(compassEnabled)];
   }
-  id mapType = data[@"mapType"];
+  NSNumber* mapType = data[@"mapType"];
   if (mapType) {
     [sink setMapType:ToMapViewType(mapType)];
   }
-  id minMaxZoomPreference = data[@"minMaxZoomPreference"];
-  if (minMaxZoomPreference) {
-    NSArray* zoomData = minMaxZoomPreference;
+  NSArray* zoomData = data[@"minMaxZoomPreference"];
+  if (zoomData) {
     float minZoom = (zoomData[0] == [NSNull null]) ? kGMSMinZoomLevel : ToFloat(zoomData[0]);
     float maxZoom = (zoomData[1] == [NSNull null]) ? kGMSMaxZoomLevel : ToFloat(zoomData[1]);
     [sink setMinZoom:minZoom maxZoom:maxZoom];
   }
-  id rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
+  NSNumber* rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
   if (rotateGesturesEnabled) {
     [sink setRotateGesturesEnabled:ToBool(rotateGesturesEnabled)];
   }
-  id scrollGesturesEnabled = data[@"scrollGesturesEnabled"];
+  NSNumber* scrollGesturesEnabled = data[@"scrollGesturesEnabled"];
   if (scrollGesturesEnabled) {
     [sink setScrollGesturesEnabled:ToBool(scrollGesturesEnabled)];
   }
-  id tiltGesturesEnabled = data[@"tiltGesturesEnabled"];
+  NSNumber* tiltGesturesEnabled = data[@"tiltGesturesEnabled"];
   if (tiltGesturesEnabled) {
     [sink setTiltGesturesEnabled:ToBool(tiltGesturesEnabled)];
   }
-  id trackCameraPosition = data[@"trackCameraPosition"];
+  NSNumber* trackCameraPosition = data[@"trackCameraPosition"];
   if (trackCameraPosition) {
     [sink setTrackCameraPosition:ToBool(trackCameraPosition)];
   }
-  id zoomGesturesEnabled = data[@"zoomGesturesEnabled"];
+  NSNumber* zoomGesturesEnabled = data[@"zoomGesturesEnabled"];
   if (zoomGesturesEnabled) {
     [sink setZoomGesturesEnabled:ToBool(zoomGesturesEnabled)];
   }
-  id myLocationEnabled = data[@"myLocationEnabled"];
+  NSNumber* myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
     [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
   }
