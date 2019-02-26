@@ -8,10 +8,11 @@
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position);
-static GMSCameraPosition* ToOptionalCameraPosition(NSArray* json);
+static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json);
 static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
 static GMSCameraUpdate* ToCameraUpdate(NSArray* data);
 static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> sink);
+static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
 
 @implementation FLTGoogleMapFactory {
   NSObject<FlutterPluginRegistrar>* _registrar;
@@ -244,8 +245,6 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position) {
   };
 }
 
-static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
-
 static float ToFloat(NSNumber* data) { return [FLTGoogleMapJsonConversions toFloat:data]; }
 
 static CLLocationCoordinate2D ToLocation(NSArray* data) {
@@ -265,7 +264,7 @@ static GMSCameraPosition* ToCameraPosition(NSDictionary* data) {
                                 viewingAngle:ToDouble(data[@"tilt"])];
 }
 
-static GMSCameraPosition* ToOptionalCameraPosition(NSArray* json) {
+static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json) {
   return json ? ToCameraPosition(json) : nil;
 }
 
