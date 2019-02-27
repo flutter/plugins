@@ -4,6 +4,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -26,9 +27,8 @@ import org.mockito.MockitoAnnotations;
 
 public class ImagePickerDelegateTest {
   private static final double WIDTH = 10.0;
-  private static final double HEIGHT = 10.0;
+  private static final double HEIGHT = 20.0;
   private static final String ORIGINAL_FILE_PATH = "/data/mock.tmp";
-  private static final String THUMBNAIL_IMAGE_PATH = "/data/thumbnail.tmp";
 
   @Mock Activity mockActivity;
   @Mock ImageResizer mockImageResizer;
@@ -279,15 +279,13 @@ public class ImagePickerDelegateTest {
     when(mockMethodCall.argument("width")).thenReturn(WIDTH);
     when(mockMethodCall.argument("height")).thenReturn(HEIGHT);
 
-    when(mockThumbnailCreator.generateImageThumbnail(any(), any(),
-            any())).thenReturn(THUMBNAIL_IMAGE_PATH);
+    doNothing().when(mockThumbnailCreator).generateImageThumbnailAsync(any(), any(), any(), any());
 
     ImagePickerDelegate delegate = createDelegate();
     delegate.generateImageThumbnail(mockMethodCall, mockResult);
 
-    verify(mockThumbnailCreator).generateImageThumbnail(ORIGINAL_FILE_PATH, WIDTH, HEIGHT);
-    verify(mockResult).success(THUMBNAIL_IMAGE_PATH);
-    verify(mockThumbnailCreator, never()).generateVideoThumbnail(any(), any(), any());
+    verify(mockThumbnailCreator).generateImageThumbnailAsync(eq(ORIGINAL_FILE_PATH), eq(WIDTH), eq(HEIGHT), any());
+    verify(mockThumbnailCreator, never()).generateVideoThumbnailAsync(any(), any(), any(), any());
   }
 
   @Test
@@ -296,15 +294,13 @@ public class ImagePickerDelegateTest {
     when(mockMethodCall.argument("width")).thenReturn(WIDTH);
     when(mockMethodCall.argument("height")).thenReturn(HEIGHT);
 
-    when(mockThumbnailCreator.generateVideoThumbnail(any(), any(),
-            any())).thenReturn(THUMBNAIL_IMAGE_PATH);
+    doNothing().when(mockThumbnailCreator).generateVideoThumbnailAsync(any(), any(), any(), any());
 
     ImagePickerDelegate delegate = createDelegate();
     delegate.generateVideoThumbnail(mockMethodCall, mockResult);
 
-    verify(mockThumbnailCreator).generateVideoThumbnail(ORIGINAL_FILE_PATH, WIDTH, HEIGHT);
-    verify(mockResult).success(THUMBNAIL_IMAGE_PATH);
-    verify(mockThumbnailCreator, never()).generateImageThumbnail(any(), any(), any());
+    verify(mockThumbnailCreator).generateVideoThumbnailAsync(eq(ORIGINAL_FILE_PATH), eq(WIDTH), eq(HEIGHT), any());
+    verify(mockThumbnailCreator, never()).generateImageThumbnailAsync(any(), any(), any(), any());
   }
 
   private ImagePickerDelegate createDelegate() {
