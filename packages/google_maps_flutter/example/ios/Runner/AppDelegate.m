@@ -7,7 +7,7 @@
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   // Provide the GoogleMaps API key.
-  [GMSServices provideAPIKey:@"YOUR KEY HERE"];
+  [GMSServices provideAPIKey:@"AIzaSyCkn-k1liMviBz4xVzOTt5kHzz9G4xXrwg"];
 
   // Register Flutter plugins.
   [GeneratedPluginRegistrant registerWithRegistry:self];
