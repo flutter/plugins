@@ -143,6 +143,7 @@ static FlutterError *getFlutterError(NSError *error) {
 @property(nonatomic) CMMotionManager *motionManager;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
+                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error;
 
 - (void)start;
@@ -162,9 +163,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
+                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
+  _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
 
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
@@ -676,6 +679,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     NSError *error;
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
+				       dispatchQueue:_dispatchQueue
                                                error:&error];
     if (error) {
       result(getFlutterError(error));
