@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Camera methods are ran in a background thread on iOS.
+
 ## 0.4.0+1
 
 * Remove categories.
