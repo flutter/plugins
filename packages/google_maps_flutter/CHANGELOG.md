@@ -1,3 +1,9 @@
+## 0.3.0
+
+* **Breaking change**. Changed the Marker API to be
+  widget based, it was controller based. Also changed the
+  example app to account for the same.
+
 ## 0.2.0+6
 
 * Updated the sample app in README.md.
