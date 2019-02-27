@@ -679,7 +679,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     NSError *error;
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
-				       dispatchQueue:_dispatchQueue
+                                       dispatchQueue:_dispatchQueue
                                                error:&error];
     if (error) {
       result(getFlutterError(error));
