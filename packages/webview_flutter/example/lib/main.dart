@@ -11,6 +11,7 @@ void main() => runApp(MaterialApp(home: WebViewExample()));
 
 const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
+<head><title>Navigation Delegate Example</title></head>thanks
 <body>
 <p>
 The navigation delegate is set to block navigation to the youtube website.
@@ -53,7 +54,7 @@ class WebViewExample extends StatelessWidget {
             _toasterJavascriptChannel(context),
           ].toSet(),
           navigationDelegate: (NavigationRequest request) {
-            if (request.url == 'https://www.youtube.com/') {
+            if (request.url.startsWith('https://www.youtube.com/')) {
               print('blocking navigation to $request}');
               return NavigationDecision.prevent;
             }

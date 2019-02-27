@@ -35,9 +35,9 @@ typedef void JavascriptMessageHandler(JavascriptMessage message);
 
 /// Information about a navigation action that is about to be executed.
 class NavigationRequest {
-  NavigationRequest({this.url, this.isMainFrame});
+  NavigationRequest._({this.url, this.isMainFrame});
 
-  /// The URL a navigation is requested to.
+  /// The URL that will be loaded if the navigation is executed.
   final String url;
 
   /// Whether the navigation request originated from the main HTML frame.
@@ -45,7 +45,7 @@ class NavigationRequest {
 
   @override
   String toString() {
-    return 'NavigationRequest(url: $url, isMainFrame: $isMainFrame)';
+    return '$runtimeType(url: $url, isMainFrame: $isMainFrame)';
   }
 }
 
@@ -376,7 +376,7 @@ class WebViewController {
             .onMessageReceived(JavascriptMessage(message));
         break;
       case 'navigationRequest':
-        final NavigationRequest request = NavigationRequest(
+        final NavigationRequest request = NavigationRequest._(
           url: call.arguments['url'],
           isMainFrame: call.arguments['isMainFrame'],
         );
