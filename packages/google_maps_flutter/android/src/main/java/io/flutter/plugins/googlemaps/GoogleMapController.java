@@ -155,8 +155,8 @@ final class GoogleMapController
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
     updateMyLocationEnabled();
-    updateInitialMarkers();
     markersController.setGoogleMap(googleMap);
+    updateInitialMarkers();
   }
 
   @Override

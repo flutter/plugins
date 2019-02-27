@@ -1,6 +1,7 @@
 ## 0.3.0+1
 
 * Add NSNull Checks for markers controller in iOS.
+* Also address an issue where initial markers are set before initialization.
 
 ## 0.3.0
 
