@@ -104,19 +104,23 @@ static const int SOURCE_GALLERY = 1;
     NSNumber *width = [call.arguments objectForKey:@"width"];
     NSNumber *height = [call.arguments objectForKey:@"height"];
       
-    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
-
-    [self generateThumbnail:image result:result width:width height:height];
+      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+          UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+        
+          [self generateThumbnail:image result:result width:width height:height];
+      });
   } else if ([@"generateVideoThumbnail" isEqualToString:call.method]) {
-      NSString *imagePath = [call.arguments objectForKey:@"originalVideoPath"];
-      NSNumber *width = [call.arguments objectForKey:@"width"];
-      NSNumber *height = [call.arguments objectForKey:@"height"];
-      
-      NSURL *videoURL = [NSURL fileURLWithPath:imagePath];
-      MPMoviePlayerController *player = [[MPMoviePlayerController alloc] initWithContentURL:videoURL];
-      UIImage *image = [player thumbnailImageAtTime:1.0 timeOption:MPMovieTimeOptionNearestKeyFrame];
-      
-      [self generateThumbnail:image result:result width:width height:height];
+      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+          NSString *imagePath = [call.arguments objectForKey:@"originalVideoPath"];
+          NSNumber *width = [call.arguments objectForKey:@"width"];
+          NSNumber *height = [call.arguments objectForKey:@"height"];
+          
+          NSURL *videoURL = [NSURL fileURLWithPath:imagePath];
+          MPMoviePlayerController *player = [[MPMoviePlayerController alloc] initWithContentURL:videoURL];
+          UIImage *image = [player thumbnailImageAtTime:1.0 timeOption:MPMovieTimeOptionNearestKeyFrame];
+          
+          [self generateThumbnail:image result:result width:width height:height];
+      });
   } else {
     result(FlutterMethodNotImplemented);
   }
