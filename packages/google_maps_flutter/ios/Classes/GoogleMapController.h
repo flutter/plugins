@@ -32,9 +32,6 @@
 - (void)animateWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate;
 - (void)moveWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate;
 - (GMSCameraPosition*)cameraPosition;
-- (NSString*)addMarkerWithPosition:(CLLocationCoordinate2D)position;
-- (FLTGoogleMapMarkerController*)markerWithId:(NSString*)markerId;
-- (void)removeMarkerWithId:(NSString*)markerId;
 @end
 
 // Allows the engine to create new Google Map instances.

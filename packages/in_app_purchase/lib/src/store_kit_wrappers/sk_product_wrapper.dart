@@ -25,7 +25,7 @@ class SkProductResponseWrapper {
   /// This method should only be used with `map` values returned by [SKRequestMaker.startProductRequest].
   /// The `map` parameter must not be null.
   factory SkProductResponseWrapper.fromJson(Map map) {
-    assert(map != null);
+    assert(map != null, 'Map must not be null.');
     return _$SkProductResponseWrapperFromJson(map);
   }
 
@@ -73,8 +73,7 @@ class SKProductSubscriptionPeriodWrapper {
   /// This method should only be used with `map` values returned by [SKProductDiscountWrapper.fromJson] or [SKProductWrapper.fromJson].
   /// The `map` parameter must not be null.
   factory SKProductSubscriptionPeriodWrapper.fromJson(Map map) {
-    assert(map != null &&
-        (map['numberOfUnits'] == null || map['numberOfUnits'] > 0));
+    assert(map != null, 'Map must not be null.');
     return _$SKProductSubscriptionPeriodWrapperFromJson(map);
   }
 
@@ -123,12 +122,12 @@ class SKProductDiscountWrapper {
   /// This method should only be used with `map` values returned by [SKProductWrapper.fromJson].
   /// The `map` parameter must not be null.
   factory SKProductDiscountWrapper.fromJson(Map map) {
-    assert(map != null);
+    assert(map != null, 'Map must not be null.');
     return _$SKProductDiscountWrapperFromJson(map);
   }
 
   /// The discounted price, in the currency that is defined in [priceLocale].
-  final double price;
+  final String price;
 
   /// Includes locale information about the price, e.g. `$` as the currency symbol for US locale.
   final PriceLocaleWrapper priceLocale;
@@ -173,7 +172,7 @@ class SKProductWrapper {
   /// This method should only be used with `map` values returned by [SkProductResponseWrapper.fromJson].
   /// The `map` parameter must not be null.
   factory SKProductWrapper.fromJson(Map map) {
-    assert(map != null);
+    assert(map != null, 'Map must not be null.');
     return _$SKProductWrapperFromJson(map);
   }
 
@@ -206,7 +205,7 @@ class SKProductWrapper {
   final String subscriptionGroupIdentifier;
 
   /// The price of the product, in the currency that is defined in [priceLocale].
-  final double price;
+  final String price;
 
   /// Whether the AppStore has downloadable content for this product.
   ///
@@ -239,7 +238,7 @@ class SKProductWrapper {
       id: productIdentifier,
       title: localizedTitle,
       description: localizedDescription,
-      price: priceLocale.currencySymbol + price.toString(),
+      price: priceLocale.currencySymbol + price,
     );
   }
 }
@@ -259,7 +258,7 @@ class PriceLocaleWrapper {
   /// This method should only be used with `map` values returned by [SKProductWrapper.fromJson] and [SKProductDiscountWrapper.fromJson].
   /// The `map` parameter must not be null.
   factory PriceLocaleWrapper.fromJson(Map map) {
-    assert(map != null);
+    assert(map != null, 'Map must not be null.');
     return _$PriceLocaleWrapperFromJson(map);
   }
 

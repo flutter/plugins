@@ -99,4 +99,44 @@ void main() {
       expect(response.skuDetailsList, contains(dummyWrapper));
     });
   });
+
+  group('launchBillingFlow', () {
+    final String launchMethodName =
+        'BillingClient#launchBillingFlow(Activity, BillingFlowParams)';
+
+    test('serializes and deserializes data', () async {
+      final BillingResponse sentCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode));
+      final SkuDetailsWrapper skuDetails = dummyWrapper;
+      final String accountId = "hashedAccountId";
+
+      final BillingResponse receivedCode = await billingClient
+          .launchBillingFlow(skuDetails: skuDetails, accountId: accountId);
+
+      expect(receivedCode, equals(sentCode));
+      Map<dynamic, dynamic> arguments =
+          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      expect(arguments['sku'], equals(skuDetails.sku));
+      expect(arguments['accountId'], equals(accountId));
+    });
+
+    test('handles null accountId', () async {
+      final BillingResponse sentCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode));
+      final SkuDetailsWrapper skuDetails = dummyWrapper;
+
+      final BillingResponse receivedCode =
+          await billingClient.launchBillingFlow(skuDetails: skuDetails);
+
+      expect(receivedCode, equals(sentCode));
+      Map<dynamic, dynamic> arguments =
+          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      expect(arguments['sku'], equals(skuDetails.sku));
+      expect(arguments['accountId'], isNull);
+    });
+  });
 }
