@@ -85,7 +85,6 @@
 @property(assign, nonatomic) BOOL isAudioSetup;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
-                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error;
 - (void)start;
 - (void)stop;
@@ -97,11 +96,9 @@
 @implementation FLTCam
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
-                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
-  _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
   AVCaptureSessionPreset preset;
   if ([resolutionPreset isEqualToString:@"high"]) {
@@ -468,7 +465,6 @@
     NSError *error;
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
-				       dispatchQueue:_dispatchQueue
                                                error:&error];
     if (error) {
       result([error flutterError]);
