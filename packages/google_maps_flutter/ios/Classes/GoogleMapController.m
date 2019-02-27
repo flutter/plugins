@@ -3,18 +3,16 @@
 // found in the LICENSE file.
 
 #import "GoogleMapController.h"
+#import "JsonConversions.h"
 
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
-static id positionToJson(GMSCameraPosition* position);
-static double toDouble(id json);
-static CLLocationCoordinate2D toLocation(id json);
-static GMSCameraPosition* toOptionalCameraPosition(id json);
-static GMSCoordinateBounds* toOptionalBounds(id json);
-static GMSCameraUpdate* toCameraUpdate(id json);
-static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
-static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
-                                   NSObject<FlutterPluginRegistrar>* registrar);
+static NSDictionary* PositionToJson(GMSCameraPosition* position);
+static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json);
+static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
+static GMSCameraUpdate* ToCameraUpdate(NSArray* data);
+static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> sink);
+static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
 
 @implementation FLTGoogleMapFactory {
   NSObject<FlutterPluginRegistrar>* _registrar;
@@ -45,7 +43,6 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 @implementation FLTGoogleMapController {
   GMSMapView* _mapView;
   int64_t _viewId;
-  NSMutableDictionary* _markers;
   FlutterMethodChannel* _channel;
   BOOL _trackCameraPosition;
   NSObject<FlutterPluginRegistrar>* _registrar;
@@ -54,6 +51,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
   // https://github.com/flutter/flutter/issues/27550
   BOOL _cameraDidInitialSetup;
+  FLTMarkersController* _markersController;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -63,11 +61,10 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   if ([super init]) {
     _viewId = viewId;
 
-    GMSCameraPosition* camera = toOptionalCameraPosition(args[@"initialCameraPosition"]);
+    GMSCameraPosition* camera = ToOptionalCameraPosition(args[@"initialCameraPosition"]);
     _mapView = [GMSMapView mapWithFrame:frame camera:camera];
-    _markers = [NSMutableDictionary dictionaryWithCapacity:1];
     _trackCameraPosition = NO;
-    interpretMapOptions(args[@"options"], self);
+    InterpretMapOptions(args[@"options"], self);
     NSString* channelName =
         [NSString stringWithFormat:@"plugins.flutter.io/google_maps_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName
@@ -81,6 +78,8 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
     _mapView.delegate = weakSelf;
     _registrar = registrar;
     _cameraDidInitialSetup = NO;
+    _markersController = [[FLTMarkersController alloc] init:_channel mapView:_mapView];
+    [_markersController addMarkers:args[@"markersToAdd"]];
   }
   return self;
 }
@@ -91,33 +90,26 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"map#show"]) {
-    [self showAtX:toDouble(call.arguments[@"x"]) Y:toDouble(call.arguments[@"y"])];
+    [self showAtX:ToDouble(call.arguments[@"x"]) Y:ToDouble(call.arguments[@"y"])];
     result(nil);
   } else if ([call.method isEqualToString:@"map#hide"]) {
     [self hide];
     result(nil);
   } else if ([call.method isEqualToString:@"camera#animate"]) {
-    [self animateWithCameraUpdate:toCameraUpdate(call.arguments[@"cameraUpdate"])];
+    [self animateWithCameraUpdate:ToCameraUpdate(call.arguments[@"cameraUpdate"])];
     result(nil);
   } else if ([call.method isEqualToString:@"camera#move"]) {
-    [self moveWithCameraUpdate:toCameraUpdate(call.arguments[@"cameraUpdate"])];
+    [self moveWithCameraUpdate:ToCameraUpdate(call.arguments[@"cameraUpdate"])];
     result(nil);
   } else if ([call.method isEqualToString:@"map#update"]) {
-    interpretMapOptions(call.arguments[@"options"], self);
-    result(positionToJson([self cameraPosition]));
+    InterpretMapOptions(call.arguments[@"options"], self);
+    result(PositionToJson([self cameraPosition]));
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
     result(nil);
-  } else if ([call.method isEqualToString:@"marker#add"]) {
-    NSDictionary* options = call.arguments[@"options"];
-    NSString* markerId = [self addMarkerWithPosition:toLocation(options[@"position"])];
-    interpretMarkerOptions(options, [self markerWithId:markerId], _registrar);
-    result(markerId);
-  } else if ([call.method isEqualToString:@"marker#update"]) {
-    interpretMarkerOptions(call.arguments[@"options"],
-                           [self markerWithId:call.arguments[@"marker"]], _registrar);
-    result(nil);
-  } else if ([call.method isEqualToString:@"marker#remove"]) {
-    [self removeMarkerWithId:call.arguments[@"marker"]];
+  } else if ([call.method isEqualToString:@"markers#update"]) {
+    [_markersController addMarkers:call.arguments[@"markersToAdd"]];
+    [_markersController changeMarkers:call.arguments[@"markersToChange"]];
+    [_markersController removeMarkerIds:call.arguments[@"markerIdsToRemove"]];
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);
@@ -147,25 +139,6 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
     return _mapView.camera;
   } else {
     return nil;
-  }
-}
-
-- (NSString*)addMarkerWithPosition:(CLLocationCoordinate2D)position {
-  FLTGoogleMapMarkerController* markerController =
-      [[FLTGoogleMapMarkerController alloc] initWithPosition:position mapView:_mapView];
-  _markers[markerController.markerId] = markerController;
-  return markerController.markerId;
-}
-
-- (FLTGoogleMapMarkerController*)markerWithId:(NSString*)markerId {
-  return _markers[markerId];
-}
-
-- (void)removeMarkerWithId:(NSString*)markerId {
-  FLTGoogleMapMarkerController* markerController = _markers[markerId];
-  if (markerController) {
-    [markerController setVisible:NO];
-    [_markers removeObjectForKey:markerId];
   }
 }
 
@@ -234,7 +207,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
     [mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
   }
   if (_trackCameraPosition) {
-    [_channel invokeMethod:@"camera#onMove" arguments:@{@"position" : positionToJson(position)}];
+    [_channel invokeMethod:@"camera#onMove" arguments:@{@"position" : PositionToJson(position)}];
   }
 }
 
@@ -244,233 +217,140 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 
 - (BOOL)mapView:(GMSMapView*)mapView didTapMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
-  [_channel invokeMethod:@"marker#onTap" arguments:@{@"marker" : markerId}];
-  return [marker.userData[1] boolValue];
+  return [_markersController onMarkerTap:markerId];
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
-  [_channel invokeMethod:@"infoWindow#onTap" arguments:@{@"marker" : markerId}];
+  [_markersController onInfoWindowTap:markerId];
 }
 
 @end
 
 #pragma mark - Implementations of JSON conversion functions.
 
-static id locationToJson(CLLocationCoordinate2D position) {
+static NSArray* LocationToJson(CLLocationCoordinate2D position) {
   return @[ @(position.latitude), @(position.longitude) ];
 }
 
-static id positionToJson(GMSCameraPosition* position) {
+static NSDictionary* PositionToJson(GMSCameraPosition* position) {
   if (!position) {
     return nil;
   }
   return @{
-    @"target" : locationToJson([position target]),
+    @"target" : LocationToJson([position target]),
     @"zoom" : @([position zoom]),
     @"bearing" : @([position bearing]),
     @"tilt" : @([position viewingAngle]),
   };
 }
 
-static bool toBool(id json) {
-  NSNumber* data = json;
-  return data.boolValue;
+static float ToFloat(NSNumber* data) { return [FLTGoogleMapJsonConversions toFloat:data]; }
+
+static CLLocationCoordinate2D ToLocation(NSArray* data) {
+  return [FLTGoogleMapJsonConversions toLocation:data];
 }
 
-static int toInt(id json) {
-  NSNumber* data = json;
-  return data.intValue;
+static int ToInt(NSNumber* data) { return [FLTGoogleMapJsonConversions toInt:data]; }
+
+static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:data]; }
+
+static CGPoint ToPoint(NSArray* data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
+
+static GMSCameraPosition* ToCameraPosition(NSDictionary* data) {
+  return [GMSCameraPosition cameraWithTarget:ToLocation(data[@"target"])
+                                        zoom:ToFloat(data[@"zoom"])
+                                     bearing:ToDouble(data[@"bearing"])
+                                viewingAngle:ToDouble(data[@"tilt"])];
 }
 
-static double toDouble(id json) {
-  NSNumber* data = json;
-  return data.doubleValue;
+static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json) {
+  return json ? ToCameraPosition(json) : nil;
 }
 
-static float toFloat(id json) {
-  NSNumber* data = json;
-  return data.floatValue;
+static GMSCoordinateBounds* ToBounds(NSArray* data) {
+  return [[GMSCoordinateBounds alloc] initWithCoordinate:ToLocation(data[0])
+                                              coordinate:ToLocation(data[1])];
 }
 
-static CLLocationCoordinate2D toLocation(id json) {
-  NSArray* data = json;
-  return CLLocationCoordinate2DMake(toDouble(data[0]), toDouble(data[1]));
+static GMSCoordinateBounds* ToOptionalBounds(NSArray* data) {
+  return (data[0] == [NSNull null]) ? nil : ToBounds(data[0]);
 }
 
-static CGPoint toPoint(id json) {
-  NSArray* data = json;
-  return CGPointMake(toDouble(data[0]), toDouble(data[1]));
-}
-
-static GMSCameraPosition* toCameraPosition(id json) {
-  NSDictionary* data = json;
-  return [GMSCameraPosition cameraWithTarget:toLocation(data[@"target"])
-                                        zoom:toFloat(data[@"zoom"])
-                                     bearing:toDouble(data[@"bearing"])
-                                viewingAngle:toDouble(data[@"tilt"])];
-}
-
-static GMSCameraPosition* toOptionalCameraPosition(id json) {
-  return json ? toCameraPosition(json) : nil;
-}
-
-static GMSCoordinateBounds* toBounds(id json) {
-  NSArray* data = json;
-  return [[GMSCoordinateBounds alloc] initWithCoordinate:toLocation(data[0])
-                                              coordinate:toLocation(data[1])];
-}
-
-static GMSCoordinateBounds* toOptionalBounds(id json) {
-  NSArray* data = json;
-  return (data[0] == [NSNull null]) ? nil : toBounds(data[0]);
-}
-
-static GMSMapViewType toMapViewType(id json) {
-  int value = toInt(json);
+static GMSMapViewType ToMapViewType(NSNumber* json) {
+  int value = ToInt(json);
   return (GMSMapViewType)(value == 0 ? 5 : value);
 }
 
-static GMSCameraUpdate* toCameraUpdate(id json) {
-  NSArray* data = json;
+static GMSCameraUpdate* ToCameraUpdate(NSArray* data) {
   NSString* update = data[0];
   if ([update isEqualToString:@"newCameraPosition"]) {
-    return [GMSCameraUpdate setCamera:toCameraPosition(data[1])];
+    return [GMSCameraUpdate setCamera:ToCameraPosition(data[1])];
   } else if ([update isEqualToString:@"newLatLng"]) {
-    return [GMSCameraUpdate setTarget:toLocation(data[1])];
+    return [GMSCameraUpdate setTarget:ToLocation(data[1])];
   } else if ([update isEqualToString:@"newLatLngBounds"]) {
-    return [GMSCameraUpdate fitBounds:toBounds(data[1]) withPadding:toDouble(data[2])];
+    return [GMSCameraUpdate fitBounds:ToBounds(data[1]) withPadding:ToDouble(data[2])];
   } else if ([update isEqualToString:@"newLatLngZoom"]) {
-    return [GMSCameraUpdate setTarget:toLocation(data[1]) zoom:toFloat(data[2])];
+    return [GMSCameraUpdate setTarget:ToLocation(data[1]) zoom:ToFloat(data[2])];
   } else if ([update isEqualToString:@"scrollBy"]) {
-    return [GMSCameraUpdate scrollByX:toDouble(data[1]) Y:toDouble(data[2])];
+    return [GMSCameraUpdate scrollByX:ToDouble(data[1]) Y:ToDouble(data[2])];
   } else if ([update isEqualToString:@"zoomBy"]) {
     if (data.count == 2) {
-      return [GMSCameraUpdate zoomBy:toFloat(data[1])];
+      return [GMSCameraUpdate zoomBy:ToFloat(data[1])];
     } else {
-      return [GMSCameraUpdate zoomBy:toFloat(data[1]) atPoint:toPoint(data[2])];
+      return [GMSCameraUpdate zoomBy:ToFloat(data[1]) atPoint:ToPoint(data[2])];
     }
   } else if ([update isEqualToString:@"zoomIn"]) {
     return [GMSCameraUpdate zoomIn];
   } else if ([update isEqualToString:@"zoomOut"]) {
     return [GMSCameraUpdate zoomOut];
   } else if ([update isEqualToString:@"zoomTo"]) {
-    return [GMSCameraUpdate zoomTo:toFloat(data[1])];
+    return [GMSCameraUpdate zoomTo:ToFloat(data[1])];
   }
   return nil;
 }
 
-static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
-  NSDictionary* data = json;
-  id cameraTargetBounds = data[@"cameraTargetBounds"];
+static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> sink) {
+  NSArray* cameraTargetBounds = data[@"cameraTargetBounds"];
   if (cameraTargetBounds) {
-    [sink setCameraTargetBounds:toOptionalBounds(cameraTargetBounds)];
+    [sink setCameraTargetBounds:ToOptionalBounds(cameraTargetBounds)];
   }
-  id compassEnabled = data[@"compassEnabled"];
+  NSNumber* compassEnabled = data[@"compassEnabled"];
   if (compassEnabled) {
-    [sink setCompassEnabled:toBool(compassEnabled)];
+    [sink setCompassEnabled:ToBool(compassEnabled)];
   }
-  id mapType = data[@"mapType"];
+  NSNumber* mapType = data[@"mapType"];
   if (mapType) {
-    [sink setMapType:toMapViewType(mapType)];
+    [sink setMapType:ToMapViewType(mapType)];
   }
-  id minMaxZoomPreference = data[@"minMaxZoomPreference"];
-  if (minMaxZoomPreference) {
-    NSArray* zoomData = minMaxZoomPreference;
-    float minZoom = (zoomData[0] == [NSNull null]) ? kGMSMinZoomLevel : toFloat(zoomData[0]);
-    float maxZoom = (zoomData[1] == [NSNull null]) ? kGMSMaxZoomLevel : toFloat(zoomData[1]);
+  NSArray* zoomData = data[@"minMaxZoomPreference"];
+  if (zoomData) {
+    float minZoom = (zoomData[0] == [NSNull null]) ? kGMSMinZoomLevel : ToFloat(zoomData[0]);
+    float maxZoom = (zoomData[1] == [NSNull null]) ? kGMSMaxZoomLevel : ToFloat(zoomData[1]);
     [sink setMinZoom:minZoom maxZoom:maxZoom];
   }
-  id rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
+  NSNumber* rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
   if (rotateGesturesEnabled) {
-    [sink setRotateGesturesEnabled:toBool(rotateGesturesEnabled)];
+    [sink setRotateGesturesEnabled:ToBool(rotateGesturesEnabled)];
   }
-  id scrollGesturesEnabled = data[@"scrollGesturesEnabled"];
+  NSNumber* scrollGesturesEnabled = data[@"scrollGesturesEnabled"];
   if (scrollGesturesEnabled) {
-    [sink setScrollGesturesEnabled:toBool(scrollGesturesEnabled)];
+    [sink setScrollGesturesEnabled:ToBool(scrollGesturesEnabled)];
   }
-  id tiltGesturesEnabled = data[@"tiltGesturesEnabled"];
+  NSNumber* tiltGesturesEnabled = data[@"tiltGesturesEnabled"];
   if (tiltGesturesEnabled) {
-    [sink setTiltGesturesEnabled:toBool(tiltGesturesEnabled)];
+    [sink setTiltGesturesEnabled:ToBool(tiltGesturesEnabled)];
   }
-  id trackCameraPosition = data[@"trackCameraPosition"];
+  NSNumber* trackCameraPosition = data[@"trackCameraPosition"];
   if (trackCameraPosition) {
-    [sink setTrackCameraPosition:toBool(trackCameraPosition)];
+    [sink setTrackCameraPosition:ToBool(trackCameraPosition)];
   }
-  id zoomGesturesEnabled = data[@"zoomGesturesEnabled"];
+  NSNumber* zoomGesturesEnabled = data[@"zoomGesturesEnabled"];
   if (zoomGesturesEnabled) {
-    [sink setZoomGesturesEnabled:toBool(zoomGesturesEnabled)];
+    [sink setZoomGesturesEnabled:ToBool(zoomGesturesEnabled)];
   }
-  id myLocationEnabled = data[@"myLocationEnabled"];
+  NSNumber* myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
-    [sink setMyLocationEnabled:toBool(myLocationEnabled)];
-  }
-}
-
-static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
-                                   NSObject<FlutterPluginRegistrar>* registrar) {
-  NSDictionary* data = json;
-  id alpha = data[@"alpha"];
-  if (alpha) {
-    [sink setAlpha:toFloat(alpha)];
-  }
-  id anchor = data[@"anchor"];
-  if (anchor) {
-    [sink setAnchor:toPoint(anchor)];
-  }
-  id draggable = data[@"draggable"];
-  if (draggable) {
-    [sink setDraggable:toBool(draggable)];
-  }
-  id icon = data[@"icon"];
-  if (icon) {
-    NSArray* iconData = icon;
-    UIImage* image;
-    if ([iconData[0] isEqualToString:@"defaultMarker"]) {
-      CGFloat hue = (iconData.count == 1) ? 0.0f : toDouble(iconData[1]);
-      image = [GMSMarker markerImageWithColor:[UIColor colorWithHue:hue / 360.0
-                                                         saturation:1.0
-                                                         brightness:0.7
-                                                              alpha:1.0]];
-    } else if ([iconData[0] isEqualToString:@"fromAsset"]) {
-      if (iconData.count == 2) {
-        image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
-      } else {
-        image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]
-                                                     fromPackage:iconData[2]]];
-      }
-    }
-    [sink setIcon:image];
-  }
-  id flat = data[@"flat"];
-  if (flat) {
-    [sink setFlat:toBool(flat)];
-  }
-  id infoWindowAnchor = data[@"infoWindowAnchor"];
-  if (infoWindowAnchor) {
-    [sink setInfoWindowAnchor:toPoint(infoWindowAnchor)];
-  }
-  id infoWindowText = data[@"infoWindowText"];
-  if (infoWindowText) {
-    NSArray* infoWindowTextData = infoWindowText;
-    NSString* title = (infoWindowTextData[0] == [NSNull null]) ? nil : infoWindowTextData[0];
-    NSString* snippet = (infoWindowTextData[1] == [NSNull null]) ? nil : infoWindowTextData[1];
-    [sink setInfoWindowTitle:title snippet:snippet];
-  }
-  id position = data[@"position"];
-  if (position) {
-    [sink setPosition:toLocation(position)];
-  }
-  id rotation = data[@"rotation"];
-  if (rotation) {
-    [sink setRotation:toDouble(rotation)];
-  }
-  id visible = data[@"visible"];
-  if (visible) {
-    [sink setVisible:toBool(visible)];
-  }
-  id zIndex = data[@"zIndex"];
-  if (zIndex) {
-    [sink setZIndex:toInt(zIndex)];
+    [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
   }
 }
