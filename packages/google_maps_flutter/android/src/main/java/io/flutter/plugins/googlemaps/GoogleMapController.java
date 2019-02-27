@@ -50,6 +50,7 @@ final class GoogleMapController
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
         PlatformView {
+
   private static final String TAG = "GoogleMapController";
   private final int id;
   private final AtomicInteger activityState;
@@ -65,6 +66,7 @@ final class GoogleMapController
   private final int registrarActivityHashCode;
   private final Context context;
   private final MarkersController markersController;
+  private List<Object> initialMarkers;
 
   GoogleMapController(
       int id,
@@ -153,6 +155,7 @@ final class GoogleMapController
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
     updateMyLocationEnabled();
+    updateInitialMarkers();
     markersController.setGoogleMap(googleMap);
   }
 
@@ -369,7 +372,17 @@ final class GoogleMapController
 
   @Override
   public void setInitialMarkers(Object initialMarkers) {
-    markersController.addMarkers((List<Object>) initialMarkers);
+    if (initialMarkers != null && initialMarkers.equals(this.initialMarkers)) {
+      return;
+    }
+    this.initialMarkers = (List<Object>) initialMarkers;
+    if (googleMap != null) {
+      updateInitialMarkers();
+    }
+  }
+
+  private void updateInitialMarkers() {
+    markersController.addMarkers(initialMarkers);
   }
 
   @SuppressLint("MissingPermission")
