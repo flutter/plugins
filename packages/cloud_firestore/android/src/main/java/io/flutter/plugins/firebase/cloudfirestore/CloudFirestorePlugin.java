@@ -6,8 +6,6 @@ package io.flutter.plugins.firebase.cloudfirestore;
 
 import android.os.AsyncTask;
 import android.util.SparseArray;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -250,7 +248,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     task.addOnFailureListener(
         new OnFailureListener() {
           @Override
-          public void onFailure(@NonNull Exception e) {
+          public void onFailure(Exception e) {
             result.error("Error performing " + description, e.getMessage(), null);
           }
         });
@@ -269,10 +267,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           getFirestore(arguments)
               .runTransaction(
                   new Transaction.Function<Void>() {
-                    @Nullable
                     @Override
-                    public Void apply(@NonNull Transaction transaction)
-                        throws FirebaseFirestoreException {
+                    public Void apply(Transaction transaction) throws FirebaseFirestoreException {
                       // Store transaction.
                       int transactionId = (Integer) arguments.get("transactionId");
                       transactions.append(transactionId, transaction);
@@ -502,7 +498,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
               .addOnFailureListener(
                   new OnFailureListener() {
                     @Override
-                    public void onFailure(@NonNull Exception e) {
+                    public void onFailure(Exception e) {
                       result.error("Error performing getDocuments", e.getMessage(), null);
                     }
                   });
@@ -557,7 +553,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
               .addOnFailureListener(
                   new OnFailureListener() {
                     @Override
-                    public void onFailure(@NonNull Exception e) {
+                    public void onFailure(Exception e) {
                       result.error("Error performing get", e.getMessage(), null);
                     }
                   });

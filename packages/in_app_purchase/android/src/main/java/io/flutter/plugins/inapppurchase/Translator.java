@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.inapppurchase;
 
-import androidx.annotation.Nullable;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.SkuDetails;
@@ -34,8 +33,7 @@ import java.util.List;
     return info;
   }
 
-  static List<HashMap<String, Object>> fromSkuDetailsList(
-      @Nullable List<SkuDetails> skuDetailsList) {
+  static List<HashMap<String, Object>> fromSkuDetailsList(List<SkuDetails> skuDetailsList) {
     if (skuDetailsList == null) {
       return Collections.emptyList();
     }
@@ -59,7 +57,7 @@ import java.util.List;
     return info;
   }
 
-  static List<HashMap<String, Object>> fromPurchasesList(@Nullable List<Purchase> purchases) {
+  static List<HashMap<String, Object>> fromPurchasesList(List<Purchase> purchases) {
     if (purchases == null) {
       return Collections.emptyList();
     }

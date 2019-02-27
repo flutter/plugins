@@ -1,6 +1,5 @@
 package io.flutter.plugins.firebasemlvision;
 
-import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -70,7 +69,7 @@ class CloudLabelDetector implements Detector {
         .addOnFailureListener(
             new OnFailureListener() {
               @Override
-              public void onFailure(@NonNull Exception e) {
+              public void onFailure(Exception e) {
                 result.error("labelDetectorError", e.getLocalizedMessage(), null);
               }
             });

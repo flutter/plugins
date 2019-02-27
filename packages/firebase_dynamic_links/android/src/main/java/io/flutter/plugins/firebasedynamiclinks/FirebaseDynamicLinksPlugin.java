@@ -1,7 +1,6 @@
 package io.flutter.plugins.firebasedynamiclinks;
 
 import android.net.Uri;
-import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.dynamiclinks.DynamicLink;
@@ -66,7 +65,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
             registrar.activity(),
             new OnCompleteListener<PendingDynamicLinkData>() {
               @Override
-              public void onComplete(@NonNull Task<PendingDynamicLinkData> task) {
+              public void onComplete(Task<PendingDynamicLinkData> task) {
                 if (task.isSuccessful()) {
                   PendingDynamicLinkData data = task.getResult();
                   if (data != null) {
@@ -90,7 +89,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   private OnCompleteListener<ShortDynamicLink> createShortLinkListener(final Result result) {
     return new OnCompleteListener<ShortDynamicLink>() {
       @Override
-      public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+      public void onComplete(Task<ShortDynamicLink> task) {
         if (task.isSuccessful()) {
           Map<String, Object> url = new HashMap<>();
           url.put("url", task.getResult().getShortLink().toString());

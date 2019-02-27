@@ -27,7 +27,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.annotation.Nullable;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.android.billingclient.api.BillingClient.SkuType;
@@ -379,8 +378,7 @@ public class InAppPurchasePluginTest {
     assertEquals(fromPurchasesList(purchasesList), resultData.get("purchasesList"));
   }
 
-  private void establishConnectedBillingClient(
-      @Nullable Map<String, Integer> arguments, @Nullable Result result) {
+  private void establishConnectedBillingClient(Map<String, Integer> arguments, Result result) {
     if (arguments == null) {
       arguments = new HashMap<>();
       arguments.put("handle", 1);

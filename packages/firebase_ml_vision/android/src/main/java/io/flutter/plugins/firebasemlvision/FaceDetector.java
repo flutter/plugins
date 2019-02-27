@@ -1,6 +1,5 @@
 package io.flutter.plugins.firebasemlvision;
 
-import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -93,7 +92,7 @@ class FaceDetector implements Detector {
         .addOnFailureListener(
             new OnFailureListener() {
               @Override
-              public void onFailure(@NonNull Exception exception) {
+              public void onFailure(Exception exception) {
                 result.error("faceDetectorError", exception.getLocalizedMessage(), null);
               }
             });

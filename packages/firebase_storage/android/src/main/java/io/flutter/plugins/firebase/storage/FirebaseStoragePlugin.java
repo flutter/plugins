@@ -6,7 +6,6 @@ package io.flutter.plugins.firebase.storage;
 
 import android.net.Uri;
 import android.util.SparseArray;
-import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -170,7 +169,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
         .addOnFailureListener(
             new OnFailureListener() {
               @Override
-              public void onFailure(@NonNull Exception e) {
+              public void onFailure(Exception e) {
                 result.error("metadata_error", e.getMessage(), null);
               }
             });
@@ -191,7 +190,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
         .addOnFailureListener(
             new OnFailureListener() {
               @Override
-              public void onFailure(@NonNull Exception e) {
+              public void onFailure(Exception e) {
                 result.error("metadata_error", e.getMessage(), null);
               }
             });
@@ -229,7 +228,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
         .addOnFailureListener(
             new OnFailureListener() {
               @Override
-              public void onFailure(@NonNull Exception e) {
+              public void onFailure(Exception e) {
                 result.error("download_error", e.getMessage(), null);
               }
             });
@@ -249,7 +248,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     deleteTask.addOnFailureListener(
         new OnFailureListener() {
           @Override
-          public void onFailure(@NonNull Exception e) {
+          public void onFailure(Exception e) {
             result.error("deletion_error", e.getMessage(), null);
           }
         });
@@ -344,7 +343,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     downloadTask.addOnFailureListener(
         new OnFailureListener() {
           @Override
-          public void onFailure(@NonNull Exception e) {
+          public void onFailure(Exception e) {
             result.error("download_error", e.getMessage(), null);
           }
         });
@@ -366,7 +365,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     downloadTask.addOnFailureListener(
         new OnFailureListener() {
           @Override
-          public void onFailure(@NonNull Exception e) {
+          public void onFailure(Exception e) {
             result.error("download_error", e.getMessage(), null);
           }
         });
@@ -425,7 +424,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
         .addOnCompleteListener(
             new OnCompleteListener<UploadTask.TaskSnapshot>() {
               @Override
-              public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+              public void onComplete(Task<UploadTask.TaskSnapshot> task) {
                 if (!task.isSuccessful()) {
                   invokeStorageTaskEvent(
                       handle,

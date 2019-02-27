@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.firebase.cloudfunctions.cloudfunctions;
 
-import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -49,7 +48,7 @@ public class CloudFunctionsPlugin implements MethodCallHandler {
             .addOnCompleteListener(
                 new OnCompleteListener<HttpsCallableResult>() {
                   @Override
-                  public void onComplete(@NonNull Task<HttpsCallableResult> task) {
+                  public void onComplete(Task<HttpsCallableResult> task) {
                     if (task.isSuccessful()) {
                       result.success(task.getResult().getData());
                     } else {

@@ -10,8 +10,6 @@ import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 
 import android.app.Activity;
 import android.content.Context;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
@@ -33,12 +31,11 @@ import java.util.Map;
 
 /** Wraps a {@link BillingClient} instance and responds to Dart calls for it. */
 public class InAppPurchasePlugin implements MethodCallHandler {
-  private @Nullable BillingClient billingClient;
+  private BillingClient billingClient;
   private final Activity activity;
   private final Context context;
   private final MethodChannel channel;
 
-  @VisibleForTesting
   static final class MethodNames {
     static final String IS_READY = "BillingClient#isReady()";
     static final String START_CONNECTION =
@@ -105,8 +102,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     }
   }
 
-  @VisibleForTesting
-  /*package*/ InAppPurchasePlugin(@Nullable BillingClient billingClient, MethodChannel channel) {
+  /*package*/ InAppPurchasePlugin(BillingClient billingClient, MethodChannel channel) {
     this.billingClient = billingClient;
     this.channel = channel;
     this.context = null;
@@ -162,8 +158,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     billingClient.querySkuDetailsAsync(
         params,
         new SkuDetailsResponseListener() {
-          public void onSkuDetailsResponse(
-              int responseCode, @Nullable List<SkuDetails> skuDetailsList) {
+          public void onSkuDetailsResponse(int responseCode, List<SkuDetails> skuDetailsList) {
             updateCachedSkus(skuDetailsList);
             final Map<String, Object> skuDetailsResponse = new HashMap<>();
             skuDetailsResponse.put("responseCode", responseCode);
@@ -173,7 +168,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
         });
   }
 
-  private void launchBillingFlow(String sku, @Nullable String accountId, Result result) {
+  private void launchBillingFlow(String sku, String accountId, Result result) {
     if (billingClientError(result)) {
       return;
     }
@@ -222,7 +217,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
         });
   }
 
-  private void updateCachedSkus(@Nullable List<SkuDetails> skuDetailsList) {
+  private void updateCachedSkus(List<SkuDetails> skuDetailsList) {
     if (skuDetailsList == null) {
       return;
     }
@@ -247,7 +242,6 @@ public class InAppPurchasePlugin implements MethodCallHandler {
         .build();
   }
 
-  @VisibleForTesting
   /*package*/ static class PluginPurchaseListener implements PurchasesUpdatedListener {
     private final MethodChannel channel;
 
@@ -256,7 +250,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     }
 
     @Override
-    public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> purchases) {
+    public void onPurchasesUpdated(int responseCode, List<Purchase> purchases) {
       final Map<String, Object> callbackArgs = new HashMap<>();
       callbackArgs.put("responseCode", responseCode);
       callbackArgs.put("purchasesList", fromPurchasesList(purchases));

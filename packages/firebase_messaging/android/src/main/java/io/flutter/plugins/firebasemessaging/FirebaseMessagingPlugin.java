@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
-import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -78,7 +77,6 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
     }
   }
 
-  @NonNull
   private Map<String, Object> parseRemoteMessage(RemoteMessage message) {
     Map<String, Object> content = new HashMap<>();
     content.put("data", message.getData());
@@ -119,7 +117,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
           .addOnCompleteListener(
               new OnCompleteListener<InstanceIdResult>() {
                 @Override
-                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                public void onComplete(Task<InstanceIdResult> task) {
                   if (!task.isSuccessful()) {
                     Log.w(TAG, "getToken, error fetching instanceID: ", task.getException());
                     result.success(null);

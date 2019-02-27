@@ -12,7 +12,6 @@ import android.content.pm.ResolveInfo;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import io.flutter.plugin.common.MethodCall;
@@ -65,16 +64,16 @@ import java.util.UUID;
 public class ImagePickerDelegate
     implements PluginRegistry.ActivityResultListener,
         PluginRegistry.RequestPermissionsResultListener {
-  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
-  @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
-  @VisibleForTesting static final int REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION = 2344;
-  @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
-  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
-  @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
-  @VisibleForTesting static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION = 2354;
-  @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
+  static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
+  static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
+  static final int REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION = 2344;
+  static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
+  static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
+  static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
+  static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION = 2354;
+  static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
 
-  @VisibleForTesting final String fileProviderName;
+  final String fileProviderName;
 
   private final Activity activity;
   private final File externalFilesDirectory;
@@ -161,7 +160,6 @@ public class ImagePickerDelegate
    * This constructor is used exclusively for testing; it can be used to provide mocks to final
    * fields of this class. Otherwise those fields would have to be mutable and visible.
    */
-  @VisibleForTesting
   ImagePickerDelegate(
       Activity activity,
       File externalFilesDirectory,

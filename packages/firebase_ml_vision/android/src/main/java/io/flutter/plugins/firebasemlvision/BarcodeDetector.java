@@ -2,7 +2,6 @@ package io.flutter.plugins.firebasemlvision;
 
 import android.graphics.Point;
 import android.graphics.Rect;
-import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -235,7 +234,7 @@ class BarcodeDetector implements Detector {
         .addOnFailureListener(
             new OnFailureListener() {
               @Override
-              public void onFailure(@NonNull Exception exception) {
+              public void onFailure(Exception exception) {
                 result.error("barcodeDetectorError", exception.getLocalizedMessage(), null);
               }
             });

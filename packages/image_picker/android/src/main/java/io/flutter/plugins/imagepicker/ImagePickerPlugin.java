@@ -5,7 +5,6 @@
 package io.flutter.plugins.imagepicker;
 
 import android.os.Environment;
-import androidx.annotation.VisibleForTesting;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -42,7 +41,6 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
     channel.setMethodCallHandler(instance);
   }
 
-  @VisibleForTesting
   ImagePickerPlugin(PluginRegistry.Registrar registrar, ImagePickerDelegate delegate) {
     this.registrar = registrar;
     this.delegate = delegate;

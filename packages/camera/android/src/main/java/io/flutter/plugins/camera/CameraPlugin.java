@@ -28,8 +28,6 @@ import android.util.Size;
 import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.Surface;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -290,7 +288,7 @@ public class CameraPlugin implements MethodCallHandler {
     private MediaRecorder mediaRecorder;
     private boolean recordingVideo;
 
-    Camera(final String cameraName, final String resolutionPreset, @NonNull final Result result) {
+    Camera(final String cameraName, final String resolutionPreset, final Result result) {
 
       this.cameraName = cameraName;
       textureEntry = view.createSurfaceTexture();
@@ -473,7 +471,7 @@ public class CameraPlugin implements MethodCallHandler {
       mediaRecorder.prepare();
     }
 
-    private void open(@Nullable final Result result) {
+    private void open(final Result result) {
       if (!hasCameraPermission()) {
         if (result != null) result.error("cameraPermission", "Camera permission not granted", null);
       } else {
@@ -491,7 +489,7 @@ public class CameraPlugin implements MethodCallHandler {
               cameraName,
               new CameraDevice.StateCallback() {
                 @Override
-                public void onOpened(@NonNull CameraDevice cameraDevice) {
+                public void onOpened(CameraDevice cameraDevice) {
                   Camera.this.cameraDevice = cameraDevice;
                   try {
                     startPreview();
@@ -512,7 +510,7 @@ public class CameraPlugin implements MethodCallHandler {
                 }
 
                 @Override
-                public void onClosed(@NonNull CameraDevice camera) {
+                public void onClosed(CameraDevice camera) {
                   if (eventSink != null) {
                     Map<String, String> event = new HashMap<>();
                     event.put("eventType", "cameraClosing");
@@ -522,14 +520,14 @@ public class CameraPlugin implements MethodCallHandler {
                 }
 
                 @Override
-                public void onDisconnected(@NonNull CameraDevice cameraDevice) {
+                public void onDisconnected(CameraDevice cameraDevice) {
                   cameraDevice.close();
                   Camera.this.cameraDevice = null;
                   sendErrorEvent("The camera was disconnected.");
                 }
 
                 @Override
-                public void onError(@NonNull CameraDevice cameraDevice, int errorCode) {
+                public void onError(CameraDevice cameraDevice, int errorCode) {
                   cameraDevice.close();
                   Camera.this.cameraDevice = null;
                   String errorDescription;
@@ -571,7 +569,7 @@ public class CameraPlugin implements MethodCallHandler {
       }
     }
 
-    private void takePicture(String filePath, @NonNull final Result result) {
+    private void takePicture(String filePath, final Result result) {
       final File file = new File(filePath);
 
       if (file.exists()) {
@@ -608,9 +606,7 @@ public class CameraPlugin implements MethodCallHandler {
             new CameraCaptureSession.CaptureCallback() {
               @Override
               public void onCaptureFailed(
-                  @NonNull CameraCaptureSession session,
-                  @NonNull CaptureRequest request,
-                  @NonNull CaptureFailure failure) {
+                  CameraCaptureSession session, CaptureRequest request, CaptureFailure failure) {
                 String reason;
                 switch (failure.getReason()) {
                   case CaptureFailure.REASON_ERROR:
@@ -631,7 +627,7 @@ public class CameraPlugin implements MethodCallHandler {
       }
     }
 
-    private void startVideoRecording(String filePath, @NonNull final Result result) {
+    private void startVideoRecording(String filePath, final Result result) {
       if (cameraDevice == null) {
         result.error("configureFailed", "Camera was closed during configuration.", null);
         return;
@@ -667,7 +663,7 @@ public class CameraPlugin implements MethodCallHandler {
             surfaces,
             new CameraCaptureSession.StateCallback() {
               @Override
-              public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+              public void onConfigured(CameraCaptureSession cameraCaptureSession) {
                 try {
                   if (cameraDevice == null) {
                     result.error("configureFailed", "Camera was closed during configuration", null);
@@ -686,7 +682,7 @@ public class CameraPlugin implements MethodCallHandler {
               }
 
               @Override
-              public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+              public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
                 result.error("configureFailed", "Failed to configure camera session", null);
               }
             },
@@ -696,7 +692,7 @@ public class CameraPlugin implements MethodCallHandler {
       }
     }
 
-    private void stopVideoRecording(@NonNull final Result result) {
+    private void stopVideoRecording(final Result result) {
       if (!recordingVideo) {
         result.success(null);
         return;
@@ -733,7 +729,7 @@ public class CameraPlugin implements MethodCallHandler {
           new CameraCaptureSession.StateCallback() {
 
             @Override
-            public void onConfigured(@NonNull CameraCaptureSession session) {
+            public void onConfigured(CameraCaptureSession session) {
               if (cameraDevice == null) {
                 sendErrorEvent("The camera was closed during configuration.");
                 return;
@@ -749,7 +745,7 @@ public class CameraPlugin implements MethodCallHandler {
             }
 
             @Override
-            public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+            public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
               sendErrorEvent("Failed to configure the camera for preview.");
             }
           },
@@ -778,7 +774,7 @@ public class CameraPlugin implements MethodCallHandler {
           surfaces,
           new CameraCaptureSession.StateCallback() {
             @Override
-            public void onConfigured(@NonNull CameraCaptureSession session) {
+            public void onConfigured(CameraCaptureSession session) {
               if (cameraDevice == null) {
                 sendErrorEvent("The camera was closed during configuration.");
                 return;
@@ -794,7 +790,7 @@ public class CameraPlugin implements MethodCallHandler {
             }
 
             @Override
-            public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+            public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
               sendErrorEvent("Failed to configure the camera for streaming images.");
             }
           },

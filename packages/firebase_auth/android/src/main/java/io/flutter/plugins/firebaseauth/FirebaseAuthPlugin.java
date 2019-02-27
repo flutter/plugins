@@ -6,8 +6,6 @@ package io.flutter.plugins.firebaseauth;
 
 import android.net.Uri;
 import android.util.SparseArray;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApiNotAvailableException;
@@ -184,7 +182,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
                 .addOnCompleteListener(
                     new OnCompleteListener<AuthResult>() {
                       @Override
-                      public void onComplete(@NonNull Task<AuthResult> task) {
+                      public void onComplete(Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                           Map<String, Object> arguments = new HashMap<>();
                           arguments.put("handle", handle);
@@ -489,7 +487,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .getIdToken(refresh)
         .addOnCompleteListener(
             new OnCompleteListener<GetTokenResult>() {
-              public void onComplete(@NonNull Task<GetTokenResult> task) {
+              public void onComplete(Task<GetTokenResult> task) {
                 if (task.isSuccessful() && task.getResult() != null) {
                   String idToken = task.getResult().getToken();
                   result.success(idToken);
@@ -556,7 +554,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     FirebaseAuth.AuthStateListener listener =
         new FirebaseAuth.AuthStateListener() {
           @Override
-          public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+          public void onAuthStateChanged(FirebaseAuth firebaseAuth) {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             Map<String, Object> userMap = mapFromUser(user);
             Map<String, Object> map = new HashMap<>();
@@ -607,7 +605,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
 
     @Override
-    public void onComplete(@NonNull Task<AuthResult> task) {
+    public void onComplete(Task<AuthResult> task) {
       if (!task.isSuccessful() || task.getResult() == null) {
         reportException(result, task.getException());
       } else {
@@ -626,7 +624,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
 
     @Override
-    public void onComplete(@NonNull Task<Void> task) {
+    public void onComplete(Task<Void> task) {
       if (!task.isSuccessful()) {
         reportException(result, task.getException());
       } else {
@@ -644,7 +642,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
 
     @Override
-    public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+    public void onComplete(Task<SignInMethodQueryResult> task) {
       if (!task.isSuccessful() || task.getResult() == null) {
         reportException(result, task.getException());
       } else {
@@ -703,7 +701,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     result.error("USER_REQUIRED", "Please authenticate with Firebase first", null);
   }
 
-  private void reportException(Result result, @Nullable Exception exception) {
+  private void reportException(Result result, Exception exception) {
     if (exception != null) {
       if (exception instanceof FirebaseAuthException) {
         final FirebaseAuthException authException = (FirebaseAuthException) exception;
