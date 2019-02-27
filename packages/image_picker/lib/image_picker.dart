@@ -148,7 +148,7 @@ class ImagePicker {
       return Future<PickingResult>.value(null);
     }
 
-    final File thumbnail = await _generateVideoThumbnail(
+    final File thumbnail = await generateVideoThumbnail(
       video: image,
       height: thumbnailHeight,
       width: thumbnailWidth,
@@ -187,7 +187,7 @@ class ImagePicker {
     return path == null ? null : File(path);
   }
 
-  static Future<File> _generateVideoThumbnail({
+  static Future<File> generateVideoThumbnail({
     @required File video,
     double width,
     double height,
