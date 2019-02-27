@@ -1,3 +1,7 @@
+## 0.3.0+1
+
+* Add NSNull Checks for markers controller in iOS.
+
 ## 0.3.0
 
 * **Breaking change**. Changed the Marker API to be
