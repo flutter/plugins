@@ -17,9 +17,6 @@
 // After querying the product, the available products will be saved in the map to be used
 // for purchase.
 @property(copy, nonatomic) NSMutableDictionary *productsCache;
-// Saved payment object used for resume payments;
-@property(copy, nonatomic) NSMutableDictionary *paymentsCache;
-;
 
 // Call back channel to dart used for when a listener function is triggered.
 @property(strong, nonatomic) FlutterMethodChannel *callbackChannel;
@@ -35,25 +32,8 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase"
                                   binaryMessenger:[registrar messenger]];
-  InAppPurchasePlugin *instance = [[InAppPurchasePlugin alloc] init];
+  InAppPurchasePlugin *instance = [[InAppPurchasePlugin alloc] initWithRegistrar:registrar];
   [registrar addMethodCallDelegate:instance channel:channel];
-}
-
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"-[SKPaymentQueue canMakePayments:]" isEqualToString:call.method]) {
-    [self canMakePayments:result];
-  } else if ([@"-[InAppPurchasePlugin startProductRequest:result:]" isEqualToString:call.method]) {
-    [self handleProductRequestMethodCall:call result:result];
-  } else if ([@"-[InAppPurchasePlugin createPaymentWithProductID:result:]"
-                 isEqualToString:call.method]) {
-    [self createPaymentWithProductID:call result:result];
-  } else if ([@"-[InAppPurchasePlugin addPayment:result:]" isEqualToString:call.method]) {
-    [self addPayment:call result:result];
-  } else if ([@"-[InAppPurchasePlugin finishTransaction:result:]" isEqualToString:call.method]) {
-    [self finishTransaction:call result:result];
-  } else {
-    result(FlutterMethodNotImplemented);
-  }
 }
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -86,6 +66,20 @@
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase_callback"
                                   binaryMessenger:[registrar messenger]];
   return self;
+}
+
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  if ([@"-[SKPaymentQueue canMakePayments:]" isEqualToString:call.method]) {
+    [self canMakePayments:result];
+  } else if ([@"-[InAppPurchasePlugin startProductRequest:result:]" isEqualToString:call.method]) {
+    [self handleProductRequestMethodCall:call result:result];
+  } else if ([@"-[InAppPurchasePlugin addPayment:result:]" isEqualToString:call.method]) {
+    [self addPayment:call result:result];
+  } else if ([@"-[InAppPurchasePlugin finishTransaction:result:]" isEqualToString:call.method]) {
+    [self finishTransaction:call result:result];
+  } else {
+    result(FlutterMethodNotImplemented);
+  }
 }
 
 - (void)canMakePayments:(FlutterResult)result {
@@ -131,83 +125,36 @@
   }];
 }
 
-- (void)createPaymentWithProductID:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if (![call.arguments isKindOfClass:[NSString class]]) {
-    result([FlutterError
-        errorWithCode:@"storekit_invalid_argument"
-              message:@"Argument type of createPaymentWithProductID is not a string."
-              details:call.arguments]);
-    return;
-  }
-  NSString *productID = call.arguments;
-  SKProduct *product = [self.productsCache objectForKey:productID];
-  if (!product) {
-    result([FlutterError
-        errorWithCode:@"storekit_product_not_found"
-              message:@"Cannot find the product. To create a payment of a product, you must query "
-                      @"the product with SKProductRequestMaker.startProductRequest first."
-              details:call.arguments]);
-    return;
-  }
-  SKPayment *payment = [SKPayment paymentWithProduct:product];
-  [self.paymentsCache setObject:payment forKey:productID];
-  result([FIAObjectTranslator getMapFromSKPayment:payment]);
-}
-
 - (void)addPayment:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (![call.arguments isKindOfClass:[NSDictionary class]]) {
     result([FlutterError errorWithCode:@"storekit_invalid_argument"
-                               message:@"Argument type of addPayment is not a map"
+                               message:@"Argument type of addPayment is not a Dictionary"
                                details:call.arguments]);
     return;
   }
   NSDictionary *paymentMap = (NSDictionary *)call.arguments;
-  NSString *productID = [paymentMap objectForKey:@"productID"];
-  SKPayment *payment = [self.paymentsCache objectForKey:productID];
-  // Use the payment object if we find a cached payment object associate with the productID. (Used
-  // for App Store payment flow
-  // https://developer.apple.com/documentation/storekit/skpaymenttransactionobserver/2877502-paymentqueue?language=objc)
-  if (payment) {
-    [self.paymentQueueHandler addPayment:payment];
-    result(nil);
-    return;
-  }
-  // The regular payment flow: when a product is already fetched, we create a payment object with
+  NSString *productID = [paymentMap objectForKey:@"productIdentifier"];
+  // When a product is already fetched, we create a payment object with
   // the product to process the payment.
-  SKProduct *product = [self.productsCache objectForKey:productID];
+  SKProduct *product = [self getProduct:productID];
   if (product) {
-    payment = [SKPayment paymentWithProduct:product];
-    [self.paymentQueueHandler addPayment:payment];
-    result(nil);
-    return;
-  }
-  // User can also use payment object with usePaymentObject = true and add
-  // simulatesAskToBuyInSandBox = true to test the payment flow.
-  if ([paymentMap[@"usePaymentObject"] boolValue] == YES) {
-    SKMutablePayment *mutablePayment = [[SKMutablePayment alloc] init];
-    mutablePayment.productIdentifier = productID;
+    SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
+    payment.applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
     NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
-    mutablePayment.quantity = quantity ? quantity.integerValue : 1;
-    NSString *applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
-    mutablePayment.applicationUsername = applicationUsername;
+    payment.quantity = quantity ? quantity.integerValue : 1;
     if (@available(iOS 8.3, *)) {
-      mutablePayment.simulatesAskToBuyInSandbox =
+      payment.simulatesAskToBuyInSandbox =
           [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
     }
-    [self.paymentQueueHandler addPayment:mutablePayment];
+    [self.paymentQueueHandler addPayment:payment];
     result(nil);
     return;
   }
   result([FlutterError
       errorWithCode:@"storekit_invalid_payment_object"
-            message:
-                @"You have requested a payment with an invalid payment object. A valid payment "
-                @"object should be one of the following: 1. Payment object that is automatically "
-                @"handled when the user starts an in-app purchase in the App Store and you "
-                @"returned true to the `shouldAddStorePayment` method or manually requested a "
-                @"payment with the productID that is provided in the `shouldAddStorePayment` "
-                @"method. 2. A payment requested for a product that has been fetched. 3. A custom "
-                @"payment object. This is not an error for a payment failure."
+            message:@"You have requested a payment for an invalid product. Either the "
+                    @"`productIdentifier` of the payment is not valid or the product has not been "
+                    @"fetched before adding the payment to the payment queue."
             details:call.arguments]);
 }
 
@@ -222,9 +169,15 @@
   SKPaymentTransaction *transaction =
       [self.paymentQueueHandler.transactions objectForKey:identifier];
   if (!transaction) {
-    result([FlutterError errorWithCode:@"storekit_platform_invalid_transaction"
-                               message:@"Invalid transaction ID is used."
-                               details:call.arguments]);
+    result([FlutterError
+        errorWithCode:@"storekit_platform_invalid_transaction"
+              message:[NSString
+                          stringWithFormat:@"The transaction with transactionIdentifer:%@ does not "
+                                           @"exist. Note that if the transactionState is "
+                                           @"purchasing, the transactionIdentifier will be "
+                                           @"nil(null).",
+                                           transaction.transactionIdentifier]
+              details:call.arguments]);
     return;
   }
   @try {
@@ -283,7 +236,6 @@
   // have a interception method that deciding if the payment should be processed (implemented by the
   // programmer).
   [self.productsCache setObject:product forKey:product.productIdentifier];
-  [self.paymentsCache setObject:payment forKey:payment.productIdentifier];
   [self.callbackChannel invokeMethod:@"shouldAddStorePayment"
                            arguments:@{
                              @"payment" : [FIAObjectTranslator getMapFromSKPayment:payment],
@@ -296,6 +248,10 @@
 
 - (SKProductsRequest *)getProductRequestWithIdentifiers:(NSSet *)identifiers {
   return [[SKProductsRequest alloc] initWithProductIdentifiers:identifiers];
+}
+
+- (SKProduct *)getProduct:(NSString *)productID {
+  return [self.productsCache objectForKey:productID];
 }
 
 #pragma mark - getter
@@ -312,13 +268,6 @@
     _productsCache = [NSMutableDictionary new];
   }
   return _productsCache;
-}
-
-- (NSMutableDictionary *)paymentsCache {
-  if (!_paymentsCache) {
-    _paymentsCache = [NSMutableDictionary new];
-  }
-  return _paymentsCache;
 }
 
 @end
