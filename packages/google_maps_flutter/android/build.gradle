@@ -46,6 +46,6 @@ android {
     }
 
     dependencies {
-        implementation 'com.google.android.gms:play-services-maps:15.+'
+        implementation 'com.google.android.gms:play-services-maps:16.1.0'
     }
 }

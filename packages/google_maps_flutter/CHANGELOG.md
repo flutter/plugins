@@ -1,3 +1,7 @@
+## 0.3.0+3
+
+* Update Android play-services-maps to 16.1.0
+
 ## 0.3.0+2
 
 * Address an issue on iOS where icons were not loading.
