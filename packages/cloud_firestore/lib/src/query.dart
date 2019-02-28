@@ -176,6 +176,27 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Cannot be used in combination with [startAt].
+  ///
+  /// Note: You cannot currently not use [DocumentSnapshot] as a parameter.
+  /// However, you can use `startAfter` with a *specific value*.
+  /// In this example it would be the `population` number from the `lastVisible` document:
+  ///
+  /// ```
+  /// final db = Firestore.instance;    
+  /// db.collection('cities').orderBy('population').limit(25).getDocuments().then((querySnapshot) {
+  ///   final lastVisible = snapshot.documents.last;
+  ///
+  ///   // Construct a new query starting at the last document, get the next 25 cities.
+  ///   final next = db.collection('cities').orderBy('population')
+  ///     .startAfter([lastVisible.data['population']]).limit(25);
+  ///   });
+  /// ```
+  ///
+  /// If you are ordering by fields that can have duplicate values, you can additionally pass
+  /// the `documentId` to `startAfter`:
+  /// ```
+  ///  .orderBy(...).orderBy('__name__').startAfter([..., lastVisible.documentId])
+  /// ```
   Query startAfter(List<dynamic> values) {
     assert(values != null);
     assert(!_parameters.containsKey('startAfter'));
