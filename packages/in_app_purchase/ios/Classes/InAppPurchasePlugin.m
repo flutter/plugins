@@ -171,12 +171,12 @@
   if (!transaction) {
     result([FlutterError
         errorWithCode:@"storekit_platform_invalid_transaction"
-              message:[NSString stringWithFormat:
-                                    @"The transaction with transactionIdentifer:%@ does not "
-                                    @"exist. Note that if the transactionState is "
-                                    @"purchasing, the transactionIdentifier will be "
-                                    @"nil(null).",
-                                    transaction.transactionIdentifier]
+              message:[NSString
+                          stringWithFormat:@"The transaction with transactionIdentifer:%@ does not "
+                                           @"exist. Note that if the transactionState is "
+                                           @"purchasing, the transactionIdentifier will be "
+                                           @"nil(null).",
+                                           transaction.transactionIdentifier]
               details:call.arguments]);
     return;
   }
