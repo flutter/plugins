@@ -77,7 +77,7 @@
 
   NSDictionary *attributes = call.arguments[@"attributes"];
   [attributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
-    [trace setValue:key forAttribute:value];
+    [trace setValue:value forAttribute:key];
   }];
 
   [trace stop];
@@ -149,7 +149,7 @@
 
   NSDictionary *attributes = call.arguments[@"attributes"];
   [attributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
-    [metric setValue:key forAttribute:value];
+    [metric setValue:value forAttribute:key];
   }];
 
   [metric stop];
