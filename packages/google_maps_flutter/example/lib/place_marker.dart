@@ -212,6 +212,15 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
+  Future<void> _setIcon() async {
+    final Marker marker = markers[selectedMarker];
+    setState(() {
+      markers[selectedMarker] = marker.copyWith(
+        iconParam: BitmapDescriptor.fromAsset('assets/emoji.png'),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -295,6 +304,10 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                         FlatButton(
                           child: const Text('change zIndex'),
                           onPressed: _changeZIndex,
+                        ),
+                        FlatButton(
+                          child: const Text('set icon'),
+                          onPressed: _setIcon,
                         ),
                       ],
                     ),
