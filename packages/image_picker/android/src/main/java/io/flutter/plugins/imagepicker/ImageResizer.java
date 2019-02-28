@@ -87,7 +87,7 @@ class ImageResizer {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     boolean saveAsPNG = bmp.hasAlpha();
     scaledBmp.compress(
-      saveAsPNG ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, 100, outputStream);
+        saveAsPNG ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, 100, outputStream);
 
     String[] pathParts = path.split("/");
     String imageName = pathParts[pathParts.length - 1];
