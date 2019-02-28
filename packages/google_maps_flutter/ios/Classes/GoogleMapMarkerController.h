@@ -33,7 +33,9 @@
 @end
 
 @interface FLTMarkersController : NSObject
-- (instancetype)init:(FlutterMethodChannel*)methodChannel mapView:(GMSMapView*)mapView;
+- (instancetype)init:(FlutterMethodChannel*)methodChannel
+             mapView:(GMSMapView*)mapView
+           registrar:(NSObject<FlutterPluginRegistrar>*)registrar;
 - (void)addMarkers:(NSArray*)markersToAdd;
 - (void)changeMarkers:(NSArray*)markersToChange;
 - (void)removeMarkerIds:(NSArray*)markerIdsToRemove;
