@@ -1,3 +1,11 @@
+## 0.4.1
+
+* Camera methods are ran in a background thread on iOS.
+
+## 0.4.0+3
+
+* Fixed a crash when the plugin is registered by a background FlutterView.
+
 ## 0.4.0+2
 
 * Fix orientation of captured photos when camera is used for the first time on Android.

@@ -17,7 +17,6 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 @interface FIAPaymentQueueHandler : NSObject <SKPaymentTransactionObserver>
 
 @property(copy, nonatomic, readonly) NSDictionary *transactions;
-@property(assign, nonatomic) BOOL observerDidSet;
 
 - (instancetype)initWithQueue:(nonnull SKPaymentQueue *)queue
                      transactionsUpdated:(nullable TransactionsUpdated)transactionsUpdated

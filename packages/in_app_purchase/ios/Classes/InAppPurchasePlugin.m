@@ -79,8 +79,6 @@
     [self finishTransaction:call result:result];
   } else if ([@"-[InAppPurchasePlugin restoreTransactions:result:]" isEqualToString:call.method]) {
     [self restoreTransactions:call result:result];
-  } else if ([@"-[InAppPurchasePlugin observerDidSet:]" isEqualToString:call.method]) {
-    [self observerDidSet:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -177,9 +175,9 @@
         errorWithCode:@"storekit_platform_invalid_transaction"
               message:[NSString
                           stringWithFormat:@"The transaction with transactionIdentifer:%@ does not "
-                                           @"exsit. Note that if the transactionState is "
+                                           @"exist. Note that if the transactionState is "
                                            @"purchasing, the transactionIdentifier will be "
-                                           @"nil(null). And you should not finish this transaction",
+                                           @"nil(null).",
                                            transaction.transactionIdentifier]
               details:call.arguments]);
     return;
@@ -206,11 +204,6 @@
     return;
   }
   [self.paymentQueueHandler restoreTransactions:call.arguments];
-}
-
-- (void)observerDidSet:(FlutterMethodCall *)call result:(FlutterResult)result {
-  self.paymentQueueHandler.observerDidSet = YES;
-  result(nil);
 }
 
 #pragma mark - delegates
