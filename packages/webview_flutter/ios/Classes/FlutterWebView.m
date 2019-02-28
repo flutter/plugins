@@ -288,38 +288,55 @@
 
 #pragma mark WKNavigationDelegate
 
-- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential *_Nullable))completionHandler {
-  NSURLProtectionSpace *ps = challenge.protectionSpace;
-  [_channel invokeMethod:@"onReceivedHttpAuthRequest"
-               arguments:@{@"host": ps.host, @"realm": ps.realm ? ps.realm : @""}
-                  result:^(id _Nullable result) {
-                      if (result && [result isKindOfClass:[NSDictionary class]]) {
-                        id username = result[@"username"];
-                        id password = result[@"password"];
-                        if (username && password) {
-                          completionHandler(
-                                  NSURLSessionAuthChallengeUseCredential,
-                                  [NSURLCredential credentialWithUser:username password:password persistence:NSURLCredentialPersistenceForSession]);
-                          return;
-                        }
-                      }
-                      completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
-                  }];
+- (void)webView:(WKWebView*)webView
+    didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge*)challenge
+                    completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition,
+                                                NSURLCredential* _Nullable))completionHandler {
+  NSURLProtectionSpace* ps = challenge.protectionSpace;
+  [_channel
+      invokeMethod:@"onReceivedHttpAuthRequest"
+         arguments:@{@"host" : ps.host, @"realm" : ps.realm ? ps.realm : @""}
+            result:^(id _Nullable result) {
+              if (result && [result isKindOfClass:[NSDictionary class]]) {
+                id username = result[@"username"];
+                id password = result[@"password"];
+                if (username && password) {
+                  completionHandler(
+                      NSURLSessionAuthChallengeUseCredential,
+                      [NSURLCredential credentialWithUser:username
+                                                 password:password
+                                              persistence:NSURLCredentialPersistenceForSession]);
+                  return;
+                }
+              }
+              completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+            }];
 }
 
-- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-  [_channel invokeMethod:@"onPageFinished" arguments:@{@"url": _webView.URL.absoluteString}];
+- (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation {
+  [_channel invokeMethod:@"onPageFinished" arguments:@{@"url" : _webView.URL.absoluteString}];
 }
 
-- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-  [_channel invokeMethod:@"onReceivedError" arguments:@{@"url": _webView.URL, @"description": [error localizedDescription]}];
+- (void)webView:(WKWebView*)webView
+    didFailNavigation:(WKNavigation*)navigation
+            withError:(NSError*)error {
+  [_channel invokeMethod:@"onReceivedError"
+               arguments:@{@"url" : _webView.URL, @"description" : [error localizedDescription]}];
 }
 
-- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-  [_channel invokeMethod:@"onReceivedError" arguments:@{@"url": _webView.URL, @"description": [error localizedDescription]}];
+- (void)webView:(WKWebView*)webView
+    didFailProvisionalNavigation:(WKNavigation*)navigation
+                       withError:(NSError*)error {
+  [_channel invokeMethod:@"onReceivedError"
+               arguments:@{
+                 @"url" : _webView.URL ?: [NSNull null],
+                 @"description" : [error localizedDescription]
+               }];
 }
 
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+- (void)webView:(WKWebView*)webView
+    decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction
+                    decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
   decisionHandler(WKNavigationActionPolicyAllow);
 }
 

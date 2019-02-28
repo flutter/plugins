@@ -262,13 +262,11 @@ class _CreationParams {
 }
 
 class _WebSettings {
-  _WebSettings({
-    this.javascriptMode,
-    this.userAgent
-  });
+  _WebSettings({this.javascriptMode, this.userAgent});
 
   static _WebSettings fromWidget(WebView widget) {
-    return _WebSettings(javascriptMode: widget.javascriptMode, userAgent: widget.userAgent);
+    return _WebSettings(
+        javascriptMode: widget.javascriptMode, userAgent: widget.userAgent);
   }
 
   final JavascriptMode javascriptMode;
@@ -291,40 +289,31 @@ class _WebSettings {
   }
 }
 
-/**
- * Simple credentials wrapper for authorization requests returned by [WebViewClient.onReceivedHttpAuthRequest].
- */
+/// Simple credentials wrapper for authorization requests returned by [WebViewClient.onReceivedHttpAuthRequest].
 class AuthInfo {
+  AuthInfo(this.username, this.password);
+
   final String username;
   final String password;
-
-  AuthInfo(this.username, this.password);
 }
 
 typedef Future<AuthInfo> AuthHandler(String host, String realm);
 
-/**
- * Generic error during loading page in [WebView] and passed to [WebViewClient.onReceivedError].
- */
+/// Generic error during loading page in [WebView] and passed to [WebViewClient.onReceivedError].
 class WebViewError {
+  WebViewError({this.url, this.description});
+
   /// URL of the page when the error happened. (might be null if unknown)
   final String url;
 
   /// Localized description of the error.
   final String description;
-
-  WebViewError({this.url, this.description});
 }
 
-/**
- * Allows listening for [WebView] events and customize behavior.
- */
+/// Allows listening for [WebView] events and customize behavior.
 class WebViewClient {
-
-  /**
-   * Called for authorization requests (basic authorization) Expected to return username/password,
-   * or null if it should cancel the request.
-   */
+  /// Called for authorization requests (basic authorization) Expected to return username/password,
+  /// or null if it should cancel the request.
   Future<AuthInfo> onReceivedHttpAuthRequest(String host, String realm) async {
     return null;
   }
@@ -372,8 +361,9 @@ class WebViewController {
       case 'onReceivedHttpAuthRequest':
         final String host = call.arguments['host'];
         final String realm = call.arguments['realm'];
-        final handled = await webViewClient.onReceivedHttpAuthRequest(host, realm);
-        return {
+        final AuthInfo handled =
+            await webViewClient.onReceivedHttpAuthRequest(host, realm);
+        return <String, String>{
           'username': handled.username,
           'password': handled.password,
         };

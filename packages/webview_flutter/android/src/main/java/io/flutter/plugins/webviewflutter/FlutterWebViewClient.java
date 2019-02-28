@@ -8,19 +8,15 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
+import io.flutter.plugin.common.MethodChannel;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.flutter.plugin.common.MethodChannel;
-
-/**
- * WebViewClient implementation for forwarding notifications to flutter channel.
- */
+/** WebViewClient implementation for forwarding notifications to flutter channel. */
 public class FlutterWebViewClient extends WebViewClient {
 
-  private final static String TAG = "FlutterWebViewClient";
+  private static final String TAG = "FlutterWebViewClient";
 
   private final MethodChannel methodChannel;
 
@@ -53,35 +49,38 @@ public class FlutterWebViewClient extends WebViewClient {
   }
 
   @Override
-  public void onReceivedHttpAuthRequest(WebView view, final HttpAuthHandler handler, String host, String realm) {
+  public void onReceivedHttpAuthRequest(
+      WebView view, final HttpAuthHandler handler, String host, String realm) {
     HashMap<String, String> arguments = new HashMap<>();
     arguments.put("host", host);
     arguments.put("realm", realm);
-    methodChannel.invokeMethod("onReceivedHttpAuthRequest", arguments, new MethodChannel.Result() {
-      @Override
-      public void success(Object o) {
-        if (o instanceof Map) {
-          Map<?, ?> map = (Map<?, ?>) o;
-          Object username = map.get("username");
-          Object password = map.get("password");
-          if (username != null && password != null) {
-            handler.proceed(username.toString(), password.toString());
-            return;
+    methodChannel.invokeMethod(
+        "onReceivedHttpAuthRequest",
+        arguments,
+        new MethodChannel.Result() {
+          @Override
+          public void success(Object o) {
+            if (o instanceof Map) {
+              Map<?, ?> map = (Map<?, ?>) o;
+              Object username = map.get("username");
+              Object password = map.get("password");
+              if (username != null && password != null) {
+                handler.proceed(username.toString(), password.toString());
+                return;
+              }
+            }
+            handler.cancel();
           }
-        }
-        handler.cancel();
-      }
 
-      @Override
-      public void error(String s, String s1, Object o) {
-        handler.cancel();
-      }
+          @Override
+          public void error(String s, String s1, Object o) {
+            handler.cancel();
+          }
 
-      @Override
-      public void notImplemented() {
-        handler.cancel();
-      }
-    });
-
+          @Override
+          public void notImplemented() {
+            handler.cancel();
+          }
+        });
   }
 }

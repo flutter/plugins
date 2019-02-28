@@ -4,8 +4,6 @@ import android.content.Context;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
-import android.webkit.WebViewDatabase;
-
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
