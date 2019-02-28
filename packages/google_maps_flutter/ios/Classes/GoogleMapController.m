@@ -78,7 +78,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _mapView.delegate = weakSelf;
     _registrar = registrar;
     _cameraDidInitialSetup = NO;
-    _markersController = [[FLTMarkersController alloc] init:_channel mapView:_mapView];
+    _markersController = [[FLTMarkersController alloc] init:_channel
+                                                    mapView:_mapView
+                                                  registrar:registrar];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
