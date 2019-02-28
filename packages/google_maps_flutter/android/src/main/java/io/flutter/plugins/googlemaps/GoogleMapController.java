@@ -372,9 +372,6 @@ final class GoogleMapController
 
   @Override
   public void setInitialMarkers(Object initialMarkers) {
-    if (initialMarkers != null && initialMarkers.equals(this.initialMarkers)) {
-      return;
-    }
     this.initialMarkers = (List<Object>) initialMarkers;
     if (googleMap != null) {
       updateInitialMarkers();
