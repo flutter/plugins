@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:flutter_driver/driver_extension.dart';
-import 'package:shared_preferences_example/main.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:test_core/src/runner/hack_register_platform.dart' as hack; // ignore: implementation_imports
 
 void main() {
   final Completer<String> completer = Completer<String>();
