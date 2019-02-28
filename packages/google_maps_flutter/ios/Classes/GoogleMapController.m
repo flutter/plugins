@@ -79,7 +79,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _registrar = registrar;
     _cameraDidInitialSetup = NO;
     _markersController = [[FLTMarkersController alloc] init:_channel mapView:_mapView];
-    [_markersController addMarkers:args[@"markersToAdd"]];
+    id markersToAdd = args[@"markersToAdd"];
+    if ([markersToAdd isKindOfClass:[NSArray class]]) {
+      [_markersController addMarkers:markersToAdd];
+    }
   }
   return self;
 }
@@ -107,9 +110,18 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
     result(nil);
   } else if ([call.method isEqualToString:@"markers#update"]) {
-    [_markersController addMarkers:call.arguments[@"markersToAdd"]];
-    [_markersController changeMarkers:call.arguments[@"markersToChange"]];
-    [_markersController removeMarkerIds:call.arguments[@"markerIdsToRemove"]];
+    id markersToAdd = call.arguments[@"markersToAdd"];
+    if ([markersToAdd isKindOfClass:[NSArray class]]) {
+      [_markersController addMarkers:markersToAdd];
+    }
+    id markersToChange = call.arguments[@"markersToChange"];
+    if ([markersToChange isKindOfClass:[NSArray class]]) {
+      [_markersController changeMarkers:markersToChange];
+    }
+    id markerIdsToRemove = call.arguments[@"markerIdsToRemove"];
+    if ([markerIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_markersController removeMarkerIds:markerIdsToRemove];
+    }
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);
