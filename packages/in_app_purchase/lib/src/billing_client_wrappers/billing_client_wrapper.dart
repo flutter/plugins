@@ -134,8 +134,8 @@ class BillingClient {
   /// to complete the transaction there.
   ///
   /// This method returns a [BillingResponse] representing the initial attempt
-  /// to show the Google Play purchase screen.
-  /// TODO(mklim, flutter/flutter#26326): Expose onPurchasesUpdated() result.
+  /// to show the Google Play billing flow. Actual purchase updates are
+  /// delivered via the [PurchasesUpdatedListener].
   ///
   /// This method calls through to
   /// [`BillingClient#launchBillingFlow`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#launchbillingflow).

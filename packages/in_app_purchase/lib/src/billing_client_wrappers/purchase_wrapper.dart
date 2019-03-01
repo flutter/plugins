@@ -121,12 +121,12 @@ class PurchasesResultWrapper {
 
   /// The status of the operation.
   ///
-  /// Unfortunately this can represent both the status of the "query purchase
-  /// history" half of the operation and the "user made purchases" transaction
-  /// itself.
+  /// This can represent either the status of the "query purchase history" half
+  /// of the operation and the "user made purchases" transaction itself.
   final BillingResponse responseCode;
 
-  /// The list of succesful purchases made in this transaction. May be
-  /// empty, especially if [responseCode] is not [BillingResponse.ok].
+  /// The list of succesful purchases made in this transaction.
+  ///
+  /// May be empty, especially if [responseCode] is not [BillingResponse.ok].
   final List<PurchaseWrapper> purchasesList;
 }
