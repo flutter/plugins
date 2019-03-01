@@ -10,6 +10,9 @@ import '../channel.dart';
 import 'sku_details_wrapper.dart';
 import 'enum_converters.dart';
 
+const String _kOnBillingServiceDisconnected =
+    'BillingClientStateListener#onBillingServiceDisconnected()';
+
 /// This class can be used directly instead of [InAppPurchaseConnection] to call
 /// Play-specific billing APIs.
 ///
@@ -35,7 +38,7 @@ class BillingClient {
   // matching callback here to remember, and then once its twin is triggered it
   // sends the handle back over the platform channel. We then access that handle
   // in this array and call it in Dart code. See also [_callHandler].
-  List<Map<String, Function>> _callbacks = <Map<String, Function>>[];
+  Map<String, List<Function>> _callbacks = <String, List<Function>>{};
 
   /// Calls
   /// [`BillingClient#isReady()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#isReady())
@@ -56,13 +59,12 @@ class BillingClient {
   Future<BillingResponse> startConnection(
       {@required
           OnBillingServiceDisconnected onBillingServiceDisconnected}) async {
-    final Map<String, Function> callbacks = <String, Function>{
-      'OnBillingServiceDisconnected': onBillingServiceDisconnected,
-    };
-    _callbacks.add(callbacks);
+    List<Function> disconnectCallbacks =
+        _callbacks[_kOnBillingServiceDisconnected] ??= [];
+    disconnectCallbacks.add(onBillingServiceDisconnected);
     return BillingResponseConverter().fromJson(await channel.invokeMethod(
         "BillingClient#startConnection(BillingClientStateListener)",
-        <String, dynamic>{'handle': _callbacks.length - 1}));
+        <String, dynamic>{'handle': disconnectCallbacks.length - 1}));
   }
 
   /// Calls
@@ -97,12 +99,46 @@ class BillingClient {
         arguments));
   }
 
+  /// Attempt to launch the Play Billing Flow for a given [skuDetails].
+  ///
+  /// The [skuDetails] needs to have already been fetched in a [querySkuDetails]
+  /// call. The [accountId] is an optional hashed string associated with the user
+  /// that's unique to your app. It's used by Google to detect unusual behavior.
+  /// Do not pass in a cleartext [accountId], use your developer ID, or use the
+  /// user's Google ID for this field.
+  ///
+  /// Calling this attemps to show the Google Play purchase UI. The user is free
+  /// to complete the transaction there.
+  ///
+  /// This method returns a [BillingResponse] representing the initial attempt
+  /// to show the Google Play purchase screen.
+  /// TODO(mklim, flutter/flutter#26326): Expose onPurchasesUpdated() result.
+  ///
+  /// This method calls through to
+  /// [`BillingClient#launchBillingFlow`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#launchbillingflow).
+  /// It constructs a
+  /// [`BillingFlowParams`](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams)
+  /// instance by [setting the given
+  /// skuDetails](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder.html#setskudetails)
+  /// and [the given
+  /// accountId](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder.html#setAccountId(java.lang.String)).
+  Future<BillingResponse> launchBillingFlow(
+      {@required SkuDetailsWrapper skuDetails, String accountId}) async {
+    assert(skuDetails != null);
+    final Map<String, dynamic> arguments = <String, dynamic>{
+      'sku': skuDetails.sku,
+      'accountId': accountId,
+    };
+    return BillingResponseConverter().fromJson(await channel.invokeMethod(
+        'BillingClient#launchBillingFlow(Activity, BillingFlowParams)',
+        arguments));
+  }
+
   Future<void> _callHandler(MethodCall call) async {
     switch (call.method) {
-      case 'BillingClientStateListener#onBillingServiceDisconnected()':
+      case _kOnBillingServiceDisconnected:
         final int handle = call.arguments['handle'];
-        await _callbacks[handle]['OnBillingServiceDisconnected']();
-        _callbacks.removeAt(handle);
+        await _callbacks[_kOnBillingServiceDisconnected][handle]();
         break;
     }
   }
@@ -127,6 +163,9 @@ enum BillingResponse {
   // further changes.
   @JsonValue(-2)
   featureNotSupported,
+
+  @JsonValue(-1)
+  serviceDisconnected,
 
   @JsonValue(0)
   ok,

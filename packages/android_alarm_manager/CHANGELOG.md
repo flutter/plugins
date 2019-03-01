@@ -1,3 +1,8 @@
+## 0.4.1+3
+
+* Update README.md to include instructions for setting the WAKE_LOCK permission.
+* Updated example application to use the WAKE_LOCK permission.
+
 ## 0.4.1+2
 
 * Include a missing API dependency.

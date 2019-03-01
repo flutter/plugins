@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
 ## 0.1.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX

@@ -20,8 +20,10 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
   }
   return self;
@@ -52,6 +54,10 @@
     NSString *name = call.arguments[@"name"];
     NSString *value = call.arguments[@"value"];
     [FIRAnalytics setUserPropertyString:value forName:name];
+    result(nil);
+  } else if ([@"setAnalyticsCollectionEnabled" isEqualToString:call.method]) {
+    NSNumber *enabled = [NSNumber numberWithBool:call.arguments];
+    [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:[enabled boolValue]];
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);

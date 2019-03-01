@@ -1,20 +1,14 @@
 #import "FirebaseMlVisionPlugin.h"
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@end
-
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
+static FlutterError *getFlutterError(NSError *error) {
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
 }
-@end
 
 @implementation FLTFirebaseMlVisionPlugin
 + (void)handleError:(NSError *)error result:(FlutterResult)result {
-  result([error flutterError]);
+  result(getFlutterError(error));
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -28,8 +22,10 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
   }
   return self;
@@ -70,6 +66,18 @@
 
 - (FIRVisionImage *)filePathToVisionImage:(NSString *)filePath {
   UIImage *image = [UIImage imageWithContentsOfFile:filePath];
+
+  if (image.imageOrientation != UIImageOrientationUp) {
+    CGImageRef imgRef = image.CGImage;
+    CGRect bounds = CGRectMake(0, 0, CGImageGetWidth(imgRef), CGImageGetHeight(imgRef));
+    UIGraphicsBeginImageContext(bounds.size);
+    CGContextDrawImage(UIGraphicsGetCurrentContext(), bounds, imgRef);
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    image = newImage;
+  }
+
   return [[FIRVisionImage alloc] initWithImage:image];
 }
 
