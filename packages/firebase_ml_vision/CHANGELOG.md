@@ -1,3 +1,8 @@
+## 0.5.1+1
+
+* Update README.md
+* Fix crash when receiving barcode urls on iOS.
+
 ## 0.5.1
 
 * iOS now handles non-planar buffers from `FirebaseVisionImage.fromBytes()`.
