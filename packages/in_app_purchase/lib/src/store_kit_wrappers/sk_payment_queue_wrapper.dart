@@ -81,14 +81,18 @@ class SKPaymentQueueWrapper {
 
   /// Restore transactions to maintain access to content that customers have already purchased.
   ///
-  /// For example, when a user upgrade to a new phone, they want to keep the content they purchased in the old phone.
+  /// For example, when a user upgrades to a new phone, they want to keep the content they purchased in the old phone.
   /// This call will invoke the [SKTransactionObserverWrapper.restoreCompletedTransactions] or [SKTransactionObserverWrapper.paymentQueueRestoreCompletedTransactionsFinished] as well as [SKTransactionObserverWrapper.updatedTransaction]
   /// in the [SKTransactionObserverWrapper]. If you keep the download content in your own server, in the observer methods, you can simply finish the transaction by calling [finishTransaction] and
   /// download the content from your own server.
   /// If you keep the download content on Apple's server, you can access the download content in the transaction object that you get from [SKTransactionObserverWrapper.updatedTransaction] when the [SKPaymentTransactionWrapper.transactionState] is [SKPaymentTransactionStateWrapper.restored].
-  Future<void> restoreTransactions({String applicationName}) async {
+  /// The `applicationUserName` is the [SKPaymentWrapper.applicationUsername] you used to create payments. If you did not use a `applicationUserName` when creating payments, then you can ignore this parameter.
+  /// This method either triggers [`-[SKPayment restoreCompletedTransactions]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506123-restorecompletedtransactions?language=objc) or [`-[SKPayment restoreCompletedTransactionsWithApplicationUsername:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1505992-restorecompletedtransactionswith?language=objc)
+  /// depends on weather the `applicationUserName` is passed.
+  Future<void> restoreTransactions({String applicationUserName}) async {
     await channel.invokeMethod(
-        '-[InAppPurchasePlugin restoreTransactions:result:]', applicationName);
+        '-[InAppPurchasePlugin restoreTransactions:result:]',
+        applicationUserName);
   }
 
   // Triage a method channel call from the platform and triggers the correct observer method.
