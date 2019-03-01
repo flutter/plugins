@@ -143,6 +143,7 @@ static FlutterError *getFlutterError(NSError *error) {
 @property(nonatomic) CMMotionManager *motionManager;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
+                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error;
 
 - (void)start;
@@ -154,15 +155,19 @@ static FlutterError *getFlutterError(NSError *error) {
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
 @end
 
-@implementation FLTCam
+@implementation FLTCam {
+  dispatch_queue_t _dispatchQueue;
+}
 // Format used for video and image streaming.
 FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
+                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
+  _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
 
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
@@ -567,9 +572,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   _audioWriterInput.expectsMediaDataInRealTime = YES;
   [_videoWriter addInput:_videoWriterInput];
   [_videoWriter addInput:_audioWriterInput];
-  dispatch_queue_t queue = dispatch_queue_create("MyQueue", NULL);
-  [_captureVideoOutput setSampleBufferDelegate:self queue:queue];
-  [_audioOutput setSampleBufferDelegate:self queue:queue];
+  [_captureVideoOutput setSampleBufferDelegate:self queue:_dispatchQueue];
+  [_audioOutput setSampleBufferDelegate:self queue:_dispatchQueue];
 
   return YES;
 }
@@ -609,7 +613,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 @property(readonly, nonatomic) FLTCam *camera;
 @end
 
-@implementation CameraPlugin
+@implementation CameraPlugin {
+  dispatch_queue_t _dispatchQueue;
+}
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/camera"
@@ -629,6 +635,17 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  if (_dispatchQueue == nil) {
+    _dispatchQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
+  }
+
+  // Invoke the plugin on another dispatch queue to avoid blocking the UI.
+  dispatch_async(_dispatchQueue, ^{
+    [self handleMethodCallAsync:call result:result];
+  });
+}
+
+- (void)handleMethodCallAsync:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"availableCameras" isEqualToString:call.method]) {
     AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
         discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
@@ -662,6 +679,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     NSError *error;
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
+                                       dispatchQueue:_dispatchQueue
                                                error:&error];
     if (error) {
       result(getFlutterError(error));
@@ -705,6 +723,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_camera close];
+      _dispatchQueue = nil;
       result(nil);
     } else if ([@"startVideoRecording" isEqualToString:call.method]) {
       [_camera startVideoRecordingAtPath:call.arguments[@"filePath"] result:result];
