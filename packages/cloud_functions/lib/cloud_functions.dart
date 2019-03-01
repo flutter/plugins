@@ -22,7 +22,7 @@ class CloudFunctionsException implements Exception {
 class CloudFunctions {
   CloudFunctions({FirebaseApp app, String region})
       : _app = app ?? FirebaseApp.instance,
-        _region = region;
+        _region = region ?? "us-central1";
 
   @visibleForTesting
   static const MethodChannel channel = MethodChannel('cloud_functions');
