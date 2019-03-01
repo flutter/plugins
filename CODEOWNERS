@@ -21,3 +21,5 @@ packages/package_info/* @cyanglaz
 packages/firebase_analytics/* @collinjackson @kroikie
 packages/connectivity/* @cyanglaz
 packages/webview_flutter/* @amirh
+packages/firebase_performance/* @bparrishMines
+packages/firebase_dynamic_links/* @bparrishMines
