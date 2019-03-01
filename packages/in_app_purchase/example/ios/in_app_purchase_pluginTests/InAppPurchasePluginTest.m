@@ -152,7 +152,7 @@
   SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
   queue.testState = SKPaymentTransactionStatePurchased;
   __block BOOL callbackInvoked = NO;
-    self.plugin.paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
+  self.plugin.paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
       transactionsUpdated:^(NSArray<SKPaymentTransaction*>* _Nonnull transactions) {
       }
       transactionRemoved:nil
@@ -160,14 +160,15 @@
       restoreCompletedTransactionsFinished:^() {
         callbackInvoked = YES;
         [expectation fulfill];
-      } shouldAddStorePayment:nil
-        updatedDownloads:nil];
-    [queue addTransactionObserver:self.plugin.paymentQueueHandler];
-    [self.plugin handleMethodCall:call
-                           result:^(id r){
-                           }];
-    [self waitForExpectations:@[ expectation ] timeout:5];
-    XCTAssertTrue(callbackInvoked);
+      }
+      shouldAddStorePayment:nil
+      updatedDownloads:nil];
+  [queue addTransactionObserver:self.plugin.paymentQueueHandler];
+  [self.plugin handleMethodCall:call
+                         result:^(id r){
+                         }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertTrue(callbackInvoked);
 }
 
 @end

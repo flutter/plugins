@@ -60,7 +60,6 @@
   }
 }
 
-
 #pragma mark - observing
 // Sent when the transaction array has changed (additions or state changes).  Client should check
 // state of transactions and finish as appropriate.
