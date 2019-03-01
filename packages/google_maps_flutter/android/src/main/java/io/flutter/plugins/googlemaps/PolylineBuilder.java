@@ -3,22 +3,23 @@ package io.flutter.plugins.googlemaps;
 import com.google.android.gms.maps.model.Cap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PatternItem;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.List;
 
 class PolylineBuilder implements PolylineOptionsSink {
-  private final GoogleMapController mapController;
   private final PolylineOptions polylineOptions;
+  private boolean consumeTapEvents;
 
-  PolylineBuilder(GoogleMapController mapController) {
-    this.mapController = mapController;
+  PolylineBuilder() {
     this.polylineOptions = new PolylineOptions();
   }
 
-  String build() {
-    final Polyline polyline = mapController.addPolyline(polylineOptions);
-    return polyline.getId();
+  PolylineOptions build() {
+    return polylineOptions;
+  }
+
+  boolean consumeTapEvents() {
+    return consumeTapEvents;
   }
 
   @Override

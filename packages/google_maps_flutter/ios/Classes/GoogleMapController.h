@@ -31,6 +31,7 @@
                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 - (void)showAtX:(CGFloat)x Y:(CGFloat)y;
 - (void)hide;
+<<<<<<< HEAD
 - (void)animateWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
 - (void)moveWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
 - (GMSCameraPosition *)cameraPosition;
@@ -40,6 +41,11 @@
 - (NSString *)addPolylineWithPoints:(NSMutableArray *)points;
 - (FLTGoogleMapPolylineController *)polylineWithId:(NSString *)polylineId;
 - (void)removePolylineWithId:(NSString *)polylineId;
+=======
+- (void)animateWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate;
+- (void)moveWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate;
+- (GMSCameraPosition*)cameraPosition;
+>>>>>>> a4890042fa05cd9e9249696819ffd986e8f1a1cd
 @end
 
 // Allows the engine to create new Google Map instances.

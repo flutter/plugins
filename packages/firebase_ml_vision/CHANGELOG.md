@@ -1,3 +1,18 @@
+## 0.6.0+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.6.0
+
+* **Breaking Change** Removed on-device model dependencies from plugin.
+  `Android` now requires adding the on-device label detector dependency manually.
+  `iOS` now requires adding the on-device barcode/face/label/text detector dependencies manually.
+  See the `README.md` for more details. https://pub.dartlang.org/packages/firebase_ml_vision#-readme-tab-
+
+## 0.5.1+2
+
+* Fixes bug where image file needs to be rotated.
+
 ## 0.5.1+1
 
 * Remove categories.

@@ -22,8 +22,10 @@ static FlutterError *getFlutterError(NSError *error) {
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
   }
   return self;
@@ -64,6 +66,18 @@ static FlutterError *getFlutterError(NSError *error) {
 
 - (FIRVisionImage *)filePathToVisionImage:(NSString *)filePath {
   UIImage *image = [UIImage imageWithContentsOfFile:filePath];
+
+  if (image.imageOrientation != UIImageOrientationUp) {
+    CGImageRef imgRef = image.CGImage;
+    CGRect bounds = CGRectMake(0, 0, CGImageGetWidth(imgRef), CGImageGetHeight(imgRef));
+    UIGraphicsBeginImageContext(bounds.size);
+    CGContextDrawImage(UIGraphicsGetCurrentContext(), bounds, imgRef);
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    image = newImage;
+  }
+
   return [[FIRVisionImage alloc] initWithImage:image];
 }
 

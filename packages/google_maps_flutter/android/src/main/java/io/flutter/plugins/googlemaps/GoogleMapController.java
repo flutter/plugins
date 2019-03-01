@@ -12,6 +12,7 @@ import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STARTED;
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STOPPED;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -27,15 +28,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -52,16 +52,14 @@ final class GoogleMapController
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
-        OnMarkerTappedListener,
-        OnPolylineTappedListener,
         PlatformView {
+
   private static final String TAG = "GoogleMapController";
   private final int id;
   private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
   private final PluginRegistry.Registrar registrar;
   private final MapView mapView;
-  private final Map<String, MarkerController> markers;
   private final Map<String, PolylineController> polylines;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
@@ -71,6 +69,10 @@ final class GoogleMapController
   private MethodChannel.Result mapReadyResult;
   private final int registrarActivityHashCode;
   private final Context context;
+  private final MarkersController markersController;
+  private final PolylinesController polylinesController;
+  private List<Object> initialMarkers;
+  private List<Object> initialPolylines;
 
   GoogleMapController(
       int id,
@@ -83,13 +85,14 @@ final class GoogleMapController
     this.activityState = activityState;
     this.registrar = registrar;
     this.mapView = new MapView(context, options);
-    this.markers = new HashMap<>();
     this.polylines = new HashMap<>();
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_maps_" + id);
     methodChannel.setMethodCallHandler(this);
     this.registrarActivityHashCode = registrar.activity().hashCode();
+    this.markersController = new MarkersController(methodChannel);
+    this.polylinesController = new PolylinesController(methodChannel);
   }
 
   @Override
@@ -147,56 +150,6 @@ final class GoogleMapController
     return trackCameraPosition ? googleMap.getCameraPosition() : null;
   }
 
-  private MarkerBuilder newMarkerBuilder() {
-    return new MarkerBuilder(this);
-  }
-
-  private PolylineBuilder newPolylineBuilder() {
-    return new PolylineBuilder(this);
-  }
-
-  Marker addMarker(MarkerOptions markerOptions, boolean consumesTapEvents) {
-    final Marker marker = googleMap.addMarker(markerOptions);
-    markers.put(marker.getId(), new MarkerController(marker, consumesTapEvents, this));
-    return marker;
-  }
-
-  private void removeMarker(String markerId) {
-    final MarkerController markerController = markers.remove(markerId);
-    if (markerController != null) {
-      markerController.remove();
-    }
-  }
-
-  private MarkerController marker(String markerId) {
-    final MarkerController marker = markers.get(markerId);
-    if (marker == null) {
-      throw new IllegalArgumentException("Unknown marker: " + markerId);
-    }
-    return marker;
-  }
-
-  Polyline addPolyline(PolylineOptions polylineOptions) {
-    final Polyline polyline = googleMap.addPolyline(polylineOptions);
-    polylines.put(polyline.getId(), new PolylineController(polyline, this));
-    return polyline;
-  }
-
-  private void removePolyline(String polylineId) {
-    final PolylineController polylineController = polylines.remove(polylineId);
-    if (polylineController != null) {
-      polylineController.remove();
-    }
-  }
-
-  private PolylineController polyline(String polylineId) {
-    final PolylineController polyline = polylines.get(polylineId);
-    if (polyline == null) {
-      throw new IllegalArgumentException("Unknown polyline: " + polylineId);
-    }
-    return polyline;
-  }
-
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
@@ -212,6 +165,9 @@ final class GoogleMapController
     googleMap.setOnMarkerDragListener(this);
     googleMap.setOnPolylineClickListener(this);
     updateMyLocationEnabled();
+    markersController.setGoogleMap(googleMap);
+    polylinesController.setGoogleMap(googleMap);
+    updateInitialMarkers();
   }
 
   @Override
@@ -246,52 +202,27 @@ final class GoogleMapController
           result.success(null);
           break;
         }
-      case "marker#add":
-        {
-          final MarkerBuilder markerBuilder = newMarkerBuilder();
-          Convert.interpretMarkerOptions(call.argument("options"), markerBuilder);
-          final String markerId = markerBuilder.build();
-          result.success(markerId);
-          break;
-        }
-      case "marker#remove":
-        {
-          final String markerId = call.argument("marker");
-          removeMarker(markerId);
-          result.success(null);
-          break;
-        }
-      case "marker#update":
-        {
-          final String markerId = call.argument("marker");
-          final MarkerController marker = marker(markerId);
-          Convert.interpretMarkerOptions(call.argument("options"), marker);
-          result.success(null);
-          break;
-        }
-      case "polyline#add":
-        {
-          final PolylineBuilder polylineBuilder = newPolylineBuilder();
-          Convert.interpretPolylineOptions(call.argument("options"), polylineBuilder);
-          final String polylineId = polylineBuilder.build();
-          result.success(polylineId);
-          break;
-        }
-      case "polyline#remove":
-        {
-          final String polylineId = call.argument("polyline");
-          removePolyline(polylineId);
-          result.success(null);
-          break;
-        }
-      case "polyline#update":
-        {
-          final String polylineId = call.argument("polyline");
-          final PolylineController polyline = polyline(polylineId);
-          Convert.interpretPolylineOptions(call.argument("options"), polyline);
-          result.success(null);
-          break;
-        }
+      case "markers#update":
+      {
+        Object markersToAdd = call.argument("markersToAdd");
+        markersController.addMarkers((List<Object>) markersToAdd);
+        Object markersToChange = call.argument("markersToChange");
+        markersController.changeMarkers((List<Object>) markersToChange);
+        Object markerIdsToRemove = call.argument("markerIdsToRemove");
+        markersController.removeMarkers((List<Object>) markerIdsToRemove);
+        break;
+      }
+      case "polylines#update":
+      {
+        Object polylinesToAdd = call.argument("polylinesToAdd");
+        polylinesController.addPolylines((List<Object>) polylinesToAdd);
+        Object polylinesToChange = call.argument("polylinesToChange");
+        polylinesController.changePolylines((List<Object>) polylinesToChange);
+        Object polylineIdsToRemove = call.argument("polylineIdsToRemove");
+        polylinesController.removePolylines((List<Object>) polylineIdsToRemove);
+        break;
+      }
+
       default:
         result.notImplemented();
     }
@@ -307,9 +238,7 @@ final class GoogleMapController
 
   @Override
   public void onInfoWindowClick(Marker marker) {
-    final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("marker", marker.getId());
-    methodChannel.invokeMethod("infoWindow#onTap", arguments);
+    markersController.onInfoWindowTap(marker.getId());
   }
 
   @Override
@@ -328,31 +257,25 @@ final class GoogleMapController
   }
 
   @Override
-  public void onMarkerTapped(Marker marker) {
-    final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("marker", marker.getId());
-    methodChannel.invokeMethod("marker#onTap", arguments);
-  }
-
-  @Override
   public boolean onMarkerClick(Marker marker) {
-    final MarkerController markerController = markers.get(marker.getId());
-    return (markerController != null && markerController.onTap());
+    return markersController.onMarkerTap(marker.getId());
   }
 
   @Override
-  public void onPolylineTapped(Polyline polyline) {
-    final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("polyline", polyline.getId());
-    methodChannel.invokeMethod("polyline#onTap", arguments);
+  public void onMarkerDragStart(Marker marker) {}
+
+  @Override
+  public void onMarkerDrag(Marker marker) {}
+
+  @Override
+  public void onMarkerDragEnd(Marker marker) {
+    markersController.onMarkerDrag(marker.getId(), marker.getPosition());
   }
+
 
   @Override
   public void onPolylineClick(Polyline polyline) {
-    final PolylineController polylineController = polylines.get(polyline.getId());
-    if (polylineController != null) {
-      polylineController.onTap();
-    }
+    polylinesController.onPolylineTap(polyline.getId());
   }
 
   @Override
@@ -486,8 +409,38 @@ final class GoogleMapController
     }
   }
 
+  @Override
+  public void setInitialMarkers(Object initialMarkers) {
+    this.initialMarkers = (List<Object>) initialMarkers;
+    if (googleMap != null) {
+      updateInitialMarkers();
+    }
+  }
+
+  private void updateInitialMarkers() {
+    markersController.addMarkers(initialMarkers);
+  }
+
+  @Override
+  public void setInitialPolylines(Object initialPolylines) {
+    this.initialPolylines = (List<Object>) initialPolylines;
+    if (googleMap != null) {
+      updateInitialPolylines();
+    }
+  }
+
+  private void updateInitialPolylines() {
+    polylinesController.addPolylines(initialPolylines);
+  }
+
+  @SuppressLint("MissingPermission")
   private void updateMyLocationEnabled() {
     if (hasLocationPermission()) {
+      // The plugin doesn't add the location permission by default so that apps that don't need
+      // the feature won't require the permission.
+      // Gradle is doing a static check for missing permission and in some configurations will
+      // fail the build if the permission is missing. The following disables the Gradle lint.
+      //noinspection ResourceType
       googleMap.setMyLocationEnabled(myLocationEnabled);
     } else {
       // TODO(amirh): Make the options update fail.
@@ -509,19 +462,5 @@ final class GoogleMapController
     }
     return context.checkPermission(
         permission, android.os.Process.myPid(), android.os.Process.myUid());
-  }
-
-  @Override
-  public void onMarkerDragStart(Marker marker) {}
-
-  @Override
-  public void onMarkerDrag(Marker marker) {}
-
-  @Override
-  public void onMarkerDragEnd(Marker marker) {
-    final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("marker", marker.getId());
-    arguments.put("position", Convert.toJson(marker.getPosition()));
-    methodChannel.invokeMethod("marker#onDrag", arguments);
   }
 }

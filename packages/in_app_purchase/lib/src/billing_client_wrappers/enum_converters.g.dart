@@ -27,6 +27,7 @@ T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
 
 const _$BillingResponseEnumMap = <BillingResponse, dynamic>{
   BillingResponse.featureNotSupported: -2,
+  BillingResponse.serviceDisconnected: -1,
   BillingResponse.ok: 0,
   BillingResponse.userCanceled: 1,
   BillingResponse.serviceUnavailable: 2,

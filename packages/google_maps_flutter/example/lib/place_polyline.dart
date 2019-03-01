@@ -23,15 +23,17 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   PlacePolylineBodyState();
 
   GoogleMapController controller;
-  int _polylineCount = 0;
-  Polyline _selectedPolyline;
+  Map<PolylineId, Polyline> polylines = <PolylineId, Polyline>{};
+  int _polylineIdCounter = 1;
+  PolylineId selectedPolyline;
 
   // Values when toggling polyline color
   int colorsIndex = 0;
-  List<int> colors = <int>[
-    0xFF000000,
-    0xFF2196F3,
-    0xFFF44336,
+  List<Color> colors = <Color>[
+    Colors.purple,
+    Colors.red,
+    Colors.green,
+    Colors.pink,
   ];
 
   // Values when toggling polyline width
@@ -69,105 +71,124 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
 
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
-    controller.onPolylineTapped.add(_onPolylineTapped);
   }
 
   @override
   void dispose() {
-    controller?.onPolylineTapped?.remove(_onPolylineTapped);
     super.dispose();
   }
 
-  void _onPolylineTapped(Polyline polyline) {
+  void _onPolylineTapped(PolylineId polylineId) {
     setState(() {
-      _selectedPolyline = polyline;
-    });
-  }
-
-  void _updateSelectedPolyline(PolylineOptions changes) {
-    controller.updatePolyline(_selectedPolyline, changes);
-  }
-
-  void _add() {
-    controller.addPolyline(PolylineOptions(
-      consumeTapEvents: true,
-      color: Colors.orange.value,
-      width: 10,
-      points: _createPoints(),
-    ));
-    setState(() {
-      _polylineCount += 1;
+      selectedPolyline = polylineId;
     });
   }
 
   void _remove() {
-    controller.removePolyline(_selectedPolyline);
     setState(() {
-      _selectedPolyline = null;
-      _polylineCount -= 1;
+      if (polylines.containsKey(selectedPolyline)) {
+        polylines.remove(selectedPolyline);
+      }
+    });
+  }
+
+  void _add() {
+    final int polylineCount = polylines.length;
+
+    if (polylineCount == 12) {
+      return;
+    }
+
+    final String polylineIdVal = 'polyline_id_$_polylineIdCounter';
+    _polylineIdCounter++;
+    final PolylineId polylineId = PolylineId(polylineIdVal);
+
+    final Polyline polyline = Polyline(
+      polylineId: polylineId,
+      consumeTapEvents: true,
+      color: Colors.orange,
+      width: 10,
+      points: _createPoints(),
+      onTap: () {
+        _onPolylineTapped(polylineId);
+      },
+    );
+
+    setState(() {
+      polylines[polylineId] = polyline;
     });
   }
 
   Future<void> _toggleGeodesic() async {
-    _updateSelectedPolyline(
-      PolylineOptions(
-        geodesic: !_selectedPolyline.options.geodesic,
-      ),
-    );
+    final Polyline polyline = polylines[selectedPolyline];
+    setState(() {
+      polylines[selectedPolyline] = polyline.copyWith(
+        geodesicParam: !polyline.geodesic,
+      );
+    });
   }
 
   Future<void> _toggleVisible() async {
-    _updateSelectedPolyline(
-      PolylineOptions(
-        visible: !_selectedPolyline.options.visible,
-      ),
-    );
+    final Polyline polyline = polylines[selectedPolyline];
+    setState(() {
+      polylines[selectedPolyline] = polyline.copyWith(
+        visibleParam: !polyline.visible,
+      );
+    });
   }
 
   Future<void> _changeColor() async {
-    _updateSelectedPolyline(
-      PolylineOptions(
-        color: colors[++colorsIndex % colors.length],
-      ),
-    );
+    final Polyline polyline = polylines[selectedPolyline];
+    setState(() {
+      polylines[selectedPolyline] = polyline.copyWith(
+        colorParam: colors[++colorsIndex % colors.length],
+      );
+    });
   }
 
   Future<void> _changeWidth() async {
-    _updateSelectedPolyline(
-      PolylineOptions(
-        width: widths[++widthsIndex % widths.length],
-      ),
-    );
+    final Polyline polyline = polylines[selectedPolyline];
+    setState(() {
+      polylines[selectedPolyline] = polyline.copyWith(
+        widthParam: widths[++widthsIndex % widths.length],
+      );
+    });
   }
 
   Future<void> _changeJointType() async {
-    _updateSelectedPolyline(
-      PolylineOptions(
-        jointType: jointTypes[++jointTypesIndex % jointTypes.length],
-      ),
-    );
+    final Polyline polyline = polylines[selectedPolyline];
+    setState(() {
+      polylines[selectedPolyline] = polyline.copyWith(
+        jointTypeParam: jointTypes[++jointTypesIndex % jointTypes.length],
+      );
+    });
   }
 
   Future<void> _changeEndCap() async {
-    _updateSelectedPolyline(
-      PolylineOptions(
-        endCap: endCaps[++endCapsIndex % endCaps.length],
-      ),
-    );
+    final Polyline polyline = polylines[selectedPolyline];
+    setState(() {
+      polylines[selectedPolyline] = polyline.copyWith(
+        endCapParam: endCaps[++endCapsIndex % endCaps.length],
+      );
+    });
   }
 
   Future<void> _changeStartCap() async {
-    _updateSelectedPolyline(
-      PolylineOptions(
-        startCap: startCaps[++startCapsIndex % startCaps.length],
-      ),
-    );
+    final Polyline polyline = polylines[selectedPolyline];
+    setState(() {
+      polylines[selectedPolyline] = polyline.copyWith(
+        startCapParam: startCaps[++startCapsIndex % startCaps.length],
+      );
+    });
   }
 
   Future<void> _changePattern() async {
-    _updateSelectedPolyline(
-      PolylineOptions(pattern: patterns[++patternsIndex % patterns.length]),
-    );
+    final Polyline polyline = polylines[selectedPolyline];
+    setState(() {
+      polylines[selectedPolyline] = polyline.copyWith(
+        patternParam: patterns[++patternsIndex % patterns.length],
+      );
+    });
   }
 
   @override
@@ -185,6 +206,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                 target: LatLng(52.4478, -3.5402),
                 zoom: 7.0,
               ),
+              polylines: Set<Polyline>.of(polylines.values),
               onMapCreated: _onMapCreated,
             ),
           ),
@@ -200,22 +222,22 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                       children: <Widget>[
                         FlatButton(
                           child: const Text('add'),
-                          onPressed: (_polylineCount == 1) ? null : _add,
+                          onPressed: _add,
                         ),
                         FlatButton(
                           child: const Text('remove'),
                           onPressed:
-                              (_selectedPolyline == null) ? null : _remove,
+                              (selectedPolyline == null) ? null : _remove,
                         ),
                         FlatButton(
                           child: const Text('toggle visible'),
-                          onPressed: (_selectedPolyline == null)
+                          onPressed: (selectedPolyline == null)
                               ? null
                               : _toggleVisible,
                         ),
                         FlatButton(
                           child: const Text('toggle geodesic'),
-                          onPressed: (_selectedPolyline == null)
+                          onPressed: (selectedPolyline == null)
                               ? null
                               : _toggleGeodesic,
                         ),
@@ -226,34 +248,33 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                         FlatButton(
                           child: const Text('change width'),
                           onPressed:
-                              (_selectedPolyline == null) ? null : _changeWidth,
+                              (selectedPolyline == null) ? null : _changeWidth,
                         ),
                         FlatButton(
                           child: const Text('change start cap'),
-                          onPressed: (_selectedPolyline == null)
+                          onPressed: (selectedPolyline == null)
                               ? null
                               : _changeStartCap,
                         ),
                         FlatButton(
                           child: const Text('change end cap'),
-                          onPressed: (_selectedPolyline == null)
-                              ? null
-                              : _changeEndCap,
+                          onPressed:
+                              (selectedPolyline == null) ? null : _changeEndCap,
                         ),
                         FlatButton(
                           child: const Text('change joint type'),
-                          onPressed: (_selectedPolyline == null)
+                          onPressed: (selectedPolyline == null)
                               ? null
                               : _changeJointType,
                         ),
                         FlatButton(
                           child: const Text('change color'),
                           onPressed:
-                              (_selectedPolyline == null) ? null : _changeColor,
+                              (selectedPolyline == null) ? null : _changeColor,
                         ),
                         FlatButton(
                           child: const Text('change pattern'),
-                          onPressed: (_selectedPolyline == null)
+                          onPressed: (selectedPolyline == null)
                               ? null
                               : _changePattern,
                         ),
