@@ -5,22 +5,13 @@
 part of google_maps_flutter;
 
 /// Controller for a single GoogleMap instance running on the host platform.
-///
-/// Change listeners are notified upon changes to any of
-///
-/// * the [options] property
-/// * the [isCameraMoving] property
-/// * the [cameraPosition] property
-///
-/// Listeners are notified after changes have been applied on the platform side.
-class GoogleMapController extends ChangeNotifier {
+class GoogleMapController {
   GoogleMapController._(
     MethodChannel channel,
     CameraPosition initialCameraPosition,
     this._googleMapState,
   )   : assert(channel != null),
         _channel = channel {
-    _cameraPosition = initialCameraPosition;
     _channel.setMethodCallHandler(_handleMethodCall);
   }
 
@@ -45,30 +36,26 @@ class GoogleMapController extends ChangeNotifier {
 
   final MethodChannel _channel;
 
-  /// True if the map camera is currently moving.
-  bool get isCameraMoving => _isCameraMoving;
-  bool _isCameraMoving = false;
-
   final _GoogleMapState _googleMapState;
-
-  /// Returns the most recent camera position reported by the platform side.
-  /// Will be null, if [GoogleMap.trackCameraPosition] is false.
-  CameraPosition get cameraPosition => _cameraPosition;
-  CameraPosition _cameraPosition;
 
   Future<dynamic> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'camera#onMoveStarted':
-        _isCameraMoving = true;
-        notifyListeners();
+        if (_googleMapState.widget.onCameraMoveStarted != null) {
+          _googleMapState.widget.onCameraMoveStarted();
+        }
         break;
       case 'camera#onMove':
-        _cameraPosition = CameraPosition.fromMap(call.arguments['position']);
-        notifyListeners();
+        if (_googleMapState.widget.onCameraMove != null) {
+          _googleMapState.widget.onCameraMove(
+            CameraPosition.fromMap(call.arguments['position']),
+          );
+        }
         break;
       case 'camera#onIdle':
-        _isCameraMoving = false;
-        notifyListeners();
+        if (_googleMapState.widget.onCameraIdle != null) {
+          _googleMapState.widget.onCameraIdle();
+        }
         break;
       case 'marker#onTap':
         _googleMapState.onMarkerTap(call.arguments['markerId']);
@@ -98,8 +85,11 @@ class GoogleMapController extends ChangeNotifier {
         'options': optionsUpdate,
       },
     );
-    _cameraPosition = CameraPosition.fromMap(json);
-    notifyListeners();
+    if (_googleMapState.widget.onMapOptionsUpdate != null) {
+      _googleMapState.widget.onMapOptionsUpdate(
+        CameraPosition.fromMap(json),
+      );
+    }
   }
 
   /// Updates marker configuration.
@@ -117,7 +107,9 @@ class GoogleMapController extends ChangeNotifier {
       'markers#update',
       markerUpdates._toMap(),
     );
-    notifyListeners();
+    if (_googleMapState.widget.onMarkersUpdate != null) {
+      _googleMapState.widget.onMarkersUpdate();
+    }
   }
 
   /// Starts an animated change of the map camera position.

@@ -6,6 +6,11 @@ part of google_maps_flutter;
 
 typedef void MapCreatedCallback(GoogleMapController controller);
 
+/// Callback that tracks camera position.
+///
+/// Will be null if trackCameraPosition on [GoogleMap] is false.
+typedef void CameraPositionCallback(CameraPosition position);
+
 class GoogleMap extends StatefulWidget {
   const GoogleMap({
     @required this.initialCameraPosition,
@@ -22,6 +27,11 @@ class GoogleMap extends StatefulWidget {
     this.trackCameraPosition = false,
     this.myLocationEnabled = false,
     this.markers,
+    this.onCameraMoveStarted,
+    this.onCameraMove,
+    this.onCameraIdle,
+    this.onMapOptionsUpdate,
+    this.onMarkersUpdate,
   }) : assert(initialCameraPosition != null);
 
   final MapCreatedCallback onMapCreated;
@@ -58,8 +68,23 @@ class GoogleMap extends StatefulWidget {
   /// True if the map view should relay camera move events to Flutter.
   final bool trackCameraPosition;
 
-  // Markers to be placed on the map.
+  /// Markers to be placed on the map.
   final Set<Marker> markers;
+
+  /// Callback for when the camera move started.
+  final VoidCallback onCameraMoveStarted;
+
+  /// Callback for when the camera is moving.
+  final CameraPositionCallback onCameraMove;
+
+  /// Callback for when the camera has entered an idle stage.
+  final VoidCallback onCameraIdle;
+
+  /// Callback when the [GoogleMap] options have been applied on the platform.
+  final CameraPositionCallback onMapOptionsUpdate;
+
+  /// Callback for when the [Marker] options have been applied on the platform.
+  final VoidCallback onMarkersUpdate;
 
   /// True if a "My Location" layer should be shown on the map.
   ///
