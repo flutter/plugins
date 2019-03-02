@@ -41,7 +41,7 @@ void main() {
             'CloudFunctions#call',
             arguments: <String, dynamic>{
               'app': '[DEFAULT]',
-              'region': null ?? 'us-central1',
+              'region': 'us-central1',
               'functionName': 'baz',
               'parameters': null,
             },
