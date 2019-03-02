@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -246,6 +247,26 @@ public class CameraPlugin implements MethodCallHandler {
           result.success(null);
           break;
         }
+      case "zoomIn":
+        {
+          try {
+            camera.zoomIn();
+            result.success(null);
+          } catch (CameraAccessException e) {
+            result.error("CameraAccess", e.getMessage(), null);
+          }
+          break;
+        }
+      case "zoomOut":
+        {
+          try {
+            camera.zoomOut();
+            result.success(null);
+          } catch (CameraAccessException e) {
+            result.error("CameraAccess", e.getMessage(), null);
+          }
+          break;
+        }
       default:
         result.notImplemented();
         break;
@@ -290,6 +311,10 @@ public class CameraPlugin implements MethodCallHandler {
     private MediaRecorder mediaRecorder;
     private boolean recordingVideo;
 
+    public float zoomLevel = 1f;
+    public Rect zoom;
+    protected CameraCharacteristics cameraCharacteristics;
+
     Camera(final String cameraName, final String resolutionPreset, @NonNull final Result result) {
 
       this.cameraName = cameraName;
@@ -316,6 +341,8 @@ public class CameraPlugin implements MethodCallHandler {
         CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
         StreamConfigurationMap streamConfigurationMap =
             characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+        cameraCharacteristics = characteristics;
+
         //noinspection ConstantConditions
         sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
         //noinspection ConstantConditions
@@ -602,7 +629,7 @@ public class CameraPlugin implements MethodCallHandler {
             cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
         captureBuilder.addTarget(pictureImageReader.getSurface());
         captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
-
+        setScalerCropRegion(captureBuilder, zoom);
         cameraCaptureSession.capture(
             captureBuilder.build(),
             new CameraCaptureSession.CaptureCallback() {
@@ -676,6 +703,7 @@ public class CameraPlugin implements MethodCallHandler {
                   Camera.this.cameraCaptureSession = cameraCaptureSession;
                   captureRequestBuilder.set(
                       CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+                  setScalerCropRegion(captureRequestBuilder, zoom);
                   cameraCaptureSession.setRepeatingRequest(
                       captureRequestBuilder.build(), null, null);
                   mediaRecorder.start();
@@ -742,6 +770,7 @@ public class CameraPlugin implements MethodCallHandler {
                 cameraCaptureSession = session;
                 captureRequestBuilder.set(
                     CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+                setScalerCropRegion(captureRequestBuilder, zoom);
                 cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               } catch (CameraAccessException e) {
                 sendErrorEvent(e.getMessage());
@@ -787,6 +816,7 @@ public class CameraPlugin implements MethodCallHandler {
                 cameraCaptureSession = session;
                 captureRequestBuilder.set(
                     CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+                setScalerCropRegion(captureRequestBuilder, zoom);
                 cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               } catch (CameraAccessException e) {
                 sendErrorEvent(e.getMessage());
@@ -906,6 +936,41 @@ public class CameraPlugin implements MethodCallHandler {
               ? 0
               : (isFrontFacing) ? -currentOrientation : currentOrientation;
       return (sensorOrientationOffset + sensorOrientation + 360) % 360;
+    }
+
+    public void zoomIn() throws CameraAccessException {
+      changeZoom(1);
+    }
+
+    public void zoomOut() throws CameraAccessException {
+      changeZoom(-1);
+    }
+
+    private void changeZoom(int step) throws CameraAccessException {
+      calculateZoom(step);
+      setScalerCropRegion(captureRequestBuilder, zoom);
+      cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+    }
+
+    private void calculateZoom(int step) {
+      zoomLevel += step;
+
+      if (zoomLevel < 1f) {
+        zoomLevel = 1f;
+        return;
+      }
+
+      Rect rect = cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
+
+      float ratio = (float) 1 / zoomLevel;
+      int croppedWidth = rect.width() - Math.round((float) rect.width() * ratio);
+      int croppedHeight = rect.height() - Math.round((float) rect.height() * ratio);
+      zoom = new Rect(croppedWidth / 2, croppedHeight / 2,
+              rect.width() - croppedWidth / 2, rect.height() - croppedHeight / 2);
+    }
+
+    private void setScalerCropRegion(CaptureRequest.Builder captureRequestBuilder, Rect zoom) {
+      captureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, zoom);
     }
   }
 }

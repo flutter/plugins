@@ -485,4 +485,12 @@ class CameraController extends ValueNotifier<CameraValue> {
       await _eventSubscription?.cancel();
     }
   }
+
+  Future<void> zoomIn() async {
+      await _channel.invokeMethod<void>('zoomIn');
+  }
+
+  Future<void> zoomOut() async {
+    await _channel.invokeMethod<void>('zoomOut');
+  }
 }
