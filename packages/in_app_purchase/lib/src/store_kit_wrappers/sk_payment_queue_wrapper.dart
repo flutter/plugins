@@ -95,7 +95,6 @@ class SKPaymentQueueWrapper {
         applicationUserName);
   }
 
-
   /// Retrieve the receipt data from your application's main bundle.
   ///
   /// If `serialized` is `false`, the receipt data will be contained in a base64 string inside a map: {"base64data":<base54 encoded string that represents the receipt>}

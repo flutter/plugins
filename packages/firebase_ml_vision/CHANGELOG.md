@@ -1,3 +1,8 @@
+## 0.6.0+2
+
+* Update README.md
+* Fix crash when receiving barcode urls on iOS.
+
 ## 0.6.0+1
 
 * Log messages about automatic configuration of the default app are now less confusing.
