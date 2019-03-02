@@ -144,6 +144,7 @@ static FlutterError *getFlutterError(NSError *error) {
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                              error:(NSError **)error;
+@property(nonatomic, assign) int zoom;
 
 - (void)start;
 - (void)stop;
@@ -152,6 +153,8 @@ static FlutterError *getFlutterError(NSError *error) {
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 - (void)stopImageStream;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
+- (void)zoonIn;
+- (void)zoomOut;
 @end
 
 @implementation FLTCam
@@ -162,6 +165,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                   resolutionPreset:(NSString *)resolutionPreset
                              error:(NSError **)error {
   self = [super init];
+  _zoom = 1;
+    
   NSAssert(self, @"super init cannot be nil");
   _captureSession = [[AVCaptureSession alloc] init];
 
@@ -207,6 +212,26 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 - (void)stop {
   [_captureSession stopRunning];
+}
+
+- (void)zoomIn {
+    _zoom++;
+    [_captureDevice lockForConfiguration:NULL];
+    [_captureDevice setVideoZoomFactor:_zoom];
+    [_captureDevice unlockForConfiguration];
+}
+
+- (void)zoomOut {
+    _zoom--;
+    
+    if (_zoom < 1) {
+        _zoom = 1;
+        return;
+    }
+    
+    [_captureDevice lockForConfiguration:NULL];
+    [_captureDevice setVideoZoomFactor:_zoom];
+    [_captureDevice unlockForConfiguration];
 }
 
 - (void)captureToFile:(NSString *)path result:(FlutterResult)result {
@@ -696,6 +721,12 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
     result(nil);
+  } else if ([@"zoomIn" isEqualToString:call.method]) {
+      [_camera zoomIn];
+      result(nil);
+  } else if ([@"zoomOut" isEqualToString:call.method]) {
+      [_camera zoomOut];
+      result(nil);
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
