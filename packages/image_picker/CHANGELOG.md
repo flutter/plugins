@@ -1,3 +1,11 @@
+## 0.5.0+4
+
+Preserve transparency when saving images.
+
+## 0.5.0+3
+
+* Fixed an Android crash when Image Picker is registered without an activity.
+
 ## 0.5.0+2
 
 * Log a more detailed warning at build time about the previous AndroidX

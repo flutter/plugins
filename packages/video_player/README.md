@@ -40,6 +40,14 @@ Ensure the following permission is present in your Android Manifest file, locate
 
 The Flutter project template adds it, so it may already be there.
 
+### Supported Formats
+
+- On iOS, the backing player is [AVPlayer](https://developer.apple.com/documentation/avfoundation/avplayer).
+  The supported formats vary depending on the version of iOS, [AVURLAsset](https://developer.apple.com/documentation/avfoundation/avurlasset) class
+  has [audiovisualTypes](https://developer.apple.com/documentation/avfoundation/avurlasset/1386800-audiovisualtypes?language=objc) that you can query for supported av formats.
+- On Android, the backing player is [ExoPlayer](https://google.github.io/ExoPlayer/),
+  please refer [here](https://google.github.io/ExoPlayer/supported-formats.html) for list of supported formats.
+
 ### Example
 
 ```dart

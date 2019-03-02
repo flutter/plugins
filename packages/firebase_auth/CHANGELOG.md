@@ -1,3 +1,25 @@
+## 0.8.1+4
+
+* Update README.
+* Update the example app with separate pages for registration and sign-in.
+
+## 0.8.1+3
+
+* Reduce compiler warnings in Android plugin
+* Raise errors early when accessing methods that require a Firebase User
+
+## 0.8.1+2
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.8.1+1
+
+* Remove categories.
+
+## 0.8.1
+
+* Fixes Firebase auth phone sign-in for Android.
+
 ## 0.8.0+3
 
 * Log a more detailed warning at build time about the previous AndroidX

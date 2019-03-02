@@ -21,7 +21,11 @@ class GoogleMap extends StatefulWidget {
     this.tiltGesturesEnabled = true,
     this.trackCameraPosition = false,
     this.myLocationEnabled = false,
+<<<<<<< HEAD
     this.styledMapStyle,
+=======
+    this.markers,
+>>>>>>> 3475f1b735c66b62d52cf2fb55af68401c3f0803
   }) : assert(initialCameraPosition != null);
 
   final MapCreatedCallback onMapCreated;
@@ -57,6 +61,9 @@ class GoogleMap extends StatefulWidget {
 
   /// True if the map view should relay camera move events to Flutter.
   final bool trackCameraPosition;
+
+  // Markers to be placed on the map.
+  final Set<Marker> markers;
 
   /// True if a "My Location" layer should be shown on the map.
   ///
@@ -105,13 +112,15 @@ class _GoogleMapState extends State<GoogleMap> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
+  Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
   _GoogleMapOptions _googleMapOptions;
 
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> creationParams = <String, dynamic>{
       'initialCameraPosition': widget.initialCameraPosition?._toMap(),
-      'options': _GoogleMapOptions.fromWidget(widget).toMap(),
+      'options': _googleMapOptions.toMap(),
+      'markersToAdd': _serializeMarkerSet(widget.markers),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
@@ -139,33 +148,57 @@ class _GoogleMapState extends State<GoogleMap> {
   void initState() {
     super.initState();
     _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
+    _markers = _keyByMarkerId(widget.markers);
   }
 
   @override
   void didUpdateWidget(GoogleMap oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _updateOptions();
+    _updateMarkers();
+  }
+
+  void _updateOptions() async {
     final _GoogleMapOptions newOptions = _GoogleMapOptions.fromWidget(widget);
     final Map<String, dynamic> updates =
         _googleMapOptions.updatesMap(newOptions);
-    _updateOptions(updates);
-    _googleMapOptions = newOptions;
-  }
-
-  void _updateOptions(Map<String, dynamic> updates) async {
     if (updates.isEmpty) {
       return;
     }
     final GoogleMapController controller = await _controller.future;
     controller._updateMapOptions(updates);
+    _googleMapOptions = newOptions;
+  }
+
+  void _updateMarkers() async {
+    final GoogleMapController controller = await _controller.future;
+    controller._updateMarkers(
+        _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
+    _markers = _keyByMarkerId(widget.markers);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
-    final GoogleMapController controller =
-        await GoogleMapController.init(id, widget.initialCameraPosition);
+    final GoogleMapController controller = await GoogleMapController.init(
+      id,
+      widget.initialCameraPosition,
+      this,
+    );
     _controller.complete(controller);
     if (widget.onMapCreated != null) {
       widget.onMapCreated(controller);
     }
+  }
+
+  void onMarkerTap(String markerIdParam) {
+    assert(markerIdParam != null);
+    final MarkerId markerId = MarkerId(markerIdParam);
+    _markers[markerId].onTap();
+  }
+
+  void onInfoWindowTap(String markerIdParam) {
+    assert(markerIdParam != null);
+    final MarkerId markerId = MarkerId(markerIdParam);
+    _markers[markerId].infoWindow.onTap();
   }
 }
 
@@ -245,12 +278,17 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
+<<<<<<< HEAD
     addIfNonNull('styledMapStyle', styledMapStyle);
+=======
+
+>>>>>>> 3475f1b735c66b62d52cf2fb55af68401c3f0803
     return optionsMap;
   }
 
   Map<String, dynamic> updatesMap(_GoogleMapOptions newOptions) {
     final Map<String, dynamic> prevOptionsMap = toMap();
+
     return newOptions.toMap()
       ..removeWhere(
           (String key, dynamic value) => prevOptionsMap[key] == value);

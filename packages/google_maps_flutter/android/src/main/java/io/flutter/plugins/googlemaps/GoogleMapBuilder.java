@@ -15,7 +15,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
+<<<<<<< HEAD
   private String styledMapStyle = "";
+=======
+  private Object initialMarkers;
+>>>>>>> 3475f1b735c66b62d52cf2fb55af68401c3f0803
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
@@ -24,11 +28,15 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.init();
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
+<<<<<<< HEAD
     controller.setStyledMapStyle(styledMapStyle);
+=======
+    controller.setInitialMarkers(initialMarkers);
+>>>>>>> 3475f1b735c66b62d52cf2fb55af68401c3f0803
     return controller;
   }
 
-  public void setInitialCameraPosition(CameraPosition position) {
+  void setInitialCameraPosition(CameraPosition position) {
     options.camera(position);
   }
 
@@ -91,5 +99,10 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setMyLocationEnabled(boolean myLocationEnabled) {
     this.myLocationEnabled = myLocationEnabled;
+  }
+
+  @Override
+  public void setInitialMarkers(Object initialMarkers) {
+    this.initialMarkers = initialMarkers;
   }
 }
