@@ -105,7 +105,7 @@ class SKPaymentQueueWrapper {
   /// There are 2 ways to do so. Either validate locally or validate with App Store.
   /// To validate the receipt locally, you will need the detailed receipt information that being represented in a Map. Thus you need to pass `serialized` as true.
   /// For more details on how to validate the receipt data, you can refer to Apple's document about [`About Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
-  Future<Map<String, dynamic>> retrieveReceiptData({bool serialized = false}) async {
+  static Future<Map<String, dynamic>> retrieveReceiptData({bool serialized = false}) async {
     return await Map.castFrom<dynamic, dynamic, String, dynamic>(await channel.invokeMethod(
         '-[InAppPurchasePlugin retrieveReceiptData:result:]',
         serialized));
