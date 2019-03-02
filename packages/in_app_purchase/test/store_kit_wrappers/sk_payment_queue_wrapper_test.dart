@@ -68,6 +68,15 @@ void main() {
     });
   });
 
+  group('retreiveReceiptData', () {
+    test('Should get result', () async {
+      stubPlatform.addResponse(
+          name: '-[InAppPurchasePlugin retrieveReceiptData:result:]', value: {'base64Data':'dummy data'});
+      final Map<String, dynamic> result = await SKPaymentQueueWrapper().retrieveReceiptData();
+      expect(result['base64Data'], 'dummy data');
+    });
+  });
+
   group('Wrapper fromJson tests', () {
     test('Should construct correct SKPaymentWrapper from json', () {
       SKPaymentWrapper payment =

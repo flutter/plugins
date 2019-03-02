@@ -171,11 +171,11 @@
   XCTAssertTrue(callbackInvoked);
 }
 
-- (void)testRetriveReceiptData {
+- (void)testretrieveReceiptData {
     XCTestExpectation* expectation =
-    [self expectationWithDescription:@"receipt data retrived"];
+    [self expectationWithDescription:@"receipt data retrieved"];
     FlutterMethodCall* call = [FlutterMethodCall
-                               methodCallWithMethodName:@"-[InAppPurchasePlugin retriveReceiptData:result:]"
+                               methodCallWithMethodName:@"-[InAppPurchasePlugin retrieveReceiptData:result:]"
                                arguments:nil];
     __block NSDictionary *result;
     [self.plugin handleMethodCall:call

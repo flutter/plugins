@@ -79,8 +79,8 @@
     [self finishTransaction:call result:result];
   } else if ([@"-[InAppPurchasePlugin restoreTransactions:result:]" isEqualToString:call.method]) {
     [self restoreTransactions:call result:result];
-  } else if ([@"-[InAppPurchasePlugin retriveReceiptData:result:]" isEqualToString:call.method]) {
-    [self retriveReceiptData:call result:result];
+  } else if ([@"-[InAppPurchasePlugin retrieveReceiptData:result:]" isEqualToString:call.method]) {
+    [self retrieveReceiptData:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -208,8 +208,8 @@
   [self.paymentQueueHandler restoreTransactions:call.arguments];
 }
 
-- (void)retriveReceiptData:(FlutterMethodCall *)call result:(FlutterResult)result {
-    BOOL serilized = [call.arguments boolValue];
+- (void)retrieveReceiptData:(FlutterMethodCall *)call result:(FlutterResult)result {
+    BOOL serialized = [call.arguments boolValue];
     NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
     NSData *receipt = [self getReceiptData:receiptURL];
     if (!receipt) {
@@ -220,12 +220,12 @@
         return;
     }
     NSDictionary *returnMap;
-    if (serilized) {
+    if (serialized) {
         NSError *error = nil;
         returnMap = [NSJSONSerialization JSONObjectWithData:receipt options:kNilOptions error:&error];
         if (error) {
             result([FlutterError
-                    errorWithCode:@"storekit_retrive_receipt_json_serialization_error"
+                    errorWithCode:@"storekit_retrieve_receipt_json_serialization_error"
                     message:error.domain
                     details:error.userInfo]);
             return;
