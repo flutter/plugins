@@ -77,6 +77,8 @@
     [self addPayment:call result:result];
   } else if ([@"-[InAppPurchasePlugin finishTransaction:result:]" isEqualToString:call.method]) {
     [self finishTransaction:call result:result];
+  } else if ([@"-[InAppPurchasePlugin restoreTransactions:result:]" isEqualToString:call.method]) {
+    [self restoreTransactions:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -191,6 +193,17 @@
     return;
   }
   result(nil);
+}
+
+- (void)restoreTransactions:(FlutterMethodCall *)call result:(FlutterResult)result {
+  if (call.arguments && ![call.arguments isKindOfClass:[NSString class]]) {
+    result([FlutterError
+        errorWithCode:@"storekit_invalid_argument"
+              message:@"Argument is not nil and the type of finishTransaction is not a string."
+              details:call.arguments]);
+    return;
+  }
+  [self.paymentQueueHandler restoreTransactions:call.arguments];
 }
 
 #pragma mark - delegates
