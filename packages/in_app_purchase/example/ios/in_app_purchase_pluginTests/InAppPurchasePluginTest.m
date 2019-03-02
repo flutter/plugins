@@ -171,4 +171,21 @@
   XCTAssertTrue(callbackInvoked);
 }
 
+- (void)testRetriveReceiptData {
+    XCTestExpectation* expectation =
+    [self expectationWithDescription:@"receipt data retrived"];
+    FlutterMethodCall* call = [FlutterMethodCall
+                               methodCallWithMethodName:@"-[InAppPurchasePlugin retriveReceiptData:result:]"
+                               arguments:nil];
+    __block NSDictionary *result;
+    [self.plugin handleMethodCall:call
+                           result:^(id r){
+                               result = r;
+                               [expectation fulfill];
+                           }];
+    [self waitForExpectations:@[ expectation ] timeout:5];
+    NSLog(@"%@", result);
+    XCTAssertNotNil(result[@"base64data"]);
+}
+
 @end

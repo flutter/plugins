@@ -79,6 +79,8 @@
     [self finishTransaction:call result:result];
   } else if ([@"-[InAppPurchasePlugin restoreTransactions:result:]" isEqualToString:call.method]) {
     [self restoreTransactions:call result:result];
+  } else if ([@"-[InAppPurchasePlugin retriveReceiptData:result:]" isEqualToString:call.method]) {
+    [self retriveReceiptData:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -206,6 +208,34 @@
   [self.paymentQueueHandler restoreTransactions:call.arguments];
 }
 
+- (void)retriveReceiptData:(FlutterMethodCall *)call result:(FlutterResult)result {
+    BOOL serilized = [call.arguments boolValue];
+    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+    NSData *receipt = [self getReceiptData:receiptURL];
+    if (!receipt) {
+        result([FlutterError
+                errorWithCode:@"storekit_no_receipt"
+                message:@"Cannot find receipt for the current main bundle."
+                details:call.arguments]);
+        return;
+    }
+    NSDictionary *returnMap;
+    if (serilized) {
+        NSError *error = nil;
+        returnMap = [NSJSONSerialization JSONObjectWithData:receipt options:kNilOptions error:&error];
+        if (error) {
+            result([FlutterError
+                    errorWithCode:@"storekit_retrive_receipt_json_serialization_error"
+                    message:error.domain
+                    details:error.userInfo]);
+            return;
+        }
+        result(returnMap);
+    } else {
+        result(@{@"base64data":[receipt base64EncodedStringWithOptions:kNilOptions]});
+    }
+}
+
 #pragma mark - delegates
 
 - (void)handleTransactionsUpdated:(NSArray<SKPaymentTransaction *> *)transactions {
@@ -265,6 +295,10 @@
 
 - (SKProduct *)getProduct:(NSString *)productID {
   return [self.productsCache objectForKey:productID];
+}
+
+- (NSData *)getReceiptData:(NSURL *)url {
+    return [NSData dataWithContentsOfURL:url];
 }
 
 #pragma mark - getter

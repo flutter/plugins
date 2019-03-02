@@ -134,6 +134,12 @@
   return [SKProduct new];
 }
 
+- (NSData *)getReceiptData:(NSURL *)url {
+    NSString *originalString = [NSString stringWithFormat:@"test"];
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:originalString options:kNilOptions];
+    return data;
+}
+
 @end
 
 @interface SKPaymentQueueStub ()
