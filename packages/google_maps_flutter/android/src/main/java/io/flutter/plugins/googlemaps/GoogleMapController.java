@@ -66,12 +66,10 @@ final class GoogleMapController
   private MethodChannel.Result mapReadyResult;
   private final int registrarActivityHashCode;
   private final Context context;
-<<<<<<< HEAD
-  private String styledMapStyle = "";
-=======
+
   private final MarkersController markersController;
   private List<Object> initialMarkers;
->>>>>>> 3475f1b735c66b62d52cf2fb55af68401c3f0803
+  private String mapStyle = "";
 
   GoogleMapController(
       int id,
@@ -329,13 +327,13 @@ final class GoogleMapController
   }
 
   @Override
-  public void setStyledMapStyle(String styledMapStyle) {
-    if (this.styledMapStyle.equals(styledMapStyle)) {
+  public void setMapStyle(String mapStyle) {
+    if (this.mapStyle.equals(mapStyle)) {
       return;
     }
-    this.styledMapStyle = styledMapStyle;
+    this.mapStyle = mapStyle;
     if (googleMap != null) {
-      googleMap.setMapStyle(new MapStyleOptions(styledMapStyle));
+      googleMap.setMapStyle(new MapStyleOptions(mapStyle));
     }
   }
 
