@@ -71,8 +71,10 @@ void main() {
   group('retreiveReceiptData', () {
     test('Should get result', () async {
       stubPlatform.addResponse(
-          name: '-[InAppPurchasePlugin retrieveReceiptData:result:]', value: {'base64Data':'dummy data'});
-      final Map<String, dynamic> result = await SKPaymentQueueWrapper.retrieveReceiptData();
+          name: '-[InAppPurchasePlugin retrieveReceiptData:result:]',
+          value: {'base64Data': 'dummy data'});
+      final Map<String, dynamic> result =
+          await SKPaymentQueueWrapper.retrieveReceiptData();
       expect(result['base64Data'], 'dummy data');
     });
   });

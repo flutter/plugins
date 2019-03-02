@@ -16,7 +16,8 @@
 @implementation InAppPurchasePluginTest
 
 - (void)setUp {
-  self.plugin = [[InAppPurchasePluginStub alloc] init];
+  self.plugin =
+      [[InAppPurchasePluginStub alloc] initWithReceiptManager:[FIAPReceiptManagerStub new]];
 }
 
 - (void)tearDown {
@@ -172,20 +173,19 @@
 }
 
 - (void)testretrieveReceiptData {
-    XCTestExpectation* expectation =
-    [self expectationWithDescription:@"receipt data retrieved"];
-    FlutterMethodCall* call = [FlutterMethodCall
-                               methodCallWithMethodName:@"-[InAppPurchasePlugin retrieveReceiptData:result:]"
-                               arguments:nil];
-    __block NSDictionary *result;
-    [self.plugin handleMethodCall:call
-                           result:^(id r){
-                               result = r;
-                               [expectation fulfill];
-                           }];
-    [self waitForExpectations:@[ expectation ] timeout:5];
-    NSLog(@"%@", result);
-    XCTAssertNotNil(result[@"base64data"]);
+  XCTestExpectation* expectation = [self expectationWithDescription:@"receipt data retrieved"];
+  FlutterMethodCall* call = [FlutterMethodCall
+      methodCallWithMethodName:@"-[InAppPurchasePlugin retrieveReceiptData:result:]"
+                     arguments:nil];
+  __block NSDictionary* result;
+  [self.plugin handleMethodCall:call
+                         result:^(id r) {
+                           result = r;
+                           [expectation fulfill];
+                         }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  NSLog(@"%@", result);
+  XCTAssertNotNil(result[@"base64data"]);
 }
 
 @end

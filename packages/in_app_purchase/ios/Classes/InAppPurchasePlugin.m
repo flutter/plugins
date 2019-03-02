@@ -5,6 +5,7 @@
 #import "InAppPurchasePlugin.h"
 #import <StoreKit/StoreKit.h>
 #import "FIAObjectTranslator.h"
+#import "FIAPReceiptManager.h"
 #import "FIAPRequestHandler.h"
 #import "FIAPaymentQueueHandler.h"
 
@@ -24,6 +25,8 @@
 @property(strong, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
 @property(strong, nonatomic) NSObject<FlutterPluginRegistrar> *registrar;
 
+@property(strong, nonatomic) FIAPReceiptManager *receiptManager;
+
 @end
 
 @implementation InAppPurchasePlugin
@@ -36,11 +39,18 @@
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+- (instancetype)initWithReceiptManager:(FIAPReceiptManager *)receiptManager {
   self = [self init];
+  self.receiptManager = receiptManager;
+  return self;
+}
+
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  self = [self initWithReceiptManager:[FIAPReceiptManager new]];
   self.registrar = registrar;
   self.registry = [registrar textures];
   self.messenger = [registrar messenger];
+
   __weak typeof(self) weakSelf = self;
   self.paymentQueueHandler =
       [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueue defaultQueue]
@@ -81,6 +91,9 @@
     [self restoreTransactions:call result:result];
   } else if ([@"-[InAppPurchasePlugin retrieveReceiptData:result:]" isEqualToString:call.method]) {
     [self retrieveReceiptData:call result:result];
+  } else if ([@"-[InAppPurchasePlugin validateReceiptLocally:result:]"
+                 isEqualToString:call.method]) {
+    [self validateReceiptLocally:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -209,31 +222,40 @@
 }
 
 - (void)retrieveReceiptData:(FlutterMethodCall *)call result:(FlutterResult)result {
-    BOOL serialized = [call.arguments boolValue];
-    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
-    NSData *receipt = [self getReceiptData:receiptURL];
-    if (!receipt) {
-        result([FlutterError
-                errorWithCode:@"storekit_no_receipt"
-                message:@"Cannot find receipt for the current main bundle."
-                details:call.arguments]);
-        return;
-    }
-    NSDictionary *returnMap;
-    if (serialized) {
-        NSError *error = nil;
-        returnMap = [NSJSONSerialization JSONObjectWithData:receipt options:kNilOptions error:&error];
-        if (error) {
-            result([FlutterError
-                    errorWithCode:@"storekit_retrieve_receipt_json_serialization_error"
-                    message:error.domain
-                    details:error.userInfo]);
-            return;
-        }
-        result(returnMap);
-    } else {
-        result(@{@"base64data":[receipt base64EncodedStringWithOptions:kNilOptions]});
-    }
+  BOOL serialized = [call.arguments boolValue];
+  FlutterError *error = nil;
+  NSDictionary *receiptInfo = [self.receiptManager retrieveReceipt:serialized error:&error];
+  if (error) {
+    result(error);
+    return;
+  }
+  result(receiptInfo);
+}
+
+// Following the steps recommanded by Apple to validate the receipt locally.
+// https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateLocally.html#//apple_ref/doc/uid/TP40010573-CH1-SW2
+- (void)validateReceiptLocally:(FlutterMethodCall *)call result:(FlutterResult)result {
+  // Step 1. locate the receipt.
+  //    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+  //    NSData *receipt = [self getReceiptData:receiptURL];
+  //    if (!receipt) {
+  //        result(@{
+  //                 @"valid":@NO,
+  //                 @"failure_code":@"no_receipt",
+  //                 @"details":@"Cannot find receipt for the current main bundle."
+  //                 });
+  //        return;
+  //    }
+  //    NSError *error = nil;
+  //    NSDictionary *returnMap = [NSJSONSerialization JSONObjectWithData:receipt
+  //    options:kNilOptions error:&error]; if (error) {
+  //        result([FlutterError
+  //                errorWithCode:@"storekit_retrieve_receipt_json_serialization_error"
+  //                message:error.domain
+  //                details:error.userInfo]);
+  //        return;
+  //    }
+  // Step 2. Verify that the receipt is properly signed by Apple.
 }
 
 #pragma mark - delegates
@@ -295,10 +317,6 @@
 
 - (SKProduct *)getProduct:(NSString *)productID {
   return [self.productsCache objectForKey:productID];
-}
-
-- (NSData *)getReceiptData:(NSURL *)url {
-    return [NSData dataWithContentsOfURL:url];
 }
 
 #pragma mark - getter
