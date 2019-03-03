@@ -79,6 +79,7 @@ class WebView extends StatefulWidget {
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.gestureRecognizers,
+    this.headers ,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -112,7 +113,7 @@ class WebView extends StatefulWidget {
   /// For example for the following JavascriptChannel:
   ///
   /// ```dart
-  /// JavascriptChannel(name: 'Print', onMessageReceived: (JavascriptMessage message) { print(message); });
+  /// JavascriptChannel(name: 'Print', onMessageReceived: (String message) { print(message); });
   /// ```
   ///
   /// JavaScript code can call:
@@ -130,6 +131,18 @@ class WebView extends StatefulWidget {
   ///
   /// A null value is equivalent to an empty set.
   final Set<JavascriptChannel> javascriptChannels;
+
+  /// The header params to pass to the web view 
+  /// For example passing an authorizition token to :
+  ///
+  /// ```dart
+  /// WebView(
+  ///     headers: {'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpbnNfaWQiOiIyODM5ODAiLCJleHAiOjE1ODMyMjM0NjR9.9maHo7RDJkZOtiTnEhYkrIoKRNCXF0epr5VIIwvABwWgw8h-AucNHmZ3IdAS0uE_nao71883uaYitKxVv7rsnw'},
+  ///     initialUrl: 'https://flutter.io', 
+  ///    );
+  /// ```
+  /// A null value is equivalent to an empty set.
+  final Map<String, String> headers;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -222,8 +235,6 @@ class _WebViewState extends State<WebView> {
 
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
   final Set<String> channelNames = channels == null
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // ignore: prefer_collection_literals
       ? Set<String>()
       : channels.map((JavascriptChannel channel) => channel.name).toSet();
   return channelNames;
@@ -231,7 +242,7 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 
 class _CreationParams {
   _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames});
+      {this.initialUrl, this.settings, this.javascriptChannelNames ,this.headers});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
@@ -239,6 +250,7 @@ class _CreationParams {
       settings: _WebSettings.fromWidget(widget),
       javascriptChannelNames:
           _extractChannelNames(widget.javascriptChannels).toList(),
+      headers:widget.headers,    
     );
   }
 
@@ -248,11 +260,14 @@ class _CreationParams {
 
   final List<String> javascriptChannelNames;
 
+  final Map<String, String> headers;
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'initialUrl': initialUrl,
       'settings': settings.toMap(),
       'javascriptChannelNames': javascriptChannelNames,
+      'headers' : headers
     };
   }
 }

@@ -70,10 +70,12 @@
     }];
     NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self applySettings:settings];
-
+    
     NSString* initialUrl = args[@"initialUrl"];
+    NSDictionary<NSString*, NSString*>* headers = args[@"headers"];
+      
     if ([initialUrl isKindOfClass:[NSString class]]) {
-      [self loadUrl:initialUrl];
+      [self loadUrl:initialUrl addHeaders:headers];
     }
   }
   return self;
@@ -120,7 +122,7 @@
 
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSString* url = [call arguments];
-  if (![self loadUrl:url]) {
+  if (![self loadUrl:url addHeaders:nil]) {
     result([FlutterError errorWithCode:@"loadUrl_failed"
                                message:@"Failed parsing the URL"
                                details:[NSString stringWithFormat:@"URL was: '%@'", url]]);
@@ -249,13 +251,20 @@
   }
 }
 
-- (bool)loadUrl:(NSString*)url {
+- (bool)loadUrl:(NSString*)url addHeaders:(NSDictionary<NSString*, NSString*>*) headers {
   NSURL* nsUrl = [NSURL URLWithString:url];
   if (!nsUrl) {
     return false;
   }
-  NSURLRequest* req = [NSURLRequest requestWithURL:nsUrl];
-  [_webView loadRequest:req];
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:nsUrl];
+  // if headers Map is passed it will be added to the request as HTTP Header .  
+  if(![headers isKindOfClass:[NSNull class]]){
+      for (NSString* key in headers) {
+          NSString* value = headers[key];
+          [request setValue:value forHTTPHeaderField:key];
+      }
+  }
+  [_webView loadRequest:request];
   return true;
 }
 
