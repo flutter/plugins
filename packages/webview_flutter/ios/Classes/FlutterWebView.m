@@ -73,7 +73,6 @@
     
     NSString* initialUrl = args[@"initialUrl"];
     NSDictionary<NSString*, NSString*>* headers = args[@"headers"];
-      
     if ([initialUrl isKindOfClass:[NSString class]]) {
       [self loadUrl:initialUrl addHeaders:headers];
     }
@@ -251,17 +250,18 @@
   }
 }
 
-- (bool)loadUrl:(NSString*)url addHeaders:(NSDictionary<NSString*, NSString*>*) headers {
+- (bool)loadUrl:(NSString*)url addHeaders:(NSDictionary<NSString*, NSString*>*)headers {
   NSURL* nsUrl = [NSURL URLWithString:url];
   if (!nsUrl) {
     return false;
   }
   NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:nsUrl];
   // if headers Map is passed it will be added to the request as HTTP Header .  
-  if(![headers isKindOfClass:[NSNull class]]){
+  if (![headers isKindOfClass:[NSNull class]]){
       for (NSString* key in headers) {
-          NSString* value = headers[key];
-          [request setValue:value forHTTPHeaderField:key];
+        NSString* value = headers[key];
+        [request setValue:value forHTTPHeaderField:key];
+        
       }
   }
   [_webView loadRequest:request];
