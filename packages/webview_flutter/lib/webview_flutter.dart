@@ -79,7 +79,7 @@ class WebView extends StatefulWidget {
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.gestureRecognizers,
-    this.headers ,
+    this.headers,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -132,13 +132,13 @@ class WebView extends StatefulWidget {
   /// A null value is equivalent to an empty set.
   final Set<JavascriptChannel> javascriptChannels;
 
-  /// The header params to pass to the web view 
+  /// The header params to pass to the web view
   /// For example passing an authorizition token to :
   ///
   /// ```dart
   /// WebView(
-  ///     headers: {'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpbnNfaWQiOiIyODM5ODAiLCJleHAiOjE1ODMyMjM0NjR9.9maHo7RDJkZOtiTnEhYkrIoKRNCXF0epr5VIIwvABwWgw8h-AucNHmZ3IdAS0uE_nao71883uaYitKxVv7rsnw'},
-  ///     initialUrl: 'https://flutter.io', 
+  ///     headers: {'Accept-Language': 'en-us,en;q=0.5'},
+  ///     initialUrl: 'https://flutter.io',
   ///    );
   /// ```
   /// A null value is equivalent to an empty set.
@@ -242,7 +242,10 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 
 class _CreationParams {
   _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames ,this.headers});
+      {this.initialUrl,
+      this.settings,
+      this.javascriptChannelNames,
+      this.headers});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
@@ -250,7 +253,7 @@ class _CreationParams {
       settings: _WebSettings.fromWidget(widget),
       javascriptChannelNames:
           _extractChannelNames(widget.javascriptChannels).toList(),
-      headers:widget.headers,    
+      headers: widget.headers,
     );
   }
 
@@ -267,7 +270,7 @@ class _CreationParams {
       'initialUrl': initialUrl,
       'settings': settings.toMap(),
       'javascriptChannelNames': javascriptChannelNames,
-      'headers' : headers
+      'headers': headers
     };
   }
 }
