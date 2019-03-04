@@ -29,5 +29,6 @@ part 'src/geo_point.dart';
 part 'src/query.dart';
 part 'src/query_snapshot.dart';
 part 'src/snapshot_metadata.dart';
+part 'src/timestamp.dart';
 part 'src/transaction.dart';
 part 'src/write_batch.dart';

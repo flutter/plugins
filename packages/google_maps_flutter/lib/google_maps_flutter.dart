@@ -12,13 +12,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-export 'dart:async';
-
 part 'src/bitmap.dart';
 part 'src/callbacks.dart';
 part 'src/camera.dart';
 part 'src/controller.dart';
 part 'src/google_map.dart';
 part 'src/marker.dart';
+part 'src/marker_updates.dart';
 part 'src/location.dart';
 part 'src/ui.dart';

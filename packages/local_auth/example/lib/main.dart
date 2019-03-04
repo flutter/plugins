@@ -17,10 +17,40 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final LocalAuthentication auth = LocalAuthentication();
+  bool _canCheckBiometrics;
+  List<BiometricType> _availableBiometrics;
   String _authorized = 'Not Authorized';
 
-  Future<Null> _authenticate() async {
-    final LocalAuthentication auth = LocalAuthentication();
+  Future<void> _checkBiometrics() async {
+    bool canCheckBiometrics;
+    try {
+      canCheckBiometrics = await auth.canCheckBiometrics;
+    } on PlatformException catch (e) {
+      print(e);
+    }
+    if (!mounted) return;
+
+    setState(() {
+      _canCheckBiometrics = canCheckBiometrics;
+    });
+  }
+
+  Future<void> _getAvailableBiometrics() async {
+    List<BiometricType> availableBiometrics;
+    try {
+      availableBiometrics = await auth.getAvailableBiometrics();
+    } on PlatformException catch (e) {
+      print(e);
+    }
+    if (!mounted) return;
+
+    setState(() {
+      _availableBiometrics = availableBiometrics;
+    });
+  }
+
+  Future<void> _authenticate() async {
     bool authenticated = false;
     try {
       authenticated = await auth.authenticateWithBiometrics(
@@ -49,6 +79,16 @@ class _MyAppState extends State<MyApp> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
+                Text('Can check biometrics: $_canCheckBiometrics\n'),
+                RaisedButton(
+                  child: const Text('Check biometrics'),
+                  onPressed: _checkBiometrics,
+                ),
+                Text('Available biometrics: $_availableBiometrics\n'),
+                RaisedButton(
+                  child: const Text('Get available biometrics'),
+                  onPressed: _getAvailableBiometrics,
+                ),
                 Text('Current State: $_authorized\n'),
                 RaisedButton(
                   child: const Text('Authenticate'),

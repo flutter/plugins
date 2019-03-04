@@ -81,6 +81,9 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
       case "wifiName":
         handleWifiName(call, result);
         break;
+      case "wifiIPAddress":
+        handleWifiIPAddress(call, result);
+        break;
       default:
         result.notImplemented();
         break;
@@ -109,6 +112,26 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
     if (ssid != null) ssid = ssid.replaceAll("\"", ""); // Android returns "SSID"
 
     result.success(ssid);
+  }
+
+  private void handleWifiIPAddress(MethodCall call, final Result result) {
+    WifiManager wifiManager =
+        (WifiManager) registrar.context().getSystemService(Context.WIFI_SERVICE);
+
+    WifiInfo wifiInfo = null;
+    if (wifiManager != null) wifiInfo = wifiManager.getConnectionInfo();
+
+    String ip = null;
+    int i_ip = 0;
+    if (wifiInfo != null) i_ip = wifiInfo.getIpAddress();
+
+    if (i_ip != 0)
+      ip =
+          String.format(
+              "%d.%d.%d.%d",
+              (i_ip & 0xff), (i_ip >> 8 & 0xff), (i_ip >> 16 & 0xff), (i_ip >> 24 & 0xff));
+
+    result.success(ip);
   }
 
   private BroadcastReceiver createReceiver(final EventSink events) {

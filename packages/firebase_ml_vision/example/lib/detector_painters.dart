@@ -122,10 +122,10 @@ class LabelDetectorPainter extends CustomPainter {
 
 // Paints rectangles around all the text in the image.
 class TextDetectorPainter extends CustomPainter {
-  TextDetectorPainter(this.absoluteImageSize, this.textLocations);
+  TextDetectorPainter(this.absoluteImageSize, this.visionText);
 
   final Size absoluteImageSize;
-  final List<TextBlock> textLocations;
+  final VisionText visionText;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -145,7 +145,7 @@ class TextDetectorPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
-    for (TextBlock block in textLocations) {
+    for (TextBlock block in visionText.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
           paint.color = Colors.green;
@@ -164,6 +164,6 @@ class TextDetectorPainter extends CustomPainter {
   @override
   bool shouldRepaint(TextDetectorPainter oldDelegate) {
     return oldDelegate.absoluteImageSize != absoluteImageSize ||
-        oldDelegate.textLocations != textLocations;
+        oldDelegate.visionText != visionText;
   }
 }

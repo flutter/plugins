@@ -14,6 +14,33 @@ Import the relevant file:
 import 'package:local_auth/local_auth.dart';
 ```
 
+To check whether there is local authentication available on this device or not, call canCheckBiometrics:
+
+```dart
+bool canCheckBiometrics =
+    await localAuth.canCheckBiometrics;
+```
+
+Currently the following biometric types are implemented:
+
+* BiometricType.face
+* BiometricType.fingerprint
+
+To get a list of enrolled biometrics, call getAvailableBiometrics:
+
+```dart
+List<BiometricType> availableBiometrics;
+    await auth.getAvailableBiometrics();
+
+if (Platform.isIOS) {
+    if (availableBiometrics.contains(BiometricType.face)) {
+        // Face ID.
+    } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
+        // Touch ID.
+    }
+}
+```
+
 We have default dialogs with an 'OK' button to show authentication error
 messages for the following 2 cases:
 
@@ -29,10 +56,10 @@ instructions will pop up to let the user set up fingerprint. If the user clicks
 Use the exported APIs to trigger local authentication with default dialogs:
 
 ```dart
-var localAuth = new LocalAuthentication();
+var localAuth = LocalAuthentication();
 bool didAuthenticate =
     await localAuth.authenticateWithBiometrics(
-    localizedReason: 'Please authenticate to show account balance');
+        localizedReason: 'Please authenticate to show account balance');
 ```
 
 If you don't want to use the default dialogs, call this API with
@@ -89,7 +116,7 @@ try {
 Note that this plugin works with both TouchID and FaceID. However, to use the latter,
 you need to also add:
 
-```
+```xml
 <key>NSFaceIDUsageDescription</key>
 <string>Why is my app authenticating using face id?</string>
 ```
@@ -103,7 +130,7 @@ app has not been updated to use TouchID.
 Update your project's `AndroidManifest.xml` file to include the
 `USE_FINGERPRINT` permissions:
 
-```
+```xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.example.app">
   <uses-permission android:name="android.permission.USE_FINGERPRINT"/>

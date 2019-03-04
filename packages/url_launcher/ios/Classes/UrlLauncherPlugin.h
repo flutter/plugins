@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTUrlLauncherPlugin : NSObject<FlutterPlugin>
+@interface FLTUrlLauncherPlugin : NSObject <FlutterPlugin>
 @end

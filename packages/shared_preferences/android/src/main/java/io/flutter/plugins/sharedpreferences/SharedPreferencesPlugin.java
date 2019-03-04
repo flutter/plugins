@@ -32,6 +32,7 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   // Fun fact: The following is a base64 encoding of the string "This is the prefix for a list."
   private static final String LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
   private static final String BIG_INTEGER_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy";
+  private static final String DOUBLE_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu";
 
   private final android.content.SharedPreferences preferences;
 
@@ -88,6 +89,9 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           } else if (stringValue.startsWith(BIG_INTEGER_PREFIX)) {
             String encoded = stringValue.substring(BIG_INTEGER_PREFIX.length());
             value = new BigInteger(encoded, Character.MAX_RADIX);
+          } else if (stringValue.startsWith(DOUBLE_PREFIX)) {
+            String doubleStr = stringValue.substring(DOUBLE_PREFIX.length());
+            value = Double.valueOf(doubleStr);
           }
         } else if (value instanceof Set) {
           // This only happens for previous usage of setStringSet. The app expects a list.
@@ -122,8 +126,9 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           status = preferences.edit().putBoolean(key, (boolean) call.argument("value")).commit();
           break;
         case "setDouble":
-          float floatValue = ((Number) call.argument("value")).floatValue();
-          status = preferences.edit().putFloat(key, floatValue).commit();
+          double doubleValue = ((Number) call.argument("value")).doubleValue();
+          String doubleValueStr = Double.toString(doubleValue);
+          status = preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr).commit();
           break;
         case "setInt":
           Number number = call.argument("value");
@@ -137,7 +142,15 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           status = editor.commit();
           break;
         case "setString":
-          status = preferences.edit().putString(key, (String) call.argument("value")).commit();
+          String value = (String) call.argument("value");
+          if (value.startsWith(LIST_IDENTIFIER) || value.startsWith(BIG_INTEGER_PREFIX)) {
+            result.error(
+                "StorageError",
+                "This string cannot be stored as it clashes with special identifier prefixes.",
+                null);
+            return;
+          }
+          status = preferences.edit().putString(key, value).commit();
           break;
         case "setStringList":
           List<String> list = call.argument("value");

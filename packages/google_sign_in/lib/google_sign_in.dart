@@ -16,9 +16,9 @@ export 'widgets.dart';
 enum SignInOption { standard, games }
 
 class GoogleSignInAuthentication {
-  final Map<dynamic, dynamic> _data;
-
   GoogleSignInAuthentication._(this._data);
+
+  final Map<dynamic, dynamic> _data;
 
   /// An OpenID Connect ID token that identifies the user.
   String get idToken => _data['idToken'];
@@ -79,6 +79,9 @@ class GoogleSignInAccount implements GoogleIdentity {
     }
 
     final Map<dynamic, dynamic> response =
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         await GoogleSignIn.channel.invokeMethod(
       'getTokens',
       <String, dynamic>{
@@ -100,6 +103,21 @@ class GoogleSignInAccount implements GoogleIdentity {
       "Authorization": "Bearer $token",
       "X-Goog-AuthUser": "0",
     };
+  }
+
+  /// Clears any client side cache that might be holding invalid tokens.
+  ///
+  /// If client runs into 401 errors using a token, it is expected to call
+  /// this method and grab `authHeaders` once again.
+  Future<void> clearAuthCache() async {
+    final String token = (await authentication).accessToken;
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await GoogleSignIn.channel.invokeMethod(
+      'clearAuthCache',
+      <String, dynamic>{'token': token},
+    );
   }
 
   @override
@@ -131,34 +149,6 @@ class GoogleSignInAccount implements GoogleIdentity {
 
 /// GoogleSignIn allows you to authenticate Google users.
 class GoogleSignIn {
-  // These error codes must match with ones declared on Android and iOS sides.
-
-  /// Error code indicating there is no signed in user and interactive sign in
-  /// flow is required.
-  static const String kSignInRequiredError = 'sign_in_required';
-
-  /// Error code indicating that interactive sign in process was canceled by the
-  /// user.
-  static const String kSignInCanceledError = 'sign_in_canceled';
-
-  /// Error code indicating that attempt to sign in failed.
-  static const String kSignInFailedError = 'sign_in_failed';
-
-  /// The [MethodChannel] over which this class communicates.
-  @visibleForTesting
-  static const MethodChannel channel =
-      MethodChannel('plugins.flutter.io/google_sign_in');
-
-  /// Option to determine the sign in user experience. [SignInOption.games] must
-  /// not be used on iOS.
-  final SignInOption signInOption;
-
-  /// The list of [scopes] are OAuth scope codes requested when signing in.
-  final List<String> scopes;
-
-  /// Domain to restrict sign-in to.
-  final String hostedDomain;
-
   /// Initializes global sign-in configuration settings.
   ///
   /// The [signInOption] determines the user experience. [SigninOption.games]
@@ -189,6 +179,34 @@ class GoogleSignIn {
     return GoogleSignIn(signInOption: SignInOption.games);
   }
 
+  // These error codes must match with ones declared on Android and iOS sides.
+
+  /// Error code indicating there is no signed in user and interactive sign in
+  /// flow is required.
+  static const String kSignInRequiredError = 'sign_in_required';
+
+  /// Error code indicating that interactive sign in process was canceled by the
+  /// user.
+  static const String kSignInCanceledError = 'sign_in_canceled';
+
+  /// Error code indicating that attempt to sign in failed.
+  static const String kSignInFailedError = 'sign_in_failed';
+
+  /// The [MethodChannel] over which this class communicates.
+  @visibleForTesting
+  static const MethodChannel channel =
+      MethodChannel('plugins.flutter.io/google_sign_in');
+
+  /// Option to determine the sign in user experience. [SignInOption.games] must
+  /// not be used on iOS.
+  final SignInOption signInOption;
+
+  /// The list of [scopes] are OAuth scope codes requested when signing in.
+  final List<String> scopes;
+
+  /// Domain to restrict sign-in to.
+  final String hostedDomain;
+
   StreamController<GoogleSignInAccount> _currentUserController =
       StreamController<GoogleSignInAccount>.broadcast();
 
@@ -202,6 +220,9 @@ class GoogleSignIn {
   Future<GoogleSignInAccount> _callMethod(String method) async {
     await _ensureInitialized();
 
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final Map<dynamic, dynamic> response = await channel.invokeMethod(method);
     return _setCurrentUser(response != null && response.isNotEmpty
         ? GoogleSignInAccount._(this, response)
@@ -218,6 +239,9 @@ class GoogleSignIn {
 
   Future<void> _ensureInitialized() {
     if (_initialization == null) {
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       _initialization = channel.invokeMethod('init', <String, dynamic>{
         'signInOption': (signInOption ?? SignInOption.standard).toString(),
         'scopes': scopes ?? <String>[],
@@ -294,6 +318,9 @@ class GoogleSignIn {
   /// Returns a future that resolves to whether a user is currently signed in.
   Future<bool> isSignedIn() async {
     await _ensureInitialized();
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final bool result = await channel.invokeMethod('isSignedIn');
     return result;
   }
@@ -324,11 +351,11 @@ class GoogleSignIn {
 }
 
 class _MethodCompleter {
+  _MethodCompleter(this.method);
+
   final String method;
   final Completer<GoogleSignInAccount> _completer =
       Completer<GoogleSignInAccount>();
-
-  _MethodCompleter(this.method);
 
   void complete(FutureOr<GoogleSignInAccount> value) {
     if (value is Future<GoogleSignInAccount>) {

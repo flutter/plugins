@@ -29,28 +29,28 @@ https://example.page.link/WXYZ
 You can create a Dynamic Link programmatically by setting the following parameters and using the `DynamicLinkParameters.buildUrl()` method.
 
 ```dart
-final DynamicLinkParameters parameters = new DynamicLinkParameters(
+final DynamicLinkParameters parameters = DynamicLinkParameters(
   domain: 'abc123.app.goo.gl',
   link: Uri.parse('https://example.com/'),
-  androidParameters: new AndroidParameters(
+  androidParameters: AndroidParameters(
       packageName: 'com.example.android',
       minimumVersion: 125,
   ),
-  iosParameters: new IosParameters(
+  iosParameters: IosParameters(
       bundleId: 'com.example.ios',
       minimumVersion: '1.0.1',
       appStoreId: '123456789',
   ),
-  googleAnalyticsParameters: new GoogleAnalyticsParameters(
+  googleAnalyticsParameters: GoogleAnalyticsParameters(
       campaign: 'example-promo',
       medium: 'social',
       source: 'orkut',
   ),
-  itunesConnectAnalyticsParameters: new ItunesConnectAnalyticsParameters(
+  itunesConnectAnalyticsParameters: ItunesConnectAnalyticsParameters(
     providerToken: '123456',
     campaignToken: 'example-promo',
   ),
-  socialMetaTagParameters:  new SocialMetaTagParameters(
+  socialMetaTagParameters:  SocialMetaTagParameters(
     title: 'Example of a Dynamic Link',
     description: 'This link works whether app is installed or not!',
   ),
@@ -71,7 +71,7 @@ To shorten a long Dynamic Link, use the DynamicLinkParameters.shortenUrl method.
 ```dart
 final ShortDynamicLink shortenedLink = await DynamicLinkParameters.shortenUrl(
   Uri.parse('https://example.page.link/?link=https://example.com/&apn=com.example.android&ibn=com.example.ios'),
-  new DynamicLinkParametersOptions(ShortDynamicLinkPathLength.unguessable),
+  DynamicLinkParametersOptions(ShortDynamicLinkPathLength.unguessable),
 );
 
 final Uri shortUrl = shortenedLink.shortUrl;
@@ -101,11 +101,11 @@ applinks:YOUR_SUBDOMAIN.page.link
 
 ```dart
 void main() {
-  runApp(new MaterialApp(
+  runApp(MaterialApp(
     title: 'Dynamic Links Example',
     routes: <String, WidgetBuilder>{
-      '/': (BuildContext context) => new MyHomeWidget(), // Default home route
-      '/helloworld': (BuildContext context) => new MyHelloWorldWidget(),
+      '/': (BuildContext context) => MyHomeWidget(), // Default home route
+      '/helloworld': (BuildContext context) => MyHelloWorldWidget(),
     },
   ));
 }

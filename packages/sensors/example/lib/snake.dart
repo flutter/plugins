@@ -9,24 +9,25 @@ import 'package:flutter/material.dart';
 import 'package:sensors/sensors.dart';
 
 class Snake extends StatefulWidget {
-  final int rows;
-  final int columns;
-  final double cellSize;
   Snake({this.rows = 20, this.columns = 20, this.cellSize = 10.0}) {
     assert(10 <= rows);
     assert(10 <= columns);
     assert(5.0 <= cellSize);
   }
 
+  final int rows;
+  final int columns;
+  final double cellSize;
+
   @override
   State<StatefulWidget> createState() => SnakeState(rows, columns, cellSize);
 }
 
 class SnakeBoardPainter extends CustomPainter {
+  SnakeBoardPainter(this.state, this.cellSize);
+
   GameState state;
   double cellSize;
-
-  SnakeBoardPainter(this.state, this.cellSize);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -53,13 +54,13 @@ class SnakeBoardPainter extends CustomPainter {
 }
 
 class SnakeState extends State<Snake> {
-  double cellSize;
-  GameState state;
-  AccelerometerEvent acceleration;
-
   SnakeState(int rows, int columns, this.cellSize) {
     state = GameState(rows, columns);
   }
+
+  double cellSize;
+  GameState state;
+  AccelerometerEvent acceleration;
 
   @override
   Widget build(BuildContext context) {
@@ -95,12 +96,13 @@ class SnakeState extends State<Snake> {
 }
 
 class GameState {
-  int rows;
-  int columns;
-  int snakeLength;
   GameState(this.rows, this.columns) {
     snakeLength = math.min(rows, columns) - 5;
   }
+
+  int rows;
+  int columns;
+  int snakeLength;
 
   List<math.Point<int>> body = <math.Point<int>>[const math.Point<int>(0, 0)];
   math.Point<int> direction = const math.Point<int>(1, 0);

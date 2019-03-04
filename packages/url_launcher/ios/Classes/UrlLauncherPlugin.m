@@ -6,51 +6,68 @@
 
 #import "UrlLauncherPlugin.h"
 
-@interface FLTUrlLaunchSession : NSObject<SFSafariViewControllerDelegate>
-@property(nonatomic) UIStatusBarStyle previousStatusBarStyle;
+API_AVAILABLE(ios(9.0))
+@interface FLTUrlLaunchSession : NSObject <SFSafariViewControllerDelegate>
+
+@property(copy, nonatomic) FlutterResult flutterResult;
+@property(strong, nonatomic) NSURL *url;
+@property(strong, nonatomic) SFSafariViewController *safari;
+@property(nonatomic, copy) void (^didFinish)(void);
+
 @end
 
-@implementation FLTUrlLaunchSession {
-  NSURL *_url;
-  FlutterResult _flutterResult;
-}
+@implementation FLTUrlLaunchSession
 
 - (instancetype)initWithUrl:url withFlutterResult:result {
   self = [super init];
   if (self) {
-    _url = url;
-    _flutterResult = result;
+    self.url = url;
+    self.flutterResult = result;
+    if (@available(iOS 9.0, *)) {
+      self.safari = [[SFSafariViewController alloc] initWithURL:url];
+      self.safari.delegate = self;
+    }
   }
   return self;
 }
 
 - (void)safariViewController:(SFSafariViewController *)controller
-      didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
-  if (_previousStatusBarStyle != nil) {
-    UIApplication *application = [UIApplication sharedApplication];
-    application.statusBarStyle = _previousStatusBarStyle;
-  }
+      didCompleteInitialLoad:(BOOL)didLoadSuccessfully API_AVAILABLE(ios(9.0)) {
   if (didLoadSuccessfully) {
-    _flutterResult(nil);
+    self.flutterResult(nil);
   } else {
-    _flutterResult([FlutterError
+    self.flutterResult([FlutterError
         errorWithCode:@"Error"
-              message:[NSString stringWithFormat:@"Error while launching %@", _url]
+              message:[NSString stringWithFormat:@"Error while launching %@", self.url]
               details:nil]);
   }
 }
 
-- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller API_AVAILABLE(ios(9.0)) {
   [controller dismissViewControllerAnimated:YES completion:nil];
+  self.didFinish();
+}
+
+- (void)close {
+  [self safariViewControllerDidFinish:self.safari];
 }
 
 @end
 
-@implementation FLTUrlLauncherPlugin {
-  UIViewController *_viewController;
-  FLTUrlLaunchSession *_currentSession;
-  UIStatusBarStyle _previousStatusBarStyle;
-}
+API_AVAILABLE(ios(9.0))
+@interface FLTUrlLauncherPlugin ()
+
+@property(strong, nonatomic) FLTUrlLaunchSession *currentSession;
+
+@end
+
+@interface FLTUrlLauncherPlugin ()
+
+@property(strong, nonatomic) UIViewController *viewController;
+
+@end
+
+@implementation FLTUrlLauncherPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -66,7 +83,7 @@
 - (instancetype)initWithViewController:(UIViewController *)viewController {
   self = [super init];
   if (self) {
-    _viewController = viewController;
+    self.viewController = viewController;
   }
   return self;
 }
@@ -77,18 +94,23 @@
     result(@([self canLaunchURL:url]));
   } else if ([@"launch" isEqualToString:call.method]) {
     NSNumber *useSafariVC = call.arguments[@"useSafariVC"];
-    NSString *brightness = call.arguments[@"statusBarBrightness"];
-    UIApplication *application = [UIApplication sharedApplication];
-    _previousStatusBarStyle = application.statusBarStyle;
-    if ([brightness isEqualToString:@"Brightness.light"]) {
-      application.statusBarStyle = UIStatusBarStyleDefault;
-    } else if ([brightness isEqualToString:@"Brightness.dark"]) {
-      application.statusBarStyle = UIStatusBarStyleLightContent;
-    }
     if (useSafariVC.boolValue) {
-      [self launchURLInVC:url result:result];
+      if (@available(iOS 9.0, *)) {
+        [self launchURLInVC:url result:result];
+      } else {
+        [self launchURL:url call:call result:result];
+      }
     } else {
-      [self launchURL:url result:result];
+      [self launchURL:url call:call result:result];
+    }
+  } else if ([@"closeWebView" isEqualToString:call.method]) {
+    if (@available(iOS 9.0, *)) {
+      [self closeWebViewWithResult:result];
+    } else {
+      result([FlutterError
+          errorWithCode:@"API_NOT_AVAILABLE"
+                message:@"SafariViewController related api is not availabe for version <= IOS9"
+                details:nil]);
     }
   } else {
     result(FlutterMethodNotImplemented);
@@ -101,47 +123,43 @@
   return [application canOpenURL:url];
 }
 
-- (void)launchURL:(NSString *)urlString result:(FlutterResult)result {
+- (void)launchURL:(NSString *)urlString
+             call:(FlutterMethodCall *)call
+           result:(FlutterResult)result {
   NSURL *url = [NSURL URLWithString:urlString];
   UIApplication *application = [UIApplication sharedApplication];
-  if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
+
+  if (@available(iOS 10.0, *)) {
+    NSNumber *universalLinksOnly = call.arguments[@"universalLinksOnly"] ?: @0;
+    NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly : universalLinksOnly};
     [application openURL:url
-        options:@{}
+                  options:options
         completionHandler:^(BOOL success) {
-          if (self->_previousStatusBarStyle != nil) {
-            UIApplication *application = [UIApplication sharedApplication];
-            application.statusBarStyle = self->_previousStatusBarStyle;
-          }
-          if (success) {
-            result(nil);
-          } else {
-            result([FlutterError
-                errorWithCode:@"Error"
-                      message:[NSString stringWithFormat:@"Error while launching %@", url]
-                      details:nil]);
-          }
+          result(@(success));
         }];
   } else {
     BOOL success = [application openURL:url];
-    if (success) {
-      result(nil);
-    } else {
-      result([FlutterError
-          errorWithCode:@"Error"
-                message:[NSString stringWithFormat:@"Error while launching %@", url]
-                details:nil]);
-    }
+    result(@(success));
   }
 }
 
-- (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result {
+- (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
   NSURL *url = [NSURL URLWithString:urlString];
+  self.currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
+  __weak typeof(self) weakSelf = self;
+  self.currentSession.didFinish = ^(void) {
+    weakSelf.currentSession = nil;
+  };
+  [self.viewController presentViewController:self.currentSession.safari
+                                    animated:YES
+                                  completion:nil];
+}
 
-  SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url];
-  _currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
-  _currentSession.previousStatusBarStyle = _previousStatusBarStyle;
-  safari.delegate = _currentSession;
-  [_viewController presentViewController:safari animated:YES completion:nil];
+- (void)closeWebViewWithResult:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
+  if (self.currentSession != nil) {
+    [self.currentSession close];
+  }
+  result(nil);
 }
 
 @end

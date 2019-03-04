@@ -1,6 +1,6 @@
 package io.flutter.plugins.firebasemlvision;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -10,25 +10,40 @@ import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceLandmark;
 import io.flutter.plugin.common.MethodChannel;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 class FaceDetector implements Detector {
-  public static final FaceDetector instance = new FaceDetector();
+  static final FaceDetector instance = new FaceDetector();
 
   private FaceDetector() {}
+
+  private FirebaseVisionFaceDetector detector;
+  private Map<String, Object> lastOptions;
 
   @Override
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
 
-    FirebaseVisionFaceDetector detector;
-    if (options == null) {
-      detector = FirebaseVision.getInstance().getVisionFaceDetector();
-    } else {
-      detector = FirebaseVision.getInstance().getVisionFaceDetector(parseOptions(options));
+    // Use instantiated detector if the options are the same. Otherwise, close and instantiate new
+    // options.
+
+    if (detector == null) {
+      lastOptions = options;
+      detector = FirebaseVision.getInstance().getVisionFaceDetector(parseOptions(lastOptions));
+    } else if (!options.equals(lastOptions)) {
+      try {
+        detector.close();
+      } catch (IOException e) {
+        result.error("faceDetectorIOError", e.getLocalizedMessage(), null);
+        return;
+      }
+
+      lastOptions = options;
+      detector = FirebaseVision.getInstance().getVisionFaceDetector(parseOptions(lastOptions));
     }
 
     detector
@@ -41,10 +56,10 @@ class FaceDetector implements Detector {
                 for (FirebaseVisionFace face : firebaseVisionFaces) {
                   Map<String, Object> faceData = new HashMap<>();
 
-                  faceData.put("left", face.getBoundingBox().left);
-                  faceData.put("top", face.getBoundingBox().top);
-                  faceData.put("width", face.getBoundingBox().width());
-                  faceData.put("height", face.getBoundingBox().height());
+                  faceData.put("left", (double) face.getBoundingBox().left);
+                  faceData.put("top", (double) face.getBoundingBox().top);
+                  faceData.put("width", (double) face.getBoundingBox().width());
+                  faceData.put("height", (double) face.getBoundingBox().height());
 
                   faceData.put("headEulerAngleY", face.getHeadEulerAngleY());
                   faceData.put("headEulerAngleZ", face.getHeadEulerAngleZ());

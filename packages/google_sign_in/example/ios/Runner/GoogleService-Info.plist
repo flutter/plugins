@@ -7,34 +7,36 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>159623150305-kpfutmlf03mmgfbp50771s90mphu1uop.apps.googleusercontent.com</string>
+	<string>479882132969-9i9aqik3jfjd7qhci1nqf0bm2g71rm1u.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.159623150305-kpfutmlf03mmgfbp50771s90mphu1uop</string>
+	<string>com.googleusercontent.apps.479882132969-9i9aqik3jfjd7qhci1nqf0bm2g71rm1u</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>479882132969-jie8r1me6dsra60pal6ejaj8dgme3tg0.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDyzecVw1zXTpBKwfFHxpl7QyYBhimNhUk</string>
+	<string>AIzaSyBECOwLTAN6PU4Aet1b2QLGIb3kRK8Xjew</string>
 	<key>GCM_SENDER_ID</key>
-	<string>159623150305</string>
+	<string>479882132969</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>io.flutter.plugins.googleSignInExample</string>
 	<key>PROJECT_ID</key>
-	<string>flutter-firebase-plugins</string>
+	<string>my-flutter-proj</string>
 	<key>STORAGE_BUCKET</key>
-	<string>flutter-firebase-plugins.appspot.com</string>
+	<string>my-flutter-proj.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<true></true>
 	<key>IS_ANALYTICS_ENABLED</key>
 	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<false></false>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
 	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:159623150305:ios:2643f950e0a0da08</string>
+	<string>1:479882132969:ios:2643f950e0a0da08</string>
 	<key>DATABASE_URL</key>
-	<string>https://flutter-firebase-plugins.firebaseio.com</string>
+	<string>https://my-flutter-proj.firebaseio.com</string>
 </dict>
 </plist>
