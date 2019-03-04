@@ -185,7 +185,7 @@
                          }];
   [self waitForExpectations:@[ expectation ] timeout:5];
   NSLog(@"%@", result);
-  XCTAssertNotNil(result[@"base64data"]);
+  XCTAssertNotNil(result);
 }
 
 @end

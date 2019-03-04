@@ -10,7 +10,7 @@
 
 @implementation FIAPReceiptManager
 
-- (NSDictionary *)retrieveReceipt:(BOOL)serialized error:(FlutterError **)error {
+- (NSString *)retrieveReceiptWithError:(FlutterError **)error {
   NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
   NSData *receipt = [self getReceiptData:receiptURL];
   if (!receipt) {
@@ -19,20 +19,7 @@
                                  details:nil];
     return nil;
   }
-  NSDictionary *returnMap;
-  if (serialized) {
-    NSError *nsError = nil;
-    returnMap = [NSJSONSerialization JSONObjectWithData:receipt options:kNilOptions error:&nsError];
-    if (error) {
-      *error = [FlutterError errorWithCode:@"storekit_retrieve_receipt_json_serialization_error"
-                                   message:nsError.domain
-                                   details:nsError.userInfo];
-      return nil;
-    }
-    return returnMap;
-  } else {
-    return @{@"base64data" : [receipt base64EncodedStringWithOptions:kNilOptions]};
-  }
+  return [receipt base64EncodedStringWithOptions:kNilOptions];
 }
 
 - (NSData *)getReceiptData:(NSURL *)url {
