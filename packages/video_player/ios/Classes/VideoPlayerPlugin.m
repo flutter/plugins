@@ -149,21 +149,25 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   CGAffineTransform transform = videoTrack.preferredTransform;
   // TODO(@recastrodiaz): why do we need to do this? Why is the preferredTransform incorrect?
   // At least 2 user videos show a black screen when in portrait mode if we directly use the
-  // videoTrack.preferredTransform Setting tx to the height of the video instead of 0, properly
-  // displays the video https://github.com/flutter/flutter/issues/17606#issuecomment-413473181
-  if (transform.tx == 0 && transform.ty == 0) {
-    NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
-    NSLog(@"TX and TY are 0. Rotation: %ld. Natural width,height: %f, %f", (long)rotationDegrees,
-          videoTrack.naturalSize.width, videoTrack.naturalSize.height);
-    if (rotationDegrees == 90) {
-      NSLog(@"Setting transform tx");
-      transform.tx = videoTrack.naturalSize.height;
-      transform.ty = 0;
-    } else if (rotationDegrees == 270) {
-      NSLog(@"Setting transform ty");
-      transform.tx = 0;
-      transform.ty = videoTrack.naturalSize.width;
-    }
+  // videoTrack.preferredTransform. This is because the transform.tx and transform.ty values are
+  // incorrectly set to 0.
+  // Setting the transform.tx value to the height of the video instead of 0 when rotationDegrees ==
+  // 90 and transform.ty to the video width when rotationDegrees == 270, properly displays the video
+  // https://github.com/flutter/flutter/issues/17606#issuecomment-413473181 In 1 other user video
+  // the transform.x and transform.y are set to 1080.0 and 0.0 respectively, whilst the width,
+  // height and rotation of the video are 848.0, 480.0 and 90 respectively. Replacing the value of
+  // transform.tx to the video height properly renders the video.
+  NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
+  NSLog(@"VIDEO__ %f, %f, %f, %f, %li", transform.tx, transform.ty, videoTrack.naturalSize.height,
+        videoTrack.naturalSize.width, (long)rotationDegrees);
+  if (rotationDegrees == 90) {
+    NSLog(@"Setting transform tx");
+    transform.tx = videoTrack.naturalSize.height;
+    transform.ty = 0;
+  } else if (rotationDegrees == 270) {
+    NSLog(@"Setting transform ty");
+    transform.tx = 0;
+    transform.ty = videoTrack.naturalSize.width;
   }
   return transform;
 }
