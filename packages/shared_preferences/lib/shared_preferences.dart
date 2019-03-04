@@ -155,6 +155,13 @@ class SharedPreferences {
     return await _kChannel.invokeMethod('clear');
   }
 
+  ///release active instance for create
+  ///new singleton with new mock values ​[setMockInitialValues]
+  @visibleForTesting
+  static void releaseSingleton() {
+    _instance = null;
+  }
+
   /// Initializes the shared preferences with mock values for testing.
   @visibleForTesting
   static void setMockInitialValues(Map<String, dynamic> values) {

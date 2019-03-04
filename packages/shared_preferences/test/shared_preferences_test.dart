@@ -146,5 +146,28 @@ void main() {
       // ignore: strong_mode_implicit_dynamic_method
       expect(await channel.invokeMethod('getAll'), kTestValues2);
     });
+
+    group('releaseSingleton', () {
+      const String _key = 'dummy';
+      const String _prefixedKey = 'flutter.' + _key;
+
+      setUp(() {
+        SharedPreferences.releaseSingleton();
+      });
+
+      test('test 1', () async {
+        SharedPreferences.setMockInitialValues(<String, dynamic>{_prefixedKey: 'my string'});
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final String value = prefs.getString(_key);
+        expect(value, 'my string');
+      });
+
+      test('test 2', () async {
+        SharedPreferences.setMockInitialValues(<String, dynamic>{_prefixedKey: 'my other string'});
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final String value = prefs.getString(_key);
+        expect(value, 'my other string');
+      });
+    });
   });
 }
