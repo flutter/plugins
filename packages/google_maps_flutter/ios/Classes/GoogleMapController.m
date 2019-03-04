@@ -374,7 +374,7 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   }
   NSNumber* myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
-    [sink setMyLocationEnabled:toBool(myLocationEnabled)];
+      [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
   }
   id mapStyle = data[@"mapStyle"];
   if (mapStyle) {
@@ -388,22 +388,22 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   NSDictionary* data = json;
   id alpha = data[@"alpha"];
   if (alpha) {
-    [sink setAlpha:toFloat(alpha)];
+      [sink setAlpha:ToFloat(alpha)];
   }
   id anchor = data[@"anchor"];
   if (anchor) {
-    [sink setAnchor:toPoint(anchor)];
+      [sink setAnchor:ToPoint(anchor)];
   }
   id draggable = data[@"draggable"];
   if (draggable) {
-    [sink setDraggable:toBool(draggable)];
+    [sink setDraggable:ToBool(draggable)];
   }
   id icon = data[@"icon"];
   if (icon) {
     NSArray* iconData = icon;
     UIImage* image;
     if ([iconData[0] isEqualToString:@"defaultMarker"]) {
-      CGFloat hue = (iconData.count == 1) ? 0.0f : toDouble(iconData[1]);
+      CGFloat hue = (iconData.count == 1) ? 0.0f : ToDouble(iconData[1]);
       image = [GMSMarker markerImageWithColor:[UIColor colorWithHue:hue / 360.0
                                                          saturation:1.0
                                                          brightness:0.7
@@ -420,11 +420,11 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   }
   id flat = data[@"flat"];
   if (flat) {
-    [sink setFlat:toBool(flat)];
+    [sink setFlat:ToBool(flat)];
   }
   id infoWindowAnchor = data[@"infoWindowAnchor"];
   if (infoWindowAnchor) {
-    [sink setInfoWindowAnchor:toPoint(infoWindowAnchor)];
+    [sink setInfoWindowAnchor:ToPoint(infoWindowAnchor)];
   }
   id infoWindowText = data[@"infoWindowText"];
   if (infoWindowText) {
@@ -435,18 +435,18 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   }
   id position = data[@"position"];
   if (position) {
-    [sink setPosition:toLocation(position)];
+    [sink setPosition:ToLocation(position)];
   }
   id rotation = data[@"rotation"];
   if (rotation) {
-    [sink setRotation:toDouble(rotation)];
+    [sink setRotation:ToDouble(rotation)];
   }
   id visible = data[@"visible"];
   if (visible) {
-    [sink setVisible:toBool(visible)];
+    [sink setVisible:ToBool(visible)];
   }
   id zIndex = data[@"zIndex"];
   if (zIndex) {
-    [sink setZIndex:toInt(zIndex)];
+    [sink setZIndex:ToInt(zIndex)];
   }
 }
