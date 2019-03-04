@@ -42,12 +42,6 @@
 - (instancetype)initWithReceiptManager:(FIAPReceiptManager *)receiptManager {
   self = [self init];
   self.receiptManager = receiptManager;
-  FlutterError *error;
-  NSString *receiptData = [self.receiptManager retrieveReceiptWithError:&error];
-  if (error) {
-    NSLog(@"receipt error: %@", error);
-  }
-  NSLog(@"receipt data: %@", receiptData);
   return self;
 }
 
