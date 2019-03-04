@@ -109,6 +109,9 @@ static FlutterError *getFlutterError(NSError *error) {
     if (error) {
       result(getFlutterError(error));
     } else {
+      if (warnings == nil) {
+        warnings = [NSMutableArray array];
+      }
       result(@{@"url" : [shortURL absoluteString], @"warnings" : warnings});
     }
   };
