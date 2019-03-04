@@ -6,8 +6,8 @@
 #import <AVFoundation/AVFoundation.h>
 
 int64_t FLTCMTimeToMillis(CMTime time) {
-    if (time.timescale == 0) return 0;
-    return time.value * 1000 / time.timescale;
+  if (time.timescale == 0) return 0;
+  return time.value * 1000 / time.timescale;
 }
 
 @interface FLTFrameUpdater : NSObject
