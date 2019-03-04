@@ -374,7 +374,7 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   }
   NSNumber* myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
-      [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
+    [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
   }
   id mapStyle = data[@"mapStyle"];
   if (mapStyle) {
@@ -388,11 +388,11 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   NSDictionary* data = json;
   id alpha = data[@"alpha"];
   if (alpha) {
-      [sink setAlpha:ToFloat(alpha)];
+    [sink setAlpha:ToFloat(alpha)];
   }
   id anchor = data[@"anchor"];
   if (anchor) {
-      [sink setAnchor:ToPoint(anchor)];
+    [sink setAnchor:ToPoint(anchor)];
   }
   id draggable = data[@"draggable"];
   if (draggable) {
