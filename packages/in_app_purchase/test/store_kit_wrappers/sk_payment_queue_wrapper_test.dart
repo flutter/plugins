@@ -71,42 +71,45 @@ void main() {
   group('Wrapper fromJson tests', () {
     test('Should construct correct SKPaymentWrapper from json', () {
       SKPaymentWrapper payment =
-          SKPaymentWrapper.fromJson(buildPaymentMap(dummyPayment));
+          SKPaymentWrapper.fromJson(dummyPayment.toMap());
       testPayment(payment, dummyPayment);
     });
-  });
 
-  test('Should construct correct SKError from json', () {
-    SKError error = SKError.fromJson(buildErrorMap(dummyError));
-    testSKError(error, dummyError);
-  });
+    test('Should construct correct SKError from json', () {
+      SKError error = SKError.fromJson(buildErrorMap(dummyError));
+      testSKError(error, dummyError);
+    });
 
-  test('Should construct correct SKDownloadWrapper from json', () {
-    SKDownloadWrapper download =
-        SKDownloadWrapper.fromJson(buildDownloadMap(dummyDownload));
-    testDownload(download, dummyDownload);
-  });
+    test('Should construct correct SKDownloadWrapper from json', () {
+      SKDownloadWrapper download =
+          SKDownloadWrapper.fromJson(buildDownloadMap(dummyDownload));
+      testDownload(download, dummyDownload);
+    });
 
-  test('Should construct correct SKTransactionWrapper from json', () {
-    SKPaymentTransactionWrapper transaction =
-        SKPaymentTransactionWrapper.fromJson(
-            buildTransactionMap(dummyTransaction));
-    testTransaction(transaction, dummyTransaction);
-    if (transaction.originalTransaction != null) {
-      testTransaction(transaction.originalTransaction,
-          dummyTransaction.originalTransaction);
-    }
-  });
-}
+    test('Should construct correct SKTransactionWrapper from json', () {
+      SKPaymentTransactionWrapper transaction =
+          SKPaymentTransactionWrapper.fromJson(
+              buildTransactionMap(dummyTransaction));
+      testTransaction(transaction, dummyTransaction);
+      if (transaction.originalTransaction != null) {
+        testTransaction(transaction.originalTransaction,
+            dummyTransaction.originalTransaction);
+      }
+    });
 
-Map<String, dynamic> buildPaymentMap(SKPaymentWrapper paymentWrapper) {
-  return {
-    'productIdentifier': paymentWrapper.productIdentifier,
-    'applicationUsername': paymentWrapper.applicationUsername,
-    'requestData': paymentWrapper.requestData,
-    'quantity': paymentWrapper.quantity,
-    'simulatesAskToBuyInSandbox': paymentWrapper.simulatesAskToBuyInSandbox
-  };
+    test('Should generate correct map of the payment object', () {
+      Map map = dummyPayment.toMap();
+      expect(map['productIdentifier'], dummyPayment.productIdentifier);
+      expect(map['applicationUsername'], dummyPayment.applicationUsername);
+
+      expect(map['requestData'], dummyPayment.requestData);
+
+      expect(map['quantity'], dummyPayment.quantity);
+
+      expect(map['simulatesAskToBuyInSandbox'],
+          dummyPayment.simulatesAskToBuyInSandbox);
+    });
+  });
 }
 
 Map<String, dynamic> buildErrorMap(SKError error) {
@@ -140,7 +143,7 @@ Map<String, dynamic> buildTransactionMap(
   Map map = <String, dynamic>{
     'transactionState': SKPaymentTransactionStateWrapper.values
         .indexOf(SKPaymentTransactionStateWrapper.purchased),
-    'payment': buildPaymentMap(transaction.payment),
+    'payment': transaction.payment.toMap(),
     'originalTransaction': buildTransactionMap(transaction.originalTransaction),
     'transactionTimeStamp': transaction.transactionTimeStamp,
     'transactionIdentifier': transaction.transactionIdentifier,

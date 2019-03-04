@@ -37,7 +37,7 @@ void main() {
     'unit': 2
   };
   final Map<String, dynamic> discountMap = <String, dynamic>{
-    'price': 1.0,
+    'price': '1.0',
     'priceLocale': localeMap,
     'numberOfPeriods': 1,
     'paymentMode': 2,
@@ -50,7 +50,7 @@ void main() {
     'priceLocale': localeMap,
     'downloadContentVersion': 'version',
     'subscriptionGroupIdentifier': 'com.group',
-    'price': 1.0,
+    'price': '1.0',
     'downloadable': true,
     'downloadContentLengths': <int>[1, 2],
     'subscriptionPeriod': subMap,

@@ -53,7 +53,7 @@ const _$SubscriptionPeriodUnitEnumMap = <SubscriptionPeriodUnit, dynamic>{
 
 SKProductDiscountWrapper _$SKProductDiscountWrapperFromJson(Map json) {
   return SKProductDiscountWrapper(
-      price: (json['price'] as num)?.toDouble(),
+      price: json['price'] as String,
       priceLocale: json['priceLocale'] == null
           ? null
           : PriceLocaleWrapper.fromJson(json['priceLocale'] as Map),
@@ -84,7 +84,7 @@ SKProductWrapper _$SKProductWrapperFromJson(Map json) {
       downloadContentVersion: json['downloadContentVersion'] as String,
       subscriptionGroupIdentifier:
           json['subscriptionGroupIdentifier'] as String,
-      price: (json['price'] as num)?.toDouble(),
+      price: json['price'] as String,
       downloadable: json['downloadable'] as bool,
       downloadContentLengths: (json['downloadContentLengths'] as List)
           ?.map((e) => e as int)

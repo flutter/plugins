@@ -22,7 +22,8 @@
 - (instancetype)initWithMap:(NSDictionary *)map {
   self = [super init];
   if (self) {
-    [self setValue:map[@"price"] ?: [NSNull null] forKey:@"price"];
+    [self setValue:[[NSDecimalNumber alloc] initWithString:map[@"price"]] ?: [NSNull null]
+            forKey:@"price"];
     NSLocale *locale = NSLocale.systemLocale;
     [self setValue:locale ?: [NSNull null] forKey:@"priceLocale"];
     [self setValue:map[@"numberOfPeriods"] ?: @(0) forKey:@"numberOfPeriods"];
@@ -45,7 +46,8 @@
     [self setValue:map[@"localizedDescription"] ?: [NSNull null] forKey:@"localizedDescription"];
     [self setValue:map[@"localizedTitle"] ?: [NSNull null] forKey:@"localizedTitle"];
     [self setValue:map[@"downloadable"] ?: @NO forKey:@"downloadable"];
-    [self setValue:map[@"price"] ?: [NSNull null] forKey:@"price"];
+    [self setValue:[[NSDecimalNumber alloc] initWithString:map[@"price"]] ?: [NSNull null]
+            forKey:@"price"];
     NSLocale *locale = NSLocale.systemLocale;
     [self setValue:locale ?: [NSNull null] forKey:@"priceLocale"];
     [self setValue:map[@"downloadContentLengths"] ?: @(0) forKey:@"downloadContentLengths"];
@@ -128,6 +130,34 @@
   return [[SKProductRequestStub alloc] initWithProductIdentifiers:identifiers];
 }
 
+- (SKProduct *)getProduct:(NSString *)productID {
+  return [SKProduct new];
+}
+
+@end
+
+@interface SKPaymentQueueStub ()
+
+@property(strong, nonatomic) id<SKPaymentTransactionObserver> observer;
+
+@end
+
+@implementation SKPaymentQueueStub
+
+- (void)addTransactionObserver:(id<SKPaymentTransactionObserver>)observer {
+  self.observer = observer;
+}
+
+- (void)addPayment:(SKPayment *)payment {
+  SKPaymentTransactionStub *transaction =
+      [[SKPaymentTransactionStub alloc] initWithState:self.testState];
+  [self.observer paymentQueue:self updatedTransactions:@[ transaction ]];
+}
+
+- (void)restoreCompletedTransactions {
+  [self.observer paymentQueueRestoreCompletedTransactionsFinished:self];
+}
+
 @end
 
 @implementation SKPaymentTransactionStub
@@ -159,6 +189,15 @@
       [downloads addObject:[[SKDownloadStub alloc] initWithMap:downloadMap]];
     }
     [self setValue:downloads forKey:@"downloads"];
+  }
+  return self;
+}
+
+- (instancetype)initWithState:(SKPaymentTransactionState)state {
+  self = [super init];
+  if (self) {
+    [self setValue:@"fakeID" forKey:@"transactionIdentifier"];
+    [self setValue:@(state) forKey:@"transactionState"];
   }
   return self;
 }

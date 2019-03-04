@@ -1,3 +1,11 @@
+## 2.0.2+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 2.0.2
+
+* Enable setAnalyticsCollectionEnabled support for iOS
+
 ## 2.0.1
 
 * Log a more detailed warning at build time about the previous AndroidX
