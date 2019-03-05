@@ -188,4 +188,19 @@
   XCTAssertNotNil(result);
 }
 
+- (void)testRefreshReceiptRequest {
+  XCTestExpectation* expectation = [self expectationWithDescription:@"expect success"];
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[InAppPurchasePlugin refreshReceipt:result:]"
+                                        arguments:nil];
+  __block BOOL result = NO;
+  [self.plugin handleMethodCall:call
+                         result:^(id r) {
+                           result = YES;
+                           [expectation fulfill];
+                         }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertTrue(result);
+}
+
 @end

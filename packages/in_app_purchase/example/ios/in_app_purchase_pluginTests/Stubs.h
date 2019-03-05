@@ -57,4 +57,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FIAPReceiptManagerStub : FIAPReceiptManager
 @end
 
+@interface SKReceiptRefreshRequestStub : SKReceiptRefreshRequest
+- (instancetype)initWithFailureError:(NSError *)error;
+@end
+
 NS_ASSUME_NONNULL_END

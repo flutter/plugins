@@ -91,6 +91,8 @@
     [self restoreTransactions:call result:result];
   } else if ([@"-[InAppPurchasePlugin retrieveReceiptData:result:]" isEqualToString:call.method]) {
     [self retrieveReceiptData:call result:result];
+  } else if ([@"-[InAppPurchasePlugin refreshReceipt:result:]" isEqualToString:call.method]) {
+    [self refreshReceipt:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -228,6 +230,40 @@
   result(receiptData);
 }
 
+- (void)refreshReceipt:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSDictionary *arguments = call.arguments;
+  SKReceiptRefreshRequest *request;
+  if (arguments) {
+    if (![arguments isKindOfClass:[NSDictionary class]]) {
+      result([FlutterError errorWithCode:@"storekit_invalid_argument"
+                                 message:@"Argument type of startRequest is not array"
+                                 details:call.arguments]);
+      return;
+    }
+    NSMutableDictionary *properties = [NSMutableDictionary new];
+    properties[SKReceiptPropertyIsExpired] = arguments[@"isExpired"];
+    properties[SKReceiptPropertyIsRevoked] = arguments[@"isRevoked"];
+    properties[SKReceiptPropertyIsVolumePurchase] = arguments[@"isVolumePurchase"];
+    request = [self getRefreshReceiptRequest:properties];
+  } else {
+    request = [self getRefreshReceiptRequest:nil];
+  }
+  FIAPRequestHandler *handler = [[FIAPRequestHandler alloc] initWithRequest:request];
+  [self.requestHandlers addObject:handler];
+  __weak typeof(self) weakSelf = self;
+  [handler startProductRequestWithCompletionHandler:^(SKProductsResponse *_Nullable response,
+                                                      NSError *_Nullable error) {
+    if (error) {
+      result([FlutterError errorWithCode:@"storekit_refreshreceiptrequest_platform_error"
+                                 message:error.description
+                                 details:error.userInfo]);
+      return;
+    }
+    result(nil);
+    [weakSelf.requestHandlers removeObject:handler];
+  }];
+}
+
 #pragma mark - delegates
 
 - (void)handleTransactionsUpdated:(NSArray<SKPaymentTransaction *> *)transactions {
@@ -287,6 +323,10 @@
 
 - (SKProduct *)getProduct:(NSString *)productID {
   return [self.productsCache objectForKey:productID];
+}
+
+- (SKReceiptRefreshRequest *)getRefreshReceiptRequest:(NSDictionary *)properties {
+  return [[SKReceiptRefreshRequest alloc] initWithReceiptProperties:properties];
 }
 
 #pragma mark - getter
