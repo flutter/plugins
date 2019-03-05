@@ -45,7 +45,7 @@ class SKRequestMaker {
   /// The valid keys in the receiptProperties are below (All of them are of type bool):
   /// * isExpired: whether the receipt is expired.
   /// * isRevoked: whether the receipt has been revoked.
-  /// * isExpired: whether the receipt is a Volume Purchase Plan receipt.
+  /// * isVolumePurchase: whether the receipt is a Volume Purchase Plan receipt.
   Future<void> startRefreshReceiptRequest({Map receiptProperties}) {
     return channel.invokeMethod(
       '-[InAppPurchasePlugin refreshReceipt:result:]',
