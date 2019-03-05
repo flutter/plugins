@@ -160,6 +160,11 @@ class FirebaseAnalytics {
     });
   }
 
+  /// Clears all analytics data for this app from the device and resets the app instance id.
+  Future<void> resetAnalyticsData() {
+     await _channel.invokeMethod('resetAnalyticsData');
+  }
+
   /// Logs the standard `add_payment_info` event.
   ///
   /// This event signifies that a user has submitted their payment information
