@@ -1,3 +1,46 @@
+## 0.8.1+4
+
+* Update README.
+* Update the example app with separate pages for registration and sign-in.
+
+## 0.8.1+3
+
+* Reduce compiler warnings in Android plugin
+* Raise errors early when accessing methods that require a Firebase User
+
+## 0.8.1+2
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.8.1+1
+
+* Remove categories.
+
+## 0.8.1
+
+* Fixes Firebase auth phone sign-in for Android.
+
+## 0.8.0+3
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.8.0+2
+
+* Update Google sign-in example in the README.
+
+## 0.8.0+1
+
+* Update a broken dependency.
+
+## 0.8.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
 ## 0.7.0
 
 * Introduce third-party auth provider classes that generate `AuthCredential`s

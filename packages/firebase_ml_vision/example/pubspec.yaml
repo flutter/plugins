@@ -6,11 +6,11 @@ dependencies:
   flutter:
     sdk: flutter
 
-  image_picker: ^0.4.5
+  image_picker: ^0.5.0
   cupertino_icons: ^0.1.2
   firebase_ml_vision:
     path: ../
-  firebase_core: ^0.2.5+1
+  firebase_core: ^0.3.0
 
 flutter:
   uses-material-design: true

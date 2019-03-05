@@ -129,7 +129,12 @@ static const int SOURCE_GALLERY = 1;
   NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
   UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
-
+  // The method dismissViewControllerAnimated does not immediately prevent further
+  // didFinishPickingMediaWithInfo invocations. A nil check is necessary to prevent below code to
+  // be unwantly executed multiple times and cause a crash.
+  if (!_result) {
+    return;
+  }
   if (videoURL != nil) {
     NSData *data = [NSData dataWithContentsOfURL:videoURL];
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
@@ -157,9 +162,12 @@ static const int SOURCE_GALLERY = 1;
       image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
     }
 
-    NSData *data = UIImageJPEGRepresentation(image, 1.0);
+    BOOL saveAsPNG = [self hasAlpha:image];
+    NSData *data =
+        saveAsPNG ? UIImagePNGRepresentation(image) : UIImageJPEGRepresentation(image, 1.0);
+    NSString *fileExtension = saveAsPNG ? @"image_picker_%@.png" : @"image_picker_%@.jpg";
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
-    NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.jpg", guid];
+    NSString *tmpFile = [NSString stringWithFormat:fileExtension, guid];
     NSString *tmpDirectory = NSTemporaryDirectory();
     NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
 
@@ -247,6 +255,13 @@ static const int SOURCE_GALLERY = 1;
   UIGraphicsEndImageContext();
 
   return scaledImage;
+}
+
+// Returns true if the image has an alpha layer
+- (BOOL)hasAlpha:(UIImage *)image {
+  CGImageAlphaInfo alpha = CGImageGetAlphaInfo(image.CGImage);
+  return (alpha == kCGImageAlphaFirst || alpha == kCGImageAlphaLast ||
+          alpha == kCGImageAlphaPremultipliedFirst || alpha == kCGImageAlphaPremultipliedLast);
 }
 
 @end

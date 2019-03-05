@@ -6,19 +6,13 @@
 
 #import "Firebase/Firebase.h"
 
-@interface NSError (FIRAuthErrorCode)
-@property(readonly, nonatomic) NSString *firAuthErrorCode;
-@end
-
-@implementation NSError (FIRAuthErrorCode)
-- (NSString *)firAuthErrorCode {
-  NSString *code = [self userInfo][FIRAuthErrorNameKey];
+static NSString *getFlutterErrorCode(NSError *error) {
+  NSString *code = [error userInfo][FIRAuthErrorNameKey];
   if (code != nil) {
     return code;
   }
-  return [NSString stringWithFormat:@"ERROR_%d", (int)self.code];
+  return [NSString stringWithFormat:@"ERROR_%d", (int)error.code];
 }
-@end
 
 NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   return @{
@@ -54,8 +48,10 @@ int nextHandle = 0;
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
   }
   return self;
@@ -299,7 +295,7 @@ int nextHandle = 0;
 
 - (void)sendResult:(FlutterResult)result forObject:(NSObject *)object error:(NSError *)error {
   if (error != nil) {
-    result([FlutterError errorWithCode:error.firAuthErrorCode
+    result([FlutterError errorWithCode:getFlutterErrorCode(error)
                                message:error.localizedDescription
                                details:nil]);
   } else if (object == nil) {
