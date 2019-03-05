@@ -1,3 +1,7 @@
+## 0.5.0+5
+
+* Remove unnecessary temp video file path.
+
 ## 0.5.0+4
 
 Preserve transparency when saving images.
