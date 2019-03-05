@@ -1,3 +1,8 @@
+## 0.4.0
+
+* Change events are call backs on GoogleMap widget.
+* GoogleMapController no longer handles change events.
+
 ## 0.3.0+3
 
 * Update Android play-services-maps to 16.1.0
