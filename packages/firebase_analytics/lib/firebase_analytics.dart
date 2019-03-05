@@ -161,7 +161,7 @@ class FirebaseAnalytics {
   }
 
   /// Clears all analytics data for this app from the device and resets the app instance id.
-  Future<void> resetAnalyticsData() {
+  Future<void> resetAnalyticsData() async {
      await _channel.invokeMethod('resetAnalyticsData');
   }
 
