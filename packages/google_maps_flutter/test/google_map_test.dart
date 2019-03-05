@@ -316,7 +316,8 @@ void main() {
       Directionality(
         textDirection: TextDirection.ltr,
         child: GoogleMap(
-          initialCameraPosition: const CameraPosition(target: LatLng(10.0, 15.0)),
+          initialCameraPosition:
+              const CameraPosition(target: LatLng(10.0, 15.0)),
           onCameraMove: (CameraPosition position) {},
         ),
       ),
