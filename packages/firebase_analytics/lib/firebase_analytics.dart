@@ -162,6 +162,9 @@ class FirebaseAnalytics {
 
   /// Clears all analytics data for this app from the device and resets the app instance id.
   Future<void> resetAnalyticsData() async {
+     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+     // https://github.com/flutter/flutter/issues/26431
+     // ignore: strong_mode_implicit_dynamic_method
      await _channel.invokeMethod('resetAnalyticsData');
   }
 
