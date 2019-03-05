@@ -2,6 +2,14 @@
 
 * iOS: fixed some videos being rendered black
 
+## 0.10.0+3
+
+* Fix divide by zero bug on iOS.
+
+## 0.10.0+2
+
+* Added supported format documentation in README.
+
 ## 0.10.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
