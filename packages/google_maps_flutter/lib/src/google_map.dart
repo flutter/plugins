@@ -6,9 +6,13 @@ part of google_maps_flutter;
 
 typedef void MapCreatedCallback(GoogleMapController controller);
 
-/// Callback that tracks camera position.
+/// Callback that receives updates to the camera position.
 ///
-/// Will be null if trackCameraPosition on [GoogleMap] is false.
+/// This callback is triggered when the platform google map
+/// registers a camera movement. This will be called with null if
+/// [GoogleMap.trackCameraPosition] is false.
+///
+/// This is used in [GoogleMap.onCameraMove] and [GoogleMap.onMapOptionsUpdate].
 typedef void CameraPositionCallback(CameraPosition position);
 
 class GoogleMap extends StatefulWidget {
@@ -71,16 +75,35 @@ class GoogleMap extends StatefulWidget {
   /// Markers to be placed on the map.
   final Set<Marker> markers;
 
-  /// Callback for when the camera move started.
+  /// Called when the camera starts moving.
+  ///
+  /// This can be initiated by the following:
+  /// 1. Non-gesture animation initiated in response to user actions.
+  ///    For example: zoom buttons, my location button, or marker clicks.
+  /// 2. Developer initiated animation.
+  /// 3. Camera motion initiated in response to user gestures on the map.
+  ///    For example: pan, tilt, pinch to zoom, or rotate.
+  ///
+  /// Note: This is callback is called even if trackCameraPosition is false.
   final VoidCallback onCameraMoveStarted;
 
-  /// Callback for when the camera is moving.
+  /// Called repeatedly as the camera continues to move after an
+  /// onCameraMoveStarted call.
+  ///
+  /// This may be called as often as once every frame and should
+  /// not perform expensive operations.
+  ///
+  /// This is callback is not called when trackCameraPosition is false.
   final CameraPositionCallback onCameraMove;
 
-  /// Callback for when the camera has entered an idle stage.
+  /// Called when camera movement has ended, there are no pending
+  /// animations and the user has stopped interacting with the map.
   final VoidCallback onCameraIdle;
 
   /// Callback when the [GoogleMap] options have been applied on the platform.
+  ///
+  /// This is callback is called even if trackCameraPosition is false,
+  /// the value it is called with is null.
   final CameraPositionCallback onMapOptionsUpdate;
 
   /// Callback for when the [Marker] options have been applied on the platform.
