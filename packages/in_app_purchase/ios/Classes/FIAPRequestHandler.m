@@ -34,6 +34,8 @@
      didReceiveResponse:(SKProductsResponse *)response {
   if (self.completion) {
     self.completion(response, nil);
+    // set the completion to nil here so self.completion won't be triggered again in
+    // requestDidFinish for SKProductRequest.
     self.completion = nil;
   }
 }
