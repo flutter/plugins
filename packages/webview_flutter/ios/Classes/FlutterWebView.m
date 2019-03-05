@@ -115,6 +115,8 @@
     [self onGoForward:call result:result];
   } else if ([[call method] isEqualToString:@"reload"]) {
     [self onReload:call result:result];
+  } else if ([[call method] isEqualToString:@"userAgent"]) {
+    [self userAgent:call result:result];
   } else if ([[call method] isEqualToString:@"currentUrl"]) {
     [self onCurrentUrl:call result:result];
   } else if ([[call method] isEqualToString:@"evaluateJavascript"]) {
@@ -169,6 +171,11 @@
 - (void)onReload:(FlutterMethodCall*)call result:(FlutterResult)result {
   [_webView reload];
   result(nil);
+}
+
+- (void)userAgent:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* userAgent = [_webView customUserAgent];
+  result(userAgent);
 }
 
 - (void)onCurrentUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -246,6 +253,18 @@
     if ([key isEqualToString:@"jsMode"]) {
       NSNumber* mode = settings[key];
       [self updateJsMode:mode];
+    } else if ([key isEqualToString:@"userAgent"]) {
+      id detroitUA = settings[key];
+      if (detroitUA && ![detroitUA isEqual:[NSNull null]]) {
+        if (@available(iOS 9.0, *)) {
+            [_webView evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id __nullable userAgent, NSError * __nullable error) {
+                NSString* appedUserAgent = [NSString stringWithFormat:@"%@ %@", userAgent, detroitUA];
+                self->_webView.customUserAgent = appedUserAgent;
+            }];
+        } else {
+          NSLog(@"webview_flutter: prior to iOS 9.0, a custom userAgent is not supported.");
+        }
+      }
     } else {
       NSLog(@"webview_flutter: unknown setting key: %@", key);
     }

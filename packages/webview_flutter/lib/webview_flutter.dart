@@ -79,6 +79,7 @@ class WebView extends StatefulWidget {
     this.javascriptMode = JavascriptMode.disabled,
     this.username,
     this.password,
+    this.userAgent,
     this.javascriptChannels,
     this.gestureRecognizers,
   })  : assert(javascriptMode != null),
@@ -107,6 +108,8 @@ class WebView extends StatefulWidget {
   final String username;
 
   final String password;
+
+  final String userAgent;
 
   /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
   ///
@@ -277,17 +280,24 @@ class _CreationParams {
 class _WebSettings {
   _WebSettings({
     this.javascriptMode,
+    this.userAgent,
   });
 
   static _WebSettings fromWidget(WebView widget) {
-    return _WebSettings(javascriptMode: widget.javascriptMode);
+    return _WebSettings(
+      javascriptMode: widget.javascriptMode,
+      userAgent: widget.userAgent,
+    );
   }
 
   final JavascriptMode javascriptMode;
 
+  final String userAgent;
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javascriptMode.index,
+      'userAgent': userAgent,
     };
   }
 
@@ -297,6 +307,7 @@ class _WebSettings {
     }
     return <String, dynamic>{
       'jsMode': newSettings.javascriptMode.index,
+      'userAgent': newSettings.userAgent,
     };
   }
 }
@@ -359,6 +370,11 @@ class WebViewController {
     // ignore: strong_mode_implicit_dynamic_method
     final String url = await _channel.invokeMethod('currentUrl');
     return url;
+  }
+
+  Future<String> userAgent() async {
+    final String userAgent = await _channel.invokeMethod('userAgent');
+    return userAgent;
   }
 
   /// Checks whether there's a back history item.
