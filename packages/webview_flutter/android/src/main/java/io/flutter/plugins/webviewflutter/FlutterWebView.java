@@ -83,6 +83,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "reload":
         reload(methodCall, result);
         break;
+      case "userAgent":
+        userAgent(methodCall, result);
+        break;
       case "currentUrl":
         currentUrl(methodCall, result);
         break;
@@ -140,7 +143,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(webView.getUrl());
   }
 
-  @SuppressWarnings("unchecked")
+  private void userAgent(MethodCall methodCall, Result result) {
+    result.success(webView.getSettings().getUserAgentString());
+  }
+
+    @SuppressWarnings("unchecked")
   private void updateSettings(MethodCall methodCall, Result result) {
     applySettings((Map<String, Object>) methodCall.arguments);
     result.success(null);
@@ -189,6 +196,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "jsMode":
           updateJsMode((Integer) settings.get(key));
           break;
+        case "userAgent":
+          webView.getSettings().setUserAgentString((String) settings.get(key));
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
