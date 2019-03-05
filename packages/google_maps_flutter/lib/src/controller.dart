@@ -85,11 +85,6 @@ class GoogleMapController {
         'options': optionsUpdate,
       },
     );
-    if (_googleMapState.widget.onMapOptionsUpdate != null) {
-      _googleMapState.widget.onMapOptionsUpdate(
-        CameraPosition.fromMap(json),
-      );
-    }
   }
 
   /// Updates marker configuration.
@@ -107,9 +102,6 @@ class GoogleMapController {
       'markers#update',
       markerUpdates._toMap(),
     );
-    if (_googleMapState.widget.onMarkersUpdate != null) {
-      _googleMapState.widget.onMarkersUpdate();
-    }
   }
 
   /// Starts an animated change of the map camera position.

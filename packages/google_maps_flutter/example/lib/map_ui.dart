@@ -186,7 +186,6 @@ class MapUiBodyState extends State<MapUiBody> {
       zoomGesturesEnabled: _zoomGesturesEnabled,
       myLocationEnabled: _myLocationEnabled,
       onCameraMove: _updateCameraPosition,
-      onMapOptionsUpdate: _updateCameraPosition,
     );
 
     final List<Widget> columnChildren = <Widget>[

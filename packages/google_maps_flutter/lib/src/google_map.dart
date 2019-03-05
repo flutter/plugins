@@ -34,8 +34,6 @@ class GoogleMap extends StatefulWidget {
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
-    this.onMapOptionsUpdate,
-    this.onMarkersUpdate,
   }) : assert(initialCameraPosition != null);
 
   final MapCreatedCallback onMapCreated;
@@ -99,15 +97,6 @@ class GoogleMap extends StatefulWidget {
   /// Called when camera movement has ended, there are no pending
   /// animations and the user has stopped interacting with the map.
   final VoidCallback onCameraIdle;
-
-  /// Callback when the [GoogleMap] options have been applied on the platform.
-  ///
-  /// This is callback is called even if trackCameraPosition is false,
-  /// the value it is called with is null.
-  final CameraPositionCallback onMapOptionsUpdate;
-
-  /// Callback for when the [Marker] options have been applied on the platform.
-  final VoidCallback onMarkersUpdate;
 
   /// True if a "My Location" layer should be shown on the map.
   ///
