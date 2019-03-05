@@ -8,7 +8,7 @@ typedef void MapCreatedCallback(GoogleMapController controller);
 
 /// Callback that receives updates to the camera position.
 ///
-/// This callback is triggered when the platform google map
+/// This callback is triggered when the platform Google Map
 /// registers a camera movement. This will be called with null if
 /// [GoogleMap.trackCameraPosition] is false.
 ///
@@ -78,11 +78,11 @@ class GoogleMap extends StatefulWidget {
   /// This can be initiated by the following:
   /// 1. Non-gesture animation initiated in response to user actions.
   ///    For example: zoom buttons, my location button, or marker clicks.
-  /// 2. Developer initiated animation.
+  /// 2. Programmatically initiated animation.
   /// 3. Camera motion initiated in response to user gestures on the map.
   ///    For example: pan, tilt, pinch to zoom, or rotate.
   ///
-  /// Note: This is callback is called even if trackCameraPosition is false.
+  /// Note: This is callback is called even if [trackCameraPosition] is false.
   final VoidCallback onCameraMoveStarted;
 
   /// Called repeatedly as the camera continues to move after an
@@ -91,7 +91,7 @@ class GoogleMap extends StatefulWidget {
   /// This may be called as often as once every frame and should
   /// not perform expensive operations.
   ///
-  /// This is callback is not called when trackCameraPosition is false.
+  /// This is only called if [trackCameraPosition] is true.
   final CameraPositionCallback onCameraMove;
 
   /// Called when camera movement has ended, there are no pending
