@@ -8,11 +8,9 @@ void main() {
   test('OSTester Example App', () async {
     app.main();
     // TODO(jackson): Implement wait() on OS side. For now we can use Dart to wait.
-    await Future<void>.delayed(const Duration(seconds: 5));
-//
-    await os.tap(os.label('Done'));
-    await os.expect(os.label('TEST'), os.visible);
+    await Future<void>.delayed(const Duration(seconds: 3));
 
-    runApp(MaterialApp(home: Text('pass')));
+    await os.tap(os.label('TEST'));
+    await os.expect(os.label('pass'), os.visible);
   });
 }

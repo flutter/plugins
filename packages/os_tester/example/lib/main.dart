@@ -14,12 +14,13 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
+  String _text = 'TEST';
 
   @override
   void initState() {
-    Future<void>.delayed(const Duration(seconds: 1)).then((_) {
-      os.tap(os.label('TEST'));
-    });
+//    Future<void>.delayed(const Duration(seconds: 1)).then((_) {
+//      os.tap(os.label('TEST'));
+//    });
     super.initState();
   }
 
@@ -33,9 +34,11 @@ class MyAppState extends State<MyApp> {
         body: Center(
           child: RaisedButton(
             onPressed: () {
-              launch('https://flutter.dev');
+              setState(() {
+                _text = 'p4ss';
+              });
             },
-            child: const Text('TEST'),
+            child: Text(_text),
           ),
         ),
       ),

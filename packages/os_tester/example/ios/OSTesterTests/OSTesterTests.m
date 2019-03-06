@@ -24,7 +24,12 @@
 }
 
 - (void)testExample {
-  [[EarlGrey selectElementWithMatcher:grey_text(@"pass")] assertWithMatcher:grey_sufficientlyVisible()];
+  [[GREYCondition conditionWithName:@"Example app test"
+                              block:^{
+                                NSError *error;
+                                [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"pass")] assertWithMatcher:grey_sufficientlyVisible() error:&error];
+                                return (BOOL)(error == nil ? YES : NO);
+                              }] waitWithTimeout:60];
 }
 
 @end
