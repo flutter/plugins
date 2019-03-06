@@ -8,35 +8,43 @@ part of os_tester;
 OSTester os = OSTester();
 
 class OSTester {
-  static const MethodChannel _channel =
-  const MethodChannel('plugins.flutter.io/os_tester');
+  static const MethodChannel _channel = MethodChannel('plugins.flutter.io/os_tester');
 
   /// Taps the element matched by [matcher]
-  Future<void> tap(Matcher matcher) async {
+  void tap(Matcher matcher) {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('tap', <String, dynamic>{ 'matcher': matcher._data });
+    _channel.invokeMethod('tap', <String, dynamic>{ 'matcher': matcher._data });
   }
 
   /// Asserts that [actual] matches [matcher].
-  Future<void> expect(Matcher actual, Matcher matcher) async {
+  void expect(Matcher actual, Matcher matcher) {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('expect', <String, dynamic>{
+    _channel.invokeMethod('expect', <String, dynamic>{
       'actual': actual._data,
       'matcher': matcher._data,
     });
   }
+  
+  Future<void> wait(
+      String name,
+      Function assertion, { 
+      Duration timeout,
+      Duration pollInterval,
+    }
+  ) async {
+    // TODO(jackson): Implement
+  }
 
   /// Matches an element with the specified label value
-  Matcher label(String text) {
-    return new Matcher._({'label': text });
-  }
+  Matcher label(String text) => Matcher._label(text);
 
   /// Matches an element with the specified text value
-  Matcher text(String text) {
-    return new Matcher._({'text': text });
-  }
+  Matcher text(String text) => Matcher._text(text);
+
+  /// Matches an element that is sufficiently visible
+  Matcher get visible => Matcher._visible();
 }

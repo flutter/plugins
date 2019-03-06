@@ -20,6 +20,7 @@ class MyAppState extends State<MyApp> {
     Future<void>.delayed(const Duration(seconds: 1)).then((_) {
       os.tap(os.label('TEST'));
     });
+    super.initState();
   }
 
   @override
@@ -34,7 +35,7 @@ class MyAppState extends State<MyApp> {
             onPressed: () {
               launch('https://flutter.dev');
             },
-            child: new Text('TEST'),
+            child: const Text('TEST'),
           ),
         ),
       ),

@@ -23,12 +23,6 @@
 - (void)tearDown {
 }
 
-- (void)testExample {
-  // Runs widget tests in tests/ folder of the example.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"TEST")] performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Done")] performAction:grey_tap()];
-}
-
 - (void)testPlugin {
   // Runs widget tests in tests/ folder of the plugin.
 }
