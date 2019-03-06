@@ -48,35 +48,35 @@
     }
     FIRHTTPSCallable *function = [functions HTTPSCallableWithName:functionName];
     [function callWithObject:parameters
-                     completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
-                   if (error) {
-                     FlutterError *flutterError;
-                     if (error.domain == FIRFunctionsErrorDomain) {
-                       NSDictionary *details = [NSMutableDictionary dictionary];
-                       [details setValue:[self mapFunctionsErrorCodes:error.code] forKey:@"code"];
-                       if (error.localizedDescription != nil) {
-                         [details setValue:error.localizedDescription forKey:@"message"];
-                       }
-                       if (error.userInfo[FIRFunctionsErrorDetailsKey] != nil) {
-                         [details setValue:error.userInfo[FIRFunctionsErrorDetailsKey]
-                                    forKey:@"details"];
-                       }
+                  completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
+                    if (error) {
+                      FlutterError *flutterError;
+                      if (error.domain == FIRFunctionsErrorDomain) {
+                        NSDictionary *details = [NSMutableDictionary dictionary];
+                        [details setValue:[self mapFunctionsErrorCodes:error.code] forKey:@"code"];
+                        if (error.localizedDescription != nil) {
+                          [details setValue:error.localizedDescription forKey:@"message"];
+                        }
+                        if (error.userInfo[FIRFunctionsErrorDetailsKey] != nil) {
+                          [details setValue:error.userInfo[FIRFunctionsErrorDetailsKey]
+                                     forKey:@"details"];
+                        }
 
-                       flutterError =
-                           [FlutterError errorWithCode:@"functionsError"
-                                               message:@"Firebase function failed with exception."
-                                               details:details];
-                     } else {
-                       flutterError = [FlutterError
-                           errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
-                                 message:error.localizedDescription
-                                 details:nil];
-                     }
-                     result(flutterError);
-                   } else {
-                     result(callableResult.data);
-                   }
-                 }];
+                        flutterError =
+                            [FlutterError errorWithCode:@"functionsError"
+                                                message:@"Firebase function failed with exception."
+                                                details:details];
+                      } else {
+                        flutterError = [FlutterError
+                            errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
+                                  message:error.localizedDescription
+                                  details:nil];
+                      }
+                      result(flutterError);
+                    } else {
+                      result(callableResult.data);
+                    }
+                  }];
   } else {
     result(FlutterMethodNotImplemented);
   }
