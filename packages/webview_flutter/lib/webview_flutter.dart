@@ -177,6 +177,9 @@ class WebView extends StatefulWidget {
   /// On Android only navigation actions originated by the main frame can be intercepted,
   /// navigation actions originating from subframes are allowed regardless of the value
   /// returned by this delegate.
+  ///
+  /// On Android API levels smaller than 21, when a navigationDelegate is set, HTTP requests do not
+  /// include the HTTP referer header.
   final NavigationDelegate navigationDelegate;
 
   @override
@@ -184,8 +187,7 @@ class WebView extends StatefulWidget {
 }
 
 class _WebViewState extends State<WebView> {
-  final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
+  final Completer<WebViewController> _controller = Completer<WebViewController>();
 
   _WebSettings _settings;
 
@@ -222,8 +224,7 @@ class _WebViewState extends State<WebView> {
         creationParamsCodec: const StandardMessageCodec(),
       );
     }
-    return Text(
-        '$defaultTargetPlatform is not yet supported by the webview_flutter plugin');
+    return Text('$defaultTargetPlatform is not yet supported by the webview_flutter plugin');
   }
 
   @override
@@ -261,12 +262,11 @@ class _WebViewState extends State<WebView> {
   }
 
   void _assertJavascriptChannelNamesAreUnique() {
-    if (widget.javascriptChannels == null ||
-        widget.javascriptChannels.isEmpty) {
+    if (widget.javascriptChannels == null || widget.javascriptChannels.isEmpty) {
       return;
     }
-    assert(_extractChannelNames(widget.javascriptChannels).length ==
-        widget.javascriptChannels.length);
+    assert(
+        _extractChannelNames(widget.javascriptChannels).length == widget.javascriptChannels.length);
   }
 }
 
@@ -280,15 +280,13 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 }
 
 class _CreationParams {
-  _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames});
+  _CreationParams({this.initialUrl, this.settings, this.javascriptChannelNames});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
       initialUrl: widget.initialUrl,
       settings: _WebSettings.fromWidget(widget),
-      javascriptChannelNames:
-          _extractChannelNames(widget.javascriptChannels).toList(),
+      javascriptChannelNames: _extractChannelNames(widget.javascriptChannels).toList(),
     );
   }
 
@@ -364,17 +362,15 @@ class WebViewController {
   _WebSettings _settings;
 
   // Maps a channel name to a channel.
-  Map<String, JavascriptChannel> _javascriptChannels =
-      <String, JavascriptChannel>{};
+  Map<String, JavascriptChannel> _javascriptChannels = <String, JavascriptChannel>{};
 
-  Future<void> _onMethodCall(MethodCall call) async {
+  Future<bool> _onMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'javascriptChannelMessage':
         final String channel = call.arguments['channel'];
         final String message = call.arguments['message'];
-        _javascriptChannels[channel]
-            .onMessageReceived(JavascriptMessage(message));
-        break;
+        _javascriptChannels[channel].onMessageReceived(JavascriptMessage(message));
+        return true;
       case 'navigationRequest':
         final NavigationRequest request = NavigationRequest._(
           url: call.arguments['url'],
@@ -382,23 +378,13 @@ class WebViewController {
         );
 
         // _navigationDelegate can be null if the widget was rebuilt with no
-        // navigation // delegate after a navigation happened and just before we
+        // navigation delegate after a navigation happened and just before we
         // got the navigationRequest message.
-        if (_navigationDelegate == null ||
-            _navigationDelegate(request) == NavigationDecision.navigate) {
-          _completeNavigation(request, call.arguments['requestId']);
-        }
-        break;
+        final bool allowNavigation = _navigationDelegate == null ||
+            _navigationDelegate(request) == NavigationDecision.navigate;
+        return allowNavigation;
     }
-  }
-
-  void _completeNavigation(NavigationRequest request, int requestId) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      if (request.isMainFrame) {
-        loadUrl(request.url);
-        return;
-      }
-    }
+    throw MissingPluginException('${call.method} was invoked but has no handler');
   }
 
   /// Loads the specified URL.
@@ -512,20 +498,16 @@ class WebViewController {
     return _channel.invokeMethod('updateSettings', updateMap);
   }
 
-  Future<void> _updateJavascriptChannels(
-      Set<JavascriptChannel> newChannels) async {
+  Future<void> _updateJavascriptChannels(Set<JavascriptChannel> newChannels) async {
     final Set<String> currentChannels = _javascriptChannels.keys.toSet();
     final Set<String> newChannelNames = _extractChannelNames(newChannels);
-    final Set<String> channelsToAdd =
-        newChannelNames.difference(currentChannels);
-    final Set<String> channelsToRemove =
-        currentChannels.difference(newChannelNames);
+    final Set<String> channelsToAdd = newChannelNames.difference(currentChannels);
+    final Set<String> channelsToRemove = currentChannels.difference(newChannelNames);
     if (channelsToRemove.isNotEmpty) {
       // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
       // https://github.com/flutter/flutter/issues/26431
       // ignore: strong_mode_implicit_dynamic_method
-      _channel.invokeMethod(
-          'removeJavascriptChannels', channelsToRemove.toList());
+      _channel.invokeMethod('removeJavascriptChannels', channelsToRemove.toList());
     }
     if (channelsToAdd.isNotEmpty) {
       // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
@@ -569,8 +551,7 @@ class WebViewController {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    final String result =
-        await _channel.invokeMethod('evaluateJavascript', javascriptString);
+    final String result = await _channel.invokeMethod('evaluateJavascript', javascriptString);
     return result;
   }
 }
@@ -584,8 +565,7 @@ class CookieManager {
 
   CookieManager._();
 
-  static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.io/cookie_manager');
+  static const MethodChannel _channel = MethodChannel('plugins.flutter.io/cookie_manager');
   static CookieManager _instance;
 
   /// Clears all cookies.
