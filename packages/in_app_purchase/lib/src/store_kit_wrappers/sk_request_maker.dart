@@ -36,4 +36,20 @@ class SKRequestMaker {
     }
     return SkProductResponseWrapper.fromJson(productResponseMap);
   }
+
+  /// Uses [SKReceiptRefreshRequest](https://developer.apple.com/documentation/storekit/skreceiptrefreshrequest?language=objc) to request a new receipt.
+  ///
+  /// If the receipt is invalid or missing, you can use this API to request a new receipt.
+  /// The [receiptProperties] is optional and it exists only for [sandbox testing](https://developer.apple.com/apple-pay/sandbox-testing/). In the production app, call this API without pass in the [receiptProperties] parameter.
+  /// To test in the sandbox, you can request a receipt with any combination of properties to test the state transitions related to [`Volume Purchase Plan`](https://www.apple.com/business/site/docs/VPP_Business_Guide.pdf) receipts.
+  /// The valid keys in the receiptProperties are below (All of them are of type bool):
+  /// * isExpired: whether the receipt is expired.
+  /// * isRevoked: whether the receipt has been revoked.
+  /// * isVolumePurchase: whether the receipt is a Volume Purchase Plan receipt.
+  Future<void> startRefreshReceiptRequest({Map receiptProperties}) {
+    return channel.invokeMethod(
+      '-[InAppPurchasePlugin refreshReceipt:result:]',
+      receiptProperties,
+    );
+  }
 }
