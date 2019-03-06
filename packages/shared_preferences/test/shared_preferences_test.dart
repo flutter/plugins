@@ -156,14 +156,16 @@ void main() {
       });
 
       test('test 1', () async {
-        SharedPreferences.setMockInitialValues(<String, dynamic>{_prefixedKey: 'my string'});
+        SharedPreferences.setMockInitialValues(
+            <String, dynamic>{_prefixedKey: 'my string'});
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         final String value = prefs.getString(_key);
         expect(value, 'my string');
       });
 
       test('test 2', () async {
-        SharedPreferences.setMockInitialValues(<String, dynamic>{_prefixedKey: 'my other string'});
+        SharedPreferences.setMockInitialValues(
+            <String, dynamic>{_prefixedKey: 'my other string'});
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         final String value = prefs.getString(_key);
         expect(value, 'my other string');
