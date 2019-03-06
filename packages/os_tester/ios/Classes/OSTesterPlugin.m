@@ -37,38 +37,57 @@ static id<GREYMatcher> getMatcher(NSDictionary *data) {
             binaryMessenger:[registrar messenger]];
   OSTesterPlugin* instance = [[OSTesterPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  // TODO(jackson): This might not be necessary
   [EarlGrey setFailureHandler:(id<GREYFailureHandler>)instance];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   id<GREYMatcher> matcher = getMatcher(call.arguments[@"matcher"]);
-  NSError *error;
   if ([@"tap" isEqualToString:call.method]) {
-    [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap() error:&error];
+    __block NSError *error;
+    BOOL success = [[GREYCondition conditionWithName:call.method
+                                               block:^{
+                                                 [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap() error:&error];
+                                                 if (error == nil) {
+                                                   return YES;
+                                                 } else {
+                                                   return NO;
+                                                 }
+                                               }] waitWithTimeout:5];
+    if (success) {
+      result(nil);
+    } else {
+      result(getFlutterError(error));
+    }
   } else if ([@"expect" isEqualToString:call.method]) {
-    id<GREYMatcher> actual = getMatcher(call.arguments[@"actual"]);
-    [[EarlGrey selectElementWithMatcher:actual] assertWithMatcher:matcher error:&error];
+    [[GREYCondition conditionWithName:call.method
+                                block:^{
+                                  NSError *error;
+                                  id<GREYMatcher> actual = getMatcher(call.arguments[@"actual"]);
+                                  [[EarlGrey selectElementWithMatcher:actual] assertWithMatcher:matcher error:&error];
+                                  if (error == nil) {
+                                    result(nil);
+                                    return YES;
+                                  } else {
+                                    return NO;
+                                  }
+                                }] waitWithTimeout:5];
   } else {
     result(FlutterMethodNotImplemented);
-//    lastResult = nil;
     return;
-  }
-  if (error) {
-    result(getFlutterError(error));
-  } else {
-    result(nil);
   }
 }
 
 - (void)handleException:(GREYFrameworkException *)ex details:(NSString *)details {
-//  lastResult([FlutterError errorWithCode:ex.name message:ex.reason details:details]);
-//  lastResult = nil;
+  // TODO(jackson): Possibly not necessary if we use &error consistently above?
+  //  [FlutterError errorWithCode:ex.name message:ex.reason details:details];
 }
 
 - (void)setInvocationFile:(NSString *)fileName
         andInvocationLine:(NSUInteger)lineNumber {
   // TODO(jackson): Record the file name and line number of the statement
-  // which was executing before the failure occurred.
+  // that was executing before the failure occurred.
 }
 
 @end

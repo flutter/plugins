@@ -11,32 +11,22 @@ class OSTester {
   static const MethodChannel _channel = MethodChannel('plugins.flutter.io/os_tester');
 
   /// Taps the element matched by [matcher]
-  void tap(Matcher matcher) {
+  Future<bool> tap(Matcher matcher) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    _channel.invokeMethod('tap', <String, dynamic>{ 'matcher': matcher._data });
+    return await _channel.invokeMethod('tap', <String, dynamic>{ 'matcher': matcher._data });
   }
 
   /// Asserts that [actual] matches [matcher].
-  void expect(Matcher actual, Matcher matcher) {
+  Future<bool> expect(Matcher actual, Matcher matcher) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    _channel.invokeMethod('expect', <String, dynamic>{
+    return await _channel.invokeMethod('expect', <String, dynamic>{
       'actual': actual._data,
       'matcher': matcher._data,
     });
-  }
-  
-  Future<void> wait(
-      String name,
-      Function assertion, { 
-      Duration timeout,
-      Duration pollInterval,
-    }
-  ) async {
-    // TODO(jackson): Implement
   }
 
   /// Matches an element with the specified label value

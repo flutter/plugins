@@ -15,7 +15,13 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  test: any
+
+  # We depend on very specific internal implementation details of the
+  # 'test' package, which change between versions, so when upgrading
+  # this, make sure the tests are still running correctly.
+  test_api: 0.2.2
+  test_core: 0.2.1+1
+  test: 1.5.3
 
   os_tester:
     path: ../

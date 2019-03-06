@@ -23,8 +23,8 @@
 - (void)tearDown {
 }
 
-- (void)testPlugin {
-  // Runs widget tests in tests/ folder of the plugin.
+- (void)testExample {
+  [[EarlGrey selectElementWithMatcher:grey_text(@"pass")] assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
