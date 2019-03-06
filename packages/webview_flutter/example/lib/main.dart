@@ -8,13 +8,23 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 void main() => runApp(MaterialApp(home: WebViewExample()));
 
-class WebViewExample extends StatelessWidget {
+class WebViewExample extends StatefulWidget {
+
+  @override
+  State<StatefulWidget> createState() {
+    return _WebViewExample();
+
+  }
+}
+
+class _WebViewExample extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
-
+  bool viewContentLoaded = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.red,
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
@@ -27,11 +37,28 @@ class WebViewExample extends StatelessWidget {
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
-          headers: <String, String>{"Accept-Language": "en-us,en;q=0.5"},
-          initialUrl: 'https://flutter.dev/',
+          headers: <String, String>{"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpbnNfaWQiOiIyODM5ODAiLCJleHAiOjE1ODMyMjM0NjR9.9maHo7RDJkZOtiTnEhYkrIoKRNCXF0epr5VIIwvABwWgw8h-AucNHmZ3IdAS0uE_nao71883uaYitKxVv7rsnw"},
+          initialUrl: 'https://engie-livechallenge.preprodrhinos.com/api/boutique',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
+            print("created !! ");
+            
+            Future.doWhile(() async{
+              try {
+               await   webViewController.evaluateJavascript('Toaster.postMessage("User Agent: " + navigator.userAgent);');
+
+              }catch(e){
+                print("Encore---");
+                return true;
+              }
+              print("STOOP---");
+              setState(() {
+                viewContentLoaded = true;
+              });
+              return false;
+            });
+
           },
           // TODO(iskakaushik): Remove this when collection literals makes it to stable.
           // ignore: prefer_collection_literals
@@ -40,7 +67,7 @@ class WebViewExample extends StatelessWidget {
           ].toSet(),
         );
       }),
-      floatingActionButton: favoriteButton(),
+      floatingActionButton: viewContentLoaded ?Container():loaderWidget(),
     );
   }
 
@@ -55,23 +82,30 @@ class WebViewExample extends StatelessWidget {
   }
 
   Widget favoriteButton() {
+
     return FutureBuilder<WebViewController>(
         future: _controller.future,
         builder: (BuildContext context,
             AsyncSnapshot<WebViewController> controller) {
+
           if (controller.hasData) {
+
             return FloatingActionButton(
-              onPressed: () async {
-                final String url = await controller.data.currentUrl();
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(content: Text('Favorited $url')),
-                );
+              onPressed: () { controller.data.evaluateJavascript(
+                  'Toaster.postMessage("User Agent: " + navigator.userAgent);');//async {
+//                final String url = await controller.data.currentUrl();
+//                Scaffold.of(context).showSnackBar(
+//                  SnackBar(content: Text('Favorited $url')),
+//                );
               },
               child: const Icon(Icons.favorite),
             );
           }
           return Container();
         });
+  }
+  Widget loaderWidget(){
+    return Stack( children: <Widget>[ Center(child: CircularProgressIndicator())],);
   }
 }
 
