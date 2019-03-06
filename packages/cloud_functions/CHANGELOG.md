@@ -2,6 +2,7 @@
 
 * Specifying a version for Cloud Functions CocoaPod dependency to prevent build errors on iOS.
 * Fix on iOS when using a null region.
+* Upgrade the firebase_core dependency of the example app.
 
 ## 0.1.1+1
 
