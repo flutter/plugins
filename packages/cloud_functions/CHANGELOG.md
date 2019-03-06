@@ -1,6 +1,7 @@
 ## 0.1.2
 
-* Fix crash on iOS when using a null region
+* Specifying a version for Cloud Functions CocoaPod dependency to prevent build errors on iOS.
+* Fix on iOS when using a null region.
 
 ## 0.1.1+1
 

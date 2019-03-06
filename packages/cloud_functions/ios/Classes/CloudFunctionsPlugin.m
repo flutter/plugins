@@ -46,9 +46,9 @@
     } else {
       functions = [FIRFunctions functionsForApp:app];
     }
-    [functions callFunction:functionName
-                 withObject:parameters
-                 completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
+    FIRHTTPSCallable *function = [functions HTTPSCallableWithName:functionName];
+    [function callWithObject:parameters
+                     completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
                    if (error) {
                      FlutterError *flutterError;
                      if (error.domain == FIRFunctionsErrorDomain) {
