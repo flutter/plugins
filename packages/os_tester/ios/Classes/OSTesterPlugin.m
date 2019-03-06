@@ -76,15 +76,4 @@ static id<GREYMatcher> getMatcher(NSDictionary *data) {
   }
 }
 
-- (void)handleException:(GREYFrameworkException *)ex details:(NSString *)details {
-  // TODO(jackson): Possibly not necessary if we use &error consistently above?
-  //  [FlutterError errorWithCode:ex.name message:ex.reason details:details];
-}
-
-- (void)setInvocationFile:(NSString *)fileName
-        andInvocationLine:(NSUInteger)lineNumber {
-  // TODO(jackson): Record the file name and line number of the statement
-  // that was executing before the failure occurred.
-}
-
 @end

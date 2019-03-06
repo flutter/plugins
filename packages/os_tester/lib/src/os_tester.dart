@@ -8,14 +8,16 @@ part of os_tester;
 OSTester os = OSTester();
 
 class OSTester {
-  static const MethodChannel _channel = MethodChannel('plugins.flutter.io/os_tester');
+  static const MethodChannel _channel =
+      MethodChannel('plugins.flutter.io/os_tester');
 
   /// Taps the element matched by [matcher]
   Future<bool> tap(Matcher matcher) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    return await _channel.invokeMethod('tap', <String, dynamic>{ 'matcher': matcher._data });
+    return await _channel
+        .invokeMethod('tap', <String, dynamic>{'matcher': matcher._data});
   }
 
   /// Asserts that [actual] matches [matcher].
