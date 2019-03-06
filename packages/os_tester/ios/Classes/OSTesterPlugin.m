@@ -37,9 +37,6 @@ static id<GREYMatcher> getMatcher(NSDictionary *data) {
             binaryMessenger:[registrar messenger]];
   OSTesterPlugin* instance = [[OSTesterPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
-
-  // TODO(jackson): This might not be necessary
-  [EarlGrey setFailureHandler:(id<GREYFailureHandler>)instance];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {

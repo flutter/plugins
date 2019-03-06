@@ -24,12 +24,13 @@
 }
 
 - (void)testExample {
-  [[GREYCondition conditionWithName:@"Example app test"
+  BOOL success = [[GREYCondition conditionWithName:@"Example app test"
                               block:^{
                                 NSError *error;
                                 [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"pass")] assertWithMatcher:grey_sufficientlyVisible() error:&error];
                                 return (BOOL)(error == nil ? YES : NO);
-                              }] waitWithTimeout:60];
+                              }] waitWithTimeout:10];
+  XCTAssert(success);
 }
 
 @end
