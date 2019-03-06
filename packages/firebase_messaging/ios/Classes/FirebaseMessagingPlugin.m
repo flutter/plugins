@@ -39,6 +39,7 @@
       NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
     [FIRMessaging messaging].delegate = self;
+    [FIRMessaging messaging].shouldEstablishDirectChannel = true;
   }
   return self;
 }
@@ -189,6 +190,11 @@
 - (void)messaging:(nonnull FIRMessaging *)messaging
     didReceiveRegistrationToken:(nonnull NSString *)fcmToken {
   [_channel invokeMethod:@"onToken" arguments:fcmToken];
+}
+
+- (void)messaging:(FIRMessaging *)messaging
+    didReceiveMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+  [_channel invokeMethod:@"onMessage" arguments:remoteMessage.appData];
 }
 
 @end
