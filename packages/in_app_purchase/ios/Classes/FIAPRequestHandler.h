@@ -12,7 +12,7 @@ typedef void (^ProductRequestCompletion)(SKProductsResponse *_Nullable response,
 
 @interface FIAPRequestHandler : NSObject
 
-- (instancetype)initWithRequest:(SKProductsRequest *)request;
+- (instancetype)initWithRequest:(SKRequest *)request;
 - (void)startProductRequestWithCompletionHandler:(ProductRequestCompletion)completion;
 
 @end

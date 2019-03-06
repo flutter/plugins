@@ -1,3 +1,7 @@
+## 0.3.1+1
+
+* Add nil check on static functions to prevent crashes or unwanted behaviors.
+
 ## 0.3.1
 
 * Remove an assertion that can interfere with hot-restart.

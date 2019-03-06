@@ -15,7 +15,7 @@ public class GoogleMapFactory extends PlatformViewFactory {
   private final AtomicInteger mActivityState;
   private final Registrar mPluginRegistrar;
 
-  public GoogleMapFactory(AtomicInteger state, Registrar registrar) {
+  GoogleMapFactory(AtomicInteger state, Registrar registrar) {
     super(StandardMessageCodec.INSTANCE);
     mActivityState = state;
     mPluginRegistrar = registrar;
@@ -31,6 +31,9 @@ public class GoogleMapFactory extends PlatformViewFactory {
     if (params.containsKey("initialCameraPosition")) {
       CameraPosition position = Convert.toCameraPosition(params.get("initialCameraPosition"));
       builder.setInitialCameraPosition(position);
+    }
+    if (params.containsKey("markersToAdd")) {
+      builder.setInitialMarkers(params.get("markersToAdd"));
     }
     return builder.build(id, context, mActivityState, mPluginRegistrar);
   }
