@@ -7,49 +7,10 @@ import 'package:test/test.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import '../stub_in_app_purchase_platform.dart';
+import 'sk_test_stub_objects.dart';
 
 void main() {
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
-  final dummyPayment = SKPaymentWrapper(
-      productIdentifier: 'prod-id',
-      applicationUsername: 'app-user-name',
-      requestData: 'fake-data-utf8',
-      quantity: 2,
-      simulatesAskToBuyInSandbox: true);
-  final SKError dummyError =
-      SKError(code: 111, domain: 'dummy-domain', userInfo: {'key': 'value'});
-  final SKDownloadWrapper dummyDownload = SKDownloadWrapper(
-    contentIdentifier: 'id',
-    state: SKDownloadState.failed,
-    contentLength: 32,
-    contentURL: 'https://download.com',
-    contentVersion: '0.0.1',
-    transactionID: 'tranID',
-    progress: 0.6,
-    timeRemaining: 1231231,
-    downloadTimeUnknown: false,
-    error: dummyError,
-  );
-  final SKPaymentTransactionWrapper dummyOriginalTransaction =
-      SKPaymentTransactionWrapper(
-    transactionState: SKPaymentTransactionStateWrapper.purchased,
-    payment: dummyPayment,
-    originalTransaction: null,
-    transactionTimeStamp: 1231231231.00,
-    transactionIdentifier: '123123',
-    downloads: [dummyDownload],
-    error: dummyError,
-  );
-  final SKPaymentTransactionWrapper dummyTransaction =
-      SKPaymentTransactionWrapper(
-    transactionState: SKPaymentTransactionStateWrapper.purchased,
-    payment: dummyPayment,
-    originalTransaction: dummyOriginalTransaction,
-    transactionTimeStamp: 1231231231.00,
-    transactionIdentifier: '123123',
-    downloads: [dummyDownload],
-    error: dummyError,
-  );
 
   setUpAll(() =>
       channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler));

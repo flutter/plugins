@@ -7,42 +7,10 @@ import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_request_maker.dart';
 import '../stub_in_app_purchase_platform.dart';
+import './sk_test_stub_objects.dart';
 
 void main() {
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
-
-  final Map<String, dynamic> localeMap = <String, dynamic>{
-    'currencySymbol': '\$'
-  };
-  final Map<String, dynamic> subMap = <String, dynamic>{
-    'numberOfUnits': 1,
-    'unit': 2
-  };
-  final Map<String, dynamic> discountMap = <String, dynamic>{
-    'price': '1.0',
-    'priceLocale': localeMap,
-    'numberOfPeriods': 1,
-    'paymentMode': 2,
-    'subscriptionPeriod': subMap,
-  };
-  final Map<String, dynamic> productMap = <String, dynamic>{
-    'productIdentifier': 'id',
-    'localizedTitle': 'title',
-    'localizedDescription': 'description',
-    'priceLocale': localeMap,
-    'downloadContentVersion': 'version',
-    'subscriptionGroupIdentifier': 'com.group',
-    'price': '1.0',
-    'downloadable': true,
-    'downloadContentLengths': <int>[1, 2],
-    'subscriptionPeriod': subMap,
-    'introductoryPrice': discountMap,
-  };
-
-  final Map<String, List<dynamic>> productResponseMap = <String, List<dynamic>>{
-    'products': <Map<String, dynamic>>[productMap],
-    'invalidProductIdentifiers': <String>['123'],
-  };
 
   setUpAll(() =>
       channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler));
