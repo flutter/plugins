@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Add sensor orientation value to `CameraDescription`.
+
 ## 0.4.0+3
 
 * Fixed a crash when the plugin is registered by a background FlutterView.
