@@ -1,0 +1,21 @@
+name: os_tester_example
+description: Demonstrates how to use the os_tester plugin.
+publish_to: 'none'
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  url_launcher: ^5.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  os_tester:
+    path: ../
+
+flutter:
+  uses-material-design: true
