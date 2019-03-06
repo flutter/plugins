@@ -114,6 +114,11 @@ void main() {
       expect(invokedMethod, 'setSessionTimeoutDuration');
       expect(arguments, 234);
     });
+
+    test('resetAnalyticsData', () async {
+      await analytics.resetAnalyticsData();
+      expect(invokedMethod, 'resetAnalyticsData');
+    });
   });
 
   group('$FirebaseAnalytics analytics events', () {
