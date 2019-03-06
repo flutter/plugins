@@ -9,7 +9,6 @@ void main() {
     app.main();
     // TODO(jackson): Implement wait() on OS side. For now we can use Dart to wait.
     await Future<void>.delayed(const Duration(seconds: 3));
-
     await os.tap(os.label('TEST'));
     await os.expect(os.label('pass'), os.visible);
   });

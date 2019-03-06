@@ -35,7 +35,7 @@ class MyAppState extends State<MyApp> {
           child: RaisedButton(
             onPressed: () {
               setState(() {
-                _text = 'p4ss';
+                _text = 'pass';
               });
             },
             child: Text(_text),
