@@ -11,7 +11,7 @@ void main() => runApp(MaterialApp(home: WebViewExample()));
 
 const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
-<head><title>Navigation Delegate Example</title></head>thanks
+<head><title>Navigation Delegate Example</title></head>
 <body>
 <p>
 The navigation delegate is set to block navigation to the youtube website.
