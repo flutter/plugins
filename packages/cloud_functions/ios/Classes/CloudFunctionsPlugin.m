@@ -41,7 +41,7 @@
     NSString *region = call.arguments[@"region"];
     FIRApp *app = [FIRApp appNamed:appName];
     FIRFunctions *functions;
-    if (region != nil) {
+    if (region != nil && region != (id)[NSNull null]) {
       functions = [FIRFunctions functionsForApp:app region:region];
     } else {
       functions = [FIRFunctions functionsForApp:app];

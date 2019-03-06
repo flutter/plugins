@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Fix crash on iOS when using a null region
+
 ## 0.1.1+1
 
 * Log messages about automatic configuration of the default app are now less confusing.
