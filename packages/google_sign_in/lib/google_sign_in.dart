@@ -15,6 +15,8 @@ import 'src/common.dart';
 export 'src/common.dart';
 export 'widgets.dart';
 
+part 'src/google_http_client.dart';
+
 enum SignInOption { standard, games }
 
 class GoogleSignInAuthentication {
@@ -30,20 +32,6 @@ class GoogleSignInAuthentication {
 
   @override
   String toString() => 'GoogleSignInAuthentication:$_data';
-}
-
-class GoogleHttpClient extends IOClient {
-  GoogleHttpClient._(this._headers) : super();
-
-  Map<String, String> _headers;
-
-  @override
-  Future<StreamedResponse> send(BaseRequest request) =>
-      super.send(request..headers.addAll(_headers));
-
-  @override
-  Future<Response> head(Object url, {Map<String, String> headers}) =>
-      super.head(url, headers: headers..addAll(_headers));
 }
 
 class GoogleSignInAccount implements GoogleIdentity {
@@ -113,6 +101,7 @@ class GoogleSignInAccount implements GoogleIdentity {
     return GoogleSignInAuthentication._(response);
   }
 
+  /// Retrieve [GoogleHttpClient] for this account.
   Future<GoogleHttpClient> get httpClient async {
     final String token = (await authentication).accessToken;
     final Map<String, String> headers = <String, String>{
@@ -122,6 +111,7 @@ class GoogleSignInAccount implements GoogleIdentity {
     return GoogleHttpClient._(headers);
   }
 
+  /// Retrieve authentication headers for this account.
   Future<Map<String, String>> get authHeaders async {
     final String token = (await authentication).accessToken;
     return <String, String>{
