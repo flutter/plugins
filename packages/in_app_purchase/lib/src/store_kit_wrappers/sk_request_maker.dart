@@ -15,7 +15,7 @@ import 'sk_product_wrapper.dart';
 class SKRequestMaker {
   /// Fetches product information for a list of given product identifiers.
   ///
-  /// The `productIdentifiers` should contain legit product identifiers that you declared for the products in the Itunes Connect. invalid identifiers
+  /// The `productIdentifiers` should contain legit product identifiers that you declared for the products in the ITunes Connect. invalid identifiers
   /// Will be stored and returned in [SkProductResponseWrapper.invalidProductIdentifiers]. Duplicate values in `productIdentifiers` will be omitted.
   /// If `productIdentifiers` is null, an `storekit_invalid_argument` error will be returned. If `productIdentifiers` is empty, a [SkProductResponseWrapper]
   /// will still be returned with [SkProductResponseWrapper.products] being null.

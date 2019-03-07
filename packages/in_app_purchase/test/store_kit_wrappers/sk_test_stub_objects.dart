@@ -45,19 +45,19 @@ final SKPaymentTransactionWrapper dummyTransaction =
   error: dummyError,
 );
 
-final PriceLocaleWrapper dummyLocale = PriceLocaleWrapper(currencySymbol: '\$');
+final SKPriceLocaleWrapper dummyLocale = SKPriceLocaleWrapper(currencySymbol: '\$');
 
 final SKProductSubscriptionPeriodWrapper dummySubscription =
     SKProductSubscriptionPeriodWrapper(
   numberOfUnits: 1,
-  unit: SubscriptionPeriodUnit.month,
+  unit: SKSubscriptionPeriodUnit.month,
 );
 
 final SKProductDiscountWrapper dummyDiscount = SKProductDiscountWrapper(
   price: '1.0',
   priceLocale: dummyLocale,
   numberOfPeriods: 1,
-  paymentMode: ProductDiscountPaymentMode.payUpFront,
+  paymentMode: SKProductDiscountPaymentMode.payUpFront,
   subscriptionPeriod: dummySubscription,
 );
 
@@ -81,7 +81,7 @@ final SkProductResponseWrapper dummyProductResponseWrapper =
   invalidProductIdentifiers: <String>['123'],
 );
 
-Map<String, dynamic> buildLocaleMap(PriceLocaleWrapper local) {
+Map<String, dynamic> buildLocaleMap(SKPriceLocaleWrapper local) {
   return {'currencySymbol': local.currencySymbol};
 }
 
@@ -89,7 +89,7 @@ Map<String, dynamic> buildSubscriptionPeriodMap(
     SKProductSubscriptionPeriodWrapper sub) {
   return {
     'numberOfUnits': sub.numberOfUnits,
-    'unit': SubscriptionPeriodUnit.values.indexOf(sub.unit),
+    'unit': SKSubscriptionPeriodUnit.values.indexOf(sub.unit),
   };
 }
 
@@ -99,7 +99,7 @@ Map<String, dynamic> buildDiscountMap(SKProductDiscountWrapper discount) {
     'priceLocale': buildLocaleMap(discount.priceLocale),
     'numberOfPeriods': discount.numberOfPeriods,
     'paymentMode':
-        ProductDiscountPaymentMode.values.indexOf(discount.paymentMode),
+        SKProductDiscountPaymentMode.values.indexOf(discount.paymentMode),
     'subscriptionPeriod':
         buildSubscriptionPeriodMap(discount.subscriptionPeriod),
   };

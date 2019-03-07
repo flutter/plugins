@@ -215,7 +215,7 @@ enum SKPaymentTransactionStateWrapper {
   /// Indicates the transaction is being processed in App Store.
   ///
   /// You should update your UI to indicate the process and waiting for the transaction to update to the next state.
-  /// Never complte a transaction that is in purchasing state.
+  /// Never complete a transaction that is in purchasing state.
   @JsonValue(0)
   purchasing,
 
@@ -529,7 +529,7 @@ class SKPaymentWrapper {
   /// An opaque id for the user's account.
   ///
   /// Used to help the store detect irregular activity. See https://developer.apple.com/documentation/storekit/skpayment/1506116-applicationusername?language=objc for more details.
-  /// For example, you can use a one-way hash of the user’s account name on your server. Don’t use the Apple ID for your developer account, the user’s Apple ID, or the user’s unhashed account name on your server.
+  /// For example, you can use a one-way hash of the user’s account name on your server. Don’t use the Apple ID for your developer account, the user’s Apple ID, or the user’s not hashed account name on your server.
   final String applicationUsername;
 
   /// Reserved for future use.

@@ -60,7 +60,7 @@ class SkProductResponseWrapper {
 
 /// Dart wrapper around StoreKit's [SKProductPeriodUnit](https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc).
 ///
-/// Used as a property in the [SKProductSubscriptionPeriodWrapper]. Minium is a day and maxium is a year.
+/// Used as a property in the [SKProductSubscriptionPeriodWrapper]. Minimum is a day and maximum is a year.
 // The values of the enum options are matching the [SKProductPeriodUnit]'s values. Should there be an update or addition
 // in the [SKProductPeriodUnit], this need to be updated to match.
 enum SKSubscriptionPeriodUnit {
@@ -269,7 +269,7 @@ class SKProductWrapper {
   /// The object represents the duration of single subscription period.
   ///
   /// This is only available if you set up the introductory price in the App Store Connect, otherwise it will be null.
-  /// Programmar is also responsible to determine if the user is eligible to receive it. See https://developer.apple.com/documentation/storekit/in-app_purchase/offering_introductory_pricing_in_your_app?language=objc
+  /// Programmer is also responsible to determine if the user is eligible to receive it. See https://developer.apple.com/documentation/storekit/in-app_purchase/offering_introductory_pricing_in_your_app?language=objc
   /// for more details.
   /// The [subscriptionPeriod] of the discount is independent of the product's [subscriptionPeriod],
   /// and their units and duration do not have to be matched.

@@ -100,8 +100,8 @@ void main() {
     });
 
     test('LocaleWrapper should have property values consistent with map', () {
-      final PriceLocaleWrapper wrapper =
-          PriceLocaleWrapper.fromJson(buildLocaleMap(dummyLocale));
+      final SKPriceLocaleWrapper wrapper =
+          SKPriceLocaleWrapper.fromJson(buildLocaleMap(dummyLocale));
       expect(wrapper, equals(dummyLocale));
     });
   });
