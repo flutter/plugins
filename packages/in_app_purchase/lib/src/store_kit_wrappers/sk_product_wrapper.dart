@@ -52,8 +52,7 @@ class SkProductResponseWrapper {
       return false;
     }
     final SkProductResponseWrapper typedOther = other;
-    return DeepCollectionEquality()
-            .equals(typedOther.products, products) &&
+    return DeepCollectionEquality().equals(typedOther.products, products) &&
         DeepCollectionEquality().equals(
             typedOther.invalidProductIdentifiers, invalidProductIdentifiers);
   }
@@ -64,7 +63,7 @@ class SkProductResponseWrapper {
 /// Used as a property in the [SKProductSubscriptionPeriodWrapper]. Minium is a day and maxium is a year.
 // The values of the enum options are matching the [SKProductPeriodUnit]'s values. Should there be an update or addition
 // in the [SKProductPeriodUnit], this need to be updated to match.
-enum SubscriptionPeriodUnit {
+enum SKSubscriptionPeriodUnit {
   @JsonValue(0)
   day,
   @JsonValue(1)
@@ -99,7 +98,7 @@ class SKProductSubscriptionPeriodWrapper {
   final int numberOfUnits;
 
   /// The time unit used to specify the length of this period.
-  final SubscriptionPeriodUnit unit;
+  final SKSubscriptionPeriodUnit unit;
 
   @override
   bool operator ==(Object other) {
@@ -119,7 +118,7 @@ class SKProductSubscriptionPeriodWrapper {
 /// This is used as a property in the [SKProductDiscountWrapper].
 // The values of the enum options are matching the [SKProductDiscountPaymentMode]'s values. Should there be an update or addition
 // in the [SKProductDiscountPaymentMode], this need to be updated to match.
-enum ProductDiscountPaymentMode {
+enum SKProductDiscountPaymentMode {
   /// Allows user to pay the discounted price at each payment period.
   @JsonValue(0)
   payAsYouGo,
@@ -158,7 +157,7 @@ class SKProductDiscountWrapper {
   final String price;
 
   /// Includes locale information about the price, e.g. `$` as the currency symbol for US locale.
-  final PriceLocaleWrapper priceLocale;
+  final SKPriceLocaleWrapper priceLocale;
 
   /// The object represent the discount period length.
   ///
@@ -166,7 +165,7 @@ class SKProductDiscountWrapper {
   final int numberOfPeriods;
 
   /// The object indicates how the discount price is charged.
-  final ProductDiscountPaymentMode paymentMode;
+  final SKProductDiscountPaymentMode paymentMode;
 
   /// The object represents the duration of single subscription period for the discount.
   ///
@@ -234,7 +233,7 @@ class SKProductWrapper {
   final String localizedDescription;
 
   /// Includes locale information about the price, e.g. `$` as the currency symbol for US locale.
-  final PriceLocaleWrapper priceLocale;
+  final SKPriceLocaleWrapper priceLocale;
 
   /// The version of the downloadable content.
   ///
@@ -293,8 +292,8 @@ class SKProductWrapper {
         typedOther.subscriptionGroupIdentifier == subscriptionGroupIdentifier &&
         typedOther.price == price &&
         typedOther.downloadable == downloadable &&
-        DeepCollectionEquality.unordered()
-            .equals(typedOther.downloadContentLengths, downloadContentLengths) &&
+        DeepCollectionEquality.unordered().equals(
+            typedOther.downloadContentLengths, downloadContentLengths) &&
         typedOther.subscriptionPeriod == subscriptionPeriod &&
         typedOther.introductoryPrice == introductoryPrice;
   }
@@ -317,14 +316,14 @@ class SKProductWrapper {
 //                 Matching android to only get the currencySymbol for now.
 //                 https://github.com/flutter/flutter/issues/26610
 @JsonSerializable()
-class PriceLocaleWrapper {
-  PriceLocaleWrapper({@required this.currencySymbol});
+class SKPriceLocaleWrapper {
+  SKPriceLocaleWrapper({@required this.currencySymbol});
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
   /// This method should only be used with `map` values returned by [SKProductWrapper.fromJson] and [SKProductDiscountWrapper.fromJson].
   /// The `map` parameter must not be null.
-  factory PriceLocaleWrapper.fromJson(Map map) {
+  factory SKPriceLocaleWrapper.fromJson(Map map) {
     assert(map != null, 'Map must not be null.');
     return _$PriceLocaleWrapperFromJson(map);
   }
@@ -340,7 +339,7 @@ class PriceLocaleWrapper {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    final PriceLocaleWrapper typedOther = other;
+    final SKPriceLocaleWrapper typedOther = other;
     return typedOther.currencySymbol == currencySymbol;
   }
 }

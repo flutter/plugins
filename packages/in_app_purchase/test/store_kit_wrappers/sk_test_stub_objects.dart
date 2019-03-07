@@ -75,55 +75,61 @@ final SKProductWrapper dummyProductWrapper = SKProductWrapper(
   introductoryPrice: dummyDiscount,
 );
 
-final SkProductResponseWrapper dummyProductResponseWrapper = SkProductResponseWrapper(
+final SkProductResponseWrapper dummyProductResponseWrapper =
+    SkProductResponseWrapper(
   products: [dummyProductWrapper],
   invalidProductIdentifiers: <String>['123'],
 );
 
 Map<String, dynamic> buildLocaleMap(PriceLocaleWrapper local) {
-  return {
-    'currencySymbol': local.currencySymbol
-  };
+  return {'currencySymbol': local.currencySymbol};
 }
 
-Map<String, dynamic> buildSubscriptionPeriodMap(SKProductSubscriptionPeriodWrapper sub) {
+Map<String, dynamic> buildSubscriptionPeriodMap(
+    SKProductSubscriptionPeriodWrapper sub) {
   return {
     'numberOfUnits': sub.numberOfUnits,
-    'unit':SubscriptionPeriodUnit.values.indexOf(sub.unit),
+    'unit': SubscriptionPeriodUnit.values.indexOf(sub.unit),
   };
 }
 
 Map<String, dynamic> buildDiscountMap(SKProductDiscountWrapper discount) {
   return {
-    'price':discount.price,
-    'priceLocale':buildLocaleMap(discount.priceLocale),
+    'price': discount.price,
+    'priceLocale': buildLocaleMap(discount.priceLocale),
     'numberOfPeriods': discount.numberOfPeriods,
-    'paymentMode':ProductDiscountPaymentMode.values.indexOf(discount.paymentMode),
-    'subscriptionPeriod':buildSubscriptionPeriodMap(discount.subscriptionPeriod),
+    'paymentMode':
+        ProductDiscountPaymentMode.values.indexOf(discount.paymentMode),
+    'subscriptionPeriod':
+        buildSubscriptionPeriodMap(discount.subscriptionPeriod),
   };
 }
 
 Map<String, dynamic> buildProductMap(SKProductWrapper product) {
   return {
-    'productIdentifier':product.productIdentifier,
-    'localizedTitle':product.localizedTitle,
-    'localizedDescription':product.localizedDescription,
-    'priceLocale':buildLocaleMap(product.priceLocale),
-    'downloadContentVersion':product.downloadContentVersion,
-    'subscriptionGroupIdentifier':product.subscriptionGroupIdentifier,
-    'price':product.price,
-    'downloadable':product.downloadable,
-    'downloadContentLengths':product.downloadContentLengths,
-    'subscriptionPeriod':buildSubscriptionPeriodMap(product.subscriptionPeriod),
-    'introductoryPrice':buildDiscountMap(product.introductoryPrice),
+    'productIdentifier': product.productIdentifier,
+    'localizedTitle': product.localizedTitle,
+    'localizedDescription': product.localizedDescription,
+    'priceLocale': buildLocaleMap(product.priceLocale),
+    'downloadContentVersion': product.downloadContentVersion,
+    'subscriptionGroupIdentifier': product.subscriptionGroupIdentifier,
+    'price': product.price,
+    'downloadable': product.downloadable,
+    'downloadContentLengths': product.downloadContentLengths,
+    'subscriptionPeriod':
+        buildSubscriptionPeriodMap(product.subscriptionPeriod),
+    'introductoryPrice': buildDiscountMap(product.introductoryPrice),
   };
 }
 
-Map<String, dynamic>buildProductResponseMap(SkProductResponseWrapper response) {
-  List productsMap = response.products.map((SKProductWrapper product)=>buildProductMap(product)).toList();
+Map<String, dynamic> buildProductResponseMap(
+    SkProductResponseWrapper response) {
+  List productsMap = response.products
+      .map((SKProductWrapper product) => buildProductMap(product))
+      .toList();
   return {
-    'products':productsMap,
-    'invalidProductIdentifiers':response.invalidProductIdentifiers
+    'products': productsMap,
+    'invalidProductIdentifiers': response.invalidProductIdentifiers
   };
 }
 

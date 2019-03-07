@@ -9,14 +9,13 @@ import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'sk_test_stub_objects.dart';
 
 void main() {
-
   group('product related object wrapper test', () {
-
     test(
         'SKProductSubscriptionPeriodWrapper should have property values consistent with map',
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
-          SKProductSubscriptionPeriodWrapper.fromJson(buildSubscriptionPeriodMap(dummySubscription));
+          SKProductSubscriptionPeriodWrapper.fromJson(
+              buildSubscriptionPeriodMap(dummySubscription));
       expect(wrapper, equals(dummySubscription));
     });
 
@@ -51,7 +50,8 @@ void main() {
 
     test('SKProductWrapper should have property values consistent with map',
         () {
-      final SKProductWrapper wrapper = SKProductWrapper.fromJson(buildProductMap(dummyProductWrapper));
+      final SKProductWrapper wrapper =
+          SKProductWrapper.fromJson(buildProductMap(dummyProductWrapper));
       expect(wrapper, equals(dummyProductWrapper));
     });
 
@@ -71,7 +71,8 @@ void main() {
     });
 
     test('toProductDetails() should return correct Product object', () {
-      final SKProductWrapper wrapper = SKProductWrapper.fromJson(buildProductMap(dummyProductWrapper));
+      final SKProductWrapper wrapper =
+          SKProductWrapper.fromJson(buildProductMap(dummyProductWrapper));
       final ProductDetails product = wrapper.toProductDetails();
       expect(product.title, wrapper.localizedTitle);
       expect(product.description, wrapper.localizedDescription);
@@ -82,7 +83,8 @@ void main() {
 
     test('SKProductResponse wrapper should match', () {
       final SkProductResponseWrapper wrapper =
-          SkProductResponseWrapper.fromJson(buildProductResponseMap(dummyProductResponseWrapper));
+          SkProductResponseWrapper.fromJson(
+              buildProductResponseMap(dummyProductResponseWrapper));
       expect(wrapper, equals(dummyProductResponseWrapper));
     });
     test('SKProductResponse wrapper should default to empty list', () {
@@ -98,12 +100,13 @@ void main() {
     });
 
     test('LocaleWrapper should have property values consistent with map', () {
-      final PriceLocaleWrapper wrapper = PriceLocaleWrapper.fromJson(buildLocaleMap(dummyLocale));
+      final PriceLocaleWrapper wrapper =
+          PriceLocaleWrapper.fromJson(buildLocaleMap(dummyLocale));
       expect(wrapper, equals(dummyLocale));
     });
   });
 
-    group('Payment queue related object tests', () {
+  group('Payment queue related object tests', () {
     test('Should construct correct SKPaymentWrapper from json', () {
       SKPaymentWrapper payment =
           SKPaymentWrapper.fromJson(dummyPayment.toMap());

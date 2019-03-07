@@ -76,13 +76,17 @@ void main() {
       expect(await SKPaymentQueueWrapper.canMakePayments(), true);
     });
 
-    test('throws if observer is not set for payment queue before adding payment', () async {
-      expect(SKPaymentQueueWrapper().addPayment(dummyPayment), throwsAssertionError);
+    test(
+        'throws if observer is not set for payment queue before adding payment',
+        () async {
+      expect(SKPaymentQueueWrapper().addPayment(dummyPayment),
+          throwsAssertionError);
     });
 
     test('should add payment to the payment queue', () async {
       SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
-      TestPaymentTransactionObserver observer = TestPaymentTransactionObserver();
+      TestPaymentTransactionObserver observer =
+          TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.addPayment(dummyPayment);
       expect(fakeIOSPlatform.payments.first, equals(dummyPayment));
@@ -90,15 +94,18 @@ void main() {
 
     test('should finish transaction', () async {
       SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
-      TestPaymentTransactionObserver observer = TestPaymentTransactionObserver();
+      TestPaymentTransactionObserver observer =
+          TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.finishTransaction(dummyTransaction);
-      expect(fakeIOSPlatform.transactionsFinished.first, equals(dummyTransaction.transactionIdentifier));
+      expect(fakeIOSPlatform.transactionsFinished.first,
+          equals(dummyTransaction.transactionIdentifier));
     });
 
     test('should restore transaction', () async {
       SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
-      TestPaymentTransactionObserver observer = TestPaymentTransactionObserver();
+      TestPaymentTransactionObserver observer =
+          TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.restoreTransactions(applicationUserName: 'aUserID');
       expect(fakeIOSPlatform.applicationNameHasTransactionRestored, 'aUserID');
@@ -135,7 +142,8 @@ class FakeIOSPlatform {
         if (getProductRequestFailTest) {
           return Future<Map<String, dynamic>>.value(null);
         }
-        return Future<Map<String, dynamic>>.value(buildProductResponseMap(dummyProductResponseWrapper));
+        return Future<Map<String, dynamic>>.value(
+            buildProductResponseMap(dummyProductResponseWrapper));
       case '-[InAppPurchasePlugin refreshReceipt:result:]':
         refreshReceipt++;
         refreshReceiptParam = call.arguments;
@@ -148,31 +156,31 @@ class FakeIOSPlatform {
         return Future<bool>.value(true);
       case '-[InAppPurchasePlugin addPayment:result:]':
         payments.add(SKPaymentWrapper.fromJson(call.arguments));
-        return Future<void>.sync((){});
+        return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin finishTransaction:result:]':
         transactionsFinished.add(call.arguments);
-        return Future<void>.sync((){});
+        return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin restoreTransactions:result:]':
         applicationNameHasTransactionRestored = call.arguments;
-        return Future<void>.sync((){});
+        return Future<void>.sync(() {});
     }
     return Future<void>.sync(() {});
   }
 }
 
 class TestPaymentTransactionObserver extends SKTransactionObserverWrapper {
-  void updatedTransactions({List<SKPaymentTransactionWrapper> transactions}){}
+  void updatedTransactions({List<SKPaymentTransactionWrapper> transactions}) {}
 
-  void removedTransactions({List<SKPaymentTransactionWrapper> transactions}){}
+  void removedTransactions({List<SKPaymentTransactionWrapper> transactions}) {}
 
-  void restoreCompletedTransactions({Error error}){}
+  void restoreCompletedTransactions({Error error}) {}
 
-  void paymentQueueRestoreCompletedTransactionsFinished(){}
+  void paymentQueueRestoreCompletedTransactionsFinished() {}
 
-  void updatedDownloads({List<SKDownloadWrapper> downloads}){}
+  void updatedDownloads({List<SKDownloadWrapper> downloads}) {}
 
   bool shouldAddStorePayment(
-      {SKPaymentWrapper payment, SKProductWrapper product}){
-        return true;
-      }
+      {SKPaymentWrapper payment, SKProductWrapper product}) {
+    return true;
+  }
 }

@@ -318,8 +318,7 @@ class SKPaymentTransactionWrapper {
         typedOther.originalTransaction == originalTransaction &&
         typedOther.transactionTimeStamp == transactionTimeStamp &&
         typedOther.transactionIdentifier == transactionIdentifier &&
-        DeepCollectionEquality()
-            .equals(typedOther.downloads, downloads) &&
+        DeepCollectionEquality().equals(typedOther.downloads, downloads) &&
         typedOther.error == error;
   }
 }
