@@ -32,11 +32,7 @@ class FlutterWebViewClient extends WebViewClient {
       return super.shouldOverrideUrlLoading(view, request);
     }
     notifyOnNavigationRequest(
-            request.getUrl().toString(),
-            request.getRequestHeaders(),
-            view,
-            request.isForMainFrame()
-    );
+        request.getUrl().toString(), request.getRequestHeaders(), view, request.isForMainFrame());
     // We must make a synchronous decision here whether to allow the navigation or not,
     // if the Dart code has set a navigation delegate we want that delegate to decide whether
     // to navigate or not, and as we cannot get a response from the Dart delegate synchronously we
@@ -60,22 +56,20 @@ class FlutterWebViewClient extends WebViewClient {
     return true;
   }
 
-  private void notifyOnNavigationRequest(String url, Map<String, String> headers, WebView webview, boolean isMainFrame) {
+  private void notifyOnNavigationRequest(
+      String url, Map<String, String> headers, WebView webview, boolean isMainFrame) {
     HashMap<String, Object> args = new HashMap<>();
     args.put("url", url);
     args.put("isMainFrame", isMainFrame);
     if (isMainFrame) {
       methodChannel.invokeMethod(
-              "navigationRequest",
-              args,
-              new OnNavigationRequestResult(url, headers, webview)
-      );
+          "navigationRequest", args, new OnNavigationRequestResult(url, headers, webview));
     } else {
-      methodChannel.invokeMethod( "navigationRequest", args);
+      methodChannel.invokeMethod("navigationRequest", args);
     }
   }
 
-  private static class OnNavigationRequestResult implements MethodChannel.Result{
+  private static class OnNavigationRequestResult implements MethodChannel.Result {
     private final String url;
     private final Map<String, String> headers;
     private final WebView webView;
@@ -96,12 +90,13 @@ class FlutterWebViewClient extends WebViewClient {
 
     @Override
     public void error(String errorCode, String s1, Object o) {
-        throw new IllegalStateException("navigation ");
+      throw new IllegalStateException("navigation ");
     }
 
     @Override
     public void notImplemented() {
-      throw new IllegalStateException("navigationRequest must be implemented by the webview method channel");
+      throw new IllegalStateException(
+          "navigationRequest must be implemented by the webview method channel");
     }
 
     private void loadUrl() {
