@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -302,6 +303,25 @@ class SKPaymentTransactionWrapper {
 
   /// The error object, only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
   final SKError error;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKPaymentTransactionWrapper typedOther = other;
+    return typedOther.payment == payment &&
+        typedOther.transactionState == transactionState &&
+        typedOther.originalTransaction == originalTransaction &&
+        typedOther.transactionTimeStamp == transactionTimeStamp &&
+        typedOther.transactionIdentifier == transactionIdentifier &&
+        DeepCollectionEquality()
+            .equals(typedOther.downloads, downloads) &&
+        typedOther.error == error;
+  }
 }
 
 /// Dart wrapper around StoreKit's [SKDownloadState](https://developer.apple.com/documentation/storekit/skdownloadstate?language=objc).
@@ -403,6 +423,27 @@ class SKDownloadWrapper {
 
   /// The error that prevented the downloading; only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
   final SKError error;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKDownloadWrapper typedOther = other;
+    return typedOther.contentIdentifier == contentIdentifier &&
+        typedOther.state == state &&
+        typedOther.contentLength == contentLength &&
+        typedOther.contentURL == contentURL &&
+        typedOther.contentVersion == contentVersion &&
+        typedOther.transactionID == transactionID &&
+        typedOther.progress == progress &&
+        typedOther.timeRemaining == timeRemaining &&
+        typedOther.downloadTimeUnknown == downloadTimeUnknown &&
+        typedOther.error == error;
+  }
 }
 
 /// Dart wrapper around StoreKit's [NSError](https://developer.apple.com/documentation/foundation/nserror?language=objc).
@@ -430,6 +471,21 @@ class SKError {
 
   /// A map that contains more detailed information about the error. Any key of the map must be one of the [NSErrorUserInfoKey](https://developer.apple.com/documentation/foundation/nserroruserinfokey?language=objc).
   final Map<String, dynamic> userInfo;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKError typedOther = other;
+    return typedOther.code == code &&
+        typedOther.domain == domain &&
+        DeepCollectionEquality.unordered()
+            .equals(typedOther.userInfo, userInfo);
+  }
 }
 
 /// Dart wrapper around StoreKit's [SKPayment](https://developer.apple.com/documentation/storekit/skpayment?language=objc).
@@ -493,4 +549,20 @@ class SKPaymentWrapper {
   ///
   /// For how to test in App Store sand box, see https://developer.apple.com/in-app-purchase/.
   final bool simulatesAskToBuyInSandbox;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKPaymentWrapper typedOther = other;
+    return typedOther.productIdentifier == productIdentifier &&
+        typedOther.applicationUsername == applicationUsername &&
+        typedOther.quantity == quantity &&
+        typedOther.simulatesAskToBuyInSandbox == simulatesAskToBuyInSandbox &&
+        typedOther.requestData == requestData;
+  }
 }

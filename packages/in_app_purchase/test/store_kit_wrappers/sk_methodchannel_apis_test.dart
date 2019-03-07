@@ -1,8 +1,6 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,14 +39,53 @@ void main() {
         isNotEmpty,
       );
 
-      expect(fakeIOSPlatform.startProductRequestParam, ['xxx'],);
+      expect(
+        fakeIOSPlatform.startProductRequestParam,
+        ['xxx'],
+      );
+    });
+
+    test('get products method channel should throw exception', () async {
+      fakeIOSPlatform.getProductRequestFailTest = true;
+      expect(
+        SKRequestMaker().startProductRequest(['xxx']),
+        throwsException,
+      );
+      fakeIOSPlatform.getProductRequestFailTest = false;
     });
 
     test('refreshed receipt', () async {
       int receiptCountBefore = fakeIOSPlatform.refreshReceipt;
-      await SKRequestMaker().startRefreshReceiptRequest(receiptProperties:{"isExpired":true});
+      await SKRequestMaker()
+          .startRefreshReceiptRequest(receiptProperties: {"isExpired": true});
       expect(fakeIOSPlatform.refreshReceipt, receiptCountBefore + 1);
-      expect(fakeIOSPlatform.refreshReceiptParam, {"isExpired":true});
+      expect(fakeIOSPlatform.refreshReceiptParam, {"isExpired": true});
+    });
+  });
+
+  group('sk_receipt_manager', () {
+    test('should get receipt (faking it by returning a `receipt data` string)',
+        () async {
+      String receiptData = await SKReceiptManager().retrieveReceiptData();
+      expect(receiptData, 'receipt data');
+    });
+  });
+
+  group('sk_payment_queue', () {
+    test('canMakePayment should return true', () async {
+      expect(await SKPaymentQueueWrapper.canMakePayments(), true);
+    });
+
+    test('throws if observer is not set for payment queue before adding payment', () async {
+      expect(SKPaymentQueueWrapper().addPayment(dummyPayment), throwsAssertionError);
+    });
+
+    test('should add payment to the payment queue', () async {
+      SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
+      TestPaymentTransactionObserver observer = TestPaymentTransactionObserver();
+      queue.setTransactionObserver(observer);
+      await queue.addPayment(dummyPayment);
+      expect(fakeIOSPlatform.payments.first, equals(dummyPayment));
     });
   });
 }
@@ -56,6 +93,7 @@ void main() {
 class FakeIOSPlatform {
   FakeIOSPlatform() {
     channel.setMockMethodCallHandler(onMethodCall);
+    getProductRequestFailTest = false;
   }
   // get product request
   List startProductRequestParam;
@@ -65,8 +103,12 @@ class FakeIOSPlatform {
   int refreshReceipt = 0;
   Map refreshReceiptParam;
 
+  // payment queue
+  List<SKPaymentWrapper> payments = [];
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
+      // request makers
       case '-[InAppPurchasePlugin startProductRequest:result:]':
         List<String> productIDS =
             List.castFrom<dynamic, String>(call.arguments);
@@ -75,13 +117,38 @@ class FakeIOSPlatform {
         if (getProductRequestFailTest) {
           return Future<Map<String, dynamic>>.value(null);
         }
-        return Future<Map<String, dynamic>>.value(productResponseMap);
-        break;
+        return Future<Map<String, dynamic>>.value(buildProductResponseMap(dummyProductResponseWrapper));
       case '-[InAppPurchasePlugin refreshReceipt:result:]':
         refreshReceipt++;
         refreshReceiptParam = call.arguments;
         return Future<void>.sync(() {});
+      // receipt manager
+      case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
+        return Future<String>.value('receipt data');
+      // payment queue
+      case '-[SKPaymentQueue canMakePayments:]':
+        return Future<bool>.value(true);
+      case '-[InAppPurchasePlugin addPayment:result:]':
+        payments.add(SKPaymentWrapper.fromJson(call.arguments));
+        return Future<void>.sync((){});
     }
     return Future<void>.sync(() {});
   }
+}
+
+class TestPaymentTransactionObserver extends SKTransactionObserverWrapper {
+  void updatedTransactions({List<SKPaymentTransactionWrapper> transactions}){}
+
+  void removedTransactions({List<SKPaymentTransactionWrapper> transactions}){}
+
+  void restoreCompletedTransactions({Error error}){}
+
+  void paymentQueueRestoreCompletedTransactionsFinished(){}
+
+  void updatedDownloads({List<SKDownloadWrapper> downloads}){}
+
+  bool shouldAddStorePayment(
+      {SKPaymentWrapper payment, SKProductWrapper product}){
+        return true;
+      }
 }
