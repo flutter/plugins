@@ -140,6 +140,7 @@ public class TranslatorTest {
     assertEquals(expected.getPurchaseTime(), serialized.get("purchaseTime"));
     assertEquals(expected.getPurchaseToken(), serialized.get("purchaseToken"));
     assertEquals(expected.getSignature(), serialized.get("signature"));
+    assertEquals(expected.getOriginalJson(), serialized.get("originalJson"));
     assertEquals(expected.getSku(), serialized.get("sku"));
   }
 }
