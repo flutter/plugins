@@ -45,7 +45,8 @@ final SKPaymentTransactionWrapper dummyTransaction =
   error: dummyError,
 );
 
-final SKPriceLocaleWrapper dummyLocale = SKPriceLocaleWrapper(currencySymbol: '\$');
+final SKPriceLocaleWrapper dummyLocale =
+    SKPriceLocaleWrapper(currencySymbol: '\$');
 
 final SKProductSubscriptionPeriodWrapper dummySubscription =
     SKProductSubscriptionPeriodWrapper(
