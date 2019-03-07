@@ -5,11 +5,12 @@
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
+import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'sk_test_stub_objects.dart';
 
 void main() {
 
-  group('product request wrapper test', () {
+  group('product related object wrapper test', () {
 
     test(
         'SKProductSubscriptionPeriodWrapper should have property values consistent with map',
@@ -99,6 +100,45 @@ void main() {
     test('LocaleWrapper should have property values consistent with map', () {
       final PriceLocaleWrapper wrapper = PriceLocaleWrapper.fromJson(buildLocaleMap(dummyLocale));
       expect(wrapper, equals(dummyLocale));
+    });
+  });
+
+    group('Payment queue related object tests', () {
+    test('Should construct correct SKPaymentWrapper from json', () {
+      SKPaymentWrapper payment =
+          SKPaymentWrapper.fromJson(dummyPayment.toMap());
+      expect(payment, equals(dummyPayment));
+    });
+
+    test('Should construct correct SKError from json', () {
+      SKError error = SKError.fromJson(buildErrorMap(dummyError));
+      expect(error, equals(dummyError));
+    });
+
+    test('Should construct correct SKDownloadWrapper from json', () {
+      SKDownloadWrapper download =
+          SKDownloadWrapper.fromJson(buildDownloadMap(dummyDownload));
+      expect(download, equals(dummyDownload));
+    });
+
+    test('Should construct correct SKTransactionWrapper from json', () {
+      SKPaymentTransactionWrapper transaction =
+          SKPaymentTransactionWrapper.fromJson(
+              buildTransactionMap(dummyTransaction));
+      expect(transaction, equals(dummyTransaction));
+    });
+
+    test('Should generate correct map of the payment object', () {
+      Map map = dummyPayment.toMap();
+      expect(map['productIdentifier'], dummyPayment.productIdentifier);
+      expect(map['applicationUsername'], dummyPayment.applicationUsername);
+
+      expect(map['requestData'], dummyPayment.requestData);
+
+      expect(map['quantity'], dummyPayment.quantity);
+
+      expect(map['simulatesAskToBuyInSandbox'],
+          dummyPayment.simulatesAskToBuyInSandbox);
     });
   });
 }

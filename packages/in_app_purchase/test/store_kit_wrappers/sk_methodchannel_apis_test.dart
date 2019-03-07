@@ -66,7 +66,7 @@ void main() {
   group('sk_receipt_manager', () {
     test('should get receipt (faking it by returning a `receipt data` string)',
         () async {
-      String receiptData = await SKReceiptManager().retrieveReceiptData();
+      String receiptData = await SKReceiptManager.retrieveReceiptData();
       expect(receiptData, 'receipt data');
     });
   });
@@ -87,6 +87,22 @@ void main() {
       await queue.addPayment(dummyPayment);
       expect(fakeIOSPlatform.payments.first, equals(dummyPayment));
     });
+
+    test('should finish transaction', () async {
+      SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
+      TestPaymentTransactionObserver observer = TestPaymentTransactionObserver();
+      queue.setTransactionObserver(observer);
+      await queue.finishTransaction(dummyTransaction);
+      expect(fakeIOSPlatform.transactionsFinished.first, equals(dummyTransaction.transactionIdentifier));
+    });
+
+    test('should restore transaction', () async {
+      SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
+      TestPaymentTransactionObserver observer = TestPaymentTransactionObserver();
+      queue.setTransactionObserver(observer);
+      await queue.restoreTransactions(applicationUserName: 'aUserID');
+      expect(fakeIOSPlatform.applicationNameHasTransactionRestored, 'aUserID');
+    });
   });
 }
 
@@ -105,6 +121,8 @@ class FakeIOSPlatform {
 
   // payment queue
   List<SKPaymentWrapper> payments = [];
+  List<String> transactionsFinished = [];
+  String applicationNameHasTransactionRestored;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -130,6 +148,12 @@ class FakeIOSPlatform {
         return Future<bool>.value(true);
       case '-[InAppPurchasePlugin addPayment:result:]':
         payments.add(SKPaymentWrapper.fromJson(call.arguments));
+        return Future<void>.sync((){});
+      case '-[InAppPurchasePlugin finishTransaction:result:]':
+        transactionsFinished.add(call.arguments);
+        return Future<void>.sync((){});
+      case '-[InAppPurchasePlugin restoreTransactions:result:]':
+        applicationNameHasTransactionRestored = call.arguments;
         return Future<void>.sync((){});
     }
     return Future<void>.sync(() {});
