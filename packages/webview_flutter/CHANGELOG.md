@@ -1,3 +1,7 @@
+## 0.3.3+2
+
+* Exclude LongPress handler from semantics tree since it does nothing.
+
 ## 0.3.3+1
 
 * Fixed a memory leak on Android - the WebView was not properly disposed.

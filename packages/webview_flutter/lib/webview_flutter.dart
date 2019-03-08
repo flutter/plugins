@@ -153,6 +153,7 @@ class _WebViewState extends State<WebView> {
         // handles are not showing.
         // TODO(amirh): remove this when the issues above are fixed.
         onLongPress: () {},
+        excludeFromSemantics: true,
         child: AndroidView(
           viewType: 'plugins.flutter.io/webview',
           onPlatformViewCreated: _onPlatformViewCreated,
