@@ -11,8 +11,8 @@ import 'package:meta/meta.dart' show visibleForTesting;
 import 'src/common.dart';
 import 'src/google_http_client.dart';
 
-export 'src/google_http_client.dart';
 export 'src/common.dart';
+export 'src/google_http_client.dart';
 export 'widgets.dart';
 
 enum SignInOption { standard, games }
@@ -106,7 +106,7 @@ class GoogleSignInAccount implements GoogleIdentity {
       "Authorization": "Bearer $token",
       "X-Goog-AuthUser": "0",
     };
-    
+
     return GoogleHttpClient(headers);
   }
 
