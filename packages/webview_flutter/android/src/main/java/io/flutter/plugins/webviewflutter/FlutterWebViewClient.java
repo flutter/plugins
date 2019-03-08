@@ -6,14 +6,20 @@ package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
 import android.os.Build;
+import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import androidx.webkit.WebViewClientCompat;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
 import java.util.Map;
 
-class FlutterWebViewClient extends WebViewClient {
+// We need to use WebViewClientCompat to get
+// shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
+// invoked by the webview on older Android devices, without it pages that use iframes will
+// be broken when a navigationDelegate is set on Android version earlier than N.
+class FlutterWebViewClient extends WebViewClientCompat {
+  private static final String TAG = "FlutterWebViewClient";
   private final MethodChannel methodChannel;
   private boolean hasNavigationDelegate;
 
@@ -40,7 +46,7 @@ class FlutterWebViewClient extends WebViewClient {
     // navigation the plugin will later make an addition loadUrl call for this url.
     //
     // Since we cannot call loadUrl for a subframe, we currently only allow the delegate to stop
-    // navigations that originated in the main frame, if the request is not for the main frame
+    // navigations that target the main frame, if the request is not for the main frame
     // we just return false to allow the navigation.
     //
     // For more details see: https://github.com/flutter/flutter/issues/25329#issuecomment-464863209
@@ -52,6 +58,14 @@ class FlutterWebViewClient extends WebViewClient {
     if (!hasNavigationDelegate) {
       return super.shouldOverrideUrlLoading(view, url);
     }
+    // This version of shouldOverrideUrlLoading is only invoked by the webview on devices with
+    // webview versions  earlier than 67(it is also invoked when hasNavigationDelegate is false).
+    // On these devices we cannot tell whether the navigation is targeted to the main frame or not.
+    // We proceed assuming that the navigation is targeted to the main frame. If the page had any
+    // frames they will be loaded in the main frame instead.
+    Log.w(
+        TAG,
+        "Using a navigationDelegate with an old webview implementation, pages with frames or iframes will not work");
     notifyOnNavigationRequest(url, null, view, true);
     return true;
   }
@@ -60,7 +74,7 @@ class FlutterWebViewClient extends WebViewClient {
       String url, Map<String, String> headers, WebView webview, boolean isMainFrame) {
     HashMap<String, Object> args = new HashMap<>();
     args.put("url", url);
-    args.put("isMainFrame", isMainFrame);
+    args.put("isForMainFrame", isMainFrame);
     if (isMainFrame) {
       methodChannel.invokeMethod(
           "navigationRequest", args, new OnNavigationRequestResult(url, headers, webview));

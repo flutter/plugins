@@ -619,9 +619,10 @@ void main() {
       expect(platformWebView.currentUrl, 'https://youtube.com');
       expect(navigationRequests.length, 1);
       expect(navigationRequests[0].url, 'https://www.google.com');
-      expect(navigationRequests[0].isMainFrame, true);
+      expect(navigationRequests[0].isForMainFrame, true);
 
       platformWebView.fakeNavigate('https://flutter.dev');
+      await tester.pump();
       expect(platformWebView.currentUrl, 'https://flutter.dev');
     });
   });
@@ -737,12 +738,16 @@ class FakePlatformWebView {
     final StandardMethodCodec codec = const StandardMethodCodec();
     final Map<String, dynamic> arguments = <String, dynamic>{
       'url': url,
-      'isMainFrame': true
+      'isForMainFrame': true
     };
     final ByteData data =
         codec.encodeMethodCall(MethodCall('navigationRequest', arguments));
-    BinaryMessages.handlePlatformMessage(
-        channel.name, data, (ByteData data) {});
+    BinaryMessages.handlePlatformMessage(channel.name, data, (ByteData data) {
+      final bool allow = codec.decodeEnvelope(data);
+      if (allow) {
+        _loadUrl(url);
+      }
+    });
   }
 
   void _loadUrl(String url) {

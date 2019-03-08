@@ -35,17 +35,17 @@ typedef void JavascriptMessageHandler(JavascriptMessage message);
 
 /// Information about a navigation action that is about to be executed.
 class NavigationRequest {
-  NavigationRequest._({this.url, this.isMainFrame});
+  NavigationRequest._({this.url, this.isForMainFrame});
 
   /// The URL that will be loaded if the navigation is executed.
   final String url;
 
-  /// Whether the navigation request originated from the main HTML frame.
-  final bool isMainFrame;
+  /// Whether the navigation request is to be loaded as the main frame.
+  final bool isForMainFrame;
 
   @override
   String toString() {
-    return '$runtimeType(url: $url, isMainFrame: $isMainFrame)';
+    return '$runtimeType(url: $url, isForMainFrame: $isForMainFrame)';
   }
 }
 
@@ -385,7 +385,7 @@ class WebViewController {
       case 'navigationRequest':
         final NavigationRequest request = NavigationRequest._(
           url: call.arguments['url'],
-          isMainFrame: call.arguments['isMainFrame'],
+          isForMainFrame: call.arguments['isForMainFrame'],
         );
 
         // _navigationDelegate can be null if the widget was rebuilt with no
