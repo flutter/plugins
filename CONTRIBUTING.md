@@ -1,7 +1,7 @@
 Contributing to Flutter
 =======================
 
-[![Build Status](https://travis-ci.org/flutter/plugins.svg)](https://travis-ci.org/flutter/plugins)
+[![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/master)
 
 _See also: [Flutter's code of conduct](https://flutter.io/design-principles/#code-of-conduct)_
 
