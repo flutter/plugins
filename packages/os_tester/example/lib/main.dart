@@ -18,9 +18,6 @@ class MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-//    Future<void>.delayed(const Duration(seconds: 1)).then((_) {
-//      os.tap(os.label('TEST'));
-//    });
     super.initState();
   }
 
