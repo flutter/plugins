@@ -7,15 +7,13 @@ import 'dart:ui' show hashValues;
 
 import 'package:flutter/services.dart' show MethodChannel, PlatformException;
 import 'package:meta/meta.dart' show visibleForTesting;
-import 'package:http/http.dart';
-import 'package:http/io_client.dart';
 
 import 'src/common.dart';
+import 'src/google_http_client.dart';
 
+export 'src/google_http_client.dart';
 export 'src/common.dart';
 export 'widgets.dart';
-
-part 'src/google_http_client.dart';
 
 enum SignInOption { standard, games }
 
@@ -108,7 +106,8 @@ class GoogleSignInAccount implements GoogleIdentity {
       "Authorization": "Bearer $token",
       "X-Goog-AuthUser": "0",
     };
-    return GoogleHttpClient._(headers);
+    
+    return GoogleHttpClient(headers);
   }
 
   /// Retrieve authentication headers for this account.

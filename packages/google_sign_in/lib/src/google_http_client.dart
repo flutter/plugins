@@ -2,11 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-part of '../google_sign_in.dart';
+import 'package:http/http.dart';
+import 'package:http/io_client.dart';
 
 /// Encapsulation of the fields that represent a Google Http Client.
 class GoogleHttpClient extends IOClient {
-  GoogleHttpClient._(this._headers) : super();
+  GoogleHttpClient(this._headers) : super();
 
   Map<String, String> _headers;
 
