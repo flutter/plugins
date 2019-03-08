@@ -15,6 +15,7 @@ class AndroidIntent {
   /// Builds an Android intent with the following parameters
   /// [action] refers to the action parameter of the intent.
   /// [category] refers to the category of the intent, can be null.
+  /// [type] refers to the type of the intent, can be null.
   /// [data] refers to the string format of the URI that will be passed to
   /// intent.
   /// [arguments] is the map that will be converted into an extras bundle and
@@ -22,6 +23,7 @@ class AndroidIntent {
   const AndroidIntent({
     @required this.action,
     this.category,
+    this.type,
     this.data,
     this.arguments,
     this.package,
@@ -32,6 +34,7 @@ class AndroidIntent {
 
   final String action;
   final String category;
+  final String type;
   final String data;
   final Map<String, dynamic> arguments;
   final String package;
@@ -47,6 +50,9 @@ class AndroidIntent {
     final Map<String, dynamic> args = <String, dynamic>{'action': action};
     if (category != null) {
       args['category'] = category;
+    }
+    if (type != null) {
+      args['type'] = type;
     }
     if (data != null) {
       args['data'] = data;
