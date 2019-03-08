@@ -1,3 +1,70 @@
+## 0.4.2
+
+* Add sensor orientation value to `CameraDescription`.
+
+## 0.4.1
+
+* Camera methods are ran in a background thread on iOS.
+
+## 0.4.0+3
+
+* Fixed a crash when the plugin is registered by a background FlutterView.
+
+## 0.4.0+2
+
+* Fix orientation of captured photos when camera is used for the first time on Android.
+
+## 0.4.0+1
+
+* Remove categories.
+
+## 0.4.0
+
+* **Breaking Change** Change iOS image stream format to `ImageFormatGroup.bgra8888` from
+  `ImageFormatGroup.yuv420`.
+
+## 0.3.0+4
+
+* Fixed bug causing black screen on some Android devices.
+
+## 0.3.0+3
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.3.0+2
+
+* Fix issue with calculating iOS image orientation in certain edge cases.
+
+## 0.3.0+1
+
+* Remove initial method call invocation from static camera method.
+
+## 0.3.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.2.9+1
+
+* Fix a crash when failing to start preview.
+
+## 0.2.9
+
+* Save photo orientation data on iOS.
+
+## 0.2.8
+
+* Add access to the image stream from Dart.
+* Use `cameraController.startImageStream(listener)` to process the images.
+
+## 0.2.7
+
+* Fix issue with crash when the physical device's orientation is unknown.
+
 ## 0.2.6
 
 * Update the camera to use the physical device's orientation instead of the UI

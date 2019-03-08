@@ -1,6 +1,7 @@
 task:
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   container:
-    image: cirrusci/flutter:latest
+    dockerfile: .ci/Dockerfile
     cpu: 4
     memory: 8G
   upgrade_script:
@@ -27,13 +28,26 @@ task:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
       script:
+        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
+        # might include non-ASCII characters which makes Gradle crash.
+        # See: https://github.com/flutter/flutter/issues/24935
+        # This is a temporary workaround until we figure how to properly configure
+        # a UTF8 locale on Cirrus (or until the Gradle bug is fixed).
+        # TODO(amirh): Set the locale to UTF8.
+        - echo "$CIRRUS_CHANGE_MESSAGE" > /tmp/cirrus_change_message.txt
+        - echo "$CIRRUS_COMMIT_MESSAGE" > /tmp/cirrus_commit_message.txt
+        - export CIRRUS_CHANGE_MESSAGE=""
+        - export CIRRUS_COMMIT_MESSAGE=""
         - ./script/incremental_build.sh build-examples --apk
         - ./script/incremental_build.sh java-test  # must come after apk build
+        - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
+        - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
 
 task:
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   name: build-ipas
   osx_instance:
-    image: high-sierra-xcode-9.4.1
+    image: mojave-xcode-10.1
   env:
     PATH: $PATH:/usr/local/bin
     matrix:

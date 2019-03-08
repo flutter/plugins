@@ -27,4 +27,6 @@ interface GoogleMapOptionsSink {
   void setZoomGesturesEnabled(boolean zoomGesturesEnabled);
 
   void setMyLocationEnabled(boolean myLocationEnabled);
+
+  void setInitialMarkers(Object initialMarkers);
 }

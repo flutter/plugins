@@ -1,5 +1,6 @@
 package io.flutter.plugins.imagepicker;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -93,6 +94,14 @@ public class ImagePickerPluginTest {
 
     verify(mockImagePickerDelegate).takeImageWithCamera(call, mockResult);
     verifyZeroInteractions(mockResult);
+  }
+
+  @Test
+  public void onResiter_WhenAcitivityIsNull_ShouldNotCrash() {
+    when(mockRegistrar.activity()).thenReturn(null);
+    ImagePickerPlugin.registerWith((mockRegistrar));
+    assertTrue(
+        "No exception thrown when ImagePickerPlugin.registerWith ran with activity = null", true);
   }
 
   private MethodCall buildMethodCall(final int source) {
