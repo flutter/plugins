@@ -88,6 +88,8 @@ static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:
 
 static CGPoint ToPoint(NSArray* data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
 
+static NSArray* PositionToJson(CLLocationCoordinate2D data) { return [FLTGoogleMapJsonConversions positionToJson:data]; }
+
 static void InterpretMarkerOptions(NSDictionary* data, id<FLTGoogleMapMarkerOptionsSink> sink,
                                    NSObject<FlutterPluginRegistrar>* registrar) {
   NSNumber* alpha = data[@"alpha"];
@@ -174,12 +176,15 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
   NSObject<FlutterPluginRegistrar>* _registrar;
   GMSMapView* _mapView;
 }
-- (instancetype)init:(FlutterMethodChannel*)methodChannel mapView:(GMSMapView*)mapView {
+- (instancetype)init:(FlutterMethodChannel*)methodChannel
+             mapView:(GMSMapView*)mapView
+           registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   self = [super init];
   if (self) {
     _methodChannel = methodChannel;
     _mapView = mapView;
     _markerIdToController = [NSMutableDictionary dictionaryWithCapacity:1];
+    _registrar = registrar;
   }
   return self;
 }
@@ -227,6 +232,17 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
     return NO;
   }
   [_methodChannel invokeMethod:@"marker#onTap" arguments:@{@"markerId" : markerId}];
+  return controller.consumeTapEvents;
+}
+- (BOOL)onMarkerDrag:(NSString*)markerId position:(CLLocationCoordinate2D)position {
+  if (!markerId) {
+    return NO;
+  }
+  FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
+  if (!controller) {
+    return NO;
+  }
+  [_methodChannel invokeMethod:@"marker#onDrag" arguments:@{@"markerId" : markerId, @"position" : PositionToJson(position) }];
   return controller.consumeTapEvents;
 }
 - (void)onInfoWindowTap:(NSString*)markerId {

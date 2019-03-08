@@ -39,6 +39,7 @@
     self.shouldAddStorePayment = shouldAddStorePayment;
     self.updatedDownloads = updatedDownloads;
     self.transactionsSetter = [NSMutableDictionary new];
+    [queue addTransactionObserver:self];
   }
   return self;
 }
@@ -57,7 +58,9 @@
 - (void)paymentQueue:(SKPaymentQueue *)queue
     updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
   for (SKPaymentTransaction *transaction in transactions) {
-    [self.transactionsSetter setObject:transaction forKey:transaction.transactionIdentifier];
+    if (transaction.transactionIdentifier) {
+      [self.transactionsSetter setObject:transaction forKey:transaction.transactionIdentifier];
+    }
   }
   // notify dart through callbacks.
   self.transactionsUpdated(transactions);

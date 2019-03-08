@@ -21,4 +21,17 @@
 @interface FLTGoogleMapPolylineController : NSObject <FLTGoogleMapPolylineOptionsSink>
 @property(atomic, readonly) NSString* polylineId;
 - (instancetype)init:(GMSMapView*)mapView;
+- (BOOL)consumeTapEvents;
+- (void)removeMarker;
+@end
+
+
+@interface FLTPolylinesController : NSObject
+- (instancetype)init:(FlutterMethodChannel*)methodChannel
+             mapView:(GMSMapView*)mapView
+           registrar:(NSObject<FlutterPluginRegistrar>*)registrar;
+- (void)addPolylines:(NSArray*)polylinesToAdd;
+- (void)changePolylines:(NSArray*)polylinesToChange;
+- (void)removePolylineIds:(NSArray*)polylineIdsToRemove;
+- (BOOL)onPolylineTap:(NSString*)polylineId;
 @end
