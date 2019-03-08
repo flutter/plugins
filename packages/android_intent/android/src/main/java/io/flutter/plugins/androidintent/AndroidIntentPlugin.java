@@ -120,6 +120,9 @@ public class AndroidIntentPlugin implements MethodCallHandler {
 
     // Build intent
     Intent intent = new Intent(action);
+    if (call.argument("type") != null) {
+      intent.setType((String) call.argument("type"));
+    }
     if (mRegistrar.activity() == null) {
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
