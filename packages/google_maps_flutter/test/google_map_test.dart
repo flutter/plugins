@@ -303,7 +303,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          trackCameraPosition: false,
         ),
       ),
     );
@@ -314,11 +313,12 @@ void main() {
     expect(platformGoogleMap.trackCameraPosition, false);
 
     await tester.pumpWidget(
-      const Directionality(
+      Directionality(
         textDirection: TextDirection.ltr,
         child: GoogleMap(
-          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          trackCameraPosition: true,
+          initialCameraPosition:
+              const CameraPosition(target: LatLng(10.0, 15.0)),
+          onCameraMove: (CameraPosition position) {},
         ),
       ),
     );

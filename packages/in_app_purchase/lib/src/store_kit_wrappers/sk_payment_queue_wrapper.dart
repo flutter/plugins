@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -77,6 +78,22 @@ class SKPaymentQueueWrapper {
     await channel.invokeMethod(
         '-[InAppPurchasePlugin finishTransaction:result:]',
         transaction.transactionIdentifier);
+  }
+
+  /// Restore transactions to maintain access to content that customers have already purchased.
+  ///
+  /// For example, when a user upgrades to a new phone, they want to keep the content they purchased in the old phone.
+  /// This call will invoke the [SKTransactionObserverWrapper.restoreCompletedTransactions] or [SKTransactionObserverWrapper.paymentQueueRestoreCompletedTransactionsFinished] as well as [SKTransactionObserverWrapper.updatedTransaction]
+  /// in the [SKTransactionObserverWrapper]. If you keep the download content in your own server, in the observer methods, you can simply finish the transaction by calling [finishTransaction] and
+  /// download the content from your own server.
+  /// If you keep the download content on Apple's server, you can access the download content in the transaction object that you get from [SKTransactionObserverWrapper.updatedTransaction] when the [SKPaymentTransactionWrapper.transactionState] is [SKPaymentTransactionStateWrapper.restored].
+  /// The `applicationUserName` is the [SKPaymentWrapper.applicationUsername] you used to create payments. If you did not use a `applicationUserName` when creating payments, then you can ignore this parameter.
+  /// This method either triggers [`-[SKPayment restoreCompletedTransactions]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506123-restorecompletedtransactions?language=objc) or [`-[SKPayment restoreCompletedTransactionsWithApplicationUsername:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1505992-restorecompletedtransactionswith?language=objc)
+  /// depends on weather the `applicationUserName` is passed.
+  Future<void> restoreTransactions({String applicationUserName}) async {
+    await channel.invokeMethod(
+        '-[InAppPurchasePlugin restoreTransactions:result:]',
+        applicationUserName);
   }
 
   // Triage a method channel call from the platform and triggers the correct observer method.
@@ -183,8 +200,9 @@ abstract class SKTransactionObserverWrapper {
   ///
   /// Return `true` to continue the transaction in your app. If you have multiple [SKTransactionObserverWrapper]s, the transaction
   /// will continue if one [SKTransactionObserverWrapper] has [shouldAddStorePayment] returning `true`.
-  /// Return `false` to defer or cancel the transaction. You can also continue the transaction later by calling
-  /// [addPayment] with the product you get from this method.
+  /// Return `false` to defer or cancel the transaction. For example, you may need to defer a transaction if the user is in the middle of onboarding.
+  /// You can also continue the transaction later by calling
+  /// [addPayment] with the [SKPaymentWrapper] object you get from this method.
   bool shouldAddStorePayment(
       {SKPaymentWrapper payment, SKProductWrapper product});
 }
@@ -197,7 +215,7 @@ enum SKPaymentTransactionStateWrapper {
   /// Indicates the transaction is being processed in App Store.
   ///
   /// You should update your UI to indicate the process and waiting for the transaction to update to the next state.
-  /// Never complte a transaction that is in purchasing state.
+  /// Never complete a transaction that is in purchasing state.
   @JsonValue(0)
   purchasing,
 
@@ -285,6 +303,24 @@ class SKPaymentTransactionWrapper {
 
   /// The error object, only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
   final SKError error;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKPaymentTransactionWrapper typedOther = other;
+    return typedOther.payment == payment &&
+        typedOther.transactionState == transactionState &&
+        typedOther.originalTransaction == originalTransaction &&
+        typedOther.transactionTimeStamp == transactionTimeStamp &&
+        typedOther.transactionIdentifier == transactionIdentifier &&
+        DeepCollectionEquality().equals(typedOther.downloads, downloads) &&
+        typedOther.error == error;
+  }
 }
 
 /// Dart wrapper around StoreKit's [SKDownloadState](https://developer.apple.com/documentation/storekit/skdownloadstate?language=objc).
@@ -386,6 +422,27 @@ class SKDownloadWrapper {
 
   /// The error that prevented the downloading; only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
   final SKError error;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKDownloadWrapper typedOther = other;
+    return typedOther.contentIdentifier == contentIdentifier &&
+        typedOther.state == state &&
+        typedOther.contentLength == contentLength &&
+        typedOther.contentURL == contentURL &&
+        typedOther.contentVersion == contentVersion &&
+        typedOther.transactionID == transactionID &&
+        typedOther.progress == progress &&
+        typedOther.timeRemaining == timeRemaining &&
+        typedOther.downloadTimeUnknown == downloadTimeUnknown &&
+        typedOther.error == error;
+  }
 }
 
 /// Dart wrapper around StoreKit's [NSError](https://developer.apple.com/documentation/foundation/nserror?language=objc).
@@ -413,6 +470,21 @@ class SKError {
 
   /// A map that contains more detailed information about the error. Any key of the map must be one of the [NSErrorUserInfoKey](https://developer.apple.com/documentation/foundation/nserroruserinfokey?language=objc).
   final Map<String, dynamic> userInfo;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKError typedOther = other;
+    return typedOther.code == code &&
+        typedOther.domain == domain &&
+        DeepCollectionEquality.unordered()
+            .equals(typedOther.userInfo, userInfo);
+  }
 }
 
 /// Dart wrapper around StoreKit's [SKPayment](https://developer.apple.com/documentation/storekit/skpayment?language=objc).
@@ -457,7 +529,7 @@ class SKPaymentWrapper {
   /// An opaque id for the user's account.
   ///
   /// Used to help the store detect irregular activity. See https://developer.apple.com/documentation/storekit/skpayment/1506116-applicationusername?language=objc for more details.
-  /// For example, you can use a one-way hash of the user’s account name on your server. Don’t use the Apple ID for your developer account, the user’s Apple ID, or the user’s unhashed account name on your server.
+  /// For example, you can use a one-way hash of the user’s account name on your server. Don’t use the Apple ID for your developer account, the user’s Apple ID, or the user’s not hashed account name on your server.
   final String applicationUsername;
 
   /// Reserved for future use.
@@ -476,4 +548,20 @@ class SKPaymentWrapper {
   ///
   /// For how to test in App Store sand box, see https://developer.apple.com/in-app-purchase/.
   final bool simulatesAskToBuyInSandbox;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKPaymentWrapper typedOther = other;
+    return typedOther.productIdentifier == productIdentifier &&
+        typedOther.applicationUsername == applicationUsername &&
+        typedOther.quantity == quantity &&
+        typedOther.simulatesAskToBuyInSandbox == simulatesAskToBuyInSandbox &&
+        typedOther.requestData == requestData;
+  }
 }
