@@ -1,3 +1,7 @@
+## 0.5.0+5
+
+Remove unnecessary camera permmision.
+
 ## 0.5.0+4
 
 Preserve transparency when saving images.
