@@ -83,8 +83,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
                                                     mapView:_mapView
                                                   registrar:registrar];
     _polylinesController = [[FLTPolylinesController alloc] init:_channel
-                                                    mapView:_mapView
-                                                registrar:registrar];
+                                                        mapView:_mapView
+                                                      registrar:registrar];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
@@ -265,7 +265,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   NSString* markerId = marker.userData[0];
   [_markersController onInfoWindowTap:markerId];
 }
-- (void)mapView:(GMSMapView *)mapView didTapOverlay:(GMSOverlay *)overlay {
+- (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
   NSString* polylineId = overlay.userData[0];
   [_polylinesController onPolylineTap:polylineId];
 }

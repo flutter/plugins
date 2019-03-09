@@ -26,7 +26,6 @@
 - (void)removeMarker;
 @end
 
-
 @interface FLTPolylinesController : NSObject
 - (instancetype)init:(FlutterMethodChannel*)methodChannel
              mapView:(GMSMapView*)mapView

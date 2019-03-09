@@ -6,26 +6,25 @@
 #import "JsonConversions.h"
 
 @implementation FLTGoogleMapPolylineController {
-  GMSPolyline *_polyline;
-  GMSMapView *_mapView;
+  GMSPolyline* _polyline;
+  GMSMapView* _mapView;
 }
 - (instancetype)initPolylineWithPath:(GMSMutablePath*)path
-                            polylineId:(NSString*)polylineId
+                          polylineId:(NSString*)polylineId
                              mapView:(GMSMapView*)mapView {
   self = [super init];
   if (self) {
-    GMSMutablePath *path = [GMSMutablePath path];
+    GMSMutablePath* path = [GMSMutablePath path];
     _polyline = [GMSPolyline polylineWithPath:path];
     _mapView = mapView;
     _polylineId = polylineId;
-    _polyline.userData =  @[ polylineId ];
+    _polyline.userData = @[ polylineId ];
   }
   return self;
 }
 
-
 - (void)removePolyline {
-    _polyline.map = nil;
+  _polyline.map = nil;
 }
 
 #pragma mark - FLTGoogleMapPolylineOptionsSink methods
@@ -39,17 +38,17 @@
 - (void)setZIndex:(int)zIndex {
   _polyline.zIndex = zIndex;
 }
-- (void)setPoints:(NSMutableArray *)points {
-  GMSMutablePath *path = [GMSMutablePath path];
+- (void)setPoints:(NSMutableArray*)points {
+  GMSMutablePath* path = [GMSMutablePath path];
 
-  for (NSObject *point in points) {
-    CLLocation *location = (CLLocation *)point;
+  for (NSObject* point in points) {
+    CLLocation* location = (CLLocation*)point;
     [path addCoordinate:location.coordinate];
   }
   _polyline.path = path;
 }
 
-- (void)setColor:(UIColor *)color {
+- (void)setColor:(UIColor*)color {
   _polyline.strokeColor = color;
 }
 - (void)setStrokeWidth:(CGFloat)width {
@@ -61,117 +60,119 @@ static int ToInt(NSNumber* data) { return [FLTGoogleMapJsonConversions toInt:dat
 
 static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:data]; }
 
-static NSMutableArray* ToPoints(NSArray* data) { return [FLTGoogleMapJsonConversions toPoints:data]; }
+static NSMutableArray* ToPoints(NSArray* data) {
+  return [FLTGoogleMapJsonConversions toPoints:data];
+}
 
 static UIColor* ToColor(NSArray* data) { return [FLTGoogleMapJsonConversions toColor:data]; }
 
 static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolylineOptionsSink> sink,
-                                   NSObject<FlutterPluginRegistrar>* registrar) {
-    
-    NSNumber* consumeTapEvents = data[@"consumeTapEvents"];
-    if (consumeTapEvents) {
-        [sink setConsumeTapEvents:ToBool(consumeTapEvents)];
-    }
-    
-    NSNumber* visible = data[@"visible"];
-    if (visible) {
-        [sink setVisible:ToBool(visible)];
-    }
-    
-    id zIndex = data[@"zIndex"];
-    if (zIndex) {
-        [sink setZIndex:ToInt(zIndex)];
-    }
-    
-    id points = data[@"points"];
-    if (points) {
-        [sink setPoints:ToPoints(points)];
-    }
-    
-    id strokeColor = data[@"color"];
-    if (strokeColor) {
-        [sink setColor:ToColor(strokeColor)];
-    }
+                                     NSObject<FlutterPluginRegistrar>* registrar) {
+  NSNumber* consumeTapEvents = data[@"consumeTapEvents"];
+  if (consumeTapEvents) {
+    [sink setConsumeTapEvents:ToBool(consumeTapEvents)];
+  }
 
-    id strokeWidth = data[@"width"];
-    if (strokeWidth) {
-        [sink setStrokeWidth:ToInt(strokeWidth)];
-    }
+  NSNumber* visible = data[@"visible"];
+  if (visible) {
+    [sink setVisible:ToBool(visible)];
+  }
+
+  id zIndex = data[@"zIndex"];
+  if (zIndex) {
+    [sink setZIndex:ToInt(zIndex)];
+  }
+
+  id points = data[@"points"];
+  if (points) {
+    [sink setPoints:ToPoints(points)];
+  }
+
+  id strokeColor = data[@"color"];
+  if (strokeColor) {
+    [sink setColor:ToColor(strokeColor)];
+  }
+
+  id strokeWidth = data[@"width"];
+  if (strokeWidth) {
+    [sink setStrokeWidth:ToInt(strokeWidth)];
+  }
 }
 
 @implementation FLTPolylinesController {
-    NSMutableDictionary* _polylineIdToController;
-    FlutterMethodChannel* _methodChannel;
-    NSObject<FlutterPluginRegistrar>* _registrar;
-    GMSMapView* _mapView;
+  NSMutableDictionary* _polylineIdToController;
+  FlutterMethodChannel* _methodChannel;
+  NSObject<FlutterPluginRegistrar>* _registrar;
+  GMSMapView* _mapView;
 }
 - (instancetype)init:(FlutterMethodChannel*)methodChannel
              mapView:(GMSMapView*)mapView
            registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-    self = [super init];
-    if (self) {
-        _methodChannel = methodChannel;
-        _mapView = mapView;
-        _polylineIdToController = [NSMutableDictionary dictionaryWithCapacity:1];
-        _registrar = registrar;
-    }
-    return self;
+  self = [super init];
+  if (self) {
+    _methodChannel = methodChannel;
+    _mapView = mapView;
+    _polylineIdToController = [NSMutableDictionary dictionaryWithCapacity:1];
+    _registrar = registrar;
+  }
+  return self;
 }
 - (void)addPolylines:(NSArray*)polylinesToAdd {
-    for (NSDictionary* polyline in polylinesToAdd) {
-        GMSMutablePath* path = [FLTPolylinesController getPath:polyline];
-        NSString* polylineId = [FLTPolylinesController getPolylineId:polyline];
-        FLTGoogleMapPolylineController* controller =
-        [[FLTGoogleMapPolylineController alloc] initPolylineWithPath:path polylineId:polylineId mapView:_mapView];
-        InterpretPolylineOptions(polyline, controller, _registrar);
-        _polylineIdToController[polylineId] = controller;
-    }
+  for (NSDictionary* polyline in polylinesToAdd) {
+    GMSMutablePath* path = [FLTPolylinesController getPath:polyline];
+    NSString* polylineId = [FLTPolylinesController getPolylineId:polyline];
+    FLTGoogleMapPolylineController* controller =
+        [[FLTGoogleMapPolylineController alloc] initPolylineWithPath:path
+                                                          polylineId:polylineId
+                                                             mapView:_mapView];
+    InterpretPolylineOptions(polyline, controller, _registrar);
+    _polylineIdToController[polylineId] = controller;
+  }
 }
 - (void)changePolylines:(NSArray*)polylinesToChange {
-    for (NSDictionary* polyline in polylinesToChange) {
-        NSString* polylineId = [FLTPolylinesController getPolylineId:polyline];
-        FLTGoogleMapPolylineController* controller = _polylineIdToController[polylineId];
-        if (!controller) {
-            continue;
-        }
-        InterpretPolylineOptions(polyline, controller, _registrar);
+  for (NSDictionary* polyline in polylinesToChange) {
+    NSString* polylineId = [FLTPolylinesController getPolylineId:polyline];
+    FLTGoogleMapPolylineController* controller = _polylineIdToController[polylineId];
+    if (!controller) {
+      continue;
     }
+    InterpretPolylineOptions(polyline, controller, _registrar);
+  }
 }
 - (void)removePolylineIds:(NSArray*)polylineIdsToRemove {
-    for (NSString* polylineId in polylineIdsToRemove) {
-        if (!polylineId) {
-            continue;
-        }
-        FLTGoogleMapPolylineController* controller = _polylineIdToController[polylineId];
-        if (!controller) {
-            continue;
-        }
-        [controller removePolyline];
-        [_polylineIdToController removeObjectForKey:polylineId];
-    }
-}
-- (void)onPolylineTap:(NSString*)polylineId {
+  for (NSString* polylineId in polylineIdsToRemove) {
     if (!polylineId) {
-        return;
+      continue;
     }
     FLTGoogleMapPolylineController* controller = _polylineIdToController[polylineId];
     if (!controller) {
-        return;
+      continue;
     }
-    [_methodChannel invokeMethod:@"polyline#onTap" arguments:@{@"polylineId" : polylineId}];
+    [controller removePolyline];
+    [_polylineIdToController removeObjectForKey:polylineId];
+  }
+}
+- (void)onPolylineTap:(NSString*)polylineId {
+  if (!polylineId) {
+    return;
+  }
+  FLTGoogleMapPolylineController* controller = _polylineIdToController[polylineId];
+  if (!controller) {
+    return;
+  }
+  [_methodChannel invokeMethod:@"polyline#onTap" arguments:@{@"polylineId" : polylineId}];
 }
 + (GMSMutablePath*)getPath:(NSDictionary*)polyline {
-    NSArray* pointArray = polyline[@"points"];
-    NSMutableArray* points = ToPoints(pointArray);
-    GMSMutablePath *path = [GMSMutablePath path];
-    for (NSObject *point in points) {
-        CLLocation *location = (CLLocation *)point;
-        [path addCoordinate:location.coordinate];
-    }
-    return path;
+  NSArray* pointArray = polyline[@"points"];
+  NSMutableArray* points = ToPoints(pointArray);
+  GMSMutablePath* path = [GMSMutablePath path];
+  for (NSObject* point in points) {
+    CLLocation* location = (CLLocation*)point;
+    [path addCoordinate:location.coordinate];
+  }
+  return path;
 }
 + (NSString*)getPolylineId:(NSDictionary*)polyline {
-    return polyline[@"polylineId"];
+  return polyline[@"polylineId"];
 }
 @end
-

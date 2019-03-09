@@ -88,7 +88,9 @@ static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:
 
 static CGPoint ToPoint(NSArray* data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
 
-static NSArray* PositionToJson(CLLocationCoordinate2D data) { return [FLTGoogleMapJsonConversions positionToJson:data]; }
+static NSArray* PositionToJson(CLLocationCoordinate2D data) {
+  return [FLTGoogleMapJsonConversions positionToJson:data];
+}
 
 static void InterpretMarkerOptions(NSDictionary* data, id<FLTGoogleMapMarkerOptionsSink> sink,
                                    NSObject<FlutterPluginRegistrar>* registrar) {
@@ -242,7 +244,8 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
   if (!controller) {
     return NO;
   }
-  [_methodChannel invokeMethod:@"marker#onDrag" arguments:@{@"markerId" : markerId, @"position" : PositionToJson(position) }];
+  [_methodChannel invokeMethod:@"marker#onDrag"
+                     arguments:@{@"markerId" : markerId, @"position" : PositionToJson(position)}];
   return controller.consumeTapEvents;
 }
 - (void)onInfoWindowTap:(NSString*)markerId {

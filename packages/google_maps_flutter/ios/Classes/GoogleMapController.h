@@ -31,9 +31,9 @@
                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 - (void)showAtX:(CGFloat)x Y:(CGFloat)y;
 - (void)hide;
-- (void)animateWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate;
-- (void)moveWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate;
-- (GMSCameraPosition*)cameraPosition;
+- (void)animateWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
+- (void)moveWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
+- (GMSCameraPosition *)cameraPosition;
 @end
 
 // Allows the engine to create new Google Map instances.
