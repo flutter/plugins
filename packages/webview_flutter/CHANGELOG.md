@@ -1,3 +1,7 @@
+## 0.3.4
+
+* Support specifying navigation delegates that can prevent navigations from being executed.
+
 ## 0.3.3+1
 
 * Fixed a memory leak on Android - the WebView was not properly disposed.
