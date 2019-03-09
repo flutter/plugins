@@ -35,7 +35,7 @@ class FlutterWebViewClient extends WebViewClientCompat {
   @Override
   public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
     if (!hasNavigationDelegate) {
-      return super.shouldOverrideUrlLoading(view, request);
+      return false;
     }
     notifyOnNavigationRequest(
         request.getUrl().toString(), request.getRequestHeaders(), view, request.isForMainFrame());
@@ -56,7 +56,7 @@ class FlutterWebViewClient extends WebViewClientCompat {
   @Override
   public boolean shouldOverrideUrlLoading(WebView view, String url) {
     if (!hasNavigationDelegate) {
-      return super.shouldOverrideUrlLoading(view, url);
+      return false;
     }
     // This version of shouldOverrideUrlLoading is only invoked by the webview on devices with
     // webview versions  earlier than 67(it is also invoked when hasNavigationDelegate is false).

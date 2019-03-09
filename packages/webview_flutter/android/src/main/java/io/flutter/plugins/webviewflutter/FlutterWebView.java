@@ -4,7 +4,9 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
@@ -139,6 +141,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(null);
   }
 
+  @TargetApi(Build.VERSION_CODES.KITKAT)
   private void evaluateJavaScript(MethodCall methodCall, final Result result) {
     String jsString = (String) methodCall.arguments;
     if (jsString == null) {
