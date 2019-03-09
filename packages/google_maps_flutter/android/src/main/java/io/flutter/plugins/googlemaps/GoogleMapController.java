@@ -203,25 +203,25 @@ final class GoogleMapController
           break;
         }
       case "markers#update":
-      {
-        Object markersToAdd = call.argument("markersToAdd");
-        markersController.addMarkers((List<Object>) markersToAdd);
-        Object markersToChange = call.argument("markersToChange");
-        markersController.changeMarkers((List<Object>) markersToChange);
-        Object markerIdsToRemove = call.argument("markerIdsToRemove");
-        markersController.removeMarkers((List<Object>) markerIdsToRemove);
-        break;
-      }
+        {
+          Object markersToAdd = call.argument("markersToAdd");
+          markersController.addMarkers((List<Object>) markersToAdd);
+          Object markersToChange = call.argument("markersToChange");
+          markersController.changeMarkers((List<Object>) markersToChange);
+          Object markerIdsToRemove = call.argument("markerIdsToRemove");
+          markersController.removeMarkers((List<Object>) markerIdsToRemove);
+          break;
+        }
       case "polylines#update":
-      {
-        Object polylinesToAdd = call.argument("polylinesToAdd");
-        polylinesController.addPolylines((List<Object>) polylinesToAdd);
-        Object polylinesToChange = call.argument("polylinesToChange");
-        polylinesController.changePolylines((List<Object>) polylinesToChange);
-        Object polylineIdsToRemove = call.argument("polylineIdsToRemove");
-        polylinesController.removePolylines((List<Object>) polylineIdsToRemove);
-        break;
-      }
+        {
+          Object polylinesToAdd = call.argument("polylinesToAdd");
+          polylinesController.addPolylines((List<Object>) polylinesToAdd);
+          Object polylinesToChange = call.argument("polylinesToChange");
+          polylinesController.changePolylines((List<Object>) polylinesToChange);
+          Object polylineIdsToRemove = call.argument("polylineIdsToRemove");
+          polylinesController.removePolylines((List<Object>) polylineIdsToRemove);
+          break;
+        }
 
       default:
         result.notImplemented();
@@ -271,7 +271,6 @@ final class GoogleMapController
   public void onMarkerDragEnd(Marker marker) {
     markersController.onMarkerDrag(marker.getId(), marker.getPosition());
   }
-
 
   @Override
   public void onPolylineClick(Polyline polyline) {

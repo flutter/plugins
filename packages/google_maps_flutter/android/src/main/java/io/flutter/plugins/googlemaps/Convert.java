@@ -146,7 +146,6 @@ class Convert {
     return data;
   }
 
-
   static Object toJson(LatLng latLng) {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }

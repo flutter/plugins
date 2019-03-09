@@ -39,12 +39,12 @@ class Polyline {
     this.endCap,
     this.geodesic = false,
     this.jointType,
-    this.points = const [],
+    this.points = const <LatLng>[],
     this.pattern,
     this.startCap,
     this.visible = true,
     this.width = 1,
-    this.zIndex = 0.0,
+    this.zIndex = 0,
     this.onTap,
   });
 
@@ -91,12 +91,12 @@ class Polyline {
 
   /// Line segment width in screen pixels. The width is constant and independent of the camera's zoom level.
   /// The default value is 10.
-  final double width;
+  final int width;
 
   /// The order in which this tile overlay is drawn with respect to other overlays. An overlay with a larger
   /// z-index is drawn over overlays with smaller z-indices. The order of overlays with the same z-index is
   /// arbitrary. The default zIndex is 0.
-  final double zIndex;
+  final int zIndex;
 
   /// Callbacks to receive tap events for polyline placed on this map.
   final VoidCallback onTap;

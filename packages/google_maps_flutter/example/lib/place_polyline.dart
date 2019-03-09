@@ -38,7 +38,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
 
   // Values when toggling polyline width
   int widthsIndex = 0;
-  List<double> widths = <double>[10.0, 20.0, 5.0];
+  List<int> widths = <int>[10.0, 20.0, 5.0];
 
   int jointTypesIndex = 0;
   List<int> jointTypes = <int>[
@@ -107,7 +107,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
       polylineId: polylineId,
       consumeTapEvents: true,
       color: Colors.orange,
-      width: 10,
+      width: 5,
       points: _createPoints(),
       onTap: () {
         _onPolylineTapped(polylineId);

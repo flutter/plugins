@@ -5,30 +5,25 @@
 #import "GoogleMapPolylineController.h"
 #import "JsonConversions.h"
 
-static uint64_t _nextPolylineId = 0;
-
 @implementation FLTGoogleMapPolylineController {
   GMSPolyline *_polyline;
   GMSMapView *_mapView;
-  BOOL _consumeTapEvents;
 }
-- (instancetype)init:(GMSMapView *)mapView {
+- (instancetype)initPolylineWithPath:(GMSMutablePath*)path
+                            polylineId:(NSString*)polylineId
+                             mapView:(GMSMapView*)mapView {
   self = [super init];
   if (self) {
     GMSMutablePath *path = [GMSMutablePath path];
     _polyline = [GMSPolyline polylineWithPath:path];
-    _polyline.tappable = true;
-    _polyline.map = mapView;
     _mapView = mapView;
-    _polylineId = [NSString stringWithFormat:@"%lld", _nextPolylineId++];
-    _polyline.userData = @[ _polylineId, @(NO) ];
+    _polylineId = polylineId;
+    _polyline.userData =  @[ polylineId ];
   }
   return self;
 }
 
-- (BOOL)consumeTapEvents {
-    return _consumeTapEvents;
-}
+
 - (void)removePolyline {
     _polyline.map = nil;
 }
@@ -36,7 +31,7 @@ static uint64_t _nextPolylineId = 0;
 #pragma mark - FLTGoogleMapPolylineOptionsSink methods
 
 - (void)setConsumeTapEvents:(BOOL)consumes {
-  _polyline.userData[1] = @(consumes);
+  _polyline.tappable = consumes;
 }
 - (void)setVisible:(BOOL)visible {
   _polyline.map = visible ? _mapView : nil;
@@ -62,19 +57,9 @@ static uint64_t _nextPolylineId = 0;
 }
 @end
 
-static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
-
-static float ToFloat(NSNumber* data) { return [FLTGoogleMapJsonConversions toFloat:data]; }
-
-static CLLocationCoordinate2D ToLocation(NSArray* data) {
-    return [FLTGoogleMapJsonConversions toLocation:data];
-}
-
 static int ToInt(NSNumber* data) { return [FLTGoogleMapJsonConversions toInt:data]; }
 
 static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:data]; }
-
-static CGPoint ToPoint(NSArray* data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
 
 static NSMutableArray* ToPoints(NSArray* data) { return [FLTGoogleMapJsonConversions toPoints:data]; }
 
@@ -93,7 +78,7 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
         [sink setVisible:ToBool(visible)];
     }
     
-    NSNumber* zIndex = data[@"zIndex"];
+    id zIndex = data[@"zIndex"];
     if (zIndex) {
         [sink setZIndex:ToInt(zIndex)];
     }
@@ -103,14 +88,14 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
         [sink setPoints:ToPoints(points)];
     }
     
-    id strokeColor = data[@"strokeColor"];
+    id strokeColor = data[@"color"];
     if (strokeColor) {
-        [sink setColor:ToPoints(strokeColor)];
+        [sink setColor:ToColor(strokeColor)];
     }
 
-    id strokeWidth = data[@"strokeWidth"];
+    id strokeWidth = data[@"width"];
     if (strokeWidth) {
-        [sink setStrokeWidth:ToFloat(strokeWidth)];
+        [sink setStrokeWidth:ToInt(strokeWidth)];
     }
 }
 
@@ -134,10 +119,10 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
 }
 - (void)addPolylines:(NSArray*)polylinesToAdd {
     for (NSDictionary* polyline in polylinesToAdd) {
-        //todo fetch every parameter and map it
+        GMSMutablePath* path = [FLTPolylinesController getPath:polyline];
         NSString* polylineId = [FLTPolylinesController getPolylineId:polyline];
         FLTGoogleMapPolylineController* controller =
-        [[FLTGoogleMapPolylineController alloc] init:_mapView];
+        [[FLTGoogleMapPolylineController alloc] initPolylineWithPath:path polylineId:polylineId mapView:_mapView];
         InterpretPolylineOptions(polyline, controller, _registrar);
         _polylineIdToController[polylineId] = controller;
     }
@@ -165,18 +150,26 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
         [_polylineIdToController removeObjectForKey:polylineId];
     }
 }
-- (BOOL)onPolylineTap:(NSString*)polylineId {
+- (void)onPolylineTap:(NSString*)polylineId {
     if (!polylineId) {
-        return NO;
+        return;
     }
     FLTGoogleMapPolylineController* controller = _polylineIdToController[polylineId];
     if (!controller) {
-        return NO;
+        return;
     }
     [_methodChannel invokeMethod:@"polyline#onTap" arguments:@{@"polylineId" : polylineId}];
-    return controller.consumeTapEvents;
 }
-
++ (GMSMutablePath*)getPath:(NSDictionary*)polyline {
+    NSArray* pointArray = polyline[@"points"];
+    NSMutableArray* points = ToPoints(pointArray);
+    GMSMutablePath *path = [GMSMutablePath path];
+    for (NSObject *point in points) {
+        CLLocation *location = (CLLocation *)point;
+        [path addCoordinate:location.coordinate];
+    }
+    return path;
+}
 + (NSString*)getPolylineId:(NSDictionary*)polyline {
     return polyline[@"polylineId"];
 }

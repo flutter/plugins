@@ -20,8 +20,9 @@
 // Defines marker controllable by Flutter.
 @interface FLTGoogleMapPolylineController : NSObject <FLTGoogleMapPolylineOptionsSink>
 @property(atomic, readonly) NSString* polylineId;
-- (instancetype)init:(GMSMapView*)mapView;
-- (BOOL)consumeTapEvents;
+- (instancetype)initPolylineWithPath:(GMSMutablePath*)path
+                          polylineId:(NSString*)polylineId
+                             mapView:(GMSMapView*)mapView;
 - (void)removeMarker;
 @end
 
@@ -33,5 +34,5 @@
 - (void)addPolylines:(NSArray*)polylinesToAdd;
 - (void)changePolylines:(NSArray*)polylinesToChange;
 - (void)removePolylineIds:(NSArray*)polylineIdsToRemove;
-- (BOOL)onPolylineTap:(NSString*)polylineId;
+- (void)onPolylineTap:(NSString*)polylineId;
 @end

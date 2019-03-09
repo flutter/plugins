@@ -71,7 +71,7 @@ class GoogleMap extends StatefulWidget {
 
   // Polylines to be placed on the map.
   final Set<Polyline> polylines;
-  
+
   /// Called when the camera starts moving.
   ///
   /// This can be initiated by the following:

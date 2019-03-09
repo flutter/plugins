@@ -7,12 +7,6 @@
 
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
-static CLLocationCoordinate2D toLocation(id json);
-static NSMutableArray* toPoints(id json);
-static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
-                                   NSObject<FlutterPluginRegistrar>* registrar);
-static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink,
-                                     NSObject<FlutterPluginRegistrar>* registrar);
 static NSDictionary* PositionToJson(GMSCameraPosition* position);
 static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json);
 static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
@@ -88,9 +82,16 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _markersController = [[FLTMarkersController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar];
+    _polylinesController = [[FLTPolylinesController alloc] init:_channel
+                                                    mapView:_mapView
+                                                registrar:registrar];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
+    }
+    id polylinesToAdd = args[@"polylinesToAdd"];
+    if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
+      [_polylinesController addPolylines:polylinesToAdd];
     }
   }
   return self;
@@ -125,11 +126,11 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     }
     id markersToChange = call.arguments[@"markersToChange"];
     if ([markersToChange isKindOfClass:[NSArray class]]) {
-        [_markersController changeMarkers:markersToChange];
+      [_markersController changeMarkers:markersToChange];
     }
     id markerIdsToRemove = call.arguments[@"markerIdsToRemove"];
     if ([markerIdsToRemove isKindOfClass:[NSArray class]]) {
-        [_markersController removeMarkerIds:markerIdsToRemove];
+      [_markersController removeMarkerIds:markerIdsToRemove];
     }
     result(nil);
   } else if ([call.method isEqualToString:@"polylines#update"]) {
@@ -264,10 +265,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   NSString* markerId = marker.userData[0];
   [_markersController onInfoWindowTap:markerId];
 }
-
-- (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
+- (void)mapView:(GMSMapView *)mapView didTapOverlay:(GMSOverlay *)overlay {
   NSString* polylineId = overlay.userData[0];
-  [_channel invokeMethod:@"polyline#onTap" arguments:@{@"polyline" : polylineId}];
+  [_polylinesController onPolylineTap:polylineId];
 }
 
 @end
@@ -276,10 +276,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 static NSArray* LocationToJson(CLLocationCoordinate2D position) {
   return @[ @(position.latitude), @(position.longitude) ];
-}
-
-static id markerToJson(GMSMarker* marker) {
-  return @[ @(marker.position.latitude), @(marker.position.longitude) ];
 }
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position) {
