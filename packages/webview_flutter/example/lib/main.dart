@@ -9,11 +9,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 void main() => runApp(MaterialApp(home: WebViewExample()));
 
 class WebViewExample extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() {
     return _WebViewExample();
-
   }
 }
 
@@ -37,18 +35,21 @@ class _WebViewExample extends State<WebViewExample> {
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
-          headers: <String, String>{"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpbnNfaWQiOiIyODM5ODAiLCJleHAiOjE1ODMyMjM0NjR9.9maHo7RDJkZOtiTnEhYkrIoKRNCXF0epr5VIIwvABwWgw8h-AucNHmZ3IdAS0uE_nao71883uaYitKxVv7rsnw"},
-          initialUrl: 'https://engie-livechallenge.preprodrhinos.com/api/boutique',
+          headers: <String, String>{
+            "Authorization":
+                "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpbnNfaWQiOiIyODM5ODAiLCJleHAiOjE1ODMyMjM0NjR9.9maHo7RDJkZOtiTnEhYkrIoKRNCXF0epr5VIIwvABwWgw8h-AucNHmZ3IdAS0uE_nao71883uaYitKxVv7rsnw"
+          },
+          initialUrl: 'https://flutter.dev/',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
             print("created !! ");
-            
-            Future.doWhile(() async{
-              try {
-               await   webViewController.evaluateJavascript('Toaster.postMessage("User Agent: " + navigator.userAgent);');
 
-              }catch(e){
+            Future.doWhile(() async {
+              try {
+                await webViewController.evaluateJavascript(
+                    'Toaster.postMessage("User Agent: " + navigator.userAgent);');
+              } catch (e) {
                 print("Encore---");
                 return true;
               }
@@ -58,7 +59,6 @@ class _WebViewExample extends State<WebViewExample> {
               });
               return false;
             });
-
           },
           // TODO(iskakaushik): Remove this when collection literals makes it to stable.
           // ignore: prefer_collection_literals
@@ -67,7 +67,7 @@ class _WebViewExample extends State<WebViewExample> {
           ].toSet(),
         );
       }),
-      floatingActionButton: viewContentLoaded ?Container():loaderWidget(),
+      floatingActionButton: viewContentLoaded ? Container() : loaderWidget(),
     );
   }
 
@@ -82,17 +82,15 @@ class _WebViewExample extends State<WebViewExample> {
   }
 
   Widget favoriteButton() {
-
     return FutureBuilder<WebViewController>(
         future: _controller.future,
         builder: (BuildContext context,
             AsyncSnapshot<WebViewController> controller) {
-
           if (controller.hasData) {
-
             return FloatingActionButton(
-              onPressed: () { controller.data.evaluateJavascript(
-                  'Toaster.postMessage("User Agent: " + navigator.userAgent);');//async {
+              onPressed: () {
+                controller.data.evaluateJavascript(
+                    'Toaster.postMessage("User Agent: " + navigator.userAgent);'); //async {
 //                final String url = await controller.data.currentUrl();
 //                Scaffold.of(context).showSnackBar(
 //                  SnackBar(content: Text('Favorited $url')),
@@ -104,8 +102,11 @@ class _WebViewExample extends State<WebViewExample> {
           return Container();
         });
   }
-  Widget loaderWidget(){
-    return Stack( children: <Widget>[ Center(child: CircularProgressIndicator())],);
+
+  Widget loaderWidget() {
+    return Stack(
+      children: <Widget>[Center(child: CircularProgressIndicator())],
+    );
   }
 }
 
