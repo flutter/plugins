@@ -176,14 +176,17 @@ class WebView extends StatefulWidget {
   ///
   /// Caveats on Android:
   ///
-  ///   * Navigation actions originated by the main frame can be intercepted,
-  ///     navigation actions originating from subframes are allowed regardless of the value
+  ///   * Navigation actions targeted to the main frame can be intercepted,
+  ///     navigation actions targeted to subframes are allowed regardless of the value
   ///     returned by this delegate.
-  ///   * On API levels smaller than 21, when a navigationDelegate is set, HTTP requests do not
-  ///     include the HTTP referer header.
   ///   * Setting a navigationDelegate makes the WebView treat all navigations as if they were
   ///     triggered by a user gesture, this disables some of Chromium's security mechanisms.
   ///     A navigationDelegate should only be set when loading trusted content.
+  ///   * On Android WebView versions earlier than 67(most devices running at least Android L+ should have
+  ///     a later version):
+  ///     * When a navigationDelegate is set pages with frames are not properly handled by the
+  ///       webview, and frames will be opened in the main frame.
+  ///     * When a navigationDelegate is set HTTP requests do not include the HTTP referer header.
   final NavigationDelegate navigationDelegate;
 
   @override
