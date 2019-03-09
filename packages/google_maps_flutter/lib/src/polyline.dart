@@ -196,3 +196,21 @@ class Polyline {
     return result;
   }
 }
+
+Map<PolylineId, Polyline> _keyByPolylineId(Iterable<Polyline> polylines) {
+  if (polylines == null) {
+    return <PolylineId, Polyline>{};
+  }
+  return Map<PolylineId, Polyline>.fromEntries(polylines.map(
+      (Polyline polyline) =>
+          MapEntry<PolylineId, Polyline>(polyline.polylineId, polyline)));
+}
+
+List<Map<String, dynamic>> _serializePolylineSet(Set<Polyline> polylines) {
+  if (polylines == null) {
+    return null;
+  }
+  return polylines
+      .map<Map<String, dynamic>>((Polyline p) => p._toJson())
+      .toList();
+}
