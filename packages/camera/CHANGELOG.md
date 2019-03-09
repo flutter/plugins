@@ -1,3 +1,7 @@
+## 0.4.2
+
+* Add sensor orientation value to `CameraDescription`.
+
 ## 0.4.1
 
 * Camera methods are ran in a background thread on iOS.

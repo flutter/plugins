@@ -2,6 +2,7 @@
 
 * Change events are call backs on GoogleMap widget.
 * GoogleMapController no longer handles change events.
+* trackCameraPosition is inferred from GoogleMap.onCameraMove being set.
 
 ## 0.3.0+3
 

@@ -164,6 +164,9 @@ public class CameraPlugin implements MethodCallHandler {
                 cameraManager.getCameraCharacteristics(cameraName);
             details.put("name", cameraName);
             @SuppressWarnings("ConstantConditions")
+            int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+            details.put("sensorOrientation", sensorOrientation);
+
             int lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
             switch (lensFacing) {
               case CameraMetadata.LENS_FACING_FRONT:

@@ -9,10 +9,9 @@ typedef void MapCreatedCallback(GoogleMapController controller);
 /// Callback that receives updates to the camera position.
 ///
 /// This callback is triggered when the platform Google Map
-/// registers a camera movement. This will be called with null if
-/// [GoogleMap.trackCameraPosition] is false.
+/// registers a camera movement.
 ///
-/// This is used in [GoogleMap.onCameraMove] and [GoogleMap.onMapOptionsUpdate].
+/// This is used in [GoogleMap.onCameraMove].
 typedef void CameraPositionCallback(CameraPosition position);
 
 class GoogleMap extends StatefulWidget {
@@ -28,7 +27,6 @@ class GoogleMap extends StatefulWidget {
     this.scrollGesturesEnabled = true,
     this.zoomGesturesEnabled = true,
     this.tiltGesturesEnabled = true,
-    this.trackCameraPosition = false,
     this.myLocationEnabled = false,
     this.markers,
     this.onCameraMoveStarted,
@@ -67,9 +65,6 @@ class GoogleMap extends StatefulWidget {
   /// True if the map view should respond to tilt gestures.
   final bool tiltGesturesEnabled;
 
-  /// True if the map view should relay camera move events to Flutter.
-  final bool trackCameraPosition;
-
   /// Markers to be placed on the map.
   final Set<Marker> markers;
 
@@ -81,8 +76,6 @@ class GoogleMap extends StatefulWidget {
   /// 2. Programmatically initiated animation.
   /// 3. Camera motion initiated in response to user gestures on the map.
   ///    For example: pan, tilt, pinch to zoom, or rotate.
-  ///
-  /// Note: This is callback is called even if [trackCameraPosition] is false.
   final VoidCallback onCameraMoveStarted;
 
   /// Called repeatedly as the camera continues to move after an
@@ -90,8 +83,6 @@ class GoogleMap extends StatefulWidget {
   ///
   /// This may be called as often as once every frame and should
   /// not perform expensive operations.
-  ///
-  /// This is only called if [trackCameraPosition] is true.
   final CameraPositionCallback onCameraMove;
 
   /// Called when camera movement has ended, there are no pending
@@ -259,7 +250,7 @@ class _GoogleMapOptions {
       rotateGesturesEnabled: map.rotateGesturesEnabled,
       scrollGesturesEnabled: map.scrollGesturesEnabled,
       tiltGesturesEnabled: map.tiltGesturesEnabled,
-      trackCameraPosition: map.trackCameraPosition,
+      trackCameraPosition: map.onCameraMove != null,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
     );
