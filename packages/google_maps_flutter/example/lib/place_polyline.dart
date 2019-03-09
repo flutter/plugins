@@ -38,7 +38,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
 
   // Values when toggling polyline width
   int widthsIndex = 0;
-  List<int> widths = <int>[10.0, 20.0, 5.0];
+  List<int> widths = <int>[10, 20, 5];
 
   int jointTypesIndex = 0;
   List<int> jointTypes = <int>[
