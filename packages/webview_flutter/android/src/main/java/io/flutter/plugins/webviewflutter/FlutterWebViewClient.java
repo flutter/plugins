@@ -104,7 +104,7 @@ class FlutterWebViewClient extends WebViewClientCompat {
 
     @Override
     public void error(String errorCode, String s1, Object o) {
-      throw new IllegalStateException("navigation ");
+      throw new IllegalStateException("navigationRequest calls must succeed");
     }
 
     @Override
