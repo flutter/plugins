@@ -1,3 +1,7 @@
+## 0.3.4
+
+* Support specifying navigation delegates that can prevent navigations from being executed.
+
 ## 0.3.3+2
 
 * Exclude LongPress handler from semantics tree since it does nothing.
