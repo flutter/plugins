@@ -115,8 +115,8 @@ class Polyline {
     List<LatLng> pointsParam,
     Cap startCapParam,
     bool visibleParam,
-    double widthParam,
-    double zIndexParam,
+    int widthParam,
+    int zIndexParam,
     VoidCallback onTapParam,
   }) {
     return Polyline(
