@@ -17,7 +17,7 @@ void main() {
     );
     final String storageBucket = 'gs://fake-storage-bucket-url.com';
     final FirebaseStorage storage =
-        new FirebaseStorage(app: app, storageBucket: storageBucket);
+        FirebaseStorage(app: app, storageBucket: storageBucket);
 
     group('getMaxDownloadRetryTimeMillis', () {
       final List<MethodCall> log = <MethodCall>[];
@@ -187,6 +187,36 @@ void main() {
       });
     });
 
+    group('getReferenceFromUrl', () {
+      final List<MethodCall> log = <MethodCall>[];
+
+      setUp(() {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return 'foo';
+        });
+      });
+
+      test('invokes correct method', () async {
+        final String url =
+            'https://firebasestorage.googleapis.com/v0/b/fake-21c50.appspot.com/o/';
+        final StorageReference reference =
+            await storage.getReferenceFromUrl(url);
+        expect(reference.path, 'foo');
+        expect(log, <Matcher>[
+          isMethodCall(
+            'FirebaseStorage#getReferenceFromUrl',
+            arguments: <String, dynamic>{
+              'app': 'testApp',
+              'bucket': 'gs://fake-storage-bucket-url.com',
+              'fullUrl': url,
+            },
+          ),
+        ]);
+      });
+    });
+
     group('StorageReference', () {
       group('getData', () {
         final List<MethodCall> log = <MethodCall>[];
@@ -197,8 +227,8 @@ void main() {
           FirebaseStorage.channel
               .setMockMethodCallHandler((MethodCall methodCall) {
             log.add(methodCall);
-            return new Future<Uint8List>.value(
-                new Uint8List.fromList(<int>[1, 2, 3, 4]));
+            return Future<Uint8List>.value(
+                Uint8List.fromList(<int>[1, 2, 3, 4]));
           });
           ref =
               storage.ref().child('avatars').child('large').child('image.jpg');
@@ -222,7 +252,7 @@ void main() {
 
         test('returns correct result', () async {
           expect(await ref.getData(10),
-              equals(new Uint8List.fromList(<int>[1, 2, 3, 4])));
+              equals(Uint8List.fromList(<int>[1, 2, 3, 4])));
         });
       });
 
@@ -275,16 +305,14 @@ void main() {
                 return <String, String>{
                   'name': 'image.jpg',
                 };
-                break;
               case 'StorageReference#updateMetadata':
                 return <String, dynamic>{
                   'name': 'image.jpg',
                   'contentLanguage': 'en',
                   'customMetadata': <String, String>{'activity': 'test'},
                 };
-                break;
               default:
-                break;
+                return null;
             }
           });
           ref =
@@ -292,7 +320,7 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await ref.updateMetadata(new StorageMetadata(
+          await ref.updateMetadata(StorageMetadata(
             contentLanguage: 'en',
             customMetadata: <String, String>{'activity': 'test'},
           ));
@@ -320,8 +348,7 @@ void main() {
         test('returns correct result', () async {
           expect((await ref.getMetadata()).contentLanguage, null);
           expect(
-              (await ref.updateMetadata(
-                      new StorageMetadata(contentLanguage: 'en')))
+              (await ref.updateMetadata(StorageMetadata(contentLanguage: 'en')))
                   .contentLanguage,
               'en');
         });

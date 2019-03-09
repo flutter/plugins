@@ -1,3 +1,32 @@
+## 0.4.2
+
+* Adding getWifiIP() to obtain current wifi network's IP.
+
+## 0.4.1
+
+* Add unit tests.
+
+## 0.4.0+2
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.4.0+1
+
+* Updated `Connectivity` to a singleton.
+
+## 0.4.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.3.2
+
+* Adding getWifiName() to obtain current wifi network's SSID.
+
 ## 0.3.1
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

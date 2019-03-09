@@ -26,7 +26,7 @@ class DocumentChange {
   DocumentChange._(Map<dynamic, dynamic> data, this._firestore)
       : oldIndex = data['oldIndex'],
         newIndex = data['newIndex'],
-        document = new DocumentSnapshot._(
+        document = DocumentSnapshot._(
           data['path'],
           _asStringKeyedMap(data['document']),
           _firestore,

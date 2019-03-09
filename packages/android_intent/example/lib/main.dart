@@ -7,19 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:platform/platform.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Flutter Demo',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(),
+      home: MyHomePage(),
       routes: <String, WidgetBuilder>{
         ExplicitIntentsWidget.routeName: (BuildContext context) =>
             const ExplicitIntentsWidget()
@@ -32,8 +32,8 @@ class MyHomePage extends StatelessWidget {
   void _createAlarm() {
     final AndroidIntent intent = const AndroidIntent(
       action: 'android.intent.action.SET_ALARM',
-      arguments: const <String, dynamic>{
-        'android.intent.extra.alarm.DAYS': const <int>[2, 3, 4, 5, 6],
+      arguments: <String, dynamic>{
+        'android.intent.extra.alarm.DAYS': <int>[2, 3, 4, 5, 6],
         'android.intent.extra.alarm.HOUR': 21,
         'android.intent.extra.alarm.MINUTES': 30,
         'android.intent.extra.alarm.SKIP_UI': true,
@@ -51,17 +51,17 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget body;
     if (const LocalPlatform().isAndroid) {
-      body = new Padding(
+      body = Padding(
         padding: const EdgeInsets.symmetric(vertical: 15.0),
-        child: new Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            new RaisedButton(
+            RaisedButton(
               child: const Text(
                   'Tap here to set an alarm\non weekdays at 9:30pm.'),
               onPressed: _createAlarm,
             ),
-            new RaisedButton(
+            RaisedButton(
                 child: const Text('Tap here to test explicit intents.'),
                 onPressed: () => _openExplicitIntentsView(context)),
           ],
@@ -70,30 +70,30 @@ class MyHomePage extends StatelessWidget {
     } else {
       body = const Text('This plugin only works with Android');
     }
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: new Center(child: body),
+      body: Center(child: body),
     );
   }
 }
 
 class ExplicitIntentsWidget extends StatelessWidget {
-  static const String routeName = "/explicitIntents";
-
   const ExplicitIntentsWidget();
 
+  static const String routeName = "/explicitIntents";
+
   void _openGoogleMapsStreetView() {
-    final AndroidIntent intent = new AndroidIntent(
+    final AndroidIntent intent = AndroidIntent(
         action: 'action_view',
         data: Uri.encodeFull('google.streetview:cbll=46.414382,10.013988'),
         package: 'com.google.android.apps.maps');
     intent.launch();
   }
 
-  void _displayMapInGoogleMaps({int zoomLevel: 12}) {
-    final AndroidIntent intent = new AndroidIntent(
+  void _displayMapInGoogleMaps({int zoomLevel = 12}) {
+    final AndroidIntent intent = AndroidIntent(
         action: 'action_view',
         data: Uri.encodeFull('geo:37.7749,-122.4194?z=$zoomLevel'),
         package: 'com.google.android.apps.maps');
@@ -101,7 +101,7 @@ class ExplicitIntentsWidget extends StatelessWidget {
   }
 
   void _launchTurnByTurnNavigationInGoogleMaps() {
-    final AndroidIntent intent = new AndroidIntent(
+    final AndroidIntent intent = AndroidIntent(
         action: 'action_view',
         data: Uri.encodeFull(
             'google.navigation:q=Taronga+Zoo,+Sydney+Australia&avoid=tf'),
@@ -110,7 +110,7 @@ class ExplicitIntentsWidget extends StatelessWidget {
   }
 
   void _openLinkInGoogleChrome() {
-    final AndroidIntent intent = new AndroidIntent(
+    final AndroidIntent intent = AndroidIntent(
         action: 'action_view',
         data: Uri.encodeFull('https://flutter.io'),
         package: 'com.android.chrome');
@@ -118,7 +118,7 @@ class ExplicitIntentsWidget extends StatelessWidget {
   }
 
   void _testExplicitIntentFallback() {
-    final AndroidIntent intent = new AndroidIntent(
+    final AndroidIntent intent = AndroidIntent(
         action: 'action_view',
         data: Uri.encodeFull('https://flutter.io'),
         package: 'com.android.chrome.implicit.fallback');
@@ -127,35 +127,35 @@ class ExplicitIntentsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('Test explicit intents'),
       ),
-      body: new Center(
-        child: new Padding(
+      body: Center(
+        child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 15.0),
-          child: new Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              new RaisedButton(
+              RaisedButton(
                 child: const Text(
                     'Tap here to display panorama\nimagery in Google Street View.'),
                 onPressed: _openGoogleMapsStreetView,
               ),
-              new RaisedButton(
+              RaisedButton(
                 child: const Text('Tap here to display\na map in Google Maps.'),
                 onPressed: _displayMapInGoogleMaps,
               ),
-              new RaisedButton(
+              RaisedButton(
                 child: const Text(
                     'Tap here to launch turn-by-turn\nnavigation in Google Maps.'),
                 onPressed: _launchTurnByTurnNavigationInGoogleMaps,
               ),
-              new RaisedButton(
+              RaisedButton(
                 child: const Text('Tap here to open link in Google Chrome.'),
                 onPressed: _openLinkInGoogleChrome,
               ),
-              new RaisedButton(
+              RaisedButton(
                 child: const Text(
                     'Tap here to test explicit intent fallback to implicit.'),
                 onPressed: _testExplicitIntentFallback,

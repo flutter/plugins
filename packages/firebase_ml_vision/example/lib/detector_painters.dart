@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 
-enum Detector { barcode, face, label, text }
+enum Detector { barcode, face, label, cloudLabel, text }
 
 class BarcodeDetectorPainter extends CustomPainter {
   BarcodeDetectorPainter(this.absoluteImageSize, this.barcodeLocations);
@@ -21,7 +21,7 @@ class BarcodeDetectorPainter extends CustomPainter {
     final double scaleY = size.height / absoluteImageSize.height;
 
     Rect scaleRect(Barcode barcode) {
-      return new Rect.fromLTRB(
+      return Rect.fromLTRB(
         barcode.boundingBox.left * scaleX,
         barcode.boundingBox.top * scaleY,
         barcode.boundingBox.right * scaleX,
@@ -29,7 +29,7 @@ class BarcodeDetectorPainter extends CustomPainter {
       );
     }
 
-    final Paint paint = new Paint()
+    final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
@@ -57,7 +57,7 @@ class FaceDetectorPainter extends CustomPainter {
     final double scaleX = size.width / absoluteImageSize.width;
     final double scaleY = size.height / absoluteImageSize.height;
 
-    final Paint paint = new Paint()
+    final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0
       ..color = Colors.red;
@@ -90,13 +90,27 @@ class LabelDetectorPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final ParagraphBuilder builder = ParagraphBuilder(ParagraphStyle());
+    final ui.ParagraphBuilder builder = ui.ParagraphBuilder(
+      ui.ParagraphStyle(
+          textAlign: TextAlign.left,
+          fontSize: 23.0,
+          textDirection: TextDirection.ltr),
+    );
+
+    builder.pushStyle(ui.TextStyle(color: Colors.green));
     for (Label label in labels) {
-      builder.addText('Label ${label.label}, '
-          'Entity Id: ${label.entityId}, '
-          'Confidence: ${label.confidence}');
+      builder.addText('Label: ${label.label}, '
+          'Confidence: ${label.confidence.toStringAsFixed(2)}\n');
     }
-    canvas.drawParagraph(builder.build(), const Offset(0.0, 0.0));
+    builder.pop();
+
+    canvas.drawParagraph(
+      builder.build()
+        ..layout(ui.ParagraphConstraints(
+          width: size.width,
+        )),
+      const Offset(0.0, 0.0),
+    );
   }
 
   @override
@@ -108,10 +122,10 @@ class LabelDetectorPainter extends CustomPainter {
 
 // Paints rectangles around all the text in the image.
 class TextDetectorPainter extends CustomPainter {
-  TextDetectorPainter(this.absoluteImageSize, this.textLocations);
+  TextDetectorPainter(this.absoluteImageSize, this.visionText);
 
   final Size absoluteImageSize;
-  final List<TextBlock> textLocations;
+  final VisionText visionText;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -119,7 +133,7 @@ class TextDetectorPainter extends CustomPainter {
     final double scaleY = size.height / absoluteImageSize.height;
 
     Rect scaleRect(TextContainer container) {
-      return new Rect.fromLTRB(
+      return Rect.fromLTRB(
         container.boundingBox.left * scaleX,
         container.boundingBox.top * scaleY,
         container.boundingBox.right * scaleX,
@@ -127,11 +141,11 @@ class TextDetectorPainter extends CustomPainter {
       );
     }
 
-    final Paint paint = new Paint()
+    final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
-    for (TextBlock block in textLocations) {
+    for (TextBlock block in visionText.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
           paint.color = Colors.green;
@@ -150,6 +164,6 @@ class TextDetectorPainter extends CustomPainter {
   @override
   bool shouldRepaint(TextDetectorPainter oldDelegate) {
     return oldDelegate.absoluteImageSize != absoluteImageSize ||
-        oldDelegate.textLocations != textLocations;
+        oldDelegate.visionText != visionText;
   }
 }

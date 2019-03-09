@@ -15,13 +15,16 @@ void main() {
   FirebaseMessaging firebaseMessaging;
 
   setUp(() {
-    mockChannel = new MockMethodChannel();
-    firebaseMessaging = new FirebaseMessaging.private(
-        mockChannel, new FakePlatform(operatingSystem: 'ios'));
+    mockChannel = MockMethodChannel();
+    firebaseMessaging = FirebaseMessaging.private(
+        mockChannel, FakePlatform(operatingSystem: 'ios'));
   });
 
   test('requestNotificationPermissions on ios with default permissions', () {
     firebaseMessaging.requestNotificationPermissions();
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('requestNotificationPermissions',
         <String, bool>{'sound': true, 'badge': true, 'alert': true}));
   });
@@ -29,21 +32,24 @@ void main() {
   test('requestNotificationPermissions on ios with custom permissions', () {
     firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(sound: false));
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('requestNotificationPermissions',
         <String, bool>{'sound': false, 'badge': true, 'alert': true}));
   });
 
   test('requestNotificationPermissions on android', () {
-    firebaseMessaging = new FirebaseMessaging.private(
-        mockChannel, new FakePlatform(operatingSystem: 'android'));
+    firebaseMessaging = FirebaseMessaging.private(
+        mockChannel, FakePlatform(operatingSystem: 'android'));
 
     firebaseMessaging.requestNotificationPermissions();
     verifyZeroInteractions(mockChannel);
   });
 
   test('requestNotificationPermissions on android', () {
-    firebaseMessaging = new FirebaseMessaging.private(
-        mockChannel, new FakePlatform(operatingSystem: 'android'));
+    firebaseMessaging = FirebaseMessaging.private(
+        mockChannel, FakePlatform(operatingSystem: 'android'));
 
     firebaseMessaging.requestNotificationPermissions();
     verifyZeroInteractions(mockChannel);
@@ -51,83 +57,76 @@ void main() {
 
   test('configure', () {
     firebaseMessaging.configure();
-    verify(mockChannel.setMethodCallHandler(typed(any)));
+    verify(mockChannel.setMethodCallHandler(any));
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('configure'));
   });
 
   test('incoming token', () async {
     firebaseMessaging.configure();
     final dynamic handler =
-        verify(mockChannel.setMethodCallHandler(typed(captureAny)))
-            .captured
-            .single;
+        verify(mockChannel.setMethodCallHandler(captureAny)).captured.single;
     final String token1 = 'I am a super secret token';
     final String token2 = 'I am the new token in town';
     Future<String> tokenFromStream = firebaseMessaging.onTokenRefresh.first;
-    await handler(new MethodCall('onToken', token1));
+    await handler(MethodCall('onToken', token1));
 
-    expect(await firebaseMessaging.getToken(), token1);
     expect(await tokenFromStream, token1);
 
     tokenFromStream = firebaseMessaging.onTokenRefresh.first;
-    await handler(new MethodCall('onToken', token2));
+    await handler(MethodCall('onToken', token2));
 
-    expect(await firebaseMessaging.getToken(), token2);
     expect(await tokenFromStream, token2);
   });
 
   test('incoming iOS settings', () async {
     firebaseMessaging.configure();
     final dynamic handler =
-        verify(mockChannel.setMethodCallHandler(typed(captureAny)))
-            .captured
-            .single;
+        verify(mockChannel.setMethodCallHandler(captureAny)).captured.single;
     IosNotificationSettings iosSettings = const IosNotificationSettings();
 
     Future<IosNotificationSettings> iosSettingsFromStream =
         firebaseMessaging.onIosSettingsRegistered.first;
-    await handler(
-        new MethodCall('onIosSettingsRegistered', iosSettings.toMap()));
+    await handler(MethodCall('onIosSettingsRegistered', iosSettings.toMap()));
     expect((await iosSettingsFromStream).toMap(), iosSettings.toMap());
 
     iosSettings = const IosNotificationSettings(sound: false);
     iosSettingsFromStream = firebaseMessaging.onIosSettingsRegistered.first;
-    await handler(
-        new MethodCall('onIosSettingsRegistered', iosSettings.toMap()));
+    await handler(MethodCall('onIosSettingsRegistered', iosSettings.toMap()));
     expect((await iosSettingsFromStream).toMap(), iosSettings.toMap());
   });
 
   test('incoming messages', () async {
-    final Completer<dynamic> onMessage = new Completer<dynamic>();
-    final Completer<dynamic> onLaunch = new Completer<dynamic>();
-    final Completer<dynamic> onResume = new Completer<dynamic>();
+    final Completer<dynamic> onMessage = Completer<dynamic>();
+    final Completer<dynamic> onLaunch = Completer<dynamic>();
+    final Completer<dynamic> onResume = Completer<dynamic>();
 
-    firebaseMessaging.configure(onMessage: (dynamic m) {
+    firebaseMessaging.configure(onMessage: (dynamic m) async {
       onMessage.complete(m);
-    }, onLaunch: (dynamic m) {
+    }, onLaunch: (dynamic m) async {
       onLaunch.complete(m);
-    }, onResume: (dynamic m) {
+    }, onResume: (dynamic m) async {
       onResume.complete(m);
     });
     final dynamic handler =
-        verify(mockChannel.setMethodCallHandler(typed(captureAny)))
-            .captured
-            .single;
+        verify(mockChannel.setMethodCallHandler(captureAny)).captured.single;
 
     final Map<String, dynamic> onMessageMessage = <String, dynamic>{};
     final Map<String, dynamic> onLaunchMessage = <String, dynamic>{};
     final Map<String, dynamic> onResumeMessage = <String, dynamic>{};
 
-    await handler(new MethodCall('onMessage', onMessageMessage));
+    await handler(MethodCall('onMessage', onMessageMessage));
     expect(await onMessage.future, onMessageMessage);
     expect(onLaunch.isCompleted, isFalse);
     expect(onResume.isCompleted, isFalse);
 
-    await handler(new MethodCall('onLaunch', onLaunchMessage));
+    await handler(MethodCall('onLaunch', onLaunchMessage));
     expect(await onLaunch.future, onLaunchMessage);
     expect(onResume.isCompleted, isFalse);
 
-    await handler(new MethodCall('onResume', onResumeMessage));
+    await handler(MethodCall('onResume', onResumeMessage));
     expect(await onResume.future, onResumeMessage);
   });
 
@@ -135,12 +134,66 @@ void main() {
 
   test('subscribe to topic', () {
     firebaseMessaging.subscribeToTopic(myTopic);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('subscribeToTopic', myTopic));
   });
 
   test('unsubscribe from topic', () {
     firebaseMessaging.unsubscribeFromTopic(myTopic);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('unsubscribeFromTopic', myTopic));
+  });
+
+  test('getToken', () {
+    firebaseMessaging.getToken();
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    verify(mockChannel.invokeMethod('getToken'));
+  });
+
+  test('deleteInstanceID', () {
+    firebaseMessaging.deleteInstanceID();
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    verify(mockChannel.invokeMethod('deleteInstanceID'));
+  });
+
+  test('autoInitEnabled', () {
+    firebaseMessaging.autoInitEnabled();
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    verify(mockChannel.invokeMethod('autoInitEnabled'));
+  });
+
+  test('setAutoInitEnabled', () {
+    // assert that we havent called the method yet
+    verifyNever(firebaseMessaging.setAutoInitEnabled(true));
+
+    firebaseMessaging.setAutoInitEnabled(true);
+
+    // assert we called the method with enabled = true
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    verify(mockChannel.invokeMethod('setAutoInitEnabled', true));
+
+    // assert that enabled = false was not yet called
+    verifyNever(firebaseMessaging.setAutoInitEnabled(false));
+
+    firebaseMessaging.setAutoInitEnabled(false);
+
+    // assert call with enabled = false was properly done
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    verify(mockChannel.invokeMethod('setAutoInitEnabled', false));
   });
 }
 

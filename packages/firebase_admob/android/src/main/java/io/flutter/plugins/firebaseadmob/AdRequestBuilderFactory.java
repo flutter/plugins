@@ -4,7 +4,9 @@
 
 package io.flutter.plugins.firebaseadmob;
 
+import android.os.Bundle;
 import android.util.Log;
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import java.util.ArrayList;
 import java.util.Date;
@@ -114,6 +116,14 @@ class AdRequestBuilderFactory {
 
     String requestAgent = getTargetingInfoString("requestAgent", targetingInfo.get("requestAgent"));
     if (requestAgent != null) builder.setRequestAgent(requestAgent);
+
+    Boolean nonPersonalizedAds =
+        getTargetingInfoBoolean("nonPersonalizedAds", targetingInfo.get("nonPersonalizedAds"));
+    if (nonPersonalizedAds != null && nonPersonalizedAds) {
+      Bundle extras = new Bundle();
+      extras.putString("npa", "1");
+      builder.addNetworkExtrasBundle(AdMobAdapter.class, extras);
+    }
 
     return builder;
   }

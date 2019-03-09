@@ -14,9 +14,12 @@ void main() {
   MockMethodChannel mockChannel;
 
   setUp(() {
-    mockChannel = new MockMethodChannel();
+    mockChannel = MockMethodChannel();
     // Re-pipe to mockito for easier verifies.
-    Share.channel.setMockMethodCallHandler((MethodCall call) {
+    Share.channel.setMockMethodCallHandler((MethodCall call) async {
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       mockChannel.invokeMethod(call.method, call.arguments);
     });
   });
@@ -24,7 +27,7 @@ void main() {
   test('sharing null fails', () {
     expect(
       () => Share.share(null),
-      throwsA(const isInstanceOf<AssertionError>()),
+      throwsA(const TypeMatcher<AssertionError>()),
     );
     verifyZeroInteractions(mockChannel);
   });
@@ -32,7 +35,7 @@ void main() {
   test('sharing empty fails', () {
     expect(
       () => Share.share(''),
-      throwsA(const isInstanceOf<AssertionError>()),
+      throwsA(const TypeMatcher<AssertionError>()),
     );
     verifyZeroInteractions(mockChannel);
   });
@@ -40,8 +43,11 @@ void main() {
   test('sharing origin sets the right params', () async {
     await Share.share(
       'some text to share',
-      sharePositionOrigin: new Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
+      sharePositionOrigin: Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
     );
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('share', <String, dynamic>{
       'text': 'some text to share',
       'originX': 1.0,

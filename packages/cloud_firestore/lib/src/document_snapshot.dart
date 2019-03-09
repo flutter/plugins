@@ -36,6 +36,6 @@ Map<String, dynamic> _asStringKeyedMap(Map<dynamic, dynamic> map) {
   if (map is Map<String, dynamic>) {
     return map;
   } else {
-    return new Map<String, dynamic>.from(map);
+    return Map<String, dynamic>.from(map);
   }
 }

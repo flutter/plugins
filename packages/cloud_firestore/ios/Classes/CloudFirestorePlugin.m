@@ -6,17 +6,13 @@
 
 #import <Firebase/Firebase.h>
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@end
+static FlutterError *getFlutterError(NSError *error) {
+  if (error == nil) return nil;
 
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
 }
-@end
 
 FIRFirestore *getFirestore(NSDictionary *arguments) {
   FIRApp *app = [FIRApp appNamed:arguments[@"app"]];
@@ -46,6 +42,8 @@ FIRQuery *getQuery(NSDictionary *arguments) {
       query = [query queryWhereField:fieldName isGreaterThan:value];
     } else if ([op isEqualToString:@">="]) {
       query = [query queryWhereField:fieldName isGreaterThanOrEqualTo:value];
+    } else if ([op isEqualToString:@"array-contains"]) {
+      query = [query queryWhereField:fieldName arrayContains:value];
     } else {
       // Unsupported operator
     }
@@ -112,8 +110,8 @@ NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
       @"type" : type,
       @"document" : documentChange.document.data,
       @"path" : documentChange.document.reference.path,
-      @"oldIndex" : [NSNumber numberWithInt:documentChange.oldIndex],
-      @"newIndex" : [NSNumber numberWithInt:documentChange.newIndex],
+      @"oldIndex" : [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
+      @"newIndex" : [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
     }];
   }
   return @{
@@ -127,6 +125,11 @@ const UInt8 DATE_TIME = 128;
 const UInt8 GEO_POINT = 129;
 const UInt8 DOCUMENT_REFERENCE = 130;
 const UInt8 BLOB = 131;
+const UInt8 ARRAY_UNION = 132;
+const UInt8 ARRAY_REMOVE = 133;
+const UInt8 DELETE = 134;
+const UInt8 SERVER_TIMESTAMP = 135;
+const UInt8 TIMESTAMP = 136;
 
 @interface FirestoreWriter : FlutterStandardWriter
 - (void)writeValue:(id)value;
@@ -140,6 +143,13 @@ const UInt8 BLOB = 131;
     NSTimeInterval time = date.timeIntervalSince1970;
     SInt64 ms = (SInt64)(time * 1000.0);
     [self writeBytes:&ms length:8];
+  } else if ([value isKindOfClass:[FIRTimestamp class]]) {
+    FIRTimestamp *timestamp = value;
+    SInt64 seconds = timestamp.seconds;
+    int nanoseconds = timestamp.nanoseconds;
+    [self writeByte:TIMESTAMP];
+    [self writeBytes:(UInt8 *)&seconds length:8];
+    [self writeBytes:(UInt8 *)&nanoseconds length:4];
   } else if ([value isKindOfClass:[FIRGeoPoint class]]) {
     FIRGeoPoint *geoPoint = value;
     Float64 latitude = geoPoint.latitude;
@@ -157,7 +167,7 @@ const UInt8 BLOB = 131;
   } else if ([value isKindOfClass:[NSData class]]) {
     NSData *blob = value;
     [self writeByte:BLOB];
-    [self writeSize:blob.length];
+    [self writeSize:(UInt32)blob.length];
     [self writeData:blob];
   } else {
     [super writeValue:value];
@@ -175,8 +185,14 @@ const UInt8 BLOB = 131;
     case DATE_TIME: {
       SInt64 value;
       [self readBytes:&value length:8];
-      NSTimeInterval time = [NSNumber numberWithLong:value].doubleValue / 1000.0;
-      return [NSDate dateWithTimeIntervalSince1970:time];
+      return [NSDate dateWithTimeIntervalSince1970:(value / 1000.0)];
+    }
+    case TIMESTAMP: {
+      SInt64 seconds;
+      int nanoseconds;
+      [self readBytes:&seconds length:8];
+      [self readBytes:&nanoseconds length:4];
+      return [[FIRTimestamp alloc] initWithSeconds:seconds nanoseconds:nanoseconds];
     }
     case GEO_POINT: {
       Float64 latitude;
@@ -195,6 +211,18 @@ const UInt8 BLOB = 131;
     case BLOB: {
       UInt32 elementCount = [self readSize];
       return [self readData:elementCount];
+    }
+    case ARRAY_UNION: {
+      return [FIRFieldValue fieldValueForArrayUnion:[self readValue]];
+    }
+    case ARRAY_REMOVE: {
+      return [FIRFieldValue fieldValueForArrayRemove:[self readValue]];
+    }
+    case DELETE: {
+      return [FIRFieldValue fieldValueForDelete];
+    }
+    case SERVER_TIMESTAMP: {
+      return [FIRFieldValue fieldValueForServerTimestamp];
     }
     default:
       return [super readValueOfType:type];
@@ -244,8 +272,10 @@ const UInt8 BLOB = 131;
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
     _listeners = [NSMutableDictionary<NSNumber *, id<FIRListenerRegistration>> dictionary];
     _batches = [NSMutableDictionary<NSNumber *, FIRWriteBatch *> dictionary];
@@ -259,30 +289,31 @@ const UInt8 BLOB = 131;
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   void (^defaultCompletionBlock)(NSError *) = ^(NSError *error) {
-    result(error.flutterError);
+    result(getFlutterError(error));
   };
   if ([@"Firestore#runTransaction" isEqualToString:call.method]) {
-    [getFirestore(call.arguments) runTransactionWithBlock:^id(FIRTransaction *transaction,
-                                                              NSError **pError) {
-      NSNumber *transactionId = call.arguments[@"transactionId"];
-      NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
+    [getFirestore(call.arguments)
+        runTransactionWithBlock:^id(FIRTransaction *transaction, NSError **pError) {
+          NSNumber *transactionId = call.arguments[@"transactionId"];
+          NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
 
-      transactions[transactionId] = transaction;
+          self->transactions[transactionId] = transaction;
 
-      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+          dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-      [self.channel invokeMethod:@"DoTransaction"
-                       arguments:call.arguments
-                          result:^(id doTransactionResult) {
-                            transactionResults[transactionId] = doTransactionResult;
-                            dispatch_semaphore_signal(semaphore);
-                          }];
+          [self.channel invokeMethod:@"DoTransaction"
+                           arguments:call.arguments
+                              result:^(id doTransactionResult) {
+                                self->transactionResults[transactionId] = doTransactionResult;
+                                dispatch_semaphore_signal(semaphore);
+                              }];
 
-      dispatch_semaphore_wait(
-          semaphore, dispatch_time(DISPATCH_TIME_NOW, [transactionTimeout integerValue] * 1000000));
+          dispatch_semaphore_wait(
+              semaphore,
+              dispatch_time(DISPATCH_TIME_NOW, [transactionTimeout integerValue] * 1000000));
 
-      return transactionResults[transactionId];
-    }
+          return self->transactionResults[transactionId];
+        }
         completion:^(id transactionResult, NSError *error) {
           if (error != nil) {
             result([FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
@@ -295,7 +326,7 @@ const UInt8 BLOB = 131;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
       FIRDocumentReference *document = getDocumentReference(call.arguments);
-      FIRTransaction *transaction = transactions[transactionId];
+      FIRTransaction *transaction = self->transactions[transactionId];
       NSError *error = [[NSError alloc] init];
 
       FIRDocumentSnapshot *snapshot = [transaction getDocument:document error:&error];
@@ -310,16 +341,14 @@ const UInt8 BLOB = 131;
           @"data" : snapshot.exists ? snapshot.data : [NSNull null]
         });
       } else {
-        result([FlutterError errorWithCode:@"DOCUMENT_NOT_FOUND"
-                                   message:@"Document not found."
-                                   details:nil]);
+        result(nil);
       }
     });
   } else if ([@"Transaction#update" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
       FIRDocumentReference *document = getDocumentReference(call.arguments);
-      FIRTransaction *transaction = transactions[transactionId];
+      FIRTransaction *transaction = self->transactions[transactionId];
 
       [transaction updateData:call.arguments[@"data"] forDocument:document];
       result(nil);
@@ -328,7 +357,7 @@ const UInt8 BLOB = 131;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
       FIRDocumentReference *document = getDocumentReference(call.arguments);
-      FIRTransaction *transaction = transactions[transactionId];
+      FIRTransaction *transaction = self->transactions[transactionId];
 
       [transaction setData:call.arguments[@"data"] forDocument:document];
       result(nil);
@@ -337,7 +366,7 @@ const UInt8 BLOB = 131;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
       FIRDocumentReference *document = getDocumentReference(call.arguments);
-      FIRTransaction *transaction = transactions[transactionId];
+      FIRTransaction *transaction = self->transactions[transactionId];
 
       [transaction deleteDocument:document];
       result(nil);
@@ -362,7 +391,7 @@ const UInt8 BLOB = 131;
     [document getDocumentWithCompletion:^(FIRDocumentSnapshot *_Nullable snapshot,
                                           NSError *_Nullable error) {
       if (error) {
-        result(error.flutterError);
+        result(getFlutterError(error));
       } else {
         result(@{
           @"path" : snapshot.reference.path,
@@ -382,7 +411,10 @@ const UInt8 BLOB = 131;
     }
     id<FIRListenerRegistration> listener = [query
         addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
-          if (error) result(error.flutterError);
+          if (error) {
+            result(getFlutterError(error));
+            return;
+          }
           NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
           [arguments setObject:handle forKey:@"handle"];
           [self.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
@@ -394,12 +426,15 @@ const UInt8 BLOB = 131;
     FIRDocumentReference *document = getDocumentReference(call.arguments);
     id<FIRListenerRegistration> listener =
         [document addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
-          if (error) result(error.flutterError);
+          if (error) {
+            result(getFlutterError(error));
+            return;
+          }
           [self.channel invokeMethod:@"DocumentSnapshot"
                            arguments:@{
                              @"handle" : handle,
-                             @"path" : snapshot.reference.path,
-                             @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+                             @"path" : snapshot ? snapshot.reference.path : [NSNull null],
+                             @"data" : snapshot && snapshot.exists ? snapshot.data : [NSNull null],
                            }];
         }];
     _listeners[handle] = listener;
@@ -415,7 +450,7 @@ const UInt8 BLOB = 131;
     }
     [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
                                         NSError *_Nullable error) {
-      if (error) result(error.flutterError);
+      if (error) result(getFlutterError(error));
       result(parseQuerySnapshot(snapshot));
     }];
   } else if ([@"Query#removeListener" isEqualToString:call.method]) {
@@ -457,6 +492,30 @@ const UInt8 BLOB = 131;
     FIRWriteBatch *batch = [_batches objectForKey:handle];
     [batch commitWithCompletion:defaultCompletionBlock];
     [_batches removeObjectForKey:handle];
+  } else if ([@"Firestore#enablePersistence" isEqualToString:call.method]) {
+    bool enable = (bool)call.arguments[@"enable"];
+    FIRFirestoreSettings *settings = [[FIRFirestoreSettings alloc] init];
+    settings.persistenceEnabled = enable;
+    FIRFirestore *db = getFirestore(call.arguments);
+    db.settings = settings;
+    result(nil);
+  } else if ([@"Firestore#settings" isEqualToString:call.method]) {
+    FIRFirestoreSettings *settings = [[FIRFirestoreSettings alloc] init];
+    if (![call.arguments[@"persistenceEnabled"] isEqual:[NSNull null]]) {
+      settings.persistenceEnabled = (bool)call.arguments[@"persistenceEnabled"];
+    }
+    if (![call.arguments[@"host"] isEqual:[NSNull null]]) {
+      settings.host = (NSString *)call.arguments[@"host"];
+    }
+    if (![call.arguments[@"sslEnabled"] isEqual:[NSNull null]]) {
+      settings.sslEnabled = (bool)call.arguments[@"sslEnabled"];
+    }
+    if (![call.arguments[@"timestampsInSnapshotsEnabled"] isEqual:[NSNull null]]) {
+      settings.timestampsInSnapshotsEnabled = (bool)call.arguments[@"timestampsInSnapshotsEnabled"];
+    }
+    FIRFirestore *db = getFirestore(call.arguments);
+    db.settings = settings;
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }

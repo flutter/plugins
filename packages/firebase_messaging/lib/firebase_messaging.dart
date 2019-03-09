@@ -22,7 +22,7 @@ class FirebaseMessaging {
       : _channel = channel,
         _platform = platform;
 
-  static final FirebaseMessaging _instance = new FirebaseMessaging.private(
+  static final FirebaseMessaging _instance = FirebaseMessaging.private(
       const MethodChannel('plugins.flutter.io/firebase_messaging'),
       const LocalPlatform());
 
@@ -32,7 +32,6 @@ class FirebaseMessaging {
   MessageHandler _onMessage;
   MessageHandler _onLaunch;
   MessageHandler _onResume;
-  String _token;
 
   /// On iOS, prompts the user for notification permissions the first time
   /// it is called.
@@ -43,12 +42,15 @@ class FirebaseMessaging {
     if (!_platform.isIOS) {
       return;
     }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     _channel.invokeMethod(
         'requestNotificationPermissions', iosSettings.toMap());
   }
 
   final StreamController<IosNotificationSettings> _iosSettingsStreamController =
-      new StreamController<IosNotificationSettings>.broadcast();
+      StreamController<IosNotificationSettings>.broadcast();
 
   /// Stream that fires when the user changes their notification settings.
   ///
@@ -67,11 +69,14 @@ class FirebaseMessaging {
     _onLaunch = onLaunch;
     _onResume = onResume;
     _channel.setMethodCallHandler(_handleMethod);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     _channel.invokeMethod('configure');
   }
 
   final StreamController<String> _tokenStreamController =
-      new StreamController<String>.broadcast();
+      StreamController<String>.broadcast();
 
   /// Fires when a new FCM token is generated.
   Stream<String> get onTokenRefresh {
@@ -79,10 +84,11 @@ class FirebaseMessaging {
   }
 
   /// Returns the FCM token.
-  Future<String> getToken() {
-    return _token != null
-        ? new Future<String>.value(_token)
-        : onTokenRefresh.first;
+  Future<String> getToken() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    return await _channel.invokeMethod('getToken');
   }
 
   /// Subscribe to topic in background.
@@ -90,25 +96,56 @@ class FirebaseMessaging {
   /// [topic] must match the following regular expression:
   /// "[a-zA-Z0-9-_.~%]{1,900}".
   void subscribeToTopic(String topic) {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     _channel.invokeMethod('subscribeToTopic', topic);
   }
 
   /// Unsubscribe from topic in background.
   void unsubscribeFromTopic(String topic) {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     _channel.invokeMethod('unsubscribeFromTopic', topic);
   }
 
-  Future<Null> _handleMethod(MethodCall call) async {
+  /// Resets Instance ID and revokes all tokens. In iOS, it also unregisters from remote notifications.
+  ///
+  /// A new Instance ID is generated asynchronously if Firebase Cloud Messaging auto-init is enabled.
+  ///
+  /// returns true if the operations executed successfully and false if an error ocurred
+  Future<bool> deleteInstanceID() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    return await _channel.invokeMethod('deleteInstanceID');
+  }
+
+  /// Determine whether FCM auto-initialization is enabled or disabled.
+  Future<bool> autoInitEnabled() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    return await _channel.invokeMethod('autoInitEnabled');
+  }
+
+  /// Enable or disable auto-initialization of Firebase Cloud Messaging.
+  Future<void> setAutoInitEnabled(bool enabled) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod('setAutoInitEnabled', enabled);
+  }
+
+  Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onToken":
         final String token = call.arguments;
-        if (_token != token) {
-          _token = token;
-          _tokenStreamController.add(_token);
-        }
+        _tokenStreamController.add(token);
         return null;
       case "onIosSettingsRegistered":
-        _iosSettingsStreamController.add(new IosNotificationSettings._fromMap(
+        _iosSettingsStreamController.add(IosNotificationSettings._fromMap(
             call.arguments.cast<String, bool>()));
         return null;
       case "onMessage":
@@ -118,26 +155,26 @@ class FirebaseMessaging {
       case "onResume":
         return _onResume(call.arguments.cast<String, dynamic>());
       default:
-        throw new UnsupportedError("Unrecognized JSON message");
+        throw UnsupportedError("Unrecognized JSON message");
     }
   }
 }
 
 class IosNotificationSettings {
-  final bool sound;
-  final bool alert;
-  final bool badge;
-
   const IosNotificationSettings({
-    this.sound: true,
-    this.alert: true,
-    this.badge: true,
+    this.sound = true,
+    this.alert = true,
+    this.badge = true,
   });
 
   IosNotificationSettings._fromMap(Map<String, bool> settings)
       : sound = settings['sound'],
         alert = settings['alert'],
         badge = settings['badge'];
+
+  final bool sound;
+  final bool alert;
+  final bool badge;
 
   @visibleForTesting
   Map<String, dynamic> toMap() {

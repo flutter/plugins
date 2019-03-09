@@ -20,6 +20,7 @@ import java.util.Map;
 
 /** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
+
   private static BitmapDescriptor toBitmapDescriptor(Object o) {
     final List<?> data = toList(o);
     switch (toString(data.get(0))) {
@@ -37,15 +38,16 @@ class Convert {
           return BitmapDescriptorFactory.fromAsset(
               FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
+      default:
+        throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
     }
-    throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
   }
 
   private static boolean toBoolean(Object o) {
     return (Boolean) o;
   }
 
-  private static CameraPosition toCameraPosition(Object o) {
+  static CameraPosition toCameraPosition(Object o) {
     final Map<?, ?> data = toMap(o);
     final CameraPosition.Builder builder = CameraPosition.builder();
     builder.bearing(toFloat(data.get("bearing")));
@@ -83,8 +85,9 @@ class Convert {
         return CameraUpdateFactory.zoomOut();
       case "zoomTo":
         return CameraUpdateFactory.zoomTo(toFloat(data.get(1)));
+      default:
+        throw new IllegalArgumentException("Cannot interpret " + o + " as CameraUpdate");
     }
-    throw new IllegalArgumentException("Cannot interpret " + o + " as CameraUpdate");
   }
 
   private static double toDouble(Object o) {
@@ -99,7 +102,7 @@ class Convert {
     return (o == null) ? null : toFloat(o);
   }
 
-  static int toInt(Object o) {
+  private static int toInt(Object o) {
     return ((Number) o).intValue();
   }
 
@@ -112,6 +115,15 @@ class Convert {
     data.put("target", toJson(position.target));
     data.put("tilt", position.tilt);
     data.put("zoom", position.zoom);
+    return data;
+  }
+
+  static Object toJson(String markerId) {
+    if (markerId == null) {
+      return null;
+    }
+    final Map<String, Object> data = new HashMap<>(1);
+    data.put("markerId", markerId);
     return data;
   }
 
@@ -136,11 +148,7 @@ class Convert {
     return (List<?>) o;
   }
 
-  static long toLong(Object o) {
-    return ((Number) o).longValue();
-  }
-
-  static Map<?, ?> toMap(Object o) {
+  private static Map<?, ?> toMap(Object o) {
     return (Map<?, ?>) o;
   }
 
@@ -148,7 +156,7 @@ class Convert {
     return toFloat(o) * density;
   }
 
-  static int toPixels(Object o, float density) {
+  private static int toPixels(Object o, float density) {
     return (int) toFractionalPixels(o, density);
   }
 
@@ -163,10 +171,6 @@ class Convert {
 
   static void interpretGoogleMapOptions(Object o, GoogleMapOptionsSink sink) {
     final Map<?, ?> data = toMap(o);
-    final Object cameraPosition = data.get("cameraPosition");
-    if (cameraPosition != null) {
-      sink.setCameraPosition(toCameraPosition(cameraPosition));
-    }
     final Object cameraTargetBounds = data.get("cameraTargetBounds");
     if (cameraTargetBounds != null) {
       final List<?> targetData = toList(cameraTargetBounds);
@@ -207,9 +211,14 @@ class Convert {
     if (zoomGesturesEnabled != null) {
       sink.setZoomGesturesEnabled(toBoolean(zoomGesturesEnabled));
     }
+    final Object myLocationEnabled = data.get("myLocationEnabled");
+    if (myLocationEnabled != null) {
+      sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
+    }
   }
 
-  static void interpretMarkerOptions(Object o, MarkerOptionsSink sink) {
+  /** Returns the dartMarkerId of the interpreted marker. */
+  static String interpretMarkerOptions(Object o, MarkerOptionsSink sink) {
     final Map<?, ?> data = toMap(o);
     final Object alpha = data.get("alpha");
     if (alpha != null) {
@@ -220,9 +229,9 @@ class Convert {
       final List<?> anchorData = toList(anchor);
       sink.setAnchor(toFloat(anchorData.get(0)), toFloat(anchorData.get(1)));
     }
-    final Object consumesTapEvents = data.get("consumesTapEvents");
-    if (consumesTapEvents != null) {
-      sink.setConsumeTapEvents(toBoolean(consumesTapEvents));
+    final Object consumeTapEvents = data.get("consumeTapEvents");
+    if (consumeTapEvents != null) {
+      sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
     }
     final Object draggable = data.get("draggable");
     if (draggable != null) {
@@ -236,15 +245,10 @@ class Convert {
     if (icon != null) {
       sink.setIcon(toBitmapDescriptor(icon));
     }
-    final Object infoWindowAnchor = data.get("infoWindowAnchor");
-    if (infoWindowAnchor != null) {
-      final List<?> anchorData = toList(infoWindowAnchor);
-      sink.setInfoWindowAnchor(toFloat(anchorData.get(0)), toFloat(anchorData.get(1)));
-    }
-    final Object infoWindowText = data.get("infoWindowText");
-    if (infoWindowText != null) {
-      final List<?> textData = toList(infoWindowText);
-      sink.setInfoWindowText(toString(textData.get(0)), toString(textData.get(1)));
+
+    final Object infoWindow = data.get("infoWindow");
+    if (infoWindow != null) {
+      interpretInfoWindowOptions(sink, (Map<String, Object>) infoWindow);
     }
     final Object position = data.get("position");
     if (position != null) {
@@ -261,6 +265,27 @@ class Convert {
     final Object zIndex = data.get("zIndex");
     if (zIndex != null) {
       sink.setZIndex(toFloat(zIndex));
+    }
+    final String markerId = (String) data.get("markerId");
+    if (markerId == null) {
+      throw new IllegalArgumentException("markerId was null");
+    } else {
+      return markerId;
+    }
+  }
+
+  private static void interpretInfoWindowOptions(
+      MarkerOptionsSink sink, Map<String, Object> infoWindow) {
+    String title = (String) infoWindow.get("title");
+    String snippet = (String) infoWindow.get("snippet");
+    // snippet is nullable.
+    if (title != null) {
+      sink.setInfoWindowText(title, snippet);
+    }
+    Object infoWindowAnchor = infoWindow.get("anchor");
+    if (infoWindowAnchor != null) {
+      final List<?> anchorData = toList(infoWindowAnchor);
+      sink.setInfoWindowAnchor(toFloat(anchorData.get(0)), toFloat(anchorData.get(1)));
     }
   }
 }

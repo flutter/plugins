@@ -12,10 +12,9 @@ class Query {
       Map<String, dynamic> parameters})
       : _pathComponents = pathComponents,
         _parameters = parameters ??
-            new Map<String, dynamic>.unmodifiable(<String, dynamic>{
-              'where': new List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
-              'orderBy':
-                  new List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
+            Map<String, dynamic>.unmodifiable(<String, dynamic>{
+              'where': List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
+              'orderBy': List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
             }),
         assert(firestore != null),
         assert(pathComponents != null);
@@ -29,17 +28,17 @@ class Query {
   String get _path => _pathComponents.join('/');
 
   Query _copyWithParameters(Map<String, dynamic> parameters) {
-    return new Query._(
+    return Query._(
       firestore: firestore,
       pathComponents: _pathComponents,
-      parameters: new Map<String, dynamic>.unmodifiable(
-        new Map<String, dynamic>.from(_parameters)..addAll(parameters),
+      parameters: Map<String, dynamic>.unmodifiable(
+        Map<String, dynamic>.from(_parameters)..addAll(parameters),
       ),
     );
   }
 
   Map<String, dynamic> buildArguments() {
-    return new Map<String, dynamic>.from(_parameters)
+    return Map<String, dynamic>.from(_parameters)
       ..addAll(<String, dynamic>{
         'path': _path,
       });
@@ -52,8 +51,11 @@ class Query {
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
     StreamController<QuerySnapshot> controller; // ignore: close_sinks
-    controller = new StreamController<QuerySnapshot>.broadcast(
+    controller = StreamController<QuerySnapshot>.broadcast(
       onListen: () {
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         _handle = Firestore.channel.invokeMethod(
           'Query#addSnapshotListener',
           <String, dynamic>{
@@ -68,6 +70,9 @@ class Query {
       },
       onCancel: () {
         _handle.then((int handle) async {
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
           await Firestore.channel.invokeMethod(
             'Query#removeListener',
             <String, dynamic>{'handle': handle},
@@ -81,6 +86,9 @@ class Query {
 
   /// Fetch the documents for this query
   Future<QuerySnapshot> getDocuments() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final Map<dynamic, dynamic> data = await Firestore.channel.invokeMethod(
       'Query#getDocuments',
       <String, dynamic>{
@@ -89,15 +97,19 @@ class Query {
         'parameters': _parameters,
       },
     );
-    return new QuerySnapshot._(data, firestore);
+    return QuerySnapshot._(data, firestore);
   }
 
   /// Obtains a CollectionReference corresponding to this query's location.
   CollectionReference reference() =>
-      new CollectionReference._(firestore, _pathComponents);
+      CollectionReference._(firestore, _pathComponents);
 
   /// Creates and returns a new [Query] with additional filter on specified
-  /// [field].
+  /// [field]. [field] refers to a field in a document.
+  ///
+  /// The [field] may consist of a single field name (referring to a top level
+  /// field in the document), or a series of field names seperated by dots '.'
+  /// (referring to a nested field in the document).
   ///
   /// Only documents satisfying provided condition are included in the result
   /// set.
@@ -108,11 +120,12 @@ class Query {
     dynamic isLessThanOrEqualTo,
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
+    dynamic arrayContains,
     bool isNull,
   }) {
     final ListEquality<dynamic> equality = const ListEquality<dynamic>();
     final List<List<dynamic>> conditions =
-        new List<List<dynamic>>.from(_parameters['where']);
+        List<List<dynamic>>.from(_parameters['where']);
 
     void addCondition(String field, String operator, dynamic value) {
       final List<dynamic> condition = <dynamic>[field, operator, value];
@@ -131,6 +144,8 @@ class Query {
     if (isGreaterThan != null) addCondition(field, '>', isGreaterThan);
     if (isGreaterThanOrEqualTo != null)
       addCondition(field, '>=', isGreaterThanOrEqualTo);
+    if (arrayContains != null)
+      addCondition(field, 'array-contains', arrayContains);
     if (isNull != null) {
       assert(
           isNull,
@@ -144,9 +159,9 @@ class Query {
 
   /// Creates and returns a new [Query] that's additionally sorted by the specified
   /// [field].
-  Query orderBy(String field, {bool descending: false}) {
+  Query orderBy(String field, {bool descending = false}) {
     final List<List<dynamic>> orders =
-        new List<List<dynamic>>.from(_parameters['orderBy']);
+        List<List<dynamic>>.from(_parameters['orderBy']);
 
     final List<dynamic> order = <dynamic>[field, descending];
     assert(orders.where((List<dynamic> item) => field == item[0]).isEmpty,

@@ -11,10 +11,10 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('FirebaseAdMob', () {
     const MethodChannel channel =
-        const MethodChannel('plugins.flutter.io/firebase_admob');
+        MethodChannel('plugins.flutter.io/firebase_admob');
 
     final List<MethodCall> log = <MethodCall>[];
-    final FirebaseAdMob admob = new FirebaseAdMob.private(channel);
+    final FirebaseAdMob admob = FirebaseAdMob.private(channel);
 
     setUp(() async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -27,9 +27,10 @@ void main() {
           case 'showAd':
           case 'showRewardedVideoAd':
           case 'disposeAd':
-            return new Future<bool>.value(true);
+            return Future<bool>.value(true);
           default:
             assert(false);
+            return null;
         }
       });
     });
@@ -50,7 +51,7 @@ void main() {
     test('banner', () async {
       log.clear();
 
-      final BannerAd banner = new BannerAd(
+      final BannerAd banner = BannerAd(
         adUnitId: BannerAd.testAdUnitId,
         size: AdSize.banner,
       );
@@ -83,7 +84,7 @@ void main() {
     test('interstitial', () async {
       log.clear();
 
-      final InterstitialAd interstitial = new InterstitialAd(
+      final InterstitialAd interstitial = InterstitialAd(
         adUnitId: InterstitialAd.testAdUnitId,
       );
       final int id = interstitial.id;

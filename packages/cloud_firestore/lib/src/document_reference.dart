@@ -39,7 +39,10 @@ class DocumentReference {
   ///
   /// If [merge] is true, the provided data will be merged into an
   /// existing document instead of overwriting.
-  Future<void> setData(Map<String, dynamic> data, {bool merge: false}) {
+  Future<void> setData(Map<String, dynamic> data, {bool merge = false}) {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return Firestore.channel.invokeMethod(
       'DocumentReference#setData',
       <String, dynamic>{
@@ -53,8 +56,14 @@ class DocumentReference {
 
   /// Updates fields in the document referred to by this [DocumentReference].
   ///
+  /// Values in [data] may be of any supported Firestore type as well as
+  /// special sentinel [FieldValue] type.
+  ///
   /// If no document exists yet, the update will fail.
   Future<void> updateData(Map<String, dynamic> data) {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return Firestore.channel.invokeMethod(
       'DocumentReference#updateData',
       <String, dynamic>{
@@ -69,19 +78,25 @@ class DocumentReference {
   ///
   /// If no document exists, the read will return null.
   Future<DocumentSnapshot> get() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final Map<dynamic, dynamic> data = await Firestore.channel.invokeMethod(
       'DocumentReference#get',
       <String, dynamic>{'app': firestore.app.name, 'path': path},
     );
-    return new DocumentSnapshot._(
+    return DocumentSnapshot._(
       data['path'],
       _asStringKeyedMap(data['data']),
-      Firestore.instance,
+      firestore,
     );
   }
 
   /// Deletes the document referred to by this [DocumentReference].
   Future<void> delete() {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return Firestore.channel.invokeMethod(
       'DocumentReference#delete',
       <String, dynamic>{'app': firestore.app.name, 'path': path},
@@ -103,8 +118,11 @@ class DocumentReference {
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
     StreamController<DocumentSnapshot> controller; // ignore: close_sinks
-    controller = new StreamController<DocumentSnapshot>.broadcast(
+    controller = StreamController<DocumentSnapshot>.broadcast(
       onListen: () {
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         _handle = Firestore.channel.invokeMethod(
           'Query#addDocumentListener',
           <String, dynamic>{
@@ -118,6 +136,9 @@ class DocumentReference {
       },
       onCancel: () {
         _handle.then((int handle) async {
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
           await Firestore.channel.invokeMethod(
             'Query#removeListener',
             <String, dynamic>{'handle': handle},

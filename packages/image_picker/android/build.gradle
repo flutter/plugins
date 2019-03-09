@@ -1,4 +1,17 @@
-group 'com.yourcompany.image_picker'
+def PLUGIN = "image_picker";
+def ANDROIDX_WARNING = "flutterPluginsAndroidXWarning";
+gradle.buildFinished { buildResult ->
+    if (buildResult.failure && !rootProject.ext.has(ANDROIDX_WARNING)) {
+        println '         *********************************************************'
+        println 'WARNING: This version of ' + PLUGIN + ' will break your Android build if it or its dependencies aren\'t compatible with AndroidX.'
+        println '         See https://goo.gl/CP92wY for more information on the problem and how to fix it.'
+        println '         This warning prints for all Android build failures. The real root cause of the error may be unrelated.'
+        println '         *********************************************************'
+        rootProject.ext.set(ANDROIDX_WARNING, true);
+    }
+}
+
+group 'io.flutter.plugins.imagepicker'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -8,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.3.0'
     }
 }
 
@@ -16,17 +29,20 @@ rootProject.allprojects {
     repositories {
         google()
         jcenter()
+        maven {
+            url 'https://google.bintray.com/exoplayer/'
+        }
     }
 }
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
-    
+    compileSdkVersion 28
+
     defaultConfig {
         minSdkVersion 16
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
         disable 'InvalidPackage'
@@ -34,5 +50,5 @@ android {
 }
 
 dependencies {
-    api 'com.android.support:appcompat-v7:27.1.0'
+    api 'androidx.legacy:legacy-support-v4:1.0.0'
 }

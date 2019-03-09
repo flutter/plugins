@@ -8,8 +8,6 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 
 *Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
-Recent versions (0.3.x and 0.4.x) of this plugin require [extensible codec functionality](https://github.com/flutter/flutter/pull/15414) that is not yet released to the [beta channel](https://github.com/flutter/flutter/wiki/Flutter-build-release-channels) of Flutter. If you're encountering issues using those versions, consider switching to the dev channel.
-
 ## Setup
 
 To use this plugin:
@@ -44,22 +42,37 @@ Binding a `CollectionReference` to a `ListView`:
 class BookList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('books').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData) return new Text('Loading...');
-        return new ListView(
-          children: snapshot.data.documents.map((DocumentSnapshot document) {
-            return new ListTile(
-              title: new Text(document['title']),
-              subtitle: new Text(document['author']),
+        if (snapshot.hasError)
+          return new Text('Error: ${snapshot.error}');
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting: return new Text('Loading...');
+          default:
+            return new ListView(
+              children: snapshot.data.documents.map((DocumentSnapshot document) {
+                return new ListTile(
+                  title: new Text(document['title']),
+                  subtitle: new Text(document['author']),
+                );
+              }).toList(),
             );
-          }).toList(),
-        );
+        }
       },
     );
   }
 }
+```
+
+Performing a query:
+```dart
+Firestore.instance
+    .collection('talks')
+    .where("topic", isEqualTo: "flutter")
+    .snapshots()
+    .listen((data) =>
+        data.documents.forEach((doc) => print(doc["title"])));
 ```
 
 Running a transaction:

@@ -21,6 +21,8 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"authenticateWithBiometrics" isEqualToString:call.method]) {
     [self authenticateWithBiometrics:call.arguments withFlutterResult:result];
+  } else if ([@"getAvailableBiometrics" isEqualToString:call.method]) {
+    [self getAvailableBiometrics:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -60,6 +62,29 @@
   [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:alert
                                                                                      animated:YES
                                                                                    completion:nil];
+}
+
+- (void)getAvailableBiometrics:(FlutterResult)result {
+  LAContext *context = [[LAContext alloc] init];
+  NSError *authError = nil;
+  NSMutableArray<NSString *> *biometrics = [[NSMutableArray<NSString *> alloc] init];
+  if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+                           error:&authError]) {
+    if (authError == nil) {
+      if (@available(iOS 11.0.1, *)) {
+        if (context.biometryType == LABiometryTypeFaceID) {
+          [biometrics addObject:@"face"];
+        } else if (context.biometryType == LABiometryTypeTouchID) {
+          [biometrics addObject:@"fingerprint"];
+        }
+      } else {
+        [biometrics addObject:@"fingerprint"];
+      }
+    }
+  } else if (authError.code == LAErrorTouchIDNotEnrolled) {
+    [biometrics addObject:@"undefined"];
+  }
+  result(biometrics);
 }
 
 - (void)authenticateWithBiometrics:(NSDictionary *)arguments

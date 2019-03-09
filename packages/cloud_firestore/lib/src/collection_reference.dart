@@ -21,9 +21,9 @@ class CollectionReference extends Query {
     if (_pathComponents.isEmpty) {
       return null;
     }
-    return new CollectionReference._(
+    return CollectionReference._(
       firestore,
-      (new List<String>.from(_pathComponents)..removeLast()),
+      (List<String>.from(_pathComponents)..removeLast()),
     );
   }
 
@@ -41,12 +41,11 @@ class CollectionReference extends Query {
     List<String> childPath;
     if (path == null) {
       final String key = PushIdGenerator.generatePushChildName();
-      childPath = new List<String>.from(_pathComponents)..add(key);
+      childPath = List<String>.from(_pathComponents)..add(key);
     } else {
-      childPath = new List<String>.from(_pathComponents)
-        ..addAll(path.split(('/')));
+      childPath = List<String>.from(_pathComponents)..addAll(path.split(('/')));
     }
-    return new DocumentReference._(firestore, childPath);
+    return DocumentReference._(firestore, childPath);
   }
 
   /// Returns a `DocumentReference` with an auto-generated ID, after

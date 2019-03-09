@@ -8,7 +8,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 const MethodChannel _channel =
-    const MethodChannel('plugins.flutter.io/path_provider');
+    MethodChannel('plugins.flutter.io/path_provider');
 
 /// Path to the temporary directory on the device.
 ///
@@ -21,11 +21,14 @@ const MethodChannel _channel =
 ///
 /// On Android, this uses the `getCacheDir` API on the context.
 Future<Directory> getTemporaryDirectory() async {
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   final String path = await _channel.invokeMethod('getTemporaryDirectory');
   if (path == null) {
     return null;
   }
-  return new Directory(path);
+  return Directory(path);
 }
 
 /// Path to a directory where the application may place files that are private
@@ -37,11 +40,14 @@ Future<Directory> getTemporaryDirectory() async {
 /// On Android, this returns the AppData directory.
 Future<Directory> getApplicationDocumentsDirectory() async {
   final String path =
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       await _channel.invokeMethod('getApplicationDocumentsDirectory');
   if (path == null) {
     return null;
   }
-  return new Directory(path);
+  return Directory(path);
 }
 
 /// Path to a directory where the application may access top level storage.
@@ -54,10 +60,13 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 /// On Android this returns getExternalStorageDirectory.
 Future<Directory> getExternalStorageDirectory() async {
   if (Platform.isIOS)
-    throw new UnsupportedError("Functionality not available on iOS");
+    throw UnsupportedError("Functionality not available on iOS");
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   final String path = await _channel.invokeMethod('getStorageDirectory');
   if (path == null) {
     return null;
   }
-  return new Directory(path);
+  return Directory(path);
 }

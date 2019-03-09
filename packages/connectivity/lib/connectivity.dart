@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 /// Connection Status Check Result
 ///
@@ -13,19 +14,40 @@ import 'package:flutter/services.dart';
 /// None: Device not connected to any network
 enum ConnectivityResult { wifi, mobile, none }
 
-const MethodChannel _methodChannel =
-    const MethodChannel('plugins.flutter.io/connectivity');
-
-const EventChannel _eventChannel =
-    const EventChannel('plugins.flutter.io/connectivity_status');
-
 class Connectivity {
+  /// Constructs a singleton instance of [Connectivity].
+  ///
+  /// [Connectivity] is designed to work as a singleton.
+  // When a second instance is created, the first instance will not be able to listen to the
+  // EventChannel because it is overridden. Forcing the class to be a singleton class can prevent
+  // misusage of creating a second instance from a programmer.
+  factory Connectivity() {
+    if (_singleton == null) {
+      _singleton = Connectivity._();
+    }
+    return _singleton;
+  }
+
+  Connectivity._();
+
+  static Connectivity _singleton;
+
   Stream<ConnectivityResult> _onConnectivityChanged;
+
+  @visibleForTesting
+  static const MethodChannel methodChannel = MethodChannel(
+    'plugins.flutter.io/connectivity',
+  );
+
+  @visibleForTesting
+  static const EventChannel eventChannel = EventChannel(
+    'plugins.flutter.io/connectivity_status',
+  );
 
   /// Fires whenever the connectivity state changes.
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (_onConnectivityChanged == null) {
-      _onConnectivityChanged = _eventChannel
+      _onConnectivityChanged = eventChannel
           .receiveBroadcastStream()
           .map((dynamic event) => _parseConnectivityResult(event));
     }
@@ -39,8 +61,33 @@ class Connectivity {
   ///
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
   Future<ConnectivityResult> checkConnectivity() async {
-    final String result = await _methodChannel.invokeMethod('check');
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    final String result = await methodChannel.invokeMethod('check');
     return _parseConnectivityResult(result);
+  }
+
+  /// Obtains the wifi name (SSID) of the connected network
+  ///
+  /// Please note that it DOESN'T WORK on emulators (returns null).
+  ///
+  /// From android 8.0 onwards the GPS must be ON (high accuracy)
+  /// in order to be able to obtain the SSID.
+  Future<String> getWifiName() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    String wifiName = await methodChannel.invokeMethod('wifiName');
+    // as Android might return <unknown ssid>, uniforming result
+    // our iOS implementation will return null
+    if (wifiName == '<unknown ssid>') wifiName = null;
+    return wifiName;
+  }
+
+  /// Obtains the IP address of the connected wifi network
+  Future<String> getWifiIP() async {
+    return await methodChannel.invokeMethod('wifiIPAddress');
   }
 }
 

@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 
 final Map<String, Item> _items = <String, Item>{};
 Item _itemForMessage(Map<String, dynamic> message) {
-  final String itemId = message['id'];
-  final Item item = _items.putIfAbsent(itemId, () => new Item(itemId: itemId))
-    ..status = message['status'];
+  final String itemId = message['data']['id'];
+  final Item item = _items.putIfAbsent(itemId, () => Item(itemId: itemId))
+    ..status = message['data']['status'];
   return item;
 }
 
@@ -19,7 +19,7 @@ class Item {
   Item({this.itemId});
   final String itemId;
 
-  StreamController<Item> _controller = new StreamController<Item>.broadcast();
+  StreamController<Item> _controller = StreamController<Item>.broadcast();
   Stream<Item> get onChanged => _controller.stream;
 
   String _status;
@@ -29,14 +29,14 @@ class Item {
     _controller.add(this);
   }
 
-  static final Map<String, Route<Null>> routes = <String, Route<Null>>{};
-  Route<Null> get route {
+  static final Map<String, Route<void>> routes = <String, Route<void>>{};
+  Route<void> get route {
     final String routeName = '/detail/$itemId';
     return routes.putIfAbsent(
       routeName,
-      () => new MaterialPageRoute<Null>(
-            settings: new RouteSettings(name: routeName),
-            builder: (BuildContext context) => new DetailPage(itemId),
+      () => MaterialPageRoute<void>(
+            settings: RouteSettings(name: routeName),
+            builder: (BuildContext context) => DetailPage(itemId),
           ),
     );
   }
@@ -46,7 +46,7 @@ class DetailPage extends StatefulWidget {
   DetailPage(this.itemId);
   final String itemId;
   @override
-  _DetailPageState createState() => new _DetailPageState();
+  _DetailPageState createState() => _DetailPageState();
 }
 
 class _DetailPageState extends State<DetailPage> {
@@ -70,12 +70,12 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("Item ${_item.itemId}"),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Item ${_item.itemId}"),
       ),
-      body: new Material(
-        child: new Center(child: new Text("Item status: ${_item.status}")),
+      body: Material(
+        child: Center(child: Text("Item status: ${_item.status}")),
       ),
     );
   }
@@ -83,28 +83,28 @@ class _DetailPageState extends State<DetailPage> {
 
 class PushMessagingExample extends StatefulWidget {
   @override
-  _PushMessagingExampleState createState() => new _PushMessagingExampleState();
+  _PushMessagingExampleState createState() => _PushMessagingExampleState();
 }
 
 class _PushMessagingExampleState extends State<PushMessagingExample> {
   String _homeScreenText = "Waiting for token...";
   bool _topicButtonsDisabled = false;
 
-  final FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final TextEditingController _topicController =
-      new TextEditingController(text: 'topic');
+      TextEditingController(text: 'topic');
 
   Widget _buildDialog(BuildContext context, Item item) {
-    return new AlertDialog(
-      content: new Text("Item ${item.itemId} has been updated"),
+    return AlertDialog(
+      content: Text("Item ${item.itemId} has been updated"),
       actions: <Widget>[
-        new FlatButton(
+        FlatButton(
           child: const Text('CLOSE'),
           onPressed: () {
             Navigator.pop(context, false);
           },
         ),
-        new FlatButton(
+        FlatButton(
           child: const Text('SHOW'),
           onPressed: () {
             Navigator.pop(context, true);
@@ -138,15 +138,15 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
   void initState() {
     super.initState();
     _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) {
+      onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
         _showItemDialog(message);
       },
-      onLaunch: (Map<String, dynamic> message) {
+      onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
         _navigateToItemDetail(message);
       },
-      onResume: (Map<String, dynamic> message) {
+      onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
         _navigateToItemDetail(message);
       },
@@ -168,12 +168,12 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
+    return Scaffold(
+        appBar: AppBar(
           title: const Text('Push Messaging Demo'),
         ),
         // For testing -- simulate a message being received
-        floatingActionButton: new FloatingActionButton(
+        floatingActionButton: FloatingActionButton(
           onPressed: () => _showItemDialog(<String, dynamic>{
                 "id": "2",
                 "status": "out of stock",
@@ -181,15 +181,15 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
           tooltip: 'Simulate Message',
           child: const Icon(Icons.message),
         ),
-        body: new Material(
-          child: new Column(
+        body: Material(
+          child: Column(
             children: <Widget>[
-              new Center(
-                child: new Text(_homeScreenText),
+              Center(
+                child: Text(_homeScreenText),
               ),
-              new Row(children: <Widget>[
-                new Expanded(
-                  child: new TextField(
+              Row(children: <Widget>[
+                Expanded(
+                  child: TextField(
                       controller: _topicController,
                       onChanged: (String v) {
                         setState(() {
@@ -197,7 +197,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
                         });
                       }),
                 ),
-                new FlatButton(
+                FlatButton(
                   child: const Text("subscribe"),
                   onPressed: _topicButtonsDisabled
                       ? null
@@ -207,7 +207,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
                           _clearTopicText();
                         },
                 ),
-                new FlatButton(
+                FlatButton(
                   child: const Text("unsubscribe"),
                   onPressed: _topicButtonsDisabled
                       ? null
@@ -233,8 +233,8 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
 
 void main() {
   runApp(
-    new MaterialApp(
-      home: new PushMessagingExample(),
+    MaterialApp(
+      home: PushMessagingExample(),
     ),
   );
 }

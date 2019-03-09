@@ -8,7 +8,7 @@
 
 static NSDictionary *rewardedStatusToString = nil;
 
-@interface FLTRewardedVideoAdWrapper ()<GADRewardBasedVideoAdDelegate>
+@interface FLTRewardedVideoAdWrapper () <GADRewardBasedVideoAdDelegate>
 @end
 
 @implementation FLTRewardedVideoAdWrapper

@@ -12,8 +12,23 @@ class AnimateCameraPage extends Page {
       : super(const Icon(Icons.map), 'Camera control, animated');
 
   @override
-  final GoogleMapOverlayController controller =
-      GoogleMapOverlayController.fromSize(width: 300.0, height: 200.0);
+  Widget build(BuildContext context) {
+    return const AnimateCamera();
+  }
+}
+
+class AnimateCamera extends StatefulWidget {
+  const AnimateCamera();
+  @override
+  State createState() => AnimateCameraState();
+}
+
+class AnimateCameraState extends State<AnimateCamera> {
+  GoogleMapController mapController;
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +36,17 @@ class AnimateCameraPage extends Page {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Center(child: GoogleMapOverlay(controller: controller)),
+        Center(
+          child: SizedBox(
+            width: 300.0,
+            height: 200.0,
+            child: GoogleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition:
+                  const CameraPosition(target: LatLng(0.0, 0.0)),
+            ),
+          ),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
@@ -29,7 +54,7 @@ class AnimateCameraPage extends Page {
               children: <Widget>[
                 FlatButton(
                   onPressed: () {
-                    controller.mapController.animateCamera(
+                    mapController.animateCamera(
                       CameraUpdate.newCameraPosition(
                         const CameraPosition(
                           bearing: 270.0,
@@ -44,7 +69,7 @@ class AnimateCameraPage extends Page {
                 ),
                 FlatButton(
                   onPressed: () {
-                    controller.mapController.animateCamera(
+                    mapController.animateCamera(
                       CameraUpdate.newLatLng(
                         const LatLng(56.1725505, 10.1850512),
                       ),
@@ -54,7 +79,7 @@ class AnimateCameraPage extends Page {
                 ),
                 FlatButton(
                   onPressed: () {
-                    controller.mapController.animateCamera(
+                    mapController.animateCamera(
                       CameraUpdate.newLatLngBounds(
                         LatLngBounds(
                           southwest: const LatLng(-38.483935, 113.248673),
@@ -68,7 +93,7 @@ class AnimateCameraPage extends Page {
                 ),
                 FlatButton(
                   onPressed: () {
-                    controller.mapController.animateCamera(
+                    mapController.animateCamera(
                       CameraUpdate.newLatLngZoom(
                         const LatLng(37.4231613, -122.087159),
                         11.0,
@@ -79,7 +104,7 @@ class AnimateCameraPage extends Page {
                 ),
                 FlatButton(
                   onPressed: () {
-                    controller.mapController.animateCamera(
+                    mapController.animateCamera(
                       CameraUpdate.scrollBy(150.0, -225.0),
                     );
                   },
@@ -91,7 +116,7 @@ class AnimateCameraPage extends Page {
               children: <Widget>[
                 FlatButton(
                   onPressed: () {
-                    controller.mapController.animateCamera(
+                    mapController.animateCamera(
                       CameraUpdate.zoomBy(
                         -0.5,
                         const Offset(30.0, 20.0),
@@ -102,7 +127,7 @@ class AnimateCameraPage extends Page {
                 ),
                 FlatButton(
                   onPressed: () {
-                    controller.mapController.animateCamera(
+                    mapController.animateCamera(
                       CameraUpdate.zoomBy(-0.5),
                     );
                   },
@@ -110,7 +135,7 @@ class AnimateCameraPage extends Page {
                 ),
                 FlatButton(
                   onPressed: () {
-                    controller.mapController.animateCamera(
+                    mapController.animateCamera(
                       CameraUpdate.zoomIn(),
                     );
                   },
@@ -118,7 +143,7 @@ class AnimateCameraPage extends Page {
                 ),
                 FlatButton(
                   onPressed: () {
-                    controller.mapController.animateCamera(
+                    mapController.animateCamera(
                       CameraUpdate.zoomOut(),
                     );
                   },
@@ -126,7 +151,7 @@ class AnimateCameraPage extends Page {
                 ),
                 FlatButton(
                   onPressed: () {
-                    controller.mapController.animateCamera(
+                    mapController.animateCamera(
                       CameraUpdate.zoomTo(16.0),
                     );
                   },

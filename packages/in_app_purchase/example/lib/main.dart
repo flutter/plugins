@@ -1,56 +1,141 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_purchase/in_app_purchase_connection.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(MyApp());
+
+const List<String> _kProductIds = <String>[
+  'consumable',
+  'upgrade',
+  'subscription'
+];
 
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => new _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await InAppPurchase.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: const Text('Plugin example app'),
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('IAP Example'),
         ),
-        body: new Center(
-          child: new Text('Running on: $_platformVersion\n'),
+        body: ListView(
+          children: [
+            FutureBuilder(
+              future: _buildConnectionCheckTile(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.error != null) {
+                  return buildListCard(ListTile(
+                      title: Text(
+                          'Error connecting: ' + snapshot.error.toString())));
+                } else if (!snapshot.hasData) {
+                  return Card(
+                      child:
+                          ListTile(title: const Text('Trying to connect...')));
+                }
+                return snapshot.data;
+              },
+            ),
+            FutureBuilder(
+              future: _buildProductList(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.error != null) {
+                  return Center(
+                    child: buildListCard(ListTile(
+                        title: Text('Error fetching products'),
+                        subtitle: snapshot.error)),
+                  );
+                } else if (!snapshot.hasData) {
+                  return Card(
+                      child: (ListTile(
+                          leading: CircularProgressIndicator(),
+                          title: Text('Fetching products...'))));
+                }
+                return snapshot.data;
+              },
+            ),
+          ],
         ),
       ),
     );
   }
+
+  Future<Card> _buildConnectionCheckTile() async {
+    final bool available = await InAppPurchaseConnection.instance.isAvailable();
+    final Widget storeHeader = ListTile(
+      leading: Icon(available ? Icons.check : Icons.block,
+          color: available ? Colors.green : ThemeData.light().errorColor),
+      title: Text(
+          'The store is ' + (available ? 'available' : 'unavailable') + '.'),
+    );
+    final List<Widget> children = <Widget>[storeHeader];
+
+    if (!available) {
+      children.addAll([
+        Divider(),
+        ListTile(
+          title: Text('Not connected',
+              style: TextStyle(color: ThemeData.light().errorColor)),
+          subtitle: const Text(
+              'Unable to connect to the payments processor. Has this app been configured correctly? See the example README for instructions.'),
+        ),
+      ]);
+    }
+    return Card(child: Column(children: children));
+  }
+
+  Future<Card> _buildProductList() async {
+    final bool available = await InAppPurchaseConnection.instance.isAvailable();
+    if (!available) {
+      return Card();
+    }
+    final ListTile productHeader = ListTile(
+        title: Text('Products for Sale',
+            style: Theme.of(context).textTheme.headline));
+    ProductDetailsResponse response = await InAppPurchaseConnection.instance
+        .queryProductDetails(_kProductIds.toSet());
+    List<ListTile> productList = <ListTile>[];
+    if (!response.notFoundIDs.isEmpty) {
+      productList.add(ListTile(
+          title: Text('[${response.notFoundIDs.join(", ")}] not found',
+              style: TextStyle(color: ThemeData.light().errorColor)),
+          subtitle: Text(
+              'This app needs special configuration to run. Please see example/README.md for instructions.')));
+    }
+
+    productList.addAll(response.productDetails.map(
+      (ProductDetails productDetails) {
+        return ListTile(
+          title: Text(
+            productDetails.title,
+          ),
+          subtitle: Text(
+            productDetails.description,
+          ),
+          trailing: Text(productDetails.price),
+        );
+      },
+    ));
+
+    return Card(
+        child:
+            Column(children: <Widget>[productHeader, Divider()] + productList));
+  }
+
+  static ListTile buildListCard(ListTile innerTile) =>
+      ListTile(title: Card(child: innerTile));
 }

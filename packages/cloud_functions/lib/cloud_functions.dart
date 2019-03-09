@@ -4,27 +4,36 @@
 
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class CloudFunctionsException implements Exception {
+  CloudFunctionsException._(this.code, this.message, this.details);
+
   final String code;
   final String message;
   final dynamic details;
-
-  CloudFunctionsException._(this.code, this.message, this.details);
 }
 
 /// The entry point for accessing a CloudFunctions.
 ///
 /// You can get an instance by calling [CloudFunctions.instance].
 class CloudFunctions {
-  @visibleForTesting
-  static const MethodChannel channel = const MethodChannel('cloud_functions');
+  CloudFunctions({FirebaseApp app, String region})
+      : _app = app ?? FirebaseApp.instance,
+        _region = region;
 
-  static CloudFunctions _instance = new CloudFunctions();
+  @visibleForTesting
+  static const MethodChannel channel = MethodChannel('cloud_functions');
+
+  static CloudFunctions _instance = CloudFunctions();
 
   static CloudFunctions get instance => _instance;
+
+  final FirebaseApp _app;
+
+  final String _region;
 
   /// Executes this Callable HTTPS trigger asynchronously.
   ///
@@ -34,7 +43,12 @@ class CloudFunctions {
       {@required String functionName, Map<String, dynamic> parameters}) async {
     try {
       final dynamic response =
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
           await channel.invokeMethod('CloudFunctions#call', <String, dynamic>{
+        'app': _app.name,
+        'region': _region,
         'functionName': functionName,
         'parameters': parameters,
       });

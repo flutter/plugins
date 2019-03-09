@@ -19,7 +19,7 @@ enum ImageSource {
 
 class ImagePicker {
   static const MethodChannel _channel =
-      const MethodChannel('plugins.flutter.io/image_picker');
+      MethodChannel('plugins.flutter.io/image_picker');
 
   /// Returns a [File] object pointing to the image that was picked.
   ///
@@ -37,13 +37,16 @@ class ImagePicker {
     assert(source != null);
 
     if (maxWidth != null && maxWidth < 0) {
-      throw new ArgumentError.value(maxWidth, 'maxWidth cannot be negative');
+      throw ArgumentError.value(maxWidth, 'maxWidth cannot be negative');
     }
 
     if (maxHeight != null && maxHeight < 0) {
-      throw new ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
+      throw ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
     }
 
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final String path = await _channel.invokeMethod(
       'pickImage',
       <String, dynamic>{
@@ -53,7 +56,7 @@ class ImagePicker {
       },
     );
 
-    return path == null ? null : new File(path);
+    return path == null ? null : File(path);
   }
 
   static Future<File> pickVideo({
@@ -61,12 +64,15 @@ class ImagePicker {
   }) async {
     assert(source != null);
 
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final String path = await _channel.invokeMethod(
       'pickVideo',
       <String, dynamic>{
         'source': source.index,
       },
     );
-    return path == null ? null : new File(path);
+    return path == null ? null : File(path);
   }
 }

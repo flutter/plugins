@@ -1,3 +1,61 @@
+## 0.5.0+5
+
+Remove unnecessary camera permmision.
+
+## 0.5.0+4
+
+Preserve transparency when saving images.
+
+## 0.5.0+3
+
+* Fixed an Android crash when Image Picker is registered without an activity.
+
+## 0.5.0+2
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.5.0+1
+
+* Fix a crash when user calls the plugin in quick succession on Android.
+
+## 0.5.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.4.12+1
+
+* Fix a crash when selecting downloaded images from image picker on certain devices.
+
+## 0.4.12
+
+* Fix a crash when user tap the image mutiple times.
+
+## 0.4.11
+
+* Use `api` to define `support-v4` dependency to allow automatic version resolution.
+
+## 0.4.10
+
+* Depend on full `support-v4` library for ease of use (fixes conflicts with Firebase and libraries)
+
+## 0.4.9
+
+* Bugfix: on iOS prevent to appear one pixel white line on resized image.
+
+## 0.4.8
+
+* Replace the full `com.android.support:appcompat-v7` dependency with `com.android.support:support-core-utils`, which results in smaller APK sizes.
+* Upgrade support library to 27.1.1
+
+## 0.4.7
+
+* Added missing video_player package dev dependency.
+
 ## 0.4.6
 
 * Added support for picking remote images.

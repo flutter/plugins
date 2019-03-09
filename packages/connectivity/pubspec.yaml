@@ -3,7 +3,7 @@ description: Flutter plugin for discovering the state of the network (WiFi &
   mobile/cellular) connectivity on Android and iOS.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity
-version: 0.3.1
+version: 0.4.2
 
 flutter:
   plugin:
@@ -13,6 +13,11 @@ flutter:
 
 dependencies:
   flutter:
+    sdk: flutter
+  meta: "^1.0.5"
+
+dev_dependencies:
+  flutter_test:
     sdk: flutter
 
 environment:

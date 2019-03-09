@@ -8,11 +8,11 @@ import 'package:flutter/services.dart';
 
 /// Provides device and operating system information.
 class DeviceInfoPlugin {
+  DeviceInfoPlugin();
+
   /// Channel used to communicate to native code.
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/device_info');
-
-  DeviceInfoPlugin();
+      MethodChannel('plugins.flutter.io/device_info');
 
   /// This information does not change from call to call. Cache it.
   AndroidDeviceInfo _cachedAndroidDeviceInfo;
@@ -22,6 +22,9 @@ class DeviceInfoPlugin {
   /// See: https://developer.android.com/reference/android/os/Build.html
   Future<AndroidDeviceInfo> get androidInfo async =>
       _cachedAndroidDeviceInfo ??= AndroidDeviceInfo._fromMap(
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
           await channel.invokeMethod('getAndroidDeviceInfo'));
 
   /// This information does not change from call to call. Cache it.
@@ -31,6 +34,9 @@ class DeviceInfoPlugin {
   ///
   /// See: https://developer.apple.com/documentation/uikit/uidevice
   Future<IosDeviceInfo> get iosInfo async => _cachedIosDeviceInfo ??=
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       IosDeviceInfo._fromMap(await channel.invokeMethod('getIosDeviceInfo'));
 }
 
@@ -58,9 +64,10 @@ class AndroidDeviceInfo {
     this.tags,
     this.type,
     this.isPhysicalDevice,
-  })  : supported32BitAbis = new List<String>.unmodifiable(supported32BitAbis),
-        supported64BitAbis = new List<String>.unmodifiable(supported64BitAbis),
-        supportedAbis = new List<String>.unmodifiable(supportedAbis);
+    this.androidId,
+  })  : supported32BitAbis = List<String>.unmodifiable(supported32BitAbis),
+        supported64BitAbis = List<String>.unmodifiable(supported64BitAbis),
+        supportedAbis = List<String>.unmodifiable(supportedAbis);
 
   /// Android operating system version values derived from `android.os.Build.VERSION`.
   final AndroidBuildVersion version;
@@ -119,10 +126,13 @@ class AndroidDeviceInfo {
   /// `false` if the application is running in an emulator, `true` otherwise.
   final bool isPhysicalDevice;
 
+  /// The Android hardware device ID that is unique between the device + user and app signing.
+  final String androidId;
+
   /// Deserializes from the message received from [_kChannel].
   static AndroidDeviceInfo _fromMap(dynamic message) {
     final Map<dynamic, dynamic> map = message;
-    return new AndroidDeviceInfo._(
+    return AndroidDeviceInfo._(
       version: AndroidBuildVersion._fromMap(map['version']),
       board: map['board'],
       bootloader: map['bootloader'],
@@ -142,13 +152,14 @@ class AndroidDeviceInfo {
       tags: map['tags'],
       type: map['type'],
       isPhysicalDevice: map['isPhysicalDevice'],
+      androidId: map['androidId'],
     );
   }
 
   /// Deserializes message as List<String>
   static List<String> _fromList(dynamic message) {
     final List<dynamic> list = message;
-    return new List<String>.from(list);
+    return List<String>.from(list);
   }
 }
 
@@ -182,7 +193,9 @@ class AndroidBuildVersion {
   /// The user-visible version string.
   final String release;
 
-  /// The user-visible SDK version of the framework; its possible values are defined in [AndroidBuildVersionCodes].
+  /// The user-visible SDK version of the framework.
+  ///
+  /// Possible values are defined in: https://developer.android.com/reference/android/os/Build.VERSION_CODES.html
   final int sdkInt;
 
   /// The user-visible security patch level.
@@ -191,7 +204,7 @@ class AndroidBuildVersion {
   /// Deserializes from the map message received from [_kChannel].
   static AndroidBuildVersion _fromMap(dynamic message) {
     final Map<dynamic, dynamic> map = message;
-    return new AndroidBuildVersion._(
+    return AndroidBuildVersion._(
       baseOS: map['baseOS'],
       codename: map['codename'],
       incremental: map['incremental'],
@@ -245,7 +258,7 @@ class IosDeviceInfo {
   /// Deserializes from the map message received from [_kChannel].
   static IosDeviceInfo _fromMap(dynamic message) {
     final Map<dynamic, dynamic> map = message;
-    return new IosDeviceInfo._(
+    return IosDeviceInfo._(
       name: map['name'],
       systemName: map['systemName'],
       systemVersion: map['systemVersion'],
@@ -287,7 +300,7 @@ class IosUtsname {
   /// Deserializes from the map message received from [_kChannel].
   static IosUtsname _fromMap(dynamic message) {
     final Map<dynamic, dynamic> map = message;
-    return new IosUtsname._(
+    return IosUtsname._(
       sysname: map['sysname'],
       nodename: map['nodename'],
       release: map['release'],

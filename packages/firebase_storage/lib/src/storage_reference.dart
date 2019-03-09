@@ -5,16 +5,17 @@
 part of firebase_storage;
 
 class StorageReference {
-  final FirebaseStorage _firebaseStorage;
   const StorageReference._(this._pathComponents, this._firebaseStorage);
+
+  final FirebaseStorage _firebaseStorage;
   final List<String> _pathComponents;
 
   /// Returns a new instance of [StorageReference] pointing to a child
   /// location of the current reference.
   StorageReference child(String path) {
-    final List<String> childPath = new List<String>.from(_pathComponents)
+    final List<String> childPath = List<String>.from(_pathComponents)
       ..addAll(path.split("/"));
-    return new StorageReference._(childPath, _firebaseStorage);
+    return StorageReference._(childPath, _firebaseStorage);
   }
 
   /// Returns a new instance of [StorageReference] pointing to the parent
@@ -25,7 +26,7 @@ class StorageReference {
       return null;
     }
 
-    final List<String> parentPath = new List<String>.from(_pathComponents);
+    final List<String> parentPath = List<String>.from(_pathComponents);
     // Trim for trailing empty path components that can
     // come from trailing slashes in the path.
     while (parentPath.last.isEmpty) {
@@ -33,12 +34,12 @@ class StorageReference {
     }
     parentPath.removeLast();
 
-    return new StorageReference._(parentPath, _firebaseStorage);
+    return StorageReference._(parentPath, _firebaseStorage);
   }
 
   /// Returns a new instance of [StorageReference] pointing to the root location.
   StorageReference getRoot() {
-    return new StorageReference._(<String>[], _firebaseStorage);
+    return StorageReference._(<String>[], _firebaseStorage);
   }
 
   /// Returns the [FirebaseStorage] service which created this reference.
@@ -58,8 +59,8 @@ class StorageReference {
   /// Asynchronously uploads a file to the currently specified
   /// [StorageReference], with an optional [metadata].
   StorageUploadTask putFile(File file, [StorageMetadata metadata]) {
-    final _StorageFileUploadTask task = new _StorageFileUploadTask._(
-        file, _firebaseStorage, _pathComponents.join("/"), metadata);
+    final _StorageFileUploadTask task =
+        _StorageFileUploadTask._(file, _firebaseStorage, this, metadata);
     task._start();
     return task;
   }
@@ -67,8 +68,8 @@ class StorageReference {
   /// Asynchronously uploads byte data to the currently specified
   /// [StorageReference], with an optional [metadata].
   StorageUploadTask putData(Uint8List data, [StorageMetadata metadata]) {
-    final StorageUploadTask task = new _StorageDataUploadTask._(
-        data, _firebaseStorage, _pathComponents.join("/"), metadata);
+    final StorageUploadTask task =
+        _StorageDataUploadTask._(data, _firebaseStorage, this, metadata);
     task._start();
     return task;
   }
@@ -76,6 +77,9 @@ class StorageReference {
   /// Returns the Google Cloud Storage bucket that holds this object.
   Future<String> getBucket() async {
     return await FirebaseStorage.channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         .invokeMethod("StorageReference#getBucket", <String, String>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
@@ -87,6 +91,9 @@ class StorageReference {
   /// Storage bucket.
   Future<String> getPath() async {
     return await FirebaseStorage.channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         .invokeMethod("StorageReference#getPath", <String, String>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
@@ -97,6 +104,9 @@ class StorageReference {
   /// Returns the short name of this object.
   Future<String> getName() async {
     return await FirebaseStorage.channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         .invokeMethod("StorageReference#getName", <String, String>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
@@ -107,6 +117,9 @@ class StorageReference {
   /// Asynchronously downloads the object at the StorageReference to a list in memory.
   /// A list of the provided max size will be allocated.
   Future<Uint8List> getData(int maxSize) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return await FirebaseStorage.channel.invokeMethod(
       "StorageReference#getData",
       <String, dynamic>{
@@ -121,7 +134,7 @@ class StorageReference {
   /// Asynchronously downloads the object at this [StorageReference] to a
   /// specified system file.
   StorageFileDownloadTask writeToFile(File file) {
-    final StorageFileDownloadTask task = new StorageFileDownloadTask._(
+    final StorageFileDownloadTask task = StorageFileDownloadTask._(
         _firebaseStorage, _pathComponents.join("/"), file);
     task._start();
     return task;
@@ -132,6 +145,9 @@ class StorageReference {
   /// developer in the Firebase Console if desired.
   Future<dynamic> getDownloadURL() async {
     return await FirebaseStorage.channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         .invokeMethod("StorageReference#getDownloadUrl", <String, String>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
@@ -141,6 +157,9 @@ class StorageReference {
 
   Future<void> delete() {
     return FirebaseStorage.channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         .invokeMethod("StorageReference#delete", <String, String>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
@@ -150,7 +169,10 @@ class StorageReference {
 
   /// Retrieves metadata associated with an object at this [StorageReference].
   Future<StorageMetadata> getMetadata() async {
-    return new StorageMetadata._fromMap(await FirebaseStorage.channel
+    return StorageMetadata._fromMap(await FirebaseStorage.channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         .invokeMethod("StorageReference#getMetadata", <String, String>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
@@ -166,7 +188,10 @@ class StorageReference {
   /// [StorageMetadata] constructor. Writable metadata properties can be deleted
   /// by passing the empty string.
   Future<StorageMetadata> updateMetadata(StorageMetadata metadata) async {
-    return new StorageMetadata._fromMap(await FirebaseStorage.channel
+    return StorageMetadata._fromMap(await FirebaseStorage.channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         .invokeMethod("StorageReference#updateMetadata", <String, dynamic>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,

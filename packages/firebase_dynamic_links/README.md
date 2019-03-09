@@ -23,34 +23,34 @@ You create a Dynamic Link either by using the Firebase console, using a REST API
 Below are instructions to create Dynamic Links using Flutter with the Firebase Dynamic Links API. This API accepts either a long Dynamic Link or an object containing Dynamic Link parameters, and returns a URL like the following example:
 
 ```
-https://abc123.app.goo.gl/WXYZ
+https://example.page.link/WXYZ
 ```
 
 You can create a Dynamic Link programmatically by setting the following parameters and using the `DynamicLinkParameters.buildUrl()` method.
 
 ```dart
-final DynamicLinkParameters parameters = new DynamicLinkParameters(
+final DynamicLinkParameters parameters = DynamicLinkParameters(
   domain: 'abc123.app.goo.gl',
   link: Uri.parse('https://example.com/'),
-  androidParameters: new AndroidParameters(
+  androidParameters: AndroidParameters(
       packageName: 'com.example.android',
       minimumVersion: 125,
   ),
-  iosParameters: new IosParameters(
+  iosParameters: IosParameters(
       bundleId: 'com.example.ios',
       minimumVersion: '1.0.1',
       appStoreId: '123456789',
   ),
-  googleAnalyticsParameters: new GoogleAnalyticsParameters(
+  googleAnalyticsParameters: GoogleAnalyticsParameters(
       campaign: 'example-promo',
       medium: 'social',
       source: 'orkut',
   ),
-  itunesConnectAnalyticsParameters: new ItunesConnectAnalyticsParameters(
+  itunesConnectAnalyticsParameters: ItunesConnectAnalyticsParameters(
     providerToken: '123456',
     campaignToken: 'example-promo',
   ),
-  socialMetaTagParameters:  new SocialMetaTagParameters(
+  socialMetaTagParameters:  SocialMetaTagParameters(
     title: 'Example of a Dynamic Link',
     description: 'This link works whether app is installed or not!',
   ),
@@ -70,8 +70,8 @@ To shorten a long Dynamic Link, use the DynamicLinkParameters.shortenUrl method.
 
 ```dart
 final ShortDynamicLink shortenedLink = await DynamicLinkParameters.shortenUrl(
-  Uri.parse('https://abc123.app.goo.gl/?link=https://example.com/&apn=com.example.android&ibn=com.example.ios'),
-  new DynamicLinkParametersOptions(ShortDynamicLinkPathLength.unguessable),
+  Uri.parse('https://example.page.link/?link=https://example.com/&apn=com.example.android&ibn=com.example.ios'),
+  DynamicLinkParametersOptions(ShortDynamicLinkPathLength.unguessable),
 );
 
 final Uri shortUrl = shortenedLink.shortUrl;
@@ -83,7 +83,7 @@ You can receive a Dynamic Link containing a deep link that takes the user to spe
 
 1. In the [Firebase Console](https://console.firebase.google.com), open the Dynamic Links section.
   - Accept the terms of service if you are prompted to do so.
-  - Take note of your project's Dynamic Links domain, which is displayed at the top of the Dynamic Links page. You need your project's Dynamic Links domain to programmatically create Dynamic Links. A Dynamic Links domain looks like `APP_CODE.app.goo.gl`.
+  - Take note of your project's Dynamic Links domain, which is displayed at the top of the Dynamic Links page. You need your project's Dynamic Links domain to programmatically create Dynamic Links. A Dynamic Links domain looks like `YOUR_SUBDOMAIN.page.link`.
 
 Receiving dynamic links on *iOS* requires a couple more steps than *Android*. If you only want to receive dynamic links on *Android*, skip to step 4. You can also follow a video on the next two steps [here.](https://youtu.be/sFPo296OQqk?t=2m40s)
 
@@ -101,16 +101,16 @@ applinks:YOUR_SUBDOMAIN.page.link
 
 ```dart
 void main() {
-  runApp(new MaterialApp(
+  runApp(MaterialApp(
     title: 'Dynamic Links Example',
     routes: <String, WidgetBuilder>{
-      '/': (BuildContext context) => new MyHomeWidget(), // Default home route
-      '/helloworld': (BuildContext context) => new MyHelloWorldWidget(),
+      '/': (BuildContext context) => MyHomeWidget(), // Default home route
+      '/helloworld': (BuildContext context) => MyHelloWorldWidget(),
     },
   ));
 }
 
-class _MyHomeWidgetState extends State<_MyHomeWidget> {
+class MyHomeWidgetState extends State<MyHomeWidget> {
   .
   .
   .
@@ -125,7 +125,7 @@ class _MyHomeWidgetState extends State<_MyHomeWidget> {
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
-      Navigator.pushNamed(context, deepLink.path); // '/helloworld'
+      Navigator.pushNamed(context, deepLink.path); // deeplink.path == '/helloworld'
     }
   }
   .

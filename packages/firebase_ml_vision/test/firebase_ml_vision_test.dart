@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/services.dart';
@@ -21,11 +22,13 @@ void main() {
         switch (methodCall.method) {
           case 'BarcodeDetector#detectInImage':
             return returnValue;
-          case 'FaceDetector#detectInImage':
+          case 'FaceDetector#processImage':
             return returnValue;
           case 'LabelDetector#detectInImage':
             return returnValue;
-          case 'TextDetector#detectInImage':
+          case 'TextRecognizer#processImage':
+            return returnValue;
+          case 'CloudLabelDetector#detectInImage':
             return returnValue;
           default:
             return null;
@@ -34,29 +37,89 @@ void main() {
       log.clear();
     });
 
-    group('$BarcodeDetector', () {
-      test('detectInImage unknown', () async {
-        final Map<dynamic, dynamic> _barcode = <dynamic, dynamic>{
-          'raw_value': 'hello:raw',
-          'display_value': 'hello:display',
-          'value_type': 0,
-          'format': 0,
-          'left': 1,
-          'top': 2,
-          'width': 3,
-          'height': 4,
-          'points': <dynamic>[
-            <dynamic>[5, 6],
-            <dynamic>[7, 8],
-          ],
+    group('$FirebaseVisionImageMetadata', () {
+      final TextRecognizer recognizer =
+          FirebaseVision.instance.textRecognizer();
+
+      setUp(() {
+        returnValue = <dynamic, dynamic>{
+          'text': '',
+          'blocks': <dynamic>[],
         };
+      });
 
-        returnValue = <dynamic>[_barcode];
-
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
+      test('default serialization', () async {
+        final FirebaseVisionImageMetadata metadata =
+            FirebaseVisionImageMetadata(
+          rawFormat: 35,
+          size: const Size(1.0, 1.0),
+          planeData: <FirebaseVisionImagePlaneMetadata>[
+            FirebaseVisionImagePlaneMetadata(
+              bytesPerRow: 1000,
+              height: 480,
+              width: 480,
+            ),
+          ],
+        );
         final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+            FirebaseVisionImage.fromBytes(Uint8List(0), metadata);
+        await recognizer.processImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'TextRecognizer#processImage',
+            arguments: <String, dynamic>{
+              'type': 'bytes',
+              'path': null,
+              'bytes': Uint8List(0),
+              'metadata': <String, dynamic>{
+                'width': 1.0,
+                'height': 1.0,
+                'rotation': 0,
+                'rawFormat': 35,
+                'planeData': <dynamic>[
+                  <String, dynamic>{
+                    'bytesPerRow': 1000,
+                    'height': 480,
+                    'width': 480,
+                  },
+                ],
+              },
+              'options': <String, dynamic>{},
+            },
+          ),
+        ]);
+      });
+    });
+
+    group('$BarcodeDetector', () {
+      BarcodeDetector detector;
+      FirebaseVisionImage image;
+      List<dynamic> returnBarcodes;
+
+      setUp(() {
+        detector = FirebaseVision.instance.barcodeDetector();
+        image = FirebaseVisionImage.fromFilePath('empty');
+        returnBarcodes = <dynamic>[
+          <dynamic, dynamic>{
+            'rawValue': 'hello:raw',
+            'displayValue': 'hello:display',
+            'format': 0,
+            'left': 1.0,
+            'top': 2.0,
+            'width': 3.0,
+            'height': 4.0,
+            'points': <dynamic>[
+              <dynamic>[5.0, 6.0],
+              <dynamic>[7.0, 8.0],
+            ],
+          },
+        ];
+      });
+
+      test('detectInImage unknown', () async {
+        returnBarcodes[0]['valueType'] = BarcodeValueType.unknown.index;
+        returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
@@ -64,19 +127,25 @@ void main() {
           isMethodCall(
             'BarcodeDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
-              'options': <String, dynamic>{},
+              'bytes': null,
+              'metadata': null,
+              'options': <String, dynamic>{
+                'barcodeFormats': 0xFFFF,
+              },
             },
           ),
         ]);
 
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
+        expect(barcode.valueType, BarcodeValueType.unknown);
+        expect(barcode.boundingBox, Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
         expect(barcode.rawValue, 'hello:raw');
         expect(barcode.displayValue, 'hello:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
+        expect(barcode.cornerPoints, const <Offset>[
+          Offset(5.0, 6.0),
+          Offset(7.0, 8.0),
         ]);
       });
 
@@ -85,157 +154,55 @@ void main() {
           'address': 'a',
           'body': 'b',
           'subject': 's',
-          'type': 0
-        };
-        final Map<dynamic, dynamic> _barcode = <dynamic, dynamic>{
-          'raw_value': 'email:raw',
-          'display_value': 'email:display',
-          'value_type': 0,
-          'format': 0,
-          'left': 1,
-          'top': 2,
-          'width': 3,
-          'height': 4,
-          'points': <dynamic>[
-            <dynamic>[5, 6],
-            <dynamic>[7, 8],
-          ],
-          'email': email
+          'type': BarcodeEmailType.home.index,
         };
 
-        returnValue = <dynamic>[_barcode];
-
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+        returnBarcodes[0]['valueType'] = BarcodeValueType.email.index;
+        returnBarcodes[0]['email'] = email;
+        returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
-        expect(log, <Matcher>[
-          isMethodCall(
-            'BarcodeDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
-
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
-        expect(barcode.rawValue, 'email:raw');
-        expect(barcode.displayValue, 'email:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
-        ]);
+        expect(barcode.valueType, BarcodeValueType.email);
         expect(barcode.email.address, 'a');
         expect(barcode.email.body, 'b');
         expect(barcode.email.subject, 's');
-        expect(barcode.email.type, BarcodeEmailType.Unknown);
+        expect(barcode.email.type, BarcodeEmailType.home);
       });
 
       test('detectInImage phone', () async {
         final Map<dynamic, dynamic> phone = <dynamic, dynamic>{
           'number': '000',
-          'type': 0
-        };
-        final Map<dynamic, dynamic> _barcode = <dynamic, dynamic>{
-          'raw_value': 'phone:raw',
-          'display_value': 'phone:display',
-          'value_type': 0,
-          'format': 0,
-          'left': 1,
-          'top': 2,
-          'width': 3,
-          'height': 4,
-          'points': <dynamic>[
-            <dynamic>[5, 6],
-            <dynamic>[7, 8],
-          ],
-          'phone': phone
+          'type': BarcodePhoneType.fax.index,
         };
 
-        returnValue = <dynamic>[_barcode];
-
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+        returnBarcodes[0]['valueType'] = BarcodeValueType.phone.index;
+        returnBarcodes[0]['phone'] = phone;
+        returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
-        expect(log, <Matcher>[
-          isMethodCall(
-            'BarcodeDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
-
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
-        expect(barcode.rawValue, 'phone:raw');
-        expect(barcode.displayValue, 'phone:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
-        ]);
+        expect(barcode.valueType, BarcodeValueType.phone);
         expect(barcode.phone.number, '000');
-        expect(barcode.phone.type, BarcodePhoneType.Unknown);
+        expect(barcode.phone.type, BarcodePhoneType.fax);
       });
 
       test('detectInImage sms', () async {
         final Map<dynamic, dynamic> sms = <dynamic, dynamic>{
-          'phone_number': '000',
+          'phoneNumber': '000',
           'message': 'm'
         };
-        final Map<dynamic, dynamic> _barcode = <dynamic, dynamic>{
-          'raw_value': 'sms:raw',
-          'display_value': 'sms:display',
-          'value_type': 0,
-          'format': 0,
-          'left': 1,
-          'top': 2,
-          'width': 3,
-          'height': 4,
-          'points': <dynamic>[
-            <dynamic>[5, 6],
-            <dynamic>[7, 8],
-          ],
-          'sms': sms
-        };
 
-        returnValue = <dynamic>[_barcode];
-
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+        returnBarcodes[0]['valueType'] = BarcodeValueType.sms.index;
+        returnBarcodes[0]['sms'] = sms;
+        returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
-        expect(log, <Matcher>[
-          isMethodCall(
-            'BarcodeDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
-
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
-        expect(barcode.rawValue, 'sms:raw');
-        expect(barcode.displayValue, 'sms:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
-        ]);
+        expect(barcode.valueType, BarcodeValueType.sms);
         expect(barcode.sms.phoneNumber, '000');
         expect(barcode.sms.message, 'm');
       });
@@ -245,49 +212,15 @@ void main() {
           'title': 't',
           'url': 'u'
         };
-        final Map<dynamic, dynamic> _barcode = <dynamic, dynamic>{
-          'raw_value': 'url:raw',
-          'display_value': 'url:display',
-          'value_type': 0,
-          'format': 0,
-          'left': 1,
-          'top': 2,
-          'width': 3,
-          'height': 4,
-          'points': <dynamic>[
-            <dynamic>[5, 6],
-            <dynamic>[7, 8],
-          ],
-          'url': url
-        };
 
-        returnValue = <dynamic>[_barcode];
-
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+        returnBarcodes[0]['valueType'] = BarcodeValueType.url.index;
+        returnBarcodes[0]['url'] = url;
+        returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
-        expect(log, <Matcher>[
-          isMethodCall(
-            'BarcodeDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
-
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
-        expect(barcode.rawValue, 'url:raw');
-        expect(barcode.displayValue, 'url:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
-        ]);
+        expect(barcode.valueType, BarcodeValueType.url);
         expect(barcode.url.title, 't');
         expect(barcode.url.url, 'u');
       });
@@ -296,126 +229,59 @@ void main() {
         final Map<dynamic, dynamic> wifi = <dynamic, dynamic>{
           'ssid': 's',
           'password': 'p',
-          'encryption_type': 0
-        };
-        final Map<dynamic, dynamic> _barcode = <dynamic, dynamic>{
-          'raw_value': 'wifi:raw',
-          'display_value': 'wifi:display',
-          'value_type': 0,
-          'format': 0,
-          'left': 1,
-          'top': 2,
-          'width': 3,
-          'height': 4,
-          'points': <dynamic>[
-            <dynamic>[5, 6],
-            <dynamic>[7, 8],
-          ],
-          'wifi': wifi
+          'encryptionType': BarcodeWiFiEncryptionType.wep.index,
         };
 
-        returnValue = <dynamic>[_barcode];
-
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+        returnBarcodes[0]['valueType'] = BarcodeValueType.wifi.index;
+        returnBarcodes[0]['wifi'] = wifi;
+        returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
-        expect(log, <Matcher>[
-          isMethodCall(
-            'BarcodeDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
-
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
-        expect(barcode.rawValue, 'wifi:raw');
-        expect(barcode.displayValue, 'wifi:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
-        ]);
+        expect(barcode.valueType, BarcodeValueType.wifi);
         expect(barcode.wifi.ssid, 's');
         expect(barcode.wifi.password, 'p');
-        expect(barcode.wifi.encryptionType, BarcodeWiFiEncryptionType.Unknown);
+        expect(barcode.wifi.encryptionType, BarcodeWiFiEncryptionType.wep);
       });
 
-      test('detectInImage geo_point', () async {
-        final Map<dynamic, dynamic> geo = <dynamic, dynamic>{
+      test('detectInImage geoPoint', () async {
+        final Map<dynamic, dynamic> geoPoint = <dynamic, dynamic>{
           'latitude': 0.2,
           'longitude': 0.3,
         };
-        final Map<dynamic, dynamic> _barcode = <dynamic, dynamic>{
-          'raw_value': 'geo:raw',
-          'display_value': 'geo:display',
-          'value_type': 0,
-          'format': 0,
-          'left': 1,
-          'top': 2,
-          'width': 3,
-          'height': 4,
-          'points': <dynamic>[
-            <dynamic>[5, 6],
-            <dynamic>[7, 8],
-          ],
-          'geo_point': geo
-        };
 
-        returnValue = <dynamic>[_barcode];
-
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+        returnBarcodes[0]['valueType'] =
+            BarcodeValueType.geographicCoordinates.index;
+        returnBarcodes[0]['geoPoint'] = geoPoint;
+        returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
-        expect(log, <Matcher>[
-          isMethodCall(
-            'BarcodeDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
-
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
-        expect(barcode.rawValue, 'geo:raw');
-        expect(barcode.displayValue, 'geo:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
-        ]);
+        expect(barcode.valueType, BarcodeValueType.geographicCoordinates);
         expect(barcode.geoPoint.latitude, 0.2);
         expect(barcode.geoPoint.longitude, 0.3);
       });
 
-      test('detectInImage contact_info', () async {
+      test('detectInImage contactInfo', () async {
         final Map<dynamic, dynamic> contact = <dynamic, dynamic>{
           'addresses': <dynamic>[
             <dynamic, dynamic>{
-              'address_lines': <String>['al'],
-              'type': 0,
+              'addressLines': <String>['al'],
+              'type': BarcodeAddressType.work.index,
             }
           ],
           'emails': <dynamic>[
             <dynamic, dynamic>{
-              'type': 0,
+              'type': BarcodeEmailType.home.index,
               'address': 'a',
               'body': 'b',
               'subject': 's'
             },
           ],
           'name': <dynamic, dynamic>{
-            'formatted_name': 'fn',
+            'formattedName': 'fn',
             'first': 'f',
             'last': 'l',
             'middle': 'm',
@@ -426,60 +292,25 @@ void main() {
           'phones': <dynamic>[
             <dynamic, dynamic>{
               'number': '012',
-              'type': 0,
+              'type': BarcodePhoneType.mobile.index,
             }
           ],
           'urls': <String>['url'],
-          'job_title': 'j',
+          'jobTitle': 'j',
           'organization': 'o'
         };
-        final Map<dynamic, dynamic> _barcode = <dynamic, dynamic>{
-          'raw_value': 'contact:raw',
-          'display_value': 'contact:display',
-          'value_type': 0,
-          'format': 0,
-          'left': 1,
-          'top': 2,
-          'width': 3,
-          'height': 4,
-          'points': <dynamic>[
-            <dynamic>[5, 6],
-            <dynamic>[7, 8],
-          ],
-          'contact_info': contact
-        };
 
-        returnValue = <dynamic>[_barcode];
-
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+        returnBarcodes[0]['valueType'] = BarcodeValueType.contactInfo.index;
+        returnBarcodes[0]['contactInfo'] = contact;
+        returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
-        expect(log, <Matcher>[
-          isMethodCall(
-            'BarcodeDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
-
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
-        expect(barcode.rawValue, 'contact:raw');
-        expect(barcode.displayValue, 'contact:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
-        ]);
-        expect(
-            barcode.contactInfo.addresses[0].type, BarcodeAddressType.Unknown);
+        expect(barcode.valueType, BarcodeValueType.contactInfo);
+        expect(barcode.contactInfo.addresses[0].type, BarcodeAddressType.work);
         expect(barcode.contactInfo.addresses[0].addressLines[0], 'al');
-        expect(barcode.contactInfo.emails[0].type, BarcodeEmailType.Unknown);
+        expect(barcode.contactInfo.emails[0].type, BarcodeEmailType.home);
         expect(barcode.contactInfo.emails[0].address, 'a');
         expect(barcode.contactInfo.emails[0].body, 'b');
         expect(barcode.contactInfo.emails[0].subject, 's');
@@ -490,16 +321,16 @@ void main() {
         expect(barcode.contactInfo.name.prefix, 'p');
         expect(barcode.contactInfo.name.suffix, 's');
         expect(barcode.contactInfo.name.pronunciation, 'pn');
-        expect(barcode.contactInfo.phones[0].type, BarcodePhoneType.Unknown);
+        expect(barcode.contactInfo.phones[0].type, BarcodePhoneType.mobile);
         expect(barcode.contactInfo.phones[0].number, '012');
         expect(barcode.contactInfo.urls[0], 'url');
         expect(barcode.contactInfo.jobTitle, 'j');
         expect(barcode.contactInfo.organization, 'o');
       });
 
-      test('detectInImage calendar_event', () async {
+      test('detectInImage calendarEvent', () async {
         final Map<dynamic, dynamic> calendar = <dynamic, dynamic>{
-          'event_description': 'e',
+          'eventDescription': 'e',
           'location': 'l',
           'organizer': 'o',
           'status': 'st',
@@ -507,49 +338,15 @@ void main() {
           'start': '2017-07-04 12:34:56.123',
           'end': '2018-08-05 01:23:45.456',
         };
-        final Map<dynamic, dynamic> _barcode = <dynamic, dynamic>{
-          'raw_value': 'calendar:raw',
-          'display_value': 'calendar:display',
-          'value_type': 0,
-          'format': 0,
-          'left': 1,
-          'top': 2,
-          'width': 3,
-          'height': 4,
-          'points': <dynamic>[
-            <dynamic>[5, 6],
-            <dynamic>[7, 8],
-          ],
-          'calendar_event': calendar
-        };
 
-        returnValue = <dynamic>[_barcode];
-
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+        returnBarcodes[0]['valueType'] = BarcodeValueType.calendarEvent.index;
+        returnBarcodes[0]['calendarEvent'] = calendar;
+        returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
-        expect(log, <Matcher>[
-          isMethodCall(
-            'BarcodeDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
-
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
-        expect(barcode.rawValue, 'calendar:raw');
-        expect(barcode.displayValue, 'calendar:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
-        ]);
+        expect(barcode.valueType, BarcodeValueType.calendarEvent);
         expect(barcode.calendarEvent.eventDescription, 'e');
         expect(barcode.calendarEvent.location, 'l');
         expect(barcode.calendarEvent.organizer, 'o');
@@ -560,66 +357,32 @@ void main() {
         expect(barcode.calendarEvent.end, DateTime(2018, 8, 5, 1, 23, 45, 456));
       });
 
-      test('detectInImage driver_license', () async {
+      test('detectInImage driversLicense', () async {
         final Map<dynamic, dynamic> driver = <dynamic, dynamic>{
-          'first_name': 'fn',
-          'middle_name': 'mn',
-          'last_name': 'ln',
+          'firstName': 'fn',
+          'middleName': 'mn',
+          'lastName': 'ln',
           'gender': 'g',
-          'address_city': 'ac',
-          'address_state': 'a',
-          'address_street': 'st',
-          'address_zip': 'az',
-          'birth_date': 'bd',
-          'document_type': 'dt',
-          'license_number': 'l',
-          'expiry_date': 'ed',
-          'issuing_date': 'id',
-          'issuing_country': 'ic'
-        };
-        final Map<dynamic, dynamic> _barcode = <dynamic, dynamic>{
-          'raw_value': 'driver:raw',
-          'display_value': 'driver:display',
-          'value_type': 0,
-          'format': 0,
-          'left': 1,
-          'top': 2,
-          'width': 3,
-          'height': 4,
-          'points': <dynamic>[
-            <dynamic>[5, 6],
-            <dynamic>[7, 8],
-          ],
-          'driver_license': driver
+          'addressCity': 'ac',
+          'addressState': 'a',
+          'addressStreet': 'st',
+          'addressZip': 'az',
+          'birthDate': 'bd',
+          'documentType': 'dt',
+          'licenseNumber': 'l',
+          'expiryDate': 'ed',
+          'issuingDate': 'id',
+          'issuingCountry': 'ic'
         };
 
-        returnValue = <dynamic>[_barcode];
-
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+        returnBarcodes[0]['valueType'] = BarcodeValueType.driverLicense.index;
+        returnBarcodes[0]['driverLicense'] = driver;
+        returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
-        expect(log, <Matcher>[
-          isMethodCall(
-            'BarcodeDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
-
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
-        expect(barcode.rawValue, 'driver:raw');
-        expect(barcode.displayValue, 'driver:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
-        ]);
+        expect(barcode.valueType, BarcodeValueType.driverLicense);
         expect(barcode.driverLicense.firstName, 'fn');
         expect(barcode.driverLicense.middleName, 'mn');
         expect(barcode.driverLicense.lastName, 'ln');
@@ -639,65 +402,96 @@ void main() {
       test('detectInImage no blocks', () async {
         returnValue = <dynamic>[];
 
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
-
         final List<Barcode> blocks = await detector.detectInImage(image);
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'BarcodeDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
-
         expect(blocks, isEmpty);
       });
 
       test('detectInImage no bounding box', () async {
         returnValue = <dynamic>[
           <dynamic, dynamic>{
-            'raw_value': 'potato:raw',
-            'display_value': 'potato:display',
-            'value_type': 0,
+            'rawValue': 'potato:raw',
+            'displayValue': 'potato:display',
+            'valueType': 0,
             'format': 0,
             'points': <dynamic>[
-              <dynamic>[17, 18],
-              <dynamic>[19, 20],
+              <dynamic>[17.0, 18.0],
+              <dynamic>[19.0, 20.0],
             ],
           },
         ];
 
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
-
         final List<Barcode> barcodes = await detector.detectInImage(image);
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'BarcodeDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
 
         final Barcode barcode = barcodes[0];
         expect(barcode.boundingBox, null);
         expect(barcode.rawValue, 'potato:raw');
         expect(barcode.displayValue, 'potato:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(17, 18),
-          Point<int>(19, 20),
+        expect(barcode.cornerPoints, const <Offset>[
+          Offset(17.0, 18.0),
+          Offset(19.0, 20.0),
         ]);
+      });
+
+      test('enums match device APIs', () {
+        expect(BarcodeValueType.values.length, 13);
+        expect(BarcodeValueType.unknown.index, 0);
+        expect(BarcodeValueType.contactInfo.index, 1);
+        expect(BarcodeValueType.email.index, 2);
+        expect(BarcodeValueType.isbn.index, 3);
+        expect(BarcodeValueType.phone.index, 4);
+        expect(BarcodeValueType.product.index, 5);
+        expect(BarcodeValueType.sms.index, 6);
+        expect(BarcodeValueType.text.index, 7);
+        expect(BarcodeValueType.url.index, 8);
+        expect(BarcodeValueType.wifi.index, 9);
+        expect(BarcodeValueType.geographicCoordinates.index, 10);
+        expect(BarcodeValueType.calendarEvent.index, 11);
+        expect(BarcodeValueType.driverLicense.index, 12);
+
+        expect(BarcodeEmailType.values.length, 3);
+        expect(BarcodeEmailType.unknown.index, 0);
+        expect(BarcodeEmailType.work.index, 1);
+        expect(BarcodeEmailType.home.index, 2);
+
+        expect(BarcodePhoneType.values.length, 5);
+        expect(BarcodePhoneType.unknown.index, 0);
+        expect(BarcodePhoneType.work.index, 1);
+        expect(BarcodePhoneType.home.index, 2);
+        expect(BarcodePhoneType.fax.index, 3);
+        expect(BarcodePhoneType.mobile.index, 4);
+
+        expect(BarcodeWiFiEncryptionType.values.length, 4);
+        expect(BarcodeWiFiEncryptionType.unknown.index, 0);
+        expect(BarcodeWiFiEncryptionType.open.index, 1);
+        expect(BarcodeWiFiEncryptionType.wpa.index, 2);
+        expect(BarcodeWiFiEncryptionType.wep.index, 3);
+
+        expect(BarcodeAddressType.values.length, 3);
+        expect(BarcodeAddressType.unknown.index, 0);
+        expect(BarcodeAddressType.work.index, 1);
+        expect(BarcodeAddressType.home.index, 2);
+      });
+
+      group('$BarcodeDetectorOptions', () {
+        test('barcodeFormats', () async {
+          // The constructor for `BarcodeDetectorOptions` can't be `const`
+          // without triggering a `CONST_EVAL_TYPE_BOOL_INT` error.
+          // ignore: prefer_const_constructors
+          final BarcodeDetectorOptions options = BarcodeDetectorOptions(
+            barcodeFormats: BarcodeFormat.code128 |
+                BarcodeFormat.dataMatrix |
+                BarcodeFormat.ean8,
+          );
+
+          final BarcodeDetector detector =
+              FirebaseVision.instance.barcodeDetector(options);
+          await detector.detectInImage(image);
+
+          expect(
+            log[0].arguments['options']['barcodeFormats'],
+            0x0001 | 0x0010 | 0x0040,
+          );
+        });
       });
     });
 
@@ -707,10 +501,10 @@ void main() {
       setUp(() {
         testFaces = <dynamic>[
           <dynamic, dynamic>{
-            'left': 0,
-            'top': 1,
-            'width': 2,
-            'height': 3,
+            'left': 0.0,
+            'top': 1.0,
+            'width': 2.0,
+            'height': 3.0,
             'headEulerAngleY': 4.0,
             'headEulerAngleZ': 5.0,
             'leftEyeOpenProbability': 0.4,
@@ -733,11 +527,11 @@ void main() {
         ];
       });
 
-      test('detectInImage', () async {
+      test('processImage', () async {
         returnValue = testFaces;
 
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
-          new FaceDetectorOptions(
+          const FaceDetectorOptions(
             enableClassification: true,
             enableLandmarks: true,
             enableTracking: false,
@@ -746,17 +540,20 @@ void main() {
           ),
         );
 
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
           'empty',
         );
 
-        final List<Face> faces = await detector.detectInImage(image);
+        final List<Face> faces = await detector.processImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
-            'FaceDetector#detectInImage',
+            'FaceDetector#processImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'enableClassification': true,
                 'enableLandmarks': true,
@@ -769,7 +566,7 @@ void main() {
         ]);
 
         final Face face = faces[0];
-        expect(face.boundingBox, const Rectangle<int>(0, 1, 2, 3));
+        expect(face.boundingBox, Rect.fromLTWH(0.0, 1.0, 2.0, 3.0));
         expect(face.headEulerAngleY, 4.0);
         expect(face.headEulerAngleZ, 5.0);
         expect(face.leftEyeOpenProbability, 0.4);
@@ -781,49 +578,49 @@ void main() {
           expect(face.getLandmark(type).type, type);
         }
 
-        Point<double> p(FaceLandmarkType type) {
+        Offset p(FaceLandmarkType type) {
           return face.getLandmark(type).position;
         }
 
-        expect(p(FaceLandmarkType.bottomMouth), const Point<double>(0.1, 1.1));
-        expect(p(FaceLandmarkType.leftCheek), const Point<double>(2.1, 3.1));
-        expect(p(FaceLandmarkType.leftEar), const Point<double>(4.1, 5.1));
-        expect(p(FaceLandmarkType.leftEye), const Point<double>(6.1, 7.1));
-        expect(p(FaceLandmarkType.leftMouth), const Point<double>(8.1, 9.1));
-        expect(p(FaceLandmarkType.noseBase), const Point<double>(10.1, 11.1));
-        expect(p(FaceLandmarkType.rightCheek), const Point<double>(12.1, 13.1));
-        expect(p(FaceLandmarkType.rightEar), const Point<double>(14.1, 15.1));
-        expect(p(FaceLandmarkType.rightEye), const Point<double>(16.1, 17.1));
-        expect(p(FaceLandmarkType.rightMouth), const Point<double>(18.1, 19.1));
+        expect(p(FaceLandmarkType.bottomMouth), const Offset(0.1, 1.1));
+        expect(p(FaceLandmarkType.leftCheek), const Offset(2.1, 3.1));
+        expect(p(FaceLandmarkType.leftEar), const Offset(4.1, 5.1));
+        expect(p(FaceLandmarkType.leftEye), const Offset(6.1, 7.1));
+        expect(p(FaceLandmarkType.leftMouth), const Offset(8.1, 9.1));
+        expect(p(FaceLandmarkType.noseBase), const Offset(10.1, 11.1));
+        expect(p(FaceLandmarkType.rightCheek), const Offset(12.1, 13.1));
+        expect(p(FaceLandmarkType.rightEar), const Offset(14.1, 15.1));
+        expect(p(FaceLandmarkType.rightEye), const Offset(16.1, 17.1));
+        expect(p(FaceLandmarkType.rightMouth), const Offset(18.1, 19.1));
       });
 
-      test('detectInImage with null landmark', () async {
+      test('processImage with null landmark', () async {
         testFaces[0]['landmarks']['bottomMouth'] = null;
         returnValue = testFaces;
 
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
-          new FaceDetectorOptions(),
+          const FaceDetectorOptions(),
         );
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
           'empty',
         );
 
-        final List<Face> faces = await detector.detectInImage(image);
+        final List<Face> faces = await detector.processImage(image);
 
         expect(faces[0].getLandmark(FaceLandmarkType.bottomMouth), isNull);
       });
 
-      test('detectInImage no faces', () async {
+      test('processImage no faces', () async {
         returnValue = <dynamic>[];
 
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
-          new FaceDetectorOptions(),
+          const FaceDetectorOptions(),
         );
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
           'empty',
         );
 
-        final List<Face> faces = await detector.detectInImage(image);
+        final List<Face> faces = await detector.processImage(image);
         expect(faces, isEmpty);
       });
     });
@@ -846,10 +643,10 @@ void main() {
         returnValue = labelData;
 
         final LabelDetector detector = FirebaseVision.instance.labelDetector(
-          LabelDetectorOptions(confidenceThreshold: 0.2),
+          const LabelDetectorOptions(confidenceThreshold: 0.2),
         );
 
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
           'empty',
         );
 
@@ -859,7 +656,10 @@ void main() {
           isMethodCall(
             'LabelDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'confidenceThreshold': 0.2,
               },
@@ -880,10 +680,10 @@ void main() {
         returnValue = <dynamic>[];
 
         final LabelDetector detector = FirebaseVision.instance.labelDetector(
-          LabelDetectorOptions(),
+          const LabelDetectorOptions(),
         );
         final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+            FirebaseVisionImage.fromFilePath('empty');
 
         final List<Label> labels = await detector.detectInImage(image);
 
@@ -891,7 +691,10 @@ void main() {
           isMethodCall(
             'LabelDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'confidenceThreshold': 0.5,
               },
@@ -903,152 +706,339 @@ void main() {
       });
     });
 
-    group('$TextDetector', () {
+    group('$CloudLabelDetector', () {
       test('detectInImage', () async {
-        final Map<dynamic, dynamic> textElement = <dynamic, dynamic>{
-          'text': 'hello',
-          'left': 1,
-          'top': 2,
-          'width': 3,
-          'height': 4,
-          'points': <dynamic>[
-            <dynamic>[5, 6],
-            <dynamic>[7, 8],
-          ],
-        };
-
-        final Map<dynamic, dynamic> textLine = <dynamic, dynamic>{
-          'text': 'my',
-          'left': 5,
-          'top': 6,
-          'width': 7,
-          'height': 8,
-          'points': <dynamic>[
-            <dynamic>[9, 10],
-            <dynamic>[11, 12],
-          ],
-          'elements': <dynamic>[
-            textElement,
-          ],
-        };
-
-        final List<dynamic> textBlocks = <dynamic>[
+        final List<dynamic> labelData = <dynamic>[
           <dynamic, dynamic>{
-            'text': 'friend',
-            'left': 13,
-            'top': 14,
-            'width': 15,
-            'height': 16,
-            'points': <dynamic>[
-              <dynamic>[17, 18],
-              <dynamic>[19, 20],
-            ],
-            'lines': <dynamic>[
-              textLine,
-            ],
+            'confidence': 0.6,
+            'entityId': '/m/0',
+            'label': 'banana',
+          },
+          <dynamic, dynamic>{
+            'confidence': 0.8,
+            'entityId': '/m/1',
+            'label': 'apple',
           },
         ];
 
-        returnValue = textBlocks;
+        returnValue = labelData;
 
-        final TextDetector detector = FirebaseVision.instance.textDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+        final CloudLabelDetector detector =
+            FirebaseVision.instance.cloudLabelDetector(
+          const CloudDetectorOptions(
+            maxResults: 5,
+            modelType: CloudModelType.latest,
+          ),
+        );
 
-        final List<TextBlock> blocks = await detector.detectInImage(image);
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
+          'empty',
+        );
+
+        final List<Label> labels = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
-            'TextDetector#detectInImage',
+            'CloudLabelDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
-              'options': <String, dynamic>{},
+              'bytes': null,
+              'metadata': null,
+              'options': <String, dynamic>{
+                'maxResults': 5,
+                'modelType': 'latest',
+              },
             },
           ),
         ]);
 
-        final TextBlock block = blocks[0];
-        expect(block.boundingBox, const Rectangle<int>(13, 14, 15, 16));
-        expect(block.text, 'friend');
-        expect(block.cornerPoints, const <Point<int>>[
-          Point<int>(17, 18),
-          Point<int>(19, 20),
-        ]);
+        expect(labels[0].confidence, 0.6);
+        expect(labels[0].entityId, '/m/0');
+        expect(labels[0].label, 'banana');
 
-        final TextLine line = block.lines[0];
-        expect(line.boundingBox, const Rectangle<int>(5, 6, 7, 8));
-        expect(line.text, 'my');
-        expect(line.cornerPoints, const <Point<int>>[
-          Point<int>(9, 10),
-          Point<int>(11, 12),
-        ]);
-
-        final TextElement element = line.elements[0];
-        expect(element.boundingBox, const Rectangle<int>(1, 2, 3, 4));
-        expect(element.text, 'hello');
-        expect(element.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
-        ]);
+        expect(labels[1].confidence, 0.8);
+        expect(labels[1].entityId, '/m/1');
+        expect(labels[1].label, 'apple');
       });
 
       test('detectInImage no blocks', () async {
         returnValue = <dynamic>[];
 
-        final TextDetector detector = FirebaseVision.instance.textDetector();
+        final CloudLabelDetector detector =
+            FirebaseVision.instance.cloudLabelDetector(
+          const CloudDetectorOptions(),
+        );
         final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+            FirebaseVisionImage.fromFilePath('empty');
 
-        final List<TextBlock> blocks = await detector.detectInImage(image);
+        final List<Label> labels = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
-            'TextDetector#detectInImage',
+            'CloudLabelDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
-              'options': <String, dynamic>{},
+              'bytes': null,
+              'metadata': null,
+              'options': <String, dynamic>{
+                'maxResults': 10,
+                'modelType': 'stable',
+              },
             },
           ),
         ]);
 
-        expect(blocks, isEmpty);
+        expect(labels, isEmpty);
       });
+    });
 
-      test('detectInImage no bounding box', () async {
-        returnValue = <dynamic>[
+    group('$TextRecognizer', () {
+      final TextRecognizer recognizer =
+          FirebaseVision.instance.textRecognizer();
+      final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
+        'empty',
+      );
+
+      setUp(() {
+        final List<dynamic> elements = <dynamic>[
           <dynamic, dynamic>{
-            'text': 'potato',
+            'text': 'hello',
+            'left': 1.0,
+            'top': 2.0,
+            'width': 3.0,
+            'height': 4.0,
             'points': <dynamic>[
-              <dynamic>[17, 18],
-              <dynamic>[19, 20],
+              <dynamic>[5.0, 6.0],
+              <dynamic>[7.0, 8.0],
             ],
-            'lines': <dynamic>[],
+            'recognizedLanguages': <dynamic>[
+              <dynamic, dynamic>{
+                'languageCode': 'ab',
+              },
+              <dynamic, dynamic>{
+                'languageCode': 'cd',
+              }
+            ],
+            'confidence': 0.1,
+          },
+          <dynamic, dynamic>{
+            'text': 'my',
+            'left': 4.0,
+            'top': 3.0,
+            'width': 2.0,
+            'height': 1.0,
+            'points': <dynamic>[
+              <dynamic>[6.0, 5.0],
+              <dynamic>[8.0, 7.0],
+            ],
+            'recognizedLanguages': <dynamic>[],
+            'confidence': 0.2,
           },
         ];
 
-        final TextDetector detector = FirebaseVision.instance.textDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+        final List<dynamic> lines = <dynamic>[
+          <dynamic, dynamic>{
+            'text': 'friend',
+            'left': 5.0,
+            'top': 6.0,
+            'width': 7.0,
+            'height': 8.0,
+            'points': <dynamic>[
+              <dynamic>[9.0, 10.0],
+              <dynamic>[11.0, 12.0],
+            ],
+            'recognizedLanguages': <dynamic>[
+              <dynamic, dynamic>{
+                'languageCode': 'ef',
+              },
+              <dynamic, dynamic>{
+                'languageCode': 'gh',
+              }
+            ],
+            'elements': elements,
+            'confidence': 0.3,
+          },
+          <dynamic, dynamic>{
+            'text': 'how',
+            'left': 8.0,
+            'top': 7.0,
+            'width': 4.0,
+            'height': 5.0,
+            'points': <dynamic>[
+              <dynamic>[10.0, 9.0],
+              <dynamic>[12.0, 11.0],
+            ],
+            'recognizedLanguages': <dynamic>[],
+            'elements': <dynamic>[],
+            'confidence': 0.4,
+          },
+        ];
 
-        final List<TextBlock> blocks = await detector.detectInImage(image);
+        final List<dynamic> blocks = <dynamic>[
+          <dynamic, dynamic>{
+            'text': 'friend',
+            'left': 13.0,
+            'top': 14.0,
+            'width': 15.0,
+            'height': 16.0,
+            'points': <dynamic>[
+              <dynamic>[17.0, 18.0],
+              <dynamic>[19.0, 20.0],
+            ],
+            'recognizedLanguages': <dynamic>[
+              <dynamic, dynamic>{
+                'languageCode': 'ij',
+              },
+              <dynamic, dynamic>{
+                'languageCode': 'kl',
+              }
+            ],
+            'lines': lines,
+            'confidence': 0.5,
+          },
+          <dynamic, dynamic>{
+            'text': 'hello',
+            'left': 14.0,
+            'top': 13.0,
+            'width': 16.0,
+            'height': 15.0,
+            'points': <dynamic>[
+              <dynamic>[18.0, 17.0],
+              <dynamic>[20.0, 19.0],
+            ],
+            'recognizedLanguages': <dynamic>[],
+            'lines': <dynamic>[],
+            'confidence': 0.6,
+          },
+        ];
 
+        final dynamic visionText = <dynamic, dynamic>{
+          'text': 'testext',
+          'blocks': blocks,
+        };
+
+        returnValue = visionText;
+      });
+
+      group('$TextBlock', () {
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
+
+          expect(text.blocks, hasLength(2));
+
+          TextBlock block = text.blocks[0];
+          expect(block.boundingBox, Rect.fromLTWH(13.0, 14.0, 15.0, 16.0));
+          expect(block.text, 'friend');
+          expect(block.cornerPoints, const <Offset>[
+            Offset(17.0, 18.0),
+            Offset(19.0, 20.0),
+          ]);
+          expect(block.recognizedLanguages, hasLength(2));
+          expect(block.recognizedLanguages[0].languageCode, 'ij');
+          expect(block.recognizedLanguages[1].languageCode, 'kl');
+          expect(block.confidence, 0.5);
+
+          block = text.blocks[1];
+          expect(block.boundingBox, Rect.fromLTWH(14.0, 13.0, 16.0, 15.0));
+          expect(block.text, 'hello');
+          expect(block.cornerPoints, const <Offset>[
+            Offset(18.0, 17.0),
+            Offset(20.0, 19.0),
+          ]);
+          expect(block.confidence, 0.6);
+        });
+      });
+
+      group('$TextLine', () {
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
+
+          TextLine line = text.blocks[0].lines[0];
+          expect(line.boundingBox, Rect.fromLTWH(5, 6, 7, 8));
+          expect(line.text, 'friend');
+          expect(line.cornerPoints, const <Offset>[
+            Offset(9.0, 10.0),
+            Offset(11.0, 12.0),
+          ]);
+          expect(line.recognizedLanguages, hasLength(2));
+          expect(line.recognizedLanguages[0].languageCode, 'ef');
+          expect(line.recognizedLanguages[1].languageCode, 'gh');
+          expect(line.confidence, 0.3);
+
+          line = text.blocks[0].lines[1];
+          expect(line.boundingBox, Rect.fromLTWH(8.0, 7.0, 4.0, 5.0));
+          expect(line.text, 'how');
+          expect(line.cornerPoints, const <Offset>[
+            Offset(10.0, 9.0),
+            Offset(12.0, 11.0),
+          ]);
+          expect(line.confidence, 0.4);
+        });
+      });
+
+      group('$TextElement', () {
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
+
+          TextElement element = text.blocks[0].lines[0].elements[0];
+          expect(element.boundingBox, Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
+          expect(element.text, 'hello');
+          expect(element.cornerPoints, const <Offset>[
+            Offset(5.0, 6.0),
+            Offset(7.0, 8.0),
+          ]);
+          expect(element.recognizedLanguages, hasLength(2));
+          expect(element.recognizedLanguages[0].languageCode, 'ab');
+          expect(element.recognizedLanguages[1].languageCode, 'cd');
+          expect(element.confidence, 0.1);
+
+          element = text.blocks[0].lines[0].elements[1];
+          expect(element.boundingBox, Rect.fromLTWH(4.0, 3.0, 2.0, 1.0));
+          expect(element.text, 'my');
+          expect(element.cornerPoints, const <Offset>[
+            Offset(6.0, 5.0),
+            Offset(8.0, 7.0),
+          ]);
+          expect(element.confidence, 0.2);
+        });
+      });
+
+      test('processImage', () async {
+        final VisionText text = await recognizer.processImage(image);
+
+        expect(text.text, 'testext');
         expect(log, <Matcher>[
           isMethodCall(
-            'TextDetector#detectInImage',
+            'TextRecognizer#processImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{},
             },
           ),
         ]);
+      });
 
-        final TextBlock block = blocks[0];
+      test('processImage no bounding box', () async {
+        returnValue = <dynamic, dynamic>{
+          'blocks': <dynamic>[
+            <dynamic, dynamic>{
+              'text': '',
+              'points': <dynamic>[],
+              'recognizedLanguages': <dynamic>[],
+              'lines': <dynamic>[],
+            },
+          ],
+        };
+
+        final VisionText text = await recognizer.processImage(image);
+
+        final TextBlock block = text.blocks[0];
         expect(block.boundingBox, null);
-        expect(block.text, 'potato');
-        expect(block.cornerPoints, const <Point<int>>[
-          Point<int>(17, 18),
-          Point<int>(19, 20),
-        ]);
       });
     });
   });

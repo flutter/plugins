@@ -1,3 +1,78 @@
+## 4.0.1+1
+
+* Remove categories.
+
+## 4.0.1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 4.0.0+1
+
+* Added a better error message for iOS when the app is missing necessary URL schemes.
+
+## 4.0.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+  This was originally incorrectly pushed in the `3.3.0` update.
+
+## 3.3.0+1
+
+* **Revert the breaking 3.3.0 update**. 3.3.0 was known to be breaking and
+  should have incremented the major version number instead of the minor. This
+  revert is in and of itself breaking for anyone that has already migrated
+  however. Anyone who has already migrated their app to AndroidX should
+  immediately update to `4.0.0` instead. That's the correctly versioned new push
+  of `3.3.0`.
+
+## 3.3.0
+
+* **BAD**. This was a breaking change that was incorrectly published on a minor
+  version upgrade, should never have happened. Reverted by 3.3.0+1.
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 3.2.4
+
+* Increase play-services-auth version to 16.0.1
+
+## 3.2.3
+
+* Change google-services.json and GoogleService-Info.plist of example.
+
+## 3.2.2
+
+* Don't use the result code when handling signin. This results in better error codes because result code always returns "cancelled".
+
+## 3.2.1
+
+* Set http version to be compatible with flutter_test.
+
+## 3.2.0
+
+* Add support for clearing authentication cache for Android.
+
+## 3.1.0
+
+* Add support to recover authentication for Android.
+
+## 3.0.6
+
+* Remove flaky displayName assertion
+
+## 3.0.5
+
+* Added missing http package dependency.
+
 ## 3.0.4
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

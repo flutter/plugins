@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use_from_same_package
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -25,6 +26,7 @@ enum MobileAdEvent {
 /// The user's gender for the sake of ad targeting using [MobileAdTargetingInfo].
 // Warning: the index values of the enums must match the values of the corresponding
 // AdMob constants. For example MobileAdGender.female.index == kGADGenderFemale.
+@Deprecated('This functionality is deprecated in AdMob without replacement.')
 enum MobileAdGender {
   unknown,
   male,
@@ -39,23 +41,31 @@ typedef void MobileAdListener(MobileAdEvent event);
 /// This class's properties mirror the native AdRequest API. See for example:
 /// [AdRequest.Builder for Android](https://firebase.google.com/docs/reference/android/com/google/android/gms/ads/AdRequest.Builder).
 class MobileAdTargetingInfo {
-  const MobileAdTargetingInfo({
-    this.keywords,
-    this.contentUrl,
-    this.birthday,
-    this.gender,
-    this.designedForFamilies,
-    this.childDirected,
-    this.testDevices,
-  });
+  const MobileAdTargetingInfo(
+      {this.keywords,
+      this.contentUrl,
+      @Deprecated('This functionality is deprecated in AdMob without replacement.')
+          this.birthday,
+      @Deprecated('This functionality is deprecated in AdMob without replacement.')
+          this.gender,
+      @Deprecated('Use `childDirected` instead.')
+          this.designedForFamilies,
+      this.childDirected,
+      this.testDevices,
+      this.nonPersonalizedAds});
 
   final List<String> keywords;
   final String contentUrl;
+  @Deprecated('This functionality is deprecated in AdMob without replacement.')
   final DateTime birthday;
+  @Deprecated('This functionality is deprecated in AdMob without replacement.')
   final MobileAdGender gender;
+  @Deprecated(
+      'This functionality is deprecated in AdMob.  Use `childDirected` instead.')
   final bool designedForFamilies;
   final bool childDirected;
   final List<String> testDevices;
+  final bool nonPersonalizedAds;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{
@@ -66,6 +76,8 @@ class MobileAdTargetingInfo {
       assert(keywords.every((String s) => s != null && s.isNotEmpty));
       json['keywords'] = keywords;
     }
+    if (nonPersonalizedAds != null)
+      json['nonPersonalizedAds'] = nonPersonalizedAds;
     if (contentUrl != null && contentUrl.isNotEmpty)
       json['contentUrl'] = contentUrl;
     if (birthday != null) json['birthday'] = birthday.millisecondsSinceEpoch;
@@ -97,10 +109,6 @@ enum AdSizeType {
 /// and [iOS](https://developers.google.com/admob/ios/banner#banner_sizes) for
 /// additional details.
 class AdSize {
-  final int height;
-  final int width;
-  final AdSizeType adSizeType;
-
   // Private constructor. Apps should use the static constants rather than
   // create their own instances of [AdSize].
   const AdSize._({
@@ -109,36 +117,40 @@ class AdSize {
     @required this.adSizeType,
   });
 
+  final int height;
+  final int width;
+  final AdSizeType adSizeType;
+
   /// The standard banner (320x50) size.
-  static const AdSize banner = const AdSize._(
+  static const AdSize banner = AdSize._(
     width: 320,
     height: 50,
     adSizeType: AdSizeType.WidthAndHeight,
   );
 
   /// The large banner (320x100) size.
-  static const AdSize largeBanner = const AdSize._(
+  static const AdSize largeBanner = AdSize._(
     width: 320,
     height: 100,
     adSizeType: AdSizeType.WidthAndHeight,
   );
 
   /// The medium rectangle (300x250) size.
-  static const AdSize mediumRectangle = const AdSize._(
+  static const AdSize mediumRectangle = AdSize._(
     width: 300,
     height: 250,
     adSizeType: AdSizeType.WidthAndHeight,
   );
 
   /// The full banner (468x60) size.
-  static const AdSize fullBanner = const AdSize._(
+  static const AdSize fullBanner = AdSize._(
     width: 468,
     height: 60,
     adSizeType: AdSizeType.WidthAndHeight,
   );
 
   /// The leaderboard (728x90) size.
-  static const AdSize leaderboard = const AdSize._(
+  static const AdSize leaderboard = AdSize._(
     width: 728,
     height: 90,
     adSizeType: AdSizeType.WidthAndHeight,
@@ -151,7 +163,7 @@ class AdSize {
   /// calculation based on the displaying device's height. For more info see the
   /// [Android](https://developers.google.com/admob/android/banner) and
   /// [iOS](https://developers.google.com/admob/ios/banner) banner ad guides.
-  static const AdSize smartBanner = const AdSize._(
+  static const AdSize smartBanner = AdSize._(
     width: 0,
     height: 0,
     adSizeType: AdSizeType.SmartBanner,
@@ -164,8 +176,6 @@ class AdSize {
 ///
 /// A valid [adUnitId] is required.
 abstract class MobileAd {
-  static final Map<int, MobileAd> _allAds = <int, MobileAd>{};
-
   /// Default constructor, used by subclasses.
   MobileAd(
       {@required this.adUnitId,
@@ -177,6 +187,8 @@ abstract class MobileAd {
     _allAds[id] = this;
   }
 
+  static final Map<int, MobileAd> _allAds = <int, MobileAd>{};
+
   /// Optional targeting info per the native AdMob API.
   MobileAdTargetingInfo get targetingInfo => _targetingInfo;
   final MobileAdTargetingInfo _targetingInfo;
@@ -187,7 +199,7 @@ abstract class MobileAd {
   final String adUnitId;
 
   /// Called when the status of the ad changes.
-  final MobileAdListener listener;
+  MobileAdListener listener;
 
   /// An internal id that identifies this mobile ad to the native AdMob plugin.
   ///
@@ -225,18 +237,16 @@ abstract class MobileAd {
     _allAds[id] = null;
     return _invokeBooleanMethod("disposeAd", <String, dynamic>{'id': id});
   }
+
+  Future<bool> isLoaded() {
+    return _invokeBooleanMethod("isAdLoaded", <String, dynamic>{
+      'id': id,
+    });
+  }
 }
 
 /// A banner ad for the [FirebaseAdMobPlugin].
 class BannerAd extends MobileAd {
-  /// These are AdMob's test ad unit IDs, which always return test ads. You're
-  /// encouraged to use them for testing in your own apps.
-  static final String testAdUnitId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/6300978111'
-      : 'ca-app-pub-3940256099942544/2934735716';
-
-  final AdSize size;
-
   /// Create a BannerAd.
   ///
   /// A valid [adUnitId] is required.
@@ -249,6 +259,14 @@ class BannerAd extends MobileAd {
             adUnitId: adUnitId,
             targetingInfo: targetingInfo,
             listener: listener);
+
+  final AdSize size;
+
+  /// These are AdMob's test ad unit IDs, which always return test ads. You're
+  /// encouraged to use them for testing in your own apps.
+  static final String testAdUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/6300978111'
+      : 'ca-app-pub-3940256099942544/2934735716';
 
   @override
   Future<bool> load() {
@@ -265,13 +283,6 @@ class BannerAd extends MobileAd {
 
 /// A full-screen interstitial ad for the [FirebaseAdMobPlugin].
 class InterstitialAd extends MobileAd {
-  /// A platform-specific AdMob test ad unit ID for interstitials. This ad unit
-  /// has been specially configured to always return test ads, and developers
-  /// are encouraged to use it while building and testing their apps.
-  static final String testAdUnitId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/1033173712'
-      : 'ca-app-pub-3940256099942544/4411468910';
-
   /// Create an Interstitial.
   ///
   /// A valid [adUnitId] is required.
@@ -283,6 +294,13 @@ class InterstitialAd extends MobileAd {
             adUnitId: adUnitId,
             targetingInfo: targetingInfo,
             listener: listener);
+
+  /// A platform-specific AdMob test ad unit ID for interstitials. This ad unit
+  /// has been specially configured to always return test ads, and developers
+  /// are encouraged to use it while building and testing their apps.
+  static final String testAdUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/1033173712'
+      : 'ca-app-pub-3940256099942544/4411468910';
 
   @override
   Future<bool> load() {
@@ -352,6 +370,8 @@ typedef void RewardedVideoAdListener(RewardedVideoAdEvent event,
 /// are so large, it's a good idea to start loading an ad well in advance of
 /// when it's likely to be needed.
 class RewardedVideoAd {
+  RewardedVideoAd._();
+
   /// A platform-specific AdMob test ad unit ID for rewarded video ads. This ad
   /// unit has been specially configured to always return test ads, and
   /// developers are encouraged to use it while building and testing their apps.
@@ -359,9 +379,7 @@ class RewardedVideoAd {
       ? 'ca-app-pub-3940256099942544/5224354917'
       : 'ca-app-pub-3940256099942544/1712485313';
 
-  static final RewardedVideoAd _instance = new RewardedVideoAd._();
-
-  RewardedVideoAd._();
+  static final RewardedVideoAd _instance = RewardedVideoAd._();
 
   /// The one and only instance of this class.
   static RewardedVideoAd get instance => _instance;
@@ -395,7 +413,7 @@ class RewardedVideoAd {
 ///
 /// Apps can create, load, and show mobile ads. For example:
 /// ```
-/// BannerAd myBanner = new BannerAd(unitId: myBannerAdUnitId)
+/// BannerAd myBanner = BannerAd(unitId: myBannerAdUnitId)
 ///   ..load()
 ///   ..show();
 /// ```
@@ -408,6 +426,11 @@ class RewardedVideoAd {
 ///  * [RewardedVideoAd], a full screen video ad that provides in-app user
 ///    rewards.
 class FirebaseAdMob {
+  @visibleForTesting
+  FirebaseAdMob.private(MethodChannel channel) : _channel = channel {
+    _channel.setMethodCallHandler(_handleMethod);
+  }
+
   // A placeholder AdMob App ID for testing. AdMob App IDs and ad unit IDs are
   // specific to a single operating system, so apps building for both Android and
   // iOS will need a set for each platform.
@@ -415,12 +438,7 @@ class FirebaseAdMob {
       ? 'ca-app-pub-3940256099942544~3347511713'
       : 'ca-app-pub-3940256099942544~1458002511';
 
-  @visibleForTesting
-  FirebaseAdMob.private(MethodChannel channel) : _channel = channel {
-    _channel.setMethodCallHandler(_handleMethod);
-  }
-
-  static final FirebaseAdMob _instance = new FirebaseAdMob.private(
+  static final FirebaseAdMob _instance = FirebaseAdMob.private(
     const MethodChannel('plugins.flutter.io/firebase_admob'),
   );
 
@@ -430,7 +448,7 @@ class FirebaseAdMob {
   final MethodChannel _channel;
 
   static const Map<String, MobileAdEvent> _methodToMobileAdEvent =
-      const <String, MobileAdEvent>{
+      <String, MobileAdEvent>{
     'onAdLoaded': MobileAdEvent.loaded,
     'onAdFailedToLoad': MobileAdEvent.failedToLoad,
     'onAdClicked': MobileAdEvent.clicked,
@@ -441,7 +459,7 @@ class FirebaseAdMob {
   };
 
   static const Map<String, RewardedVideoAdEvent> _methodToRewardedVideoAdEvent =
-      const <String, RewardedVideoAdEvent>{
+      <String, RewardedVideoAdEvent>{
     'onRewarded': RewardedVideoAdEvent.rewarded,
     'onRewardedVideoAdClosed': RewardedVideoAdEvent.closed,
     'onRewardedVideoAdFailedToLoad': RewardedVideoAdEvent.failedToLoad,
@@ -456,7 +474,7 @@ class FirebaseAdMob {
   Future<bool> initialize(
       {@required String appId,
       String trackingId,
-      bool analyticsEnabled: false}) {
+      bool analyticsEnabled = false}) {
     assert(appId != null && appId.isNotEmpty);
     assert(analyticsEnabled != null);
     return _invokeBooleanMethod("initialize", <String, dynamic>{
@@ -492,11 +510,14 @@ class FirebaseAdMob {
       }
     }
 
-    return new Future<Null>(null);
+    return Future<dynamic>.value(null);
   }
 }
 
 Future<bool> _invokeBooleanMethod(String method, [dynamic arguments]) async {
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   final bool result = await FirebaseAdMob.instance._channel.invokeMethod(
     method,
     arguments,

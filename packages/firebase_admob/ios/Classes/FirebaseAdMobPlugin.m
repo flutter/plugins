@@ -10,18 +10,6 @@
 #import "FLTRewardedVideoAdWrapper.h"
 #import "Firebase/Firebase.h"
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@end
-
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", (long)self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
-}
-@end
-
 @interface FLTFirebaseAdMobPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @property(nonatomic, strong) FLTRewardedVideoAdWrapper *rewardedWrapper;
@@ -40,9 +28,10 @@
 
 - (instancetype)init {
   self = [super init];
-  if (self && ![FIRApp defaultApp]) {
-    FLTLogWarning(@"[FIRApp configure]");
+  if (self && ![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+    NSLog(@"Configuring the default Firebase app...");
     [FIRApp configure];
+    NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
   }
   return self;
 }
@@ -210,6 +199,23 @@
   result([NSNumber numberWithBool:YES]);
 }
 
+- (void)callIsAdLoaded:(NSNumber *)mobileAdId
+                  call:(FlutterMethodCall *)call
+                result:(FlutterResult)result {
+  FLTMobileAd *ad = [FLTMobileAd getAdForId:mobileAdId];
+  if (ad == nil) {
+    NSString *message = [NSString
+        stringWithFormat:@"isAdLoaded failed, no ad exists for id=%d", mobileAdId.intValue];
+    result([FlutterError errorWithCode:@"no_ad_for_id" message:message details:nil]);
+    return;
+  }
+  if (ad.status == LOADED) {
+    result([NSNumber numberWithBool:YES]);
+  } else {
+    result([NSNumber numberWithBool:NO]);
+  }
+}
+
 - (void)callShowRewardedVideoAd:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (self.rewardedWrapper.status != FLTRewardedVideoAdStatusLoaded) {
     result([FlutterError errorWithCode:@"ad_not_loaded"
@@ -254,10 +260,9 @@
 
   NSNumber *mobileAdId = (NSNumber *)call.arguments[@"id"];
   if (mobileAdId == nil) {
-    NSString *message =
-        @"FirebaseAdMobPlugin method calls for banners and "
-        @"interstitials must specify an "
-        @"integer mobile ad id";
+    NSString *message = @"FirebaseAdMobPlugin method calls for banners and "
+                        @"interstitials must specify an "
+                        @"integer mobile ad id";
     result([FlutterError errorWithCode:@"no_id" message:message details:nil]);
     return;
   }
@@ -270,6 +275,8 @@
                           result:result];
   } else if ([call.method isEqualToString:@"showAd"]) {
     [self callShowAd:mobileAdId call:call result:result];
+  } else if ([call.method isEqualToString:@"isAdLoaded"]) {
+    [self callIsAdLoaded:mobileAdId call:call result:result];
   } else if ([call.method isEqualToString:@"disposeAd"]) {
     [self callDisposeAd:mobileAdId call:call result:result];
   } else {

@@ -4,14 +4,14 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(new MaterialApp(
+  runApp(MaterialApp(
       title: 'Remote Config Example',
-      home: new FutureBuilder<RemoteConfig>(
+      home: FutureBuilder<RemoteConfig>(
         future: setupRemoteConfig(),
         builder: (BuildContext context, AsyncSnapshot<RemoteConfig> snapshot) {
           return snapshot.hasData
-              ? new WelcomeWidget(remoteConfig: snapshot.data)
-              : new Container();
+              ? WelcomeWidget(remoteConfig: snapshot.data)
+              : Container();
         },
       )));
 }
@@ -23,13 +23,12 @@ class WelcomeWidget extends AnimatedWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('Remote Config Example'),
       ),
-      body: new Center(
-          child: new Text('Welcome ${remoteConfig.getString('welcome')}')),
-      floatingActionButton: new FloatingActionButton(
+      body: Center(child: Text('Welcome ${remoteConfig.getString('welcome')}')),
+      floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.refresh),
           onPressed: () async {
             try {
@@ -52,7 +51,7 @@ class WelcomeWidget extends AnimatedWidget {
 Future<RemoteConfig> setupRemoteConfig() async {
   final RemoteConfig remoteConfig = await RemoteConfig.instance;
   // Enable developer mode to relax fetch throttling
-  remoteConfig.setConfigSettings(new RemoteConfigSettings(debugMode: true));
+  remoteConfig.setConfigSettings(RemoteConfigSettings(debugMode: true));
   remoteConfig.setDefaults(<String, dynamic>{
     'welcome': 'default welcome',
     'hello': 'default hello',

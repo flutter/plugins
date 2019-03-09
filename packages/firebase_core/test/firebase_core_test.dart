@@ -9,10 +9,10 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('$FirebaseApp', () {
     final List<MethodCall> log = <MethodCall>[];
-    const FirebaseApp testApp = const FirebaseApp(
+    const FirebaseApp testApp = FirebaseApp(
       name: 'testApp',
     );
-    const FirebaseOptions testOptions = const FirebaseOptions(
+    const FirebaseOptions testOptions = FirebaseOptions(
       apiKey: 'testAPIKey',
       bundleID: 'testBundleID',
       clientID: 'testClientID',
@@ -56,7 +56,7 @@ void main() {
               },
             ];
           default:
-            break;
+            return null;
         }
       });
       log.clear();
@@ -76,10 +76,6 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall(
-            'FirebaseApp#appNamed',
-            arguments: 'testApp',
-          ),
           isMethodCall(
             'FirebaseApp#appNamed',
             arguments: 'testApp',

@@ -18,10 +18,10 @@ class FirebasePerformance {
 
   @visibleForTesting
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/firebase_performance');
+      MethodChannel('plugins.flutter.io/firebase_performance');
 
   /// Singleton of [FirebasePerformance].
-  static final FirebasePerformance instance = new FirebasePerformance._();
+  static final FirebasePerformance instance = FirebasePerformance._();
 
   /// Determines whether performance monitoring is enabled or disabled.
   ///
@@ -30,6 +30,9 @@ class FirebasePerformance {
   /// does not reflect whether instrumentation is enabled/disabled.
   Future<bool> isPerformanceCollectionEnabled() async {
     final bool isEnabled = await channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         .invokeMethod('FirebasePerformance#isPerformanceCollectionEnabled');
     return isEnabled;
   }
@@ -39,6 +42,9 @@ class FirebasePerformance {
   /// This setting is persisted and applied on future invocations of your
   /// application. By default, performance monitoring is enabled.
   Future<void> setPerformanceCollectionEnabled(bool enable) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod(
         'FirebasePerformance#setPerformanceCollectionEnabled', enable);
   }
@@ -49,12 +55,12 @@ class FirebasePerformance {
   /// underscore _ character, max length of [Trace.maxTraceNameLength]
   /// characters.
   Trace newTrace(String name) {
-    return new Trace._(_traceCount++, name);
+    return Trace._(_traceCount++, name);
   }
 
   /// Creates [HttpMetric] for collecting performance for one request/response.
   HttpMetric newHttpMetric(String url, HttpMethod httpMethod) {
-    return new HttpMetric._(_httpMetricCount++, url, httpMethod);
+    return HttpMetric._(_httpMetricCount++, url, httpMethod);
   }
 
   /// Creates a [Trace] object with given [name] and start the trace.

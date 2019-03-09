@@ -1,13 +1,14 @@
 name: camera_example
 description: Demonstrates how to use the camera plugin.
+author: Flutter Team <flutter-dev@googlegroups.com>
 
 dependencies:
-  path_provider: 0.3.0
-  flutter:
-    sdk: flutter
   camera:
     path: ../
-  video_player: "0.5.2"
+  path_provider: ^0.5.0
+  flutter:
+    sdk: flutter
+  video_player: ^0.10.0
 
 dev_dependencies:
   flutter_test:
