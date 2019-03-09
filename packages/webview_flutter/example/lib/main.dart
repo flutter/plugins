@@ -18,7 +18,6 @@ class WebViewExample extends StatefulWidget {
 class _WebViewExample extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
-  bool viewContentLoaded = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,22 +42,6 @@ class _WebViewExample extends State<WebViewExample> {
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
-            print("created !! ");
-
-            Future.doWhile(() async {
-              try {
-                await webViewController.evaluateJavascript(
-                    'Toaster.postMessage("User Agent: " + navigator.userAgent);');
-              } catch (e) {
-                print("Encore---");
-                return true;
-              }
-              print("STOOP---");
-              setState(() {
-                viewContentLoaded = true;
-              });
-              return false;
-            });
           },
           // TODO(iskakaushik): Remove this when collection literals makes it to stable.
           // ignore: prefer_collection_literals
@@ -67,7 +50,7 @@ class _WebViewExample extends State<WebViewExample> {
           ].toSet(),
         );
       }),
-      floatingActionButton: viewContentLoaded ? Container() : loaderWidget(),
+      floatingActionButton: favoriteButton(),
     );
   }
 
@@ -90,23 +73,13 @@ class _WebViewExample extends State<WebViewExample> {
             return FloatingActionButton(
               onPressed: () {
                 controller.data.evaluateJavascript(
-                    'Toaster.postMessage("User Agent: " + navigator.userAgent);'); //async {
-//                final String url = await controller.data.currentUrl();
-//                Scaffold.of(context).showSnackBar(
-//                  SnackBar(content: Text('Favorited $url')),
-//                );
+                    'Toaster.postMessage("User Agent: " + navigator.userAgent);');
               },
               child: const Icon(Icons.favorite),
             );
           }
           return Container();
         });
-  }
-
-  Widget loaderWidget() {
-    return Stack(
-      children: <Widget>[Center(child: CircularProgressIndicator())],
-    );
   }
 }
 
