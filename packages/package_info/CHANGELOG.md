@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Added fallback to CFBundleName when CFBundleDisplayName is not available on iOS.
+
 ## 0.4.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
