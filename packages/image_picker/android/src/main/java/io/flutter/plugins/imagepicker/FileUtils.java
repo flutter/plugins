@@ -167,9 +167,10 @@ class FileUtils {
     Cursor cursor = null;
 
     try {
-      cursor = context.getContentResolver().query(uriImage,
-              new String[]{MediaStore.MediaColumns.MIME_TYPE},
-              null, null, null);
+      cursor =
+          context
+              .getContentResolver()
+              .query(uriImage, new String[] {MediaStore.MediaColumns.MIME_TYPE}, null, null, null);
 
       if (cursor != null && cursor.moveToNext()) {
         String mimeType = cursor.getString(0);
