@@ -8,6 +8,9 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.view.View;
+import android.webkit.GeolocationPermissions;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -42,6 +45,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
 
     webView.setWebViewClient(flutterWebViewClient);
+
+    enableGeolocation();
 
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
@@ -217,5 +222,15 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @Override
   public void dispose() {
     methodChannel.setMethodCallHandler(null);
+  }
+
+  private void enableGeolocation() {
+    webView.getSettings().setGeolocationEnabled(true);
+    webView.setWebChromeClient(new WebChromeClient() {
+        @Override
+        public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+            callback.invoke(origin, true, false);
+        }
+    });
   }
 }
