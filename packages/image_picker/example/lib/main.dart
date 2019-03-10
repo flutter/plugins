@@ -164,21 +164,21 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           title: Text(widget.title),
         ),
-        body: Stack(children: <Widget>[
-          Center(
-            child: isVideo ? _previewVideo(_controller) : _previewImage(),
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: leftButtons(),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: rightButtons(),
-          ),
-        ],
-        )
-    );
+        body: Stack(
+          children: <Widget>[
+            Center(
+              child: isVideo ? _previewVideo(_controller) : _previewImage(),
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: leftButtons(),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: rightButtons(),
+            ),
+          ],
+        ));
   }
 
   Widget rightButtons() {

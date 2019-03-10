@@ -284,7 +284,8 @@ public class ImagePickerDelegateTest {
     ImagePickerDelegate delegate = createDelegate();
     delegate.generateImageThumbnail(mockMethodCall, mockResult);
 
-    verify(mockThumbnailCreator).generateImageThumbnailAsync(eq(ORIGINAL_FILE_PATH), eq(WIDTH), eq(HEIGHT), any());
+    verify(mockThumbnailCreator)
+        .generateImageThumbnailAsync(eq(ORIGINAL_FILE_PATH), eq(WIDTH), eq(HEIGHT), any());
     verify(mockThumbnailCreator, never()).generateVideoThumbnailAsync(any(), any(), any(), any());
   }
 
@@ -299,7 +300,8 @@ public class ImagePickerDelegateTest {
     ImagePickerDelegate delegate = createDelegate();
     delegate.generateVideoThumbnail(mockMethodCall, mockResult);
 
-    verify(mockThumbnailCreator).generateVideoThumbnailAsync(eq(ORIGINAL_FILE_PATH), eq(WIDTH), eq(HEIGHT), any());
+    verify(mockThumbnailCreator)
+        .generateVideoThumbnailAsync(eq(ORIGINAL_FILE_PATH), eq(WIDTH), eq(HEIGHT), any());
     verify(mockThumbnailCreator, never()).generateImageThumbnailAsync(any(), any(), any(), any());
   }
 

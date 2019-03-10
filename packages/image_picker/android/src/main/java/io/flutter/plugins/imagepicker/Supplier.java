@@ -5,5 +5,5 @@
 package io.flutter.plugins.imagepicker;
 
 public interface Supplier<T> {
-    T get();
+  T get();
 }

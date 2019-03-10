@@ -98,14 +98,12 @@ class ImagePicker {
     }
 
     if (thumbnailHeight != null && thumbnailHeight < 0) {
-      throw ArgumentError.value(thumbnailHeight, 'maxHeight cannot be negative');
+      throw ArgumentError.value(
+          thumbnailHeight, 'maxHeight cannot be negative');
     }
 
     final File image = await pickImage(
-        source: source,
-        maxHeight: maxHeight,
-        maxWidth: maxWidth
-    );
+        source: source, maxHeight: maxHeight, maxWidth: maxWidth);
 
     //return null if cancel
     if (image == null) {
@@ -113,16 +111,13 @@ class ImagePicker {
     }
 
     final File thumbnail = await generateImageThumbnail(
-        image: image,
-        height: thumbnailHeight,
-        width: thumbnailWidth,
+      image: image,
+      height: thumbnailHeight,
+      width: thumbnailWidth,
     );
 
     return Future<PickingResult>.value(
-        PickingResult(
-        originalFile: image,
-        thumbnail: thumbnail
-    ));
+        PickingResult(originalFile: image, thumbnail: thumbnail));
   }
 
   static Future<PickingResult> pickVideoWithThumbnail({
@@ -132,15 +127,17 @@ class ImagePicker {
   }) async {
     assert(source != null);
     if (thumbnailWidth != null && thumbnailWidth < 0) {
-      throw ArgumentError.value(thumbnailWidth, 'thumbnailWidth cannot be negative');
+      throw ArgumentError.value(
+          thumbnailWidth, 'thumbnailWidth cannot be negative');
     }
 
     if (thumbnailHeight != null && thumbnailHeight < 0) {
-      throw ArgumentError.value(thumbnailHeight, 'maxHeight cannot be negative');
+      throw ArgumentError.value(
+          thumbnailHeight, 'maxHeight cannot be negative');
     }
 
     final File image = await pickVideo(
-        source: source,
+      source: source,
     );
 
     //return null if cancel
@@ -155,10 +152,7 @@ class ImagePicker {
     );
 
     return Future<PickingResult>.value(
-        PickingResult(
-            originalFile: image,
-            thumbnail: thumbnail
-        ));
+        PickingResult(originalFile: image, thumbnail: thumbnail));
   }
 
   static Future<File> generateImageThumbnail({
@@ -215,11 +209,7 @@ class ImagePicker {
 }
 
 class PickingResult {
-
-  const PickingResult({
-    @required this.originalFile,
-    @required this.thumbnail
-  });
+  const PickingResult({@required this.originalFile, @required this.thumbnail});
 
   ///
   /// original file of video or image

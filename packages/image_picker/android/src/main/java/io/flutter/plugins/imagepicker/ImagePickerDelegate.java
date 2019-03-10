@@ -223,12 +223,16 @@ public class ImagePickerDelegate
     Double width = methodCall.argument("width");
     Double height = methodCall.argument("height");
 
-    thumbnailCreator.generateImageThumbnailAsync(originalImagePath, width, height, new Consumer<String>() {
-      @Override
-      public void accept(String finalThumbnailPath) {
-        result.success(finalThumbnailPath);
-      }
-    });
+    thumbnailCreator.generateImageThumbnailAsync(
+        originalImagePath,
+        width,
+        height,
+        new Consumer<String>() {
+          @Override
+          public void accept(String finalThumbnailPath) {
+            result.success(finalThumbnailPath);
+          }
+        });
   }
 
   public void generateVideoThumbnail(MethodCall methodCall, final MethodChannel.Result result) {
@@ -236,12 +240,16 @@ public class ImagePickerDelegate
     Double width = methodCall.argument("width");
     Double height = methodCall.argument("height");
 
-    thumbnailCreator.generateVideoThumbnailAsync(originalVideoPath, width, height, new Consumer<String>() {
-      @Override
-      public void accept(String finalThumbnailPath) {
-        result.success(finalThumbnailPath);
-      }
-    });
+    thumbnailCreator.generateVideoThumbnailAsync(
+        originalVideoPath,
+        width,
+        height,
+        new Consumer<String>() {
+          @Override
+          public void accept(String finalThumbnailPath) {
+            result.success(finalThumbnailPath);
+          }
+        });
   }
 
   private void launchTakeVideoWithCameraIntent() {
