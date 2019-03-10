@@ -4,6 +4,8 @@
 
 package io.flutter.plugins.googlemaps;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -37,6 +39,13 @@ class Convert {
         } else {
           return BitmapDescriptorFactory.fromAsset(
               FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
+        }
+      case "fromBytes":
+        if (data.size() == 2) {
+          Bitmap bitmap = toBitmap(data.get(1));
+          return BitmapDescriptorFactory.fromBitmap(bitmap);
+        } else {
+          return BitmapDescriptorFactory.defaultMarker();
         }
       default:
         throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
@@ -158,6 +167,12 @@ class Convert {
 
   private static int toPixels(Object o, float density) {
     return (int) toFractionalPixels(o, density);
+  }
+
+  static Bitmap toBitmap(Object o) {
+    byte[] bmpData = (byte[]) o;
+    Bitmap bitmap = BitmapFactory.decodeByteArray(bmpData, 0, bmpData.length);
+    return bitmap;
   }
 
   private static Point toPoint(Object o, float density) {
