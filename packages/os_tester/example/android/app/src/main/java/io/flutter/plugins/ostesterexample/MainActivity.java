@@ -1,4 +1,4 @@
-package com.example.os_tester_example;
+package io.flutter.plugins.ostesterexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
