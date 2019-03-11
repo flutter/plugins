@@ -4,9 +4,12 @@
 
 #import <Flutter/Flutter.h>
 @class FIAPaymentQueueHandler;
+@class FIAPReceiptManager;
 
 @interface InAppPurchasePlugin : NSObject <FlutterPlugin>
 
 @property(strong, nonatomic) FIAPaymentQueueHandler *paymentQueueHandler;
+
+- (instancetype)initWithReceiptManager:(FIAPReceiptManager *)receiptManager;
 
 @end

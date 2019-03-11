@@ -575,6 +575,57 @@ void main() {
 
     expect(ttsMessagesReceived, <String>['Hello', 'World']);
   });
+
+  group('navigationDelegate', () {
+    testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        initialUrl: 'https://youtube.com',
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      expect(platformWebView.hasNavigationDelegate, false);
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        navigationDelegate: (NavigationRequest r) => null,
+      ));
+
+      expect(platformWebView.hasNavigationDelegate, true);
+    });
+
+    testWidgets('Block navigation', (WidgetTester tester) async {
+      final List<NavigationRequest> navigationRequests = <NavigationRequest>[];
+
+      await tester.pumpWidget(WebView(
+          initialUrl: 'https://youtube.com',
+          navigationDelegate: (NavigationRequest request) {
+            navigationRequests.add(request);
+            // Only allow navigating to https://flutter.dev
+            return request.url == 'https://flutter.dev'
+                ? NavigationDecision.navigate
+                : NavigationDecision.prevent;
+          }));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      expect(platformWebView.hasNavigationDelegate, true);
+
+      platformWebView.fakeNavigate('https://www.google.com');
+      // The navigation delegate only allows navigation to https://flutter.dev
+      // so we should still be in https://youtube.com.
+      expect(platformWebView.currentUrl, 'https://youtube.com');
+      expect(navigationRequests.length, 1);
+      expect(navigationRequests[0].url, 'https://www.google.com');
+      expect(navigationRequests[0].isForMainFrame, true);
+
+      platformWebView.fakeNavigate('https://flutter.dev');
+      await tester.pump();
+      expect(platformWebView.currentUrl, 'https://flutter.dev');
+    });
+  });
 }
 
 class FakePlatformWebView {
@@ -585,12 +636,14 @@ class FakePlatformWebView {
         history.add(initialUrl);
         currentPosition++;
       }
-      javascriptMode = JavascriptMode.values[params['settings']['jsMode']];
     }
     if (params.containsKey('javascriptChannelNames')) {
       javascriptChannelNames =
           List<String>.from(params['javascriptChannelNames']);
     }
+    javascriptMode = JavascriptMode.values[params['settings']['jsMode']];
+    hasNavigationDelegate =
+        params['settings']['hasNavigationDelegate'] ?? false;
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
@@ -607,20 +660,21 @@ class FakePlatformWebView {
   JavascriptMode javascriptMode;
   List<String> javascriptChannelNames;
 
+  bool hasNavigationDelegate;
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'loadUrl':
         final String url = call.arguments;
-        history = history.sublist(0, currentPosition + 1);
-        history.add(url);
-        currentPosition++;
-        amountOfReloadsOnCurrentUrl = 0;
+        _loadUrl(url);
         return Future<void>.sync(() {});
       case 'updateSettings':
-        if (call.arguments['jsMode'] == null) {
-          break;
+        if (call.arguments['jsMode'] != null) {
+          javascriptMode = JavascriptMode.values[call.arguments['jsMode']];
         }
-        javascriptMode = JavascriptMode.values[call.arguments['jsMode']];
+        if (call.arguments['hasNavigationDelegate'] != null) {
+          hasNavigationDelegate = call.arguments['hasNavigationDelegate'];
+        }
         break;
       case 'canGoBack':
         return Future<bool>.sync(() => currentPosition > 0);
@@ -671,6 +725,36 @@ class FakePlatformWebView {
         .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
     BinaryMessages.handlePlatformMessage(
         channel.name, data, (ByteData data) {});
+  }
+
+  // Fakes a main frame navigation that was initiated by the webview, e.g when
+  // the user clicks a link in the currently loaded page.
+  void fakeNavigate(String url) {
+    if (!hasNavigationDelegate) {
+      print('no navigation delegate');
+      _loadUrl(url);
+      return;
+    }
+    final StandardMethodCodec codec = const StandardMethodCodec();
+    final Map<String, dynamic> arguments = <String, dynamic>{
+      'url': url,
+      'isForMainFrame': true
+    };
+    final ByteData data =
+        codec.encodeMethodCall(MethodCall('navigationRequest', arguments));
+    BinaryMessages.handlePlatformMessage(channel.name, data, (ByteData data) {
+      final bool allow = codec.decodeEnvelope(data);
+      if (allow) {
+        _loadUrl(url);
+      }
+    });
+  }
+
+  void _loadUrl(String url) {
+    history = history.sublist(0, currentPosition + 1);
+    history.add(url);
+    currentPosition++;
+    amountOfReloadsOnCurrentUrl = 0;
   }
 }
 

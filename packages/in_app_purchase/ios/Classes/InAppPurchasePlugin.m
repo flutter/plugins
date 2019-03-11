@@ -5,6 +5,7 @@
 #import "InAppPurchasePlugin.h"
 #import <StoreKit/StoreKit.h>
 #import "FIAObjectTranslator.h"
+#import "FIAPReceiptManager.h"
 #import "FIAPRequestHandler.h"
 #import "FIAPaymentQueueHandler.h"
 
@@ -24,6 +25,8 @@
 @property(strong, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
 @property(strong, nonatomic) NSObject<FlutterPluginRegistrar> *registrar;
 
+@property(strong, nonatomic) FIAPReceiptManager *receiptManager;
+
 @end
 
 @implementation InAppPurchasePlugin
@@ -36,11 +39,18 @@
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+- (instancetype)initWithReceiptManager:(FIAPReceiptManager *)receiptManager {
   self = [self init];
+  self.receiptManager = receiptManager;
+  return self;
+}
+
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  self = [self initWithReceiptManager:[FIAPReceiptManager new]];
   self.registrar = registrar;
   self.registry = [registrar textures];
   self.messenger = [registrar messenger];
+
   __weak typeof(self) weakSelf = self;
   self.paymentQueueHandler =
       [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueue defaultQueue]
@@ -79,6 +89,10 @@
     [self finishTransaction:call result:result];
   } else if ([@"-[InAppPurchasePlugin restoreTransactions:result:]" isEqualToString:call.method]) {
     [self restoreTransactions:call result:result];
+  } else if ([@"-[InAppPurchasePlugin retrieveReceiptData:result:]" isEqualToString:call.method]) {
+    [self retrieveReceiptData:call result:result];
+  } else if ([@"-[InAppPurchasePlugin refreshReceipt:result:]" isEqualToString:call.method]) {
+    [self refreshReceipt:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -206,6 +220,50 @@
   [self.paymentQueueHandler restoreTransactions:call.arguments];
 }
 
+- (void)retrieveReceiptData:(FlutterMethodCall *)call result:(FlutterResult)result {
+  FlutterError *error = nil;
+  NSString *receiptData = [self.receiptManager retrieveReceiptWithError:&error];
+  if (error) {
+    result(error);
+    return;
+  }
+  result(receiptData);
+}
+
+- (void)refreshReceipt:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSDictionary *arguments = call.arguments;
+  SKReceiptRefreshRequest *request;
+  if (arguments) {
+    if (![arguments isKindOfClass:[NSDictionary class]]) {
+      result([FlutterError errorWithCode:@"storekit_invalid_argument"
+                                 message:@"Argument type of startRequest is not array"
+                                 details:call.arguments]);
+      return;
+    }
+    NSMutableDictionary *properties = [NSMutableDictionary new];
+    properties[SKReceiptPropertyIsExpired] = arguments[@"isExpired"];
+    properties[SKReceiptPropertyIsRevoked] = arguments[@"isRevoked"];
+    properties[SKReceiptPropertyIsVolumePurchase] = arguments[@"isVolumePurchase"];
+    request = [self getRefreshReceiptRequest:properties];
+  } else {
+    request = [self getRefreshReceiptRequest:nil];
+  }
+  FIAPRequestHandler *handler = [[FIAPRequestHandler alloc] initWithRequest:request];
+  [self.requestHandlers addObject:handler];
+  __weak typeof(self) weakSelf = self;
+  [handler startProductRequestWithCompletionHandler:^(SKProductsResponse *_Nullable response,
+                                                      NSError *_Nullable error) {
+    if (error) {
+      result([FlutterError errorWithCode:@"storekit_refreshreceiptrequest_platform_error"
+                                 message:error.description
+                                 details:error.userInfo]);
+      return;
+    }
+    result(nil);
+    [weakSelf.requestHandlers removeObject:handler];
+  }];
+}
+
 #pragma mark - delegates
 
 - (void)handleTransactionsUpdated:(NSArray<SKPaymentTransaction *> *)transactions {
@@ -265,6 +323,10 @@
 
 - (SKProduct *)getProduct:(NSString *)productID {
   return [self.productsCache objectForKey:productID];
+}
+
+- (SKReceiptRefreshRequest *)getRefreshReceiptRequest:(NSDictionary *)properties {
+  return [[SKReceiptRefreshRequest alloc] initWithReceiptProperties:properties];
 }
 
 #pragma mark - getter
