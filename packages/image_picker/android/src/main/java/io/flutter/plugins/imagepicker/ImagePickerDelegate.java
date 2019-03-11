@@ -428,13 +428,12 @@ public class ImagePickerDelegate
       Double maxHeight = methodCall.argument("maxHeight");
 
       String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+      finishWithSuccess(finalImagePath);
 
       //delete original file if scaled
       if (!finalImagePath.equals(path)) {
         new File(path).delete();
       }
-
-      finishWithSuccess(finalImagePath);
     } else {
       throw new IllegalStateException("Received image from picker that was not requested");
     }
