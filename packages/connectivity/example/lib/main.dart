@@ -101,8 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
           wifiIP = (await _connectivity.getWifiIP()).toString();
         } on PlatformException catch (e) {
           print(e.toString());
-
-          wifiName = "Failed to get Wifi IP";
+          wifiIP = "Failed to get Wifi IP";
         }
 
         setState(() {
