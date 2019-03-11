@@ -1,3 +1,3 @@
 ## 0.0.1
 
-* Initial release
+* Initial proof of concept demonstrating tap gestures
