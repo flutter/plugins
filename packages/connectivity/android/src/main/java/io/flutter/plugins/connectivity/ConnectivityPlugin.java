@@ -103,12 +103,9 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   }
 
   private WifiInfo getWifiInfo() {
-    WifiManager wifiManager = (WifiManager) registrar.context().getSystemService(Context.WIFI_SERVICE);
-    WifiInfo wifiInfo = null;
-    if (wifiManager != null) {
-      wifiInfo = wifiManager.getConnectionInfo();
-    }
-    return wifiInfo;
+    WifiManager wifiManager =
+        (WifiManager) registrar.context().getSystemService(Context.WIFI_SERVICE);
+    return wifiManager == null ? null : wifiManager.getConnectionInfo();
   }
 
   private void handleWifiName(MethodCall call, final Result result) {

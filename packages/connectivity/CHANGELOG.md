@@ -1,3 +1,7 @@
+## 0.4.3
+
+* Add getWifiBSSID to obtain current wifi network's BSSID.
+
 ## 0.4.2
 
 * Adding getWifiIP() to obtain current wifi network's IP.
