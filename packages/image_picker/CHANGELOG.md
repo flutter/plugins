@@ -1,3 +1,7 @@
+## 0.5.0+6
+
+* Deleting original image if image was scaled
+
 ## 0.5.0+5
 
 Remove unnecessary camera permmision.
