@@ -1,6 +1,6 @@
 ## 0.5.0+6
 
-* Deleting original image if image was scaled
+* Delete the original image if it was scaled.
 
 ## 0.5.0+5
 
