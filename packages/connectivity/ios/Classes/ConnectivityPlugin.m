@@ -33,18 +33,37 @@
   [streamChannel setStreamHandler:instance];
 }
 
-- (NSString*)getWifiName {
-  NSString* wifiName = nil;
-  NSArray* interFaceNames = (__bridge_transfer id)CNCopySupportedInterfaces();
-
-  for (NSString* name in interFaceNames) {
-    NSDictionary* info = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)name);
-    if (info[@"SSID"]) {
-      wifiName = info[@"SSID"];
+/**
+ Look up network information value by key.
+ @param key one of SSID, BSSID
+ @return the value of the requested network information key
+ */
+- (NSString*)findNetworkInfo:(NSString *) key {
+  NSString* info = nil;
+  NSArray* interfaceNames = (__bridge_transfer id)CNCopySupportedInterfaces();
+  for (NSString* interfaceName in interfaceNames) {
+    NSDictionary* networkInfo = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)interfaceName);
+    if (networkInfo[key]) {
+      info = networkInfo[key];
     }
   }
+  return info;
+}
 
-  return wifiName;
+/**
+ Get SSID (wifi name) of the current Wi-Fi network
+ @return SSID string, e.g: "Vince's iPhone"
+ */
+- (NSString*)getWifiName {
+  return [self findNetworkInfo:@"SSID"];
+}
+
+/**
+ Get BSSID (MAC address) of the current Wi-Fi network
+ @return BSSID string, e.g: "11:a1:b2:c3:d4:e5"
+ */
+- (NSString*)getBSSID {
+  return [self findNetworkInfo:@"BSSID"];
 }
 
 - (NSString*)getWifiIP {
@@ -100,6 +119,8 @@
     result([self statusFromReachability:[Reachability reachabilityForInternetConnection]]);
   } else if ([call.method isEqualToString:@"wifiName"]) {
     result([self getWifiName]);
+  } else if ([call.method isEqualToString:@"wifiBSSID"]) {
+    result([self getBSSID])
   } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
     result([self getWifiIP]);
   } else {
