@@ -1,0 +1,23 @@
+name: os_tester
+description: Flutter plugin for integration testing.
+version: 0.0.1
+author: Flutter Team <flutter-dev@googlegroups.com>
+homepage: https://github.com/flutter/plugins/tree/master/packages/os_tester
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.ostester
+    pluginClass: OSTesterPlugin
+
+dependencies:
+  meta: ^1.1.6
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+environment:
+  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  flutter: ">=0.2.4 <2.0.0"
