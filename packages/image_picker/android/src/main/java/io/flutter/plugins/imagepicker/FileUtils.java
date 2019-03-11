@@ -116,12 +116,15 @@ class FileUtils {
     try {
       cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
       if (cursor != null && cursor.moveToFirst()) {
-        final int column_index = cursor.getColumnIndexOrThrow(column);
+        final int column_index = cursor.getColumnIndex(column);
+
+        //yandex.disk and dropbox do not have _data column
+        if (column_index == -1) {
+          return null;
+        }
+
         return cursor.getString(column_index);
       }
-    } catch (Exception ignored) {
-      //catch exception, if uri from yandex.disk for example
-      //return null and try get from remote Uri
     } finally {
       if (cursor != null) {
         cursor.close();
