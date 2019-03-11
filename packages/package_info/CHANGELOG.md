@@ -1,4 +1,4 @@
-## 0.4.1
+## 0.4.0+2
 
 * Android: Using new method for BuildNumber in new android versions
 
