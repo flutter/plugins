@@ -56,4 +56,7 @@
                         }];
 }
 
+- (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation {
+  [_methodChannel invokeMethod:@"onPageLoaded" arguments:@{@"url" : webView.URL.absoluteString}];
+}
 @end
