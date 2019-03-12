@@ -576,6 +576,24 @@ void main() {
     expect(ttsMessagesReceived, <String>['Hello', 'World']);
   });
 
+  testWidgets('OnPageLoaded', (WidgetTester tester) async {
+    String returnedUrl;
+
+    await tester.pumpWidget(WebView(
+      initialUrl: 'https://youtube.com',
+      onPageLoaded: (String url) {
+        returnedUrl = url;
+      },
+    ));
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    platformWebView.fakeOnPageLoadedCallback();
+
+    expect(platformWebView.currentUrl, returnedUrl);
+  });
+
   group('navigationDelegate', () {
     testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
@@ -748,6 +766,21 @@ class FakePlatformWebView {
         _loadUrl(url);
       }
     });
+  }
+
+  void fakeOnPageLoadedCallback() {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+
+    final ByteData data = codec.encodeMethodCall(MethodCall(
+      'onPageLoaded',
+      <dynamic, dynamic>{'url': currentUrl},
+    ));
+
+    BinaryMessages.handlePlatformMessage(
+      channel.name,
+      data,
+      (ByteData data) {},
+    );
   }
 
   void _loadUrl(String url) {
