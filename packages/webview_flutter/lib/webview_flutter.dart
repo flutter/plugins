@@ -66,6 +66,8 @@ enum NavigationDecision {
 /// See also: [WebView.navigationDelegate].
 typedef NavigationDecision NavigationDelegate(NavigationRequest navigation);
 
+typedef void OnPageLoaded(String url);
+
 final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
 
 /// A named channel for receiving messaged from JavaScript code running inside a web view.
@@ -113,6 +115,7 @@ class WebView extends StatefulWidget {
     this.javascriptChannels,
     this.navigationDelegate,
     this.gestureRecognizers,
+    this.onPageLoaded,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -189,6 +192,8 @@ class WebView extends StatefulWidget {
   ///     * When a navigationDelegate is set HTTP requests do not include the HTTP referer header.
   final NavigationDelegate navigationDelegate;
 
+  final OnPageLoaded onPageLoaded;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -264,6 +269,7 @@ class _WebViewState extends State<WebView> {
       _WebSettings.fromWidget(widget),
       widget.javascriptChannels,
       widget.navigationDelegate,
+      widget.onPageLoaded,
     );
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
@@ -363,6 +369,7 @@ class WebViewController {
     this._settings,
     Set<JavascriptChannel> javascriptChannels,
     this._navigationDelegate,
+    this._onPageLoaded,
   ) : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
     _updateJavascriptChannelsFromSet(javascriptChannels);
     _channel.setMethodCallHandler(_onMethodCall);
@@ -373,6 +380,8 @@ class WebViewController {
   NavigationDelegate _navigationDelegate;
 
   _WebSettings _settings;
+
+  final OnPageLoaded _onPageLoaded;
 
   // Maps a channel name to a channel.
   Map<String, JavascriptChannel> _javascriptChannels =
@@ -391,13 +400,18 @@ class WebViewController {
           url: call.arguments['url'],
           isForMainFrame: call.arguments['isForMainFrame'],
         );
-
         // _navigationDelegate can be null if the widget was rebuilt with no
         // navigation delegate after a navigation happened and just before we
         // got the navigationRequest message.
         final bool allowNavigation = _navigationDelegate == null ||
             _navigationDelegate(request) == NavigationDecision.navigate;
         return allowNavigation;
+      case 'onPageLoaded':
+        if (_onPageLoaded != null) {
+          _onPageLoaded(call.arguments['url']);
+        }
+
+        return null;
     }
     throw MissingPluginException(
         '${call.method} was invoked but has no handler');
