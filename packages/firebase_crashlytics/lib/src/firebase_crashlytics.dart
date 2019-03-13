@@ -190,7 +190,7 @@ class Crashlytics {
   }
 
   List<Map<String, String>> getStackTraceElements(List<String> lines) {
-    List<Map<String, String>> elements = <Map<String, String>>[];
+    final List<Map<String, String>> elements = <Map<String, String>>[];
     for (String line in lines) {
       final List<String> lineParts = line.split(RegExp('\\s+'));
       final String fileName = lineParts[0];
