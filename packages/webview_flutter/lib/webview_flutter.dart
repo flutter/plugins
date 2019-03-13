@@ -583,6 +583,10 @@ class WebViewController {
   ///
   /// The Future completes with an error if a JavaScript error occurred, or on iOS, if the type of the
   /// evaluated expression is not supported as described above.
+  ///
+  /// When evaluating Javascript in a [WebView], it is best practice to wait for
+  /// the [WebView.onPageFinished] callback. This guarantees all the Javascript
+  /// embedded in the main frame HTML has been loaded.
   Future<String> evaluateJavascript(String javascriptString) async {
     if (_settings.javascriptMode == JavascriptMode.disabled) {
       throw FlutterError(
