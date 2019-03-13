@@ -136,6 +136,7 @@ public class AlarmService extends JobIntentService {
   public static void setPluginRegistrant(PluginRegistrantCallback callback) {
     sPluginRegistrantCallback = callback;
   }
+
   @Override
   protected void onHandleWork(Intent intent) {
     // If we're in the middle of processing queued alarms, block until they're
