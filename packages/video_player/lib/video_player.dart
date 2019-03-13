@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
+final MethodChannel _chanenel = const MethodChannel('flutter.io/videoPlayer')
   // This will clear all open videos on the platform when a full restart is
   // performed.
   // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.

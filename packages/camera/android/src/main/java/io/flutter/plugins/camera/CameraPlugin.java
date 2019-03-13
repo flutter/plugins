@@ -96,15 +96,16 @@ public class CameraPlugin implements MethodCallHandler {
 
           @Override
           public void onActivityResumed(Activity activity) {
+            boolean wasRequestingPermission = requestingPermission;
             if (requestingPermission) {
               requestingPermission = false;
+            }
+            if (activity != CameraPlugin.this.activity) {
               return;
             }
-            if (activity == CameraPlugin.this.activity) {
-              orientationEventListener.enable();
-              if (camera != null) {
-                camera.open(null);
-              }
+            orientationEventListener.enable();
+            if (camera != null && !wasRequestingPermission) {
+              camera.open(null);
             }
           }
 
@@ -136,6 +137,11 @@ public class CameraPlugin implements MethodCallHandler {
   }
 
   public static void registerWith(Registrar registrar) {
+    if (registrar.activity() == null) {
+      // When a background flutter view tries to register the plugin, the registrar has no activity.
+      // We stop the registration process as this plugin is foreground only.
+      return;
+    }
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/camera");
 
@@ -158,6 +164,9 @@ public class CameraPlugin implements MethodCallHandler {
                 cameraManager.getCameraCharacteristics(cameraName);
             details.put("name", cameraName);
             @SuppressWarnings("ConstantConditions")
+            int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+            details.put("sensorOrientation", sensorOrientation);
+
             int lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
             switch (lensFacing) {
               case CameraMetadata.LENS_FACING_FRONT:
@@ -194,6 +203,12 @@ public class CameraPlugin implements MethodCallHandler {
       case "takePicture":
         {
           camera.takePicture((String) call.argument("path"), result);
+          break;
+        }
+      case "prepareForVideoRecording":
+        {
+          // This optimization is not required for Android.
+          result.success(null);
           break;
         }
       case "startVideoRecording":
@@ -292,16 +307,16 @@ public class CameraPlugin implements MethodCallHandler {
       registerEventChannel();
 
       try {
-        Size minPreviewSize;
+        int minHeight;
         switch (resolutionPreset) {
           case "high":
-            minPreviewSize = new Size(1024, 768);
+            minHeight = 720;
             break;
           case "medium":
-            minPreviewSize = new Size(640, 480);
+            minHeight = 480;
             break;
           case "low":
-            minPreviewSize = new Size(320, 240);
+            minHeight = 240;
             break;
           default:
             throw new IllegalArgumentException("Unknown preset: " + resolutionPreset);
@@ -317,7 +332,7 @@ public class CameraPlugin implements MethodCallHandler {
             characteristics.get(CameraCharacteristics.LENS_FACING)
                 == CameraMetadata.LENS_FACING_FRONT;
         computeBestCaptureSize(streamConfigurationMap);
-        computeBestPreviewAndRecordingSize(streamConfigurationMap, minPreviewSize, captureSize);
+        computeBestPreviewAndRecordingSize(streamConfigurationMap, minHeight, captureSize);
 
         if (cameraPermissionContinuation != null) {
           result.error("cameraPermission", "Camera permission request ongoing", null);
@@ -390,7 +405,7 @@ public class CameraPlugin implements MethodCallHandler {
     }
 
     private void computeBestPreviewAndRecordingSize(
-        StreamConfigurationMap streamConfigurationMap, Size minPreviewSize, Size captureSize) {
+        StreamConfigurationMap streamConfigurationMap, int minHeight, Size captureSize) {
       Size[] sizes = streamConfigurationMap.getOutputSizes(SurfaceTexture.class);
 
       // Preview size and video size should not be greater than screen resolution or 1080.
@@ -404,8 +419,7 @@ public class CameraPlugin implements MethodCallHandler {
 
       List<Size> goodEnough = new ArrayList<>();
       for (Size s : sizes) {
-        if (minPreviewSize.getWidth() < s.getWidth()
-            && minPreviewSize.getHeight() < s.getHeight()
+        if (minHeight <= s.getHeight()
             && s.getWidth() <= screenWidth
             && s.getHeight() <= screenHeight
             && s.getHeight() <= 1080) {

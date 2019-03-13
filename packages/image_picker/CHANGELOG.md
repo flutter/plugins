@@ -1,3 +1,27 @@
+## 0.5.0+7
+* Fix a crash when selecting images from yandex.disk and dropbox.
+
+## 0.5.0+6
+
+* Delete the original image if it was scaled.
+
+## 0.5.0+5
+
+Remove unnecessary camera permmision.
+
+## 0.5.0+4
+
+Preserve transparency when saving images.
+
+## 0.5.0+3
+
+* Fixed an Android crash when Image Picker is registered without an activity.
+
+## 0.5.0+2
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 0.5.0+1
 
 * Fix a crash when user calls the plugin in quick succession on Android.

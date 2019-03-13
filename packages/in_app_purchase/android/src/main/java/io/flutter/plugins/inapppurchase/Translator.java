@@ -5,6 +5,8 @@
 package io.flutter.plugins.inapppurchase;
 
 import androidx.annotation.Nullable;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.SkuDetails;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,5 +45,37 @@ import java.util.List;
       output.add(fromSkuDetail(detail));
     }
     return output;
+  }
+
+  static HashMap<String, Object> fromPurchase(Purchase purchase) {
+    HashMap<String, Object> info = new HashMap<>();
+    info.put("orderId", purchase.getOrderId());
+    info.put("packageName", purchase.getPackageName());
+    info.put("purchaseTime", purchase.getPurchaseTime());
+    info.put("purchaseToken", purchase.getPurchaseToken());
+    info.put("signature", purchase.getSignature());
+    info.put("sku", purchase.getSku());
+    info.put("isAutoRenewing", purchase.isAutoRenewing());
+    info.put("originalJson", purchase.getOriginalJson());
+    return info;
+  }
+
+  static List<HashMap<String, Object>> fromPurchasesList(@Nullable List<Purchase> purchases) {
+    if (purchases == null) {
+      return Collections.emptyList();
+    }
+
+    List<HashMap<String, Object>> serialized = new ArrayList<>();
+    for (Purchase purchase : purchases) {
+      serialized.add(fromPurchase(purchase));
+    }
+    return serialized;
+  }
+
+  static HashMap<String, Object> fromPurchasesResult(PurchasesResult purchasesResult) {
+    HashMap<String, Object> info = new HashMap<>();
+    info.put("responseCode", purchasesResult.getResponseCode());
+    info.put("purchasesList", fromPurchasesList(purchasesResult.getPurchasesList()));
+    return info;
   }
 }

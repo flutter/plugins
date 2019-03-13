@@ -8,7 +8,14 @@ Dart code in the background when alarms fire.
 ## Getting Started
 
 After importing this plugin to your project as usual, add the following to your
-`AndroidManifest.xml`:
+`AndroidManifest.xml` within the `<manifest></manifest>` tags:
+
+```xml
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+<uses-permission android:name="android.permission.WAKE_LOCK"/>
+```
+
+Next, within the `<application></application>` tags, add:
 
 ```xml
 <service
@@ -18,6 +25,14 @@ After importing this plugin to your project as usual, add the following to your
 <receiver
     android:name="io.flutter.plugins.androidalarmmanager.AlarmBroadcastReceiver"
     android:exported="false"/>
+<receiver
+    android:name="io.flutter.plugins.androidalarmmanager.RebootBroadcastReceiver"
+    android:enabled="false">
+    <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+    </intent-filter>
+</receiver>
+
 ```
 
 Then in Dart code add:
