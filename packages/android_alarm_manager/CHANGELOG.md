@@ -1,3 +1,10 @@
+## 0.4.1+4
+
+* Update AlarmService to throw a `PluginRegistrantException` if
+  `AlarmService.setPluginRegistrant` has not been called to set a
+  PluginRegistrantCallback. This improves the error message seen when the
+  `AlarmService.setPluginRegistrant` call is omitted.
+
 ## 0.4.1+3
 
 * Update README.md to include instructions for setting the WAKE_LOCK permission.

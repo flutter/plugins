@@ -102,6 +102,9 @@ public class AlarmService extends JobIntentService {
     // as a background view and does not create a drawing surface.
     sBackgroundFlutterView = new FlutterNativeView(context, true);
     if (mAppBundlePath != null && !sStarted.get()) {
+      if (sPluginRegistrantCallback == null) {
+        throw new PluginRegistrantException();
+      }
       Log.i(TAG, "Starting AlarmService...");
       FlutterRunArguments args = new FlutterRunArguments();
       args.bundlePath = mAppBundlePath;
@@ -133,7 +136,6 @@ public class AlarmService extends JobIntentService {
   public static void setPluginRegistrant(PluginRegistrantCallback callback) {
     sPluginRegistrantCallback = callback;
   }
-
   @Override
   protected void onHandleWork(Intent intent) {
     // If we're in the middle of processing queued alarms, block until they're
