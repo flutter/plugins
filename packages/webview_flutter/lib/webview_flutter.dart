@@ -200,7 +200,7 @@ class WebView extends StatefulWidget {
   /// When [onPageFinished] is invoked, the page being rendered may not be
   /// updated yet. However, any Javascript code that is embedded directly in the
   /// HTML has been loaded and code injected with
-  /// `WebViewController.evaluateJavascript` can assume this.
+  /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
 
   @override

@@ -62,9 +62,7 @@ class WebViewExample extends StatelessWidget {
             return NavigationDecision.navigate;
           },
           onPageFinished: (String url) {
-            Scaffold.of(context).showSnackBar(const SnackBar(
-              content: Text('Page finished loading!'),
-            ));
+            print('Page finished loading: $url');
           },
         );
       }),
