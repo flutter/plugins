@@ -69,6 +69,7 @@ class FlutterWebViewClient {
   private void onPageFinished(WebView view, String url) {
     Map<String, Object> args = new HashMap<>();
     args.put("url", url);
+    view.setBackgroundColor(0x00000000);
     methodChannel.invokeMethod("onPageFinished", args);
   }
 

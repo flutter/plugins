@@ -10,11 +10,11 @@ import 'package:webview_flutter/webview_flutter.dart';
 void main() => runApp(MaterialApp(home: WebViewExample()));
 
 const String kNavigationExamplePage = '''
-<!DOCTYPE html><html>
+<!DOCTYPE html><html  style="background-color:transparent;">
 <head><title>Navigation Delegate Example</title></head>
-<body>
+<body style="background-color:transparent;">
 <p>
-The navigation delegate is set to block navigation to the youtube website.
+The navigation delegate is set to block navigation to the youtube website, and as the webview background is transparent, you can see scaffold background.
 </p>
 <ul>
 <ul><a href="https://www.youtube.com/">https://www.youtube.com/</a></ul>
@@ -31,6 +31,7 @@ class WebViewExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.green,
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.

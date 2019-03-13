@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 import android.webkit.WebStorage;
@@ -29,6 +30,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @SuppressWarnings("unchecked")
   FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
+    webView.setBackgroundColor(Color.TRANSPARENT);
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
 
@@ -99,6 +101,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void loadUrl(MethodCall methodCall, Result result) {
     String url = (String) methodCall.arguments;
+    webView.setBackgroundColor(Color.TRANSPARENT);
     webView.loadUrl(url);
     result.success(null);
   }

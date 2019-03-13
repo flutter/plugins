@@ -66,6 +66,10 @@
     configuration.userContentController = userContentController;
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    _webView.opaque = NO;
+    _webView.backgroundColor = UIColor.clearColor;
+    _webView.scrollView.backgroundColor = UIColor.clearColor;
+
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;
