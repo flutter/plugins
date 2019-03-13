@@ -66,6 +66,7 @@ enum NavigationDecision {
 /// See also: [WebView.navigationDelegate].
 typedef NavigationDecision NavigationDelegate(NavigationRequest navigation);
 
+/// Handles when a [WebView] has finished loading a page.
 typedef void OnPageLoaded(String url);
 
 final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
@@ -192,6 +193,9 @@ class WebView extends StatefulWidget {
   ///     * When a navigationDelegate is set HTTP requests do not include the HTTP referer header.
   final NavigationDelegate navigationDelegate;
 
+  /// A function that receives notification when a page has finished loading.
+  ///
+  /// This method is called only for main frame.
   final OnPageLoaded onPageLoaded;
 
   @override
