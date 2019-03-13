@@ -1,3 +1,7 @@
+## 0.4.3
+
+* Add capability to prepare the capture session for video recording on iOS.
+
 ## 0.4.2
 
 * Add sensor orientation value to `CameraDescription`.
