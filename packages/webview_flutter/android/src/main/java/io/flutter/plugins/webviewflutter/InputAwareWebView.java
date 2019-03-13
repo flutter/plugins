@@ -31,6 +31,7 @@ final class InputAwareWebView extends WebView {
   InputAwareWebView(Context context, View containerView) {
     super(context);
     this.containerView = containerView;
+    setBackgroundColor(0x00000000);
   }
 
   void setContainerView(View containerView) {

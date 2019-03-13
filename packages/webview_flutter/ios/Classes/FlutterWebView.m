@@ -92,6 +92,10 @@
                         inConfiguration:configuration];
 
     _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
+    _webView.opaque = NO;
+    _webView.backgroundColor = UIColor.clearColor;
+    _webView.scrollView.backgroundColor = UIColor.clearColor;
+
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
