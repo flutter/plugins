@@ -74,7 +74,7 @@ class FlutterWebViewClient extends WebViewClientCompat {
   public void onPageFinished(WebView view, String url) {
     Map<String, Object> args = new HashMap<>();
     args.put("url", url);
-    methodChannel.invokeMethod("onPageLoaded", args);
+    methodChannel.invokeMethod("onPageFinished", args);
   }
 
   private void notifyOnNavigationRequest(

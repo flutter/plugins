@@ -66,8 +66,8 @@ enum NavigationDecision {
 /// See also: [WebView.navigationDelegate].
 typedef NavigationDecision NavigationDelegate(NavigationRequest navigation);
 
-/// Handles when a [WebView] has finished loading a page.
-typedef void OnPageLoaded(String url);
+/// Signature for when a [WebView] has finished loading a page.
+typedef void PageFinishedCallback(String url);
 
 final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
 
@@ -116,7 +116,7 @@ class WebView extends StatefulWidget {
     this.javascriptChannels,
     this.navigationDelegate,
     this.gestureRecognizers,
-    this.onPageLoaded,
+    this.onPageFinished,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -193,10 +193,10 @@ class WebView extends StatefulWidget {
   ///     * When a navigationDelegate is set HTTP requests do not include the HTTP referer header.
   final NavigationDelegate navigationDelegate;
 
-  /// A function that receives notification when a page has finished loading.
+  /// Invoked when a page has finished loading.
   ///
-  /// This method is called only for main frame.
-  final OnPageLoaded onPageLoaded;
+  /// This is invoked only for the main frame.
+  final PageFinishedCallback onPageFinished;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -273,7 +273,7 @@ class _WebViewState extends State<WebView> {
       _WebSettings.fromWidget(widget),
       widget.javascriptChannels,
       widget.navigationDelegate,
-      widget.onPageLoaded,
+      widget.onPageFinished,
     );
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
@@ -373,7 +373,7 @@ class WebViewController {
     this._settings,
     Set<JavascriptChannel> javascriptChannels,
     this._navigationDelegate,
-    this._onPageLoaded,
+    this._onPageFinished,
   ) : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
     _updateJavascriptChannelsFromSet(javascriptChannels);
     _channel.setMethodCallHandler(_onMethodCall);
@@ -385,7 +385,7 @@ class WebViewController {
 
   _WebSettings _settings;
 
-  final OnPageLoaded _onPageLoaded;
+  final PageFinishedCallback _onPageFinished;
 
   // Maps a channel name to a channel.
   Map<String, JavascriptChannel> _javascriptChannels =
@@ -410,9 +410,9 @@ class WebViewController {
         final bool allowNavigation = _navigationDelegate == null ||
             _navigationDelegate(request) == NavigationDecision.navigate;
         return allowNavigation;
-      case 'onPageLoaded':
-        if (_onPageLoaded != null) {
-          _onPageLoaded(call.arguments['url']);
+      case 'onPageFinished':
+        if (_onPageFinished != null) {
+          _onPageFinished(call.arguments['url']);
         }
 
         return null;

@@ -576,12 +576,12 @@ void main() {
     expect(ttsMessagesReceived, <String>['Hello', 'World']);
   });
 
-  testWidgets('OnPageLoaded', (WidgetTester tester) async {
+  testWidgets('onPageFinished', (WidgetTester tester) async {
     String returnedUrl;
 
     await tester.pumpWidget(WebView(
       initialUrl: 'https://youtube.com',
-      onPageLoaded: (String url) {
+      onPageFinished: (String url) {
         returnedUrl = url;
       },
     ));
@@ -589,7 +589,7 @@ void main() {
     final FakePlatformWebView platformWebView =
         fakePlatformViewsController.lastCreatedView;
 
-    platformWebView.fakeOnPageLoadedCallback();
+    platformWebView.fakeOnPageFinishedCallback();
 
     expect(platformWebView.currentUrl, returnedUrl);
   });
@@ -768,11 +768,11 @@ class FakePlatformWebView {
     });
   }
 
-  void fakeOnPageLoadedCallback() {
+  void fakeOnPageFinishedCallback() {
     final StandardMethodCodec codec = const StandardMethodCodec();
 
     final ByteData data = codec.encodeMethodCall(MethodCall(
-      'onPageLoaded',
+      'onPageFinished',
       <dynamic, dynamic>{'url': currentUrl},
     ));
 
