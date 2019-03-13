@@ -47,6 +47,7 @@ class Crashlytics {
       // Report error
       final List<String> stackTraceLines =
           Trace.format(details.stack).trimRight().split('\n');
+      final List<Map<String, String>> stackTraceElements = getStackTraceElements(stackTraceLines);
       final dynamic result =
           // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
           // https://github.com/flutter/flutter/issues/26431
@@ -54,7 +55,7 @@ class Crashlytics {
           await channel.invokeMethod('Crashlytics#onError', <String, dynamic>{
         'exception': details.exceptionAsString(),
         'stackTrace': details.stack.toString(),
-        'stackTraceLines': stackTraceLines,
+        'stackTraceElements': stackTraceElements,
         'code': stackTraceLines[0].hashCode
       });
       print(result);
@@ -186,5 +187,24 @@ class Crashlytics {
         await channel.invokeMethod('Crashlytics#setBool', crashlyticsKey);
       }
     }
+  }
+
+  List<Map<String, String>> getStackTraceElements(List<String> lines) {
+    List<Map<String, String>> elements = <Map<String, String>>[];
+    for (String line in lines) {
+      final List<String> lineParts = line.split(RegExp('\\s+'));
+      final String fileName = lineParts[0];
+      final String lineNumber = lineParts[1].substring(0, lineParts[1].indexOf(":")).trim();
+      final String className = lineParts[2].substring(0, lineParts[2].indexOf(".")).trim();
+      final String methodName = lineParts[2].substring(lineParts[2].indexOf(".") + 1).trim();
+
+      elements.add(<String, String>{
+        'class': className,
+        'method': methodName,
+        'file': fileName,
+        'line': lineNumber,
+      });
+    }
+    return elements;
   }
 }

@@ -27,13 +27,14 @@
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([@"Crashlytics#onError" isEqualToString:call.method]) {
-    NSError* error = [NSError errorWithDomain:call.arguments[@"exception"]
-                                         code:(int)call.arguments[@"code"]
-                                     userInfo:@{
-                                       @"exception" : call.arguments[@"exception"],
-                                       @"stackTrace" : call.arguments[@"stackTrace"]
-                                     }];
-    [[Crashlytics sharedInstance] recordError:error];
+    NSArray *errorElements = call.arguments[@"stackTraceElements"];
+    NSMutableArray *frames = [NSMutableArray array];
+    for (NSDictionary *errorElement in errorElements) {
+      [frames addObject:[self generateFrame:errorElement]];
+    }
+    [[Crashlytics sharedInstance] recordCustomExceptionName:call.arguments[@"exception"]
+                                                     reason:NULL
+                                                 frameArray:frames];
     result(@"Error reported to Crashlytics.");
   } else if ([@"Crashlytics#isDebuggable" isEqualToString:call.method]) {
     result([NSNumber numberWithBool:[Crashlytics sharedInstance].debugMode]);
@@ -70,6 +71,17 @@
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (CLSStackFrame *) generateFrame:(NSDictionary *)errorElement {
+  CLSStackFrame *frame = [CLSStackFrame stackFrame];
+
+  frame.library = [errorElement valueForKey:@"class"];
+  frame.symbol = [errorElement valueForKey:@"method"];
+  frame.fileName = [errorElement valueForKey:@"file"];
+  frame.lineNumber = [[errorElement valueForKey:@"line"] intValue];
+
+  return frame;
 }
 
 @end
