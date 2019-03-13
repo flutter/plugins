@@ -3,15 +3,15 @@
 #import <Firebase/Firebase.h>
 
 @interface FirebaseCrashlyticsPlugin ()
-@property(nonatomic, retain) FlutterMethodChannel* channel;
+@property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
 
 @implementation FirebaseCrashlyticsPlugin
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel =
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_crashlytics"
                                   binaryMessenger:[registrar messenger]];
-  FirebaseCrashlyticsPlugin* instance = [[FirebaseCrashlyticsPlugin alloc] init];
+  FirebaseCrashlyticsPlugin *instance = [[FirebaseCrashlyticsPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -25,7 +25,7 @@
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"Crashlytics#onError" isEqualToString:call.method]) {
     NSArray *errorElements = call.arguments[@"stackTraceElements"];
     NSMutableArray *frames = [NSMutableArray array];
@@ -73,7 +73,7 @@
   }
 }
 
-- (CLSStackFrame *) generateFrame:(NSDictionary *)errorElement {
+- (CLSStackFrame *)generateFrame:(NSDictionary *)errorElement {
   CLSStackFrame *frame = [CLSStackFrame stackFrame];
 
   frame.library = [errorElement valueForKey:@"class"];
