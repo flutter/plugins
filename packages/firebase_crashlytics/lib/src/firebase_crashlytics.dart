@@ -54,9 +54,8 @@ class Crashlytics {
           // ignore: strong_mode_implicit_dynamic_method
           await channel.invokeMethod('Crashlytics#onError', <String, dynamic>{
         'exception': details.exceptionAsString(),
-        'stackTrace': details.stack.toString(),
+        'context': details.context,
         'stackTraceElements': stackTraceElements,
-        'code': stackTraceLines[0].hashCode
       });
       print(result);
     }

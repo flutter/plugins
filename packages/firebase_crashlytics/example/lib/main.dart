@@ -59,7 +59,6 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () {
                     // Example of thrown error, it will be caught and sent to
                     // Crashlytics.
-
                     throw StateError('Uncaught error thrown by app.');
                   }),
             ],
