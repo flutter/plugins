@@ -256,6 +256,24 @@ class CameraController extends ValueNotifier<CameraValue> {
     return _creatingCompleter.future;
   }
 
+  /// Prepare the capture session for video recording.
+  ///
+  /// Use of this method is optional, but it may be called for performance
+  /// reasons on iOS.
+  ///
+  /// Preparing audio can cause a minor delay in the CameraPreview view on iOS.
+  /// If video recording is intended, calling this early eliminates this delay
+  /// that would otherwise be experienced when video recording is started.
+  /// This operation is a no-op on Android.
+  ///
+  /// Throws a [CameraException] if the prepare fails.
+  Future<void> prepareForVideoRecording() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod('prepareForVideoRecording');
+  }
+
   /// Listen to events from the native plugins.
   ///
   /// A "cameraClosing" event is sent when the camera is closed automatically by the system (for example when the app go to background). The plugin will try to reopen the camera automatically but any ongoing recording will end.
