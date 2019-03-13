@@ -3,10 +3,26 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() => runApp(MaterialApp(home: WebViewExample()));
+
+const String kNavigationExamplePage = '''
+<!DOCTYPE html><html>
+<head><title>Navigation Delegate Example</title></head>
+<body>
+<p>
+The navigation delegate is set to block navigation to the youtube website.
+</p>
+<ul>
+<ul><a href="https://www.youtube.com/">https://www.youtube.com/</a></ul>
+<ul><a href="https://www.google.com/">https://www.google.com/</a></ul>
+</ul>
+</body>
+</html>
+''';
 
 class WebViewExample extends StatelessWidget {
   final Completer<WebViewController> _controller =
@@ -37,6 +53,14 @@ class WebViewExample extends StatelessWidget {
           javascriptChannels: <JavascriptChannel>[
             _toasterJavascriptChannel(context),
           ].toSet(),
+          navigationDelegate: (NavigationRequest request) {
+            if (request.url.startsWith('https://www.youtube.com/')) {
+              print('blocking navigation to $request}');
+              return NavigationDecision.prevent;
+            }
+            print('allowing navigation to $request');
+            return NavigationDecision.navigate;
+          },
         );
       }),
       floatingActionButton: favoriteButton(),
@@ -76,12 +100,12 @@ class WebViewExample extends StatelessWidget {
 
 enum MenuOptions {
   showUserAgent,
-  toast,
   listCookies,
   clearCookies,
   addToCache,
   listCache,
   clearCache,
+  navigationDelegate,
 }
 
 class SampleMenu extends StatelessWidget {
@@ -102,13 +126,6 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.showUserAgent:
                 _onShowUserAgent(controller.data, context);
                 break;
-              case MenuOptions.toast:
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('You selected: $value'),
-                  ),
-                );
-                break;
               case MenuOptions.listCookies:
                 _onListCookies(controller.data, context);
                 break;
@@ -124,6 +141,9 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.clearCache:
                 _onClearCache(controller.data, context);
                 break;
+              case MenuOptions.navigationDelegate:
+                _onNavigationDelegateExample(controller.data, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
@@ -131,10 +151,6 @@ class SampleMenu extends StatelessWidget {
                   value: MenuOptions.showUserAgent,
                   child: const Text('Show user agent'),
                   enabled: controller.hasData,
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.toast,
-                  child: Text('Make a toast'),
                 ),
                 const PopupMenuItem<MenuOptions>(
                   value: MenuOptions.listCookies,
@@ -155,6 +171,10 @@ class SampleMenu extends StatelessWidget {
                 const PopupMenuItem<MenuOptions>(
                   value: MenuOptions.clearCache,
                   child: Text('Clear cache'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.navigationDelegate,
+                  child: Text('Navigation Delegate example'),
                 ),
               ],
         );
@@ -216,6 +236,13 @@ class SampleMenu extends StatelessWidget {
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text(message),
     ));
+  }
+
+  void _onNavigationDelegateExample(
+      WebViewController controller, BuildContext context) async {
+    final String contentBase64 =
+        base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
+    controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
   Widget _getCookieList(String cookies) {
