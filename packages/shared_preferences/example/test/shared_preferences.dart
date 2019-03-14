@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   final Completer<String> completer = Completer<String>();
   enableFlutterDriverExtension(handler: (String _) => completer.future);
+  tearDownAll(() => completer.complete(null));
 
   group('$SharedPreferences', () {
     const Map<String, dynamic> kTestValues = <String, dynamic>{
@@ -32,10 +33,6 @@ void main() {
 
     tearDown(() {
       preferences.clear();
-    });
-
-    tearDownAll(() {
-      completer.complete(null);
     });
 
     test('reading', () async {
