@@ -4,8 +4,7 @@ import 'package:test/test.dart';
 void main() {
   test('SharedPreferences', () async {
     FlutterDriver driver = await FlutterDriver.connect();
-    String result = await driver.requestData(null, timeout: const Duration(minutes: 1));
-    expect(result, 'pass');
+    await driver.requestData(null, timeout: const Duration(minutes: 1));
     if (driver != null) {
       driver.close();
     }

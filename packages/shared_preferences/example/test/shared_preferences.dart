@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  final Completer<String> completer = Completer<String>();
+  final Completer<void> completer = Completer<void>();
   enableFlutterDriverExtension(handler: (String _) => completer.future);
 
   group('$SharedPreferences', () {
@@ -35,7 +35,7 @@ void main() {
     });
 
     tearDownAll(() {
-      completer.complete('pass');
+      completer.complete(null);
     });
 
     test('reading', () async {
