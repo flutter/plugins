@@ -39,7 +39,7 @@ void main() {
     });
 
     test('reading', () async {
-      expect(preferences.get('String'), isNotNull);
+      expect(preferences.get('String'), isNull);
       expect(preferences.get('bool'), isNull);
       expect(preferences.get('int'), isNull);
       expect(preferences.get('double'), isNull);
