@@ -390,7 +390,7 @@ const UInt8 TIMESTAMP = 136;
     FIRDocumentReference *document = getDocumentReference(call.arguments);
     [document getDocumentWithCompletion:^(FIRDocumentSnapshot *_Nullable snapshot,
                                           NSError *_Nullable error) {
-      if (error) {
+      if (snapshot == nil) {
         result(getFlutterError(error));
       } else {
         result(@{
@@ -411,7 +411,7 @@ const UInt8 TIMESTAMP = 136;
     }
     id<FIRListenerRegistration> listener = [query
         addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
-          if (error) {
+          if (snapshot == nil) {
             result(getFlutterError(error));
             return;
           }
@@ -426,7 +426,7 @@ const UInt8 TIMESTAMP = 136;
     FIRDocumentReference *document = getDocumentReference(call.arguments);
     id<FIRListenerRegistration> listener =
         [document addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
-          if (error) {
+          if (snapshot == nil) {
             result(getFlutterError(error));
             return;
           }
@@ -450,7 +450,10 @@ const UInt8 TIMESTAMP = 136;
     }
     [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
                                         NSError *_Nullable error) {
-      if (error) result(getFlutterError(error));
+      if (snapshot != nil) {
+        result(getFlutterError(error));
+        return;
+      }
       result(parseQuerySnapshot(snapshot));
     }];
   } else if ([@"Query#removeListener" isEqualToString:call.method]) {
