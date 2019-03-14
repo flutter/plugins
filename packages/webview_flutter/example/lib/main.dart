@@ -43,7 +43,7 @@ class WebViewExample extends StatelessWidget {
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
-          initialUrl: 'https://flutter.io',
+          initialUrl: 'https://flutter.dev',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
@@ -60,6 +60,9 @@ class WebViewExample extends StatelessWidget {
             }
             print('allowing navigation to $request');
             return NavigationDecision.navigate;
+          },
+          onPageFinished: (String url) {
+            print('Page finished loading: $url');
           },
         );
       }),
