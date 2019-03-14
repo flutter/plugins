@@ -17,7 +17,7 @@ packages/firebase_messaging/* @collinjackson @kroikie
 packages/firebase_ml_vision/* @bparrishMines
 packages/firebase_performance/* @bparrishMines
 packages/firebase_storage/* @collinjackson @kroikie
-packages/google_maps_flutter/* @amirh
+packages/google_maps_flutter/* @amirh @iskakaushik
 packages/google_sign_in/* @cyanglaz @mehmetf
 packages/image_picker/* @cyanglaz
 packages/in_app_purchase/* @mklim
