@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  final Completer<void> completer = Completer<void>();
+  final Completer<String> completer = Completer<String>();
   enableFlutterDriverExtension(handler: (String _) => completer.future);
 
   group('$SharedPreferences', () {
