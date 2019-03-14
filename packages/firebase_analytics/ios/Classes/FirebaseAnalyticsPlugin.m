@@ -59,6 +59,9 @@
     NSNumber *enabled = [NSNumber numberWithBool:call.arguments];
     [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:[enabled boolValue]];
     result(nil);
+  } else if ([@"resetAnalyticsData" isEqualToString:call.method]) {
+    [FIRAnalytics resetAnalyticsData];
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }
