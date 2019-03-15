@@ -1,5 +1,9 @@
 [test change to make bots run the tests]
 
+## 0.5.1+2
+
+* Add a driver test
+
 ## 0.5.1+1
 
 * Log a more detailed warning at build time about the previous AndroidX
