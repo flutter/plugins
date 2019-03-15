@@ -11,6 +11,7 @@ void main() {
       (WidgetTester tester) async {
     await tester.pumpWidget(MyApp());
     await tester.tap(find.text('Test registration'));
-    expect(find.text('Test sign in anonymously'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('Registration'), findsOneWidget);
   });
 }
