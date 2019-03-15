@@ -64,6 +64,8 @@ task:
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - flutter doctor
     - pub global activate flutter_plugin_tools
+    - open -a Simulator.app
   build_script:
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - ./script/incremental_build.sh build-examples --ipa
+    - ./script/incremental_build.sh drive-examples
