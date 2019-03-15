@@ -2,8 +2,8 @@ task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   container:
     dockerfile: .ci/Dockerfile
-    cpu: 4
-    memory: 8G
+    cpu: 8
+    memory: 16G
   upgrade_script:
     - flutter channel master
     - flutter upgrade
@@ -27,6 +27,8 @@ task:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 2"
       create_device_script:
         echo no | avdmanager -v create avd -n test -k "system-images;android-16;default;armeabi-v7a"
       start_emulator_background_script:
