@@ -34,6 +34,7 @@ class MapsDemo extends StatelessWidget {
       body: ListView.builder(
         itemCount: _allPages.length,
         itemBuilder: (_, int index) => ListTile(
+              key: ValueKey<String>(_allPages[index].title),
               leading: _allPages[index].leading,
               title: Text(_allPages[index].title),
               onTap: () => _pushPage(context, _allPages[index]),
