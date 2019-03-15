@@ -28,7 +28,7 @@ task:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
       create_device_script:
-        echo no | avdmanager -v create avd -n x86 -k "system-images;android-27;google_apis;x86" -g "google_apis"
+        echo no | avdmanager -v create avd -n test -k "system-images;android-27;google_apis;x86" -g "google_apis"
       start_emulator_background_script:
       - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window
       wait_for_emulator_script: adb wait-for-device
