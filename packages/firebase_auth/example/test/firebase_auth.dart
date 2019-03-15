@@ -13,8 +13,10 @@ void main() {
   tearDownAll(() => completer.complete(null));
 
   group('$FirebaseAuth', () {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+
     test('signInAnonymously', () async {
-      final FirebaseUser user = await FirebaseAuth.instance.signInAnonymously();
+      final FirebaseUser user = await auth.signInAnonymously();
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isTrue);
     });
