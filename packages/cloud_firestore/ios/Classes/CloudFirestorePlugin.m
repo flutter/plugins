@@ -450,7 +450,7 @@ const UInt8 TIMESTAMP = 136;
     }
     [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
                                         NSError *_Nullable error) {
-      if (snapshot != nil) {
+      if (snapshot == nil) {
         result(getFlutterError(error));
         return;
       }
