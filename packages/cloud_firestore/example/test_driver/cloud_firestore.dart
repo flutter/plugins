@@ -27,7 +27,7 @@ void main() {
 
     test('getDocuments', () async {
       final CollectionReference reference = firestore.collection('messages');
-      QuerySnapshot snapshot = await reference.getDocuments();
+      final QuerySnapshot snapshot = await reference.getDocuments();
       expect(snapshot.documents.length, isNonZero);
     });
 
