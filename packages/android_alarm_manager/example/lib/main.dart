@@ -21,8 +21,8 @@ Future<void> main() async {
 
   printMessage("main run");
   runApp(const Center(
-      child: Text('See device log for output',
-        textDirection: TextDirection.ltr)));
+      child:
+          Text('See device log for output', textDirection: TextDirection.ltr)));
   await AndroidAlarmManager.periodic(
       const Duration(seconds: 5), periodicID, printPeriodic,
       wakeup: true);
