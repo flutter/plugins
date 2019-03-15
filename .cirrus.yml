@@ -60,8 +60,10 @@ task:
   env:
     PATH: $PATH:/usr/local/bin
     matrix:
-      PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-      PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+      PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
+      PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
+      PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
+      PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
   setup_script:
     - brew update
     - brew install libimobiledevice
