@@ -1,3 +1,8 @@
+## 0.9.7
+
+* Fixes a NoSuchMethodError when using getDocuments on iOS (introduced in 0.9.6).
+* Adds a driver test for getDocuments.
+
 ## 0.9.6
 
 * On iOS, update null checking to match the recommended pattern usage in the Firebase documentation.
