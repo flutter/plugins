@@ -30,6 +30,7 @@ task:
       create_device_script:
         android update sdk -u --filter platform-tools,android-25
         sdkmanager --verbose "system-images;android-25;google_apis;x86"
+        yes | sdkmanager --licenses
         echo no | avdmanager -v create avd -n x86 -k "system-images;android-25;google_apis;x86" -g "google_apis"
       start_emulator_background_script:
       - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window
