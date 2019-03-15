@@ -1,3 +1,7 @@
+## 0.8.1+5
+
+* Added a driver test.
+
 ## 0.8.1+4
 
 * Update README.
