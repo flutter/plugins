@@ -17,21 +17,21 @@ void main() {
       final dynamic response = await CloudFunctions.instance.call(
         functionName: 'repeat',
         parameters: <String, dynamic>{
-          'foo': 'bar',
-          'baz': 1,
+          'message': 'foo',
+          'count': 1,
         },
       );
-      expect(response['foo'], 'bar');
-      expect(response['baz'], 1);
+      expect(response['repeat_message'], 'foo');
+      expect(response['repeat_count'], 2);
       final dynamic response2 = await CloudFunctions.instance.call(
         functionName: 'repeat',
         parameters: <String, dynamic>{
-          'foo': 'quox',
-          'baz': 42,
+          'message': 'bar',
+          'count': 42,
         },
       );
-      expect(response2['foo'], 'quox');
-      expect(response2['baz'], 42);
+      expect(response2['repeat_message'], 'bar');
+      expect(response2['repeat_count'], 43);
     });
   });
 }
