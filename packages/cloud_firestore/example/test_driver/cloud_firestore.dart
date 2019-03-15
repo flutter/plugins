@@ -30,6 +30,5 @@ void main() {
       final QuerySnapshot snapshot = await reference.getDocuments();
       expect(snapshot.documents.length, isNonZero);
     });
-
   });
 }
