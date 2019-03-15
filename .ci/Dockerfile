@@ -6,6 +6,6 @@ RUN yes | sdkmanager \
     "build-tools;27.0.3" \
     "extras;google;m2repository" \
     "extras;android;m2repository" \
-    "system-images;android-16;default;armeabi-v7a"
+    "system-images;android-21;default;armeabi-v7a"
 
 RUN yes | sdkmanager --licenses
