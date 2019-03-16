@@ -1,3 +1,7 @@
+## 0.5.1
+* Added support for picking images or videos with thumbnails or only thumbnail.
+
+
 ## 0.5.0+7
 * Fix a crash when selecting images from yandex.disk and dropbox.
 

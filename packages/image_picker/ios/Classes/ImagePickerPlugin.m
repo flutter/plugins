@@ -103,49 +103,54 @@ static const int SOURCE_GALLERY = 1;
     NSString *imagePath = [call.arguments objectForKey:@"originalImagePath"];
     NSNumber *width = [call.arguments objectForKey:@"width"];
     NSNumber *height = [call.arguments objectForKey:@"height"];
-      
-      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-          UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
-        
-          [self generateThumbnail:image result:result width:width height:height];
-      });
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+
+      [self generateThumbnail:image result:result width:width height:height];
+    });
   } else if ([@"generateVideoThumbnail" isEqualToString:call.method]) {
-      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-          NSString *imagePath = [call.arguments objectForKey:@"originalVideoPath"];
-          NSNumber *width = [call.arguments objectForKey:@"width"];
-          NSNumber *height = [call.arguments objectForKey:@"height"];
-          
-          NSURL *videoURL = [NSURL fileURLWithPath:imagePath];
-          MPMoviePlayerController *player = [[MPMoviePlayerController alloc] initWithContentURL:videoURL];
-          UIImage *image = [player thumbnailImageAtTime:1.0 timeOption:MPMovieTimeOptionNearestKeyFrame];
-          
-          [self generateThumbnail:image result:result width:width height:height];
-      });
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      NSString *imagePath = [call.arguments objectForKey:@"originalVideoPath"];
+      NSNumber *width = [call.arguments objectForKey:@"width"];
+      NSNumber *height = [call.arguments objectForKey:@"height"];
+
+      NSURL *videoURL = [NSURL fileURLWithPath:imagePath];
+      MPMoviePlayerController *player =
+          [[MPMoviePlayerController alloc] initWithContentURL:videoURL];
+      UIImage *image = [player thumbnailImageAtTime:1.0
+                                         timeOption:MPMovieTimeOptionNearestKeyFrame];
+
+      [self generateThumbnail:image result:result width:width height:height];
+    });
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-- (void)generateThumbnail:(UIImage *)image result:(FlutterResult) result width: (NSNumber *) width height: (NSNumber *) height  {
-    image = [self normalizedImage:image];
-    
-    if (width != (id)[NSNull null] || height != (id)[NSNull null]) {
-        image = [self scaledImage:image maxWidth:width maxHeight:height];
-    }
-    
-    NSData *data = UIImageJPEGRepresentation(image, 1);
-    NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
-    NSString *tmpFile = [NSString stringWithFormat:@"thumbnail_%@.jpg", guid];
-    NSString *tmpDirectory = NSTemporaryDirectory();
-    NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-    
-    if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-        result(tmpPath);
-    } else {
-        result([FlutterError errorWithCode:@"create_error"
-                                   message:@"Thumbnail file could not be created"
-                                   details:nil]);
-    }
+- (void)generateThumbnail:(UIImage *)image
+                   result:(FlutterResult)result
+                    width:(NSNumber *)width
+                   height:(NSNumber *)height {
+  image = [self normalizedImage:image];
+
+  if (width != (id)[NSNull null] || height != (id)[NSNull null]) {
+    image = [self scaledImage:image maxWidth:width maxHeight:height];
+  }
+
+  NSData *data = UIImageJPEGRepresentation(image, 1);
+  NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
+  NSString *tmpFile = [NSString stringWithFormat:@"thumbnail_%@.jpg", guid];
+  NSString *tmpDirectory = NSTemporaryDirectory();
+  NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
+
+  if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
+    result(tmpPath);
+  } else {
+    result([FlutterError errorWithCode:@"create_error"
+                               message:@"Thumbnail file could not be created"
+                               details:nil]);
+  }
 }
 
 - (void)showCamera {
