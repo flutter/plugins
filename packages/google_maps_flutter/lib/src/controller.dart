@@ -137,8 +137,8 @@ class GoogleMapController {
     // ignore: strong_mode_implicit_dynamic_method
     final Map<dynamic, dynamic> latLngBounds =
         await _channel.invokeMethod('map#getVisibleRegion');
-    LatLng southwest = LatLng._fromJson(latLngBounds['southwest']);
-    LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
+    final LatLng southwest = LatLng._fromJson(latLngBounds['southwest']);
+    final LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
 
     return LatLngBounds(northeast: northeast, southwest: southwest);
   }

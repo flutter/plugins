@@ -178,7 +178,7 @@ class MapUiBodyState extends State<MapUiBody> {
       onPressed: mapController == null
           ? null
           : () async {
-              LatLngBounds latLngBounds =
+              final LatLngBounds latLngBounds =
                   await mapController.getVisibleRegion();
 
               showDialog<dynamic>(
