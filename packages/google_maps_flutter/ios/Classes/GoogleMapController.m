@@ -11,6 +11,7 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position);
 static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json);
 static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
 static GMSCameraUpdate* ToCameraUpdate(NSArray* data);
+static NSDictionary* GMSCoordinateBoundsToJson(GMSCoordinateBounds* bounds);
 static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> sink);
 static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
 
@@ -109,6 +110,17 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#update"]) {
     InterpretMapOptions(call.arguments[@"options"], self);
     result(PositionToJson([self cameraPosition]));
+  } else if ([call.method isEqualToString:@"map#getVisibleRegion"]) {
+    if (_mapView != nil) {
+      GMSVisibleRegion visibleRegion = _mapView.projection.visibleRegion;
+      GMSCoordinateBounds* bounds = [[GMSCoordinateBounds alloc] initWithRegion:visibleRegion];
+
+      result(GMSCoordinateBoundsToJson(bounds));
+    } else {
+      result([FlutterError errorWithCode:@"map not created"
+                                 message:@"calling getVisibleRegion before making a map"
+                                 details:nil]);
+    }
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
     result(nil);
   } else if ([call.method isEqualToString:@"markers#update"]) {
@@ -259,6 +271,16 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position) {
     @"zoom" : @([position zoom]),
     @"bearing" : @([position bearing]),
     @"tilt" : @([position viewingAngle]),
+  };
+}
+
+static NSDictionary* GMSCoordinateBoundsToJson(GMSCoordinateBounds* bounds) {
+  if (!bounds) {
+    return nil;
+  }
+  return @{
+    @"southwest" : LocationToJson([bounds southWest]),
+    @"northeast" : LocationToJson([bounds northEast]),
   };
 }
 

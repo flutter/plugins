@@ -175,6 +175,16 @@ final class GoogleMapController
           result.success(Convert.toJson(getCameraPosition()));
           break;
         }
+      case "map#getVisibleRegion":
+        {
+          if (googleMap != null) {
+            LatLngBounds latLngBounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
+            result.success(Convert.toJson(latLngBounds));
+          } else {
+            result.error("map not created", "calling getVisibleRegion before making a map", null);
+          }
+          break;
+        }
       case "camera#move":
         {
           final CameraUpdate cameraUpdate =
