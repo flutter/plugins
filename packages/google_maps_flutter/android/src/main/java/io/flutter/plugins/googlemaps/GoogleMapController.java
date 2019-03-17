@@ -60,6 +60,7 @@ final class GoogleMapController
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
+  private boolean myLocationButtonEnabled = false;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
@@ -367,6 +368,17 @@ final class GoogleMapController
     this.myLocationEnabled = myLocationEnabled;
     if (googleMap != null) {
       updateMyLocationEnabled();
+    }
+  }
+
+  @Override
+  public void setMyLocationButtonEnabled(boolean myLocationButtonEnabled) {
+    if (this.myLocationButtonEnabled == myLocationButtonEnabled) {
+      return;
+    }
+    this.myLocationButtonEnabled = myLocationButtonEnabled;
+    if (googleMap != null) {
+      googleMap.getUiSettings().setMyLocationButtonEnabled(myLocationButtonEnabled);
     }
   }
 
