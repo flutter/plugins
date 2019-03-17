@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Add feature: onMapTapped callback.
+
 ## 0.4.0
 
 * Change events are call backs on GoogleMap widget.
