@@ -175,7 +175,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
         // For testing -- simulate a message being received
         floatingActionButton: FloatingActionButton(
           onPressed: () => _showItemDialog(<String, dynamic>{
-                "data": {
+                "data": <String, String>{
                   "id": "2",
                   "status": "out of stock",
                 }
