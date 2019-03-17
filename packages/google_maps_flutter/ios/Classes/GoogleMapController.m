@@ -205,6 +205,12 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 #pragma mark - GMSMapViewDelegate methods
 
+- (void)mapView:(GMSMapView*)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
+  [_channel
+      invokeMethod:@"map#onMapTapped"
+         arguments:@{@"latitude" : @(coordinate.latitude), @"longitude" : @(coordinate.longitude)}];
+}
+
 - (void)mapView:(GMSMapView*)mapView willMove:(BOOL)gesture {
   [_channel invokeMethod:@"camera#onMoveStarted" arguments:@{@"isGesture" : @(gesture)}];
 }

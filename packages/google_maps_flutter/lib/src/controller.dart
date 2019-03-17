@@ -63,6 +63,12 @@ class GoogleMapController {
       case 'infoWindow#onTap':
         _googleMapState.onInfoWindowTap(call.arguments['markerId']);
         break;
+      case 'map#onMapTapped':
+        if (_googleMapState.widget.onMapTapped != null) {
+          _googleMapState.widget.onMapTapped(
+              LatLng(call.arguments['latitude'], call.arguments['longitude']));
+        }
+        break;
       default:
         throw MissingPluginException();
     }

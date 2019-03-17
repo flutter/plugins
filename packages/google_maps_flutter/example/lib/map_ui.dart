@@ -48,6 +48,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _tiltGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
+  LatLng lastTappedPosition;
 
   @override
   void initState() {
@@ -185,6 +186,7 @@ class MapUiBodyState extends State<MapUiBody> {
       zoomGesturesEnabled: _zoomGesturesEnabled,
       myLocationEnabled: _myLocationEnabled,
       onCameraMove: _updateCameraPosition,
+      onMapTapped: onMapTapped,
     );
 
     final List<Widget> columnChildren = <Widget>[
@@ -212,6 +214,7 @@ class MapUiBodyState extends State<MapUiBody> {
               Text('camera zoom: ${_position.zoom}'),
               Text('camera tilt: ${_position.tilt}'),
               Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
+              Text('last tapped position: ${_lastTappedPositionToString()}'),
               _compassToggler(),
               _latLngBoundsToggler(),
               _mapTypeCycler(),
@@ -233,6 +236,16 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  String _lastTappedPositionToString() {
+    if (lastTappedPosition == null) {
+      return '';
+    }
+
+    return lastTappedPosition.latitude.toStringAsFixed(4) +
+        ', ' +
+        lastTappedPosition.longitude.toStringAsFixed(4);
+  }
+
   void _updateCameraPosition(CameraPosition position) {
     setState(() {
       _position = position;
@@ -242,6 +255,12 @@ class MapUiBodyState extends State<MapUiBody> {
   void onMapCreated(GoogleMapController controller) {
     setState(() {
       _isMapCreated = true;
+    });
+  }
+
+  void onMapTapped(LatLng latLng) {
+    setState(() {
+      lastTappedPosition = latLng;
     });
   }
 }

@@ -14,6 +14,14 @@ typedef void MapCreatedCallback(GoogleMapController controller);
 /// This is used in [GoogleMap.onCameraMove].
 typedef void CameraPositionCallback(CameraPosition position);
 
+/// Callback that receives position of tap gesture on the map.
+///
+/// This callback is triggered when the platform Google Map
+/// registers a tap gesture on the map.
+///
+/// This is used in [GoogleMap.onMapTapped].
+typedef void MapTapPositionCallback(LatLng latLng);
+
 class GoogleMap extends StatefulWidget {
   const GoogleMap({
     @required this.initialCameraPosition,
@@ -32,6 +40,7 @@ class GoogleMap extends StatefulWidget {
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
+    this.onMapTapped,
   }) : assert(initialCameraPosition != null);
 
   final MapCreatedCallback onMapCreated;
@@ -88,6 +97,10 @@ class GoogleMap extends StatefulWidget {
   /// Called when camera movement has ended, there are no pending
   /// animations and the user has stopped interacting with the map.
   final VoidCallback onCameraIdle;
+
+  /// Called when the user makes a tap gesture on the map,
+  /// but only if none of the overlays of the map handled the gesture.
+  final MapTapPositionCallback onMapTapped;
 
   /// True if a "My Location" layer should be shown on the map.
   ///
