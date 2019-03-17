@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Add myLocationButtonEnabled option.
+
 ## 0.4.0
 
 * Change events are call backs on GoogleMap widget.
