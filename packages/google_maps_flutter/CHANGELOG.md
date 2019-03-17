@@ -1,3 +1,7 @@
+## 0.5.1
+
+* Add method getVisibleRegion for get the latlng bounds of the visible map area.
+
 ## 0.5.0
 
 * Add a key parameter to the GoogleMap widget.
