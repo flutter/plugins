@@ -231,7 +231,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           public void onGeolocationPermissionsShowPrompt(
               String origin, GeolocationPermissions.Callback callback) {
             callback.invoke(origin, true, false);
-        }
-      });
+          }
+        });
   }
 }
