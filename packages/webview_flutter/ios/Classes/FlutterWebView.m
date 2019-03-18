@@ -254,13 +254,10 @@
       NSNumber* mode = settings[key];
       [self updateJsMode:mode];
     } else if ([key isEqualToString:@"userAgent"]) {
-      id detroitUA = settings[key];
-      if (detroitUA && ![detroitUA isEqual:[NSNull null]]) {
+      id userAgent = settings[key];
+      if (userAgent && ![userAgent isEqual:[NSNull null]]) {
         if (@available(iOS 9.0, *)) {
-            [_webView evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id __nullable userAgent, NSError * __nullable error) {
-                NSString* appedUserAgent = [NSString stringWithFormat:@"%@ %@", userAgent, detroitUA];
-                self->_webView.customUserAgent = appedUserAgent;
-            }];
+            _webView.customUserAgent = userAgent;
         } else {
           NSLog(@"webview_flutter: prior to iOS 9.0, a custom userAgent is not supported.");
         }
