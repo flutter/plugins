@@ -2,16 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:device_info/device_info.dart';
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
 
+final DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
+
+Future<String> _modelString() async {
+  if (Platform.isAndroid) {
+    final AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
+    return androidInfo.model;
+  } else if (Platform.isIOS) {
+    final IosDeviceInfo iosInfo = await _deviceInfo.iosInfo;
+    return iosInfo.model;
+  } else {
+    return Platform.operatingSystem;
+  }
+}
+
 Future<List<int>> _loadGolden(String assetName) async {
-  final File file = File('test_assets/$assetName.png');
+  final String modelString = await _modelString();
+  final String fileName = 'test_assets/$modelString/$assetName.png';
+  final File file = File(fileName);
 
   if (!file.existsSync()) {
-    throw Exception('Unable to find golden: ${file.absolute.path}');
+    print('Unable to find file $fileName, returning null bytes');
+    return null;
   }
 
   return file.readAsBytes();
@@ -49,7 +68,15 @@ void main() {
       final List<int> screenShotBytes = await driver.screenshot();
       final List<int> golden = await _loadGolden('basic_map_ui');
 
-      expect(screenShotBytes, equals(golden));
+      if (golden == null) {
+        // The golden file does not exist. Printing the base64.
+        print('No golden found for model: ${_modelString()}, got:');
+        print(base64.encode(screenShotBytes));
+
+        fail('Please update the golden for the above device.');
+      } else {
+        expect(screenShotBytes, equals(golden));
+      }
     });
   });
 }
