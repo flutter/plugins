@@ -120,7 +120,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         handleReauthenticateWithCredential(call, result, getAuth(call));
         break;
       case "linkWithCredential":
-        handleLinkWithEmailAndPassword(call, result, getAuth(call));
+        handleLinkWithCredential(call, result, getAuth(call));
         break;
       case "unlinkFromProvider":
         handleUnlinkFromProvider(call, result, getAuth(call));
@@ -264,19 +264,12 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     return exceptionMap;
   }
 
-  private void handleLinkWithEmailAndPassword(
-      MethodCall call, Result result, FirebaseAuth firebaseAuth) {
-    final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+  private void handleLinkWithCredential(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
     if (currentUser == null) {
       markUserRequired(result);
       return;
     }
-
-    Map<String, String> arguments = call.arguments();
-    String email = arguments.get("email");
-    String password = arguments.get("password");
-
-    AuthCredential credential = EmailAuthProvider.getCredential(email, password);
 
     currentUser
         .linkWithCredential(credential)
@@ -382,6 +375,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           String idToken = data.get("idToken");
           String accessToken = data.get("accessToken");
           credential = GoogleAuthProvider.getCredential(idToken, accessToken);
+          break;
+        }
+      case PhoneAuthProvider.PROVIDER_ID:
+        {
+          String verificationId = data.get("verificationId");
+          String smsCode = data.get("smsCode");
+          credential = PhoneAuthProvider.getCredential(verificationId, smsCode);
           break;
         }
       case FacebookAuthProvider.PROVIDER_ID:
