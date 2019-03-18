@@ -71,8 +71,7 @@ API_AVAILABLE(ios(9.0))
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher"
                                   binaryMessenger:registrar.messenger];
-  FLTUrlLauncherPlugin *plugin =
-      [[FLTUrlLauncherPlugin alloc] init];
+  FLTUrlLauncherPlugin *plugin = [[FLTUrlLauncherPlugin alloc] init];
   [registrar addMethodCallDelegate:plugin channel:channel];
 }
 
@@ -139,13 +138,14 @@ API_AVAILABLE(ios(9.0))
   self.currentSession.didFinish = ^(void) {
     weakSelf.currentSession = nil;
   };
-  UIViewController *topRootViewController = [[UIApplication  sharedApplication] keyWindow].rootViewController;
+  UIViewController *topRootViewController =
+    [[UIApplication sharedApplication] keyWindow].rootViewController;
   while (topRootViewController.presentedViewController) {
     topRootViewController = topRootViewController.presentedViewController;
   }
   [topRootViewController presentViewController:self.currentSession.safari
-                                    animated:YES
-                                  completion:nil];
+                                      animated:YES
+                                    completion:nil];
 }
 
 - (void)closeWebViewWithResult:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
