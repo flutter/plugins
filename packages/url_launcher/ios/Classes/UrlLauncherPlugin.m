@@ -63,8 +63,6 @@ API_AVAILABLE(ios(9.0))
 
 @interface FLTUrlLauncherPlugin ()
 
-@property(strong, nonatomic) UIViewController *viewController;
-
 @end
 
 @implementation FLTUrlLauncherPlugin
@@ -73,20 +71,11 @@ API_AVAILABLE(ios(9.0))
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher"
                                   binaryMessenger:registrar.messenger];
-  UIViewController *viewController =
-      [UIApplication sharedApplication].delegate.window.rootViewController;
   FLTUrlLauncherPlugin *plugin =
-      [[FLTUrlLauncherPlugin alloc] initWithViewController:viewController];
+      [[FLTUrlLauncherPlugin alloc] init];
   [registrar addMethodCallDelegate:plugin channel:channel];
 }
 
-- (instancetype)initWithViewController:(UIViewController *)viewController {
-  self = [super init];
-  if (self) {
-    self.viewController = viewController;
-  }
-  return self;
-}
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *url = call.arguments[@"url"];
@@ -150,7 +139,11 @@ API_AVAILABLE(ios(9.0))
   self.currentSession.didFinish = ^(void) {
     weakSelf.currentSession = nil;
   };
-  [self.viewController presentViewController:self.currentSession.safari
+  UIViewController *topRootViewController = [[UIApplication  sharedApplication] keyWindow].rootViewController;
+  while (topRootViewController.presentedViewController) {
+    topRootViewController = topRootViewController.presentedViewController;
+  }
+  [topRootViewController presentViewController:self.currentSession.safari
                                     animated:YES
                                   completion:nil];
 }
