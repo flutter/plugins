@@ -378,13 +378,6 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           credential = GoogleAuthProvider.getCredential(idToken, accessToken);
           break;
         }
-      case PhoneAuthProvider.PROVIDER_ID:
-        {
-          String verificationId = data.get("verificationId");
-          String smsCode = data.get("smsCode");
-          credential = PhoneAuthProvider.getCredential(verificationId, smsCode);
-          break;
-        }
       case FacebookAuthProvider.PROVIDER_ID:
         {
           String accessToken = data.get("accessToken");
