@@ -23,6 +23,8 @@ void main() {
 
     test('can connect', () async {
       await driver.waitFor(connectedFinder);
-    });
+    },
+        skip:
+            "run this test manually https://github.com/flutter/flutter/issues/29462");
   });
 }
