@@ -265,6 +265,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleLinkWithCredential(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
     AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
     if (currentUser == null) {
       markUserRequired(result);
