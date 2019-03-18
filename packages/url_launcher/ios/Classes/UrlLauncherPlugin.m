@@ -75,7 +75,6 @@ API_AVAILABLE(ios(9.0))
   [registrar addMethodCallDelegate:plugin channel:channel];
 }
 
-
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *url = call.arguments[@"url"];
   if ([@"canLaunch" isEqualToString:call.method]) {
@@ -139,7 +138,7 @@ API_AVAILABLE(ios(9.0))
     weakSelf.currentSession = nil;
   };
   UIViewController *topRootViewController =
-    [[UIApplication sharedApplication] keyWindow].rootViewController;
+      [[UIApplication sharedApplication] keyWindow].rootViewController;
   while (topRootViewController.presentedViewController) {
     topRootViewController = topRootViewController.presentedViewController;
   }
