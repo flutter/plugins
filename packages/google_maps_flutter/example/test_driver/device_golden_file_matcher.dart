@@ -8,7 +8,6 @@ import 'dart:io';
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
 
-
 /// Match golden files for plugins.
 ///
 /// This needs `modelName` to be passed in as a handler in
