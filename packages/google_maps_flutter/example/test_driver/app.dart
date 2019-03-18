@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter_driver/driver_extension.dart';
-import 'package:google_maps_flutter_example/main.dart' as app;
+import '../lib/main.dart' as app;
 
 import 'device_model.dart';
 
