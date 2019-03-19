@@ -55,7 +55,7 @@ Default FirebaseApp is not initialized in this process [package name].
 Make sure to call FirebaseApp.initializeApp(Context) first.
 ```
 
-*Note:* When you are debugging on android, use a device or AVD with Google Play services.
+*Note:* When you are debugging on Android, use a device or AVD with Google Play services.
 Otherwise you will not be able to use Firebase Crashlytics.
 
 ### iOS Integration

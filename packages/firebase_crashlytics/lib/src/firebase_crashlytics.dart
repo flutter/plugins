@@ -14,41 +14,33 @@ class Crashlytics {
   bool enableInDevMode = false;
 
   /// Keys to be included with report.
-  @visibleForTesting
-  final Map<String, dynamic> keys = <String, dynamic>{};
+  final Map<String, dynamic> _keys = <String, dynamic>{};
 
   /// Logs to be included with report.
-  @visibleForTesting
-  final ListQueue<String> logs = ListQueue<String>(15);
+  final ListQueue<String> _logs = ListQueue<String>(15);
   int _logSize = 0;
 
-  bool get isInDebugMode {
-    bool _inDebugMode = false;
-    if (!enableInDevMode) {
-      assert(_inDebugMode = true);
-    }
-    return _inDebugMode;
-  }
-
+  @visibleForTesting
   static const MethodChannel channel =
       MethodChannel('plugins.flutter.io/firebase_crashlytics');
 
+  /// Submits non-fatal crash report to Firebase Crashlytics.
   Future<void> onError(FlutterErrorDetails details) async {
     print('Error caught by Crashlytics plugin:');
-    if (isInDebugMode && !enableInDevMode) {
+
+    bool inDebugMode = false;
+    if (!enableInDevMode) {
+      assert(inDebugMode = true);
+    }
+
+    if (inDebugMode && !enableInDevMode) {
       print(Trace.format(details.stack).trimRight().split('\n'));
     } else {
-      // Send logs
-      await sendLogs();
-
-      // Send keys
-      await sendKeys();
-
       // Report error
       final List<String> stackTraceLines =
           Trace.format(details.stack).trimRight().split('\n');
       final List<Map<String, String>> stackTraceElements =
-          getStackTraceElements(stackTraceLines);
+          _getStackTraceElements(stackTraceLines);
       final dynamic result =
           // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
           // https://github.com/flutter/flutter/issues/26431
@@ -57,6 +49,8 @@ class Crashlytics {
         'exception': details.exceptionAsString(),
         'context': details.context,
         'stackTraceElements': stackTraceElements,
+        'logs': _logs.toList(),
+        'keys': _prepareKeys(),
       });
       print(result);
     }
@@ -76,6 +70,7 @@ class Crashlytics {
     return result;
   }
 
+  /// Returns the Kit Version.
   Future<String> getVersion() async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
@@ -85,40 +80,48 @@ class Crashlytics {
   }
 
   /// Add text logging that will be sent with your next report. `msg` will be
-  /// printed to the console when in debug mode.
+  /// printed to the console when in debug mode. Each report has a rolling max
+  /// of 64k of logs, older logs are removed to allow newer logs to fit within
+  /// the limit.
   void log(String msg) {
     _logSize += Uint8List.fromList(msg.codeUnits).length;
-    logs.add(msg);
+    _logs.add(msg);
     // Remove oldest log till logSize is no more than 64K.
     while (_logSize > 65536) {
-      final String first = logs.removeFirst();
+      final String first = _logs.removeFirst();
       _logSize -= Uint8List.fromList(first.codeUnits).length;
     }
   }
 
-  void setKey(String key, dynamic value) {
+  void _setValue(String key, dynamic value) {
     // Check that only 64 keys are set.
-    if (keys.containsKey(key) || keys.length <= 64) {
-      keys[key] = value;
+    if (_keys.containsKey(key) || _keys.length <= 64) {
+      _keys[key] = value;
     }
   }
 
+  /// Sets a value to be associated with a given key for your crash data.
   void setBool(String key, bool value) {
-    setKey(key, value);
+    _setValue(key, value);
   }
 
+  /// Sets a value to be associated with a given key for your crash data.
   void setDouble(String key, double value) {
-    setKey(key, value);
+    _setValue(key, value);
   }
 
+  /// Sets a value to be associated with a given key for your crash data.
   void setInt(String key, int value) {
-    setKey(key, value);
+    _setValue(key, value);
   }
 
+  /// Sets a value to be associated with a given key for your crash data.
   void setString(String key, String value) {
-    setKey(key, value);
+    _setValue(key, value);
   }
 
+  /// Optionally set a end-user's name or username for display within the
+  /// Crashlytics UI. Please be mindful of end-user's privacy.
   Future<void> setUserEmail(String email) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
@@ -127,6 +130,8 @@ class Crashlytics {
         'Crashlytics#setUserEmail', <String, dynamic>{'email': email});
   }
 
+  /// Specify a user identifier which will be visible in the Crashlytics UI.
+  /// Please be mindful of end-user's privacy.
   Future<void> setUserIdentifier(String identifier) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
@@ -135,6 +140,8 @@ class Crashlytics {
         <String, dynamic>{'identifier': identifier});
   }
 
+  /// Specify a user name which will be visible in the Crashlytics UI. Please
+  /// be mindful of end-user's privacy.
   Future<void> setUserName(String name) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
@@ -143,22 +150,10 @@ class Crashlytics {
         'Crashlytics#setUserName', <String, dynamic>{'name': name});
   }
 
-  @visibleForTesting
-  Future<void> sendLogs() async {
-    for (int i = 0; i < logs.length; i++) {
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      await channel.invokeMethod('Crashlytics#log', <String, dynamic>{
-        'msg': logs.elementAt(i),
-      });
-    }
-  }
-
-  @visibleForTesting
-  Future<void> sendKeys() async {
-    for (String key in keys.keys) {
-      final dynamic value = keys[key];
+  List<Map<String, dynamic>> _prepareKeys() {
+    final List<Map<String, dynamic>> crashlyticsKeys = <Map<String, dynamic>>[];
+    for (String key in _keys.keys) {
+      final dynamic value = _keys[key];
 
       final Map<String, dynamic> crashlyticsKey = <String, dynamic>{
         'key': key,
@@ -166,47 +161,41 @@ class Crashlytics {
       };
 
       if (value is int) {
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await channel.invokeMethod('Crashlytics#setInt', crashlyticsKey);
+        crashlyticsKey['type'] = 'int';
       } else if (value is double) {
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await channel.invokeMethod('Crashlytics#setDouble', crashlyticsKey);
+        crashlyticsKey['type'] = 'double';
       } else if (value is String) {
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await channel.invokeMethod('Crashlytics#setString', crashlyticsKey);
+        crashlyticsKey['type'] = 'string';
       } else if (value is bool) {
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await channel.invokeMethod('Crashlytics#setBool', crashlyticsKey);
+        crashlyticsKey['type'] = 'boolean';
       }
     }
+
+    return crashlyticsKeys;
   }
 
-  List<Map<String, String>> getStackTraceElements(List<String> lines) {
+  List<Map<String, String>> _getStackTraceElements(List<String> lines) {
     final List<Map<String, String>> elements = <Map<String, String>>[];
     for (String line in lines) {
       final List<String> lineParts = line.split(RegExp('\\s+'));
-      final String fileName = lineParts[0];
-      final String lineNumber =
-          lineParts[1].substring(0, lineParts[1].indexOf(":")).trim();
-      final String className =
-          lineParts[2].substring(0, lineParts[2].indexOf(".")).trim();
-      final String methodName =
-          lineParts[2].substring(lineParts[2].indexOf(".") + 1).trim();
+      try {
+        final String fileName = lineParts[0];
+        final String lineNumber =
+        lineParts[1].substring(0, lineParts[1].indexOf(":")).trim();
+        final String className =
+        lineParts[2].substring(0, lineParts[2].indexOf(".")).trim();
+        final String methodName =
+        lineParts[2].substring(lineParts[2].indexOf(".") + 1).trim();
 
-      elements.add(<String, String>{
-        'class': className,
-        'method': methodName,
-        'file': fileName,
-        'line': lineNumber,
-      });
+        elements.add(<String, String>{
+          'class': className,
+          'method': methodName,
+          'file': fileName,
+          'line': lineNumber,
+        });
+      } catch (e) {
+        print(e.toString());
+      }
     }
     return elements;
   }

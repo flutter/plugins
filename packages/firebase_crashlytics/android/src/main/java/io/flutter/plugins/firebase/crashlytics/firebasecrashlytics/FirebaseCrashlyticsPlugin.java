@@ -27,6 +27,32 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     if (call.method.equals("Crashlytics#onError")) {
+      // Add logs.
+      List<String> logs = call.argument("logs");
+      for (String log : logs) {
+        Crashlytics.log(log);
+      }
+
+      // Set keys.
+      List<Map<String, Object>> keys = call.argument("keys");
+      for (Map<String, Object> key : keys) {
+        switch ((String) key.get("type")) {
+          case "int":
+            Crashlytics.setInt((String) key.get("key"), (int) key.get("value"));
+            break;
+          case "double":
+            Crashlytics.setDouble((String) key.get("key"), (double) key.get("value"));
+            break;
+          case "string":
+            Crashlytics.setString((String) key.get("key"), (String) key.get("value"));
+            break;
+          case "boolean":
+            Crashlytics.setBool((String) key.get("key"), (boolean) key.get("value"));
+            break;
+        }
+      }
+
+      // Report crash.
       Exception exception = new Exception("Dart Error");
       List<Map<String, String>> errorElements = call.argument("stackTraceElements");
       List<StackTraceElement> elements = new ArrayList<>();
@@ -45,21 +71,6 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
       result.success(Fabric.isDebuggable());
     } else if (call.method.equals("Crashlytics#getVersion")) {
       result.success(Crashlytics.getInstance().getVersion());
-    } else if (call.method.equals("Crashlytics#setInt")) {
-      Crashlytics.setInt((String) call.argument("key"), (int) call.argument("value"));
-      result.success(null);
-    } else if (call.method.equals("Crashlytics#setDouble")) {
-      Crashlytics.setDouble((String) call.argument("key"), (double) call.argument("value"));
-      result.success(null);
-    } else if (call.method.equals("Crashlytics#setString")) {
-      Crashlytics.setString((String) call.argument("key"), (String) call.argument("value"));
-      result.success(null);
-    } else if (call.method.equals("Crashlytics#setBool")) {
-      Crashlytics.setBool((String) call.argument("key"), (boolean) call.argument("value"));
-      result.success(null);
-    } else if (call.method.equals("Crashlytics#log")) {
-      Crashlytics.log((String) call.argument("msg"));
-      result.success(null);
     } else if (call.method.equals("Crashlytics#setUserEmail")) {
       Crashlytics.setUserEmail((String) call.argument("email"));
       result.success(null);

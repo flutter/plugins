@@ -1,18 +1,17 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('$Crashlytics', () {
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/firebase_crashlytics');
 
     final List<MethodCall> log = <MethodCall>[];
 
     final Crashlytics crashlytics = Crashlytics.instance;
 
     setUp(() async {
-      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      Crashlytics.channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'Crashlytics#isDebuggable':
@@ -23,31 +22,38 @@ void main() {
             return true;
           case 'Crashlytics#setUserName':
             return true;
-          case 'Crashlytics#log':
-            return null;
         }
       });
       log.clear();
     });
 
+    test('onError', () async {
+      final FlutterErrorDetails details = FlutterErrorDetails(
+        exception: 'foo exception',
+        stack: StackTrace.current,
+        library: 'foo library',
+        context: 'foo context',
+        informationCollector: (StringBuffer information) {
+          information.writeln('foo information');
+        },
+      );
+      crashlytics.enableInDevMode = true;
+      crashlytics.log('foo');
+      await crashlytics.onError(details);
+      expect(log[0].method, 'Crashlytics#onError');
+      expect(log[0].arguments['exception'], 'foo exception');
+      expect(log[0].arguments['context'], 'foo context');
+      expect(log[0].arguments['logs'], isNotEmpty);
+      expect(log[0].arguments['logs'], contains('foo'));
+      expect(log[0].arguments['keys'], isEmpty);
+    });
+
     test('isDebuggable', () async {
       expect(await crashlytics.isDebuggable(), true);
       expect(log,
-          <Matcher>[isMethodCall('Crashlytics#isDebuggable', arguments: null)]);
-    });
-
-    test('log', () {
-      crashlytics.log('foo');
-      expect(crashlytics.logs.length, 1);
-      crashlytics.log('bar');
-      expect(crashlytics.logs.length, 2);
-    });
-
-    test('isInDebugMode', () {
-      crashlytics.enableInDevMode = true;
-      expect(crashlytics.isInDebugMode, false);
-      crashlytics.enableInDevMode = false;
-      expect(crashlytics.isInDebugMode, true);
+          <Matcher>[
+            isMethodCall('Crashlytics#isDebuggable', arguments: null,)
+          ],);
     });
 
     test('crash', () {
@@ -55,15 +61,9 @@ void main() {
     });
 
     test('getVersion', () async {
-      crashlytics.getVersion();
+      await crashlytics.getVersion();
       expect(log,
           <Matcher>[isMethodCall('Crashlytics#getVersion', arguments: null)]);
-    });
-
-    test('setKey', () {
-      crashlytics.setKey('foo', 'bar');
-      expect(crashlytics.keys.length, 1);
-      expect(crashlytics.keys['foo'], 'bar');
     });
 
     test('setUserEmail', () async {
@@ -87,36 +87,6 @@ void main() {
       expect(log, <Matcher>[
         isMethodCall('Crashlytics#setUserName',
             arguments: <String, dynamic>{'name': 'foo'})
-      ]);
-    });
-
-    test('sendLogs', () async {
-      crashlytics.log('foo');
-      await crashlytics.sendLogs();
-      expect(log, <Matcher>[
-        isMethodCall('Crashlytics#log',
-            arguments: <String, dynamic>{'msg': 'foo'}),
-        isMethodCall('Crashlytics#log',
-            arguments: <String, dynamic>{'msg': 'bar'}),
-        isMethodCall('Crashlytics#log',
-            arguments: <String, dynamic>{'msg': 'foo'}),
-      ]);
-    });
-
-    test('sendKeys', () async {
-      crashlytics.setKey('baz', 'qux');
-      crashlytics.setKey('quux', 1);
-      crashlytics.setKey('quuz', false);
-      await crashlytics.sendKeys();
-      expect(log, <Matcher>[
-        isMethodCall('Crashlytics#setString',
-            arguments: <String, dynamic>{'key': 'foo', 'value': 'bar'}),
-        isMethodCall('Crashlytics#setString',
-            arguments: <String, dynamic>{'key': 'baz', 'value': 'qux'}),
-        isMethodCall('Crashlytics#setInt',
-            arguments: <String, dynamic>{'key': 'quux', 'value': 1}),
-        isMethodCall('Crashlytics#setBool',
-            arguments: <String, dynamic>{'key': 'quuz', 'value': false}),
       ]);
     });
   });

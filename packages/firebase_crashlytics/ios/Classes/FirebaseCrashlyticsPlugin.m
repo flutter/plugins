@@ -27,6 +27,31 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"Crashlytics#onError" isEqualToString:call.method]) {
+    // Add logs.
+    NSArray *logs = call.arguments[@"logs"];
+    for (NSString *log in logs) {
+      CLS_LOG(@"%@", log);
+    }
+
+    // Set keys.
+    NSArray *keys = call.arguments[@"keys"];
+    for (NSDictionary *key in keys) {
+      if ([@"int" isEqualToString: key[@"type"]]) {
+        [[Crashlytics sharedInstance] setIntValue:(int)call.arguments[@"value"]
+                                           forKey:call.arguments[@"key"]];
+      } else if ([@"double" isEqualToString: key[@"type"]]) {
+        [[Crashlytics sharedInstance] setFloatValue:[call.arguments[@"value"] floatValue]
+                                             forKey:call.arguments[@"key"]];
+      } else if ([@"string" isEqualToString: key[@"type"]]) {
+        [[Crashlytics sharedInstance] setObjectValue:call.arguments[@"value"]
+                                              forKey:call.arguments[@"key"]];
+      } else if ([@"boolean" isEqualToString: key[@"type"]]) {
+        [[Crashlytics sharedInstance] setBoolValue:[call.arguments[@"value"] boolValue]
+                                            forKey:call.arguments[@"key"]];
+      }
+    }
+
+    // Report crash.
     NSArray *errorElements = call.arguments[@"stackTraceElements"];
     NSMutableArray *frames = [NSMutableArray array];
     for (NSDictionary *errorElement in errorElements) {
@@ -40,25 +65,6 @@
     result([NSNumber numberWithBool:[Crashlytics sharedInstance].debugMode]);
   } else if ([@"Crashlytics#getVersion" isEqualToString:call.method]) {
     result([Crashlytics sharedInstance].version);
-  } else if ([@"Crashlytics#setInt" isEqualToString:call.method]) {
-    [[Crashlytics sharedInstance] setIntValue:(int)call.arguments[@"value"]
-                                       forKey:call.arguments[@"key"]];
-    result(nil);
-  } else if ([@"Crashlytics#setDouble" isEqualToString:call.method]) {
-    [[Crashlytics sharedInstance] setFloatValue:[call.arguments[@"value"] floatValue]
-                                         forKey:call.arguments[@"key"]];
-    result(nil);
-  } else if ([@"Crashlytics#setString" isEqualToString:call.method]) {
-    [[Crashlytics sharedInstance] setObjectValue:call.arguments[@"value"]
-                                          forKey:call.arguments[@"key"]];
-    result(nil);
-  } else if ([@"Crashlytics#setBool" isEqualToString:call.method]) {
-    [[Crashlytics sharedInstance] setBoolValue:[call.arguments[@"value"] boolValue]
-                                        forKey:call.arguments[@"key"]];
-    result(nil);
-  } else if ([@"Crashlytics#log" isEqualToString:call.method]) {
-    CLS_LOG(@"%@", call.arguments[@"msg"]);
-    result(nil);
   } else if ([@"Crashlytics#setUserEmail" isEqualToString:call.method]) {
     [[Crashlytics sharedInstance] setUserEmail:call.arguments[@"email"]];
     result(nil);
