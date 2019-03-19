@@ -1,8 +1,13 @@
+## 0.5.0+9
+
+* Remove unnecessary temp video file path.
+
 ## 0.5.0+8
 
-* Fixed wrong GooglePhotos authority of image Uri
+* Fixed wrong GooglePhotos authority of image Uri.
 
 ## 0.5.0+7
+
 * Fix a crash when selecting images from yandex.disk and dropbox.
 
 ## 0.5.0+6
@@ -11,11 +16,11 @@
 
 ## 0.5.0+5
 
-Remove unnecessary camera permmision.
+* Remove unnecessary camera permission.
 
 ## 0.5.0+4
 
-Preserve transparency when saving images.
+* Preserve transparency when saving images.
 
 ## 0.5.0+3
 
