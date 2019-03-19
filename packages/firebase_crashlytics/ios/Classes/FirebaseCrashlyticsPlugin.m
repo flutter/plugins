@@ -36,16 +36,16 @@
     // Set keys.
     NSArray *keys = call.arguments[@"keys"];
     for (NSDictionary *key in keys) {
-      if ([@"int" isEqualToString: key[@"type"]]) {
+      if ([@"int" isEqualToString:key[@"type"]]) {
         [[Crashlytics sharedInstance] setIntValue:(int)call.arguments[@"value"]
                                            forKey:call.arguments[@"key"]];
-      } else if ([@"double" isEqualToString: key[@"type"]]) {
+      } else if ([@"double" isEqualToString:key[@"type"]]) {
         [[Crashlytics sharedInstance] setFloatValue:[call.arguments[@"value"] floatValue]
                                              forKey:call.arguments[@"key"]];
-      } else if ([@"string" isEqualToString: key[@"type"]]) {
+      } else if ([@"string" isEqualToString:key[@"type"]]) {
         [[Crashlytics sharedInstance] setObjectValue:call.arguments[@"value"]
                                               forKey:call.arguments[@"key"]];
-      } else if ([@"boolean" isEqualToString: key[@"type"]]) {
+      } else if ([@"boolean" isEqualToString:key[@"type"]]) {
         [[Crashlytics sharedInstance] setBoolValue:[call.arguments[@"value"] boolValue]
                                             forKey:call.arguments[@"key"]];
       }
