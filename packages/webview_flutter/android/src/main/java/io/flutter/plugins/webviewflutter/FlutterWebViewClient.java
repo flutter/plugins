@@ -9,6 +9,8 @@ import android.os.Build;
 import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import androidx.annotation.NonNull;
 import androidx.webkit.WebViewClientCompat;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
@@ -18,7 +20,7 @@ import java.util.Map;
 // shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
 // invoked by the webview on older Android devices, without it pages that use iframes will
 // be broken when a navigationDelegate is set on Android version earlier than N.
-class FlutterWebViewClient extends WebViewClientCompat {
+class FlutterWebViewClient {
   private static final String TAG = "FlutterWebViewClient";
   private final MethodChannel methodChannel;
   private boolean hasNavigationDelegate;
@@ -32,8 +34,7 @@ class FlutterWebViewClient extends WebViewClientCompat {
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  @Override
-  public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+  private boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
     if (!hasNavigationDelegate) {
       return false;
     }
@@ -53,8 +54,7 @@ class FlutterWebViewClient extends WebViewClientCompat {
     return request.isForMainFrame();
   }
 
-  @Override
-  public boolean shouldOverrideUrlLoading(WebView view, String url) {
+  private boolean shouldOverrideUrlLoading(WebView view, String url) {
     if (!hasNavigationDelegate) {
       return false;
     }
@@ -70,8 +70,7 @@ class FlutterWebViewClient extends WebViewClientCompat {
     return true;
   }
 
-  @Override
-  public void onPageFinished(WebView view, String url) {
+  private void onPageFinished(WebView view, String url) {
     Map<String, Object> args = new HashMap<>();
     args.put("url", url);
     methodChannel.invokeMethod("onPageFinished", args);
@@ -88,6 +87,49 @@ class FlutterWebViewClient extends WebViewClientCompat {
     } else {
       methodChannel.invokeMethod("navigationRequest", args);
     }
+  }
+
+  WebViewClient createWebViewClient() {
+    if (!hasNavigationDelegate || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      return internalCreateWebViewClient();
+    }
+
+    return internalCreateWebViewClientCompat();
+  }
+
+  private WebViewClient internalCreateWebViewClient() {
+    return new WebViewClient() {
+      @TargetApi(Build.VERSION_CODES.N)
+      @Override
+      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+        return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, request);
+      }
+
+      @Override
+      public void onPageFinished(WebView view, String url) {
+        FlutterWebViewClient.this.onPageFinished(view, url);
+      }
+    };
+  }
+
+  private WebViewClientCompat internalCreateWebViewClientCompat() {
+    return new WebViewClientCompat() {
+      @Override
+      public boolean shouldOverrideUrlLoading(
+          @NonNull WebView view, @NonNull WebResourceRequest request) {
+        return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, request);
+      }
+
+      @Override
+      public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, url);
+      }
+
+      @Override
+      public void onPageFinished(WebView view, String url) {
+        FlutterWebViewClient.this.onPageFinished(view, url);
+      }
+    };
   }
 
   private static class OnNavigationRequestResult implements MethodChannel.Result {
