@@ -8,11 +8,9 @@ import 'dart:io';
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
 
-/// Match golden files for plugins.
-///
-/// This needs `modelName` to be passed in as a handler in
-/// `enableFlutterDriverExtension` for the test app. Please look at
-/// `app.dart` as an example on how to do this.
+// This needs `modelName` to be passed in as a handler in
+// `enableFlutterDriverExtension` for the test app. Please look at
+// `app.dart` as an example on how to do this.
 class DeviceGoldenFileMatcher {
   DeviceGoldenFileMatcher(this.driver);
 

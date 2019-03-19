@@ -12,12 +12,16 @@ Future<String> modelName(String message) async {
   if (message != "modelName") {
     throw Exception('Unknown message: $message');
   }
+
+  final String os = Platform.operatingSystem;
   if (Platform.isAndroid) {
     final AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
-    return androidInfo.model;
+    final String modelName = androidInfo.model;
+    return '$os/$modelName';
   } else if (Platform.isIOS) {
     final IosDeviceInfo iosInfo = await _deviceInfo.iosInfo;
-    return iosInfo.model;
+    final String modelName = iosInfo.model;
+    return '$os/$modelName';
   } else {
     return Platform.operatingSystem;
   }

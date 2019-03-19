@@ -12,8 +12,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # The following dependenciess can be removed once
-  # https://github.com/flutter/flutter/issues/17168 is resolved.
+  # TODO(iskakaushik): The following dependencies can be removed once
+  # https://github.com/dart-lang/pub/issues/2101 is resolved.
   flutter_driver:
     sdk: flutter
   test: 1.5.3
