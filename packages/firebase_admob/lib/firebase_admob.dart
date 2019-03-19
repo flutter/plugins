@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use_from_same_package
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -25,6 +26,7 @@ enum MobileAdEvent {
 /// The user's gender for the sake of ad targeting using [MobileAdTargetingInfo].
 // Warning: the index values of the enums must match the values of the corresponding
 // AdMob constants. For example MobileAdGender.female.index == kGADGenderFemale.
+@Deprecated('This functionality is deprecated in AdMob without replacement.')
 enum MobileAdGender {
   unknown,
   male,
@@ -42,17 +44,24 @@ class MobileAdTargetingInfo {
   const MobileAdTargetingInfo(
       {this.keywords,
       this.contentUrl,
-      this.birthday,
-      this.gender,
-      this.designedForFamilies,
+      @Deprecated('This functionality is deprecated in AdMob without replacement.')
+          this.birthday,
+      @Deprecated('This functionality is deprecated in AdMob without replacement.')
+          this.gender,
+      @Deprecated('Use `childDirected` instead.')
+          this.designedForFamilies,
       this.childDirected,
       this.testDevices,
       this.nonPersonalizedAds});
 
   final List<String> keywords;
   final String contentUrl;
+  @Deprecated('This functionality is deprecated in AdMob without replacement.')
   final DateTime birthday;
+  @Deprecated('This functionality is deprecated in AdMob without replacement.')
   final MobileAdGender gender;
+  @Deprecated(
+      'This functionality is deprecated in AdMob.  Use `childDirected` instead.')
   final bool designedForFamilies;
   final bool childDirected;
   final List<String> testDevices;
@@ -506,6 +515,9 @@ class FirebaseAdMob {
 }
 
 Future<bool> _invokeBooleanMethod(String method, [dynamic arguments]) async {
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   final bool result = await FirebaseAdMob.instance._channel.invokeMethod(
     method,
     arguments,

@@ -1,3 +1,66 @@
+## 0.9.7
+
+* Fixes a NoSuchMethodError when using getDocuments on iOS (introduced in 0.9.6).
+* Adds a driver test for getDocuments.
+
+## 0.9.6
+
+* On iOS, update null checking to match the recommended pattern usage in the Firebase documentation.
+* Fixes a case where snapshot errors might result in plugin crash.
+
+## 0.9.5+2
+
+* Fixing PlatformException(Error 0, null, null) which happened when a successful operation was performed.
+
+## 0.9.5+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.9.5
+
+* Fix an issue on some iOS devices that results in reading incorrect dates.
+
+## 0.9.4
+
+* No longer sends empty snapshot events on iOS when encountering errors.
+
+## 0.9.3
+
+* Fix transactions on iOS when getting snapshot that doesn't exist.
+
+## 0.9.2
+
+* Fix IllegalStateException errors when using transactions on Android.
+
+## 0.9.1
+
+* Fixed Firebase multiple app support in transactions and document snapshots.
+
+## 0.9.0+2
+
+* Remove categories.
+
+## 0.9.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.9.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.8.2+3
+
+* Resolved "explicit self reference" and "loses accuracy" compiler warnings.
+
+## 0.8.2+2
+
+* Clean up Android build logs. @SuppressWarnings("unchecked")
+
 ## 0.8.2+1
 
 * Avoid crash in document snapshot callback.

@@ -1,3 +1,56 @@
+## 0.5.0+9
+
+* Remove unnecessary temp video file path.
+
+## 0.5.0+8
+
+* Fixed wrong GooglePhotos authority of image Uri.
+
+## 0.5.0+7
+
+* Fix a crash when selecting images from yandex.disk and dropbox.
+
+## 0.5.0+6
+
+* Delete the original image if it was scaled.
+
+## 0.5.0+5
+
+* Remove unnecessary camera permission.
+
+## 0.5.0+4
+
+* Preserve transparency when saving images.
+
+## 0.5.0+3
+
+* Fixed an Android crash when Image Picker is registered without an activity.
+
+## 0.5.0+2
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.5.0+1
+
+* Fix a crash when user calls the plugin in quick succession on Android.
+
+## 0.5.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.4.12+1
+
+* Fix a crash when selecting downloaded images from image picker on certain devices.
+
+## 0.4.12
+
+* Fix a crash when user tap the image mutiple times.
+
 ## 0.4.11
 
 * Use `api` to define `support-v4` dependency to allow automatic version resolution.
