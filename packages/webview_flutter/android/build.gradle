@@ -44,4 +44,8 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+
+    dependencies {
+        implementation 'androidx.webkit:webkit:1.0.0'
+    }
 }

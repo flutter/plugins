@@ -58,6 +58,7 @@ Future<List<CameraDescription>> availableCameras() async {
       return CameraDescription(
         name: camera['name'],
         lensDirection: _parseCameraLensDirection(camera['lensFacing']),
+        sensorOrientation: camera['sensorOrientation'],
       );
     }).toList();
   } on PlatformException catch (e) {
@@ -66,10 +67,19 @@ Future<List<CameraDescription>> availableCameras() async {
 }
 
 class CameraDescription {
-  CameraDescription({this.name, this.lensDirection});
+  CameraDescription({this.name, this.lensDirection, this.sensorOrientation});
 
   final String name;
   final CameraLensDirection lensDirection;
+
+  /// Clockwise angle through which the output image needs to be rotated to be upright on the device screen in its native orientation.
+  ///
+  /// **Range of valid values:**
+  /// 0, 90, 180, 270
+  ///
+  /// On Android, also defines the direction of rolling shutter readout, which
+  /// is from top to bottom in the sensor's coordinate system.
+  final int sensorOrientation;
 
   @override
   bool operator ==(Object o) {
@@ -85,7 +95,7 @@ class CameraDescription {
 
   @override
   String toString() {
-    return '$runtimeType($name, $lensDirection)';
+    return '$runtimeType($name, $lensDirection, $sensorOrientation)';
   }
 }
 
@@ -244,6 +254,24 @@ class CameraController extends ValueNotifier<CameraValue> {
             .listen(_listener);
     _creatingCompleter.complete();
     return _creatingCompleter.future;
+  }
+
+  /// Prepare the capture session for video recording.
+  ///
+  /// Use of this method is optional, but it may be called for performance
+  /// reasons on iOS.
+  ///
+  /// Preparing audio can cause a minor delay in the CameraPreview view on iOS.
+  /// If video recording is intended, calling this early eliminates this delay
+  /// that would otherwise be experienced when video recording is started.
+  /// This operation is a no-op on Android.
+  ///
+  /// Throws a [CameraException] if the prepare fails.
+  Future<void> prepareForVideoRecording() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod('prepareForVideoRecording');
   }
 
   /// Listen to events from the native plugins.

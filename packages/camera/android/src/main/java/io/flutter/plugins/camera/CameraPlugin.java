@@ -164,6 +164,9 @@ public class CameraPlugin implements MethodCallHandler {
                 cameraManager.getCameraCharacteristics(cameraName);
             details.put("name", cameraName);
             @SuppressWarnings("ConstantConditions")
+            int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+            details.put("sensorOrientation", sensorOrientation);
+
             int lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
             switch (lensFacing) {
               case CameraMetadata.LENS_FACING_FRONT:
@@ -200,6 +203,12 @@ public class CameraPlugin implements MethodCallHandler {
       case "takePicture":
         {
           camera.takePicture((String) call.argument("path"), result);
+          break;
+        }
+      case "prepareForVideoRecording":
+        {
+          // This optimization is not required for Android.
+          result.success(null);
           break;
         }
       case "startVideoRecording":

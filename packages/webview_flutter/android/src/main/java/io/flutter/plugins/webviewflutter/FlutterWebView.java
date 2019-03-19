@@ -4,7 +4,9 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
@@ -21,6 +23,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
   private final WebView webView;
   private final MethodChannel methodChannel;
+  private final FlutterWebViewClient flutterWebViewClient;
 
   @SuppressWarnings("unchecked")
   FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
@@ -31,11 +34,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
 
+    flutterWebViewClient = new FlutterWebViewClient(methodChannel);
     applySettings((Map<String, Object>) params.get("settings"));
 
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
       registerJavaScriptChannelNames((List<String>) params.get(JS_CHANNEL_NAMES_FIELD));
     }
+
+    webView.setWebViewClient(flutterWebViewClient);
 
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
@@ -135,6 +141,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(null);
   }
 
+  @TargetApi(Build.VERSION_CODES.KITKAT)
   private void evaluateJavaScript(MethodCall methodCall, final Result result) {
     String jsString = (String) methodCall.arguments;
     if (jsString == null) {
@@ -177,6 +184,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       switch (key) {
         case "jsMode":
           updateJsMode((Integer) settings.get(key));
+          break;
+        case "hasNavigationDelegate":
+          flutterWebViewClient.setHasNavigationDelegate((boolean) settings.get(key));
           break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
