@@ -5,13 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('$Crashlytics', () {
-
     final List<MethodCall> log = <MethodCall>[];
 
     final Crashlytics crashlytics = Crashlytics.instance;
 
     setUp(() async {
-      Crashlytics.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      Crashlytics.channel
+          .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'Crashlytics#isDebuggable':
@@ -50,10 +50,15 @@ void main() {
 
     test('isDebuggable', () async {
       expect(await crashlytics.isDebuggable(), true);
-      expect(log,
-          <Matcher>[
-            isMethodCall('Crashlytics#isDebuggable', arguments: null,)
-          ],);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'Crashlytics#isDebuggable',
+            arguments: null,
+          )
+        ],
+      );
     });
 
     test('crash', () {

@@ -181,11 +181,11 @@ class Crashlytics {
       try {
         final String fileName = lineParts[0];
         final String lineNumber =
-        lineParts[1].substring(0, lineParts[1].indexOf(":")).trim();
+            lineParts[1].substring(0, lineParts[1].indexOf(":")).trim();
         final String className =
-        lineParts[2].substring(0, lineParts[2].indexOf(".")).trim();
+            lineParts[2].substring(0, lineParts[2].indexOf(".")).trim();
         final String methodName =
-        lineParts[2].substring(lineParts[2].indexOf(".") + 1).trim();
+            lineParts[2].substring(lineParts[2].indexOf(".") + 1).trim();
 
         elements.add(<String, String>{
           'class': className,
