@@ -256,7 +256,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           optionsBuilder.setHostedDomain(hostedDomain);
         }
         if (!Strings.isNullOrEmpty(serverClientId)) {
-          optionsBuilder.requestServerAuthCode(serverClientId);
+          optionsBuilder.requestServerAuthCode(serverClientId, true);
           optionsBuilder.requestIdToken(serverClientId);
         }
 
