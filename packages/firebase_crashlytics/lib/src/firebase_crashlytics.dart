@@ -70,7 +70,7 @@ class Crashlytics {
     return result;
   }
 
-  /// Returns the Kit Version.
+  /// Returns Crashlytics SDK version.
   Future<String> getVersion() async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
