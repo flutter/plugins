@@ -1,3 +1,7 @@
+## 0.10.0+4
+
+* Android: Upgrade ExoPlayer to 2.9.6.
+
 ## 0.10.0+3
 
 * Fix divide by zero bug on iOS.

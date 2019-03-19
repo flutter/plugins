@@ -1,3 +1,13 @@
+## 0.9.7
+
+* Fixes a NoSuchMethodError when using getDocuments on iOS (introduced in 0.9.6).
+* Adds a driver test for getDocuments.
+
+## 0.9.6
+
+* On iOS, update null checking to match the recommended pattern usage in the Firebase documentation.
+* Fixes a case where snapshot errors might result in plugin crash.
+
 ## 0.9.5+2
 
 * Fixing PlatformException(Error 0, null, null) which happened when a successful operation was performed.

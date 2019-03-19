@@ -1,6 +1,10 @@
-## 0.5.0+8
+## 0.5.0+9
 
 * Remove unnecessary temp video file path.
+
+## 0.5.0+8
+
+* Fixed wrong GooglePhotos authority of image Uri.
 
 ## 0.5.0+7
 
