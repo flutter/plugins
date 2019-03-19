@@ -28,7 +28,7 @@ enable the [Google People API](https://developers.google.com/people/).
 6. A dialog will show up and ask you to select the targets, select the `Runner` target.
 7. Then add the `CFBundleURLTypes` attributes below into the `[my_project]/ios/Runner/Info.plist` file.
 
-```
+```xml
 <!-- Put me in the [my_project]/ios/Runner/Info.plist file -->
 <!-- Google Sign-in Section -->
 <key>CFBundleURLTypes</key>
