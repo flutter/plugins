@@ -1,3 +1,7 @@
+## 0.5.0+8
+
+* Fixed wrong GooglePhotos authority of image Uri
+
 ## 0.5.0+7
 * Fix a crash when selecting images from yandex.disk and dropbox.
 
