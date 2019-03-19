@@ -25,8 +25,10 @@ task:
     - name: build-apks+java-test+drive-examples
       env:
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
       create_device_script:
         echo no | avdmanager -v create avd -n test -k "system-images;android-21;google_apis;armeabi-v7a"
       start_emulator_background_script:
