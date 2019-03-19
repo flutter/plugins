@@ -76,11 +76,11 @@ Get a specific document:
 
 ```dart
 Firestore.instance
-    .collection('talks')
-    .document('document-name')
-    .get()
-    .then((DocumentSnapshot ds) => {
-    // use ds as a snashot
+        .collection('talks')
+        .document('document-name')
+        .get()
+        .then((DocumentSnapshot ds) {
+      // use ds as a snapshot
     });
 ```
 
