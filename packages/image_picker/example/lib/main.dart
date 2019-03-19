@@ -194,9 +194,9 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class AspectRatioVideo extends StatefulWidget {
-  final VideoPlayerController controller;
-
   AspectRatioVideo(this.controller);
+
+  final VideoPlayerController controller;
 
   @override
   AspectRatioVideoState createState() => AspectRatioVideoState();
@@ -226,10 +226,9 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   @override
   Widget build(BuildContext context) {
     if (initialized) {
-      final Size size = controller.value.size;
       return Center(
         child: AspectRatio(
-          aspectRatio: size.width / size.height,
+          aspectRatio: controller.value?.aspectRatio,
           child: VideoPlayer(controller),
         ),
       );

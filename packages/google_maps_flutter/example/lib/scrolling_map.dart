@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -41,16 +42,19 @@ class ScrollingMapBody extends StatelessWidget {
                     width: 300.0,
                     height: 300.0,
                     child: GoogleMap(
-                      onMapCreated: onMapCreated,
-                      options: GoogleMapOptions(
-                        cameraPosition: CameraPosition(
-                          target: center,
-                          zoom: 11.0,
-                        ),
+                      initialCameraPosition: CameraPosition(
+                        target: center,
+                        zoom: 11.0,
                       ),
-                      gestureRecognizers: <OneSequenceGestureRecognizer>[
-                        EagerGestureRecognizer()
-                      ],
+                      gestureRecognizers:
+                          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+                          // https://github.com/flutter/flutter/issues/28312
+                          // ignore: prefer_collection_literals
+                          <Factory<OneSequenceGestureRecognizer>>[
+                        Factory<OneSequenceGestureRecognizer>(
+                          () => EagerGestureRecognizer(),
+                        ),
+                      ].toSet(),
                     ),
                   ),
                 ),
@@ -74,16 +78,38 @@ class ScrollingMapBody extends StatelessWidget {
                     width: 300.0,
                     height: 300.0,
                     child: GoogleMap(
-                      onMapCreated: onMapCreated,
-                      options: GoogleMapOptions(
-                        cameraPosition: CameraPosition(
-                          target: center,
-                          zoom: 11.0,
-                        ),
+                      initialCameraPosition: CameraPosition(
+                        target: center,
+                        zoom: 11.0,
                       ),
-                      gestureRecognizers: <OneSequenceGestureRecognizer>[
-                        ScaleGestureRecognizer()
-                      ],
+                      markers:
+                          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+                          // https://github.com/flutter/flutter/issues/28312
+                          // ignore: prefer_collection_literals
+                          Set<Marker>.of(
+                        <Marker>[
+                          Marker(
+                            markerId: MarkerId("test_marker_id"),
+                            position: LatLng(
+                              center.latitude,
+                              center.longitude,
+                            ),
+                            infoWindow: const InfoWindow(
+                              title: 'An interesting location',
+                              snippet: '*',
+                            ),
+                          )
+                        ],
+                      ),
+                      gestureRecognizers:
+                          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+                          // https://github.com/flutter/flutter/issues/28312
+                          // ignore: prefer_collection_literals
+                          <Factory<OneSequenceGestureRecognizer>>[
+                        Factory<OneSequenceGestureRecognizer>(
+                          () => ScaleGestureRecognizer(),
+                        ),
+                      ].toSet(),
                     ),
                   ),
                 ),
@@ -93,15 +119,5 @@ class ScrollingMapBody extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  void onMapCreated(GoogleMapController controller) {
-    controller.addMarker(MarkerOptions(
-      position: LatLng(
-        center.latitude,
-        center.longitude,
-      ),
-      infoWindowText: const InfoWindowText('An interesting location', '*'),
-    ));
   }
 }

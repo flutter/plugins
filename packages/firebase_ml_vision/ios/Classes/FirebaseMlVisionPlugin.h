@@ -2,7 +2,7 @@
 
 #import "Firebase/Firebase.h"
 
-@interface FLTFirebaseMlVisionPlugin : NSObject<FlutterPlugin>
+@interface FLTFirebaseMlVisionPlugin : NSObject <FlutterPlugin>
 + (void)handleError:(NSError *)error result:(FlutterResult)result;
 @end
 
@@ -14,17 +14,17 @@
 @optional
 @end
 
-@interface BarcodeDetector : NSObject<Detector>
+@interface BarcodeDetector : NSObject <Detector>
 @end
 
-@interface FaceDetector : NSObject<Detector>
+@interface FaceDetector : NSObject <Detector>
 @end
 
-@interface LabelDetector : NSObject<Detector>
+@interface LabelDetector : NSObject <Detector>
 @end
 
-@interface CloudLabelDetector : NSObject<Detector>
+@interface CloudLabelDetector : NSObject <Detector>
 @end
 
-@interface TextRecognizer : NSObject<Detector>
+@interface TextRecognizer : NSObject <Detector>
 @end

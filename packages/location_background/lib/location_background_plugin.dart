@@ -24,12 +24,6 @@ enum LocationActivityType {
 
 /// A representation of a location update.
 class Location {
-  final double _time;
-  final double latitude;
-  final double longitude;
-  final double altitude;
-  final double speed;
-
   Location(
       this._time, this.latitude, this.longitude, this.altitude, this.speed);
 
@@ -38,6 +32,12 @@ class Location {
     return Location(location['time'], location['latitude'],
         location['longitude'], location['altitude'], location['speed']);
   }
+
+  final double _time;
+  final double latitude;
+  final double longitude;
+  final double altitude;
+  final double speed;
 
   DateTime get time =>
       DateTime.fromMillisecondsSinceEpoch((_time * 1000).round(), isUtc: true);
@@ -106,6 +106,24 @@ void _backgroundCallbackDispatcher() {
 }
 
 class LocationBackgroundPlugin {
+  LocationBackgroundPlugin(
+      {this.pauseLocationUpdatesAutomatically = false,
+      this.showsBackgroundLocationIndicator = true,
+      this.activityType = LocationActivityType.other}) {
+    // Start the headless location service. The parameter here is a handle to
+    // a callback managed by the Flutter engine, which allows for us to pass
+    // references to our callbacks between isolates.
+    print("Starting LocationBackgroundPlugin service");
+    final CallbackHandle handle =
+        PluginUtilities.getCallbackHandle(_backgroundCallbackDispatcher);
+    assert(handle != null, 'Unable to lookup callback.');
+    _channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
+        .invokeMethod(_kStartHeadlessService, <dynamic>[handle.toRawHandle()]);
+  }
+
   // The method channel we'll use to communicate with the native portion of our
   // plugin.
   static const MethodChannel _channel =
@@ -119,21 +137,6 @@ class LocationBackgroundPlugin {
   bool showsBackgroundLocationIndicator;
   LocationActivityType activityType;
 
-  LocationBackgroundPlugin(
-      {this.pauseLocationUpdatesAutomatically = false,
-      this.showsBackgroundLocationIndicator = true,
-      this.activityType = LocationActivityType.other}) {
-    // Start the headless location service. The parameter here is a handle to
-    // a callback managed by the Flutter engine, which allows for us to pass
-    // references to our callbacks between isolates.
-    print("Starting LocationBackgroundPlugin service");
-    final CallbackHandle handle =
-        PluginUtilities.getCallbackHandle(_backgroundCallbackDispatcher);
-    assert(handle != null, 'Unable to lookup callback.');
-    _channel
-        .invokeMethod(_kStartHeadlessService, <dynamic>[handle.toRawHandle()]);
-  }
-
   /// Start getting significant location updates through `callback`.
   ///
   /// `callback` is invoked on a background isolate and will not have direct
@@ -144,6 +147,9 @@ class LocationBackgroundPlugin {
       throw ArgumentError.notNull('callback');
     }
     final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod(_kMonitorLocationChanges, <dynamic>[
       handle.toRawHandle(),
       pauseLocationUpdatesAutomatically,
@@ -154,5 +160,8 @@ class LocationBackgroundPlugin {
 
   /// Stop all location updates.
   Future<void> cancelLocationUpdates() =>
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       _channel.invokeMethod(_kCancelLocationUpdates);
 }

@@ -19,6 +19,7 @@ Future<void> main() async {
     ),
   );
   final Firestore firestore = Firestore(app: app);
+  await firestore.settings(timestampsInSnapshotsEnabled: true);
 
   runApp(MaterialApp(
       title: 'Firestore Example', home: MyHomePage(firestore: firestore)));
@@ -56,10 +57,10 @@ class MyHomePage extends StatelessWidget {
   final Firestore firestore;
   CollectionReference get messages => firestore.collection('messages');
 
-  Future<Null> _addMessage() async {
-    final DocumentReference document = messages.document();
-    document.setData(<String, dynamic>{
+  Future<void> _addMessage() async {
+    await messages.add(<String, dynamic>{
       'message': 'Hello world!',
+      'created_at': FieldValue.serverTimestamp(),
     });
   }
 

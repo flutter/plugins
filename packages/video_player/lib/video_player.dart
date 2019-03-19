@@ -12,6 +12,9 @@ import 'package:meta/meta.dart';
 final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
   // This will clear all open videos on the platform when a full restart is
   // performed.
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   ..invokeMethod('init');
 
 class DurationRange {
@@ -35,6 +38,23 @@ class DurationRange {
 /// The duration, current position, buffering state, error state and settings
 /// of a [VideoPlayerController].
 class VideoPlayerValue {
+  VideoPlayerValue({
+    @required this.duration,
+    this.size,
+    this.position = const Duration(),
+    this.buffered = const <DurationRange>[],
+    this.isPlaying = false,
+    this.isLooping = false,
+    this.isBuffering = false,
+    this.volume = 1.0,
+    this.errorDescription,
+  });
+
+  VideoPlayerValue.uninitialized() : this(duration: null);
+
+  VideoPlayerValue.erroneous(String errorDescription)
+      : this(duration: null, errorDescription: errorDescription);
+
   /// The total duration of the video.
   ///
   /// Is null when [initialized] is false.
@@ -68,26 +88,9 @@ class VideoPlayerValue {
   /// Is null when [initialized] is false.
   final Size size;
 
-  VideoPlayerValue({
-    @required this.duration,
-    this.size,
-    this.position = const Duration(),
-    this.buffered = const <DurationRange>[],
-    this.isPlaying = false,
-    this.isLooping = false,
-    this.isBuffering = false,
-    this.volume = 1.0,
-    this.errorDescription,
-  });
-
-  VideoPlayerValue.uninitialized() : this(duration: null);
-
-  VideoPlayerValue.erroneous(String errorDescription)
-      : this(duration: null, errorDescription: errorDescription);
-
   bool get initialized => duration != null;
   bool get hasError => errorDescription != null;
-  double get aspectRatio => size.width / size.height;
+  double get aspectRatio => size != null ? size.width / size.height : 1.0;
 
   VideoPlayerValue copyWith({
     Duration duration,
@@ -141,20 +144,6 @@ enum DataSourceType { asset, network, file }
 ///
 /// After [dispose] all further calls are ignored.
 class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
-  int _textureId;
-  final String dataSource;
-
-  /// Describes the type of data source this [VideoPlayerController]
-  /// is constructed with.
-  final DataSourceType dataSourceType;
-
-  final String package;
-  Timer _timer;
-  bool _isDisposed = false;
-  Completer<void> _creatingCompleter;
-  StreamSubscription<dynamic> _eventSubscription;
-  _VideoAppLifeCycleObserver _lifeCycleObserver;
-
   /// Constructs a [VideoPlayerController] playing a video from an asset.
   ///
   /// The name of the asset is given by the [dataSource] argument and must not be
@@ -184,6 +173,20 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         package = null,
         super(VideoPlayerValue(duration: null));
 
+  int _textureId;
+  final String dataSource;
+
+  /// Describes the type of data source this [VideoPlayerController]
+  /// is constructed with.
+  final DataSourceType dataSourceType;
+
+  final String package;
+  Timer _timer;
+  bool _isDisposed = false;
+  Completer<void> _creatingCompleter;
+  StreamSubscription<dynamic> _eventSubscription;
+  _VideoAppLifeCycleObserver _lifeCycleObserver;
+
   @visibleForTesting
   int get textureId => _textureId;
 
@@ -205,6 +208,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       case DataSourceType.file:
         dataSourceDescription = <String, dynamic>{'uri': dataSource};
     }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final Map<dynamic, dynamic> response = await _channel.invokeMethod(
       'create',
       dataSourceDescription,
@@ -227,7 +233,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         case 'initialized':
           value = value.copyWith(
             duration: Duration(milliseconds: map['duration']),
-            size: Size(map['width'].toDouble(), map['height'].toDouble()),
+            size: Size(map['width']?.toDouble() ?? 0.0,
+                map['height']?.toDouble() ?? 0.0),
           );
           initializingCompleter.complete(null);
           _applyLooping();
@@ -277,6 +284,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         _isDisposed = true;
         _timer?.cancel();
         await _eventSubscription?.cancel();
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         await _channel.invokeMethod(
           'dispose',
           <String, dynamic>{'textureId': _textureId},
@@ -307,6 +317,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     _channel.invokeMethod(
       'setLooping',
       <String, dynamic>{'textureId': _textureId, 'looping': value.isLooping},
@@ -318,6 +331,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
     if (value.isPlaying) {
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       await _channel.invokeMethod(
         'play',
         <String, dynamic>{'textureId': _textureId},
@@ -337,6 +353,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       );
     } else {
       _timer?.cancel();
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       await _channel.invokeMethod(
         'pause',
         <String, dynamic>{'textureId': _textureId},
@@ -348,6 +367,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod(
       'setVolume',
       <String, dynamic>{'textureId': _textureId, 'volume': value.volume},
@@ -360,6 +382,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return null;
     }
     return Duration(
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       milliseconds: await _channel.invokeMethod(
         'position',
         <String, dynamic>{'textureId': _textureId},
@@ -376,6 +401,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     } else if (moment < const Duration()) {
       moment = const Duration();
     }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('seekTo', <String, dynamic>{
       'textureId': _textureId,
       'location': moment.inMilliseconds,
@@ -393,11 +421,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 }
 
-class _VideoAppLifeCycleObserver extends WidgetsBindingObserver {
+class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
+  _VideoAppLifeCycleObserver(this._controller);
+
   bool _wasPlayingBeforePause = false;
   final VideoPlayerController _controller;
-
-  _VideoAppLifeCycleObserver(this._controller);
 
   void initialize() {
     WidgetsBinding.instance.addObserver(this);
@@ -426,18 +454,15 @@ class _VideoAppLifeCycleObserver extends WidgetsBindingObserver {
 
 /// Displays the video controlled by [controller].
 class VideoPlayer extends StatefulWidget {
-  final VideoPlayerController controller;
-
   VideoPlayer(this.controller);
+
+  final VideoPlayerController controller;
 
   @override
   _VideoPlayerState createState() => _VideoPlayerState();
 }
 
 class _VideoPlayerState extends State<VideoPlayer> {
-  VoidCallback _listener;
-  int _textureId;
-
   _VideoPlayerState() {
     _listener = () {
       final int newTextureId = widget.controller.textureId;
@@ -448,6 +473,9 @@ class _VideoPlayerState extends State<VideoPlayer> {
       }
     };
   }
+
+  VoidCallback _listener;
+  int _textureId;
 
   @override
   void initState() {
@@ -479,25 +507,25 @@ class _VideoPlayerState extends State<VideoPlayer> {
 }
 
 class VideoProgressColors {
-  final Color playedColor;
-  final Color bufferedColor;
-  final Color backgroundColor;
-
   VideoProgressColors({
     this.playedColor = const Color.fromRGBO(255, 0, 0, 0.7),
     this.bufferedColor = const Color.fromRGBO(50, 50, 200, 0.2),
     this.backgroundColor = const Color.fromRGBO(200, 200, 200, 0.5),
   });
+
+  final Color playedColor;
+  final Color bufferedColor;
+  final Color backgroundColor;
 }
 
 class _VideoScrubber extends StatefulWidget {
-  final Widget child;
-  final VideoPlayerController controller;
-
   _VideoScrubber({
     @required this.child,
     @required this.controller,
   });
+
+  final Widget child;
+  final VideoPlayerController controller;
 
   @override
   _VideoScrubberState createState() => _VideoScrubberState();
@@ -559,11 +587,6 @@ class _VideoScrubberState extends State<_VideoScrubber> {
 /// [padding] allows to specify some extra padding around the progress indicator
 /// that will also detect the gestures.
 class VideoProgressIndicator extends StatefulWidget {
-  final VideoPlayerController controller;
-  final VideoProgressColors colors;
-  final bool allowScrubbing;
-  final EdgeInsets padding;
-
   VideoProgressIndicator(
     this.controller, {
     VideoProgressColors colors,
@@ -571,13 +594,16 @@ class VideoProgressIndicator extends StatefulWidget {
     this.padding = const EdgeInsets.only(top: 5.0),
   }) : colors = colors ?? VideoProgressColors();
 
+  final VideoPlayerController controller;
+  final VideoProgressColors colors;
+  final bool allowScrubbing;
+  final EdgeInsets padding;
+
   @override
   _VideoProgressIndicatorState createState() => _VideoProgressIndicatorState();
 }
 
 class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
-  VoidCallback listener;
-
   _VideoProgressIndicatorState() {
     listener = () {
       if (!mounted) {
@@ -587,7 +613,10 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
     };
   }
 
+  VoidCallback listener;
+
   VideoPlayerController get controller => widget.controller;
+
   VideoProgressColors get colors => widget.colors;
 
   @override

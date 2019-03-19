@@ -33,9 +33,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<Null> _launched;
+  Future<void> _launched;
+  String _phone = '';
 
-  Future<Null> _launchInBrowser(String url) async {
+  Future<void> _launchInBrowser(String url) async {
     if (await canLaunch(url)) {
       await launch(url, forceSafariVC: false, forceWebView: false);
     } else {
@@ -43,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<Null> _launchInWebViewOrVC(String url) async {
+  Future<void> _launchInWebViewOrVC(String url) async {
     if (await canLaunch(url)) {
       await launch(url, forceSafariVC: true, forceWebView: true);
     } else {
@@ -51,11 +52,48 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Widget _launchStatus(BuildContext context, AsyncSnapshot<Null> snapshot) {
+  Future<void> _launchInWebViewWithJavaScript(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: true,
+        forceWebView: true,
+        enableJavaScript: true,
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> _launchUniversalLinkIos(String url) async {
+    if (await canLaunch('https://youtube.com')) {
+      final bool nativeAppLaunchSucceeded = await launch(
+        'https://youtube.com',
+        forceSafariVC: false,
+        universalLinksOnly: true,
+      );
+      if (!nativeAppLaunchSucceeded) {
+        await launch(
+          'https://youtube.com',
+          forceSafariVC: true,
+        );
+      }
+    }
+  }
+
+  Widget _launchStatus(BuildContext context, AsyncSnapshot<void> snapshot) {
     if (snapshot.hasError) {
       return Text('Error: ${snapshot.error}');
     } else {
       return const Text('');
+    }
+  }
+
+  Future<void> _makePhoneCall(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 
@@ -70,6 +108,19 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                  onChanged: (String text) => _phone = text,
+                  decoration: const InputDecoration(
+                      hintText: 'Input the phone number to launch')),
+            ),
+            RaisedButton(
+              onPressed: () => setState(() {
+                    _launched = _makePhoneCall('tel:$_phone');
+                  }),
+              child: const Text('Make phone call'),
+            ),
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(toLaunch),
@@ -88,7 +139,32 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text('Launch in app'),
             ),
             const Padding(padding: EdgeInsets.all(16.0)),
-            FutureBuilder<Null>(future: _launched, builder: _launchStatus),
+            RaisedButton(
+              onPressed: () => setState(() {
+                    _launched = _launchInWebViewWithJavaScript(toLaunch);
+                  }),
+              child: const Text('Launch in app(JavaScript ON)'),
+            ),
+            RaisedButton(
+              onPressed: () => setState(() {
+                    _launched = _launchUniversalLinkIos(toLaunch);
+                  }),
+              child: const Text(
+                  'Launch a universal link in a native app, fallback to Safari.(Youtube)'),
+            ),
+            const Padding(padding: EdgeInsets.all(16.0)),
+            RaisedButton(
+              onPressed: () => setState(() {
+                    _launched = _launchInWebViewOrVC(toLaunch);
+                    Timer(const Duration(seconds: 5), () {
+                      print('Closing WebView after 5 seconds...');
+                      closeWebView();
+                    });
+                  }),
+              child: const Text('Launch in app + close after 5 seconds'),
+            ),
+            const Padding(padding: EdgeInsets.all(16.0)),
+            FutureBuilder<void>(future: _launched, builder: _launchStatus),
           ],
         ),
       ),

@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_analytics/observer.dart';
 
 class TabsPage extends StatefulWidget {
-  static const String routeName = '/tab';
-
   TabsPage(this.observer);
 
   final FirebaseAnalyticsObserver observer;
+
+  static const String routeName = '/tab';
 
   @override
   State<StatefulWidget> createState() => _TabsPageState(observer);

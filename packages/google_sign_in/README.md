@@ -23,10 +23,10 @@ enable the [Google People API](https://developers.google.com/people/).
 1. [First register your application](https://developers.google.com/mobile/add?platform=ios).
 2. Open Xcode. You'll have to paste this into Xcode to properly register `GoogleServices-Info.plist`.
 3. Select `GoogleServices-Info.plist` from the file manager and drag that file into the `Runner` directory, `[my_project]/ios/Runner/GoogleServices-Info.plist`.
-4. A dialog will show up and ask you to select the targets, select the `Runner` target.  
-5. Then add the `CFBundleURLTypes` attributes below into the `[my_project]/ios/Runner/Info.plist` file.  
+4. A dialog will show up and ask you to select the targets, select the `Runner` target.
+5. Then add the `CFBundleURLTypes` attributes below into the `[my_project]/ios/Runner/Info.plist` file.
 
-```
+```xml
 <!-- Put me in the [my_project]/ios/Runner/Info.plist file -->
 <!-- Google Sign-in Section -->
 <key>CFBundleURLTypes</key>
@@ -53,14 +53,14 @@ To use this plugin, follow the [plugin installation instructions](https://pub.da
 ### Use the plugin
 Add the following import to your Dart code:
 
-```
+```dart
 import 'package:google_sign_in/google_sign_in.dart';
 ```
 
 Initialize GoogleSignIn with the scopes you want:
 
-```
-GoogleSignIn _googleSignIn = new GoogleSignIn(
+```dart
+GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: [
     'email',
     'https://www.googleapis.com/auth/contacts.readonly',
@@ -71,8 +71,8 @@ GoogleSignIn _googleSignIn = new GoogleSignIn(
 
 You can now use the `GoogleSignIn` class to authenticate in your Dart code, e.g.
 
-```
-Future<Null> _handleSignIn() async {
+```dart
+Future<void> _handleSignIn() async {
   try {
     await _googleSignIn.signIn();
   } catch (error) {

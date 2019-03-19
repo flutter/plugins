@@ -19,8 +19,10 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
   }
   return self;
@@ -81,9 +83,8 @@
                                                            message:errorMessage
                                                            details:resultDict];
                       } else {
-                        NSString *errorMessage =
-                            @"Unable to complete fetch. Reason is unknown "
-                             "but this could be due to lack of connectivity.";
+                        NSString *errorMessage = @"Unable to complete fetch. Reason is unknown "
+                                                  "but this could be due to lack of connectivity.";
                         flutterError = [FlutterError errorWithCode:@"fetchFailed"
                                                            message:errorMessage
                                                            details:resultDict];

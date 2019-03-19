@@ -6,7 +6,7 @@ dependencies:
     sdk: flutter
   firebase_database:
     path: ../
-  firebase_core: ^0.2.2
+  firebase_core: ^0.3.0
 
 flutter:
   uses-material-design: true
