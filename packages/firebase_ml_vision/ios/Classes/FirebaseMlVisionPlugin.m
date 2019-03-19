@@ -39,7 +39,7 @@ static FlutterError *getFlutterError(NSError *error) {
   } else if ([@"FaceDetector#processImage" isEqualToString:call.method]) {
     [FaceDetector handleDetection:image options:options result:result];
   } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
-    [LabelDetector handleDetection:image options:options result:result];
+    [ImageLabeler handleDetection:image options:options result:result];
   } else if ([@"CloudLabelDetector#detectInImage" isEqualToString:call.method]) {
     [CloudLabelDetector handleDetection:image options:options result:result];
   } else if ([@"TextRecognizer#processImage" isEqualToString:call.method]) {
