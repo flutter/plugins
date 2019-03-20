@@ -22,10 +22,7 @@ class DeviceInfoPlugin {
   /// See: https://developer.android.com/reference/android/os/Build.html
   Future<AndroidDeviceInfo> get androidInfo async =>
       _cachedAndroidDeviceInfo ??= AndroidDeviceInfo._fromMap(
-          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-          // https://github.com/flutter/flutter/issues/26431
-          // ignore: strong_mode_implicit_dynamic_method
-          await channel.invokeMethod('getAndroidDeviceInfo'));
+          await channel.invokeMethod<dynamic>('getAndroidDeviceInfo'));
 
   /// This information does not change from call to call. Cache it.
   IosDeviceInfo _cachedIosDeviceInfo;
@@ -34,10 +31,7 @@ class DeviceInfoPlugin {
   ///
   /// See: https://developer.apple.com/documentation/uikit/uidevice
   Future<IosDeviceInfo> get iosInfo async => _cachedIosDeviceInfo ??=
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      IosDeviceInfo._fromMap(await channel.invokeMethod('getIosDeviceInfo'));
+      IosDeviceInfo._fromMap(await channel.invokeMethod<dynamic>('getIosDeviceInfo'));
 }
 
 /// Information derived from `android.os.Build`.
