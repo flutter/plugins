@@ -111,7 +111,7 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    final dynamic r = await _channel.invokeMethod<dynamic>('Alarm.oneShot', <dynamic>[
+   return _channel.invokeMethod<bool>('Alarm.oneShot', <dynamic>[
       id,
       exact,
       wakeup,
