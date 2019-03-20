@@ -49,7 +49,7 @@ class FirebaseVision {
   }
 
   /// Creates an on device instance of [ImageLabeler].
-  ImageLabeler labelDetector([ImageLabelerOptions options]) {
+  ImageLabeler imageLabeler([ImageLabelerOptions options]) {
     return ImageLabeler._(
       options: options ?? const ImageLabelerOptions(),
       modelType: ModelType.onDevice,

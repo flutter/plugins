@@ -82,7 +82,7 @@ class _MyHomePageState extends State<_MyHomePage> {
         results = await detector.processImage(visionImage);
         break;
       case Detector.label:
-        final ImageLabeler labeler = FirebaseVision.instance.labelDetector();
+        final ImageLabeler labeler = FirebaseVision.instance.imageLabeler();
         results = await labeler.processImage(visionImage);
         break;
       case Detector.cloudLabel:
