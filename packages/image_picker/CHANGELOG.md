@@ -1,3 +1,8 @@
+## 0.5.0+10
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 0.5.0+9
 
 * Remove unnecessary temp video file path.

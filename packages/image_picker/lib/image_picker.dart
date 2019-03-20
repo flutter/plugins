@@ -44,10 +44,7 @@ class ImagePicker {
       throw ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
     }
 
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final String path = await _channel.invokeMethod(
+    final String path = await _channel.invokeMethod<String>(
       'pickImage',
       <String, dynamic>{
         'source': source.index,
@@ -64,10 +61,7 @@ class ImagePicker {
   }) async {
     assert(source != null);
 
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final String path = await _channel.invokeMethod(
+    final String path = await _channel.invokeMethod<String>(
       'pickVideo',
       <String, dynamic>{
         'source': source.index,
