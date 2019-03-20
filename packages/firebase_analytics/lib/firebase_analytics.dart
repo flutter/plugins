@@ -55,10 +55,7 @@ class FirebaseAnalytics {
           'Prefix "$kReservedPrefix" is reserved and cannot be used.');
     }
 
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('logEvent', <String, dynamic>{
+    await _channel.invokeMethod<void>('logEvent', <String, dynamic>{
       'name': name,
       'parameters': parameters,
     });
@@ -72,10 +69,7 @@ class FirebaseAnalytics {
       throw ArgumentError.notNull('enabled');
     }
 
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('setAnalyticsCollectionEnabled', enabled);
+    await _channel.invokeMethod<void>('setAnalyticsCollectionEnabled', enabled);
   }
 
   /// Sets the user ID property.
@@ -84,10 +78,7 @@ class FirebaseAnalytics {
   ///
   /// [1]: https://www.google.com/policies/privacy/
   Future<void> setUserId(String id) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('setUserId', id);
+    await _channel.invokeMethod<void>('setUserId', id);
   }
 
   /// Sets the current [screenName], which specifies the current visual context
@@ -114,10 +105,7 @@ class FirebaseAnalytics {
       throw ArgumentError.notNull('screenName');
     }
 
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('setCurrentScreen', <String, String>{
+    await _channel.invokeMethod<void>('setCurrentScreen', <String, String>{
       'screenName': screenName,
       'screenClassOverride': screenClassOverride,
     });
@@ -151,10 +139,7 @@ class FirebaseAnalytics {
     if (name.startsWith('firebase_'))
       throw ArgumentError.value(name, 'name', '"firebase_" prefix is reserved');
 
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('setUserProperty', <String, String>{
+    await _channel.invokeMethod<void>('setUserProperty', <String, String>{
       'name': name,
       'value': value,
     });
@@ -162,10 +147,7 @@ class FirebaseAnalytics {
 
   /// Clears all analytics data for this app from the device and resets the app instance id.
   Future<void> resetAnalyticsData() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('resetAnalyticsData');
+    await _channel.invokeMethod<void>('resetAnalyticsData');
   }
 
   /// Logs the standard `add_payment_info` event.
@@ -823,10 +805,7 @@ class FirebaseAnalyticsAndroid {
       throw ArgumentError.notNull('enabled');
     }
 
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('setAnalyticsCollectionEnabled', enabled);
+    await _channel.invokeMethod<void>('setAnalyticsCollectionEnabled', enabled);
   }
 
   /// Sets the minimum engagement time required before starting a session.
@@ -837,10 +816,7 @@ class FirebaseAnalyticsAndroid {
       throw ArgumentError.notNull('milliseconds');
     }
 
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('setMinimumSessionDuration', milliseconds);
+    await _channel.invokeMethod<void>('setMinimumSessionDuration', milliseconds);
   }
 
   /// Sets the duration of inactivity that terminates the current session.
@@ -851,10 +827,7 @@ class FirebaseAnalyticsAndroid {
       throw ArgumentError.notNull('milliseconds');
     }
 
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('setSessionTimeoutDuration', milliseconds);
+    await _channel.invokeMethod<void>('setSessionTimeoutDuration', milliseconds);
   }
 }
 
