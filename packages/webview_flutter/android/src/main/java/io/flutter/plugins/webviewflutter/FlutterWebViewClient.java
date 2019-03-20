@@ -89,6 +89,8 @@ class FlutterWebViewClient {
     }
   }
 
+  // This method attempts to avoid using WebViewClientCompat due to bug
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=925887
   WebViewClient createWebViewClient() {
     if (!hasNavigationDelegate || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       return internalCreateWebViewClient();
