@@ -76,7 +76,8 @@ class HttpMetric extends PerformanceAttributes {
     };
 
     _hasStopped = true;
-    return FirebasePerformance.channel.invokeMethod<void>('HttpMetric#stop', data);
+    return FirebasePerformance.channel
+        .invokeMethod<void>('HttpMetric#stop', data);
   }
 
   /// Sets a String [value] for the specified [attribute].

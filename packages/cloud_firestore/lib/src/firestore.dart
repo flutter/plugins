@@ -111,7 +111,8 @@ class Firestore {
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
     final Map<String, dynamic> result = await channel
-        .invokeMapMethod<String, dynamic>('Firestore#runTransaction', <String, dynamic>{
+        .invokeMapMethod<String, dynamic>(
+            'Firestore#runTransaction', <String, dynamic>{
       'app': app.name,
       'transactionId': transactionId,
       'transactionTimeout': timeout.inMilliseconds
@@ -122,7 +123,8 @@ class Firestore {
   @deprecated
   Future<void> enablePersistence(bool enable) async {
     assert(enable != null);
-    await channel.invokeMethod<void>('Firestore#enablePersistence', <String, dynamic>{
+    await channel
+        .invokeMethod<void>('Firestore#enablePersistence', <String, dynamic>{
       'app': app.name,
       'enable': enable,
     });

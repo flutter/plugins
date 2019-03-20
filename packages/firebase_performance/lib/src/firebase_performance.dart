@@ -29,8 +29,8 @@ class FirebasePerformance {
   /// monitoring is disabled. This is for dynamic enable/disable state. This
   /// does not reflect whether instrumentation is enabled/disabled.
   Future<bool> isPerformanceCollectionEnabled() async {
-    final bool isEnabled = await channel
-        .invokeMethod<bool>('FirebasePerformance#isPerformanceCollectionEnabled');
+    final bool isEnabled = await channel.invokeMethod<bool>(
+        'FirebasePerformance#isPerformanceCollectionEnabled');
     return isEnabled;
   }
 

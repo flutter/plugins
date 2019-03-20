@@ -42,8 +42,8 @@ class CloudFunctions {
   Future<dynamic> call(
       {@required String functionName, Map<String, dynamic> parameters}) async {
     try {
-      final dynamic response =
-          await channel.invokeMethod<dynamic>('CloudFunctions#call', <String, dynamic>{
+      final dynamic response = await channel
+          .invokeMethod<dynamic>('CloudFunctions#call', <String, dynamic>{
         'app': _app.name,
         'region': _region,
         'functionName': functionName,

@@ -117,8 +117,8 @@ class LocationBackgroundPlugin {
     final CallbackHandle handle =
         PluginUtilities.getCallbackHandle(_backgroundCallbackDispatcher);
     assert(handle != null, 'Unable to lookup callback.');
-    _channel
-        .invokeMethod<void>(_kStartHeadlessService, <dynamic>[handle.toRawHandle()]);
+    _channel.invokeMethod<void>(
+        _kStartHeadlessService, <dynamic>[handle.toRawHandle()]);
   }
 
   // The method channel we'll use to communicate with the native portion of our

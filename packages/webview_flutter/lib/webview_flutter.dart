@@ -525,7 +525,8 @@ class WebViewController {
           'removeJavascriptChannels', channelsToRemove.toList());
     }
     if (channelsToAdd.isNotEmpty) {
-      _channel.invokeMethod<void>('addJavascriptChannels', channelsToAdd.toList());
+      _channel.invokeMethod<void>(
+          'addJavascriptChannels', channelsToAdd.toList());
     }
     _updateJavascriptChannelsFromSet(newChannels);
   }
@@ -564,8 +565,8 @@ class WebViewController {
     if (javascriptString == null) {
       throw ArgumentError('The argument javascriptString must not be null. ');
     }
-    final String result =
-        await _channel.invokeMethod<String>('evaluateJavascript', javascriptString);
+    final String result = await _channel.invokeMethod<String>(
+        'evaluateJavascript', javascriptString);
     return result;
   }
 }

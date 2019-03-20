@@ -113,9 +113,9 @@ class RemoteConfig extends ChangeNotifier {
   /// Expiration must be defined in seconds.
   Future<void> fetch({Duration expiration = const Duration(hours: 12)}) async {
     try {
-      final Map<String, dynamic> properties = await channel.invokeMapMethod<String, dynamic>(
-          'RemoteConfig#fetch',
-          <dynamic, dynamic>{'expiration': expiration.inSeconds});
+      final Map<String, dynamic> properties = await channel
+          .invokeMapMethod<String, dynamic>('RemoteConfig#fetch',
+              <dynamic, dynamic>{'expiration': expiration.inSeconds});
       _lastFetchTime =
           DateTime.fromMillisecondsSinceEpoch(properties['lastFetchTime']);
       _lastFetchStatus = _parseLastFetchStatus(properties['lastFetchStatus']);

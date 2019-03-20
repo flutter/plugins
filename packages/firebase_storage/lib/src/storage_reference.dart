@@ -132,8 +132,8 @@ class StorageReference {
   /// This can be used to share the file with others, but can be revoked by a
   /// developer in the Firebase Console if desired.
   Future<dynamic> getDownloadURL() async {
-    return await FirebaseStorage.channel
-        .invokeMethod<dynamic>("StorageReference#getDownloadUrl", <String, String>{
+    return await FirebaseStorage.channel.invokeMethod<dynamic>(
+        "StorageReference#getDownloadUrl", <String, String>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
       'path': _pathComponents.join("/"),
@@ -152,7 +152,8 @@ class StorageReference {
   /// Retrieves metadata associated with an object at this [StorageReference].
   Future<StorageMetadata> getMetadata() async {
     return StorageMetadata._fromMap(await FirebaseStorage.channel
-        .invokeMapMethod<String, dynamic>("StorageReference#getMetadata", <String, String>{
+        .invokeMapMethod<String, dynamic>(
+            "StorageReference#getMetadata", <String, String>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
       'path': _pathComponents.join("/"),
@@ -168,7 +169,8 @@ class StorageReference {
   /// by passing the empty string.
   Future<StorageMetadata> updateMetadata(StorageMetadata metadata) async {
     return StorageMetadata._fromMap(await FirebaseStorage.channel
-        .invokeMapMethod<String, dynamic>("StorageReference#updateMetadata", <String, dynamic>{
+        .invokeMapMethod<String, dynamic>(
+            "StorageReference#updateMetadata", <String, dynamic>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
       'path': _pathComponents.join("/"),

@@ -170,8 +170,8 @@ class DatabaseReference extends Query {
       return TransactionResult._(databaseError, committed, dataSnapshot);
     }
 
-    _database._channel
-        .invokeMethod<dynamic>('DatabaseReference#runTransaction', <String, dynamic>{
+    _database._channel.invokeMethod<dynamic>(
+        'DatabaseReference#runTransaction', <String, dynamic>{
       'app': _database.app?.name,
       'databaseURL': _database.databaseURL,
       'path': path,

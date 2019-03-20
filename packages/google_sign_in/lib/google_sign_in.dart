@@ -214,7 +214,8 @@ class GoogleSignIn {
   Future<GoogleSignInAccount> _callMethod(String method) async {
     await _ensureInitialized();
 
-    final Map<String, dynamic> response = await channel.invokeMapMethod<String, dynamic>(method);
+    final Map<String, dynamic> response =
+        await channel.invokeMapMethod<String, dynamic>(method);
     return _setCurrentUser(response != null && response.isNotEmpty
         ? GoogleSignInAccount._(this, response)
         : null);

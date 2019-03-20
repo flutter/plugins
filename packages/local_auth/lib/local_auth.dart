@@ -72,14 +72,16 @@ class LocalAuthentication {
               'operating systems.',
           details: 'Your operating system is ${Platform.operatingSystem}');
     }
-    return await _channel.invokeMethod<bool>('authenticateWithBiometrics', args);
+    return await _channel.invokeMethod<bool>(
+        'authenticateWithBiometrics', args);
   }
 
   /// Returns true if device is capable of checking biometrics
   ///
   /// Returns a [Future] bool true or false:
   Future<bool> get canCheckBiometrics async =>
-      (await _channel.invokeListMethod<String>('getAvailableBiometrics')).isNotEmpty;
+      (await _channel.invokeListMethod<String>('getAvailableBiometrics'))
+          .isNotEmpty;
 
   /// Returns a list of enrolled biometrics
   ///

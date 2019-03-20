@@ -190,7 +190,8 @@ class BarcodeDetector {
 
   /// Detects barcodes in the input image.
   Future<List<Barcode>> detectInImage(FirebaseVisionImage visionImage) async {
-    final List<Map<String, dynamic>> reply = await FirebaseVision.channel.invokeListMethod<Map<String, dynamic>>(
+    final List<Map<String, dynamic>> reply =
+        await FirebaseVision.channel.invokeListMethod<Map<String, dynamic>>(
       'BarcodeDetector#detectInImage',
       <String, dynamic>{
         'options': <String, dynamic>{
@@ -226,7 +227,7 @@ class BarcodeDetectorOptions {
 
 /// Represents a single recognized barcode and its value.
 class Barcode {
-  Barcode._(Map<String, dynamic>_data)
+  Barcode._(Map<String, dynamic> _data)
       : boundingBox = _data['left'] != null
             ? Rect.fromLTWH(
                 _data['left'],

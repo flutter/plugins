@@ -816,7 +816,8 @@ class FirebaseAnalyticsAndroid {
       throw ArgumentError.notNull('milliseconds');
     }
 
-    await _channel.invokeMethod<void>('setMinimumSessionDuration', milliseconds);
+    await _channel.invokeMethod<void>(
+        'setMinimumSessionDuration', milliseconds);
   }
 
   /// Sets the duration of inactivity that terminates the current session.
@@ -827,7 +828,8 @@ class FirebaseAnalyticsAndroid {
       throw ArgumentError.notNull('milliseconds');
     }
 
-    await _channel.invokeMethod<void>('setSessionTimeoutDuration', milliseconds);
+    await _channel.invokeMethod<void>(
+        'setSessionTimeoutDuration', milliseconds);
   }
 }
 

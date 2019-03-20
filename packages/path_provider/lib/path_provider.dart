@@ -21,7 +21,8 @@ const MethodChannel _channel =
 ///
 /// On Android, this uses the `getCacheDir` API on the context.
 Future<Directory> getTemporaryDirectory() async {
-  final String path = await _channel.invokeMethod<String>('getTemporaryDirectory');
+  final String path =
+      await _channel.invokeMethod<String>('getTemporaryDirectory');
   if (path == null) {
     return null;
   }
@@ -55,7 +56,8 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 Future<Directory> getExternalStorageDirectory() async {
   if (Platform.isIOS)
     throw UnsupportedError("Functionality not available on iOS");
-  final String path = await _channel.invokeMethod<String>('getStorageDirectory');
+  final String path =
+      await _channel.invokeMethod<String>('getStorageDirectory');
   if (path == null) {
     return null;
   }

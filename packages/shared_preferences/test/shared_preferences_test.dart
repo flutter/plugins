@@ -136,9 +136,11 @@ void main() {
     });
 
     test('mocking', () async {
-      expect(await channel.invokeMapMethod<Object, Object>('getAll'), kTestValues);
+      expect(
+          await channel.invokeMapMethod<Object, Object>('getAll'), kTestValues);
       SharedPreferences.setMockInitialValues(kTestValues2);
-      expect(await channel.invokeMapMethod<Object, Object>('getAll'), kTestValues2);
+      expect(await channel.invokeMapMethod<Object, Object>('getAll'),
+          kTestValues2);
     });
   });
 }
