@@ -1,7 +1,7 @@
-## 0.9.7
+## 0.9.6+1
 
-* Fixes a NoSuchMethodError when using getDocuments on iOS (introduced in 0.9.6).
-* Adds a driver test for getDocuments.
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
 
 ## 0.9.6
 
