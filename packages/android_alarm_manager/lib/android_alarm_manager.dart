@@ -184,7 +184,7 @@ class AndroidAlarmManager {
   /// failure.
   static Future<bool> cancel(int id) async {
     final dynamic r =
-        await _channel.invokeMethod<dynamic>('Alarm.cancel', <dynamic>[id]);
+        final bool r = await _channel.invokeMethod<bool>('Alarm.cancel', <dynamic>[id]);
     return (r == null) ? false : r;
   }
 }
