@@ -75,18 +75,6 @@ Firestore.instance
         data.documents.forEach((doc) => print(doc["title"])));
 ```
 
-Get a specific document:
-
-```dart
-Firestore.instance
-        .collection('talks')
-        .document('document-name')
-        .get()
-        .then((DocumentSnapshot ds) {
-      // use ds as a snapshot
-    });
-```
-
 Running a transaction:
 
 ```dart
