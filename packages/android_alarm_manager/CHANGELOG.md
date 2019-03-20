@@ -1,3 +1,8 @@
+## 0.4.1+4
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 0.4.1+3
 
 * Update README.md to include instructions for setting the WAKE_LOCK permission.
