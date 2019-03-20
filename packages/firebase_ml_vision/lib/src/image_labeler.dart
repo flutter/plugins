@@ -4,7 +4,7 @@
 
 part of firebase_ml_vision;
 
-/// Detector for detecting and labeling entities in an input image.
+/// Used for finding [ImageLabel]s in a supplied image.
 ///
 /// When you use the API, you get a list of the entities that were recognized:
 /// people, things, places, activities, and so on. Each label found comes with a
@@ -12,110 +12,67 @@ part of firebase_ml_vision;
 /// this information, you can perform tasks such as automatic metadata
 /// generation and content moderation.
 ///
-/// A label detector is created via
-/// `labelDetector([LabelDetectorOptions options])` in [FirebaseVision]:
+/// A image labeler is created via
+/// `imageLabeler([ImageLabelerOptions options])` or
+/// `cloudImageLabeler([CloudImageLabelerOptions options])` in [FirebaseVision]:
 ///
 /// ```dart
 /// final FirebaseVisionImage image =
 ///     FirebaseVisionImage.fromFilePath('path/to/file');
 ///
-/// final LabelDetector labelDetector =
-///     FirebaseVision.instance.labelDetector(options);
+/// final ImageLabeler imageLabeler =
+///     FirebaseVision.instance.imageLabeler(options);
 ///
-/// final List<Label> labels = await labelDetector.detectInImage(image);
+/// final List<ImageLabel> labels = await imageLabeler.processImage(image);
 /// ```
-class LabelDetector {
-  LabelDetector._(this.options) : assert(options != null);
+class ImageLabeler {
+  ImageLabeler._({@required dynamic options, @required this.modelType})
+      : _options = options,
+        assert(options != null),
+        assert(modelType != null);
 
-  /// The options for the detector.
-  ///
-  /// Sets the confidence threshold for detecting entities.
-  final LabelDetectorOptions options;
+  /// Indicates whether this labeler is ran on device or in the cloud.
+  final ModelType modelType;
 
-  /// Detects entities in the input image.
-  Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
+  // Should be of type ImageLabelerOptions or CloudImageLabelerOptions.
+  final dynamic _options;
+
+  /// Finds entities in the input image.
+  Future<List<ImageLabel>> processImage(FirebaseVisionImage visionImage) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
-      'LabelDetector#detectInImage',
+      'ImageLabeler#processImage',
       <String, dynamic>{
         'options': <String, dynamic>{
-          'confidenceThreshold': options.confidenceThreshold,
+          'modelType': _enumToString(modelType),
+          'confidenceThreshold': _options.confidenceThreshold,
         },
       }..addAll(visionImage._serialize()),
     );
 
-    final List<Label> labels = <Label>[];
+    final List<ImageLabel> labels = <ImageLabel>[];
     for (dynamic data in reply) {
-      labels.add(Label._(data));
+      labels.add(ImageLabel._(data));
     }
 
     return labels;
   }
 }
 
-/// Detector for detecting and labeling entities in an input image.
-///
-/// Uses cloud machine learning models and will require enabling Cloud API.
-///
-/// When you use the API, you get a list of the entities that were recognized:
-/// people, things, places, activities, and so on. Each label found comes with a
-/// score that indicates the confidence the ML model has in its relevance. With
-/// this information, you can perform tasks such as automatic metadata
-/// generation and content moderation.
-///
-/// A cloud label detector is created via
-/// `cloudLabelDetector([CloudDetectorOptions options])` in [FirebaseVision]:
-///
-/// ```dart
-/// final FirebaseVisionImage image =
-///     FirebaseVisionImage.fromFilePath('path/to/file');
-///
-/// final CloudLabelDetector cloudLabelDetector =
-///     FirebaseVision.instance.cloudLabelDetector();
-///
-/// final List<Label> labels = await cloudLabelDetector.detectInImage(image);
-/// ```
-class CloudLabelDetector {
-  CloudLabelDetector._(this.options) : assert(options != null);
-
-  /// Options used to configure this cloud detector.
-  final CloudDetectorOptions options;
-
-  /// Detects entities in the input image.
-  Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
-      'CloudLabelDetector#detectInImage',
-      <String, dynamic>{
-        'options': options._serialize(),
-      }..addAll(visionImage._serialize()),
-    );
-
-    final List<Label> labels = <Label>[];
-    for (dynamic data in reply) {
-      labels.add(Label._(data));
-    }
-
-    return labels;
-  }
-}
-
-/// Options for Label detector.
+/// Options for on device image labeler.
 ///
 /// Confidence threshold could be provided for the label detection. For example,
 /// if the confidence threshold is set to 0.7, only labels with
 /// confidence >= 0.7 would be returned. The default threshold is 0.5.
-class LabelDetectorOptions {
-  /// Constructor for [LabelDetectorOptions].
+class ImageLabelerOptions {
+  /// Constructor for [ImageLabelerOptions].
   ///
   /// Confidence threshold could be provided for the label detection.
   /// For example, if the confidence threshold is set to 0.7, only labels with
   /// confidence >= 0.7 would be returned. The default threshold is 0.5.
-  const LabelDetectorOptions({this.confidenceThreshold = 0.5})
+  const ImageLabelerOptions({this.confidenceThreshold = 0.5})
       : assert(confidenceThreshold >= 0.0),
         assert(confidenceThreshold <= 1.0);
 
@@ -125,12 +82,33 @@ class LabelDetectorOptions {
   final double confidenceThreshold;
 }
 
-/// Represents an entity label detected by [LabelDetector].
-class Label {
-  Label._(dynamic data)
+/// Options for cloud image labeler.
+///
+/// Confidence threshold could be provided for the label detection. For example,
+/// if the confidence threshold is set to 0.7, only labels with
+/// confidence >= 0.7 would be returned. The default threshold is 0.5.
+class CloudImageLabelerOptions {
+  /// Constructor for [CloudImageLabelerOptions].
+  ///
+  /// Confidence threshold could be provided for the label detection.
+  /// For example, if the confidence threshold is set to 0.7, only labels with
+  /// confidence >= 0.7 would be returned. The default threshold is 0.5.
+  const CloudImageLabelerOptions({this.confidenceThreshold = 0.5})
+      : assert(confidenceThreshold >= 0.0),
+        assert(confidenceThreshold <= 1.0);
+
+  /// The minimum confidence threshold of labels to be detected.
+  ///
+  /// Required to be in range [0.0, 1.0].
+  final double confidenceThreshold;
+}
+
+/// Represents an entity label detected by [ImageLabeler] and [CloudImageLabeler].
+class ImageLabel {
+  ImageLabel._(dynamic data)
       : confidence = data['confidence'],
         entityId = data['entityId'],
-        label = data['label'];
+        text = data['text'];
 
   /// The overall confidence of the result. Range [0.0, 1.0].
   final double confidence;
@@ -145,5 +123,5 @@ class Label {
   ///
   /// The label returned here is in English only. The end developer should use
   /// [entityId] to retrieve unique id.
-  final String label;
+  final String text;
 }

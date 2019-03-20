@@ -1,16 +1,21 @@
 #import "FirebaseMlVisionPlugin.h"
 
-@implementation LabelDetector
-static FIRVisionLabelDetector *detector;
+@implementation ImageLabeler
+static FIRVisionImageLabeler *labeler;
 
 + (void)handleDetection:(FIRVisionImage *)image
                 options:(NSDictionary *)options
                  result:(FlutterResult)result {
   FIRVision *vision = [FIRVision vision];
-  detector = [vision labelDetectorWithOptions:[LabelDetector parseOptions:options]];
 
-  [detector detectInImage:image
-               completion:^(NSArray<FIRVisionLabel *> *_Nullable labels, NSError *_Nullable error) {
+  if ([@"onDevice" isEqualToString:options[@"modelType"]]) {
+    labeler = [vision onDeviceImageLabelerWithOptions:[ImageLabeler parseOptions:options]];
+  } else if ([@"cloud" isEqualToString:options[@"modelType"]]) {
+    labeler = [vision cloudImageLabelerWithOptions:[ImageLabeler parseCloudOptions:options]];
+  }
+
+  [labeler processImage:image
+               completion:^(NSArray<FIRVisionImageLabel *> *_Nullable labels, NSError *_Nullable error) {
                  if (error) {
                    [FLTFirebaseMlVisionPlugin handleError:error result:result];
                    return;
@@ -19,11 +24,11 @@ static FIRVisionLabelDetector *detector;
                  }
 
                  NSMutableArray *labelData = [NSMutableArray array];
-                 for (FIRVisionLabel *label in labels) {
+                 for (FIRVisionImageLabel *label in labels) {
                    NSDictionary *data = @{
-                     @"confidence" : @(label.confidence),
+                     @"confidence" : label.confidence,
                      @"entityID" : label.entityID,
-                     @"label" : label.label
+                     @"text" : label.text,
                    };
                    [labelData addObject:data];
                  }
@@ -32,8 +37,21 @@ static FIRVisionLabelDetector *detector;
                }];
 }
 
-+ (FIRVisionLabelDetectorOptions *)parseOptions:(NSDictionary *)optionsData {
++ (FIRVisionOnDeviceImageLabelerOptions *)parseOptions:(NSDictionary *)optionsData {
   NSNumber *conf = optionsData[@"confidenceThreshold"];
-  return [[FIRVisionLabelDetectorOptions alloc] initWithConfidenceThreshold:[conf floatValue]];
+
+  FIRVisionOnDeviceImageLabelerOptions *options = [FIRVisionOnDeviceImageLabelerOptions new];
+  options.confidenceThreshold = [conf floatValue];
+
+  return options;
+}
+
++ (FIRVisionCloudImageLabelerOptions *)parseCloudOptions:(NSDictionary *)optionsData {
+  NSNumber *conf = optionsData[@"confidenceThreshold"];
+
+  FIRVisionCloudImageLabelerOptions *options = [FIRVisionCloudImageLabelerOptions new];
+  options.confidenceThreshold = [conf floatValue];
+
+  return options;
 }
 @end
