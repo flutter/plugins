@@ -32,7 +32,7 @@ class PackageInfo {
     if (_fromPlatform == null) {
       final Completer<PackageInfo> completer = Completer<PackageInfo>();
 
-      _kChannel.invokeListMethod<Map<String, dynamic>>('getAll').then(
+      _kChannel.invokeMapMethod<String, dynamic>('getAll').then(
           (Map<String, dynamic> result) {
         completer.complete(PackageInfo(
           appName: result["appName"],
