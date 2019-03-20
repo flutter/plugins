@@ -34,10 +34,7 @@ class LabelDetector {
 
   /// Detects entities in the input image.
   Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
+    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod<List<dynamic>>(
       'LabelDetector#detectInImage',
       <String, dynamic>{
         'options': <String, dynamic>{
@@ -85,10 +82,7 @@ class CloudLabelDetector {
 
   /// Detects entities in the input image.
   Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
+    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod<List<dynamic>>(
       'CloudLabelDetector#detectInImage',
       <String, dynamic>{
         'options': options._serialize(),
