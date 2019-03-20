@@ -67,7 +67,7 @@ class AndroidAlarmManager {
       return false;
     }
     final dynamic r = await _channel
-        .invokeMethod<dynamic>('AlarmService.start', <dynamic>[handle.toRawHandle()]);
+    return _channel.invokeMethod<bool>('AlarmService.start', <dynamic>[handle.toRawHandle()]);
     return r ?? false;
   }
 
