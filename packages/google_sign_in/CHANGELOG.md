@@ -1,3 +1,8 @@
+## 0.4.2
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 4.0.1+1
 
 * Remove categories.
