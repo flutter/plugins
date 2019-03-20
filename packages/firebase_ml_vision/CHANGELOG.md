@@ -1,3 +1,8 @@
+## 0.6.0+3
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 0.6.0+2
 
 * Update README.md
