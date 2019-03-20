@@ -1,3 +1,8 @@
+## 0.3.5+1
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 0.3.5
 
 * Added an onPageFinished callback.
