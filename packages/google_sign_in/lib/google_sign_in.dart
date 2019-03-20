@@ -78,8 +78,8 @@ class GoogleSignInAccount implements GoogleIdentity {
       throw StateError('User is no longer signed in.');
     }
 
-    final Map<dynamic, dynamic> response =
-        await GoogleSignIn.channel.invokeMapMethod<dynamic, dynamic>(
+    final Map<String, dynamic> response =
+        await GoogleSignIn.channel.invokeMapMethod<String, dynamic>(
       'getTokens',
       <String, dynamic>{
         'email': email,
@@ -214,7 +214,7 @@ class GoogleSignIn {
   Future<GoogleSignInAccount> _callMethod(String method) async {
     await _ensureInitialized();
 
-    final Map<dynamic, dynamic> response = await channel.invokeMapMethod<dynamic, dynamic>(method);
+    final Map<String, dynamic> response = await channel.invokeMapMethod<String, dynamic>(method);
     return _setCurrentUser(response != null && response.isNotEmpty
         ? GoogleSignInAccount._(this, response)
         : null);

@@ -65,8 +65,8 @@ class DynamicLinkParameters {
   /// using [DynamicLinkParameters].
   static Future<ShortDynamicLink> shortenUrl(Uri url,
       [DynamicLinkParametersOptions options]) async {
-    final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
-        .invokeMapMethod<dynamic, dynamic>('DynamicLinkParameters#shortenUrl', <String, dynamic>{
+    final Map<String, dynamic> reply = await FirebaseDynamicLinks.channel
+        .invokeMapMethod<String, dynamic>('DynamicLinkParameters#shortenUrl', <String, dynamic>{
       'url': url.toString(),
       'dynamicLinkParametersOptions': options?._data,
     });
@@ -95,8 +95,8 @@ class DynamicLinkParameters {
 
   /// Generate a short Dynamic Link.
   Future<ShortDynamicLink> buildShortLink() async {
-    final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
-        .invokeMapMethod<dynamic, dynamic>('DynamicLinkParameters#buildShortLink', _data);
+    final Map<String, dynamic> reply = await FirebaseDynamicLinks.channel
+        .invokeMapMethod<String, dynamic>('DynamicLinkParameters#buildShortLink', _data);
     return _parseShortLink(reply);
   }
 

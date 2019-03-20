@@ -49,9 +49,9 @@ CameraLensDirection _parseCameraLensDirection(String string) {
 /// May throw a [CameraException].
 Future<List<CameraDescription>> availableCameras() async {
   try {
-    final List<dynamic> cameras =
-        await _channel.invokeListMethod<dynamic>('availableCameras');
-    return cameras.map((dynamic camera) {
+    final List<Map<String, dynamic>> cameras =
+        await _channel.invokeListMethod<Map<String, dynamic>>('availableCameras');
+    return cameras.map((Map<String, dynamic> camera) {
       return CameraDescription(
         name: camera['name'],
         lensDirection: _parseCameraLensDirection(camera['lensFacing']),
@@ -224,7 +224,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       _creatingCompleter = Completer<void>();
-      final Map<dynamic, dynamic> reply = await _channel.invokeMapMethod<String, dynamic>(
+      final Map<String, dynamic> reply = await _channel.invokeMapMethod<String, dynamic>(
         'initialize',
         <String, dynamic>{
           'cameraName': description.name,

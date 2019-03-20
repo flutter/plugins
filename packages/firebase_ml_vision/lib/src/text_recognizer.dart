@@ -23,8 +23,8 @@ class TextRecognizer {
 
   /// Detects [VisionText] from a [FirebaseVisionImage].
   Future<VisionText> processImage(FirebaseVisionImage visionImage) async {
-    final Map<dynamic, dynamic> reply =
-        await FirebaseVision.channel.invokeMapMethod<dynamic, dynamic>(
+    final Map<String, dynamic> reply =
+        await FirebaseVision.channel.invokeMapMethod<String, dynamic>(
       'TextRecognizer#processImage',
       <String, dynamic>{
         'options': <String, dynamic>{},

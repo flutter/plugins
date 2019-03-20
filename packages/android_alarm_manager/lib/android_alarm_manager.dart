@@ -66,9 +66,7 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    final dynamic r = await _channel
     return _channel.invokeMethod<bool>('AlarmService.start', <dynamic>[handle.toRawHandle()]);
-    return r ?? false;
   }
 
   /// Schedules a one-shot timer to run `callback` after time `delay`.

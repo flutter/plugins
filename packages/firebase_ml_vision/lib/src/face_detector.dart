@@ -45,7 +45,7 @@ class FaceDetector {
 
   /// Detects faces in the input image.
   Future<List<Face>> processImage(FirebaseVisionImage visionImage) async {
-    final List<dynamic> reply = await FirebaseVision.channel.invokeListMethod<dynamic>(
+    final List<Map<String, dynamic>> reply = await FirebaseVision.channel.invokeListMethod<Map<String, dynamic>>(
       'FaceDetector#processImage',
       <String, dynamic>{
         'options': <String, dynamic>{
@@ -59,7 +59,7 @@ class FaceDetector {
     );
 
     final List<Face> faces = <Face>[];
-    for (dynamic data in reply) {
+    for (Map<String, dynamic> data in reply) {
       faces.add(Face._(data));
     }
 
@@ -111,7 +111,7 @@ class FaceDetectorOptions {
 
 /// Represents a face detected by [FaceDetector].
 class Face {
-  Face._(dynamic data)
+  Face._(Map<String, dynamic> data)
       : boundingBox = Rect.fromLTWH(
           data['left'],
           data['top'],

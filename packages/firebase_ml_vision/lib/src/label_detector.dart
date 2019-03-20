@@ -34,7 +34,7 @@ class LabelDetector {
 
   /// Detects entities in the input image.
   Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
-    final List<dynamic> reply = await FirebaseVision.channel.invokeListMethod<dynamic>(
+    final List<Map<String, dynamic>> reply = await FirebaseVision.channel.invokeListMethod<Map<String, dynamic>>(
       'LabelDetector#detectInImage',
       <String, dynamic>{
         'options': <String, dynamic>{
@@ -44,7 +44,7 @@ class LabelDetector {
     );
 
     final List<Label> labels = <Label>[];
-    for (dynamic data in reply) {
+    for (Map<String, dynamic> data in reply) {
       labels.add(Label._(data));
     }
 
@@ -82,7 +82,7 @@ class CloudLabelDetector {
 
   /// Detects entities in the input image.
   Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
-    final List<dynamic> reply = await FirebaseVision.channel.invokeListMethod<dynamic>(
+    final List<Map<String, dynamic>> reply = await FirebaseVision.channel.invokeListMethod<Map<String, dynamic>>(
       'CloudLabelDetector#detectInImage',
       <String, dynamic>{
         'options': options._serialize(),
@@ -90,7 +90,7 @@ class CloudLabelDetector {
     );
 
     final List<Label> labels = <Label>[];
-    for (dynamic data in reply) {
+    for (Map<String, dynamic> data in reply) {
       labels.add(Label._(data));
     }
 
@@ -121,7 +121,7 @@ class LabelDetectorOptions {
 
 /// Represents an entity label detected by [LabelDetector].
 class Label {
-  Label._(dynamic data)
+  Label._(Map<String, dynamic> data)
       : confidence = data['confidence'],
         entityId = data['entityId'],
         label = data['label'];

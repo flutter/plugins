@@ -24,7 +24,7 @@ class FirebaseApp {
   /// This getter is asynchronous because apps can also be configured by native
   /// code.
   Future<FirebaseOptions> get options async {
-    final Map<dynamic, dynamic> app = await channel.invokeMapMethod<dynamic, dynamic>(
+    final Map<String, dynamic> app = await channel.invokeMapMethod<String, dynamic>(
       'FirebaseApp#appNamed',
       name,
     );
@@ -35,7 +35,7 @@ class FirebaseApp {
   /// Returns a previously created FirebaseApp instance with the given name,
   /// or null if no such app exists.
   static Future<FirebaseApp> appNamed(String name) async {
-    final Map<dynamic, dynamic> app = await channel.invokeMapMethod<dynamic, dynamic>(
+    final Map<String, dynamic> app = await channel.invokeMapMethod<String, dynamic>(
       'FirebaseApp#appNamed',
       name,
     );
@@ -75,12 +75,12 @@ class FirebaseApp {
   /// Returns a list of all extant FirebaseApp instances, or null if there are
   /// no FirebaseApp instances.
   static Future<List<FirebaseApp>> allApps() async {
-    final List<dynamic> result = await channel.invokeListMethod<dynamic>(
+    final List<Map<String, dynamic>> result = await channel.invokeListMethod<Map<String, dynamic>>(
       'FirebaseApp#allApps',
     );
     return result
         ?.map<FirebaseApp>(
-          (dynamic app) => FirebaseApp(name: app['name']),
+          (Map<String, dynamic> app) => FirebaseApp(name: app['name']),
         )
         ?.toList();
   }
