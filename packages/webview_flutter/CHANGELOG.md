@@ -1,3 +1,7 @@
+## 0.3.5+1
+
+* Fix a bug where updates to onPageFinished were ignored.
+
 ## 0.3.5
 
 * Added an onPageFinished callback.

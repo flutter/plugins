@@ -272,6 +272,7 @@ class _WebViewState extends State<WebView> {
     controller._updateSettings(settings);
     controller._updateJavascriptChannels(widget.javascriptChannels);
     controller._navigationDelegate = widget.navigationDelegate;
+    controller._onPageFinished = widget.onPageFinished;
   }
 
   void _onPlatformViewCreated(int id) {
@@ -392,7 +393,7 @@ class WebViewController {
 
   _WebSettings _settings;
 
-  final PageFinishedCallback _onPageFinished;
+  PageFinishedCallback _onPageFinished;
 
   // Maps a channel name to a channel.
   Map<String, JavascriptChannel> _javascriptChannels =

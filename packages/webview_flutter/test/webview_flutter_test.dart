@@ -608,6 +608,29 @@ void main() {
       // to test that it does not crash on a null callback.
       platformWebView.fakeOnPageFinishedCallback();
     });
+
+    testWidgets('onPageFinished changed', (WidgetTester tester) async {
+      String returnedUrl;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageFinished: (String url) {},
+      ));
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageFinished: (String url) {
+          returnedUrl = url;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      platformWebView.fakeOnPageFinishedCallback();
+
+      expect(platformWebView.currentUrl, returnedUrl);
+    });
   });
 
   group('navigationDelegate', () {
