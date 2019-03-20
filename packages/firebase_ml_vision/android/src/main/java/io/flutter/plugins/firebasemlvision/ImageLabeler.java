@@ -9,7 +9,6 @@ import com.google.firebase.ml.vision.label.FirebaseVisionCloudImageLabelerOption
 import com.google.firebase.ml.vision.label.FirebaseVisionImageLabel;
 import com.google.firebase.ml.vision.label.FirebaseVisionImageLabeler;
 import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceImageLabelerOptions;
-
 import io.flutter.plugin.common.MethodChannel;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,11 +79,16 @@ class ImageLabeler implements Detector {
 
   private FirebaseVisionOnDeviceImageLabelerOptions parseOptions(Map<String, Object> optionsData) {
     float conf = (float) (double) optionsData.get("confidenceThreshold");
-    return new FirebaseVisionOnDeviceImageLabelerOptions.Builder().setConfidenceThreshold(conf).build();
+    return new FirebaseVisionOnDeviceImageLabelerOptions.Builder()
+        .setConfidenceThreshold(conf)
+        .build();
   }
 
-  private FirebaseVisionCloudImageLabelerOptions parseCloudOptions(Map<String, Object> optionsData) {
+  private FirebaseVisionCloudImageLabelerOptions parseCloudOptions(
+      Map<String, Object> optionsData) {
     float conf = (float) (double) optionsData.get("confidenceThreshold");
-    return new FirebaseVisionCloudImageLabelerOptions.Builder().setConfidenceThreshold(conf).build();
+    return new FirebaseVisionCloudImageLabelerOptions.Builder()
+        .setConfidenceThreshold(conf)
+        .build();
   }
 }

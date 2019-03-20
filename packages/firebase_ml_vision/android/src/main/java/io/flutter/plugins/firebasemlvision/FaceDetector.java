@@ -148,11 +148,12 @@ class FaceDetector implements Detector {
         throw new IllegalArgumentException("Not a mode:" + options.get("mode"));
     }
 
-    FirebaseVisionFaceDetectorOptions.Builder builder = new FirebaseVisionFaceDetectorOptions.Builder()
-        .setClassificationMode(classification)
-        .setLandmarkMode(landmark)
-        .setMinFaceSize((float) ((double) options.get("minFaceSize")))
-        .setPerformanceMode(mode);
+    FirebaseVisionFaceDetectorOptions.Builder builder =
+        new FirebaseVisionFaceDetectorOptions.Builder()
+            .setClassificationMode(classification)
+            .setLandmarkMode(landmark)
+            .setMinFaceSize((float) ((double) options.get("minFaceSize")))
+            .setPerformanceMode(mode);
 
     if ((boolean) options.get("enableTracking")) {
       builder.enableTracking();
