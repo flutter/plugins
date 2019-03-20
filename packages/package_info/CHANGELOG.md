@@ -1,3 +1,8 @@
+## 0.4.0+3
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 0.4.0+2
 
 * Android: Using new method for BuildNumber in new android versions
