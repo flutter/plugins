@@ -1,3 +1,8 @@
+## 2.1.1
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 2.1.0+1
 
 * Reverting error.code casting/formatting to what it was until version 2.0.1.
