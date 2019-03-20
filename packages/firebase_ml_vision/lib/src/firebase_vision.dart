@@ -11,6 +11,9 @@ enum _ImageType { file, bytes }
 /// Rotation is counter-clockwise.
 enum ImageRotation { rotation0, rotation90, rotation180, rotation270 }
 
+/// Indicates whether a model is ran on device or in the cloud.
+enum ModelType { onDevice, cloud }
+
 /// The Firebase machine learning vision API.
 ///
 /// You can get an instance by calling [FirebaseVision.instance] and then get
@@ -24,7 +27,7 @@ class FirebaseVision {
 
   @visibleForTesting
   static const MethodChannel channel =
-      MethodChannel('plugins.flutter.io/firebase_ml_vision');
+  MethodChannel('plugins.flutter.io/firebase_ml_vision');
 
   /// Singleton of [FirebaseVision].
   ///
@@ -45,17 +48,23 @@ class FirebaseVision {
     return FaceDetector._(options ?? const FaceDetectorOptions());
   }
 
-  /// Creates an instance of [LabelDetector].
-  LabelDetector labelDetector([LabelDetectorOptions options]) {
-    return LabelDetector._(options ?? const LabelDetectorOptions());
+  /// Creates an on device instance of [ImageLabeler].
+  ImageLabeler imageLabeler([ImageLabelerOptions options]) {
+    return ImageLabeler._(
+      options: options ?? const ImageLabelerOptions(),
+      modelType: ModelType.onDevice,
+    );
   }
 
   /// Creates an instance of [TextRecognizer].
   TextRecognizer textRecognizer() => TextRecognizer._();
 
-  /// Creates an instance of [CloudLabelDetector].
-  CloudLabelDetector cloudLabelDetector([CloudDetectorOptions options]) {
-    return CloudLabelDetector._(options ?? const CloudDetectorOptions());
+  /// Creates a cloud instance of [ImageLabeler].
+  ImageLabeler cloudImageLabeler([CloudImageLabelerOptions options]) {
+    return ImageLabeler._(
+      options: options ?? const CloudImageLabelerOptions(),
+      modelType: ModelType.cloud,
+    );
   }
 }
 
@@ -100,9 +109,9 @@ class FirebaseVisionImage {
   /// On iOS, expects `kCVPixelFormatType_32BGRA` format. However, this should
   /// work with most formats from `kCVPixelFormatType_*`.
   factory FirebaseVisionImage.fromBytes(
-    Uint8List bytes,
-    FirebaseVisionImageMetadata metadata,
-  ) {
+      Uint8List bytes,
+      FirebaseVisionImageMetadata metadata,
+      ) {
     assert(bytes != null);
     assert(metadata != null);
     return FirebaseVisionImage._(
@@ -118,11 +127,11 @@ class FirebaseVisionImage {
   final _ImageType _type;
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
-        'type': _enumToString(_type),
-        'bytes': _bytes,
-        'path': _imageFile?.path,
-        'metadata': _type == _ImageType.bytes ? _metadata._serialize() : null,
-      };
+    'type': _enumToString(_type),
+    'bytes': _bytes,
+    'path': _imageFile?.path,
+    'metadata': _type == _ImageType.bytes ? _metadata._serialize() : null,
+  };
 }
 
 /// Plane attributes to create the image buffer on iOS.
@@ -135,13 +144,13 @@ class FirebaseVisionImagePlaneMetadata {
     @required this.height,
     @required this.width,
   })  : assert(defaultTargetPlatform == TargetPlatform.iOS
-            ? bytesPerRow != null
-            : true),
+      ? bytesPerRow != null
+      : true),
         assert(defaultTargetPlatform == TargetPlatform.iOS
             ? height != null
             : true),
         assert(
-            defaultTargetPlatform == TargetPlatform.iOS ? width != null : true);
+        defaultTargetPlatform == TargetPlatform.iOS ? width != null : true);
 
   /// The row stride for this color plane, in bytes.
   final int bytesPerRow;
@@ -153,10 +162,10 @@ class FirebaseVisionImagePlaneMetadata {
   final int width;
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
-        'bytesPerRow': bytesPerRow,
-        'height': height,
-        'width': width,
-      };
+    'bytesPerRow': bytesPerRow,
+    'height': height,
+    'width': width,
+  };
 }
 
 /// Image metadata used by [FirebaseVision] detectors.
@@ -222,14 +231,14 @@ class FirebaseVisionImageMetadata {
   }
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
-        'width': size.width,
-        'height': size.height,
-        'rotation': _imageRotationToInt(rotation),
-        'rawFormat': rawFormat,
-        'planeData': planeData
-            .map((FirebaseVisionImagePlaneMetadata plane) => plane._serialize())
-            .toList(),
-      };
+    'width': size.width,
+    'height': size.height,
+    'rotation': _imageRotationToInt(rotation),
+    'rawFormat': rawFormat,
+    'planeData': planeData
+        .map((FirebaseVisionImagePlaneMetadata plane) => plane._serialize())
+        .toList(),
+  };
 }
 
 String _enumToString(dynamic enumValue) {
