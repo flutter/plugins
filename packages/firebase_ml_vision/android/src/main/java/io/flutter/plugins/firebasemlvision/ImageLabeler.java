@@ -5,11 +5,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
-import com.google.firebase.ml.vision.label.FirebaseVisionCloudImageLabelerOptions;
-import com.google.firebase.ml.vision.label.FirebaseVisionImageLabel;
-import com.google.firebase.ml.vision.label.FirebaseVisionImageLabeler;
-import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceImageLabelerOptions;
-
+import com.google.firebase.ml.vision.label.FirebaseVisionLabel;
+import com.google.firebase.ml.vision.label.FirebaseVisionLabelDetector;
+import com.google.firebase.ml.vision.label.FirebaseVisionLabelDetectorOptions;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,51 +15,48 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class ImageLabeler implements Detector {
-  static final ImageLabeler instance = new ImageLabeler();
+class LabelDetector implements Detector {
+  static final LabelDetector instance = new LabelDetector();
 
-  private ImageLabeler() {}
+  private LabelDetector() {}
 
-  private FirebaseVisionImageLabeler labeler;
+  private FirebaseVisionLabelDetector detector;
   private Map<String, Object> lastOptions;
 
   @Override
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
 
-    // Use instantiated labeler if the options are the same. Otherwise, close and instantiate new
+    // Use instantiated detector if the options are the same. Otherwise, close and instantiate new
     // options.
 
-    if (labeler != null && !options.equals(lastOptions)) {
+    if (detector == null) {
+      lastOptions = options;
+      detector = FirebaseVision.getInstance().getVisionLabelDetector(parseOptions(lastOptions));
+    } else if (!options.equals(lastOptions)) {
       try {
-        labeler.close();
+        detector.close();
       } catch (IOException e) {
         result.error("labelDetectorIOError", e.getLocalizedMessage(), null);
         return;
       }
+
+      lastOptions = options;
+      detector = FirebaseVision.getInstance().getVisionLabelDetector(parseOptions(lastOptions));
     }
 
-    lastOptions = options;
-
-    final String modelType = (String) options.get("modelType");
-    if (modelType.equals("onDevice")) {
-      labeler = FirebaseVision.getInstance().getOnDeviceImageLabeler(parseOptions(lastOptions));
-    } else if (modelType.equals("cloud")) {
-      labeler = FirebaseVision.getInstance().getCloudImageLabeler(parseCloudOptions(lastOptions));
-    }
-
-    labeler
-        .processImage(image)
+    detector
+        .detectInImage(image)
         .addOnSuccessListener(
-            new OnSuccessListener<List<FirebaseVisionImageLabel>>() {
+            new OnSuccessListener<List<FirebaseVisionLabel>>() {
               @Override
-              public void onSuccess(List<FirebaseVisionImageLabel> firebaseVisionLabels) {
+              public void onSuccess(List<FirebaseVisionLabel> firebaseVisionLabels) {
                 List<Map<String, Object>> labels = new ArrayList<>(firebaseVisionLabels.size());
-                for (FirebaseVisionImageLabel label : firebaseVisionLabels) {
+                for (FirebaseVisionLabel label : firebaseVisionLabels) {
                   Map<String, Object> labelData = new HashMap<>();
                   labelData.put("confidence", (double) label.getConfidence());
                   labelData.put("entityId", label.getEntityId());
-                  labelData.put("text", label.getText());
+                  labelData.put("label", label.getLabel());
 
                   labels.add(labelData);
                 }
@@ -73,18 +68,13 @@ class ImageLabeler implements Detector {
             new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception e) {
-                result.error("imageLabelerError", e.getLocalizedMessage(), null);
+                result.error("labelDetectorError", e.getLocalizedMessage(), null);
               }
             });
   }
 
-  private FirebaseVisionOnDeviceImageLabelerOptions parseOptions(Map<String, Object> optionsData) {
+  private FirebaseVisionLabelDetectorOptions parseOptions(Map<String, Object> optionsData) {
     float conf = (float) (double) optionsData.get("confidenceThreshold");
-    return new FirebaseVisionOnDeviceImageLabelerOptions.Builder().setConfidenceThreshold(conf).build();
-  }
-
-  private FirebaseVisionCloudImageLabelerOptions parseCloudOptions(Map<String, Object> optionsData) {
-    float conf = (float) (double) optionsData.get("confidenceThreshold");
-    return new FirebaseVisionCloudImageLabelerOptions.Builder().setConfidenceThreshold(conf).build();
+    return new FirebaseVisionLabelDetectorOptions.Builder().setConfidenceThreshold(conf).build();
   }
 }
