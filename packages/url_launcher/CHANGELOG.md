@@ -1,4 +1,9 @@
-## 5.0.2
+## 5.0.3
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
+# 5.0.2
 * Fixes `closeWebView` failure on iOS.
 
 ## 5.0.1
