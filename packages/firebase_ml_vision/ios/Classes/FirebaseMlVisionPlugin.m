@@ -40,8 +40,6 @@ static FlutterError *getFlutterError(NSError *error) {
     [FaceDetector handleDetection:image options:options result:result];
   } else if ([@"ImageLabeler#processImage" isEqualToString:call.method]) {
     [ImageLabeler handleDetection:image options:options result:result];
-  } else if ([@"CloudImageLabeler#processImage" isEqualToString:call.method]) {
-    [ImageLabeler handleDetection:image options:options result:result];
   } else if ([@"TextRecognizer#processImage" isEqualToString:call.method]) {
     [TextRecognizer handleDetection:image options:options result:result];
   } else {

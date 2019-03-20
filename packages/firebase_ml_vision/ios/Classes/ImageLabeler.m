@@ -8,9 +8,9 @@ static FIRVisionImageLabeler *labeler;
                  result:(FlutterResult)result {
   FIRVision *vision = [FIRVision vision];
 
-  if ([@"onDevice" isEqualToString:options[@"type"]]) {
+  if ([@"onDevice" isEqualToString:options[@"modelType"]]) {
     labeler = [vision onDeviceImageLabelerWithOptions:[ImageLabeler parseOptions:options]];
-  } else if ([@"cloud" isEqualToString:options[@"type"]]) {
+  } else if ([@"cloud" isEqualToString:options[@"modelType"]]) {
     labeler = [vision cloudImageLabelerWithOptions:[ImageLabeler parseCloudOptions:options]];
   }
 
