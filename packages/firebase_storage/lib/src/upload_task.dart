@@ -11,7 +11,7 @@ abstract class StorageUploadTask {
   final StorageReference _ref;
   final StorageMetadata _metadata;
 
-  Future<dynamic> _platformStart();
+  Future<int> _platformStart();
 
   int _handle;
 
@@ -127,8 +127,8 @@ class _StorageFileUploadTask extends StorageUploadTask {
   final File _file;
 
   @override
-  Future<dynamic> _platformStart() {
-    return FirebaseStorage.channel.invokeMethod<dynamic>(
+  Future<int> _platformStart() {
+    return FirebaseStorage.channel.invokeMethod<int>(
       'StorageReference#putFile',
       <String, dynamic>{
         'app': _firebaseStorage.app?.name,
@@ -150,8 +150,8 @@ class _StorageDataUploadTask extends StorageUploadTask {
   final Uint8List _bytes;
 
   @override
-  Future<dynamic> _platformStart() {
-    return FirebaseStorage.channel.invokeMethod<dynamic>(
+  Future<int> _platformStart() {
+    return FirebaseStorage.channel.invokeMethod<int>(
       'StorageReference#putData',
       <String, dynamic>{
         'app': _firebaseStorage.app?.name,

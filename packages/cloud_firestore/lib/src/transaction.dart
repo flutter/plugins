@@ -14,8 +14,8 @@ class Transaction {
   Firestore _firestore;
 
   Future<DocumentSnapshot> get(DocumentReference documentReference) async {
-    final dynamic result = await Firestore.channel
-        .invokeMethod<dynamic>('Transaction#get', <String, dynamic>{
+    final Map<String, dynamic> result = await Firestore.channel
+        .invokeMapMethod<String, dynamic>('Transaction#get', <String, dynamic>{
       'app': _firestore.app.name,
       'transactionId': _transactionId,
       'path': documentReference.path,

@@ -162,7 +162,7 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    final dynamic r = await _channel.invokeMethod<dynamic>('Alarm.periodic', <dynamic>[
+    final bool r = await _channel.invokeMethod<bool>('Alarm.periodic', <dynamic>[
       id,
       exact,
       wakeup,
