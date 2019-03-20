@@ -7,7 +7,12 @@ static FIRVisionImageLabeler *labeler;
                 options:(NSDictionary *)options
                  result:(FlutterResult)result {
   FIRVision *vision = [FIRVision vision];
-  labeler = [vision onDeviceImageLabelerWithOptions:[ImageLabeler parseOptions:options]];
+
+  if ([@"onDevice" isEqualToString:options[@"type"]]) {
+    labeler = [vision onDeviceImageLabelerWithOptions:[ImageLabeler parseOptions:options]];
+  } else if ([@"cloud" isEqualToString:options[@"type"]]) {
+    labeler = [vision cloudImageLabelerWithOptions:[ImageLabeler parseCloudOptions:options]];
+  }
 
   [labeler processImage:image
                completion:^(NSArray<FIRVisionImageLabel *> *_Nullable labels, NSError *_Nullable error) {
@@ -36,6 +41,15 @@ static FIRVisionImageLabeler *labeler;
   NSNumber *conf = optionsData[@"confidenceThreshold"];
 
   FIRVisionOnDeviceImageLabelerOptions *options = [FIRVisionOnDeviceImageLabelerOptions new];
+  options.confidenceThreshold = [conf floatValue];
+
+  return options;
+}
+
++ (FIRVisionCloudImageLabelerOptions *)parseCloudOptions:(NSDictionary *)optionsData {
+  NSNumber *conf = optionsData[@"confidenceThreshold"];
+
+  FIRVisionCloudImageLabelerOptions *options = [FIRVisionCloudImageLabelerOptions new];
   options.confidenceThreshold = [conf floatValue];
 
   return options;
