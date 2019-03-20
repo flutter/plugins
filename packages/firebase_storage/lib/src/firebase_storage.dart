@@ -134,7 +134,7 @@ class StorageFileDownloadTask {
   final File _file;
 
   Future<void> _start() async {
-    final int totalByteCount = await FirebaseStorage.channel.invokeMethod<void>(
+    final int totalByteCount = await FirebaseStorage.channel.invokeMethod<int>(
       "StorageReference#writeToFile",
       <String, dynamic>{
         'app': _firebaseStorage.app?.name,

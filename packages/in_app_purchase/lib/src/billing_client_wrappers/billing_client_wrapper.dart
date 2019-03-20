@@ -67,7 +67,7 @@ class BillingClient {
   /// [`BillingClient#isReady()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#isReady())
   /// to get the ready status of the BillingClient instance.
   Future<bool> isReady() async =>
-      await channel.invokeMethod<void>('BillingClient#isReady()');
+      await channel.invokeMethod<bool>('BillingClient#isReady()');
 
   /// Calls
   /// [`BillingClient#startConnection(BillingClientStateListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#startconnection)
