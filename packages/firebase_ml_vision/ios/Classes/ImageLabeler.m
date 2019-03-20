@@ -28,7 +28,7 @@ static FIRVisionImageLabeler *labeler;
                    NSDictionary *data = @{
                      @"confidence" : label.confidence,
                      @"entityID" : label.entityID,
-                     @"label" : label.text,
+                     @"text" : label.text,
                    };
                    [labelData addObject:data];
                  }

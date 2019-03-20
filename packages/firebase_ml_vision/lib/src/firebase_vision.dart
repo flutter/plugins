@@ -60,7 +60,7 @@ class FirebaseVision {
   TextRecognizer textRecognizer() => TextRecognizer._();
 
   /// Creates a cloud instance of [ImageLabeler].
-  ImageLabeler cloudLabelDetector([CloudImageLabelerOptions options]) {
+  ImageLabeler cloudImageLabeler([CloudImageLabelerOptions options]) {
     return ImageLabeler._(
       options: options ?? const CloudImageLabelerOptions(),
       modelType: ModelType.cloud,

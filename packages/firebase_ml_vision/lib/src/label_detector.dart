@@ -28,7 +28,7 @@ part of firebase_ml_vision;
 class ImageLabeler {
   ImageLabeler._({@required dynamic options, @required this.modelType})
       : _options = options,
-        assert(_options != null),
+        assert(options != null),
         assert(modelType != null);
 
   /// Indicates whether this labeler is ran on device or in the cloud.
