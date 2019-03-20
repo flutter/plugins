@@ -14,27 +14,28 @@ static FIRVisionImageLabeler *labeler;
     labeler = [vision cloudImageLabelerWithOptions:[ImageLabeler parseCloudOptions:options]];
   }
 
-  [labeler processImage:image
-               completion:^(NSArray<FIRVisionImageLabel *> *_Nullable labels, NSError *_Nullable error) {
-                 if (error) {
-                   [FLTFirebaseMlVisionPlugin handleError:error result:result];
-                   return;
-                 } else if (!labels) {
-                   result(@[]);
-                 }
+  [labeler
+      processImage:image
+        completion:^(NSArray<FIRVisionImageLabel *> *_Nullable labels, NSError *_Nullable error) {
+          if (error) {
+            [FLTFirebaseMlVisionPlugin handleError:error result:result];
+            return;
+          } else if (!labels) {
+            result(@[]);
+          }
 
-                 NSMutableArray *labelData = [NSMutableArray array];
-                 for (FIRVisionImageLabel *label in labels) {
-                   NSDictionary *data = @{
-                     @"confidence" : label.confidence,
-                     @"entityID" : label.entityID,
-                     @"text" : label.text,
-                   };
-                   [labelData addObject:data];
-                 }
+          NSMutableArray *labelData = [NSMutableArray array];
+          for (FIRVisionImageLabel *label in labels) {
+            NSDictionary *data = @{
+              @"confidence" : label.confidence,
+              @"entityID" : label.entityID,
+              @"text" : label.text,
+            };
+            [labelData addObject:data];
+          }
 
-                 result(labelData);
-               }];
+          result(labelData);
+        }];
 }
 
 + (FIRVisionOnDeviceImageLabelerOptions *)parseOptions:(NSDictionary *)optionsData {
