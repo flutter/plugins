@@ -48,10 +48,7 @@ class Trace extends PerformanceAttributes {
 
     _hasStarted = true;
     return FirebasePerformance.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('Trace#start', <String, dynamic>{
+        .invokeMethod<void>('Trace#start', <String, dynamic>{
       'handle': _handle,
       'name': _name,
     });
@@ -76,10 +73,7 @@ class Trace extends PerformanceAttributes {
     };
 
     _hasStopped = true;
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return FirebasePerformance.channel.invokeMethod('Trace#stop', data);
+    return FirebasePerformance.channel.invokeMethod<void>('Trace#stop', data);
   }
 
   /// Increments the counter with the given [name] by [incrementBy].

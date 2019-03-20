@@ -1,3 +1,8 @@
+## 0.1.0+5
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 0.1.0+4
 
 * Remove deprecated methods for iOS.
