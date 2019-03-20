@@ -34,7 +34,7 @@ class LabelDetector {
 
   /// Detects entities in the input image.
   Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
-    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod<List<dynamic>>(
+    final List<dynamic> reply = await FirebaseVision.channel.invokeListMethod<dynamic>(
       'LabelDetector#detectInImage',
       <String, dynamic>{
         'options': <String, dynamic>{
@@ -82,7 +82,7 @@ class CloudLabelDetector {
 
   /// Detects entities in the input image.
   Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
-    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod<List<dynamic>>(
+    final List<dynamic> reply = await FirebaseVision.channel.invokeListMethod<dynamic>(
       'CloudLabelDetector#detectInImage',
       <String, dynamic>{
         'options': options._serialize(),

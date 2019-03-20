@@ -114,11 +114,10 @@ class FirebaseAuth {
     @required String email,
   }) async {
     assert(email != null);
-    final List<dynamic> providers = await channel.invokeMethod<List<dynamic>>(
+    return await channel.invokeListMethod<String>(
       'fetchSignInMethodsForEmail',
       <String, String>{'email': email, 'app': app.name},
     );
-    return providers?.cast<String>();
   }
 
   /// Triggers the Firebase Authentication backend to send a password-reset

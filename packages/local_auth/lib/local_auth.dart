@@ -79,7 +79,7 @@ class LocalAuthentication {
   ///
   /// Returns a [Future] bool true or false:
   Future<bool> get canCheckBiometrics async =>
-      (await _channel.invokeMethod<List<dynamic>>('getAvailableBiometrics')).isNotEmpty;
+      (await _channel.invokeListMethod<String>('getAvailableBiometrics')).isNotEmpty;
 
   /// Returns a list of enrolled biometrics
   ///
@@ -89,7 +89,7 @@ class LocalAuthentication {
   /// - BiometricType.iris (not yet implemented)
   Future<List<BiometricType>> getAvailableBiometrics() async {
     final List<String> result =
-        (await _channel.invokeMethod<List<dynamic>>('getAvailableBiometrics')).cast<String>();
+        (await _channel.invokeListMethod<String>('getAvailableBiometrics'));
     final List<BiometricType> biometrics = <BiometricType>[];
     result.forEach((String value) {
       switch (value) {

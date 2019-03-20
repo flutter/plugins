@@ -190,7 +190,7 @@ class BarcodeDetector {
 
   /// Detects barcodes in the input image.
   Future<List<Barcode>> detectInImage(FirebaseVisionImage visionImage) async {
-    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod<List<dynamic>>(
+    final List<dynamic> reply = await FirebaseVision.channel.invokeListMethod<dynamic>(
       'BarcodeDetector#detectInImage',
       <String, dynamic>{
         'options': <String, dynamic>{
