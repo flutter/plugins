@@ -21,10 +21,12 @@ enable the [Google People API](https://developers.google.com/people/).
 ## iOS integration
 
 1. [First register your application](https://developers.google.com/mobile/add?platform=ios).
-2. Open Xcode. You'll have to paste this into Xcode to properly register `GoogleServices-Info.plist`.
-3. Select `GoogleServices-Info.plist` from the file manager and drag that file into the `Runner` directory, `[my_project]/ios/Runner/GoogleServices-Info.plist`.
-4. A dialog will show up and ask you to select the targets, select the `Runner` target.
-5. Then add the `CFBundleURLTypes` attributes below into the `[my_project]/ios/Runner/Info.plist` file.
+2. Make sure the file you download in step 1 is named `GoogleService-Info.plist`.
+3. Move or copy `GoogleService-Info.plist` into the `[my_project]/ios/Runner` directory.
+4. Open Xcode, then right-click on `Runner` directory and select `Add Files to "Runner"`.
+5. Select `GoogleService-Info.plist` from the file manager.
+6. A dialog will show up and ask you to select the targets, select the `Runner` target.
+7. Then add the `CFBundleURLTypes` attributes below into the `[my_project]/ios/Runner/Info.plist` file.
 
 ```xml
 <!-- Put me in the [my_project]/ios/Runner/Info.plist file -->
@@ -37,7 +39,7 @@ enable the [Google People API](https://developers.google.com/people/).
 		<key>CFBundleURLSchemes</key>
 		<array>
 			<!-- TODO Replace this value: -->
-			<!-- Copied from GoogleServices-Info.plist key REVERSED_CLIENT_ID -->
+			<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
 			<string>com.googleusercontent.apps.861823949799-vc35cprkp249096uujjn0vvnmcvjppkn</string>
 		</array>
 	</dict>
