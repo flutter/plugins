@@ -1,3 +1,8 @@
+## 0.1.2+2
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 0.1.2+1
 
 * Added a driver test.
