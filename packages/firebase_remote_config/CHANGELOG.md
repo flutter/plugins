@@ -1,3 +1,8 @@
+## 0.1.0+3
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 0.1.0+2
 
 * Log messages about automatic configuration of the default app are now less confusing.
