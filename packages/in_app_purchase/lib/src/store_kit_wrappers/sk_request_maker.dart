@@ -24,7 +24,7 @@ class SKRequestMaker {
   /// A [PlatformException] is thrown if the platform code making the request fails.
   Future<SkProductResponseWrapper> startProductRequest(
       List<String> productIdentifiers) async {
-    final Map productResponseMap = await channel.invokeMethod<Map>(
+    final Map productResponseMap = await channel.invokeMapMethod(
       '-[InAppPurchasePlugin startProductRequest:result:]',
       productIdentifiers,
     );

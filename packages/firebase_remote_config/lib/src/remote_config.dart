@@ -36,7 +36,7 @@ class RemoteConfig extends ChangeNotifier {
 
   static void _getRemoteConfigInstance() async {
     final Map<dynamic, dynamic> properties =
-        await channel.invokeMethod<Map<dynamic, dynamic> >('RemoteConfig#instance');
+        await channel.invokeMapMethod<dynamic, dynamic>('RemoteConfig#instance');
 
     final RemoteConfig instance = RemoteConfig();
 
@@ -113,7 +113,7 @@ class RemoteConfig extends ChangeNotifier {
   /// Expiration must be defined in seconds.
   Future<void> fetch({Duration expiration = const Duration(hours: 12)}) async {
     try {
-      final Map<dynamic, dynamic> properties = await channel.invokeMethod<Map<dynamic, dynamic>>(
+      final Map<dynamic, dynamic> properties = await channel.invokeMapMethod<dynamic, dynamic>(
           'RemoteConfig#fetch',
           <dynamic, dynamic>{'expiration': expiration.inSeconds});
       _lastFetchTime =
@@ -138,7 +138,7 @@ class RemoteConfig extends ChangeNotifier {
   /// from the currently activated config, it contains false otherwise.
   Future<bool> activateFetched() async {
     final Map<dynamic, dynamic> properties =
-        await channel.invokeMethod<Map<dynamic, dynamic>>('RemoteConfig#activate');
+        await channel.invokeMapMethod<dynamic, dynamic>('RemoteConfig#activate');
     final Map<dynamic, dynamic> rawParameters = properties['parameters'];
     final bool newConfig = properties['newConfig'];
     final Map<String, RemoteConfigValue> fetchedParameters =

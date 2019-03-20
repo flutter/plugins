@@ -152,7 +152,7 @@ class StorageReference {
   /// Retrieves metadata associated with an object at this [StorageReference].
   Future<StorageMetadata> getMetadata() async {
     return StorageMetadata._fromMap(await FirebaseStorage.channel
-        .invokeMethod<Map<dynamic, dynamic>>("StorageReference#getMetadata", <String, String>{
+        .invokeMapMethod<dynamic, dynamic>("StorageReference#getMetadata", <String, String>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
       'path': _pathComponents.join("/"),
@@ -168,7 +168,7 @@ class StorageReference {
   /// by passing the empty string.
   Future<StorageMetadata> updateMetadata(StorageMetadata metadata) async {
     return StorageMetadata._fromMap(await FirebaseStorage.channel
-        .invokeMethod<Map<dynamic, dynamic>>("StorageReference#updateMetadata", <String, dynamic>{
+        .invokeMapMethod<dynamic, dynamic>("StorageReference#updateMetadata", <String, dynamic>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
       'path': _pathComponents.join("/"),

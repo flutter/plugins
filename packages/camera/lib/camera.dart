@@ -224,7 +224,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       _creatingCompleter = Completer<void>();
-      final Map<dynamic, dynamic> reply = await _channel.invokeMethod<Map<dynamic, dynamic>>(
+      final Map<dynamic, dynamic> reply = await _channel.invokeMapMethod<dynamic, dynamic>(
         'initialize',
         <String, dynamic>{
           'cameraName': description.name,

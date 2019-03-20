@@ -205,7 +205,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       case DataSourceType.file:
         dataSourceDescription = <String, dynamic>{'uri': dataSource};
     }
-    final Map<dynamic, dynamic> response = await _channel.invokeMethod<Map<dynamic, dynamic>>(
+    final Map<dynamic, dynamic> response = await _channel.invokeMapMethod<dynamic, dynamic>(
       'create',
       dataSourceDescription,
     );

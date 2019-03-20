@@ -72,7 +72,7 @@ class DocumentReference {
   ///
   /// If no document exists, the read will return null.
   Future<DocumentSnapshot> get() async {
-    final Map<dynamic, dynamic> data = await Firestore.channel.invokeMethod<Map<dynamic, dynamic>>(
+    final Map<dynamic, dynamic> data = await Firestore.channel.invokeMapMethod<dynamic, dynamic>(
       'DocumentReference#get',
       <String, dynamic>{'app': firestore.app.name, 'path': path},
     );

@@ -73,7 +73,7 @@ class FirebaseAuth {
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Anonymous accounts are not enabled.
   Future<FirebaseUser> signInAnonymously() async {
     final Map<dynamic, dynamic> data = await channel
-        .invokeMethod<Map<dynamic, dynamic>>('signInAnonymously', <String, String>{"app": app.name});
+        .invokeMapMethod<dynamic, dynamic>('signInAnonymously', <String, String>{"app": app.name});
     final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
@@ -93,7 +93,7 @@ class FirebaseAuth {
   }) async {
     assert(email != null);
     assert(password != null);
-    final Map<dynamic, dynamic> data = await channel.invokeMethod<Map<dynamic, dynamic>>(
+    final Map<dynamic, dynamic> data = await channel.invokeMapMethod<dynamic, dynamic>(
       'createUserWithEmailAndPassword',
       <String, String>{'email': email, 'password': password, 'app': app.name},
     );
@@ -187,7 +187,7 @@ class FirebaseAuth {
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Google accounts are not enabled.
   Future<FirebaseUser> signInWithCredential(AuthCredential credential) async {
     assert(credential != null);
-    final Map<dynamic, dynamic> data = await channel.invokeMethod<Map<dynamic, dynamic>>(
+    final Map<dynamic, dynamic> data = await channel.invokeMapMethod<dynamic, dynamic>(
       'signInWithCredential',
       <String, dynamic>{
         'app': app.name,
@@ -290,7 +290,7 @@ class FirebaseAuth {
   ///     Ensure your app's SHA1 is correct in the Firebase console.
   Future<FirebaseUser> signInWithCustomToken({@required String token}) async {
     assert(token != null);
-    final Map<dynamic, dynamic> data = await channel.invokeMethod<Map<dynamic, dynamic>>(
+    final Map<dynamic, dynamic> data = await channel.invokeMapMethod<dynamic, dynamic>(
       'signInWithCustomToken',
       <String, String>{'token': token, 'app': app.name},
     );
@@ -310,7 +310,7 @@ class FirebaseAuth {
   /// Returns the currently signed-in [FirebaseUser] or [null] if there is none.
   Future<FirebaseUser> currentUser() async {
     final Map<dynamic, dynamic> data = await channel
-        .invokeMethod<Map<dynamic, dynamic>>("currentUser", <String, String>{'app': app.name});
+        .invokeMapMethod<dynamic, dynamic>("currentUser", <String, String>{'app': app.name});
     final FirebaseUser currentUser =
         data == null ? null : FirebaseUser._(data, app);
     return currentUser;
@@ -332,7 +332,7 @@ class FirebaseAuth {
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that this type of account is not enabled.
   Future<FirebaseUser> linkWithCredential(AuthCredential credential) async {
     assert(credential != null);
-    final Map<dynamic, dynamic> data = await channel.invokeMethod<Map<dynamic, dynamic>>(
+    final Map<dynamic, dynamic> data = await channel.invokeMapMethod<dynamic, dynamic>(
       'linkWithCredential',
       <String, dynamic>{
         'app': app.name,

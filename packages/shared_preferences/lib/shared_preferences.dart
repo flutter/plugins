@@ -22,7 +22,7 @@ class SharedPreferences {
   static Future<SharedPreferences> getInstance() async {
     if (_instance == null) {
       final Map<Object, Object> fromSystem =
-          await _kChannel.invokeMethod<Map<Object, Object> >('getAll');
+          await _kChannel.invokeMapMethod<Object, Object>('getAll');
       assert(fromSystem != null);
       // Strip the flutter. prefix from the returned preferences.
       final Map<String, Object> preferencesMap = <String, Object>{};
