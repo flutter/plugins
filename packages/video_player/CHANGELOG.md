@@ -1,3 +1,8 @@
+## 0.10.0+5
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 0.10.0+4
 
 * Android: Upgrade ExoPlayer to 2.9.6.
