@@ -85,7 +85,7 @@ void main() {
           const ImageLabelerOptions(),
         );
         final FirebaseVisionImage image =
-        FirebaseVisionImage.fromFilePath('empty');
+            FirebaseVisionImage.fromFilePath('empty');
 
         final List<ImageLabel> labels = await detector.processImage(image);
 
@@ -126,8 +126,7 @@ void main() {
 
         returnValue = labelData;
 
-        final ImageLabeler labeler =
-        FirebaseVision.instance.cloudImageLabeler(
+        final ImageLabeler labeler = FirebaseVision.instance.cloudImageLabeler(
           const CloudImageLabelerOptions(confidenceThreshold: 0.6),
         );
 

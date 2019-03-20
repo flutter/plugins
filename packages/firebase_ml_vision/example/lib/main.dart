@@ -31,7 +31,7 @@ class _MyHomePageState extends State<_MyHomePage> {
     });
 
     final File imageFile =
-    await ImagePicker.pickImage(source: ImageSource.gallery);
+        await ImagePicker.pickImage(source: ImageSource.gallery);
 
     if (imageFile != null) {
       _getImageSize(imageFile);
@@ -48,7 +48,7 @@ class _MyHomePageState extends State<_MyHomePage> {
 
     final Image image = Image.file(imageFile);
     image.image.resolve(const ImageConfiguration()).addListener(
-          (ImageInfo info, bool _) {
+      (ImageInfo info, bool _) {
         completer.complete(Size(
           info.image.width.toDouble(),
           info.image.height.toDouble(),
@@ -68,13 +68,13 @@ class _MyHomePageState extends State<_MyHomePage> {
     });
 
     final FirebaseVisionImage visionImage =
-    FirebaseVisionImage.fromFile(imageFile);
+        FirebaseVisionImage.fromFile(imageFile);
 
     dynamic results;
     switch (_currentDetector) {
       case Detector.barcode:
         final BarcodeDetector detector =
-        FirebaseVision.instance.barcodeDetector();
+            FirebaseVision.instance.barcodeDetector();
         results = await detector.detectInImage(visionImage);
         break;
       case Detector.face:
@@ -87,12 +87,12 @@ class _MyHomePageState extends State<_MyHomePage> {
         break;
       case Detector.cloudLabel:
         final ImageLabeler labeler =
-        FirebaseVision.instance.cloudImageLabeler();
+            FirebaseVision.instance.cloudImageLabeler();
         results = await labeler.processImage(visionImage);
         break;
       case Detector.text:
         final TextRecognizer recognizer =
-        FirebaseVision.instance.textRecognizer();
+            FirebaseVision.instance.textRecognizer();
         results = await recognizer.processImage(visionImage);
         break;
       default:
@@ -143,14 +143,14 @@ class _MyHomePageState extends State<_MyHomePage> {
       ),
       child: _imageSize == null || _scanResults == null
           ? const Center(
-        child: Text(
-          'Scanning...',
-          style: TextStyle(
-            color: Colors.green,
-            fontSize: 30.0,
-          ),
-        ),
-      )
+              child: Text(
+                'Scanning...',
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 30.0,
+                ),
+              ),
+            )
           : _buildResults(_imageSize, _scanResults),
     );
   }
@@ -167,27 +167,27 @@ class _MyHomePageState extends State<_MyHomePage> {
               if (_imageFile != null) _scanImage(_imageFile);
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
-              const PopupMenuItem<Detector>(
-                child: Text('Detect Barcode'),
-                value: Detector.barcode,
-              ),
-              const PopupMenuItem<Detector>(
-                child: Text('Detect Face'),
-                value: Detector.face,
-              ),
-              const PopupMenuItem<Detector>(
-                child: Text('Detect Label'),
-                value: Detector.label,
-              ),
-              const PopupMenuItem<Detector>(
-                child: Text('Detect Cloud Label'),
-                value: Detector.cloudLabel,
-              ),
-              const PopupMenuItem<Detector>(
-                child: Text('Detect Text'),
-                value: Detector.text,
-              ),
-            ],
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Barcode'),
+                    value: Detector.barcode,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Face'),
+                    value: Detector.face,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Label'),
+                    value: Detector.label,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Cloud Label'),
+                    value: Detector.cloudLabel,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Text'),
+                    value: Detector.text,
+                  ),
+                ],
           ),
         ],
       ),

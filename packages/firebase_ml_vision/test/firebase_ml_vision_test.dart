@@ -35,7 +35,7 @@ void main() {
 
     group('$FirebaseVisionImageMetadata', () {
       final TextRecognizer recognizer =
-      FirebaseVision.instance.textRecognizer();
+          FirebaseVision.instance.textRecognizer();
 
       setUp(() {
         returnValue = <dynamic, dynamic>{
@@ -46,7 +46,7 @@ void main() {
 
       test('default serialization', () async {
         final FirebaseVisionImageMetadata metadata =
-        FirebaseVisionImageMetadata(
+            FirebaseVisionImageMetadata(
           rawFormat: 35,
           size: const Size(1.0, 1.0),
           planeData: <FirebaseVisionImagePlaneMetadata>[
@@ -58,7 +58,7 @@ void main() {
           ],
         );
         final FirebaseVisionImage image =
-        FirebaseVisionImage.fromBytes(Uint8List(0), metadata);
+            FirebaseVisionImage.fromBytes(Uint8List(0), metadata);
         await recognizer.processImage(image);
 
         expect(log, <Matcher>[
@@ -475,12 +475,12 @@ void main() {
           // ignore: prefer_const_constructors
           final BarcodeDetectorOptions options = BarcodeDetectorOptions(
             barcodeFormats: BarcodeFormat.code128 |
-            BarcodeFormat.dataMatrix |
-            BarcodeFormat.ean8,
+                BarcodeFormat.dataMatrix |
+                BarcodeFormat.ean8,
           );
 
           final BarcodeDetector detector =
-          FirebaseVision.instance.barcodeDetector(options);
+              FirebaseVision.instance.barcodeDetector(options);
           await detector.detectInImage(image);
 
           expect(
@@ -623,7 +623,7 @@ void main() {
 
     group('$TextRecognizer', () {
       final TextRecognizer recognizer =
-      FirebaseVision.instance.textRecognizer();
+          FirebaseVision.instance.textRecognizer();
       final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
         'empty',
       );

@@ -27,7 +27,7 @@ class FirebaseVision {
 
   @visibleForTesting
   static const MethodChannel channel =
-  MethodChannel('plugins.flutter.io/firebase_ml_vision');
+      MethodChannel('plugins.flutter.io/firebase_ml_vision');
 
   /// Singleton of [FirebaseVision].
   ///
@@ -109,9 +109,9 @@ class FirebaseVisionImage {
   /// On iOS, expects `kCVPixelFormatType_32BGRA` format. However, this should
   /// work with most formats from `kCVPixelFormatType_*`.
   factory FirebaseVisionImage.fromBytes(
-      Uint8List bytes,
-      FirebaseVisionImageMetadata metadata,
-      ) {
+    Uint8List bytes,
+    FirebaseVisionImageMetadata metadata,
+  ) {
     assert(bytes != null);
     assert(metadata != null);
     return FirebaseVisionImage._(
@@ -127,11 +127,11 @@ class FirebaseVisionImage {
   final _ImageType _type;
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
-    'type': _enumToString(_type),
-    'bytes': _bytes,
-    'path': _imageFile?.path,
-    'metadata': _type == _ImageType.bytes ? _metadata._serialize() : null,
-  };
+        'type': _enumToString(_type),
+        'bytes': _bytes,
+        'path': _imageFile?.path,
+        'metadata': _type == _ImageType.bytes ? _metadata._serialize() : null,
+      };
 }
 
 /// Plane attributes to create the image buffer on iOS.
@@ -144,13 +144,13 @@ class FirebaseVisionImagePlaneMetadata {
     @required this.height,
     @required this.width,
   })  : assert(defaultTargetPlatform == TargetPlatform.iOS
-      ? bytesPerRow != null
-      : true),
+            ? bytesPerRow != null
+            : true),
         assert(defaultTargetPlatform == TargetPlatform.iOS
             ? height != null
             : true),
         assert(
-        defaultTargetPlatform == TargetPlatform.iOS ? width != null : true);
+            defaultTargetPlatform == TargetPlatform.iOS ? width != null : true);
 
   /// The row stride for this color plane, in bytes.
   final int bytesPerRow;
@@ -162,10 +162,10 @@ class FirebaseVisionImagePlaneMetadata {
   final int width;
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
-    'bytesPerRow': bytesPerRow,
-    'height': height,
-    'width': width,
-  };
+        'bytesPerRow': bytesPerRow,
+        'height': height,
+        'width': width,
+      };
 }
 
 /// Image metadata used by [FirebaseVision] detectors.
@@ -231,14 +231,14 @@ class FirebaseVisionImageMetadata {
   }
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
-    'width': size.width,
-    'height': size.height,
-    'rotation': _imageRotationToInt(rotation),
-    'rawFormat': rawFormat,
-    'planeData': planeData
-        .map((FirebaseVisionImagePlaneMetadata plane) => plane._serialize())
-        .toList(),
-  };
+        'width': size.width,
+        'height': size.height,
+        'rotation': _imageRotationToInt(rotation),
+        'rawFormat': rawFormat,
+        'planeData': planeData
+            .map((FirebaseVisionImagePlaneMetadata plane) => plane._serialize())
+            .toList(),
+      };
 }
 
 String _enumToString(dynamic enumValue) {
