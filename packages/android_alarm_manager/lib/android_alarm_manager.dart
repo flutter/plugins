@@ -67,7 +67,7 @@ class AndroidAlarmManager {
       return false;
     }
     final dynamic r = await _channel
-        .invokeMethod<dynamic>('AlarmService.start', <dynamic>[handle.toRawHandle()]);
+    return _channel.invokeMethod<bool>('AlarmService.start', <dynamic>[handle.toRawHandle()]);
     return r ?? false;
   }
 
@@ -111,7 +111,7 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    final dynamic r = await _channel.invokeMethod<dynamic>('Alarm.oneShot', <dynamic>[
+   return _channel.invokeMethod<bool>('Alarm.oneShot', <dynamic>[
       id,
       exact,
       wakeup,
@@ -184,7 +184,7 @@ class AndroidAlarmManager {
   /// failure.
   static Future<bool> cancel(int id) async {
     final dynamic r =
-        await _channel.invokeMethod<dynamic>('Alarm.cancel', <dynamic>[id]);
+        final bool r = await _channel.invokeMethod<bool>('Alarm.cancel', <dynamic>[id]);
     return (r == null) ? false : r;
   }
 }
