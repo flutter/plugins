@@ -61,10 +61,7 @@ class Connectivity {
   ///
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
   Future<ConnectivityResult> checkConnectivity() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final String result = await methodChannel.invokeMethod('check');
+    final String result = await methodChannel.invokeMethod<String>('check');
     return _parseConnectivityResult(result);
   }
 
@@ -75,10 +72,7 @@ class Connectivity {
   /// From android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the SSID.
   Future<String> getWifiName() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    String wifiName = await methodChannel.invokeMethod('wifiName');
+    String wifiName = await methodChannel.invokeMethod<String>('wifiName');
     // as Android might return <unknown ssid>, uniforming result
     // our iOS implementation will return null
     if (wifiName == '<unknown ssid>') wifiName = null;
@@ -87,7 +81,7 @@ class Connectivity {
 
   /// Obtains the IP address of the connected wifi network
   Future<String> getWifiIP() async {
-    return await methodChannel.invokeMethod('wifiIPAddress');
+    return await methodChannel.invokeMethod<String>('wifiIPAddress');
   }
 }
 
