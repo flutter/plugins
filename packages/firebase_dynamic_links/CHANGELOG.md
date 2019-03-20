@@ -1,3 +1,8 @@
+## 0.2.0+5
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 0.2.0+4
 
 * Fix crash when receiving `ShortDynamicLink` warnings.

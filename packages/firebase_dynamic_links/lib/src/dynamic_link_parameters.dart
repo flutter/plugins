@@ -66,10 +66,7 @@ class DynamicLinkParameters {
   static Future<ShortDynamicLink> shortenUrl(Uri url,
       [DynamicLinkParametersOptions options]) async {
     final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('DynamicLinkParameters#shortenUrl', <String, dynamic>{
+        .invokeMethod<Map<dynamic, dynamic> >('DynamicLinkParameters#shortenUrl', <String, dynamic>{
       'url': url.toString(),
       'dynamicLinkParametersOptions': options?._data,
     });
@@ -92,20 +89,14 @@ class DynamicLinkParameters {
   /// Generate a long Dynamic Link URL.
   Future<Uri> buildUrl() async {
     final String url = await FirebaseDynamicLinks.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('DynamicLinkParameters#buildUrl', _data);
+        .invokeMethod<String>('DynamicLinkParameters#buildUrl', _data);
     return Uri.parse(url);
   }
 
   /// Generate a short Dynamic Link.
   Future<ShortDynamicLink> buildShortLink() async {
     final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('DynamicLinkParameters#buildShortLink', _data);
+        .invokeMethod<Map<dynamic, dynamic>>('DynamicLinkParameters#buildShortLink', _data);
     return _parseShortLink(reply);
   }
 
