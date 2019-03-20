@@ -67,7 +67,7 @@ class BillingClient {
   /// [`BillingClient#isReady()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#isReady())
   /// to get the ready status of the BillingClient instance.
   Future<bool> isReady() async =>
-      await channel.invokeMethod('BillingClient#isReady()');
+      await channel.invokeMethod<void>('BillingClient#isReady()');
 
   /// Calls
   /// [`BillingClient#startConnection(BillingClientStateListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#startconnection)
@@ -85,7 +85,7 @@ class BillingClient {
     List<Function> disconnectCallbacks =
         _callbacks[_kOnBillingServiceDisconnected] ??= [];
     disconnectCallbacks.add(onBillingServiceDisconnected);
-    return BillingResponseConverter().fromJson(await channel.invokeMethod(
+    return BillingResponseConverter().fromJson(await channel.invokeMethod<int>(
         "BillingClient#startConnection(BillingClientStateListener)",
         <String, dynamic>{'handle': disconnectCallbacks.length - 1}));
   }
@@ -98,7 +98,7 @@ class BillingClient {
   ///
   /// This triggers the destruction of the `BillingClient` instance in Java.
   Future<void> endConnection() async {
-    return channel.invokeMethod("BillingClient#endConnection()", null);
+    return channel.invokeMethod<void>("BillingClient#endConnection()", null);
   }
 
   /// Returns a list of [SkuDetailsWrapper]s that have [SkuDetailsWrapper.sku]
@@ -152,7 +152,7 @@ class BillingClient {
       'sku': skuDetails.sku,
       'accountId': accountId,
     };
-    return BillingResponseConverter().fromJson(await channel.invokeMethod(
+    return BillingResponseConverter().fromJson(await channel.invokeMethod<int>(
         'BillingClient#launchBillingFlow(Activity, BillingFlowParams)',
         arguments));
   }

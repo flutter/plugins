@@ -16,6 +16,6 @@ class SKReceiptManager {
   /// If the receipt is invalid or missing, you can use [SKRequestMaker.startRefreshReceiptRequest] to request a new receipt.
   static Future<String> retrieveReceiptData() {
     return channel
-        .invokeMethod('-[InAppPurchasePlugin retrieveReceiptData:result:]');
+        .invokeMethod<String>('-[InAppPurchasePlugin retrieveReceiptData:result:]');
   }
 }

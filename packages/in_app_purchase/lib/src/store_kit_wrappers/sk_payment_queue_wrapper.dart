@@ -35,7 +35,7 @@ class SKPaymentQueueWrapper {
 
   /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
   static Future<bool> canMakePayments() async =>
-      await channel.invokeMethod('-[SKPaymentQueue canMakePayments:]');
+      await channel.invokeMethod<bool>('-[SKPaymentQueue canMakePayments:]');
 
   /// Sets a transaction observer to listen to all the transaction events of the payment queue.
   ///
@@ -61,7 +61,7 @@ class SKPaymentQueueWrapper {
     assert(_observer != null,
         '[in_app_purchase]: Trying to add a payment without an observer. Observer must be set using `setTransactionObserver` before adding a payment `setTransactionObserver`. It is mandatory to set the observer at the moment when app launches.');
     Map requestMap = payment.toMap();
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
       '-[InAppPurchasePlugin addPayment:result:]',
       requestMap,
     );
@@ -75,7 +75,7 @@ class SKPaymentQueueWrapper {
   /// This method calls StoreKit's [`-[SKPaymentQueue finishTransaction:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506003-finishtransaction?language=objc).
   Future<void> finishTransaction(
       SKPaymentTransactionWrapper transaction) async {
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
         '-[InAppPurchasePlugin finishTransaction:result:]',
         transaction.transactionIdentifier);
   }
@@ -91,7 +91,7 @@ class SKPaymentQueueWrapper {
   /// This method either triggers [`-[SKPayment restoreCompletedTransactions]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506123-restorecompletedtransactions?language=objc) or [`-[SKPayment restoreCompletedTransactionsWithApplicationUsername:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1505992-restorecompletedtransactionswith?language=objc)
   /// depends on weather the `applicationUserName` is passed.
   Future<void> restoreTransactions({String applicationUserName}) async {
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
         '-[InAppPurchasePlugin restoreTransactions:result:]',
         applicationUserName);
   }
