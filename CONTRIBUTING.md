@@ -58,8 +58,6 @@ cd example
 flutter drive test/<name_of_plugin>.dart
 ```
 
-These tests are run automatically on contributions using Cirrus. However, due to cost constraints, pull requests from external contributors may not run the integration tests automatically.
-
 Contributing code
 -----------------
 
@@ -94,19 +92,16 @@ To send us a pull request:
 
 Please make sure all your checkins have detailed commit messages explaining the patch.
 
-Once you've gotten an LGTM from a project maintainer and once your PR has received
-the green light from all our automated testing (Travis, AppVeyor, etc), submit your
-changes to the `master` branch using one of the following methods:
+Plugins tests are run automatically on contributions using Cirrus CI. However, due to
+cost constraints, pull requests from non-committers may not run all the tests
+automatically.
 
-* Wait for one of the project maintainers to submit it for you.
-* Click the green "Merge pull request" button on the GitHub UI of your pull
-  request (requires commit access).
+Once you've gotten an LGTM from a project maintainer and once your PR has received
+the green light from all our automated testing, wait for one the package maintainers
+to merge the pull request and `pub submit` any affected packages.
 
 You must complete the
 [Contributor License Agreement](https://cla.developers.google.com/clas).
 You can do this online, and it only takes a minute.
 If you've never submitted code before, you must add your (or your
 organization's) name and contact info to the [AUTHORS](AUTHORS) file.
-
-We grant commit access to people who have gained our trust and demonstrated
-a commitment to Flutter.
