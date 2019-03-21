@@ -11,7 +11,7 @@
 Before you create this PR confirm that it meets all requirements listed below by checking the relevant checkboxes (`[x]`). This will ensure a smooth and quick review process.
 
 - [ ] I read the [Contributor Guide] and followed the process outlined there for submitting PRs.
-- [ ] My PR includes unit or integration tests for *all* changed/updated/fixed behaviors (See [Contribution Guide]).
+- [ ] My PR includes unit or integration tests for *all* changed/updated/fixed behaviors (See [Contributor Guide]).
 - [ ] All existing and new tests are passing.
 - [ ] I updated/added relevant documentation (doc comments with `///`).
 - [ ] The analyzer (`flutter analyze`) does not report any problems on my PR.
