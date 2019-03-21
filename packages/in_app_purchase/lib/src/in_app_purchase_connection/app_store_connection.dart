@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
@@ -91,9 +90,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     transactions.forEach((SKPaymentTransactionWrapper wrapper) {
       print('xyzzy transactionState is ${wrapper.transactionState}');
       if (wrapper.transactionState == SKPaymentTransactionStateWrapper.restored) {
-        _restoredTransactions.add(wrapper.originalTransaction);
-      } else {
-        _updatedTransactions.add(wrapper);
+        _restoredTransactions.add(wrapper);
       }
     });
   }

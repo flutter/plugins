@@ -66,4 +66,28 @@ void main() {
       );
     });
   });
+
+  group('query purchases list', () {
+    test('should get purchase list', () async {
+      stubPlatform.addResponse(
+          name: '-[InAppPurchasePlugin restoreTransactions:result:]',
+          value: buildProductResponseMap(dummyProductResponseWrapper));
+      final AppStoreConnection connection = AppStoreConnection();
+      final ProductDetailsResponse response =
+          await connection.queryProductDetails(<String>['id'].toSet());
+      List<ProductDetails> products = response.productDetails;
+      expect(
+        products,
+        isNotEmpty,
+      );
+      expect(
+        products.first.title,
+        'title',
+      );
+      expect(
+        products.first.title,
+        isNot('splash coins'),
+      );
+    });
+  });
 }

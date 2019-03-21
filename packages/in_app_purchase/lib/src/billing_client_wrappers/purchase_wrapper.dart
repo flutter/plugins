@@ -5,6 +5,7 @@
 import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/in_app_purchase_connection.dart';
 import 'enum_converters.dart';
 import 'billing_client_wrapper.dart';
 
@@ -89,6 +90,18 @@ class PurchaseWrapper {
   /// Note though that verifying a purchase locally is inherently insecure (see
   /// the article for more details).
   final String originalJson;
+
+  /// Generate a [PurchaseDetails] object based on the transaction.
+  ///
+  /// [PurchaseDetails] is Used to represent a purchase detail for unified iOS and Android API.
+  PurchaseDetails toPurchaseDetails() {
+    return PurchaseDetails(
+      purchaseID: orderId,
+      productId: sku,
+      verificationData: PurchaseVerificationData(data: originalJson, source: PurchaseSource.GooglePlay),
+      transactionDate: purchaseTime.toString(),
+    );
+  }
 }
 
 /// A data struct representing the result of a transaction.

@@ -106,14 +106,21 @@ class SKPaymentTransactionWrapper {
     return _$SKPaymentTransactionWrapperFromJson(map);
   }
 
+  /// Generate a [PurchaseDetails] object based on the transaction.
+  ///
+  /// [PurchaseDetails] is Used to represent a purchase detail for unified iOS and Android API.
   PurchaseDetails toPurchaseDetails(String base64EncodedReceipt) {
     return PurchaseDetails(
+      purchaseID: transactionIdentifier,
       productId: payment.productIdentifier,
-      verificationData: PurchaseVerificationData(data: base64EncodedReceipt, source: PurchaseSource.AppStore),
-      transactionDate: transactionTimeStamp.toString(),
+      verificationData: (base64EncodedReceipt != null)
+          ? PurchaseVerificationData(
+              data: base64EncodedReceipt, source: PurchaseSource.AppStore)
+          : null,
+      transactionDate: (transactionTimeStamp * 1000).toInt().toString(),
+      originalPurchase: originalTransaction != null ? originalTransaction.toPurchaseDetails(null) : null,
     );
   }
-
 
   /// Current transaction state.
   @SKTransactionStatusConverter()
@@ -130,7 +137,7 @@ class SKPaymentTransactionWrapper {
 
   /// The timestamp of the transaction.
   ///
-  /// Milliseconds since epoch.
+  /// Seconds since epoch.
   /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased] or [SKPaymentTransactionStateWrapper.restored].
   final double transactionTimeStamp;
 
