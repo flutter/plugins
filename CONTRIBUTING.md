@@ -1,5 +1,5 @@
-Contributing to Flutter
-=======================
+Contributing to Flutter Plugins
+===============================
 
 [![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/master)
 
@@ -39,6 +39,26 @@ USB and debugging enabled on that device.
 
  * `cd packages/battery/example`
  * `flutter run`
+
+Running the tests
+-----------------
+
+Flutter plugins have both unit tests of their Dart API and integration tests that run on a virtual or actual device.
+
+To run the unit tests:
+
+```
+flutter test test/<name_of_plugin>_test.dart
+```
+
+To run the integration tests:
+
+```
+cd example
+flutter drive test/<name_of_plugin>.dart
+```
+
+These tests are run automatically on contributions using Cirrus. However, due to cost constraints, pull requests from external contributors may not run the integration tests automatically.
 
 Contributing code
 -----------------
