@@ -1,3 +1,7 @@
+## 0.5.0+10
+
+* Bugfix iOS: Cancel button not visible in gallery, if camera was accessed first
+
 ## 0.5.0+9
 
 * Remove unnecessary temp video file path.
