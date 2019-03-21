@@ -15,9 +15,10 @@ Before you create this PR confirm that it meets all requirements listed below by
 - [ ] All existing and new tests are passing.
 - [ ] I updated/added relevant documentation (doc comments with `///`).
 - [ ] The analyzer (`flutter analyze`) does not report any problems on my PR.
-- [ ] I read and followed the [Flutter Style Guide], including [Features we expect every widget to implement].
-- [ ] I updated pubspec.yaml with an updated version
-- [ ] I updated CHANGELOG.md with a description of the change.
+- [ ] I read and followed the [Flutter Style Guide].
+- [ ] The title of the PR starts with the name of the plugin surrounded by square brackets, e.g. [shared_preferences]
+- [ ] I updated pubspec.yaml with an appropriate new version according to the [pub versioning philosophy].
+- [ ] I updated CHANGELOG.md to add a description of the change.
 - [ ] I signed the [CLA].
 - [ ] I am willing to follow-up on review comments in a timely manner.
 
@@ -31,7 +32,6 @@ Does your PR require plugin user to manually update their apps to accommodate yo
 <!-- Links -->
 [issue database]: https://github.com/flutter/flutter/issues
 [Contributor Guide]: https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md
-[Test Coverage]: https://github.com/flutter/flutter/wiki/Test-coverage-for-package%3Aflutter
 [Flutter Style Guide]: https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo
 [pub versioning philosophy]: https://www.dartlang.org/tools/pub/versioning
 [CLA]: https://cla.developers.google.com/
