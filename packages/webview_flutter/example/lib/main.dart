@@ -45,6 +45,7 @@ class WebViewExample extends StatelessWidget {
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
+
           headers: <String, String>{
             "Authorization":
                 "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpbnNfaWQiOiIyODM5ODAiLCJleHAiOjE1ODMyMjM0NjR9.9maHo7RDJkZOtiTnEhYkrIoKRNCXF0epr5VIIwvABwWgw8h-AucNHmZ3IdAS0uE_nao71883uaYitKxVv7rsnw"
@@ -66,6 +67,9 @@ class WebViewExample extends StatelessWidget {
             }
             print('allowing navigation to $request');
             return NavigationDecision.navigate;
+          },
+          onPageFinished: (String url) {
+            print('Page finished loading: $url');
           },
         );
       }),

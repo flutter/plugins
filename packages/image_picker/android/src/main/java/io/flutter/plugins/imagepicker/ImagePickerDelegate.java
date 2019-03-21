@@ -429,6 +429,11 @@ public class ImagePickerDelegate
 
       String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
       finishWithSuccess(finalImagePath);
+
+      //delete original file if scaled
+      if (!finalImagePath.equals(path)) {
+        new File(path).delete();
+      }
     } else {
       throw new IllegalStateException("Received image from picker that was not requested");
     }

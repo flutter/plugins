@@ -136,19 +136,7 @@ static const int SOURCE_GALLERY = 1;
     return;
   }
   if (videoURL != nil) {
-    NSData *data = [NSData dataWithContentsOfURL:videoURL];
-    NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
-    NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.MOV", guid];
-    NSString *tmpDirectory = NSTemporaryDirectory();
-    NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-
-    if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-      _result(tmpPath);
-    } else {
-      _result([FlutterError errorWithCode:@"create_error"
-                                  message:@"Temporary file could not be created"
-                                  details:nil]);
-    }
+    _result(videoURL.description);
   } else {
     if (image == nil) {
       image = [info objectForKey:UIImagePickerControllerOriginalImage];
