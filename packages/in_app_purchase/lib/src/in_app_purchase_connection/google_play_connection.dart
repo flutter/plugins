@@ -35,7 +35,17 @@ class GooglePlayConnection
   }
 
   @override
-  Future<List<PurchaseDetails>> queryPastPurchases() => throw UnimplementedError;
+  Future<List<PurchaseDetails>> queryPastPurchases() async {
+    List<PurchasesResultWrapper> responses = await Future.wait([
+      _billingClient.queryPurchaseHistory(SkuType.inapp),
+      _billingClient.queryPurchaseHistory(SkuType.subs)
+    ]);
+    return responses.expand((PurchasesResultWrapper response) {
+      return response.purchasesList;
+    }).map((PurchaseWrapper purchaseWrapper) {
+      return purchaseWrapper.toPurchaseDetails();
+    }).toList();
+  }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {

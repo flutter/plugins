@@ -76,6 +76,7 @@ abstract class InAppPurchaseConnection {
   /// Query product details list that match the given set of identifiers.
   Future<ProductDetailsResponse> queryProductDetails(Set<String> identifiers);
 
+  /// Query all the past purchases.
   Future<List<PurchaseDetails>> queryPastPurchases();
 
   /// The [InAppPurchaseConnection] implemented for this platform.

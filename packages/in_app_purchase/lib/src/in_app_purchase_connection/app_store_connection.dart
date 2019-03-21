@@ -76,10 +76,6 @@ class AppStoreConnection implements InAppPurchaseConnection {
 }
 
 class _TransactionObserver implements SKTransactionObserverWrapper {
-  StreamController<SKPaymentTransactionWrapper> _updatedTransactions =
-      StreamController.broadcast();
-  Stream<SKPaymentTransactionWrapper> get updatedTransactionsStream =>
-      _updatedTransactions.stream;
   StreamController<SKPaymentTransactionWrapper> _restoredTransactions =
       StreamController.broadcast();
   Stream<SKPaymentTransactionWrapper> get restoredTransactionsStream =>
