@@ -35,6 +35,9 @@ class GooglePlayConnection
   }
 
   @override
+  Future<List<PurchaseDetails>> queryPastPurchases() => throw UnimplementedError;
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.paused:

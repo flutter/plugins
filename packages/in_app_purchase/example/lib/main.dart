@@ -99,15 +99,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Card> _buildProductList() async {
-    final bool available = await InAppPurchaseConnection.instance.isAvailable();
+    InAppPurchaseConnection connection = InAppPurchaseConnection.instance;
+    final bool available = await connection.isAvailable();
     if (!available) {
       return Card();
     }
     final ListTile productHeader = ListTile(
         title: Text('Products for Sale',
             style: Theme.of(context).textTheme.headline));
-    ProductDetailsResponse response = await InAppPurchaseConnection.instance
-        .queryProductDetails(_kProductIds.toSet());
+    ProductDetailsResponse response =
+        await connection.queryProductDetails(_kProductIds.toSet());
     List<ListTile> productList = <ListTile>[];
     if (!response.notFoundIDs.isEmpty) {
       productList.add(ListTile(
@@ -117,8 +118,16 @@ class _MyAppState extends State<MyApp> {
               'This app needs special configuration to run. Please see example/README.md for instructions.')));
     }
 
+    print('xyzzy about to query past purchases');
+    Map<String, PurchaseDetails> purchases = Map.fromEntries(
+        (await connection.queryPastPurchases()).map(
+            (PurchaseDetails purchase) =>
+                MapEntry<String, PurchaseDetails>(purchase.productId, purchase)));
+    print('xyzzy list is ${purchases.length} long');
+
     productList.addAll(response.productDetails.map(
       (ProductDetails productDetails) {
+        PurchaseDetails previousPurchase = purchases[productDetails.id];
         return ListTile(
           title: Text(
             productDetails.title,
@@ -126,7 +135,7 @@ class _MyAppState extends State<MyApp> {
           subtitle: Text(
             productDetails.description,
           ),
-          trailing: Text(productDetails.price),
+          trailing: previousPurchase != null ? Text(':)') : Text(productDetails.price),
         );
       },
     ));

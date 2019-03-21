@@ -8,14 +8,13 @@ part of 'enum_converters.dart';
 
 _SerializedEnums _$_SerializedEnumsFromJson(Map json) {
   return _SerializedEnums()
-    ..response = _$enumDecode(_$BillingResponseEnumMap, json['response'])
-    ..type = _$enumDecode(_$SkuTypeEnumMap, json['type']);
+    ..response = _$enumDecode(
+        _$SKPaymentTransactionStateWrapperEnumMap, json['response']);
 }
 
 Map<String, dynamic> _$_SerializedEnumsToJson(_SerializedEnums instance) =>
     <String, dynamic>{
-      'response': _$BillingResponseEnumMap[instance.response],
-      'type': _$SkuTypeEnumMap[instance.type]
+      'response': _$SKPaymentTransactionStateWrapperEnumMap[instance.response]
     };
 
 T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
@@ -31,21 +30,11 @@ T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
       .key;
 }
 
-const _$BillingResponseEnumMap = <BillingResponse, dynamic>{
-  BillingResponse.featureNotSupported: -2,
-  BillingResponse.serviceDisconnected: -1,
-  BillingResponse.ok: 0,
-  BillingResponse.userCanceled: 1,
-  BillingResponse.serviceUnavailable: 2,
-  BillingResponse.billingUnavailable: 3,
-  BillingResponse.itemUnavailable: 4,
-  BillingResponse.developerError: 5,
-  BillingResponse.error: 6,
-  BillingResponse.itemAlreadyOwned: 7,
-  BillingResponse.itemNotOwned: 8
-};
-
-const _$SkuTypeEnumMap = <SkuType, dynamic>{
-  SkuType.inapp: 'inapp',
-  SkuType.subs: 'subs'
+const _$SKPaymentTransactionStateWrapperEnumMap =
+    <SKPaymentTransactionStateWrapper, dynamic>{
+  SKPaymentTransactionStateWrapper.purchasing: 0,
+  SKPaymentTransactionStateWrapper.purchased: 1,
+  SKPaymentTransactionStateWrapper.failed: 2,
+  SKPaymentTransactionStateWrapper.restored: 3,
+  SKPaymentTransactionStateWrapper.deferred: 4
 };

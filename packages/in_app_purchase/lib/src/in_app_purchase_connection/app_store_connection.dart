@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
@@ -15,9 +16,31 @@ import 'package:in_app_purchase/store_kit_wrappers.dart';
 class AppStoreConnection implements InAppPurchaseConnection {
   static AppStoreConnection get instance => _getOrCreateInstance();
   static AppStoreConnection _instance;
+  static SKPaymentQueueWrapper _skPaymentQueueWrapper;
+  static _TransactionObserver _observer;
 
   @override
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
+
+  @override
+  Future<List<PurchaseDetails>> queryPastPurchases() async {
+    _skPaymentQueueWrapper.restoreTransactions();
+    try {
+      final List<SKPaymentTransactionWrapper> restoredTransactions =
+          await _observer.restoredTransactionsStream.toList();
+      final String receiptData = await SKReceiptManager.retrieveReceiptData();
+      return restoredTransactions
+          .where((SKPaymentTransactionWrapper wrapper) =>
+              wrapper.transactionState ==
+              SKPaymentTransactionStateWrapper.purchased)
+          .map((SKPaymentTransactionWrapper wrapper) =>
+              wrapper.toPurchaseDetails(receiptData))
+          .toList();
+    } catch (e) {
+      print('failed to get list $e');
+      return <PurchaseDetails>[];
+    }
+  }
 
   static AppStoreConnection _getOrCreateInstance() {
     if (_instance != null) {
@@ -25,6 +48,9 @@ class AppStoreConnection implements InAppPurchaseConnection {
     }
 
     _instance = AppStoreConnection();
+    _skPaymentQueueWrapper = SKPaymentQueueWrapper();
+    _observer = new _TransactionObserver();
+    _skPaymentQueueWrapper.setTransactionObserver(_observer);
     return _instance;
   }
 
@@ -48,4 +74,59 @@ class AppStoreConnection implements InAppPurchaseConnection {
     );
     return productDetailsResponse;
   }
+}
+
+class _TransactionObserver implements SKTransactionObserverWrapper {
+  StreamController<SKPaymentTransactionWrapper> _updatedTransactions =
+      StreamController.broadcast();
+  Stream<SKPaymentTransactionWrapper> get updatedTransactionsStream =>
+      _updatedTransactions.stream;
+  StreamController<SKPaymentTransactionWrapper> _restoredTransactions =
+      StreamController.broadcast();
+  Stream<SKPaymentTransactionWrapper> get restoredTransactionsStream =>
+      _restoredTransactions.stream;
+
+  /// Triggered when any transactions are updated.
+  void updatedTransactions({List<SKPaymentTransactionWrapper> transactions}) {
+    transactions.forEach((SKPaymentTransactionWrapper wrapper) {
+      print('xyzzy transactionState is ${wrapper.transactionState}');
+      if (wrapper.transactionState == SKPaymentTransactionStateWrapper.restored) {
+        _restoredTransactions.add(wrapper.originalTransaction);
+      } else {
+        _updatedTransactions.add(wrapper);
+      }
+    });
+  }
+
+  /// Triggered when any transactions are removed from the payment queue.
+  void removedTransactions({List<SKPaymentTransactionWrapper> transactions}) {
+    print('xyzzy removedTransactions: $transactions');
+  }
+
+  /// Triggered when there is an error while restoring transactions.
+  void restoreCompletedTransactions({Error error}) {
+    print('xyzzy restoreCompletedTransactions $error');
+    _restoredTransactions.addError(error);
+  }
+
+  /// Triggered when payment queue has finished sending restored transactions.
+  void paymentQueueRestoreCompletedTransactionsFinished() {
+    print('xyzzy paymentQueueRestoreCompletedTransactionsFinished');
+    _restoredTransactions.close();
+  }
+
+  /// Triggered when any download objects are updated.
+  void updatedDownloads({List<SKDownloadWrapper> downloads}) {
+    print('xyzzy updatedDownloads $downloads');
+  }
+
+  /// Triggered when a user initiated an in-app purchase from App Store.
+  ///
+  /// Return `true` to continue the transaction in your app. If you have multiple [SKTransactionObserverWrapper]s, the transaction
+  /// will continue if one [SKTransactionObserverWrapper] has [shouldAddStorePayment] returning `true`.
+  /// Return `false` to defer or cancel the transaction. For example, you may need to defer a transaction if the user is in the middle of onboarding.
+  /// You can also continue the transaction later by calling
+  /// [addPayment] with the [SKPaymentWrapper] object you get from this method.
+  bool shouldAddStorePayment(
+      {SKPaymentWrapper payment, SKProductWrapper product}) {}
 }
