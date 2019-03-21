@@ -104,7 +104,9 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   }
 
   /// Triggered when there is an error while restoring transactions.
-  void restoreCompletedTransactions({Error error}) {
+  ///
+  /// The error is represented in a Map. The map contains `errorCode` and `message`
+  void restoreCompletedTransactions({Map<String, String> error}) {
     print('xyzzy restoreCompletedTransactions $error');
     _restoredTransactions.addError(error);
   }

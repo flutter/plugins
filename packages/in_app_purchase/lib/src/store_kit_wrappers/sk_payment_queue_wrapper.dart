@@ -121,9 +121,9 @@ class SKPaymentQueueWrapper {
         }
       case 'restoreCompletedTransactions':
         {
-          final Error error = call.arguments;
+          final Map<String, String> error = call.arguments;
           return Future<void>(() {
-            _observer.restoreCompletedTransactions(error: error);
+            _observer.restoreCompletedTransactions({error: error});
           });
         }
       case 'paymentQueueRestoreCompletedTransactionsFinished':

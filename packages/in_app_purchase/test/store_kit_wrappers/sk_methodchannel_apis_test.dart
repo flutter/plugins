@@ -173,7 +173,7 @@ class TestPaymentTransactionObserver extends SKTransactionObserverWrapper {
 
   void removedTransactions({List<SKPaymentTransactionWrapper> transactions}) {}
 
-  void restoreCompletedTransactions({Error error}) {}
+  void restoreCompletedTransactions({Map<String, String> error}) {}
 
   void paymentQueueRestoreCompletedTransactionsFinished() {}
 
