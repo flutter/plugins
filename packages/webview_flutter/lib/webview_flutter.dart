@@ -213,8 +213,6 @@ class _WebViewState extends State<WebView> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
 
-  _WebSettings _settings;
-
   @override
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -263,26 +261,12 @@ class _WebViewState extends State<WebView> {
   void didUpdateWidget(WebView oldWidget) {
     super.didUpdateWidget(oldWidget);
     _assertJavascriptChannelNamesAreUnique();
-    _updateConfiguration(_WebSettings.fromWidget(widget));
-  }
-
-  Future<void> _updateConfiguration(_WebSettings settings) async {
-    _settings = settings;
-    final WebViewController controller = await _controller.future;
-    controller._updateSettings(settings);
-    controller._updateJavascriptChannels(widget.javascriptChannels);
-    controller._navigationDelegate = widget.navigationDelegate;
-    controller._onPageFinished = widget.onPageFinished;
+    _controller.future.then(
+        (WebViewController controller) => controller._updateWidget(widget));
   }
 
   void _onPlatformViewCreated(int id) {
-    final WebViewController controller = WebViewController._(
-      id,
-      _WebSettings.fromWidget(widget),
-      widget.javascriptChannels,
-      widget.navigationDelegate,
-      widget.onPageFinished,
-    );
+    final WebViewController controller = WebViewController._(id, widget);
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
@@ -378,22 +362,18 @@ class _WebSettings {
 class WebViewController {
   WebViewController._(
     int id,
-    this._settings,
-    Set<JavascriptChannel> javascriptChannels,
-    this._navigationDelegate,
-    this._onPageFinished,
+    this._widget,
   ) : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
-    _updateJavascriptChannelsFromSet(javascriptChannels);
+    _settings = _WebSettings.fromWidget(_widget);
+    _updateJavascriptChannelsFromSet(_widget.javascriptChannels);
     _channel.setMethodCallHandler(_onMethodCall);
   }
 
   final MethodChannel _channel;
 
-  NavigationDelegate _navigationDelegate;
-
   _WebSettings _settings;
 
-  PageFinishedCallback _onPageFinished;
+  WebView _widget;
 
   // Maps a channel name to a channel.
   Map<String, JavascriptChannel> _javascriptChannels =
@@ -415,12 +395,12 @@ class WebViewController {
         // _navigationDelegate can be null if the widget was rebuilt with no
         // navigation delegate after a navigation happened and just before we
         // got the navigationRequest message.
-        final bool allowNavigation = _navigationDelegate == null ||
-            _navigationDelegate(request) == NavigationDecision.navigate;
+        final bool allowNavigation = _widget.navigationDelegate == null ||
+            _widget.navigationDelegate(request) == NavigationDecision.navigate;
         return allowNavigation;
       case 'onPageFinished':
-        if (_onPageFinished != null) {
-          _onPageFinished(call.arguments['url']);
+        if (_widget.onPageFinished != null) {
+          _widget.onPageFinished(call.arguments['url']);
         }
 
         return null;
@@ -526,6 +506,12 @@ class WebViewController {
     // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod("clearCache");
     return reload();
+  }
+
+  Future<void> _updateWidget(WebView widget) async {
+    _widget = widget;
+    await _updateSettings(_WebSettings.fromWidget(widget));
+    await _updateJavascriptChannels(widget.javascriptChannels);
   }
 
   Future<void> _updateSettings(_WebSettings setting) async {
