@@ -29,10 +29,6 @@ class FlutterWebViewClient {
     this.methodChannel = methodChannel;
   }
 
-  void setHasNavigationDelegate(boolean hasNavigationDelegate) {
-    this.hasNavigationDelegate = hasNavigationDelegate;
-  }
-
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
     if (!hasNavigationDelegate) {
@@ -91,7 +87,9 @@ class FlutterWebViewClient {
 
   // This method attempts to avoid using WebViewClientCompat due to bug
   // https://bugs.chromium.org/p/chromium/issues/detail?id=925887
-  WebViewClient createWebViewClient() {
+  WebViewClient createWebViewClient(boolean hasNavigationDelegate) {
+    this.hasNavigationDelegate = hasNavigationDelegate;
+
     if (!hasNavigationDelegate || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       return internalCreateWebViewClient();
     }
