@@ -222,6 +222,16 @@ public class CameraPlugin implements MethodCallHandler {
           camera.stopVideoRecording(result);
           break;
         }
+      case "pauseVideoRecording":
+        {
+          camera.pauseVideoRecording(result);
+          break;
+        }
+      case "resumeVideoRecording":
+        {
+          camera.resumeVideoRecording(result);
+          break;
+        }
       case "startImageStream":
         {
           try {
@@ -718,6 +728,34 @@ public class CameraPlugin implements MethodCallHandler {
         startPreview();
         result.success(null);
       } catch (CameraAccessException | IllegalStateException e) {
+        result.error("videoRecordingFailed", e.getMessage(), null);
+      }
+    }
+
+    private void pauseVideoRecording(@NonNull final Result result) {
+      if (!recordingVideo) {
+        result.success(null);
+        return;
+      }
+
+      try {
+        mediaRecorder.pause();
+        result.success(null);
+      } catch (IllegalStateException e) {
+        result.error("videoRecordingFailed", e.getMessage(), null);
+      }
+    }
+
+    private void resumeVideoRecording(@NonNull final Result result) {
+      if (!recordingVideo) {
+        result.success(null);
+        return;
+      }
+
+      try {
+        mediaRecorder.resume();
+        result.success(null);
+      } catch (IllegalStateException e) {
         result.error("videoRecordingFailed", e.getMessage(), null);
       }
     }
