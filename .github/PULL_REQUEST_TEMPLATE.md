@@ -24,7 +24,7 @@ Before you create this PR confirm that it meets all requirements listed below by
 
 ## Breaking Change
 
-Does your PR require plugin user to manually update their apps to accommodate your change?
+Does your PR require plugin users to manually update their apps to accommodate your change?
 
 - [ ] Yes, this is a breaking change (please indicate a breaking change in CHANGELOG.md and increment major revision).
 - [ ] No, this is *not* a breaking change.
