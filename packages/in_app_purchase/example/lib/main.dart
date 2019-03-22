@@ -99,15 +99,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Card> _buildProductList() async {
-    final bool available = await InAppPurchaseConnection.instance.isAvailable();
+    InAppPurchaseConnection connection = InAppPurchaseConnection.instance;
+    final bool available = await connection.isAvailable();
     if (!available) {
       return Card();
     }
     final ListTile productHeader = ListTile(
         title: Text('Products for Sale',
             style: Theme.of(context).textTheme.headline));
-    ProductDetailsResponse response = await InAppPurchaseConnection.instance
-        .queryProductDetails(_kProductIds.toSet());
+    ProductDetailsResponse response =
+        await connection.queryProductDetails(_kProductIds.toSet());
     List<ListTile> productList = <ListTile>[];
     if (!response.notFoundIDs.isEmpty) {
       productList.add(ListTile(
@@ -116,20 +117,6 @@ class _MyAppState extends State<MyApp> {
           subtitle: Text(
               'This app needs special configuration to run. Please see example/README.md for instructions.')));
     }
-
-    productList.addAll(response.productDetails.map(
-      (ProductDetails productDetails) {
-        return ListTile(
-          title: Text(
-            productDetails.title,
-          ),
-          subtitle: Text(
-            productDetails.description,
-          ),
-          trailing: Text(productDetails.price),
-        );
-      },
-    ));
 
     return Card(
         child:
