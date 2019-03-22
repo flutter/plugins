@@ -105,10 +105,13 @@ class WebView extends StatefulWidget {
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
 
+  /// basic auth username
   final String username;
 
+  /// basic auth password
   final String password;
 
+  /// custom useragent to set for webview
   final String userAgent;
 
   /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
