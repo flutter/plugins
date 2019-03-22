@@ -76,7 +76,12 @@ abstract class InAppPurchaseConnection {
   Future<ProductDetailsResponse> queryProductDetails(Set<String> identifiers);
 
   /// Query all the past purchases.
-  Future<List<PurchaseDetails>> queryPastPurchases();
+  ///
+  /// The `applicationUserName` is used for iOS only and it is optional. It does not have any effects on Android.
+  /// It is the `applicationUsername` you used to create payments.
+  /// If you did not use a `applicationUserName` when creating payments, you can ignore this parameter.
+  Future<List<PurchaseDetails>> queryPastPurchases(
+      {String applicationUserName});
 
   /// The [InAppPurchaseConnection] implemented for this platform.
   ///

@@ -4,6 +4,8 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
@@ -36,13 +38,15 @@ class AppStoreConnection implements InAppPurchaseConnection {
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
 
   @override
-  Future<List<PurchaseDetails>> queryPastPurchases() async {
-    _skPaymentQueueWrapper.restoreTransactions();
+  Future<List<PurchaseDetails>> queryPastPurchases(
+      {String applicationUserName}) async {
     try {
       final List<SKPaymentTransactionWrapper> restoredTransactions =
-          await _observer.restoredTransactionsStream.toList();
+          await _observer.getRestoredTransactions(
+              queue: _skPaymentQueueWrapper,
+              applicationUserName: applicationUserName);
       final String receiptData = await SKReceiptManager.retrieveReceiptData();
-      print(restoredTransactions);
+      _observer.cleanUpRestoredTransactions();
       return restoredTransactions
           .where((SKPaymentTransactionWrapper wrapper) =>
               wrapper.transactionState ==
@@ -79,20 +83,31 @@ class AppStoreConnection implements InAppPurchaseConnection {
 }
 
 class _TransactionObserver implements SKTransactionObserverWrapper {
-  StreamController<SKPaymentTransactionWrapper> _restoredTransactions =
-      StreamController.broadcast();
-  Stream<SKPaymentTransactionWrapper> get restoredTransactionsStream =>
-      _restoredTransactions.stream;
+  Completer<List<SKPaymentTransactionWrapper>> _restoreCompleter;
+  List<SKPaymentTransactionWrapper> _restoredTransactions;
+
+  Future<List<SKPaymentTransactionWrapper>> getRestoredTransactions(
+      {@required SKPaymentQueueWrapper queue, String applicationUserName}) {
+    assert(queue != null);
+    _restoreCompleter = Completer();
+    queue.restoreTransactions(applicationUserName: applicationUserName);
+    return _restoreCompleter.future;
+  }
+
+  void cleanUpRestoredTransactions() {
+    _restoredTransactions = null;
+    _restoreCompleter = null;
+  }
 
   /// Triggered when any transactions are updated.
   void updatedTransactions({List<SKPaymentTransactionWrapper> transactions}) {
-    transactions.forEach((SKPaymentTransactionWrapper wrapper) {
-      if (wrapper.transactionState ==
-          SKPaymentTransactionStateWrapper.restored) {
-        _restoredTransactions.add(wrapper);
-        print('added');
-      }
-    });
+    if (_restoreCompleter != null) {
+      _restoredTransactions =
+          transactions.where((SKPaymentTransactionWrapper wrapper) {
+        return wrapper.transactionState ==
+            SKPaymentTransactionStateWrapper.restored;
+      }).toList();
+    }
   }
 
   /// Triggered when any transactions are removed from the payment queue.
@@ -102,13 +117,12 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   ///
   /// The error is represented in a Map. The map contains `errorCode` and `message`
   void restoreCompletedTransactions({Map<String, String> error}) {
-    _restoredTransactions.addError(error);
+    _restoreCompleter.completeError(error);
   }
 
   /// Triggered when payment queue has finished sending restored transactions.
   void paymentQueueRestoreCompletedTransactionsFinished() {
-    _restoredTransactions.close();
-    print('closed');
+    _restoreCompleter.complete(_restoredTransactions);
   }
 
   /// Triggered when any download objects are updated.

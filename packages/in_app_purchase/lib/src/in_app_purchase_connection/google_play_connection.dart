@@ -35,7 +35,8 @@ class GooglePlayConnection
   }
 
   @override
-  Future<List<PurchaseDetails>> queryPastPurchases() async {
+  Future<List<PurchaseDetails>> queryPastPurchases(
+      {String applicationUserName}) async {
     List<PurchasesResultWrapper> responses = await Future.wait([
       _billingClient.queryPurchaseHistory(SkuType.inapp),
       _billingClient.queryPurchaseHistory(SkuType.subs)
