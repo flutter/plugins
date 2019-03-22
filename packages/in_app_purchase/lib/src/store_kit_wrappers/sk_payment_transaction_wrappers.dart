@@ -8,8 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'sk_product_wrapper.dart';
 import 'sk_download_wrapper.dart';
 import 'sk_payment_queue_wrapper.dart';
-import 'enum_converters.dart';
-import 'package:in_app_purchase/in_app_purchase_connection.dart';
 
 part 'sk_payment_transaction_wrappers.g.dart';
 
@@ -104,17 +102,7 @@ class SKPaymentTransactionWrapper {
     return _$SKPaymentTransactionWrapperFromJson(map);
   }
 
-  PurchaseDetails toPurchaseDetails(String base64EncodedReceipt) {
-    return PurchaseDetails(
-      productId: payment.productIdentifier,
-      verificationData: PurchaseVerificationData(
-          data: base64EncodedReceipt, source: PurchaseSource.AppStore),
-      transactionDate: transactionTimeStamp.toString(),
-    );
-  }
-
   /// Current transaction state.
-  @SKTransactionStatusConverter()
   final SKPaymentTransactionStateWrapper transactionState;
 
   /// The payment that is created and added to the payment queue which generated this transaction.

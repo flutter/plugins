@@ -118,23 +118,6 @@ class _MyAppState extends State<MyApp> {
               'This app needs special configuration to run. Please see example/README.md for instructions.')));
     }
 
-    productList.addAll(response.productDetails.map(
-      (ProductDetails productDetails) {
-        PurchaseDetails previousPurchase = purchases[productDetails.id];
-        return ListTile(
-          title: Text(
-            productDetails.title,
-          ),
-          subtitle: Text(
-            productDetails.description,
-          ),
-          trailing: previousPurchase != null
-              ? Text(':)')
-              : Text(productDetails.price),
-        );
-      },
-    ));
-
     return Card(
         child:
             Column(children: <Widget>[productHeader, Divider()] + productList));
