@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
@@ -16,7 +15,6 @@ import 'package:in_app_purchase/store_kit_wrappers.dart';
 class AppStoreConnection implements InAppPurchaseConnection {
   static AppStoreConnection get instance => _getOrCreateInstance();
   static AppStoreConnection _instance;
-  static SKPaymentQueueWrapper _skPaymentQueueWrapper;
 
   @override
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
@@ -27,7 +25,6 @@ class AppStoreConnection implements InAppPurchaseConnection {
     }
 
     _instance = AppStoreConnection();
-    _skPaymentQueueWrapper = SKPaymentQueueWrapper();
     return _instance;
   }
 
