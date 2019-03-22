@@ -38,20 +38,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
 
-    flutterWebViewClient = new FlutterWebViewClient(methodChannel);
+    flutterWebViewClient = new FlutterWebViewClient(methodChannel, params);
     applySettings((Map<String, Object>) params.get("settings"));
-
-    // todo multiple webclients
-    webView.setWebViewClient(new WebViewClient() {
-        @Override
-        public void onReceivedHttpAuthRequest(
-                WebView view, HttpAuthHandler handler, String host, String realm) {
-
-            if (params.containsKey("username") && params.containsKey("password")) {
-                handler.proceed((String) params.get("username"), (String) params.get("password"));
-            }
-        }
-    });
 
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
       registerJavaScriptChannelNames((List<String>) params.get(JS_CHANNEL_NAMES_FIELD));

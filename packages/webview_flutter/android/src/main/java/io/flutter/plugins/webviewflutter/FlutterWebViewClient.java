@@ -7,6 +7,7 @@ package io.flutter.plugins.webviewflutter;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.util.Log;
+import android.webkit.HttpAuthHandler;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import androidx.webkit.WebViewClientCompat;
@@ -21,14 +22,24 @@ import java.util.Map;
 class FlutterWebViewClient extends WebViewClientCompat {
   private static final String TAG = "FlutterWebViewClient";
   private final MethodChannel methodChannel;
+  private final  Map<String, Object> params;
   private boolean hasNavigationDelegate;
 
-  FlutterWebViewClient(MethodChannel methodChannel) {
+  FlutterWebViewClient(MethodChannel methodChannel, Map<String, Object> params) {
     this.methodChannel = methodChannel;
+    this.params = params;
   }
 
   void setHasNavigationDelegate(boolean hasNavigationDelegate) {
     this.hasNavigationDelegate = hasNavigationDelegate;
+  }
+
+  @Override
+  public void onReceivedHttpAuthRequest(
+          WebView view, HttpAuthHandler handler, String host, String realm) {
+      if (params.containsKey("username") && params.containsKey("password")) {
+          handler.proceed((String) params.get("username"), (String) params.get("password"));
+      }
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
