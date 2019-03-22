@@ -168,6 +168,7 @@ final class GoogleMapController
     markersController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     updateInitialMarkers();
+    updateInitialPolylines();
   }
 
   @Override
