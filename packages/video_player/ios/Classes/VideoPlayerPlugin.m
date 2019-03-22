@@ -297,7 +297,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)sendInitialized {
   if (_eventSink && _isInitialized) {
-    CGSize size = [self.player currentItem].presentationSize;
+    AVPlayerItem* item = self.player.currentItem;
+    AVAssetTrack *track = [[item.asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+    CGSize size = CGSizeApplyAffineTransform(track.naturalSize, track.preferredTransform);
     CGFloat width = size.width;
     CGFloat height = size.height;
 
