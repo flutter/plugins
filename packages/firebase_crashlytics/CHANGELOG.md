@@ -1,3 +1,7 @@
+## 0.0.2
+
+* Updates the iOS podspec to support compatibility with Swift plugins.
+
 ## 0.0.1
 
 * Initial release of Firebase Crashlytics plugin.
