@@ -58,7 +58,10 @@ void main() {
           fakeIOSPlatform.transactions.first.transactionIdentifier);
       expect(purchases.last.purchaseID,
           fakeIOSPlatform.transactions.last.transactionIdentifier);
-      expect(purchases.first.verificationData.data, 'dummy base64data');
+      expect(purchases.first.verificationData.localVerificationData,
+          'dummy base64data');
+      expect(purchases.first.verificationData.serverVerificationData,
+          'dummy base64data');
     });
 
     test('receipt error should populate null to verificationData.data',
@@ -66,7 +69,19 @@ void main() {
       fakeIOSPlatform.receiptData = null;
       List<PurchaseDetails> purchases =
           await AppStoreConnection.instance.queryPastPurchases();
-      expect(purchases.first.verificationData.data, null);
+      expect(purchases.first.verificationData.localVerificationData, null);
+      expect(purchases.first.verificationData.serverVerificationData, null);
+      fakeIOSPlatform.receiptData = 'dummy base64data';
+    });
+  });
+
+  group('refresh receipt data', () {
+    test('should refresh receipt data', () async {
+      PurchaseVerificationData receiptData = await AppStoreConnection.instance
+          .refreshPurchaseVerificationData(null);
+      expect(receiptData.source, PurchaseSource.AppStore);
+      expect(receiptData.localVerificationData, 'refreshed receipt data');
+      expect(receiptData.serverVerificationData, 'refreshed receipt data');
       fakeIOSPlatform.receiptData = 'dummy base64data';
     });
   });
@@ -142,10 +157,14 @@ class FakeIOSPlatform {
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
         if (receiptData != null) {
-          return Future<void>.value('dummy base64data');
+          return Future<void>.value(receiptData);
         } else {
           throw PlatformException(code: 'no_receipt_data');
         }
+        break;
+      case '-[InAppPurchasePlugin refreshReceipt:result:]':
+        receiptData = 'refreshed receipt data';
+        return Future<void>.sync(() {});
     }
     return Future<void>.sync(() {});
   }

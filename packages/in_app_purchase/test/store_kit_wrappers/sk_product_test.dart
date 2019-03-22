@@ -139,7 +139,8 @@ void main() {
       expect(dummyTransaction.payment.productIdentifier, details.productId);
       expect((dummyTransaction.transactionTimeStamp * 1000).toInt().toString(),
           details.transactionDate);
-      expect(details.verificationData.data, 'receipt data');
+      expect(details.verificationData.localVerificationData, 'receipt data');
+      expect(details.verificationData.serverVerificationData, 'receipt data');
       expect(details.verificationData.source, PurchaseSource.AppStore);
       expect(
           details.originalPurchase.productId,

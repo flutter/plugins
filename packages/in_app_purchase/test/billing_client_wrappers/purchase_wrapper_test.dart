@@ -35,7 +35,10 @@ void main() {
       expect(details.originalPurchase, null);
       expect(details.transactionDate, dummyPurchase.purchaseTime.toString());
       expect(details.verificationData.source, PurchaseSource.GooglePlay);
-      expect(details.verificationData.data, dummyPurchase.originalJson);
+      expect(details.verificationData.localVerificationData,
+          dummyPurchase.originalJson);
+      expect(details.verificationData.serverVerificationData,
+          dummyPurchase.purchaseToken);
     });
   });
 
