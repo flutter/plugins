@@ -18,6 +18,20 @@ class AppStoreConnection implements InAppPurchaseConnection {
   static SKPaymentQueueWrapper _skPaymentQueueWrapper;
   static _TransactionObserver _observer;
 
+  static SKTransactionObserverWrapper get observer => _observer;
+
+  static AppStoreConnection _getOrCreateInstance() {
+    if (_instance != null) {
+      return _instance;
+    }
+
+    _instance = AppStoreConnection();
+    _skPaymentQueueWrapper = SKPaymentQueueWrapper();
+    _observer = _TransactionObserver();
+    _skPaymentQueueWrapper.setTransactionObserver(observer);
+    return _instance;
+  }
+
   @override
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
 
@@ -28,6 +42,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
       final List<SKPaymentTransactionWrapper> restoredTransactions =
           await _observer.restoredTransactionsStream.toList();
       final String receiptData = await SKReceiptManager.retrieveReceiptData();
+      print(restoredTransactions);
       return restoredTransactions
           .where((SKPaymentTransactionWrapper wrapper) =>
               wrapper.transactionState ==
@@ -39,17 +54,6 @@ class AppStoreConnection implements InAppPurchaseConnection {
       print('failed to query past purchases $e');
       return <PurchaseDetails>[];
     }
-  }
-
-  static AppStoreConnection _getOrCreateInstance() {
-    if (_instance != null) {
-      return _instance;
-    }
-
-    _instance = AppStoreConnection();
-    _skPaymentQueueWrapper = SKPaymentQueueWrapper();
-    _skPaymentQueueWrapper.setTransactionObserver(_observer);
-    return _instance;
   }
 
   /// Query the product detail list.
@@ -83,37 +87,33 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   /// Triggered when any transactions are updated.
   void updatedTransactions({List<SKPaymentTransactionWrapper> transactions}) {
     transactions.forEach((SKPaymentTransactionWrapper wrapper) {
-      print('xyzzy transactionState is ${wrapper.transactionState}');
       if (wrapper.transactionState ==
           SKPaymentTransactionStateWrapper.restored) {
         _restoredTransactions.add(wrapper);
+        print('added');
       }
     });
   }
 
   /// Triggered when any transactions are removed from the payment queue.
   void removedTransactions({List<SKPaymentTransactionWrapper> transactions}) {
-    print('xyzzy removedTransactions: $transactions');
   }
 
   /// Triggered when there is an error while restoring transactions.
   ///
   /// The error is represented in a Map. The map contains `errorCode` and `message`
   void restoreCompletedTransactions({Map<String, String> error}) {
-    print('xyzzy restoreCompletedTransactions $error');
     _restoredTransactions.addError(error);
   }
 
   /// Triggered when payment queue has finished sending restored transactions.
   void paymentQueueRestoreCompletedTransactionsFinished() {
-    print('xyzzy paymentQueueRestoreCompletedTransactionsFinished');
     _restoredTransactions.close();
-    //_restoredTransactions = StreamController.broadcast();
+    print('closed');
   }
 
   /// Triggered when any download objects are updated.
   void updatedDownloads({List<SKDownloadWrapper> downloads}) {
-    print('xyzzy updatedDownloads $downloads');
   }
 
   /// Triggered when a user initiated an in-app purchase from App Store.
@@ -124,5 +124,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   /// You can also continue the transaction later by calling
   /// [addPayment] with the [SKPaymentWrapper] object you get from this method.
   bool shouldAddStorePayment(
-      {SKPaymentWrapper payment, SKProductWrapper product}) {}
+      {SKPaymentWrapper payment, SKProductWrapper product}) {
+        return true;
+      }
 }
