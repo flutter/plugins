@@ -1,3 +1,7 @@
+## 0.9.7+1
+
+* Update README with example of getting a document.
+
 ## 0.9.7
 
 * Fixes a NoSuchMethodError when using getDocuments on iOS (introduced in 0.9.6).

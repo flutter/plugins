@@ -148,4 +148,28 @@ void main() {
       expect(purcahseDetails.first.purchaseID, dummyPurchase.orderId);
     });
   });
+
+  group('refresh receipt data', () {
+    final String queryMethodName =
+        'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)';
+    test('should refresh receipt data', () async {
+      final BillingResponse responseCode = BillingResponse.ok;
+      stubPlatform.addResponse(name: queryMethodName, value: <String, dynamic>{
+        'responseCode': BillingResponseConverter().toJson(responseCode),
+        'purchasesList': <Map<String, dynamic>>[
+          buildPurchaseMap(dummyPurchase),
+        ]
+      });
+      final List<PurchaseDetails> purcahseDetails =
+          await connection.queryPastPurchases();
+
+      PurchaseVerificationData receiptData = await GooglePlayConnection.instance
+          .refreshPurchaseVerificationData(purcahseDetails.first);
+      expect(receiptData.source, PurchaseSource.GooglePlay);
+      expect(receiptData.localVerificationData,
+          purcahseDetails.first.verificationData.localVerificationData);
+      expect(receiptData.serverVerificationData,
+          purcahseDetails.first.verificationData.serverVerificationData);
+    });
+  });
 }

@@ -49,6 +49,12 @@ class GooglePlayConnection
   }
 
   @override
+  Future<PurchaseVerificationData> refreshPurchaseVerificationData(
+      PurchaseDetails purchase) async {
+    return purchase.verificationData;
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.paused:

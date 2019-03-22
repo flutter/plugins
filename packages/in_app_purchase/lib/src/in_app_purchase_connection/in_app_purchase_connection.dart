@@ -13,23 +13,38 @@ import 'package:flutter/foundation.dart';
 ///
 /// The property [source] helps you to determine the method to verify purchases.
 /// Different source of purchase has different methods of verifying purchases.
+///
+/// Both platforms have 2 ways to verify purchase data. You can either choose to verify the data locally using [localVerificationData]
+/// or verify the data using your own server with [serverVerificationData].
+///
 /// For details on how to verify your purchase on iOS,
 /// you can refer to Apple's document about [`About Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
+///
+/// on Android, all purchase information should also be verified manually, with your
+/// server if at all possible. See [`Verify a purchase`](https://developer.android.com/google/play/billing/billing_library_overview#Verify).
 class PurchaseVerificationData {
-  /// The data used for verification.
+  /// The data used for local verification.
   ///
-  /// If the [source] is [PurchaseSource.AppStore], data will be based64 encoded. The structure of the payload is defined using ASN.1.
+  /// If the [source] is [PurchaseSource.AppStore], this data is a based64 encoded string. The structure of the payload is defined using ASN.1.
+  /// If the [source] is [PurchaseSource.GooglePlay], this data is a JSON String.
+  ///
   /// If the platform is iOS, it is possible the data can be null or your validation of this data turns out invalid. When these happen,
-  /// Call [SKRequestMaker.startRefreshReceiptRequest] and then call [SKReceiptManager.retrieveReceiptData] to retrieve a new receipt. Finally,
+  /// Call [InAppPurchaseConnection.refreshPurchaseVerificationData] to get a new [PurchaseVerificationData] object. And then you can
   /// validate th receipt data again using one of the methods mentioned in [`Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
+  final String localVerificationData;
+
+  /// The data used for server verification.
   ///
-  /// You can use the receipt data retrieved by this method to validate users' purchases.
-  final String data;
+  /// If the platform is iOS, this data is identical to [localVerificationData].
+  final String serverVerificationData;
 
   /// Indicates the source of the purchase.
   final PurchaseSource source;
 
-  PurchaseVerificationData({@required this.data, @required this.source});
+  PurchaseVerificationData(
+      {@required this.localVerificationData,
+      @required this.serverVerificationData,
+      @required this.source});
 }
 
 enum PurchaseSource { GooglePlay, AppStore }
@@ -47,12 +62,6 @@ class PurchaseDetails {
   /// The verification data of the purchase.
   ///
   /// Use this to verify the purchase.
-  ///
-  /// For details on how to verify your purchase on iOS,
-  /// you can refer to Apple's document about [`Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
-  ///
-  /// on Android, all purchase information should also be verified manually, with your
-  /// server if at all possible. See [`Verify a purchase`](https://developer.android.com/google/play/billing/billing_library_overview#Verify).
   final PurchaseVerificationData verificationData;
 
   /// The timestamp of the transaction.
@@ -96,6 +105,10 @@ abstract class InAppPurchaseConnection {
   /// If you did not use a `applicationUserName` when creating payments, you can ignore this parameter.
   Future<List<PurchaseDetails>> queryPastPurchases(
       {String applicationUserName});
+
+  /// Get a refreshed purchase verification data.
+  Future<PurchaseVerificationData> refreshPurchaseVerificationData(
+      PurchaseDetails purchase);
 
   /// The [InAppPurchaseConnection] implemented for this platform.
   ///

@@ -9,7 +9,6 @@ import 'package:flutter/foundation.dart';
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
-import 'package:in_app_purchase/store_kit_wrappers.dart';
 
 /// An [InAppPurchaseConnection] that wraps StoreKit.
 ///
@@ -64,6 +63,17 @@ class AppStoreConnection implements InAppPurchaseConnection {
       print('Failed to query past purchases $e');
       return <PurchaseDetails>[];
     }
+  }
+
+  @override
+  Future<PurchaseVerificationData> refreshPurchaseVerificationData(
+      PurchaseDetails purchase) async {
+    await SKRequestMaker().startRefreshReceiptRequest();
+    String receipt = await SKReceiptManager.retrieveReceiptData();
+    return PurchaseVerificationData(
+        localVerificationData: receipt,
+        serverVerificationData: receipt,
+        source: PurchaseSource.AppStore);
   }
 
   /// Query the product detail list.
