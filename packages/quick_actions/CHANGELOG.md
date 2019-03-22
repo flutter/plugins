@@ -1,3 +1,7 @@
+## 0.2.3
+
+* Added support for unit tests
+
 ## 0.2.2
 
 * Allow to register more than once.
