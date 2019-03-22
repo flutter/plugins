@@ -5,10 +5,10 @@ author: Flutter Team <flutter-dev@googlegroups.com>
 dependencies:
   camera:
     path: ../
-  path_provider: ^0.4.1
+  path_provider: ^0.5.0
   flutter:
     sdk: flutter
-  video_player: ^0.5.2
+  video_player: ^0.10.0
 
 dev_dependencies:
   flutter_test:

@@ -40,6 +40,14 @@ Ensure the following permission is present in your Android Manifest file, locate
 
 The Flutter project template adds it, so it may already be there.
 
+### Supported Formats
+
+- On iOS, the backing player is [AVPlayer](https://developer.apple.com/documentation/avfoundation/avplayer).
+  The supported formats vary depending on the version of iOS, [AVURLAsset](https://developer.apple.com/documentation/avfoundation/avurlasset) class
+  has [audiovisualTypes](https://developer.apple.com/documentation/avfoundation/avurlasset/1386800-audiovisualtypes?language=objc) that you can query for supported av formats.
+- On Android, the backing player is [ExoPlayer](https://google.github.io/ExoPlayer/),
+  please refer [here](https://google.github.io/ExoPlayer/supported-formats.html) for list of supported formats.
+
 ### Example
 
 ```dart
@@ -55,22 +63,12 @@ class VideoApp extends StatefulWidget {
 
 class _VideoAppState extends State<VideoApp> {
   VideoPlayerController _controller;
-  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-      'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
-    )
-      ..addListener(() {
-        final bool isPlaying = _controller.value.isPlaying;
-        if (isPlaying != _isPlaying) {
-          setState(() {
-            _isPlaying = isPlaying;
-          });
-        }
-      })
+        'http://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4')
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
@@ -91,15 +89,25 @@ class _VideoAppState extends State<VideoApp> {
               : Container(),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: _controller.value.isPlaying
-              ? _controller.pause
-              : _controller.play,
+          onPressed: () {
+            setState(() {
+              _controller.value.isPlaying
+                  ? _controller.pause()
+                  : _controller.play();
+            });
+          },
           child: Icon(
             _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
   }
 }
 ```

@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -28,7 +29,8 @@ void main() {
 
     test('call', () async {
       await CloudFunctions.instance.call(functionName: 'baz');
-      await CloudFunctions.instance
+      await CloudFunctions(
+              app: const FirebaseApp(name: '1337'), region: 'space')
           .call(functionName: 'qux', parameters: <String, dynamic>{
         'quux': 'quuz',
       });
@@ -38,6 +40,8 @@ void main() {
           isMethodCall(
             'CloudFunctions#call',
             arguments: <String, dynamic>{
+              'app': '[DEFAULT]',
+              'region': null,
               'functionName': 'baz',
               'parameters': null,
             },
@@ -45,6 +49,8 @@ void main() {
           isMethodCall(
             'CloudFunctions#call',
             arguments: <String, dynamic>{
+              'app': '1337',
+              'region': 'space',
               'functionName': 'qux',
               'parameters': <String, dynamic>{
                 'quux': 'quuz',
