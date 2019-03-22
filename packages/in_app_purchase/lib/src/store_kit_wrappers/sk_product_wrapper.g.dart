@@ -16,13 +16,27 @@ SkProductResponseWrapper _$SkProductResponseWrapperFromJson(Map json) {
           .toList());
 }
 
+Map<String, dynamic> _$SkProductResponseWrapperToJson(
+        SkProductResponseWrapper instance) =>
+    <String, dynamic>{
+      'products': instance.products,
+      'invalidProductIdentifiers': instance.invalidProductIdentifiers
+    };
+
 SKProductSubscriptionPeriodWrapper _$SKProductSubscriptionPeriodWrapperFromJson(
     Map json) {
   return SKProductSubscriptionPeriodWrapper(
       numberOfUnits: json['numberOfUnits'] as int,
-      unit:
-          _$enumDecodeNullable(_$SubscriptionPeriodUnitEnumMap, json['unit']));
+      unit: _$enumDecodeNullable(
+          _$SKSubscriptionPeriodUnitEnumMap, json['unit']));
 }
+
+Map<String, dynamic> _$SKProductSubscriptionPeriodWrapperToJson(
+        SKProductSubscriptionPeriodWrapper instance) =>
+    <String, dynamic>{
+      'numberOfUnits': instance.numberOfUnits,
+      'unit': _$SKSubscriptionPeriodUnitEnumMap[instance.unit]
+    };
 
 T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
   if (source == null) {
@@ -44,7 +58,7 @@ T _$enumDecodeNullable<T>(Map<T, dynamic> enumValues, dynamic source) {
   return _$enumDecode<T>(enumValues, source);
 }
 
-const _$SubscriptionPeriodUnitEnumMap = <SKSubscriptionPeriodUnit, dynamic>{
+const _$SKSubscriptionPeriodUnitEnumMap = <SKSubscriptionPeriodUnit, dynamic>{
   SKSubscriptionPeriodUnit.day: 0,
   SKSubscriptionPeriodUnit.week: 1,
   SKSubscriptionPeriodUnit.month: 2,
@@ -59,14 +73,25 @@ SKProductDiscountWrapper _$SKProductDiscountWrapperFromJson(Map json) {
           : SKPriceLocaleWrapper.fromJson(json['priceLocale'] as Map),
       numberOfPeriods: json['numberOfPeriods'] as int,
       paymentMode: _$enumDecodeNullable(
-          _$ProductDiscountPaymentModeEnumMap, json['paymentMode']),
+          _$SKProductDiscountPaymentModeEnumMap, json['paymentMode']),
       subscriptionPeriod: json['subscriptionPeriod'] == null
           ? null
           : SKProductSubscriptionPeriodWrapper.fromJson(
               json['subscriptionPeriod'] as Map));
 }
 
-const _$ProductDiscountPaymentModeEnumMap =
+Map<String, dynamic> _$SKProductDiscountWrapperToJson(
+        SKProductDiscountWrapper instance) =>
+    <String, dynamic>{
+      'price': instance.price,
+      'priceLocale': instance.priceLocale,
+      'numberOfPeriods': instance.numberOfPeriods,
+      'paymentMode':
+          _$SKProductDiscountPaymentModeEnumMap[instance.paymentMode],
+      'subscriptionPeriod': instance.subscriptionPeriod
+    };
+
+const _$SKProductDiscountPaymentModeEnumMap =
     <SKProductDiscountPaymentMode, dynamic>{
   SKProductDiscountPaymentMode.payAsYouGo: 0,
   SKProductDiscountPaymentMode.payUpFront: 1,
@@ -99,6 +124,25 @@ SKProductWrapper _$SKProductWrapperFromJson(Map json) {
               json['introductoryPrice'] as Map));
 }
 
-SKPriceLocaleWrapper _$PriceLocaleWrapperFromJson(Map json) {
+Map<String, dynamic> _$SKProductWrapperToJson(SKProductWrapper instance) =>
+    <String, dynamic>{
+      'productIdentifier': instance.productIdentifier,
+      'localizedTitle': instance.localizedTitle,
+      'localizedDescription': instance.localizedDescription,
+      'priceLocale': instance.priceLocale,
+      'downloadContentVersion': instance.downloadContentVersion,
+      'subscriptionGroupIdentifier': instance.subscriptionGroupIdentifier,
+      'price': instance.price,
+      'downloadable': instance.downloadable,
+      'downloadContentLengths': instance.downloadContentLengths,
+      'subscriptionPeriod': instance.subscriptionPeriod,
+      'introductoryPrice': instance.introductoryPrice
+    };
+
+SKPriceLocaleWrapper _$SKPriceLocaleWrapperFromJson(Map json) {
   return SKPriceLocaleWrapper(currencySymbol: json['currencySymbol'] as String);
 }
+
+Map<String, dynamic> _$SKPriceLocaleWrapperToJson(
+        SKPriceLocaleWrapper instance) =>
+    <String, dynamic>{'currencySymbol': instance.currencySymbol};
