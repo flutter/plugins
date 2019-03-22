@@ -83,6 +83,12 @@ abstract class InAppPurchaseConnection {
   /// Query product details list that match the given set of identifiers.
   Future<ProductDetailsResponse> queryProductDetails(Set<String> identifiers);
 
+  /// Make a payment
+  ///
+  /// The `productID` is the product ID to create payment for.
+  /// The `applicationUserName`
+  Future<void> makePayment({String productID, String applicationUserName});
+
   /// Query all the past purchases.
   ///
   /// The `applicationUserName` is used for iOS only and it is optional. It does not have any effects on Android.
