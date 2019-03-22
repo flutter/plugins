@@ -31,12 +31,12 @@ class AppStoreConnection implements InAppPurchaseConnection {
       return restoredTransactions
           .where((SKPaymentTransactionWrapper wrapper) =>
               wrapper.transactionState ==
-              SKPaymentTransactionStateWrapper.purchased)
+              SKPaymentTransactionStateWrapper.restored)
           .map((SKPaymentTransactionWrapper wrapper) =>
               wrapper.toPurchaseDetails(receiptData))
           .toList();
     } catch (e) {
-      print('failed to get list $e');
+      print('failed to query past purchases $e');
       return <PurchaseDetails>[];
     }
   }
@@ -108,6 +108,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   void paymentQueueRestoreCompletedTransactionsFinished() {
     print('xyzzy paymentQueueRestoreCompletedTransactionsFinished');
     _restoredTransactions.close();
+    //_restoredTransactions = StreamController.broadcast();
   }
 
   /// Triggered when any download objects are updated.
