@@ -56,7 +56,7 @@ class PurchaseDetails {
 
   /// The original purchase data of this purchase.
   ///
-  /// It is only available when this purchase is a restored purchase.
+  /// It is only available when this purchase is a restored purchase in iOS.
   /// See [InAppPurchaseConnection.queryPastPurchases] for details on restoring purchases.
   /// The value of this property is null if the purchase is not a restored purchases.
   final PurchaseDetails originalPurchase;
