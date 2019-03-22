@@ -1,3 +1,7 @@
+## 0.4.1+4
+
+* Updated example to remove dependency on Firebase.
+
 ## 0.4.1+3
 
 * Update README.md to include instructions for setting the WAKE_LOCK permission.
