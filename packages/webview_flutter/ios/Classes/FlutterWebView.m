@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FlutterWebView.h"
+#import "FLTWKNavigationDelegate.h"
 #import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
@@ -41,6 +42,7 @@
   id _Nullable _args;
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
+  FLTWKNavigationDelegate* _navigationDelegate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -66,8 +68,8 @@
     configuration.userContentController = userContentController;
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
-    _webView.navigationDelegate = self;
-      
+    _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
+    _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
@@ -84,10 +86,10 @@
 }
 
 - (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
-    
+
     NSString* username = _args[@"username"];
     NSString* password = _args[@"password"];
-    
+
     if ([username isKindOfClass:[NSString class]] && [password isKindOfClass:[NSString class]]) {
         NSURLCredential *credential = [NSURLCredential credentialWithUser:(username)
                                                                  password:(password)
@@ -253,6 +255,9 @@
     if ([key isEqualToString:@"jsMode"]) {
       NSNumber* mode = settings[key];
       [self updateJsMode:mode];
+    } else if ([key isEqualToString:@"hasNavigationDelegate"]) {
+      NSNumber* hasDartNavigationDelegate = settings[key];
+      _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
     } else if ([key isEqualToString:@"userAgent"]) {
       id userAgent = settings[key];
       if (userAgent && ![userAgent isEqual:[NSNull null]]) {

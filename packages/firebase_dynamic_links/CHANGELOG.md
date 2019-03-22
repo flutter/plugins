@@ -1,3 +1,11 @@
+## 0.2.0+4
+
+* Fix crash when receiving `ShortDynamicLink` warnings.
+
+## 0.2.0+3
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
 ## 0.2.0+2
 
 * Remove categories.

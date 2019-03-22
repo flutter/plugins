@@ -96,15 +96,16 @@ public class CameraPlugin implements MethodCallHandler {
 
           @Override
           public void onActivityResumed(Activity activity) {
+            boolean wasRequestingPermission = requestingPermission;
             if (requestingPermission) {
               requestingPermission = false;
+            }
+            if (activity != CameraPlugin.this.activity) {
               return;
             }
-            if (activity == CameraPlugin.this.activity) {
-              orientationEventListener.enable();
-              if (camera != null) {
-                camera.open(null);
-              }
+            orientationEventListener.enable();
+            if (camera != null && !wasRequestingPermission) {
+              camera.open(null);
             }
           }
 
@@ -136,6 +137,11 @@ public class CameraPlugin implements MethodCallHandler {
   }
 
   public static void registerWith(Registrar registrar) {
+    if (registrar.activity() == null) {
+      // When a background flutter view tries to register the plugin, the registrar has no activity.
+      // We stop the registration process as this plugin is foreground only.
+      return;
+    }
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/camera");
 
@@ -158,6 +164,9 @@ public class CameraPlugin implements MethodCallHandler {
                 cameraManager.getCameraCharacteristics(cameraName);
             details.put("name", cameraName);
             @SuppressWarnings("ConstantConditions")
+            int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+            details.put("sensorOrientation", sensorOrientation);
+
             int lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
             switch (lensFacing) {
               case CameraMetadata.LENS_FACING_FRONT:
@@ -194,6 +203,12 @@ public class CameraPlugin implements MethodCallHandler {
       case "takePicture":
         {
           camera.takePicture((String) call.argument("path"), result);
+          break;
+        }
+      case "prepareForVideoRecording":
+        {
+          // This optimization is not required for Android.
+          result.success(null);
           break;
         }
       case "startVideoRecording":

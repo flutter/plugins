@@ -7,6 +7,9 @@
 #import <Firebase/Firebase.h>
 
 static NSDictionary *getDictionaryFromFIROptions(FIROptions *options) {
+  if (!options) {
+    return nil;
+  }
   return @{
     @"googleAppID" : options.googleAppID ?: [NSNull null],
     @"bundleID" : options.bundleID ?: [NSNull null],
@@ -23,6 +26,9 @@ static NSDictionary *getDictionaryFromFIROptions(FIROptions *options) {
 }
 
 static NSDictionary *getDictionaryFromFIRApp(FIRApp *app) {
+  if (!app) {
+    return nil;
+  }
   return @{@"name" : app.name, @"options" : getDictionaryFromFIROptions(app.options)};
 }
 

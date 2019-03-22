@@ -98,7 +98,7 @@ void main() {
     });
 
     test('setAnalyticsCollectionEnabled', () async {
-      await analytics.android.setAnalyticsCollectionEnabled(false);
+      await analytics.setAnalyticsCollectionEnabled(false);
       expect(invokedMethod, 'setAnalyticsCollectionEnabled');
       expect(arguments, false);
     });
@@ -113,6 +113,11 @@ void main() {
       await analytics.android.setSessionTimeoutDuration(234);
       expect(invokedMethod, 'setSessionTimeoutDuration');
       expect(arguments, 234);
+    });
+
+    test('resetAnalyticsData', () async {
+      await analytics.resetAnalyticsData();
+      expect(invokedMethod, 'resetAnalyticsData');
     });
   });
 
