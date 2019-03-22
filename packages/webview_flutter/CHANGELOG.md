@@ -1,3 +1,7 @@
+## 0.3.5+2
+
+* Fix crash from `NavigationDelegate` on later versions of Android.
+
 ## 0.3.5+1
 
 * Fix a bug where updates to onPageFinished were ignored.
