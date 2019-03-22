@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "FlutterWebView.h"
-#import "FLTWKNavigationDelegate.h"
 #import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
