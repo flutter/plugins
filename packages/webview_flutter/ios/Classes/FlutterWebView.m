@@ -106,7 +106,7 @@
     @"url" : navigationAction.request.URL.absoluteString,
     @"isForMainFrame" : @(navigationAction.targetFrame.isMainFrame)
   };
-  [_methodChannel invokeMethod:@"navigationRequest"
+  [_channel invokeMethod:@"navigationRequest"
                      arguments:arguments
                         result:^(id _Nullable result) {
                           if ([result isKindOfClass:[FlutterError class]]) {
@@ -136,7 +136,7 @@
 }
 
 - (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation {
-  [_methodChannel invokeMethod:@"onPageFinished" arguments:@{@"url" : webView.URL.absoluteString}];
+  [_channel invokeMethod:@"onPageFinished" arguments:@{@"url" : webView.URL.absoluteString}];
 }
 
 - (UIView*)view {
@@ -298,7 +298,7 @@
       [self updateJsMode:mode];
     } else if ([key isEqualToString:@"hasNavigationDelegate"]) {
       NSNumber* hasDartNavigationDelegate = settings[key];
-      hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
+      self.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
     } else if ([key isEqualToString:@"userAgent"]) {
       id userAgent = settings[key];
       if (userAgent && ![userAgent isEqual:[NSNull null]]) {

@@ -15,15 +15,15 @@ NS_ASSUME_NONNULL_BEGIN
               binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
 
 - (UIView*)view;
-@end
-
-@interface FLTWebViewFactory : NSObject <FlutterPlatformViewFactory>
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
-@end
 
 /**
  * Whether to delegate navigation decisions over the method channel.
  */
 @property(nonatomic, assign) BOOL hasDartNavigationDelegate;
+@end
+
+@interface FLTWebViewFactory : NSObject <FlutterPlatformViewFactory>
+- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
+@end
 
 NS_ASSUME_NONNULL_END
