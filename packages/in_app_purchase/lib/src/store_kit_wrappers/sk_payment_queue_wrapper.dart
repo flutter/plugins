@@ -190,7 +190,6 @@ class SKError {
   /// The map needs to have named string keys with values matching the names and
   /// types of all of the members on this class.
   /// The `map` parameter must not be null.
-  @visibleForTesting
   factory SKError.fromJson(Map map) {
     assert(map != null);
     return _$SKErrorFromJson(map);
@@ -240,7 +239,6 @@ class SKPaymentWrapper {
   /// The map needs to have named string keys with values matching the names and
   /// types of all of the members on this class.
   /// The `map` parameter must not be null.
-  @visibleForTesting
   factory SKPaymentWrapper.fromJson(Map map) {
     assert(map != null);
     return _$SKPaymentWrapperFromJson(map);

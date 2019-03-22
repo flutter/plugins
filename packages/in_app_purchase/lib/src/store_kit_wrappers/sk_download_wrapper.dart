@@ -34,7 +34,6 @@ class SKDownloadWrapper {
   /// The map needs to have named string keys with values matching the names and
   /// types of all of the members on this class.
   /// The `map` parameter must not be null.
-  @visibleForTesting
   factory SKDownloadWrapper.fromJson(Map map) {
     assert(map != null);
     return _$SKDownloadWrapperFromJson(map);
