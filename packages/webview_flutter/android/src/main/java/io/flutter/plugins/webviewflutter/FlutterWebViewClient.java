@@ -31,6 +31,7 @@ class FlutterWebViewClient extends WebViewClientCompat {
   }
 
   void setHasNavigationDelegate(boolean hasNavigationDelegate) {
+
     this.hasNavigationDelegate = hasNavigationDelegate;
   }
 
