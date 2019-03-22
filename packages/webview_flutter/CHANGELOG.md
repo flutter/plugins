@@ -1,3 +1,7 @@
+## 0.3.4+1
+
+* Fix crash from `NavigationDelegate` on later versions of Android.
+
 ## 0.3.4
 
 * Support specifying navigation delegates that can prevent navigations from being executed.

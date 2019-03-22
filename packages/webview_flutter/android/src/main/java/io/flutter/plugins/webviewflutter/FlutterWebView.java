@@ -10,6 +10,7 @@ import android.os.Build;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -184,8 +185,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           updateJsMode((Integer) settings.get(key));
           break;
         case "hasNavigationDelegate":
-          boolean hasNavigationDelegate = (boolean) settings.get(key);
-          webView.setWebViewClient(flutterWebViewClient.createWebViewClient(hasNavigationDelegate));
+          final boolean hasNavigationDelegate = (boolean) settings.get(key);
+
+          final WebViewClient webViewClient =
+              flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
+
+          webView.setWebViewClient(webViewClient);
           break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
