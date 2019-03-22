@@ -1,3 +1,7 @@
+## 0.10.0+5
+
+* iOS: Fix wrong size determination when using presentationSize.
+ 
 ## 0.10.0+4
 
 * Android: Upgrade ExoPlayer to 2.9.6.
