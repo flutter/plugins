@@ -16,7 +16,6 @@ import 'package:flutter/foundation.dart';
 /// For details on how to verify your purchase on iOS,
 /// you can refer to Apple's document about [`About Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
 class PurchaseVerificationData {
-
   /// The data used for verification.
   ///
   /// If the [source] is [PurchaseSource.AppStore], data will be based64 encoded. The structure of the payload is defined using ASN.1.
@@ -35,7 +34,6 @@ enum PurchaseStatus { pending, purchased, error }
 
 /// Represents the transaction details of a purchase.
 class PurchaseDetails {
-
   /// A unique identifier of the purchase.
   final String purchaseID;
 
@@ -65,7 +63,8 @@ class PurchaseDetails {
       {@required this.purchaseID,
       @required this.productId,
       @required this.verificationData,
-      @required this.transactionDate, this.originalPurchase});
+      @required this.transactionDate,
+      this.originalPurchase});
 }
 
 /// Basic generic API for making in app purchases across multiple platforms.

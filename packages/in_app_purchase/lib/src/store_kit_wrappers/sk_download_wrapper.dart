@@ -5,7 +5,6 @@ import 'sk_payment_queue_wrapper.dart';
 
 part 'sk_download_wrapper.g.dart';
 
-
 /// Dart wrapper around StoreKit's [SKDownload](https://developer.apple.com/documentation/storekit/skdownload?language=objc).
 ///
 /// When a product is created in the App Store Connect, one or more download contents can be associated with it.

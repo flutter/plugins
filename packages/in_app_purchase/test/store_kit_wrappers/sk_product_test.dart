@@ -133,13 +133,19 @@ void main() {
     });
 
     test('toPurchaseDetails() should return correct PurchaseDetail object', () {
-      PurchaseDetails details = dummyTransaction.toPurchaseDetails('receipt data');
+      PurchaseDetails details =
+          dummyTransaction.toPurchaseDetails('receipt data');
       expect(dummyTransaction.transactionIdentifier, details.purchaseID);
       expect(dummyTransaction.payment.productIdentifier, details.productId);
-      expect((dummyTransaction.transactionTimeStamp*1000).toInt().toString(), details.transactionDate);
+      expect((dummyTransaction.transactionTimeStamp * 1000).toInt().toString(),
+          details.transactionDate);
       expect(details.verificationData.data, 'receipt data');
-      expect(details.verificationData.source,  PurchaseSource.AppStore);
-      expect(details.originalPurchase.productId, dummyTransaction.originalTransaction.toPurchaseDetails('dummy').productId);
+      expect(details.verificationData.source, PurchaseSource.AppStore);
+      expect(
+          details.originalPurchase.productId,
+          dummyTransaction.originalTransaction
+              .toPurchaseDetails('dummy')
+              .productId);
     });
     test('Should generate correct map of the payment object', () {
       Map map = dummyPayment.toMap();

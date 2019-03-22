@@ -118,7 +118,9 @@ class SKPaymentTransactionWrapper {
               data: base64EncodedReceipt, source: PurchaseSource.AppStore)
           : null,
       transactionDate: (transactionTimeStamp * 1000).toInt().toString(),
-      originalPurchase: originalTransaction != null ? originalTransaction.toPurchaseDetails(null) : null,
+      originalPurchase: originalTransaction != null
+          ? originalTransaction.toPurchaseDetails(null)
+          : null,
     );
   }
 

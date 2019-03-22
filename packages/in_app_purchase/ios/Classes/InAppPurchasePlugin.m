@@ -283,9 +283,11 @@
 }
 
 - (void)handleTransactionRestoreFailed:(NSError *)error {
-    [self.callbackChannel invokeMethod:@"restoreCompletedTransactions" arguments:@{@"errorCode":@"restore_transactions_failed",
-                                                                                   @"message":error.localizedDescription?:@""
-                                                                                   }];
+  [self.callbackChannel invokeMethod:@"restoreCompletedTransactions"
+                           arguments:@{
+                             @"errorCode" : @"restore_transactions_failed",
+                             @"message" : error.localizedDescription ?: @""
+                           }];
 }
 
 - (void)restoreCompletedTransactionsFinished {

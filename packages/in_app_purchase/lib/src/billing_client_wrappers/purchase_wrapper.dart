@@ -98,7 +98,8 @@ class PurchaseWrapper {
     return PurchaseDetails(
       purchaseID: orderId,
       productId: sku,
-      verificationData: PurchaseVerificationData(data: originalJson, source: PurchaseSource.GooglePlay),
+      verificationData: PurchaseVerificationData(
+          data: originalJson, source: PurchaseSource.GooglePlay),
       transactionDate: purchaseTime.toString(),
     );
   }

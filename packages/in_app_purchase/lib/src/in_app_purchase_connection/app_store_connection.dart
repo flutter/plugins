@@ -48,7 +48,6 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
     _instance = AppStoreConnection();
     _skPaymentQueueWrapper = SKPaymentQueueWrapper();
-    _observer = new _TransactionObserver();
     _skPaymentQueueWrapper.setTransactionObserver(_observer);
     return _instance;
   }
@@ -85,7 +84,8 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   void updatedTransactions({List<SKPaymentTransactionWrapper> transactions}) {
     transactions.forEach((SKPaymentTransactionWrapper wrapper) {
       print('xyzzy transactionState is ${wrapper.transactionState}');
-      if (wrapper.transactionState == SKPaymentTransactionStateWrapper.restored) {
+      if (wrapper.transactionState ==
+          SKPaymentTransactionStateWrapper.restored) {
         _restoredTransactions.add(wrapper);
       }
     });

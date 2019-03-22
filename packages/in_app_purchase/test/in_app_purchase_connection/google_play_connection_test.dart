@@ -115,7 +115,7 @@ void main() {
     });
   });
 
-    group('queryPurchaseDetails', () {
+  group('queryPurchaseDetails', () {
     final String queryMethodName =
         'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)';
     test('handles empty skuDetails', () async {
@@ -125,7 +125,8 @@ void main() {
         'purchasesList': <Map<String, dynamic>>[]
       });
 
-      final List<PurchaseDetails> purcahseDetails = await connection.queryPastPurchases();
+      final List<PurchaseDetails> purcahseDetails =
+          await connection.queryPastPurchases();
 
       expect(purcahseDetails, isEmpty);
     });
@@ -141,7 +142,8 @@ void main() {
 
       // Since queryPastPurchases makes 2 platform method calls (one for each SkuType), the result will contain 2 dummyWrapper instead
       // of 1.
-      final List<PurchaseDetails> purcahseDetails = await connection.queryPastPurchases();
+      final List<PurchaseDetails> purcahseDetails =
+          await connection.queryPastPurchases();
 
       expect(purcahseDetails.first.purchaseID, dummyPurchase.orderId);
     });

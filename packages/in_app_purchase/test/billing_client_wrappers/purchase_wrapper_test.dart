@@ -28,7 +28,7 @@ void main() {
       expect(parsed, equals(expected));
     });
 
-    test('toPurchaseDetails() should return correct PurchaseDetail object', (){
+    test('toPurchaseDetails() should return correct PurchaseDetail object', () {
       final PurchaseDetails details = dummyPurchase.toPurchaseDetails();
       expect(details.purchaseID, dummyPurchase.orderId);
       expect(details.productId, dummyPurchase.sku);
