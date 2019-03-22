@@ -51,10 +51,13 @@ void main() {
 
   group('query purchases list', () {
     test('should get purchase list', () async {
-      List<PurchaseDetails> purchases = await AppStoreConnection.instance.queryPastPurchases();
+      List<PurchaseDetails> purchases =
+          await AppStoreConnection.instance.queryPastPurchases();
       expect(purchases.length, 2);
-      expect(purchases.first.purchaseID, fakeIOSPlatform.transactions.first.transactionIdentifier);
-      expect(purchases.last.purchaseID, fakeIOSPlatform.transactions.last.transactionIdentifier);
+      expect(purchases.first.purchaseID,
+          fakeIOSPlatform.transactions.first.transactionIdentifier);
+      expect(purchases.last.purchaseID,
+          fakeIOSPlatform.transactions.last.transactionIdentifier);
     });
   });
 }
@@ -104,7 +107,7 @@ class FakeIOSPlatform {
       case '-[SKPaymentQueue canMakePayments:]':
         return Future<bool>.value(true);
       case '-[InAppPurchasePlugin startProductRequest:result:]':
-              List<String> productIDS =
+        List<String> productIDS =
             List.castFrom<dynamic, String>(call.arguments);
         assert(productIDS is List<String>, 'invalid argument type');
         List<String> invalidFound = [];
@@ -121,10 +124,10 @@ class FakeIOSPlatform {
         return Future<Map<String, dynamic>>.value(
             buildProductResponseMap(response));
       case '-[InAppPurchasePlugin restoreTransactions:result:]':
-
         AppStoreConnection.observer
             .updatedTransactions(transactions: transactions);
-        AppStoreConnection.observer.paymentQueueRestoreCompletedTransactionsFinished();
+        AppStoreConnection.observer
+            .paymentQueueRestoreCompletedTransactionsFinished();
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
         return Future<void>.value('dummybase64data');

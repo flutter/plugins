@@ -96,8 +96,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   }
 
   /// Triggered when any transactions are removed from the payment queue.
-  void removedTransactions({List<SKPaymentTransactionWrapper> transactions}) {
-  }
+  void removedTransactions({List<SKPaymentTransactionWrapper> transactions}) {}
 
   /// Triggered when there is an error while restoring transactions.
   ///
@@ -113,8 +112,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   }
 
   /// Triggered when any download objects are updated.
-  void updatedDownloads({List<SKDownloadWrapper> downloads}) {
-  }
+  void updatedDownloads({List<SKDownloadWrapper> downloads}) {}
 
   /// Triggered when a user initiated an in-app purchase from App Store.
   ///
@@ -125,6 +123,6 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   /// [addPayment] with the [SKPaymentWrapper] object you get from this method.
   bool shouldAddStorePayment(
       {SKPaymentWrapper payment, SKProductWrapper product}) {
-        return true;
-      }
+    return true;
+  }
 }

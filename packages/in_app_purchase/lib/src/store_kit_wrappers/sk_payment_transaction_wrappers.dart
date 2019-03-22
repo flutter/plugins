@@ -9,7 +9,7 @@ import 'sk_product_wrapper.dart';
 import 'sk_download_wrapper.dart';
 import 'sk_payment_queue_wrapper.dart';
 import 'enum_converters.dart';
-import 'package:in_app_purchase/in_app_purchase_connection.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/in_app_purchase_connection.dart';
 
 part 'sk_payment_transaction_wrappers.g.dart';
 

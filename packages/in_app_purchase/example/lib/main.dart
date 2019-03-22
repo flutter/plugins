@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase/in_app_purchase_connection.dart';
 import './product_list.dart';
 
 void main() => runApp(MyApp());
