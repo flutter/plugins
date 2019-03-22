@@ -1,6 +1,6 @@
 ## 0.0.2
 
-* Updated the iOS podspec to support compatibility with Swift plugins.
+* Updated the iOS podspec to a static framework to support compatibility with Swift plugins.
 
 ## 0.0.1
 
