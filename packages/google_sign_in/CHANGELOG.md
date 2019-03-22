@@ -1,3 +1,7 @@
+## 4.0.1+2
+
+* Fix README.md to correctly spell `GoogleService-Info.plist`.
+
 ## 4.0.1+1
 
 * Remove categories.
