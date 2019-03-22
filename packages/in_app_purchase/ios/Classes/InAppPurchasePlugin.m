@@ -283,10 +283,9 @@
 }
 
 - (void)handleTransactionRestoreFailed:(NSError *)error {
-  FlutterError *fltError =
-      [FlutterError errorWithCode:error.domain
-                          message:error.description
-                          details:error.description];
+  FlutterError *fltError = [FlutterError errorWithCode:error.domain
+                                               message:error.description
+                                               details:error.description];
   [self.callbackChannel invokeMethod:@"restoreCompletedTransactions" arguments:fltError];
 }
 
