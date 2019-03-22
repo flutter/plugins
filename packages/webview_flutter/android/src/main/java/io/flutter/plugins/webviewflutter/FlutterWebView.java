@@ -197,7 +197,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           updateJsMode((Integer) settings.get(key));
           break;
         case "hasNavigationDelegate":
-          flutterWebViewClient.setHasNavigationDelegate((boolean) settings.get(key));
+          final boolean hasNavigationDelegate = (boolean) settings.get(key);
+
+          final WebViewClient webViewClient =
+                  flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
+
+          webView.setWebViewClient(webViewClient);
           break;
         case "userAgent":
           webView.getSettings().setUserAgentString((String) settings.get(key));
