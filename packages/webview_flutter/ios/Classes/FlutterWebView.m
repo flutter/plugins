@@ -42,7 +42,6 @@
   id _Nullable _args;
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
-  FLTWKNavigationDelegate* _navigationDelegate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -68,8 +67,7 @@
     configuration.userContentController = userContentController;
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
-    _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
-    _webView.navigationDelegate = _navigationDelegate;
+    _webView.navigationDelegate = self;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
@@ -96,6 +94,50 @@
                                                               persistence:NSURLCredentialPersistenceForSession];
         completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
     }
+}
+
+- (void)webView:(WKWebView*)webView
+    decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction
+                    decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+  if (!self.hasDartNavigationDelegate) {
+    decisionHandler(WKNavigationActionPolicyAllow);
+    return;
+  }
+  NSDictionary* arguments = @{
+    @"url" : navigationAction.request.URL.absoluteString,
+    @"isForMainFrame" : @(navigationAction.targetFrame.isMainFrame)
+  };
+  [_methodChannel invokeMethod:@"navigationRequest"
+                     arguments:arguments
+                        result:^(id _Nullable result) {
+                          if ([result isKindOfClass:[FlutterError class]]) {
+                            NSLog(@"navigationRequest has unexpectedly completed with an error, "
+                                  @"allowing navigation.");
+                            decisionHandler(WKNavigationActionPolicyAllow);
+                            return;
+                          }
+                          if (result == FlutterMethodNotImplemented) {
+                            NSLog(@"navigationRequest was unexepectedly not implemented: %@, "
+                                  @"allowing navigation.",
+                                  result);
+                            decisionHandler(WKNavigationActionPolicyAllow);
+                            return;
+                          }
+                          if (![result isKindOfClass:[NSNumber class]]) {
+                            NSLog(@"navigationRequest unexpectedly returned a non boolean value: "
+                                  @"%@, allowing navigation.",
+                                  result);
+                            decisionHandler(WKNavigationActionPolicyAllow);
+                            return;
+                          }
+                          NSNumber* typedResult = result;
+                          decisionHandler([typedResult boolValue] ? WKNavigationActionPolicyAllow
+                                                                  : WKNavigationActionPolicyCancel);
+                        }];
+}
+
+- (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation {
+  [_methodChannel invokeMethod:@"onPageFinished" arguments:@{@"url" : webView.URL.absoluteString}];
 }
 
 - (UIView*)view {
@@ -257,7 +299,7 @@
       [self updateJsMode:mode];
     } else if ([key isEqualToString:@"hasNavigationDelegate"]) {
       NSNumber* hasDartNavigationDelegate = settings[key];
-      _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
+      hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
     } else if ([key isEqualToString:@"userAgent"]) {
       id userAgent = settings[key];
       if (userAgent && ![userAgent isEqual:[NSNull null]]) {

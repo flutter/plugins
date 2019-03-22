@@ -21,4 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
 @end
 
+/**
+ * Whether to delegate navigation decisions over the method channel.
+ */
+@property(nonatomic, assign) BOOL hasDartNavigationDelegate;
+
 NS_ASSUME_NONNULL_END
