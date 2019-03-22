@@ -19,5 +19,6 @@ A new flutter plugin project.
   s.dependency 'Fabric'
   s.dependency 'Crashlytics'
   s.dependency 'Firebase/Core'
+  s.static_framework = true
 end
 
