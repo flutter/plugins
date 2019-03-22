@@ -115,7 +115,7 @@ void main() {
       final String accountId = "hashedAccountId";
 
       final BillingResponse receivedCode = await billingClient
-          .launchBillingFlow(skuDetails: skuDetails, accountId: accountId);
+          .launchBillingFlow(sku: skuDetails.sku, accountId: accountId);
 
       expect(receivedCode, equals(sentCode));
       Map<dynamic, dynamic> arguments =
@@ -132,7 +132,7 @@ void main() {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
 
       final BillingResponse receivedCode =
-          await billingClient.launchBillingFlow(skuDetails: skuDetails);
+          await billingClient.launchBillingFlow(sku: skuDetails.sku);
 
       expect(receivedCode, equals(sentCode));
       Map<dynamic, dynamic> arguments =

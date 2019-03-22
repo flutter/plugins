@@ -34,6 +34,39 @@ class GooglePlayConnection
     return _billingClient.isReady();
   }
 
+  /// Query the product detail list.
+  ///
+  /// This method only returns [ProductDetailsResponse].
+  /// To get detailed Google Play sku list, use [BillingClient.querySkuDetails]
+  /// to get the [SkuDetailsResponseWrapper].
+  Future<ProductDetailsResponse> queryProductDetails(
+      Set<String> identifiers) async {
+    List<SkuDetailsResponseWrapper> responses = await Future.wait([
+      _billingClient.querySkuDetails(
+          skuType: SkuType.inapp, skusList: identifiers.toList()),
+      _billingClient.querySkuDetails(
+          skuType: SkuType.subs, skusList: identifiers.toList())
+    ]);
+    List<ProductDetails> productDetails =
+        responses.expand((SkuDetailsResponseWrapper response) {
+      return response.skuDetailsList;
+    }).map((SkuDetailsWrapper skuDetailWrapper) {
+      return skuDetailWrapper.toProductDetails();
+    }).toList();
+    Set<String> successIDS = productDetails
+        .map((ProductDetails productDetails) => productDetails.id)
+        .toSet();
+    List<String> notFoundIDS = identifiers.difference(successIDS).toList();
+    return ProductDetailsResponse(
+        productDetails: productDetails, notFoundIDs: notFoundIDS);
+  }
+
+  @override
+  Future<void> makePayment(
+      {String productID, String applicationUserName}) async {
+      _billingClient.launchBillingFlow(sku: productID, accountId: applicationUserName);
+  }
+
   @override
   Future<List<PurchaseDetails>> queryPastPurchases(
       {String applicationUserName}) async {
@@ -83,31 +116,4 @@ class GooglePlayConnection
       _billingClient.startConnection(onBillingServiceDisconnected: () {});
 
   Future<void> _disconnect() => _billingClient.endConnection();
-
-  /// Query the product detail list.
-  ///
-  /// This method only returns [ProductDetailsResponse].
-  /// To get detailed Google Play sku list, use [BillingClient.querySkuDetails]
-  /// to get the [SkuDetailsResponseWrapper].
-  Future<ProductDetailsResponse> queryProductDetails(
-      Set<String> identifiers) async {
-    List<SkuDetailsResponseWrapper> responses = await Future.wait([
-      _billingClient.querySkuDetails(
-          skuType: SkuType.inapp, skusList: identifiers.toList()),
-      _billingClient.querySkuDetails(
-          skuType: SkuType.subs, skusList: identifiers.toList())
-    ]);
-    List<ProductDetails> productDetails =
-        responses.expand((SkuDetailsResponseWrapper response) {
-      return response.skuDetailsList;
-    }).map((SkuDetailsWrapper skuDetailWrapper) {
-      return skuDetailWrapper.toProductDetails();
-    }).toList();
-    Set<String> successIDS = productDetails
-        .map((ProductDetails productDetails) => productDetails.id)
-        .toSet();
-    List<String> notFoundIDS = identifiers.difference(successIDS).toList();
-    return ProductDetailsResponse(
-        productDetails: productDetails, notFoundIDs: notFoundIDS);
-  }
 }

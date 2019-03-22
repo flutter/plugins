@@ -38,6 +38,10 @@ class AppStoreConnection implements InAppPurchaseConnection {
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
 
   @override
+  Future<void> makePayment({String productID, String applicationUserName}) async {
+  }
+
+  @override
   Future<List<PurchaseDetails>> queryPastPurchases(
       {String applicationUserName}) async {
     try {
@@ -81,6 +85,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
   /// This method only returns [ProductDetailsResponse].
   /// To get detailed Store Kit product list, use [SkProductResponseWrapper.startProductRequest]
   /// to get the [SKProductResponseWrapper].
+  @override
   Future<ProductDetailsResponse> queryProductDetails(
       Set<String> identifiers) async {
     final SKRequestMaker requestMaker = SKRequestMaker();
