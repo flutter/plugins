@@ -118,13 +118,6 @@ class _MyAppState extends State<MyApp> {
               'This app needs special configuration to run. Please see example/README.md for instructions.')));
     }
 
-    print('xyzzy about to query past purchases');
-    Map<String, PurchaseDetails> purchases = Map.fromEntries(
-        (await connection.queryPastPurchases()).map(
-            (PurchaseDetails purchase) =>
-                MapEntry<String, PurchaseDetails>(purchase.productId, purchase)));
-    print('xyzzy list is ${purchases.length} long');
-
     productList.addAll(response.productDetails.map(
       (ProductDetails productDetails) {
         PurchaseDetails previousPurchase = purchases[productDetails.id];
@@ -135,7 +128,9 @@ class _MyAppState extends State<MyApp> {
           subtitle: Text(
             productDetails.description,
           ),
-          trailing: previousPurchase != null ? Text(':)') : Text(productDetails.price),
+          trailing: previousPurchase != null
+              ? Text(':)')
+              : Text(productDetails.price),
         );
       },
     ));

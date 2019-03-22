@@ -107,11 +107,11 @@ class SKPaymentTransactionWrapper {
   PurchaseDetails toPurchaseDetails(String base64EncodedReceipt) {
     return PurchaseDetails(
       productId: payment.productIdentifier,
-      verificationData: PurchaseVerificationData(data: base64EncodedReceipt, source: PurchaseSource.AppStore),
+      verificationData: PurchaseVerificationData(
+          data: base64EncodedReceipt, source: PurchaseSource.AppStore),
       transactionDate: transactionTimeStamp.toString(),
     );
   }
-
 
   /// Current transaction state.
   @SKTransactionStatusConverter()

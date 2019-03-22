@@ -283,9 +283,10 @@
 }
 
 - (void)handleTransactionRestoreFailed:(NSError *)error {
-  FlutterError *fltError = [FlutterError errorWithCode:@"restore_transactions_failed"
-                                               message: error.localizedDescription
-                                               details:@"xyzzy test2"/*error.localizedDescription*/];
+  FlutterError *fltError =
+      [FlutterError errorWithCode:@"restore_transactions_failed"
+                          message:error.localizedDescription
+                          details:@"xyzzy test2" /*error.localizedDescription*/];
   [self.callbackChannel invokeMethod:@"restoreCompletedTransactions" arguments:fltError];
 }
 

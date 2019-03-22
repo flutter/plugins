@@ -8,15 +8,20 @@ part 'enum_converters.g.dart';
 ///
 /// Use these in `@JsonSerializable()` classes by annotating them with
 /// `@SKTransactionStatusConverter()`.
-class SKTransactionStatusConverter implements JsonConverter<SKPaymentTransactionStateWrapper, int> {
+class SKTransactionStatusConverter
+    implements JsonConverter<SKPaymentTransactionStateWrapper, int> {
   const SKTransactionStatusConverter();
 
   @override
-  SKPaymentTransactionStateWrapper fromJson(int json) => _$enumDecode<SKPaymentTransactionStateWrapper>(
-      _$SKPaymentTransactionStateWrapperEnumMap.cast<SKPaymentTransactionStateWrapper, dynamic>(), json);
+  SKPaymentTransactionStateWrapper fromJson(int json) =>
+      _$enumDecode<SKPaymentTransactionStateWrapper>(
+          _$SKPaymentTransactionStateWrapperEnumMap
+              .cast<SKPaymentTransactionStateWrapper, dynamic>(),
+          json);
 
   @override
-  int toJson(SKPaymentTransactionStateWrapper object) => _$SKPaymentTransactionStateWrapperEnumMap[object];
+  int toJson(SKPaymentTransactionStateWrapper object) =>
+      _$SKPaymentTransactionStateWrapperEnumMap[object];
 
   PurchaseStatus toPurchaseStatus(SKPaymentTransactionStateWrapper object) {
     switch (object) {

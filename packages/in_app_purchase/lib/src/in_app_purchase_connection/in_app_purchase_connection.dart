@@ -39,8 +39,6 @@ abstract class InAppPurchaseConnection {
   /// Query product details list that match the given set of identifiers.
   Future<ProductDetailsResponse> queryProductDetails(Set<String> identifiers);
 
-  Future<List<PurchaseDetails>> queryPastPurchases();
-
   /// The [InAppPurchaseConnection] implemented for this platform.
   ///
   /// Throws an [UnsupportedError] when accessed on a platform other than
