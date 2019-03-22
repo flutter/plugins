@@ -112,10 +112,8 @@ class SKPaymentTransactionWrapper {
     return PurchaseDetails(
       purchaseID: transactionIdentifier,
       productId: payment.productIdentifier,
-      verificationData: (base64EncodedReceipt != null)
-          ? PurchaseVerificationData(
-              data: base64EncodedReceipt, source: PurchaseSource.AppStore)
-          : null,
+      verificationData: PurchaseVerificationData(
+          data: base64EncodedReceipt, source: PurchaseSource.AppStore),
       transactionDate: (transactionTimeStamp * 1000).toInt().toString(),
       originalPurchase: originalTransaction != null
           ? originalTransaction.toPurchaseDetails(null)

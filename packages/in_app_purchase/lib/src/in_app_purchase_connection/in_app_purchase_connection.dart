@@ -19,6 +19,10 @@ class PurchaseVerificationData {
   /// The data used for verification.
   ///
   /// If the [source] is [PurchaseSource.AppStore], data will be based64 encoded. The structure of the payload is defined using ASN.1.
+  /// If the platform is iOS, it is possible the data can be null or your validation of this data turns out invalid. When these happen,
+  /// Call [SKRequestMaker.startRefreshReceiptRequest] and then call [SKReceiptManager.retrieveReceiptData] to retrieve a new receipt. Finally,
+  /// validate th receipt data again using one of the methods mentioned in [`Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
+  ///
   /// You can use the receipt data retrieved by this method to validate users' purchases.
   final String data;
 
@@ -42,9 +46,13 @@ class PurchaseDetails {
 
   /// The verification data of the purchase.
   ///
-  /// Use to verify the purchase.
+  /// Use this to verify the purchase.
+  ///
   /// For details on how to verify your purchase on iOS,
-  /// you can refer to Apple's document about [`About Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
+  /// you can refer to Apple's document about [`Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
+  ///
+  /// on Android, all purchase information should also be verified manually, with your
+  /// server if at all possible. See [`Verify a purchase`](https://developer.android.com/google/play/billing/billing_library_overview#Verify).
   final PurchaseVerificationData verificationData;
 
   /// The timestamp of the transaction.

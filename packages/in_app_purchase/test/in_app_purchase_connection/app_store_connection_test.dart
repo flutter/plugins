@@ -58,6 +58,16 @@ void main() {
           fakeIOSPlatform.transactions.first.transactionIdentifier);
       expect(purchases.last.purchaseID,
           fakeIOSPlatform.transactions.last.transactionIdentifier);
+      expect(purchases.first.verificationData.data, 'dummy base64data');
+    });
+
+    test('receipt error should populate null to verificationData.data',
+        () async {
+      fakeIOSPlatform.receiptData = null;
+      List<PurchaseDetails> purchases =
+          await AppStoreConnection.instance.queryPastPurchases();
+      expect(purchases.first.verificationData.data, null);
+      fakeIOSPlatform.receiptData = 'dummy base64data';
     });
   });
 }
@@ -69,6 +79,7 @@ class FakeIOSPlatform {
   }
 
   // pre-configured store informations
+  String receiptData = 'dummy base64data';
   Set<String> validProductIDs = ['123', '456'].toSet();
   Map<String, SKProductWrapper> validProducts = Map();
   List<SKPaymentTransactionWrapper> transactions = [];
@@ -130,7 +141,11 @@ class FakeIOSPlatform {
             .paymentQueueRestoreCompletedTransactionsFinished();
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
-        return Future<void>.value('dummybase64data');
+        if (receiptData != null) {
+          return Future<void>.value('dummy base64data');
+        } else {
+          throw PlatformException(code: 'no_receipt_data');
+        }
     }
     return Future<void>.sync(() {});
   }

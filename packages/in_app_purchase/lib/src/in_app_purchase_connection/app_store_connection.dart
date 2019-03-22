@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
+import 'package:in_app_purchase/store_kit_wrappers.dart';
 
 /// An [InAppPurchaseConnection] that wraps StoreKit.
 ///
@@ -41,11 +42,16 @@ class AppStoreConnection implements InAppPurchaseConnection {
   Future<List<PurchaseDetails>> queryPastPurchases(
       {String applicationUserName}) async {
     try {
+      String receiptData;
+      try {
+        receiptData = await SKReceiptManager.retrieveReceiptData();
+      } catch (e) {
+        receiptData = null;
+      }
       final List<SKPaymentTransactionWrapper> restoredTransactions =
           await _observer.getRestoredTransactions(
               queue: _skPaymentQueueWrapper,
               applicationUserName: applicationUserName);
-      final String receiptData = await SKReceiptManager.retrieveReceiptData();
       _observer.cleanUpRestoredTransactions();
       return restoredTransactions
           .where((SKPaymentTransactionWrapper wrapper) =>
@@ -55,7 +61,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
               wrapper.toPurchaseDetails(receiptData))
           .toList();
     } catch (e) {
-      print('failed to query past purchases $e');
+      print('Failed to query past purchases $e');
       return <PurchaseDetails>[];
     }
   }
