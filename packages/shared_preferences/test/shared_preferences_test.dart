@@ -125,13 +125,13 @@ void main() {
           ));
     });
 
-    test('contains', () async {
+    test('containsKey', () async {
       const String key = 'testKey';
 
-      expect(false, preferences.contains(key));
+      expect(false, preferences.containsKey(key));
 
       preferences.setString(key, 'test');
-      expect(true, preferences.contains(key));
+      expect(true, preferences.containsKey(key));
     });
 
     test('clearing', () async {
