@@ -1,3 +1,7 @@
+## 0.10.0
+
+* Add metadata field to DocumentSnapshot.
+
 ## 0.9.7+1
 
 * Update README with example of getting a document.
