@@ -88,6 +88,8 @@ class DocumentReference {
     return DocumentSnapshot._(
       data['path'],
       _asStringKeyedMap(data['data']),
+      SnapshotMetadata._(data['metadata']['hasPendingWrites'],
+          data['metadata']['isFromCache']),
       firestore,
     );
   }

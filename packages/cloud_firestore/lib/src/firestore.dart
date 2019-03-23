@@ -18,6 +18,8 @@ class Firestore {
         final DocumentSnapshot snapshot = DocumentSnapshot._(
           call.arguments['path'],
           _asStringKeyedMap(call.arguments['data']),
+          SnapshotMetadata._(call.arguments['metadata']['hasPendingWrites'],
+              call.arguments['metadata']['isFromCache']),
           this,
         );
         _documentObservers[call.arguments['handle']].add(snapshot);
