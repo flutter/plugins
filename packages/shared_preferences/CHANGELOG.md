@@ -1,6 +1,6 @@
 ## 0.5.2
 
-* Add contains method.
+* Add containsKey method.
 
 ## 0.5.1+2
 
