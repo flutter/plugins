@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -24,9 +24,14 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
-class WebViewExample extends StatelessWidget {
-  final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
+class WebViewExample extends StatefulWidget {
+  @override
+  _WebViewExampleState createState() => _WebViewExampleState();
+}
+
+class _WebViewExampleState extends State<WebViewExample> {
+  WebViewController _controller;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +40,8 @@ class WebViewExample extends StatelessWidget {
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
-          NavigationControls(_controller.future),
-          SampleMenu(_controller.future),
+          NavigationControls(_controller, _isLoading),
+          SampleMenu(_controller),
         ],
       ),
       // We're using a Builder here so we have a context that is below the Scaffold
@@ -46,7 +51,9 @@ class WebViewExample extends StatelessWidget {
           initialUrl: 'https://flutter.dev',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
-            _controller.complete(webViewController);
+            setState(() {
+              _controller = webViewController;
+            });
           },
           // TODO(iskakaushik): Remove this when collection literals makes it to stable.
           // ignore: prefer_collection_literals
@@ -63,6 +70,41 @@ class WebViewExample extends StatelessWidget {
           },
           onPageFinished: (String url) {
             print('Page finished loading: $url');
+            setState(() {
+              _isLoading = false;
+            });
+          },
+          onPageStarted: (String url) {
+            setState(() {
+              _isLoading = true;
+            });
+          },
+          onReceivedError: (WebViewError error) {
+            if (error.isForMainFrame) {
+              setState(() {
+                _isLoading = false;
+              });
+              showDialog<void>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                        title: const Text('Error while loading web site.'),
+                        content: Text(error.description),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: const Text('Retry'),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              await _controller.loadUrl(error.url);
+                            },
+                          ),
+                          FlatButton(
+                              child: const Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              }),
+                        ],
+                      ));
+            }
           },
         );
       }),
@@ -81,23 +123,20 @@ class WebViewExample extends StatelessWidget {
   }
 
   Widget favoriteButton() {
-    return FutureBuilder<WebViewController>(
-        future: _controller.future,
-        builder: (BuildContext context,
-            AsyncSnapshot<WebViewController> controller) {
-          if (controller.hasData) {
-            return FloatingActionButton(
-              onPressed: () async {
-                final String url = await controller.data.currentUrl();
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(content: Text('Favorited $url')),
-                );
-              },
-              child: const Icon(Icons.favorite),
+    return Builder(builder: (BuildContext context) {
+      if (_controller != null) {
+        return FloatingActionButton(
+          onPressed: () async {
+            final String url = await _controller.currentUrl();
+            Scaffold.of(context).showSnackBar(
+              SnackBar(content: Text('Favorited $url')),
             );
-          }
-          return Container();
-        });
+          },
+          child: const Icon(Icons.favorite),
+        );
+      }
+      return Container();
+    });
   }
 }
 
@@ -109,79 +148,97 @@ enum MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  error404,
+  error500,
+  errorUnknownHost,
 }
 
 class SampleMenu extends StatelessWidget {
   SampleMenu(this.controller);
 
-  final Future<WebViewController> controller;
+  final WebViewController controller;
   final CookieManager cookieManager = CookieManager();
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<WebViewController>(
-      future: controller,
-      builder:
-          (BuildContext context, AsyncSnapshot<WebViewController> controller) {
-        return PopupMenuButton<MenuOptions>(
-          onSelected: (MenuOptions value) {
-            switch (value) {
-              case MenuOptions.showUserAgent:
-                _onShowUserAgent(controller.data, context);
-                break;
-              case MenuOptions.listCookies:
-                _onListCookies(controller.data, context);
-                break;
-              case MenuOptions.clearCookies:
-                _onClearCookies(context);
-                break;
-              case MenuOptions.addToCache:
-                _onAddToCache(controller.data, context);
-                break;
-              case MenuOptions.listCache:
-                _onListCache(controller.data, context);
-                break;
-              case MenuOptions.clearCache:
-                _onClearCache(controller.data, context);
-                break;
-              case MenuOptions.navigationDelegate:
-                _onNavigationDelegateExample(controller.data, context);
-                break;
-            }
-          },
-          itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
-                PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.showUserAgent,
-                  child: const Text('Show user agent'),
-                  enabled: controller.hasData,
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.listCookies,
-                  child: Text('List cookies'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.clearCookies,
-                  child: Text('Clear cookies'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.addToCache,
-                  child: Text('Add to cache'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.listCache,
-                  child: Text('List cache'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.clearCache,
-                  child: Text('Clear cache'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.navigationDelegate,
-                  child: Text('Navigation Delegate example'),
-                ),
-              ],
-        );
+    return PopupMenuButton<MenuOptions>(
+      onSelected: (MenuOptions value) {
+        switch (value) {
+          case MenuOptions.showUserAgent:
+            _onShowUserAgent(controller, context);
+            break;
+          case MenuOptions.listCookies:
+            _onListCookies(controller, context);
+            break;
+          case MenuOptions.clearCookies:
+            _onClearCookies(context);
+            break;
+          case MenuOptions.addToCache:
+            _onAddToCache(controller, context);
+            break;
+          case MenuOptions.listCache:
+            _onListCache(controller, context);
+            break;
+          case MenuOptions.clearCache:
+            _onClearCache(controller, context);
+            break;
+          case MenuOptions.navigationDelegate:
+            _onNavigationDelegateExample(controller, context);
+            break;
+          case MenuOptions.error404:
+            controller.loadUrl('https://httpstat.us/404');
+            break;
+          case MenuOptions.error500:
+            controller.loadUrl('https://httpstat.us/500');
+            break;
+          case MenuOptions.errorUnknownHost:
+            controller.loadUrl('https://unknown.invalid/');
+            break;
+        }
       },
+      itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
+            PopupMenuItem<MenuOptions>(
+              value: MenuOptions.showUserAgent,
+              child: const Text('Show user agent'),
+              enabled: controller != null,
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.listCookies,
+              child: Text('List cookies'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.clearCookies,
+              child: Text('Clear cookies'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.addToCache,
+              child: Text('Add to cache'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.listCache,
+              child: Text('List cache'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.clearCache,
+              child: Text('Clear cache'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.navigationDelegate,
+              child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.error404,
+              child: Text('Force Error: 404'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.error500,
+              child: Text('Force Error: 500'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.errorUnknownHost,
+              child: Text('Force Error: Unknown Host'),
+            ),
+          ],
     );
   }
 
@@ -264,64 +321,65 @@ class SampleMenu extends StatelessWidget {
 }
 
 class NavigationControls extends StatelessWidget {
-  const NavigationControls(this._webViewControllerFuture)
-      : assert(_webViewControllerFuture != null);
+  const NavigationControls(this._webViewController, this._isLoading)
+      : assert(_isLoading != null);
 
-  final Future<WebViewController> _webViewControllerFuture;
+  final WebViewController _webViewController;
+
+  final bool _isLoading;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<WebViewController>(
-      future: _webViewControllerFuture,
-      builder:
-          (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
-        final bool webViewReady =
-            snapshot.connectionState == ConnectionState.done;
-        final WebViewController controller = snapshot.data;
-        return Row(
-          children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios),
-              onPressed: !webViewReady
-                  ? null
-                  : () async {
-                      if (await controller.canGoBack()) {
-                        controller.goBack();
-                      } else {
-                        Scaffold.of(context).showSnackBar(
-                          const SnackBar(content: Text("No back history item")),
-                        );
-                        return;
-                      }
-                    },
-            ),
-            IconButton(
-              icon: const Icon(Icons.arrow_forward_ios),
-              onPressed: !webViewReady
-                  ? null
-                  : () async {
-                      if (await controller.canGoForward()) {
-                        controller.goForward();
-                      } else {
-                        Scaffold.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text("No forward history item")),
-                        );
-                        return;
-                      }
-                    },
-            ),
-            IconButton(
-              icon: const Icon(Icons.replay),
-              onPressed: !webViewReady
-                  ? null
-                  : () {
-                      controller.reload();
-                    },
-            ),
-          ],
-        );
-      },
+    final bool webViewReady = _webViewController != null;
+    final WebViewController controller = _webViewController;
+    return Row(
+      children: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: !webViewReady
+              ? null
+              : () async {
+                  if (await controller.canGoBack()) {
+                    controller.goBack();
+                  } else {
+                    Scaffold.of(context).showSnackBar(
+                      const SnackBar(content: Text("No back history item")),
+                    );
+                    return;
+                  }
+                },
+        ),
+        IconButton(
+          icon: const Icon(Icons.arrow_forward_ios),
+          onPressed: !webViewReady
+              ? null
+              : () async {
+                  if (await controller.canGoForward()) {
+                    controller.goForward();
+                  } else {
+                    Scaffold.of(context).showSnackBar(
+                      const SnackBar(content: Text("No forward history item")),
+                    );
+                    return;
+                  }
+                },
+        ),
+        webViewReady && _isLoading
+            ? IconButton(
+                icon: const Icon(Icons.cancel),
+                onPressed: () {
+                  controller.stopLoading();
+                },
+              )
+            : IconButton(
+                icon: const Icon(Icons.replay),
+                onPressed: !webViewReady
+                    ? null
+                    : () {
+                        controller.reload();
+                      },
+              ),
+      ],
     );
   }
 }

@@ -576,6 +576,26 @@ void main() {
     expect(ttsMessagesReceived, <String>['Hello', 'World']);
   });
 
+  group('$PageStartedCallback', () {
+    testWidgets('onPageStarted is called.', (WidgetTester tester) async {
+      String returnedUrl;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: (String url) {
+          returnedUrl = url;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      platformWebView.fakeOnPageStartedCallback();
+
+      expect(platformWebView.currentUrl, returnedUrl);
+    });
+  });
+
   group('$PageFinishedCallback', () {
     testWidgets('onPageFinished is not null', (WidgetTester tester) async {
       String returnedUrl;
@@ -805,6 +825,21 @@ class FakePlatformWebView {
         _loadUrl(url);
       }
     });
+  }
+
+  void fakeOnPageStartedCallback() {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+
+    final ByteData data = codec.encodeMethodCall(MethodCall(
+      'onPageStarted',
+      <dynamic, dynamic>{'url': currentUrl},
+    ));
+
+    BinaryMessages.handlePlatformMessage(
+      channel.name,
+      data,
+      (ByteData data) {},
+    );
   }
 
   void fakeOnPageFinishedCallback() {

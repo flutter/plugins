@@ -5,14 +5,18 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.webkit.WebViewClientCompat;
 import io.flutter.plugin.common.MethodChannel;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,6 +76,62 @@ class FlutterWebViewClient {
     methodChannel.invokeMethod("onPageFinished", args);
   }
 
+  private void onPageStarted(WebView view, String url, Bitmap favicon) {
+    methodChannel.invokeMethod("onPageStarted", Collections.singletonMap("url", url));
+  }
+
+  private String parseWebViewErrorCode(int errorCode) {
+    switch (errorCode) {
+      case WebViewClient.ERROR_CONNECT:
+        return "connect";
+      case WebViewClient.ERROR_FAILED_SSL_HANDSHAKE:
+        return "failedSslHandshake";
+      case WebViewClient.ERROR_BAD_URL:
+        return "badUrl";
+      case WebViewClient.ERROR_TOO_MANY_REQUESTS:
+        return "tooManyRequests";
+      case WebViewClient.ERROR_REDIRECT_LOOP:
+        return "redirectLoop";
+      default:
+        return "unknown";
+    }
+  }
+
+  private void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("isConnectError", true);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      map.put("description", error.getDescription().toString());
+      map.put("connectErrorType", parseWebViewErrorCode(error.getErrorCode()));
+    } else {
+      map.put("description", error.toString());
+      map.put("connectErrorType", "unknown");
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      map.put("url", request.getUrl().toString());
+      map.put("isForMainFrame", request.isForMainFrame());
+    } else {
+      // before Lollipop we only receive errors for the main frame.
+      map.put("isForMainFrame", true);
+    }
+    this.methodChannel.invokeMethod("onReceivedError", map);
+  }
+
+  private void onReceivedHttpError(
+      WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("isConnectError", false);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      map.put("url", request.getUrl().toString());
+      map.put("description", errorResponse.getReasonPhrase());
+      map.put("isForMainFrame", request.isForMainFrame());
+    } else {
+      // before Lollipop we only receive errors for the main frame.
+      map.put("isForMainFrame", true);
+    }
+    this.methodChannel.invokeMethod("onReceivedError", map);
+  }
+
   private void notifyOnNavigationRequest(
       String url, Map<String, String> headers, WebView webview, boolean isMainFrame) {
     HashMap<String, Object> args = new HashMap<>();
@@ -109,6 +169,23 @@ class FlutterWebViewClient {
       @Override
       public void onPageFinished(WebView view, String url) {
         FlutterWebViewClient.this.onPageFinished(view, url);
+      }
+
+      @Override
+      public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        FlutterWebViewClient.this.onPageStarted(view, url, favicon);
+      }
+
+      @Override
+      public void onReceivedError(
+          WebView view, WebResourceRequest request, WebResourceError error) {
+        FlutterWebViewClient.this.onReceivedError(view, request, error);
+      }
+
+      @Override
+      public void onReceivedHttpError(
+          WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+        FlutterWebViewClient.this.onReceivedHttpError(view, request, errorResponse);
       }
     };
   }

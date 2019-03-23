@@ -69,6 +69,70 @@ typedef NavigationDecision NavigationDelegate(NavigationRequest navigation);
 /// Signature for when a [WebView] has finished loading a page.
 typedef void PageFinishedCallback(String url);
 
+/// Signature for callback which is called when page started loading.
+typedef void PageStartedCallback(String url);
+
+/// Type of connection error.
+enum WebViewConnectErrorType {
+  /// Error while trying to connect to remote server, can include
+  /// unavailability of network connection, failing to resolve DNS, etc.
+  connect,
+
+  /// SSL handshake errors (e.g. untrusted certificate, bad expiry or
+  /// validation date, unknown root certificates).
+  failedSslHandshake,
+
+  /// Given URL was invalid or unable to parse.
+  badUrl,
+
+  tooManyRequests,
+
+  /// Too many requests during this load. (android only).
+  redirectLoop,
+
+  /// All other errors.
+  unknown,
+}
+
+const Map<String, WebViewConnectErrorType> _webViewConnectErrorTypes =
+    <String, WebViewConnectErrorType>{
+  'connect': WebViewConnectErrorType.connect,
+  'failedSslHandshake': WebViewConnectErrorType.failedSslHandshake,
+  'badUrl': WebViewConnectErrorType.badUrl,
+  'tooManyRequests': WebViewConnectErrorType.tooManyRequests,
+  'redirectLoop': WebViewConnectErrorType.redirectLoop,
+  'unknown': WebViewConnectErrorType.unknown,
+};
+
+/// Generic error during loading page in [WebView].
+class WebViewError {
+  WebViewError({
+    @required this.url,
+    @required this.description,
+    @required this.isForMainFrame,
+    @required this.isConnectError,
+    this.connectErrorType,
+  });
+
+  /// URL of the page when the error happened. (might be null if unknown)
+  final String url;
+
+  /// Localized description of the error. (might be null if unknown reason)
+  final String description;
+
+  /// On android since Lollipop all errors (even for sub resources/iframes are propagated)
+  /// on other devices this is always false.
+  final bool isForMainFrame;
+
+  /// Whether this represents a connection error, or a http level error.
+  final bool isConnectError;
+
+  /// Error type for connection errors. (null for other error types).
+  final WebViewConnectErrorType connectErrorType;
+}
+
+typedef void ReceivedErrorCallback(WebViewError error);
+
 final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
 
 /// A named channel for receiving messaged from JavaScript code running inside a web view.
@@ -116,7 +180,9 @@ class WebView extends StatefulWidget {
     this.javascriptChannels,
     this.navigationDelegate,
     this.gestureRecognizers,
+    this.onPageStarted,
     this.onPageFinished,
+    this.onReceivedError,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -193,6 +259,11 @@ class WebView extends StatefulWidget {
   ///     * When a navigationDelegate is set HTTP requests do not include the HTTP referer header.
   final NavigationDelegate navigationDelegate;
 
+  /// Invoked when a page starts loading.
+  ///
+  /// This is invoked only for the main frame.
+  final PageStartedCallback onPageStarted;
+
   /// Invoked when a page has finished loading.
   ///
   /// This is invoked only for the main frame.
@@ -204,6 +275,12 @@ class WebView extends StatefulWidget {
   /// directly in the HTML has been loaded and code injected with
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
+
+  /// Invoked if an error is encountered while loading
+  /// resources in the [WebView].
+  ///
+  /// See [WebViewError.isForMainFrame]
+  final ReceivedErrorCallback onReceivedError;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -398,11 +475,34 @@ class WebViewController {
         final bool allowNavigation = _widget.navigationDelegate == null ||
             _widget.navigationDelegate(request) == NavigationDecision.navigate;
         return allowNavigation;
+      case 'onPageStarted':
+        if (_widget.onPageStarted != null) {
+          _widget.onPageStarted(call.arguments['url']);
+        }
+        return null;
       case 'onPageFinished':
         if (_widget.onPageFinished != null) {
           _widget.onPageFinished(call.arguments['url']);
         }
 
+        return null;
+      case 'onReceivedError':
+        if (_widget.onReceivedError != null) {
+          final bool isConnectError =
+              call.arguments['isConnectError'] ? true : false;
+          final WebViewConnectErrorType connectErrorType = call
+                      .arguments['connectErrorType'] !=
+                  null
+              ? _webViewConnectErrorTypes[call.arguments['connectErrorType']]
+              : null;
+          _widget.onReceivedError(WebViewError(
+            url: call.arguments['url'],
+            description: call.arguments['description'],
+            isForMainFrame: call.arguments['isForMainFrame'] ?? true,
+            isConnectError: isConnectError,
+            connectErrorType: connectErrorType,
+          ));
+        }
         return null;
     }
     throw MissingPluginException(
@@ -488,6 +588,14 @@ class WebViewController {
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod("reload");
+  }
+
+  /// Stops the current loading request.
+  Future<void> stopLoading() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    return _channel.invokeMethod("stopLoading");
   }
 
   /// Clears all caches used by the [WebView].

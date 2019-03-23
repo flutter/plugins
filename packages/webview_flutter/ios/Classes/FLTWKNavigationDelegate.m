@@ -5,10 +5,10 @@
 #import "FLTWKNavigationDelegate.h"
 
 @implementation FLTWKNavigationDelegate {
-  FlutterMethodChannel* _methodChannel;
+  FlutterMethodChannel *_methodChannel;
 }
 
-- (instancetype)initWithChannel:(FlutterMethodChannel*)channel {
+- (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
   self = [super init];
   if (self) {
     _methodChannel = channel;
@@ -16,14 +16,14 @@
   return self;
 }
 
-- (void)webView:(WKWebView*)webView
-    decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction
+- (void)webView:(WKWebView *)webView
+    decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
                     decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
   if (!self.hasDartNavigationDelegate) {
     decisionHandler(WKNavigationActionPolicyAllow);
     return;
   }
-  NSDictionary* arguments = @{
+  NSDictionary *arguments = @{
     @"url" : navigationAction.request.URL.absoluteString,
     @"isForMainFrame" : @(navigationAction.targetFrame.isMainFrame)
   };
@@ -50,13 +50,85 @@
                             decisionHandler(WKNavigationActionPolicyAllow);
                             return;
                           }
-                          NSNumber* typedResult = result;
+                          NSNumber *typedResult = result;
                           decisionHandler([typedResult boolValue] ? WKNavigationActionPolicyAllow
                                                                   : WKNavigationActionPolicyCancel);
                         }];
 }
 
-- (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation {
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
   [_methodChannel invokeMethod:@"onPageFinished" arguments:@{@"url" : webView.URL.absoluteString}];
 }
+
+- (NSString *)parseErrorCode:(NSInteger)errorCode {
+  switch (errorCode) {
+    case NSURLErrorNotConnectedToInternet:
+      return @"connect";
+    case NSURLErrorSecureConnectionFailed:
+    case NSURLErrorServerCertificateUntrusted:
+    case NSURLErrorServerCertificateHasBadDate:
+    case NSURLErrorServerCertificateNotYetValid:
+    case NSURLErrorServerCertificateHasUnknownRoot:
+      return @"failedSslHandshake";
+    case NSURLErrorHTTPTooManyRedirects:
+      return @"redirectLoop";
+    case NSURLErrorUnsupportedURL:
+    case NSURLErrorBadURL:
+      return @"badUrl";
+    default:
+      return @"unknown";
+  }
+}
+
+- (void)webView:(WKWebView *)webView
+    didFailProvisionalNavigation:(WKNavigation *)navigation
+                       withError:(NSError *)error {
+  [_methodChannel invokeMethod:@"onReceivedError"
+                     arguments:@{
+                       @"isConnectError" : @YES,
+                       @"url" : error.userInfo[NSURLErrorFailingURLStringErrorKey]
+                           ?: webView.URL.absoluteString ?: [NSNull null],
+                       @"description" : [error localizedDescription],
+                       @"connectErrorType" : [self parseErrorCode:error.code],
+                     }];
+}
+
+- (void)webView:(WKWebView *)webView
+    didFailNavigation:(WKNavigation *)navigation
+            withError:(NSError *)error {
+  [_methodChannel invokeMethod:@"onReceivedError"
+                     arguments:@{
+                       @"isConnectError" : @YES,
+                       @"url" : webView.URL.absoluteString,
+                       @"description" : [error localizedDescription],
+                       @"connectErrorType" : [self parseErrorCode:error.code],
+                     }];
+}
+
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
+  [_methodChannel invokeMethod:@"onPageStarted"
+                     arguments:@{
+                       @"url" : webView.URL.absoluteString ?: [NSNull null],
+                     }];
+}
+
+- (void)webView:(WKWebView *)webView
+    decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse
+                      decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
+  if ([navigationResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
+    NSHTTPURLResponse *response = (NSHTTPURLResponse *)navigationResponse.response;
+    if (response.statusCode >= 400 && response.statusCode < 600) {
+      [_methodChannel invokeMethod:@"onReceivedError"
+                         arguments:@{
+                           @"isConnectError" : @NO,
+                           @"url" : response.URL.absoluteString,
+                           @"description" :
+                               [NSHTTPURLResponse localizedStringForStatusCode:response.statusCode],
+                         }];
+    }
+  }
+
+  decisionHandler(WKNavigationResponsePolicyAllow);
+}
+
 @end
