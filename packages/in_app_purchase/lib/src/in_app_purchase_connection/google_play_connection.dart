@@ -62,9 +62,13 @@ class GooglePlayConnection
   }
 
   @override
-  Future<void> makePayment(
+  Future<PurchaseResponse> makePayment(
       {String productID, String applicationUserName}) async {
-      _billingClient.launchBillingFlow(sku: productID, accountId: applicationUserName);
+      BillingResponse response = await _billingClient.launchBillingFlow(sku: productID, accountId: applicationUserName);
+      print('xx ' + response.toString());
+      PurchaseStatus status = response == BillingResponse.ok ? PurchaseStatus.purchased :PurchaseStatus.error;
+      String error = response == BillingResponse.ok ? null : response.toString();
+      return PurchaseResponse(status: status, error: error);
   }
 
   @override

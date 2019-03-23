@@ -172,4 +172,61 @@ void main() {
           purcahseDetails.first.verificationData.serverVerificationData);
     });
   });
+
+  group('make payment', () {
+    final String launchMethodName =
+        'BillingClient#launchBillingFlow(Activity, BillingFlowParams)';
+    test('serializes and deserializes data', () async {
+      final BillingResponse sentCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode));
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+
+      final PurchaseResponse response = await GooglePlayConnection.instance
+          .makePayment(productID: skuDetails.sku, applicationUserName: accountId);
+
+      expect(response.status, PurchaseStatus.purchased);
+      Map<dynamic, dynamic> arguments =
+          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      expect(arguments['sku'], equals(skuDetails.sku));
+      expect(arguments['accountId'], equals(accountId));
+    });
+
+    test('handles null accountId', () async {
+      final BillingResponse sentCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode));
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+
+      final PurchaseResponse response = await GooglePlayConnection.instance
+          .makePayment(productID: skuDetails.sku, applicationUserName: null);
+
+      expect(response.status, PurchaseStatus.purchased);
+      Map<dynamic, dynamic> arguments =
+          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      expect(arguments['sku'], equals(skuDetails.sku));
+      expect(arguments['accountId'], isNull);
+    });
+
+    test('handles error', () async {
+      final BillingResponse sentCode = BillingResponse.userCanceled;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode));
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+
+      final PurchaseResponse response = await GooglePlayConnection.instance
+          .makePayment(productID: skuDetails.sku, applicationUserName: null);
+
+      expect(response.status, PurchaseStatus.error);
+      expect(response.error, sentCode.toString());
+      Map<dynamic, dynamic> arguments =
+          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      expect(arguments['sku'], equals(skuDetails.sku));
+      expect(arguments['accountId'], isNull);
+    });
+  });
 }

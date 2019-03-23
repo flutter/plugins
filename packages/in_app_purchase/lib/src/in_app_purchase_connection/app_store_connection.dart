@@ -38,7 +38,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
 
   @override
-  Future<void> makePayment({String productID, String applicationUserName}) async {
+  Future<PurchaseResponse> makePayment({String productID, String applicationUserName}) async {
   }
 
   @override

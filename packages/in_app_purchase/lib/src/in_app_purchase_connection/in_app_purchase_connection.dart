@@ -49,7 +49,23 @@ class PurchaseVerificationData {
 
 enum PurchaseSource { GooglePlay, AppStore }
 
-enum PurchaseStatus { pending, purchased, error }
+enum PurchaseStatus {
+
+  /// The purchase process is pending.
+  ///
+  /// You can update UI to let your users know the purchase is pending.
+  pending,
+
+  /// The purchase is finished and successful.
+  ///
+  /// Update your UI to indicate the purchase is finished and deliver the product.
+  /// On Android, the google play store is handling the purchase, so we set the status to
+  /// `purchased` as long as we can successfully launch play store purchase flow.
+  purchased,
+
+  /// Some error occurred in the purchase. The purchasing process if aborted.
+  error
+}
 
 /// Represents the transaction details of a purchase.
 class PurchaseDetails {
@@ -84,6 +100,20 @@ class PurchaseDetails {
       this.originalPurchase});
 }
 
+/// Represents the response of a [InAppPurchaseConnection.makePayment] call.
+class PurchaseResponse {
+
+  PurchaseResponse({
+    @required this.status, this.error
+  });
+
+  /// The status of the purchase response.
+  PurchaseStatus status;
+
+  /// Only available if the [status] is [PurchaseStatus.error]
+  String error;
+}
+
 /// Basic generic API for making in app purchases across multiple platforms.
 abstract class InAppPurchaseConnection {
   /// Returns true if the payment platform is ready and available.
@@ -96,7 +126,7 @@ abstract class InAppPurchaseConnection {
   ///
   /// The `productID` is the product ID to create payment for.
   /// The `applicationUserName`
-  Future<void> makePayment({String productID, String applicationUserName});
+  Future<PurchaseResponse> makePayment({String productID, String applicationUserName});
 
   /// Query all the past purchases.
   ///
