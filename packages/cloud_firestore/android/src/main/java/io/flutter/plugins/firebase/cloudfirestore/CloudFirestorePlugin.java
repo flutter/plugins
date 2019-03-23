@@ -131,7 +131,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       change.put("document", documentChange.getDocument().getData());
       change.put("path", documentChange.getDocument().getReference().getPath());
       Map<String, Object> metadata = new HashMap();
-      metadata.put("hasPendingWrites", documentChange.getDocument().getMetadata().hasPendingWrites());
+      metadata.put(
+          "hasPendingWrites", documentChange.getDocument().getMetadata().hasPendingWrites());
       metadata.put("isFromCache", documentChange.getDocument().getMetadata().isFromCache());
       change.put("metadata", metadata);
       documentChanges.add(change);
@@ -355,8 +356,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                   snapshotMap.put("data", null);
                 }
                 Map<String, Object> metadata = new HashMap();
-                  metadata.put("hasPendingWrites", documentSnapshot.getMetadata().hasPendingWrites());
-                  metadata.put("isFromCache", documentSnapshot.getMetadata().isFromCache());
+                metadata.put("hasPendingWrites", documentSnapshot.getMetadata().hasPendingWrites());
+                metadata.put("isFromCache", documentSnapshot.getMetadata().isFromCache());
                 snapshotMap.put("metadata", metadata);
                 result.success(snapshotMap);
               } catch (FirebaseFirestoreException e) {
@@ -564,7 +565,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                       Map<String, Object> snapshotMap = new HashMap<>();
                       Map<String, Object> metadata = new HashMap<>();
-                      metadata.put("hasPendingWrites", documentSnapshot.getMetadata().hasPendingWrites());
+                      metadata.put(
+                          "hasPendingWrites", documentSnapshot.getMetadata().hasPendingWrites());
                       metadata.put("isFromCache", documentSnapshot.getMetadata().isFromCache());
                       snapshotMap.put("metadata", metadata);
                       snapshotMap.put("path", documentSnapshot.getReference().getPath());
