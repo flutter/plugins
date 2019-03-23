@@ -58,7 +58,7 @@ void main() {
                     'handle': handle,
                     'paths': <String>["${methodCall.arguments['path']}/0"],
                     'documents': <dynamic>[kMockDocumentSnapshotData],
-                    'metadatas': [kMockSnapshotMetadata],
+                    'metadatas': <Map<String, dynamic>>[kMockSnapshotMetadata],
                     'documentChanges': <dynamic>[
                       <String, dynamic>{
                         'oldIndex': -1,
@@ -97,7 +97,7 @@ void main() {
             return <String, dynamic>{
               'paths': <String>["${methodCall.arguments['path']}/0"],
               'documents': <dynamic>[kMockDocumentSnapshotData],
-              'metadatas': [kMockSnapshotMetadata],
+              'metadatas': <Map<String, dynamic>>[kMockSnapshotMetadata],
               'documentChanges': <dynamic>[
                 <String, dynamic>{
                   'oldIndex': -1,
