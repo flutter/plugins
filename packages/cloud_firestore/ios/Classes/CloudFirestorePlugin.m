@@ -456,7 +456,8 @@ const UInt8 TIMESTAMP = 136;
                              @"metadata" : snapshot ? @{
                                @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
                                @"isFromCache" : @(snapshot.metadata.isFromCache),
-                             } : [NSNull null],
+                             }
+                                                    : [NSNull null],
                            }];
         }];
     _listeners[handle] = listener;
