@@ -172,4 +172,32 @@ void main() {
     expect(platformGoogleMap.markersToAdd.first, equals(m1));
     expect(platformGoogleMap.markerIdsToRemove.first, equals(m3.markerId));
   });
+
+  testWidgets(
+    "Partial Update",
+    (WidgetTester tester) async {
+      Marker m1 = Marker(markerId: MarkerId("marker_1"));
+      Marker m2 = Marker(markerId: MarkerId("marker_2"));
+      final Set<Marker> prev = _toSet(m1: m1, m2: m2);
+      m2 = Marker(markerId: MarkerId("marker_2"), draggable: true);
+      final Set<Marker> cur = _toSet(m1: m1, m2: m2);
+
+      await tester.pumpWidget(_mapWithMarkers(prev));
+      await tester.pumpWidget(_mapWithMarkers(cur));
+
+      final FakePlatformGoogleMap platformGoogleMap =
+          fakePlatformViewsController.lastCreatedView;
+
+      expect(platformGoogleMap.markersToChange,
+        <Marker>[m2].toSet()
+      );
+      expect(platformGoogleMap.markerIdsToRemove.isEmpty, true);
+      expect(platformGoogleMap.markersToAdd.isEmpty, true);
+    },
+    // The test is currently broken due to a bug (we're updating all markers
+    // instead of just the ones that were changed):
+    // https://github.com/flutter/flutter/issues/27823
+    // TODO(amirh): enable this test when the issue is fixed.
+    skip: true,
+  );
 }
