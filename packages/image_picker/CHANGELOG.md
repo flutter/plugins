@@ -1,3 +1,7 @@
+## 0.5.0+10
+
+* Fixed photos rotated on 90 degrees.
+
 ## 0.5.0+9
 
 * Remove unnecessary temp video file path.
