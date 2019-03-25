@@ -17,8 +17,10 @@ class GooglePlayConnection
     with WidgetsBindingObserver
     implements InAppPurchaseConnection {
   GooglePlayConnection._()
-      : _billingClient = BillingClient((PurchasesResultWrapper _) {
-          // TODO(mklim): wire this in to the generic interface
+      : _billingClient = BillingClient((PurchasesResultWrapper resultWrapper) {
+          for (PurchaseWrapper purchase in resultWrapper.purchasesList) {
+            _purchaseUpdateListener(purchaseDetails: purchase.toPurchaseDetails(), status:resultWrapper.responseCode == BillingResponse.ok ? PurchaseStatus.purchased: PurchaseStatus.error);
+          }
         }) {
     _readyFuture = _connect();
     WidgetsBinding.instance.addObserver(this);
@@ -27,6 +29,8 @@ class GooglePlayConnection
   static GooglePlayConnection _instance;
   final BillingClient _billingClient;
   Future<void> _readyFuture;
+  static PurchaseUpdateListener _purchaseUpdateListener;
+  static StorePaymentDecisionMaker _storePaymentDecisionMaker;
 
   @override
   Future<bool> isAvailable() async {
@@ -62,13 +66,13 @@ class GooglePlayConnection
   }
 
   @override
-  Future<PurchaseResponse> makePayment(
+  Future<void> makePayment(
       {String productID, String applicationUserName}) async {
       BillingResponse response = await _billingClient.launchBillingFlow(sku: productID, accountId: applicationUserName);
       print('xx ' + response.toString());
       PurchaseStatus status = response == BillingResponse.ok ? PurchaseStatus.purchased :PurchaseStatus.error;
       String error = response == BillingResponse.ok ? null : response.toString();
-      return PurchaseResponse(status: status, error: error);
+      //return PurchaseResponse(status: status, error: error);
   }
 
   @override
@@ -133,12 +137,19 @@ class GooglePlayConnection
   static void reset() => _instance = null;
 
   static GooglePlayConnection _getOrCreateInstance() {
+    assert(_purchaseUpdateListener != null);
+    assert(_storePaymentDecisionMaker != null);
     if (_instance != null) {
       return _instance;
     }
 
     _instance = GooglePlayConnection._();
     return _instance;
+  }
+
+  static void configure({PurchaseUpdateListener purchaseUpdateListener, StorePaymentDecisionMaker storePaymentDecisionMaker}) {
+    _purchaseUpdateListener = purchaseUpdateListener;
+    _storePaymentDecisionMaker = storePaymentDecisionMaker;
   }
 
   Future<void> _connect() =>

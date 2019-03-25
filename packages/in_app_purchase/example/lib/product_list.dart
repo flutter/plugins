@@ -122,14 +122,11 @@ class ProductListState extends State<ProductList> {
               ? Icon(Icons.check)
               : Text(productDetails.price),
           onTap: () async {
-            PurchaseResponse response =
                 await InAppPurchaseConnection.instance.makePayment(
               productID: productDetails.id,
               applicationUserName: username,
             );
-            String text = response.status == PurchaseStatus.purchased
-                ? 'Purchase successful'
-                : 'Purchase failed with error ${response.error}';
+            String text = '';
             final snackBar = SnackBar(
               content: Text(text),
             );

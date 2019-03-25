@@ -100,20 +100,6 @@ class PurchaseDetails {
       this.originalPurchase});
 }
 
-/// Represents the response of a [InAppPurchaseConnection.makePayment] call.
-class PurchaseResponse {
-
-  PurchaseResponse({
-    @required this.status, this.error
-  });
-
-  /// The status of the purchase response.
-  PurchaseStatus status;
-
-  /// Only available if the [status] is [PurchaseStatus.error]
-  String error;
-}
-
 /// The response object for fetching the past purchases.
 ///
 /// An instance of this class is returned in [InAppPurchaseConnection.queryPastPurchases].
@@ -133,8 +119,39 @@ class QueryPastPurchaseResponse {
   final Map<String, String> error;
 }
 
+/// Triggered when some [PurchaseDetails] is updated.
+///
+/// Use this method to get different [PurchaseStatus] of the purchase process, and update your UI accordingly.
+/// If `statsu` is [PurchaseStatus.error], the error message is stored in `error`.
+typedef void PurchaseUpdateListener({PurchaseDetails purchaseDetails, PurchaseStatus status, Map<String, String> error});
+
+/// Triggered when a user initiated an in-app purchase from App Store. (iOS only)
+///
+/// Return `true` to continue the transaction in your app. If you have multiple [PurchaseDetails]s, the purchases
+/// will continue if one [PurchaseDetails] has [StorePaymentDecisionMaker] returning `true`.
+/// Return `false` to defer or cancel the purchase. For example, you may need to defer a transaction if the user is in the middle of onboarding.
+/// You can also continue the transaction later by calling
+/// [InAppPurchaseConnection.makePayment] with the [PurchaseDetails.productID] in the [PurchaseDetails] object you get from this method.
+///
+/// This method has no effect on Android.
+typedef bool StorePaymentDecisionMaker({PurchaseDetails purchaseDetails});
+
 /// Basic generic API for making in app purchases across multiple platforms.
 abstract class InAppPurchaseConnection {
+  /// Configure necessary callbacks.
+  ///
+  /// It has to be called in the very beginning of app launching. Preferably before returning the App Widget in main().
+  static void configure({PurchaseUpdateListener purchaseUpdateListener, StorePaymentDecisionMaker storePaymentDecisionMaker}) {
+    if (Platform.isAndroid) {
+      GooglePlayConnection.configure(purchaseUpdateListener: purchaseUpdateListener, storePaymentDecisionMaker: storePaymentDecisionMaker);
+    } else if (Platform.isIOS) {
+      _instance = AppStoreConnection.instance;
+    } else {
+      throw UnsupportedError(
+          'InAppPurchase plugin only works on Android and iOS.');
+    }
+  }
+
   /// Returns true if the payment platform is ready and available.
   Future<bool> isAvailable();
 
@@ -145,7 +162,7 @@ abstract class InAppPurchaseConnection {
   ///
   /// The `productID` is the product ID to create payment for.
   /// The `applicationUserName`
-  Future<PurchaseResponse> makePayment({String productID, String applicationUserName});
+  Future<void> makePayment({String productID, String applicationUserName});
 
   /// Query all the past purchases.
   ///
