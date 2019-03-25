@@ -50,7 +50,7 @@ The plugins are still under development, and some APIs might not be available ye
 [core_badge]: https://img.shields.io/pub/v/firebase_core.svg
 
 [crash_pub]: https://pub.dartlang.org/packages/firebase_crashlytics
-[crash_product]: https://firebase.google.com/
+[crash_product]: https://firebase.google.com/products/crashlytics/
 [crash_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_crashlytics
 [crash_badge]: https://img.shields.io/pub/v/firebase_crashlytics.svg
 
