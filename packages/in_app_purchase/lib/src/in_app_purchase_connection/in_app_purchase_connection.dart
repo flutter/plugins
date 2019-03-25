@@ -47,9 +47,27 @@ class PurchaseVerificationData {
       @required this.source});
 }
 
+/// Which platform the purchase is on.
 enum PurchaseSource { GooglePlay, AppStore }
 
 enum PurchaseStatus { pending, purchased, error }
+
+/// Error of a purchase process.
+///
+/// The error can happen during the purchase, or restoring a purchase.
+/// The error happened in restoring a purchase is not necessary the same as the error happened during the same purchase if any.
+class PurchaseError {
+  PurchaseError({@required this.source, this.code, this.message});
+
+  /// Which source is the error on.
+  final PurchaseSource source;
+
+  /// The error code.
+  final String code;
+
+  /// A map containing the detailed error message.
+  final Map<String, dynamic> message;
+}
 
 /// Represents the transaction details of a purchase.
 class PurchaseDetails {
@@ -99,8 +117,7 @@ class QueryPastPurchaseResponse {
   /// The error when fetching past purchases.
   ///
   /// If fetch is successful, the value is null.
-  /// This map contains 'errorCode' and 'message'.
-  final Map<String, String> error;
+  final PurchaseError error;
 }
 
 /// Basic generic API for making in app purchases across multiple platforms.
