@@ -37,8 +37,8 @@ class ProductListState extends State<ProductList> {
             if (snapshot.error != null) {
               print(snapshot.error);
               return Center(
-                child: buildListCard(ListTile(
-                    title: Text('Error fetching products')),
+                child: buildListCard(
+                    ListTile(title: Text('Error fetching products'))),
               );
             } else if (!snapshot.hasData) {
               return Card(
@@ -99,7 +99,8 @@ class ProductListState extends State<ProductList> {
 
     print('xyzzy about to query past purchases');
     Map<String, PurchaseDetails> purchases = Map.fromEntries(((await connection
-            .queryPastPurchases()).pastPurchases)
+                .queryPastPurchases())
+            .pastPurchases)
         .map((PurchaseDetails purchase) =>
             MapEntry<String, PurchaseDetails>(purchase.productId, purchase)));
     print('xyzzy list is ${purchases.length} long');
