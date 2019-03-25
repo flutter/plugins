@@ -47,6 +47,7 @@ class VideoPlayerValue {
     this.isLooping = false,
     this.isBuffering = false,
     this.volume = 1.0,
+    this.speed = 1.0,
     this.errorDescription,
   });
 
@@ -88,6 +89,9 @@ class VideoPlayerValue {
   /// Is null when [initialized] is false.
   final Size size;
 
+  /// The Current speed of the Playback.
+  final double speed;
+
   bool get initialized => duration != null;
   bool get hasError => errorDescription != null;
   double get aspectRatio => size != null ? size.width / size.height : 1.0;
@@ -102,6 +106,7 @@ class VideoPlayerValue {
     bool isBuffering,
     double volume,
     String errorDescription,
+    double speed,
   }) {
     return VideoPlayerValue(
       duration: duration ?? this.duration,
@@ -113,6 +118,7 @@ class VideoPlayerValue {
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       errorDescription: errorDescription ?? this.errorDescription,
+      speed : speed ?? this.speed,
     );
   }
 
@@ -127,6 +133,7 @@ class VideoPlayerValue {
         'isLooping: $isLooping, '
         'isBuffering: $isBuffering'
         'volume: $volume, '
+        'speed: $speed'
         'errorDescription: $errorDescription)';
   }
 }
@@ -240,6 +247,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _applyLooping();
           _applyVolume();
           _applyPlayPause();
+          _applyPlayBackSpeed();
           break;
         case 'completed':
           value = value.copyWith(isPlaying: false);
@@ -418,6 +426,23 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Future<void> setVolume(double volume) async {
     value = value.copyWith(volume: volume.clamp(0.0, 1.0));
     await _applyVolume();
+  }
+
+  Future<void> _applyPlayBackSpeed() async {
+    if (!value.initialized || _isDisposed) {
+      return;
+    }
+
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod(
+      'setPlayBackSpeed',
+      <String, dynamic>{'textureId': _textureId, 'speed': value.speed},
+    );
+  }
+
+  Future<void> setSpeed(double speed) async {
+    value = value.copyWith(speed: speed);
+    await _applyPlayBackSpeed();
   }
 }
 
