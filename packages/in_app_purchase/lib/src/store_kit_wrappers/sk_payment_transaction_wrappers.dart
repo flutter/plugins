@@ -26,7 +26,7 @@ abstract class SKTransactionObserverWrapper {
   /// Triggered when there is an error while restoring transactions.
   ///
   /// The error is represented in a Map. The map contains `errorCode` and `message`
-  void restoreCompletedTransactions({Map<String, String> error});
+  void restoreCompletedTransactionsFailed({Map<String, String> error});
 
   /// Triggered when payment queue has finished sending restored transactions.
   void paymentQueueRestoreCompletedTransactionsFinished();

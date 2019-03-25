@@ -64,6 +64,14 @@ void main() {
           'dummy base64data');
     });
 
+    test('should get null', () async {
+      fakeIOSPlatform.testRestoredTransactionsNull = true;
+      List<PurchaseDetails> purchases =
+          await AppStoreConnection.instance.queryPastPurchases();
+      expect(purchases, null);
+      fakeIOSPlatform.testRestoredTransactionsNull = false;
+    });
+
     test('receipt error should populate null to verificationData.data',
         () async {
       fakeIOSPlatform.receiptData = null;
@@ -98,6 +106,7 @@ class FakeIOSPlatform {
   Set<String> validProductIDs = ['123', '456'].toSet();
   Map<String, SKProductWrapper> validProducts = Map();
   List<SKPaymentTransactionWrapper> transactions = [];
+  bool testRestoredTransactionsNull = false;
 
   void preConfigure() {
     for (String validID in validProductIDs) {
@@ -150,8 +159,10 @@ class FakeIOSPlatform {
         return Future<Map<String, dynamic>>.value(
             buildProductResponseMap(response));
       case '-[InAppPurchasePlugin restoreTransactions:result:]':
-        AppStoreConnection.observer
+        if (!testRestoredTransactionsNull) {
+          AppStoreConnection.observer
             .updatedTransactions(transactions: transactions);
+        }
         AppStoreConnection.observer
             .paymentQueueRestoreCompletedTransactionsFinished();
         return Future<void>.sync(() {});

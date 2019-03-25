@@ -52,6 +52,9 @@ class AppStoreConnection implements InAppPurchaseConnection {
               queue: _skPaymentQueueWrapper,
               applicationUserName: applicationUserName);
       _observer.cleanUpRestoredTransactions();
+      if (restoredTransactions == null) {
+        return null;
+      }
       return restoredTransactions
           .where((SKPaymentTransactionWrapper wrapper) =>
               wrapper.transactionState ==
@@ -117,13 +120,12 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
 
   /// Triggered when any transactions are updated.
   void updatedTransactions({List<SKPaymentTransactionWrapper> transactions}) {
-    if (_restoreCompleter != null) {
-      _restoredTransactions =
-          transactions.where((SKPaymentTransactionWrapper wrapper) {
-        return wrapper.transactionState ==
-            SKPaymentTransactionStateWrapper.restored;
-      }).toList();
-    }
+    assert(_restoreCompleter != null);
+    _restoredTransactions =
+        transactions.where((SKPaymentTransactionWrapper wrapper) {
+      return wrapper.transactionState ==
+          SKPaymentTransactionStateWrapper.restored;
+    }).toList();
   }
 
   /// Triggered when any transactions are removed from the payment queue.
@@ -132,7 +134,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   /// Triggered when there is an error while restoring transactions.
   ///
   /// The error is represented in a Map. The map contains `errorCode` and `message`
-  void restoreCompletedTransactions({Map<String, String> error}) {
+  void restoreCompletedTransactionsFailed({Map<String, String> error}) {
     _restoreCompleter.completeError(error);
   }
 
