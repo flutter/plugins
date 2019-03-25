@@ -44,7 +44,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
   @override
   Future<QueryPastPurchaseResponse> queryPastPurchases(
       {String applicationUserName}) async {
-    Map<String, String> error;
+    PurchaseError error;
     List<PurchaseDetails> pastPurchases = [];
 
     try {
@@ -69,7 +69,10 @@ class AppStoreConnection implements InAppPurchaseConnection {
             .toList();
       }
     } catch (e) {
-      error = e;
+      error = PurchaseError(
+          source: PurchaseSource.AppStore,
+          code: e['errorCode'],
+          message: {'message': e['message']});
     }
     return QueryPastPurchaseResponse(
         pastPurchases: pastPurchases, error: error);

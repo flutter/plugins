@@ -77,14 +77,12 @@ void main() {
     });
 
     test('test restore error', () async {
-      fakeIOSPlatform.testRestoredError = {'errorKey': 'errorMessage'};
-      try {
-        QueryPastPurchaseResponse response =
-            await AppStoreConnection.instance.queryPastPurchases();
-        expect(response.pastPurchases, isEmpty);
-      } catch (e) {
-        expect(e, fakeIOSPlatform.testRestoredError);
-      }
+      fakeIOSPlatform.testRestoredError = {'message': 'errorMessage'};
+      QueryPastPurchaseResponse response =
+          await AppStoreConnection.instance.queryPastPurchases();
+      expect(response.pastPurchases, isEmpty);
+      expect(response.error.source, PurchaseSource.AppStore);
+      expect(response.error.message['message'], 'errorMessage');
       fakeIOSPlatform.testRestoredError = null;
     });
 

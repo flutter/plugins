@@ -106,10 +106,10 @@ class GooglePlayConnection
     return QueryPastPurchaseResponse(
       pastPurchases: pastPurchases,
       error: errorMessage != null
-          ? {
-              'errorCode': 'restore_transactions_failed',
-              'message': errorMessage
-            }
+          ? PurchaseError(
+              source: PurchaseSource.GooglePlay,
+              code: 'restore_transactions_failed',
+              message: {'message': errorMessage})
           : null,
     );
   }
