@@ -34,11 +34,13 @@ void main() {
               'source': 0,
               'maxWidth': null,
               'maxHeight': null,
+              'rotate': null,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 1,
               'maxWidth': null,
               'maxHeight': null,
+              'rotate': null,
             }),
           ],
         );
@@ -59,6 +61,16 @@ void main() {
           maxWidth: 10.0,
           maxHeight: 20.0,
         );
+        await ImagePicker.pickImage(
+          source: ImageSource.camera,
+          rotate: true,
+        );
+        await ImagePicker.pickImage(
+          source: ImageSource.camera,
+          maxWidth: 10.0,
+          maxHeight: 20.0,
+          rotate: true,
+        );
 
         expect(
           log,
@@ -67,21 +79,37 @@ void main() {
               'source': 0,
               'maxWidth': null,
               'maxHeight': null,
+              'rotate': null,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
+              'rotate': null,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
+              'rotate': null,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
+              'rotate': null,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': null,
+              'rotate': true,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': 10.0,
+              'maxHeight': 20.0,
+              'rotate': true,
             }),
           ],
         );

@@ -426,8 +426,9 @@ public class ImagePickerDelegate
     if (pendingResult != null) {
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
+      Boolean rotate = methodCall.argument("rotate");
 
-      String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+      String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, rotate);
       finishWithSuccess(finalImagePath);
 
       //delete original file if scaled

@@ -6,6 +6,8 @@ package io.flutter.plugins.imagepicker;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,6 +16,7 @@ import java.io.IOException;
 class ImageResizer {
   private final File externalFilesDirectory;
   private final ExifDataCopier exifDataCopier;
+  private boolean isRotated = false;
 
   ImageResizer(File externalFilesDirectory, ExifDataCopier exifDataCopier) {
     this.externalFilesDirectory = externalFilesDirectory;
@@ -26,24 +29,34 @@ class ImageResizer {
    *
    * <p>If no resizing is needed, returns the path for the original image.
    */
-  String resizeImageIfNeeded(String imagePath, Double maxWidth, Double maxHeight) {
+  String resizeImageIfNeeded(String imagePath, Double maxWidth, Double maxHeight, Boolean rotate) {
     boolean shouldScale = maxWidth != null || maxHeight != null;
 
-    if (!shouldScale) {
+    if (!shouldScale && !(rotate != null && rotate)) {
       return imagePath;
     }
 
     try {
-      File scaledImage = resizedImage(imagePath, maxWidth, maxHeight);
+      File scaledImage = resizedImage(imagePath, maxWidth, maxHeight, rotate);
       exifDataCopier.copyExif(imagePath, scaledImage.getPath());
-
+      rewriteRotationExifIfNeeded(scaledImage);
       return scaledImage.getPath();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  private File resizedImage(String path, Double maxWidth, Double maxHeight) throws IOException {
+  private void rewriteRotationExifIfNeeded(File scaledImage) throws IOException {
+    if (isRotated) {
+      ExifInterface exif = new ExifInterface(scaledImage.getPath());
+      exif.setAttribute(
+          ExifInterface.TAG_ORIENTATION, String.valueOf(ExifInterface.ORIENTATION_NORMAL));
+      exif.saveAttributes();
+    }
+  }
+
+  private File resizedImage(String path, Double maxWidth, Double maxHeight, Boolean rotate)
+      throws IOException {
     Bitmap bmp = BitmapFactory.decodeFile(path);
     double originalWidth = bmp.getWidth() * 1.0;
     double originalHeight = bmp.getHeight() * 1.0;
@@ -84,6 +97,9 @@ class ImageResizer {
     }
 
     Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, width.intValue(), height.intValue(), false);
+    if (rotate != null && rotate) {
+      scaledBmp = rotateImage(scaledBmp, path);
+    }
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     boolean saveAsPNG = bmp.hasAlpha();
     scaledBmp.compress(
@@ -98,5 +114,32 @@ class ImageResizer {
     fileOutput.close();
 
     return imageFile;
+  }
+
+  private Bitmap rotateImage(Bitmap bitmap, String originalImagePath) throws IOException {
+
+    ExifInterface ei = new ExifInterface(originalImagePath);
+    int orientation =
+        ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+    switch (orientation) {
+      case ExifInterface.ORIENTATION_ROTATE_90:
+        return rotate(bitmap, 90);
+      case ExifInterface.ORIENTATION_ROTATE_180:
+        return rotate(bitmap, 180);
+      case ExifInterface.ORIENTATION_ROTATE_270:
+        return rotate(bitmap, 270);
+      case ExifInterface.ORIENTATION_NORMAL:
+        return bitmap;
+    }
+
+    return bitmap;
+  }
+
+  private Bitmap rotate(Bitmap source, float angle) {
+    isRotated = true;
+    Matrix matrix = new Matrix();
+    matrix.postRotate(angle);
+    return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, false);
   }
 }
