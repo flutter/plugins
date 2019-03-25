@@ -38,15 +38,20 @@ class ImageLabeler implements Detector {
         result.error("labelDetectorIOError", e.getLocalizedMessage(), null);
         return;
       }
+
+      labeler = null;
+      lastOptions = null;
     }
 
-    lastOptions = options;
+    if (labeler == null) {
+      lastOptions = options;
 
-    final String modelType = (String) options.get("modelType");
-    if (modelType.equals("onDevice")) {
-      labeler = FirebaseVision.getInstance().getOnDeviceImageLabeler(parseOptions(lastOptions));
-    } else if (modelType.equals("cloud")) {
-      labeler = FirebaseVision.getInstance().getCloudImageLabeler(parseCloudOptions(lastOptions));
+      final String modelType = (String) options.get("modelType");
+      if (modelType.equals("onDevice")) {
+        labeler = FirebaseVision.getInstance().getOnDeviceImageLabeler(parseOptions(lastOptions));
+      } else if (modelType.equals("cloud")) {
+        labeler = FirebaseVision.getInstance().getCloudImageLabeler(parseCloudOptions(lastOptions));
+      }
     }
 
     labeler
