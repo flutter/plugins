@@ -39,10 +39,10 @@ class ProductListState extends State<ProductList> {
           future: _buildProductList(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.error != null) {
+              print(snapshot.error);
               return Center(
-                child: buildListCard(ListTile(
-                    title: Text('Error fetching products'),
-                    subtitle: snapshot.error)),
+                child: buildListCard(
+                    ListTile(title: Text('Error fetching products'))),
               );
             } else if (!snapshot.hasData) {
               return Card(
@@ -101,8 +101,10 @@ class ProductListState extends State<ProductList> {
               'This app needs special configuration to run. Please see example/README.md for instructions.')));
     }
 
-    Map<String, PurchaseDetails> purchases = Map.fromEntries((await connection
-            .queryPastPurchases())
+    print('xyzzy about to query past purchases');
+    Map<String, PurchaseDetails> purchases = Map.fromEntries(((await connection
+                .queryPastPurchases())
+            .pastPurchases)
         .map((PurchaseDetails purchase) =>
             MapEntry<String, PurchaseDetails>(purchase.productId, purchase)));
 

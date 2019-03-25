@@ -51,26 +51,54 @@ void main() {
 
   group('query purchases list', () {
     test('should get purchase list', () async {
-      List<PurchaseDetails> purchases =
+      QueryPastPurchaseResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
-      expect(purchases.length, 2);
-      expect(purchases.first.purchaseID,
+      expect(response.pastPurchases.length, 2);
+      expect(response.pastPurchases.first.purchaseID,
           fakeIOSPlatform.transactions.first.transactionIdentifier);
-      expect(purchases.last.purchaseID,
+      expect(response.pastPurchases.last.purchaseID,
           fakeIOSPlatform.transactions.last.transactionIdentifier);
-      expect(purchases.first.verificationData.localVerificationData,
+      expect(
+          response.pastPurchases.first.verificationData.localVerificationData,
           'dummy base64data');
-      expect(purchases.first.verificationData.serverVerificationData,
+      expect(
+          response.pastPurchases.first.verificationData.serverVerificationData,
           'dummy base64data');
+      expect(response.error, isNull);
+    });
+
+    test('should get empty result if there is no restored transactions',
+        () async {
+      fakeIOSPlatform.testRestoredTransactionsNull = true;
+      QueryPastPurchaseResponse response =
+          await AppStoreConnection.instance.queryPastPurchases();
+      expect(response.pastPurchases, isEmpty);
+      fakeIOSPlatform.testRestoredTransactionsNull = false;
+    });
+
+    test('test restore error', () async {
+      fakeIOSPlatform.testRestoredError = {'errorKey': 'errorMessage'};
+      try {
+        QueryPastPurchaseResponse response =
+            await AppStoreConnection.instance.queryPastPurchases();
+        expect(response.pastPurchases, isEmpty);
+      } catch (e) {
+        expect(e, fakeIOSPlatform.testRestoredError);
+      }
+      fakeIOSPlatform.testRestoredError = null;
     });
 
     test('receipt error should populate null to verificationData.data',
         () async {
       fakeIOSPlatform.receiptData = null;
-      List<PurchaseDetails> purchases =
+      QueryPastPurchaseResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
-      expect(purchases.first.verificationData.localVerificationData, null);
-      expect(purchases.first.verificationData.serverVerificationData, null);
+      expect(
+          response.pastPurchases.first.verificationData.localVerificationData,
+          null);
+      expect(
+          response.pastPurchases.first.verificationData.serverVerificationData,
+          null);
       fakeIOSPlatform.receiptData = 'dummy base64data';
     });
   });
@@ -98,6 +126,8 @@ class FakeIOSPlatform {
   Set<String> validProductIDs = ['123', '456'].toSet();
   Map<String, SKProductWrapper> validProducts = Map();
   List<SKPaymentTransactionWrapper> transactions = [];
+  bool testRestoredTransactionsNull = false;
+  Map<String, String> testRestoredError = null;
 
   void preConfigure() {
     for (String validID in validProductIDs) {
@@ -150,8 +180,15 @@ class FakeIOSPlatform {
         return Future<Map<String, dynamic>>.value(
             buildProductResponseMap(response));
       case '-[InAppPurchasePlugin restoreTransactions:result:]':
-        AppStoreConnection.observer
-            .updatedTransactions(transactions: transactions);
+        if (testRestoredError != null) {
+          AppStoreConnection.observer
+              .restoreCompletedTransactionsFailed(error: testRestoredError);
+          return Future<void>.sync(() {});
+        }
+        if (!testRestoredTransactionsNull) {
+          AppStoreConnection.observer
+              .updatedTransactions(transactions: transactions);
+        }
         AppStoreConnection.observer
             .paymentQueueRestoreCompletedTransactionsFinished();
         return Future<void>.sync(() {});

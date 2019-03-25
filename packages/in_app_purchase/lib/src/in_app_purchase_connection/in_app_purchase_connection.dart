@@ -114,6 +114,25 @@ class PurchaseResponse {
   String error;
 }
 
+/// The response object for fetching the past purchases.
+///
+/// An instance of this class is returned in [InAppPurchaseConnection.queryPastPurchases].
+class QueryPastPurchaseResponse {
+  QueryPastPurchaseResponse({@required this.pastPurchases, this.error});
+
+  /// A list of successfully fetched past purchases.
+  ///
+  /// If there are no past purchases, or there is an [error] fetching past purchases,
+  /// this variable is an empty List.
+  final List<PurchaseDetails> pastPurchases;
+
+  /// The error when fetching past purchases.
+  ///
+  /// If fetch is successful, the value is null.
+  /// This map contains 'errorCode' and 'message'.
+  final Map<String, String> error;
+}
+
 /// Basic generic API for making in app purchases across multiple platforms.
 abstract class InAppPurchaseConnection {
   /// Returns true if the payment platform is ready and available.
@@ -133,7 +152,7 @@ abstract class InAppPurchaseConnection {
   /// The `applicationUserName` is used for iOS only and it is optional. It does not have any effects on Android.
   /// It is the `applicationUsername` you used to create payments.
   /// If you did not use a `applicationUserName` when creating payments, you can ignore this parameter.
-  Future<List<PurchaseDetails>> queryPastPurchases(
+  Future<QueryPastPurchaseResponse> queryPastPurchases(
       {String applicationUserName});
 
   /// Get a refreshed purchase verification data.
