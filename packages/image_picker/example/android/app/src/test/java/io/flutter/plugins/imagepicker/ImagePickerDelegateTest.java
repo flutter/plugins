@@ -60,12 +60,15 @@ public class ImagePickerDelegateTest {
     when(mockFileUtils.getPathFromUri(any(Context.class), any(Uri.class)))
         .thenReturn("pathFromUri");
 
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null, null))
         .thenReturn("originalPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, HEIGHT))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, HEIGHT, null))
         .thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null)).thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null, null))
+        .thenReturn("scaledPath");
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT, null))
+        .thenReturn("scaledPath");
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null, true))
         .thenReturn("scaledPath");
 
     mockFileUriResolver = new MockFileUriResolver();
@@ -266,6 +269,19 @@ public class ImagePickerDelegateTest {
         ImagePickerDelegate.REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA, Activity.RESULT_OK, mockIntent);
 
     verify(mockResult).success("pathFromUri");
+    verifyNoMoreInteractions(mockResult);
+  }
+
+  @Test
+  public void
+      onActivityResult_WhenImageTakenWithCamera_AndRotateNeeded_FinishesWithScaledImagePath() {
+    when(mockMethodCall.argument("rotate")).thenReturn(true);
+
+    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+    delegate.onActivityResult(
+        ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA, Activity.RESULT_OK, mockIntent);
+
+    verify(mockResult).success("scaledPath");
     verifyNoMoreInteractions(mockResult);
   }
 
