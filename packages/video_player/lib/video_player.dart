@@ -5,16 +5,16 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
-  // This will clear all open videos on the platform when a full restart is
-  // performed.
-  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-  // https://github.com/flutter/flutter/issues/26431
-  // ignore: strong_mode_implicit_dynamic_method
+// This will clear all open videos on the platform when a full restart is
+// performed.
+// TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+// https://github.com/flutter/flutter/issues/26431
+// ignore: strong_mode_implicit_dynamic_method
   ..invokeMethod('init');
 
 class DurationRange {
@@ -93,7 +93,9 @@ class VideoPlayerValue {
   final double speed;
 
   bool get initialized => duration != null;
+
   bool get hasError => errorDescription != null;
+
   double get aspectRatio => size != null ? size.width / size.height : 1.0;
 
   VideoPlayerValue copyWith({
@@ -118,7 +120,7 @@ class VideoPlayerValue {
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       errorDescription: errorDescription ?? this.errorDescription,
-      speed : speed ?? this.speed,
+      speed: speed ?? this.speed,
     );
   }
 
