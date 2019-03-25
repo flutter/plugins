@@ -118,17 +118,17 @@ void main() {
   group('queryPurchaseDetails', () {
     final String queryMethodName =
         'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)';
-    test('handles empty skuDetails', () async {
+    test('handles error', () async {
       final BillingResponse responseCode = BillingResponse.developerError;
       stubPlatform.addResponse(name: queryMethodName, value: <dynamic, dynamic>{
         'responseCode': BillingResponseConverter().toJson(responseCode),
         'purchasesList': <Map<String, dynamic>>[]
       });
-
-      final List<PurchaseDetails> purcahseDetails =
+      final QueryPastPurchaseResponse response =
           await connection.queryPastPurchases();
-
-      expect(purcahseDetails, isEmpty);
+      expect(response.pastPurchases, isEmpty);
+      expect(
+          response.error['message'], BillingResponse.developerError.toString());
     });
 
     test('returns SkuDetailsResponseWrapper', () async {
@@ -142,10 +142,10 @@ void main() {
 
       // Since queryPastPurchases makes 2 platform method calls (one for each SkuType), the result will contain 2 dummyWrapper instead
       // of 1.
-      final List<PurchaseDetails> purcahseDetails =
+      final QueryPastPurchaseResponse response =
           await connection.queryPastPurchases();
-
-      expect(purcahseDetails.first.purchaseID, dummyPurchase.orderId);
+      expect(response.error, isNull);
+      expect(response.pastPurchases.first.purchaseID, dummyPurchase.orderId);
     });
   });
 
@@ -160,16 +160,16 @@ void main() {
           buildPurchaseMap(dummyPurchase),
         ]
       });
-      final List<PurchaseDetails> purcahseDetails =
+      final QueryPastPurchaseResponse response =
           await connection.queryPastPurchases();
 
       PurchaseVerificationData receiptData = await GooglePlayConnection.instance
-          .refreshPurchaseVerificationData(purcahseDetails.first);
+          .refreshPurchaseVerificationData(response.pastPurchases.first);
       expect(receiptData.source, PurchaseSource.GooglePlay);
       expect(receiptData.localVerificationData,
-          purcahseDetails.first.verificationData.localVerificationData);
+          response.pastPurchases.first.verificationData.localVerificationData);
       expect(receiptData.serverVerificationData,
-          purcahseDetails.first.verificationData.serverVerificationData);
+          response.pastPurchases.first.verificationData.serverVerificationData);
     });
   });
 }

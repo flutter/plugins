@@ -38,8 +38,11 @@ class AppStoreConnection implements InAppPurchaseConnection {
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
 
   @override
-  Future<List<PurchaseDetails>> queryPastPurchases(
+  Future<QueryPastPurchaseResponse> queryPastPurchases(
       {String applicationUserName}) async {
+    Map<String, String> error;
+    List<PurchaseDetails> pastPurchases = [];
+
     try {
       String receiptData;
       try {
@@ -52,20 +55,20 @@ class AppStoreConnection implements InAppPurchaseConnection {
               queue: _skPaymentQueueWrapper,
               applicationUserName: applicationUserName);
       _observer.cleanUpRestoredTransactions();
-      if (restoredTransactions == null) {
-        return null;
+      if (restoredTransactions != null) {
+        pastPurchases = restoredTransactions
+            .where((SKPaymentTransactionWrapper wrapper) =>
+                wrapper.transactionState ==
+                SKPaymentTransactionStateWrapper.restored)
+            .map((SKPaymentTransactionWrapper wrapper) =>
+                wrapper.toPurchaseDetails(receiptData))
+            .toList();
       }
-      return restoredTransactions
-          .where((SKPaymentTransactionWrapper wrapper) =>
-              wrapper.transactionState ==
-              SKPaymentTransactionStateWrapper.restored)
-          .map((SKPaymentTransactionWrapper wrapper) =>
-              wrapper.toPurchaseDetails(receiptData))
-          .toList();
     } catch (e) {
-      print('Failed to query past purchases $e');
-      return <PurchaseDetails>[];
+      error = e;
     }
+    return QueryPastPurchaseResponse(
+        pastPurchases: pastPurchases, error: error);
   }
 
   @override

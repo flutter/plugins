@@ -35,17 +35,42 @@ class GooglePlayConnection
   }
 
   @override
-  Future<List<PurchaseDetails>> queryPastPurchases(
+  Future<QueryPastPurchaseResponse> queryPastPurchases(
       {String applicationUserName}) async {
     List<PurchasesResultWrapper> responses = await Future.wait([
       _billingClient.queryPurchaseHistory(SkuType.inapp),
       _billingClient.queryPurchaseHistory(SkuType.subs)
     ]);
-    return responses.expand((PurchasesResultWrapper response) {
-      return response.purchasesList;
-    }).map((PurchaseWrapper purchaseWrapper) {
-      return purchaseWrapper.toPurchaseDetails();
-    }).toList();
+
+    BillingResponse errorInApp = responses.first.responseCode;
+    BillingResponse errorSubs = responses.last.responseCode;
+    String errorMessage = null;
+    if (errorInApp != BillingResponse.ok) {
+      errorMessage = errorInApp.toString();
+    }
+    if (errorSubs != BillingResponse.ok && errorSubs != errorInApp) {
+      errorMessage += ', ${errorSubs.toString()}';
+    }
+
+    List<PurchaseDetails> pastPurchases;
+    if (responses == null) {
+      pastPurchases = [];
+    } else {
+      pastPurchases = responses.expand((PurchasesResultWrapper response) {
+        return response.purchasesList;
+      }).map((PurchaseWrapper purchaseWrapper) {
+        return purchaseWrapper.toPurchaseDetails();
+      }).toList();
+    }
+    return QueryPastPurchaseResponse(
+      pastPurchases: pastPurchases,
+      error: errorMessage != null
+          ? {
+              'errorCode': 'restore_transactions_failed',
+              'message': errorMessage
+            }
+          : null,
+    );
   }
 
   @override
