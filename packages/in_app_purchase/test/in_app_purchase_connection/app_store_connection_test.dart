@@ -32,6 +32,10 @@ void main() {
         .setMockMethodCallHandler(fakeIOSPlatform.onMethodCall);
   });
 
+  setUp(() => fakeIOSPlatform.reset());
+
+  tearDown(()=> fakeIOSPlatform.reset());
+
   group('isAvailable', () {
     test('true', () async {
       expect(await AppStoreConnection.instance.isAvailable(), isTrue);
@@ -83,7 +87,6 @@ void main() {
       QueryPastPurchaseResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
-      fakeIOSPlatform.testRestoredTransactionsNull = false;
     });
 
     test('test restore error', () async {
@@ -93,7 +96,6 @@ void main() {
       expect(response.pastPurchases, isEmpty);
       expect(response.error.source, PurchaseSource.AppStore);
       expect(response.error.message['message'], 'errorMessage');
-      fakeIOSPlatform.testRestoredError = null;
     });
 
     test('receipt error should populate null to verificationData.data',
@@ -107,7 +109,6 @@ void main() {
       expect(
           response.pastPurchases.first.verificationData.serverVerificationData,
           null);
-      fakeIOSPlatform.receiptData = 'dummy base64data';
     });
   });
 
@@ -118,7 +119,6 @@ void main() {
       expect(receiptData.source, PurchaseSource.AppStore);
       expect(receiptData.localVerificationData, 'refreshed receipt data');
       expect(receiptData.serverVerificationData, 'refreshed receipt data');
-      fakeIOSPlatform.receiptData = 'dummy base64data';
     });
   });
 
@@ -148,6 +148,7 @@ void main() {
       List<PurchaseDetails> result = await completer.future;
       expect(result.length, 2);
       expect(result.first.productId, 'productID');
+      expect(fakeIOSPlatform.finishedTransactions.length, 1);
     });
   });
 
@@ -178,26 +179,29 @@ void main() {
     expect(error.code, kPurchaseErrorCode);
     expect(error.source, PurchaseSource.AppStore);
     expect(error.message, {'message': 'an error message'});
-    fakeIOSPlatform.testTransactionFail = false;
   });
 }
 
 class FakeIOSPlatform {
   FakeIOSPlatform() {
     channel.setMockMethodCallHandler(onMethodCall);
-    preConfigure();
   }
 
   // pre-configured store informations
-  String receiptData = 'dummy base64data';
-  Set<String> validProductIDs = ['123', '456'].toSet();
-  Map<String, SKProductWrapper> validProducts = Map();
-  List<SKPaymentTransactionWrapper> transactions = [];
-  bool testRestoredTransactionsNull = false;
-  bool testTransactionFail = false;
-  Map<String, String> testRestoredError = null;
+  String receiptData;
+  Set<String> validProductIDs;
+  Map<String, SKProductWrapper> validProducts;
+  List<SKPaymentTransactionWrapper> transactions;
+  List<SKPaymentTransactionWrapper> finishedTransactions;
+  bool testRestoredTransactionsNull;
+  bool testTransactionFail;
+  Map<String, String> testRestoredError;
 
-  void preConfigure() {
+  void reset() {
+    transactions =[];
+    receiptData = 'dummy base64data';
+    validProductIDs = ['123', '456'].toSet();
+    validProducts = Map();
     for (String validID in validProductIDs) {
       Map productWrapperMap = buildProductMap(dummyProductWrapper);
       productWrapperMap['productIdentifier'] = validID;
@@ -224,6 +228,10 @@ class FakeIOSPlatform {
     );
 
     transactions.addAll([tran1, tran2]);
+    finishedTransactions = [];
+    testRestoredTransactionsNull = false;
+    testTransactionFail = false;
+    testRestoredError = null;
   }
 
   SKPaymentTransactionWrapper createPendingTransactionWithProductID(String id) {
@@ -325,6 +333,9 @@ class FakeIOSPlatform {
           AppStoreConnection.observer
               .updatedTransactions(transactions: [transaction_finished]);
         }
+        break;
+      case '-[InAppPurchasePlugin finishTransaction:result:]':
+          finishedTransactions.add(createPurchasedTransactionWithProductID(call.arguments));
         break;
     }
     return Future<void>.sync(() {});

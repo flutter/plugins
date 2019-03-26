@@ -190,6 +190,9 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
                 )
               : null,
         );
+        if (transaction.transactionState == SKPaymentTransactionStateWrapper.purchased) {
+          SKPaymentQueueWrapper().finishTransaction(transaction);
+        }
       });
     }
   }
