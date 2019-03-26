@@ -16,6 +16,7 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.DefaultEventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -218,6 +219,14 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       return exoPlayer.getCurrentPosition();
     }
 
+    void setPlayBackSpeed(double value) {
+      float bracketedValue = (float) value;
+      PlaybackParameters existingParam = exoPlayer.getPlaybackParameters();
+      PlaybackParameters newParameter =
+							new PlaybackParameters(bracketedValue, existingParam.pitch, existingParam.skipSilence);
+      exoPlayer.setPlaybackParameters(newParameter);
+    }
+
     private void sendInitialized() {
       if (isInitialized) {
         Map<String, Object> event = new HashMap<>();
@@ -390,6 +399,10 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         videoPlayers.remove(textureId);
         result.success(null);
         break;
+			case "setPlayBackSpeed":
+				player.setPlayBackSpeed((Double) call.argument("speed"));
+				result.success(null);
+				break;
       default:
         result.notImplemented();
         break;
