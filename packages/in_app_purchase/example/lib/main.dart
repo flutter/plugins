@@ -11,6 +11,9 @@ void main() {
       {PurchaseDetails purchaseDetails,
       PurchaseStatus status,
       PurchaseError error}) {
+    print('purchase updated product ID: (${purchaseDetails.productId})');
+    print('purchase updated purchase ID: (${purchaseDetails.purchaseID})');
+    print('purchase updated status: ($status)');
     if (error != null) {
       print('purchase error ${error.message}');
     }
