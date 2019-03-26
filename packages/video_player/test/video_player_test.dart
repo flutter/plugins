@@ -37,6 +37,10 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<void> play() async {}
   @override
   Future<void> setLooping(bool looping) async {}
+  @override
+  Future<void> setSpeed(double speed) async {
+    value = value.copyWith(speed: speed);
+  }
 }
 
 void main() {
@@ -72,5 +76,20 @@ void main() {
           (Widget widget) => widget is Texture && widget.textureId == 102,
         ),
         findsOneWidget);
+  });
+
+  testWidgets('default playback speed', (WidgetTester tester) async {
+    final FakeController controller = FakeController();
+    controller.textureId = 101;
+    await tester.pumpWidget(VideoPlayer(controller));
+    expect(controller.value.speed, 1.0);
+  });
+
+  testWidgets('Changed playback speed', (WidgetTester tester) async {
+    final FakeController controller = FakeController();
+    controller.textureId = 101;
+    controller.setSpeed(1.5);
+    await tester.pumpWidget(VideoPlayer(controller));
+    expect(controller.value.speed, 1.5);
   });
 }
