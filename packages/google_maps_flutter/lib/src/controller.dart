@@ -127,5 +127,35 @@ class GoogleMapController {
     });
   }
 
-  // TODO method to get recorded actions.
+  // Record SDK calls. This is used for testing.
+
+  Future<void> startRecordingActions() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod('map#startRecordingActions');
+  }
+
+  Future<void> stopRecordingActions() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod('map#stopRecordingActions');
+  }
+
+  Future<void> clearRecordedActions() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod('map#clearRecordedActions');
+  }
+
+  Future<List<String>> getRecordedActions() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    final List<String> recordedActions =
+        await _channel.invokeMethod('map#getRecordedActions');
+    return recordedActions;
+  }
 }
