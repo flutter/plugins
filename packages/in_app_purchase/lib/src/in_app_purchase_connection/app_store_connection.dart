@@ -63,7 +63,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
         productIdentifier: productID,
         quantity: 1,
         applicationUsername: applicationUserName,
-        simulatesAskToBuyInSandbox: false,
+        simulatesAskToBuyInSandbox: true,
         requestData: null);
     SKPaymentQueueWrapper().addPayment(payment);
   }
@@ -161,13 +161,11 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     _restoreCompleter = null;
   }
 
-  /// Triggered when any transactions are updated.
   void updatedTransactions(
       {List<SKPaymentTransactionWrapper> transactions}) async {
     if (_restoreCompleter != null) {
-      _restoredTransactions =
-          transactions.where((SKPaymentTransactionWrapper wrapper) {
-        return wrapper.transactionState ==
+      _restoredTransactions = transactions.where((transaction) {
+        return transaction.transactionState ==
             SKPaymentTransactionStateWrapper.restored;
       }).toList();
     } else {
@@ -177,7 +175,12 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
       } catch (e) {
         receiptData = null;
       }
-      transactions.forEach((transaction) {
+
+      transactions.where((transaction) {
+        // restored case is already handled in the `if (_restoreCompleter != null)` clause.
+        return transaction.transactionState !=
+            SKPaymentTransactionStateWrapper.restored;
+      }).forEach((transaction) {
         purchaseUpdateListener(
           purchaseDetails: transaction.toPurchaseDetails(receiptData),
           status: SKTransactionStatusConverter()
@@ -190,38 +193,30 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
                 )
               : null,
         );
-        if (transaction.transactionState == SKPaymentTransactionStateWrapper.purchased) {
-          SKPaymentQueueWrapper().finishTransaction(transaction);
-        }
       });
     }
+    transactions.where((transaction) {
+      return transaction.transactionState ==
+              SKPaymentTransactionStateWrapper.purchased ||
+          transaction.transactionState ==
+              SKPaymentTransactionStateWrapper.restored;
+    }).forEach((transaction) {
+      SKPaymentQueueWrapper().finishTransaction(transaction);
+    });
   }
 
-  /// Triggered when any transactions are removed from the payment queue.
   void removedTransactions({List<SKPaymentTransactionWrapper> transactions}) {}
 
-  /// Triggered when there is an error while restoring transactions.
-  ///
-  /// The error is represented in a Map. The map contains `errorCode` and `message`
   void restoreCompletedTransactionsFailed({Map<String, String> error}) {
     _restoreCompleter.completeError(error);
   }
 
-  /// Triggered when payment queue has finished sending restored transactions.
   void paymentQueueRestoreCompletedTransactionsFinished() {
     _restoreCompleter.complete(_restoredTransactions);
   }
 
-  /// Triggered when any download objects are updated.
   void updatedDownloads({List<SKDownloadWrapper> downloads}) {}
 
-  /// Triggered when a user initiated an in-app purchase from App Store.
-  ///
-  /// Return `true` to continue the transaction in your app. If you have multiple [SKTransactionObserverWrapper]s, the transaction
-  /// will continue if one [SKTransactionObserverWrapper] has [shouldAddStorePayment] returning `true`.
-  /// Return `false` to defer or cancel the transaction. For example, you may need to defer a transaction if the user is in the middle of onboarding.
-  /// You can also continue the transaction later by calling
-  /// [addPayment] with the [SKPaymentWrapper] object you get from this method.
   bool shouldAddStorePayment(
       {SKPaymentWrapper payment, SKProductWrapper product}) {
     return storePaymentDecisionMaker(

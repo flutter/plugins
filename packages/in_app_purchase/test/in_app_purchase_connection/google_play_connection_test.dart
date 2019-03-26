@@ -22,11 +22,15 @@ void main() {
       'BillingClient#startConnection(BillingClientStateListener)';
   const String endConnectionCall = 'BillingClient#endConnection()';
 
-  setUpAll((){
-        GooglePlayConnection.configure(purchaseUpdateListener: ({PurchaseDetails purchaseDetails, PurchaseStatus status, PurchaseError error}) {
-        return;
-    }, storePaymentDecisionMaker: ({ProductDetails productDetails, String applicationUserName}) {
-        return true;
+  setUpAll(() {
+    GooglePlayConnection.configure(purchaseUpdateListener: (
+        {PurchaseDetails purchaseDetails,
+        PurchaseStatus status,
+        PurchaseError error}) {
+      return;
+    }, storePaymentDecisionMaker: (
+        {ProductDetails productDetails, String applicationUserName}) {
+      return true;
     });
     channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler);
   });
@@ -191,8 +195,8 @@ void main() {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
       final String accountId = "hashedAccountId";
 
-      await GooglePlayConnection.instance
-          .makePayment(productID: skuDetails.sku, applicationUserName: accountId);
+      await GooglePlayConnection.instance.makePayment(
+          productID: skuDetails.sku, applicationUserName: accountId);
 
       // expect(response.status, PurchaseStatus.purchased);
       // Map<dynamic, dynamic> arguments =

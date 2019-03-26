@@ -54,7 +54,6 @@ class PurchaseVerificationData {
 enum PurchaseSource { GooglePlay, AppStore }
 
 enum PurchaseStatus {
-
   /// The purchase process is pending.
   ///
   /// You can update UI to let your users know the purchase is pending.
@@ -143,7 +142,10 @@ class QueryPastPurchaseResponse {
 ///
 /// Use this method to get different [PurchaseStatus] of the purchase process, and update your UI accordingly.
 /// If `status` is [PurchaseStatus.error], the error message is stored in `error`.
-typedef void PurchaseUpdateListener({PurchaseDetails purchaseDetails, PurchaseStatus status, PurchaseError error});
+typedef void PurchaseUpdateListener(
+    {PurchaseDetails purchaseDetails,
+    PurchaseStatus status,
+    PurchaseError error});
 
 /// Triggered when a user initiated an in-app purchase from App Store. (iOS only)
 ///
@@ -154,18 +156,25 @@ typedef void PurchaseUpdateListener({PurchaseDetails purchaseDetails, PurchaseSt
 /// [InAppPurchaseConnection.makePayment] with the [ProductDetails.productID] in the [ProductDetails] object you get from this method.
 ///
 /// This method has no effect on Android.
-typedef bool StorePaymentDecisionMaker({ProductDetails productDetails, String applicationUserName});
+typedef bool StorePaymentDecisionMaker(
+    {ProductDetails productDetails, String applicationUserName});
 
 /// Basic generic API for making in app purchases across multiple platforms.
 abstract class InAppPurchaseConnection {
   /// Configure necessary callbacks.
   ///
   /// It has to be called in the very beginning of app launching. Preferably before returning your main App Widget in main().
-  static void configure({PurchaseUpdateListener purchaseUpdateListener, StorePaymentDecisionMaker storePaymentDecisionMaker}) {
+  static void configure(
+      {PurchaseUpdateListener purchaseUpdateListener,
+      StorePaymentDecisionMaker storePaymentDecisionMaker}) {
     if (Platform.isAndroid) {
-      GooglePlayConnection.configure(purchaseUpdateListener: purchaseUpdateListener, storePaymentDecisionMaker: storePaymentDecisionMaker);
+      GooglePlayConnection.configure(
+          purchaseUpdateListener: purchaseUpdateListener,
+          storePaymentDecisionMaker: storePaymentDecisionMaker);
     } else if (Platform.isIOS) {
-      _instance = AppStoreConnection.instance;
+      AppStoreConnection.configure(
+          purchaseUpdateListener: purchaseUpdateListener,
+          storePaymentDecisionMaker: storePaymentDecisionMaker);
     } else {
       throw UnsupportedError(
           'InAppPurchase plugin only works on Android and iOS.');

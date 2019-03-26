@@ -4,8 +4,29 @@
 
 import 'package:flutter/material.dart';
 import './product_list.dart';
+import 'package:in_app_purchase/in_app_purchase_connection.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  PurchaseUpdateListener updateListener = (
+      {PurchaseDetails purchaseDetails,
+      PurchaseStatus status,
+      PurchaseError error}) {
+    if (error != null) {
+      print('purchase error ${error.message}');
+    }
+  };
+
+  StorePaymentDecisionMaker decisionMaker =
+      ({ProductDetails productDetails, String applicationUserName}) {
+    return true;
+  };
+
+  InAppPurchaseConnection.configure(
+    purchaseUpdateListener: updateListener,
+    storePaymentDecisionMaker: decisionMaker,
+  );
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override

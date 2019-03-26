@@ -101,7 +101,6 @@ class ProductListState extends State<ProductList> {
               'This app needs special configuration to run. Please see example/README.md for instructions.')));
     }
 
-    print('xyzzy about to query past purchases');
     Map<String, PurchaseDetails> purchases = Map.fromEntries(((await connection
                 .queryPastPurchases())
             .pastPurchases)
@@ -122,15 +121,10 @@ class ProductListState extends State<ProductList> {
               ? Icon(Icons.check)
               : Text(productDetails.price),
           onTap: () async {
-                await InAppPurchaseConnection.instance.makePayment(
+            await InAppPurchaseConnection.instance.makePayment(
               productID: productDetails.id,
               applicationUserName: username,
             );
-            String text = '';
-            final snackBar = SnackBar(
-              content: Text(text),
-            );
-            Scaffold.of(context).showSnackBar(snackBar);
           },
         );
       },

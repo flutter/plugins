@@ -34,7 +34,7 @@ void main() {
 
   setUp(() => fakeIOSPlatform.reset());
 
-  tearDown(()=> fakeIOSPlatform.reset());
+  tearDown(() => fakeIOSPlatform.reset());
 
   group('isAvailable', () {
     test('true', () async {
@@ -198,7 +198,7 @@ class FakeIOSPlatform {
   Map<String, String> testRestoredError;
 
   void reset() {
-    transactions =[];
+    transactions = [];
     receiptData = 'dummy base64data';
     validProductIDs = ['123', '456'].toSet();
     validProducts = Map();
@@ -335,7 +335,8 @@ class FakeIOSPlatform {
         }
         break;
       case '-[InAppPurchasePlugin finishTransaction:result:]':
-          finishedTransactions.add(createPurchasedTransactionWithProductID(call.arguments));
+        finishedTransactions
+            .add(createPurchasedTransactionWithProductID(call.arguments));
         break;
     }
     return Future<void>.sync(() {});
