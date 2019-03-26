@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "GoogleMapController.h"
+#import "GoogleMapActionRecorder.h"
 #import "JsonConversions.h"
 
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
@@ -52,6 +53,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   // https://github.com/flutter/flutter/issues/27550
   BOOL _cameraDidInitialSetup;
   FLTMarkersController* _markersController;
+  GoogleMapActionRecorder* _actionRecorder;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -81,6 +83,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _markersController = [[FLTMarkersController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar];
+    _actionRecorder = [[GoogleMapActionRecorder alloc] init];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
@@ -125,6 +128,17 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       [_markersController removeMarkerIds:markerIdsToRemove];
     }
     result(nil);
+  } else if ([call.method isEqualToString:@"map#startRecordingActions"]) {
+    [_actionRecorder startRecordingActions];
+    result(nil);
+  } else if ([call.method isEqualToString:@"map#stopRecordingActions"]) {
+    [_actionRecorder stopRecordingActions];
+    result(nil);
+  } else if ([call.method isEqualToString:@"map#clearRecordedActions"]) {
+    [_actionRecorder clearRecordedActions];
+    result(nil);
+  } else if ([call.method isEqualToString:@"map#getRecordedActions"]) {
+    result([_actionRecorder getRecordedActions]);
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -167,6 +181,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 }
 
 - (void)setCompassEnabled:(BOOL)enabled {
+  [_actionRecorder recordAction:@"setCompassEnabled" boolValue:enabled];
   _mapView.settings.compassButton = enabled;
 }
 
@@ -206,7 +221,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 #pragma mark - GMSMapViewDelegate methods
 
 - (void)mapView:(GMSMapView*)mapView willMove:(BOOL)gesture {
-  [_channel invokeMethod:@"camera#onMoveStarted" arguments:@{@"isGesture" : @(gesture)}];
+  [_channel invokeMethod:@"camera#onMoveStarted" arguments:@{@"isGesture": @(gesture)}];
 }
 
 - (void)mapView:(GMSMapView*)mapView didChangeCameraPosition:(GMSCameraPosition*)position {
@@ -221,7 +236,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     [mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
   }
   if (_trackCameraPosition) {
-    [_channel invokeMethod:@"camera#onMove" arguments:@{@"position" : PositionToJson(position)}];
+    [_channel invokeMethod:@"camera#onMove" arguments:@{@"position": PositionToJson(position)}];
   }
 }
 
@@ -244,7 +259,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 #pragma mark - Implementations of JSON conversion functions.
 
 static NSArray* LocationToJson(CLLocationCoordinate2D position) {
-  return @[ @(position.latitude), @(position.longitude) ];
+  return @[@(position.latitude), @(position.longitude)];
 }
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position) {
@@ -252,10 +267,10 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position) {
     return nil;
   }
   return @{
-    @"target" : LocationToJson([position target]),
-    @"zoom" : @([position zoom]),
-    @"bearing" : @([position bearing]),
-    @"tilt" : @([position viewingAngle]),
+      @"target": LocationToJson([position target]),
+      @"zoom": @([position zoom]),
+      @"bearing": @([position bearing]),
+      @"tilt": @([position viewingAngle]),
   };
 }
 
@@ -293,7 +308,7 @@ static GMSCoordinateBounds* ToOptionalBounds(NSArray* data) {
 
 static GMSMapViewType ToMapViewType(NSNumber* json) {
   int value = ToInt(json);
-  return (GMSMapViewType)(value == 0 ? 5 : value);
+  return (GMSMapViewType) (value == 0 ? 5 : value);
 }
 
 static GMSCameraUpdate* ToCameraUpdate(NSArray* data) {
