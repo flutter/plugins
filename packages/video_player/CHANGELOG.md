@@ -2,7 +2,11 @@
 
 * Android: Fix missing call to `event.put("event", "completed");` which makes it possible to detect when the video is over.
 
-## 0.10.0+5
+## 0.10.0+5.1
+
+* Implemented playback speed feature.
+
+## 0.10.0+5.2
 
 * Fixed iOS build warnings about implicit retains.
 
