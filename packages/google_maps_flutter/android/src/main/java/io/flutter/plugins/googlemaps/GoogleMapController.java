@@ -67,6 +67,7 @@ final class GoogleMapController
   private final Context context;
   private final MarkersController markersController;
   private List<Object> initialMarkers;
+  private final ActionRecorder actionRecorder = new ActionRecorder();
 
   GoogleMapController(
       int id,
@@ -199,6 +200,19 @@ final class GoogleMapController
           markersController.changeMarkers((List<Object>) markersToChange);
           Object markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers((List<Object>) markerIdsToRemove);
+          result.success(null);
+          break;
+        }
+      case "map#startRecordingActions":
+        {
+          actionRecorder.startRecordingActions();
+          result.success(null);
+          break;
+        }
+        // todo specify in contract for when recordActions is false.
+      case "map#getRecordedActions":
+        {
+          result.success(actionRecorder.getRecordedActions());
           break;
         }
       default:
@@ -315,6 +329,8 @@ final class GoogleMapController
 
   @Override
   public void setCompassEnabled(boolean compassEnabled) {
+    // TODO add this for more methods.
+    actionRecorder.recordAction("setCompassEnabled", compassEnabled);
     googleMap.getUiSettings().setCompassEnabled(compassEnabled);
   }
 
