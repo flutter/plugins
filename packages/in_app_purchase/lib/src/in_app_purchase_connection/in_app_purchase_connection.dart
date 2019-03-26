@@ -55,7 +55,7 @@ enum PurchaseStatus { pending, purchased, error }
 /// Error of a purchase process.
 ///
 /// The error can happen during the purchase, or restoring a purchase.
-/// The error happened in restoring a purchase is not necessary the same as the error happened during the same purchase if any.
+/// Errors from restoring a purchase are not indicative of any errors during the original purchase.
 class PurchaseError {
   PurchaseError({@required this.source, this.code, this.message});
 
