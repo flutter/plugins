@@ -160,7 +160,7 @@ typedef bool StorePaymentDecisionMaker({ProductDetails productDetails, String ap
 abstract class InAppPurchaseConnection {
   /// Configure necessary callbacks.
   ///
-  /// It has to be called in the very beginning of app launching. Preferably before returning the App Widget in main().
+  /// It has to be called in the very beginning of app launching. Preferably before returning your main App Widget in main().
   static void configure({PurchaseUpdateListener purchaseUpdateListener, StorePaymentDecisionMaker storePaymentDecisionMaker}) {
     if (Platform.isAndroid) {
       GooglePlayConnection.configure(purchaseUpdateListener: purchaseUpdateListener, storePaymentDecisionMaker: storePaymentDecisionMaker);

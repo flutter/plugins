@@ -47,6 +47,10 @@ class AppStoreConnection implements InAppPurchaseConnection {
       StorePaymentDecisionMaker storePaymentDecisionMaker}) {
     _purchaseUpdateListener = purchaseUpdateListener;
     _storePaymentDecisionMaker = storePaymentDecisionMaker;
+    if (_observer != null) {
+      _observer.purchaseUpdateListener = _purchaseUpdateListener;
+      _observer.storePaymentDecisionMaker = _storePaymentDecisionMaker;
+    }
   }
 
   @override
@@ -54,7 +58,15 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
   @override
   Future<void> makePayment(
-      {String productID, String applicationUserName}) async {}
+      {String productID, String applicationUserName}) async {
+    SKPaymentWrapper payment = SKPaymentWrapper(
+        productIdentifier: productID,
+        quantity: 1,
+        applicationUsername: applicationUserName,
+        simulatesAskToBuyInSandbox: false,
+        requestData: null);
+    SKPaymentQueueWrapper().addPayment(payment);
+  }
 
   @override
   Future<QueryPastPurchaseResponse> queryPastPurchases(
@@ -130,8 +142,8 @@ class AppStoreConnection implements InAppPurchaseConnection {
 class _TransactionObserver implements SKTransactionObserverWrapper {
   Completer<List<SKPaymentTransactionWrapper>> _restoreCompleter;
   List<SKPaymentTransactionWrapper> _restoredTransactions;
-  final PurchaseUpdateListener purchaseUpdateListener;
-  final StorePaymentDecisionMaker storePaymentDecisionMaker;
+  PurchaseUpdateListener purchaseUpdateListener;
+  StorePaymentDecisionMaker storePaymentDecisionMaker;
 
   _TransactionObserver(
       {@required this.purchaseUpdateListener, this.storePaymentDecisionMaker});

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:test/test.dart';
@@ -18,6 +19,15 @@ void main() {
   final FakeIOSPlatform fakeIOSPlatform = FakeIOSPlatform();
 
   setUpAll(() {
+    AppStoreConnection.configure(purchaseUpdateListener: (
+        {PurchaseDetails purchaseDetails,
+        PurchaseStatus status,
+        PurchaseError error}) {
+      return;
+    }, storePaymentDecisionMaker: (
+        {ProductDetails productDetails, String applicationUserName}) {
+      return true;
+    });
     SystemChannels.platform
         .setMockMethodCallHandler(fakeIOSPlatform.onMethodCall);
   });
@@ -111,6 +121,65 @@ void main() {
       fakeIOSPlatform.receiptData = 'dummy base64data';
     });
   });
+
+  group('make payment', () {
+    test('should get purchase objects in the purchase update callback',
+        () async {
+      List<PurchaseDetails> details = [];
+      Completer completer = Completer();
+      PurchaseUpdateListener listener = (
+          {PurchaseDetails purchaseDetails,
+          PurchaseStatus status,
+          PurchaseError error}) {
+        details.add(purchaseDetails);
+        if (status == PurchaseStatus.purchased) {
+          completer.complete(details);
+        }
+      };
+
+      StorePaymentDecisionMaker decisionMaker =
+          ({ProductDetails productDetails, String applicationUserName}) => true;
+
+      AppStoreConnection.configure(
+          purchaseUpdateListener: listener,
+          storePaymentDecisionMaker: decisionMaker);
+      AppStoreConnection.instance
+          .makePayment(productID: 'productID', applicationUserName: 'appName');
+      List<PurchaseDetails> result = await completer.future;
+      expect(result.length, 2);
+      expect(result.first.productId, 'productID');
+    });
+  });
+
+  test('should get failed purchase status', () async {
+    fakeIOSPlatform.testTransactionFail = true;
+    List<PurchaseDetails> details = [];
+    Completer completer = Completer();
+    PurchaseUpdateListener listener = (
+        {PurchaseDetails purchaseDetails,
+        PurchaseStatus status,
+        PurchaseError error}) {
+      details.add(purchaseDetails);
+      if (status == PurchaseStatus.error) {
+        completer.complete(error);
+      }
+    };
+
+    StorePaymentDecisionMaker decisionMaker =
+        ({ProductDetails productDetails, String applicationUserName}) => true;
+
+    AppStoreConnection.configure(
+        purchaseUpdateListener: listener,
+        storePaymentDecisionMaker: decisionMaker);
+    AppStoreConnection.instance
+        .makePayment(productID: 'productID', applicationUserName: 'appName');
+    PurchaseError error = await completer.future;
+
+    expect(error.code, kPurchaseErrorCode);
+    expect(error.source, PurchaseSource.AppStore);
+    expect(error.message, {'message': 'an error message'});
+    fakeIOSPlatform.testTransactionFail = false;
+  });
 }
 
 class FakeIOSPlatform {
@@ -125,6 +194,7 @@ class FakeIOSPlatform {
   Map<String, SKProductWrapper> validProducts = Map();
   List<SKPaymentTransactionWrapper> transactions = [];
   bool testRestoredTransactionsNull = false;
+  bool testTransactionFail = false;
   Map<String, String> testRestoredError = null;
 
   void preConfigure() {
@@ -154,6 +224,43 @@ class FakeIOSPlatform {
     );
 
     transactions.addAll([tran1, tran2]);
+  }
+
+  SKPaymentTransactionWrapper createPendingTransactionWithProductID(String id) {
+    return SKPaymentTransactionWrapper(
+        payment: SKPaymentWrapper(productIdentifier: id),
+        transactionState: SKPaymentTransactionStateWrapper.purchasing,
+        transactionTimeStamp: 123123.121,
+        transactionIdentifier: id,
+        error: null,
+        downloads: null,
+        originalTransaction: null);
+  }
+
+  SKPaymentTransactionWrapper createPurchasedTransactionWithProductID(
+      String id) {
+    return SKPaymentTransactionWrapper(
+        payment: SKPaymentWrapper(productIdentifier: id),
+        transactionState: SKPaymentTransactionStateWrapper.purchased,
+        transactionTimeStamp: 123123.121,
+        transactionIdentifier: id,
+        error: null,
+        downloads: null,
+        originalTransaction: null);
+  }
+
+  SKPaymentTransactionWrapper createFailedTransactionWithProductID(String id) {
+    return SKPaymentTransactionWrapper(
+        payment: SKPaymentWrapper(productIdentifier: id),
+        transactionState: SKPaymentTransactionStateWrapper.failed,
+        transactionTimeStamp: 123123.121,
+        transactionIdentifier: id,
+        error: SKError(
+            code: 0,
+            domain: 'ios_domain',
+            userInfo: {'message': 'an error message'}),
+        downloads: null,
+        originalTransaction: null);
   }
 
   Future<dynamic> onMethodCall(MethodCall call) {
@@ -200,6 +307,25 @@ class FakeIOSPlatform {
       case '-[InAppPurchasePlugin refreshReceipt:result:]':
         receiptData = 'refreshed receipt data';
         return Future<void>.sync(() {});
+      case '-[InAppPurchasePlugin addPayment:result:]':
+        String id = call.arguments['productIdentifier'];
+        SKPaymentTransactionWrapper transaction =
+            createPendingTransactionWithProductID(id);
+        AppStoreConnection.observer
+            .updatedTransactions(transactions: [transaction]);
+        sleep(const Duration(milliseconds: 30));
+        if (testTransactionFail) {
+          SKPaymentTransactionWrapper transaction_failed =
+              createFailedTransactionWithProductID(id);
+          AppStoreConnection.observer
+              .updatedTransactions(transactions: [transaction_failed]);
+        } else {
+          SKPaymentTransactionWrapper transaction_finished =
+              createPurchasedTransactionWithProductID(id);
+          AppStoreConnection.observer
+              .updatedTransactions(transactions: [transaction_finished]);
+        }
+        break;
     }
     return Future<void>.sync(() {});
   }

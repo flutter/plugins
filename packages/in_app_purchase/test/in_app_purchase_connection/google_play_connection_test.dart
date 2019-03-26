@@ -22,8 +22,14 @@ void main() {
       'BillingClient#startConnection(BillingClientStateListener)';
   const String endConnectionCall = 'BillingClient#endConnection()';
 
-  setUpAll(() =>
-      channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler));
+  setUpAll((){
+        GooglePlayConnection.configure(purchaseUpdateListener: ({PurchaseDetails purchaseDetails, PurchaseStatus status, PurchaseError error}) {
+        return;
+    }, storePaymentDecisionMaker: ({ProductDetails productDetails, String applicationUserName}) {
+        return true;
+    });
+    channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler);
+  });
 
   setUp(() {
     WidgetsFlutterBinding.ensureInitialized();
