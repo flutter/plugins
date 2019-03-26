@@ -8,7 +8,6 @@ part of google_maps_flutter;
 class GoogleMapController {
   GoogleMapController._(
     MethodChannel channel,
-    CameraPosition initialCameraPosition,
     this._googleMapState,
   )   : assert(channel != null),
         _channel = channel {
@@ -17,7 +16,6 @@ class GoogleMapController {
 
   static Future<GoogleMapController> init(
     int id,
-    CameraPosition initialCameraPosition,
     _GoogleMapState googleMapState,
   ) async {
     assert(id != null);
@@ -29,7 +27,6 @@ class GoogleMapController {
     await channel.invokeMethod('map#waitForMap');
     return GoogleMapController._(
       channel,
-      initialCameraPosition,
       googleMapState,
     );
   }
@@ -129,4 +126,6 @@ class GoogleMapController {
       'cameraUpdate': cameraUpdate._toJson(),
     });
   }
+
+  // TODO method to get recorded actions.
 }

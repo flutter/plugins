@@ -199,11 +199,8 @@ class _GoogleMapState extends State<GoogleMap> {
   }
 
   Future<void> onPlatformViewCreated(int id) async {
-    final GoogleMapController controller = await GoogleMapController.init(
-      id,
-      widget.initialCameraPosition,
-      this,
-    );
+    final GoogleMapController controller =
+        await GoogleMapController.init(id, this);
     _controller.complete(controller);
     if (widget.onMapCreated != null) {
       widget.onMapCreated(controller);
