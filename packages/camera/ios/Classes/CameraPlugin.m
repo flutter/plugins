@@ -6,11 +6,11 @@
 
 static FlutterError *getFlutterError(NSError *error) {
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
-                             message:error.domain
-                             details:error.localizedDescription];
+                             message:error.localizedDescription
+                             details:error.domain];
 }
 
-@interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
+@interface FLTSavePhotoDelegate : NSObject<AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
 @property(readonly, nonatomic) FlutterResult result;
 @property(readonly, nonatomic) CMMotionManager *motionManager;
@@ -22,7 +22,7 @@ static FlutterError *getFlutterError(NSError *error) {
     cameraPosition:(AVCaptureDevicePosition)cameraPosition;
 @end
 
-@interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
+@interface FLTImageStreamHandler : NSObject<FlutterStreamHandler>
 @property FlutterEventSink eventSink;
 @end
 
@@ -114,10 +114,8 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 @end
 
-@interface FLTCam : NSObject <FlutterTexture,
-                              AVCaptureVideoDataOutputSampleBufferDelegate,
-                              AVCaptureAudioDataOutputSampleBufferDelegate,
-                              FlutterStreamHandler>
+@interface FLTCam : NSObject<FlutterTexture, AVCaptureVideoDataOutputSampleBufferDelegate,
+                             AVCaptureAudioDataOutputSampleBufferDelegate, FlutterStreamHandler>
 @property(readonly, nonatomic) int64_t textureId;
 @property(nonatomic, copy) void (^onFrameAvailable)();
 @property(nonatomic) FlutterEventChannel *eventChannel;
@@ -140,6 +138,7 @@ static FlutterError *getFlutterError(NSError *error) {
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
+@property(assign, nonatomic) NSString *resolutionPreset;
 @property(nonatomic) CMMotionManager *motionManager;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
@@ -167,13 +166,14 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                              error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
+  _resolutionPreset = resolutionPreset;
   _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
 
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
-  _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
-                                                             error:&localError];
+  _captureVideoInput =
+      [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice error:&localError];
   if (localError) {
     *error = localError;
     return nil;
@@ -181,7 +181,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
-      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)};
+      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat) };
   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
   [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
 
@@ -201,8 +201,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   _motionManager = [[CMMotionManager alloc] init];
   [_motionManager startAccelerometerUpdates];
 
-  [self setCaptureSessionPreset:resolutionPreset];
-
+  @try {
+    [self setCaptureSessionPreset:resolutionPreset];
+  } @catch (NSError *e) {
+    *error = e;
+  }
   return self;
 }
 
@@ -216,7 +219,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 - (void)captureToFile:(NSString *)path result:(FlutterResult)result {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
-  [settings setHighResolutionPhotoEnabled:YES];
+  if ([_resolutionPreset isEqualToString:@"veryHigh"]) {
+    [settings setHighResolutionPhotoEnabled:YES];
+  }
   [_capturePhotoOutput
       capturePhotoWithSettings:settings
                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
@@ -227,14 +232,25 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 - (void)setCaptureSessionPreset:(NSString *)resolutionPreset {
   int presetIndex;
-  if ([resolutionPreset isEqualToString:@"high"]) {
+  if ([resolutionPreset isEqualToString:@"veryHigh"]) {
     presetIndex = 0;
+  } else if ([resolutionPreset isEqualToString:@"high"]) {
+    presetIndex = 1;
   } else if ([resolutionPreset isEqualToString:@"medium"]) {
     presetIndex = 2;
-  } else {
-    NSAssert([resolutionPreset isEqualToString:@"low"], @"Unknown resolution preset %@",
-             resolutionPreset);
+  } else if ([resolutionPreset isEqualToString:@"low"]) {
     presetIndex = 3;
+  } else if ([resolutionPreset isEqualToString:@"veryLow"]) {
+    presetIndex = 4;
+  } else {
+    NSError *error = [NSError
+        errorWithDomain:NSCocoaErrorDomain
+                   code:NSURLErrorUnknown
+               userInfo:@{
+                 NSLocalizedDescriptionKey :
+                     [NSString stringWithFormat:@"Unknown resolution preset %@", resolutionPreset]
+               }];
+    @throw error;
   }
 
   switch (presetIndex) {
@@ -268,13 +284,20 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
         _previewSize = CGSizeMake(352, 288);
         break;
       }
-    default: {
-      NSException *exception = [NSException
-          exceptionWithName:@"NoAvailableCaptureSessionException"
-                     reason:@"No capture session available for current capture session."
-                   userInfo:nil];
-      @throw exception;
-    }
+    default:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetLow]) {
+        _captureSession.sessionPreset = AVCaptureSessionPresetLow;
+        _previewSize = CGSizeMake(352, 288);
+      } else {
+        NSError *error =
+            [NSError errorWithDomain:NSCocoaErrorDomain
+                                code:NSURLErrorUnknown
+                            userInfo:@{
+                              NSLocalizedDescriptionKey :
+                                  @"No capture session available for current capture session."
+                            }];
+        @throw error;
+      }
   }
 }
 
@@ -535,9 +558,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   if (!_isAudioSetup) {
     [self setUpCaptureSessionForAudio];
   }
-  _videoWriter = [[AVAssetWriter alloc] initWithURL:outputURL
-                                           fileType:AVFileTypeQuickTimeMovie
-                                              error:&error];
+  _videoWriter =
+      [[AVAssetWriter alloc] initWithURL:outputURL fileType:AVFileTypeQuickTimeMovie error:&error];
   NSParameterAssert(_videoWriter);
   if (error) {
     _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
@@ -580,8 +602,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   // Create a device input with the device and add it to the session.
   // Setup the audio input.
   AVCaptureDevice *audioDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
-  AVCaptureDeviceInput *audioInput = [AVCaptureDeviceInput deviceInputWithDevice:audioDevice
-                                                                           error:&error];
+  AVCaptureDeviceInput *audioInput =
+      [AVCaptureDeviceInput deviceInputWithDevice:audioDevice error:&error];
   if (error) {
     _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
   }
@@ -618,8 +640,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/camera"
                                   binaryMessenger:[registrar messenger]];
-  CameraPlugin *instance = [[CameraPlugin alloc] initWithRegistry:[registrar textures]
-                                                        messenger:[registrar messenger]];
+  CameraPlugin *instance =
+      [[CameraPlugin alloc] initWithRegistry:[registrar textures] messenger:[registrar messenger]];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 

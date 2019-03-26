@@ -15,6 +15,14 @@ final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
 enum CameraLensDirection { front, back, external }
 
+/// Affect the quality of video recording and image capture:
+/// - veryLow = 352x288 (CIF)
+/// - low = 640x480 on iOS, 720x480 on Android (480p)
+/// - medium = 1280x720 (720p)
+/// - high = 1920x1080 (1080p/HD)
+/// - veryHigh = 3840x2160 (2160p/4K)
+///
+/// If a preset is not available on the camera being used a preset of lower quality will be selected automatically.
 enum ResolutionPreset { veryLow, low, medium, high, veryHigh }
 
 typedef onLatestImageAvailable = Function(CameraImage image);

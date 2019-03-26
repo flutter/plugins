@@ -203,7 +203,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     if (controller != null) {
       await controller.dispose();
     }
-    controller = CameraController(cameraDescription, ResolutionPreset.veryHigh);
+    controller = CameraController(cameraDescription, ResolutionPreset.veryLow);
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
