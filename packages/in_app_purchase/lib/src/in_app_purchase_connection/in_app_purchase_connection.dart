@@ -20,17 +20,20 @@ import 'package:flutter/foundation.dart';
 /// For details on how to verify your purchase on iOS,
 /// you can refer to Apple's document about [`About Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
 ///
-/// on Android, all purchase information should also be verified manually, with your
-/// server if at all possible. See [`Verify a purchase`](https://developer.android.com/google/play/billing/billing_library_overview#Verify).
+/// On Android, all purchase information should also be verified manually. See [`Verify a purchase`](https://developer.android.com/google/play/billing/billing_library_overview#Verify).
+///
+/// It is preferable to verify purchases using a server with [serverVerificationData].
+///
+/// If the platform is iOS, it is possible the data can be null or your validation of this data turns out invalid. When these happen,
+/// Call [InAppPurchaseConnection.refreshPurchaseVerificationData] to get a new [PurchaseVerificationData] object. And then you can
+/// validate th receipt data again using one of the methods mentioned in [`Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
+///
+/// You should never use any purchase data until verified.
 class PurchaseVerificationData {
   /// The data used for local verification.
   ///
   /// If the [source] is [PurchaseSource.AppStore], this data is a based64 encoded string. The structure of the payload is defined using ASN.1.
   /// If the [source] is [PurchaseSource.GooglePlay], this data is a JSON String.
-  ///
-  /// If the platform is iOS, it is possible the data can be null or your validation of this data turns out invalid. When these happen,
-  /// Call [InAppPurchaseConnection.refreshPurchaseVerificationData] to get a new [PurchaseVerificationData] object. And then you can
-  /// validate th receipt data again using one of the methods mentioned in [`Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
   final String localVerificationData;
 
   /// The data used for server verification.
@@ -50,14 +53,13 @@ class PurchaseVerificationData {
 /// Which platform the purchase is on.
 enum PurchaseSource { GooglePlay, AppStore }
 
-enum PurchaseStatus { pending, purchased, error }
-
 /// Error of a purchase process.
 ///
 /// The error can happen during the purchase, or restoring a purchase.
 /// The error happened in restoring a purchase is not necessary the same as the error happened during the same purchase if any.
 class PurchaseError {
-  PurchaseError({@required this.source, this.code, this.message});
+  PurchaseError(
+      {@required this.source, @required this.code, @required this.message});
 
   /// Which source is the error on.
   final PurchaseSource source;
@@ -79,7 +81,8 @@ class PurchaseDetails {
 
   /// The verification data of the purchase.
   ///
-  /// Use this to verify the purchase.
+  /// Use this to verify the purchase. See [PurchaseVerificationData] for details on how to verify purchase use this data.
+  /// You should never use any purchase data until verified.
   final PurchaseVerificationData verificationData;
 
   /// The timestamp of the transaction.
@@ -87,31 +90,25 @@ class PurchaseDetails {
   /// Milliseconds since epoch.
   final String transactionDate;
 
-  /// The original purchase data of this purchase.
-  ///
-  /// It is only available when this purchase is a restored purchase in iOS.
-  /// See [InAppPurchaseConnection.queryPastPurchases] for details on restoring purchases.
-  /// The value of this property is null if the purchase is not a restored purchases.
-  final PurchaseDetails originalPurchase;
-
-  PurchaseDetails(
-      {@required this.purchaseID,
-      @required this.productId,
-      @required this.verificationData,
-      @required this.transactionDate,
-      this.originalPurchase});
+  PurchaseDetails({
+    @required this.purchaseID,
+    @required this.productId,
+    @required this.verificationData,
+    @required this.transactionDate,
+  });
 }
 
 /// The response object for fetching the past purchases.
 ///
 /// An instance of this class is returned in [InAppPurchaseConnection.queryPastPurchases].
-class QueryPastPurchaseResponse {
-  QueryPastPurchaseResponse({@required this.pastPurchases, this.error});
+class QueryPurchaseDetailsResponse {
+  QueryPurchaseDetailsResponse({@required this.pastPurchases, this.error});
 
   /// A list of successfully fetched past purchases.
   ///
   /// If there are no past purchases, or there is an [error] fetching past purchases,
   /// this variable is an empty List.
+  /// You should verify the purchase data using [PurchaseDetails.verificationData] before use the [PurchaseDetails] object.
   final List<PurchaseDetails> pastPurchases;
 
   /// The error when fetching past purchases.
@@ -130,13 +127,15 @@ abstract class InAppPurchaseConnection {
 
   /// Query all the past purchases.
   ///
-  /// The `applicationUserName` is used for iOS only and it is optional. It does not have any effects on Android.
-  /// It is the `applicationUsername` you used to create payments.
+  /// The `applicationUserName` is required if you also passed this when make a purchase.
   /// If you did not use a `applicationUserName` when creating payments, you can ignore this parameter.
-  Future<QueryPastPurchaseResponse> queryPastPurchases(
+  Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName});
 
-  /// Get a refreshed purchase verification data.
+  /// A utility method in case there is an issue with getting the verification data originally.
+  ///
+  /// On Android, it is a non-op. We directly return the verification data in the `purchase` that is passed in.
+  /// See [PurchaseVerificationData] for more details on when to use this.
   Future<PurchaseVerificationData> refreshPurchaseVerificationData(
       PurchaseDetails purchase);
 

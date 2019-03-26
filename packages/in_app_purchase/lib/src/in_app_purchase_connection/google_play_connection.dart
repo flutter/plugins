@@ -35,34 +35,31 @@ class GooglePlayConnection
   }
 
   @override
-  Future<QueryPastPurchaseResponse> queryPastPurchases(
+  Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
     List<PurchasesResultWrapper> responses = await Future.wait([
       _billingClient.queryPurchaseHistory(SkuType.inapp),
       _billingClient.queryPurchaseHistory(SkuType.subs)
     ]);
 
-    BillingResponse errorInApp = responses.first.responseCode;
-    BillingResponse errorSubs = responses.last.responseCode;
-    String errorMessage = null;
-    if (errorInApp != BillingResponse.ok) {
-      errorMessage = errorInApp.toString();
-    }
-    if (errorSubs != BillingResponse.ok && errorSubs != errorInApp) {
-      errorMessage += ', ${errorSubs.toString()}';
-    }
+    Set errorCodeSet = responses
+        .where((PurchasesResultWrapper response) =>
+            response.responseCode != BillingResponse.ok)
+        .map((PurchasesResultWrapper response) =>
+            response.responseCode.toString())
+        .toSet();
 
-    List<PurchaseDetails> pastPurchases;
-    if (responses == null) {
-      pastPurchases = [];
-    } else {
-      pastPurchases = responses.expand((PurchasesResultWrapper response) {
-        return response.purchasesList;
-      }).map((PurchaseWrapper purchaseWrapper) {
-        return purchaseWrapper.toPurchaseDetails();
-      }).toList();
-    }
-    return QueryPastPurchaseResponse(
+    String errorMessage =
+        errorCodeSet.isNotEmpty ? errorCodeSet.join(', ') : null;
+
+    List<PurchaseDetails> pastPurchases =
+        responses.expand((PurchasesResultWrapper response) {
+      return response.purchasesList;
+    }).map((PurchaseWrapper purchaseWrapper) {
+      return purchaseWrapper.toPurchaseDetails();
+    }).toList();
+
+    return QueryPurchaseDetailsResponse(
       pastPurchases: pastPurchases,
       error: errorMessage != null
           ? PurchaseError(
@@ -73,6 +70,9 @@ class GooglePlayConnection
     );
   }
 
+  /// This is a non-op.
+  ///
+  /// There is no refreshing verification data on Google Play.
   @override
   Future<PurchaseVerificationData> refreshPurchaseVerificationData(
       PurchaseDetails purchase) async {
