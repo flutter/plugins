@@ -25,7 +25,6 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Size;
-import android.util.SparseArray;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import androidx.annotation.NonNull;
@@ -432,68 +431,60 @@ public class CameraPlugin implements MethodCallHandler {
       mediaRecorder.prepare();
     }
 
-    // We need to find the best available profile for the selected resolution. For this we make an ordered list
-    // of all the profiles (highest number is better quality) and we see if the requested profile is in it. If it's not
-    // we check the next profile and so on until the lowest quality profile.
     private CamcorderProfile getBestAvailableCamcorderProfileForResolutionPreset(
         String resolutionPreset) {
       int camcorderProfileIndex;
       switch (resolutionPreset) {
         case "veryHigh":
-          camcorderProfileIndex = 4;
+          camcorderProfileIndex = 0;
           break;
         case "high":
-          camcorderProfileIndex = 3;
+          camcorderProfileIndex = 1;
           break;
         case "medium":
           camcorderProfileIndex = 2;
           break;
         case "low":
-          camcorderProfileIndex = 1;
+          camcorderProfileIndex = 3;
           break;
         case "veryLow":
-          camcorderProfileIndex = 0;
+          camcorderProfileIndex = 4;
           break;
         default:
           throw new IllegalArgumentException("Unknown resolution preset: " + resolutionPreset);
       }
 
-      // Try to use the closest available profile for requested quality.
-      SparseArray<CamcorderProfile> availableProfileIndexes = getAvailableCamcorderProfiles();
-      for (int i = camcorderProfileIndex; i >= 0; i--) {
-        CamcorderProfile profile = availableProfileIndexes.get(i);
-        if (profile != null) {
-          return profile;
-        }
-      }
-
-      // Last chance fallback.
-      if (CamcorderProfile.hasProfile(Integer.parseInt(cameraName), CamcorderProfile.QUALITY_LOW)) {
-        return CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
-      } else {
-        throw new IllegalArgumentException("No camera profile could be loaded for this camera.");
-      }
-    }
-
-    private SparseArray<CamcorderProfile> getAvailableCamcorderProfiles() {
       int cameraId = Integer.parseInt(cameraName);
-      SparseArray<CamcorderProfile> profiles = new SparseArray<>();
-      if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_2160P)) {
-        profiles.append(4, CamcorderProfile.get(CamcorderProfile.QUALITY_2160P));
+      switch (camcorderProfileIndex) {
+        case 0:
+          if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_2160P)) {
+            return CamcorderProfile.get(CamcorderProfile.QUALITY_2160P);
+          }
+        case 1:
+          if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_1080P)) {
+            return CamcorderProfile.get(CamcorderProfile.QUALITY_1080P);
+          }
+        case 2:
+          if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_720P)) {
+            return CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
+          }
+        case 3:
+          if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_480P)) {
+            return CamcorderProfile.get(CamcorderProfile.QUALITY_480P);
+          }
+        case 4:
+          if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_CIF)) {
+            return CamcorderProfile.get(CamcorderProfile.QUALITY_CIF);
+          }
+        default:
+          if (CamcorderProfile.hasProfile(
+              Integer.parseInt(cameraName), CamcorderProfile.QUALITY_LOW)) {
+            return CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
+          } else {
+            throw new IllegalArgumentException(
+                "No capture session available for current capture session.");
+          }
       }
-      if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_1080P)) {
-        profiles.append(3, CamcorderProfile.get(CamcorderProfile.QUALITY_1080P));
-      }
-      if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_720P)) {
-        profiles.append(2, CamcorderProfile.get(CamcorderProfile.QUALITY_720P));
-      }
-      if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_480P)) {
-        profiles.append(1, CamcorderProfile.get(CamcorderProfile.QUALITY_480P));
-      }
-      if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_CIF)) {
-        profiles.append(0, CamcorderProfile.get(CamcorderProfile.QUALITY_CIF));
-      }
-      return profiles;
     }
 
     private void open(@Nullable final Result result) {
