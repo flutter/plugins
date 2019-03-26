@@ -4,6 +4,7 @@
   `AlarmService.setPluginRegistrant` has not been called to set a
   PluginRegistrantCallback. This improves the error message seen when the
   `AlarmService.setPluginRegistrant` call is omitted.
+* Updated example to remove dependency on Firebase.
 
 ## 0.4.1+3
 

@@ -98,7 +98,6 @@
   } else {
     [self.delegate productsRequest:self didReceiveResponse:response];
   }
-  [self.delegate requestDidFinish:self];
 }
 
 @end
@@ -132,6 +131,10 @@
 
 - (SKProduct *)getProduct:(NSString *)productID {
   return [SKProduct new];
+}
+
+- (SKReceiptRefreshRequestStub *)getRefreshReceiptRequest:(NSDictionary *)properties {
+  return [[SKReceiptRefreshRequestStub alloc] initWithReceiptProperties:properties];
 }
 
 @end
@@ -232,6 +235,40 @@
   return [self initWithDomain:[map objectForKey:@"domain"]
                          code:[[map objectForKey:@"code"] integerValue]
                      userInfo:[map objectForKey:@"userInfo"]];
+}
+
+@end
+
+@implementation FIAPReceiptManagerStub : FIAPReceiptManager
+
+- (NSData *)getReceiptData:(NSURL *)url {
+  NSString *originalString = [NSString stringWithFormat:@"test"];
+  return [[NSData alloc] initWithBase64EncodedString:originalString options:kNilOptions];
+}
+
+@end
+
+@implementation SKReceiptRefreshRequestStub {
+  NSError *_error;
+}
+
+- (instancetype)initWithReceiptProperties:(NSDictionary<NSString *, id> *)properties {
+  self = [super initWithReceiptProperties:properties];
+  return self;
+}
+
+- (instancetype)initWithFailureError:(NSError *)error {
+  self = [super init];
+  _error = error;
+  return self;
+}
+
+- (void)start {
+  if (_error) {
+    [self.delegate request:self didFailWithError:_error];
+  } else {
+    [self.delegate requestDidFinish:self];
+  }
 }
 
 @end

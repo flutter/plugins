@@ -87,23 +87,23 @@ void main() {
       final BillingResponse responseCode = BillingResponse.ok;
       stubPlatform.addResponse(name: queryMethodName, value: <String, dynamic>{
         'responseCode': BillingResponseConverter().toJson(responseCode),
-        'skuDetailsList': <Map<String, dynamic>>[buildSkuMap(dummyWrapper)]
+        'skuDetailsList': <Map<String, dynamic>>[buildSkuMap(dummySkuDetails)]
       });
       // Since queryProductDetails makes 2 platform method calls (one for each SkuType), the result will contain 2 dummyWrapper instead
       // of 1.
       final ProductDetailsResponse response =
           await connection.queryProductDetails(<String>['valid'].toSet());
-      expect(response.productDetails.first.title, dummyWrapper.title);
-      expect(
-          response.productDetails.first.description, dummyWrapper.description);
-      expect(response.productDetails.first.price, dummyWrapper.price);
+      expect(response.productDetails.first.title, dummySkuDetails.title);
+      expect(response.productDetails.first.description,
+          dummySkuDetails.description);
+      expect(response.productDetails.first.price, dummySkuDetails.price);
     });
 
     test('should get the correct notFoundIDs', () async {
       final BillingResponse responseCode = BillingResponse.ok;
       stubPlatform.addResponse(name: queryMethodName, value: <String, dynamic>{
         'responseCode': BillingResponseConverter().toJson(responseCode),
-        'skuDetailsList': <Map<String, dynamic>>[buildSkuMap(dummyWrapper)]
+        'skuDetailsList': <Map<String, dynamic>>[buildSkuMap(dummySkuDetails)]
       });
       // Since queryProductDetails makes 2 platform method calls (one for each SkuType), the result will contain 2 dummyWrapper instead
       // of 1.

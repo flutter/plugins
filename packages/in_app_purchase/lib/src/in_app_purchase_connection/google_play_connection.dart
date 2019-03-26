@@ -16,7 +16,10 @@ import 'product_details.dart';
 class GooglePlayConnection
     with WidgetsBindingObserver
     implements InAppPurchaseConnection {
-  GooglePlayConnection._() : _billingClient = BillingClient() {
+  GooglePlayConnection._()
+      : _billingClient = BillingClient((PurchasesResultWrapper _) {
+          // TODO(mklim): wire this in to the generic interface
+        }) {
     _readyFuture = _connect();
     WidgetsBinding.instance.addObserver(this);
   }

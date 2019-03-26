@@ -53,6 +53,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
         result.success(true);
       } else if (method.equals("AlarmService.initialized")) {
         AlarmService.onInitialized();
+        result.success(true);
       } else if (method.equals("Alarm.periodic")) {
         periodic((JSONArray) arguments);
         result.success(true);
