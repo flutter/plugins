@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
+import 'package:in_app_purchase/src/store_kit_wrappers/enum_converters.dart';
 
 /// An [InAppPurchaseConnection] that wraps StoreKit.
 ///
@@ -19,27 +20,41 @@ class AppStoreConnection implements InAppPurchaseConnection {
   static AppStoreConnection _instance;
   static SKPaymentQueueWrapper _skPaymentQueueWrapper;
   static _TransactionObserver _observer;
+  static PurchaseUpdateListener _purchaseUpdateListener;
+  static StorePaymentDecisionMaker _storePaymentDecisionMaker;
 
   static SKTransactionObserverWrapper get observer => _observer;
 
   static AppStoreConnection _getOrCreateInstance() {
+    assert(_purchaseUpdateListener != null);
+    assert(_storePaymentDecisionMaker != null);
     if (_instance != null) {
       return _instance;
     }
 
     _instance = AppStoreConnection();
     _skPaymentQueueWrapper = SKPaymentQueueWrapper();
-    _observer = _TransactionObserver();
+    _observer = _TransactionObserver(
+      purchaseUpdateListener: _purchaseUpdateListener,
+      storePaymentDecisionMaker: _storePaymentDecisionMaker,
+    );
     _skPaymentQueueWrapper.setTransactionObserver(observer);
     return _instance;
+  }
+
+  static void configure(
+      {PurchaseUpdateListener purchaseUpdateListener,
+      StorePaymentDecisionMaker storePaymentDecisionMaker}) {
+    _purchaseUpdateListener = purchaseUpdateListener;
+    _storePaymentDecisionMaker = storePaymentDecisionMaker;
   }
 
   @override
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
 
   @override
-  Future<void> makePayment({String productID, String applicationUserName}) async {
-  }
+  Future<void> makePayment(
+      {String productID, String applicationUserName}) async {}
 
   @override
   Future<QueryPastPurchaseResponse> queryPastPurchases(
@@ -115,6 +130,11 @@ class AppStoreConnection implements InAppPurchaseConnection {
 class _TransactionObserver implements SKTransactionObserverWrapper {
   Completer<List<SKPaymentTransactionWrapper>> _restoreCompleter;
   List<SKPaymentTransactionWrapper> _restoredTransactions;
+  final PurchaseUpdateListener purchaseUpdateListener;
+  final StorePaymentDecisionMaker storePaymentDecisionMaker;
+
+  _TransactionObserver(
+      {@required this.purchaseUpdateListener, this.storePaymentDecisionMaker});
 
   Future<List<SKPaymentTransactionWrapper>> getRestoredTransactions(
       {@required SKPaymentQueueWrapper queue, String applicationUserName}) {
@@ -130,13 +150,36 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   }
 
   /// Triggered when any transactions are updated.
-  void updatedTransactions({List<SKPaymentTransactionWrapper> transactions}) {
-    assert(_restoreCompleter != null);
-    _restoredTransactions =
-        transactions.where((SKPaymentTransactionWrapper wrapper) {
-      return wrapper.transactionState ==
-          SKPaymentTransactionStateWrapper.restored;
-    }).toList();
+  void updatedTransactions(
+      {List<SKPaymentTransactionWrapper> transactions}) async {
+    if (_restoreCompleter != null) {
+      _restoredTransactions =
+          transactions.where((SKPaymentTransactionWrapper wrapper) {
+        return wrapper.transactionState ==
+            SKPaymentTransactionStateWrapper.restored;
+      }).toList();
+    } else {
+      String receiptData;
+      try {
+        receiptData = await SKReceiptManager.retrieveReceiptData();
+      } catch (e) {
+        receiptData = null;
+      }
+      transactions.forEach((transaction) {
+        purchaseUpdateListener(
+          purchaseDetails: transaction.toPurchaseDetails(receiptData),
+          status: SKTransactionStatusConverter()
+              .toPurchaseStatus(transaction.transactionState),
+          error: transaction.error != null
+              ? PurchaseError(
+                  source: PurchaseSource.AppStore,
+                  code: kPurchaseErrorCode,
+                  message: transaction.error.userInfo,
+                )
+              : null,
+        );
+      });
+    }
   }
 
   /// Triggered when any transactions are removed from the payment queue.
@@ -166,6 +209,8 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   /// [addPayment] with the [SKPaymentWrapper] object you get from this method.
   bool shouldAddStorePayment(
       {SKPaymentWrapper payment, SKProductWrapper product}) {
-    return true;
+    return storePaymentDecisionMaker(
+        productDetails: product.toProductDetails(),
+        applicationUserName: payment.applicationUsername);
   }
 }

@@ -9,6 +9,9 @@ import 'google_play_connection.dart';
 import 'product_details.dart';
 import 'package:flutter/foundation.dart';
 
+final String kPurchaseErrorCode = 'purchase_error';
+final String kRestoredPurchaseErrorCode = 'restore_transactions_failed';
+
 /// Represents the data that is used to verify purchases.
 ///
 /// The property [source] helps you to determine the method to verify purchases.
@@ -139,19 +142,19 @@ class QueryPastPurchaseResponse {
 /// Triggered when some [PurchaseDetails] is updated.
 ///
 /// Use this method to get different [PurchaseStatus] of the purchase process, and update your UI accordingly.
-/// If `statsu` is [PurchaseStatus.error], the error message is stored in `error`.
-typedef void PurchaseUpdateListener({PurchaseDetails purchaseDetails, PurchaseStatus status, Map<String, String> error});
+/// If `status` is [PurchaseStatus.error], the error message is stored in `error`.
+typedef void PurchaseUpdateListener({PurchaseDetails purchaseDetails, PurchaseStatus status, PurchaseError error});
 
 /// Triggered when a user initiated an in-app purchase from App Store. (iOS only)
 ///
-/// Return `true` to continue the transaction in your app. If you have multiple [PurchaseDetails]s, the purchases
-/// will continue if one [PurchaseDetails] has [StorePaymentDecisionMaker] returning `true`.
+/// Return `true` to continue the transaction in your app. If you have multiple [ProductDetails]s, the purchases
+/// will continue if one [ProductDetails] has [StorePaymentDecisionMaker] returning `true`.
 /// Return `false` to defer or cancel the purchase. For example, you may need to defer a transaction if the user is in the middle of onboarding.
 /// You can also continue the transaction later by calling
-/// [InAppPurchaseConnection.makePayment] with the [PurchaseDetails.productID] in the [PurchaseDetails] object you get from this method.
+/// [InAppPurchaseConnection.makePayment] with the [ProductDetails.productID] in the [ProductDetails] object you get from this method.
 ///
 /// This method has no effect on Android.
-typedef bool StorePaymentDecisionMaker({PurchaseDetails purchaseDetails});
+typedef bool StorePaymentDecisionMaker({ProductDetails productDetails, String applicationUserName});
 
 /// Basic generic API for making in app purchases across multiple platforms.
 abstract class InAppPurchaseConnection {

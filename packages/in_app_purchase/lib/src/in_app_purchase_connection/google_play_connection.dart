@@ -19,7 +19,20 @@ class GooglePlayConnection
   GooglePlayConnection._()
       : _billingClient = BillingClient((PurchasesResultWrapper resultWrapper) {
           for (PurchaseWrapper purchase in resultWrapper.purchasesList) {
-            _purchaseUpdateListener(purchaseDetails: purchase.toPurchaseDetails(), status:resultWrapper.responseCode == BillingResponse.ok ? PurchaseStatus.purchased: PurchaseStatus.error);
+            PurchaseError error = null;
+            if (resultWrapper.responseCode != BillingResponse.ok) {
+              error = PurchaseError(
+                source: PurchaseSource.GooglePlay,
+                code: kRestoredPurchaseErrorCode,
+                message: {'message': resultWrapper.responseCode.toString()},
+              );
+            }
+            _purchaseUpdateListener(
+                purchaseDetails: purchase.toPurchaseDetails(),
+                status: resultWrapper.responseCode == BillingResponse.ok
+                    ? PurchaseStatus.purchased
+                    : PurchaseStatus.error,
+                error: error);
           }
         }) {
     _readyFuture = _connect();
@@ -68,11 +81,8 @@ class GooglePlayConnection
   @override
   Future<void> makePayment(
       {String productID, String applicationUserName}) async {
-      BillingResponse response = await _billingClient.launchBillingFlow(sku: productID, accountId: applicationUserName);
-      print('xx ' + response.toString());
-      PurchaseStatus status = response == BillingResponse.ok ? PurchaseStatus.purchased :PurchaseStatus.error;
-      String error = response == BillingResponse.ok ? null : response.toString();
-      //return PurchaseResponse(status: status, error: error);
+    await _billingClient.launchBillingFlow(
+        sku: productID, accountId: applicationUserName);
   }
 
   @override
@@ -108,7 +118,7 @@ class GooglePlayConnection
       error: errorMessage != null
           ? PurchaseError(
               source: PurchaseSource.GooglePlay,
-              code: 'restore_transactions_failed',
+              code: kRestoredPurchaseErrorCode,
               message: {'message': errorMessage})
           : null,
     );
@@ -147,7 +157,9 @@ class GooglePlayConnection
     return _instance;
   }
 
-  static void configure({PurchaseUpdateListener purchaseUpdateListener, StorePaymentDecisionMaker storePaymentDecisionMaker}) {
+  static void configure(
+      {PurchaseUpdateListener purchaseUpdateListener,
+      StorePaymentDecisionMaker storePaymentDecisionMaker}) {
     _purchaseUpdateListener = purchaseUpdateListener;
     _storePaymentDecisionMaker = storePaymentDecisionMaker;
   }
