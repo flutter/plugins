@@ -24,9 +24,9 @@ import 'package:flutter/foundation.dart';
 ///
 /// It is preferable to verify purchases using a server with [serverVerificationData].
 ///
-/// If the platform is iOS, it is possible the data can be null or your validation of this data turns out invalid. When these happen,
+/// If the platform is iOS, it is possible the data can be null or your validation of this data turns out invalid. When this happens,
 /// Call [InAppPurchaseConnection.refreshPurchaseVerificationData] to get a new [PurchaseVerificationData] object. And then you can
-/// validate th receipt data again using one of the methods mentioned in [`Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
+/// validate the receipt data again using one of the methods mentioned in [`Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
 ///
 /// You should never use any purchase data until verified.
 class PurchaseVerificationData {
@@ -56,7 +56,7 @@ enum PurchaseSource { GooglePlay, AppStore }
 /// Error of a purchase process.
 ///
 /// The error can happen during the purchase, or restoring a purchase.
-/// The error happened in restoring a purchase is not necessary the same as the error happened during the same purchase if any.
+/// Errors from restoring a purchase are not indicative of any errors during the original purchase.
 class PurchaseError {
   PurchaseError(
       {@required this.source, @required this.code, @required this.message});
