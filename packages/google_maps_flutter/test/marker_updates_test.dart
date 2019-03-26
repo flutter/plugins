@@ -176,7 +176,7 @@ void main() {
   testWidgets(
     "Partial Update",
     (WidgetTester tester) async {
-      Marker m1 = Marker(markerId: MarkerId("marker_1"));
+      final Marker m1 = Marker(markerId: MarkerId("marker_1"));
       Marker m2 = Marker(markerId: MarkerId("marker_2"));
       final Set<Marker> prev = _toSet(m1: m1, m2: m2);
       m2 = Marker(markerId: MarkerId("marker_2"), draggable: true);
@@ -188,9 +188,7 @@ void main() {
       final FakePlatformGoogleMap platformGoogleMap =
           fakePlatformViewsController.lastCreatedView;
 
-      expect(platformGoogleMap.markersToChange,
-        <Marker>[m2].toSet()
-      );
+      expect(platformGoogleMap.markersToChange, _toSet(m2: m2));
       expect(platformGoogleMap.markerIdsToRemove.isEmpty, true);
       expect(platformGoogleMap.markersToAdd.isEmpty, true);
     },
