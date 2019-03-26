@@ -209,10 +209,21 @@ final class GoogleMapController
           result.success(null);
           break;
         }
-        // todo specify in contract for when recordActions is false.
       case "map#getRecordedActions":
         {
           result.success(actionRecorder.getRecordedActions());
+          break;
+        }
+      case "map#clearRecordedActions":
+        {
+          actionRecorder.clearRecordedActions();
+          result.success(null);
+          break;
+        }
+      case "map#stopRecordingActions":
+        {
+          actionRecorder.stopRecordingActions();
+          result.success(null);
           break;
         }
       default:
@@ -329,7 +340,7 @@ final class GoogleMapController
 
   @Override
   public void setCompassEnabled(boolean compassEnabled) {
-    // TODO add this for more methods.
+    // TODO(iskakaushik): record actions to all methods.
     actionRecorder.recordAction("setCompassEnabled", compassEnabled);
     googleMap.getUiSettings().setCompassEnabled(compassEnabled);
   }

@@ -15,6 +15,9 @@ dev_dependencies:
 
   google_maps_flutter:
     path: ../
+  flutter_driver:
+    sdk: flutter
+  test: any
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

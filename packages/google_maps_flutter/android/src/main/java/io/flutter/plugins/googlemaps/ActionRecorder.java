@@ -4,21 +4,20 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActionRecorder {
+class ActionRecorder {
 
   private boolean recordActions = false;
   private final List<String> recordedActions = new ArrayList<>();
 
-  public void startRecordingActions() {
+  void startRecordingActions() {
     recordActions = true;
   }
 
-  // TODO need to implement in delegater
-  public void stopRecordingActions() {
+  void stopRecordingActions() {
     recordActions = false;
   }
 
-  public void clearRecordedActions() {
+  void clearRecordedActions() {
     recordedActions.clear();
   }
 
@@ -38,5 +37,4 @@ public class ActionRecorder {
   List<String> getRecordedActions() {
     return recordedActions;
   }
-
 }

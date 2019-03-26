@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_example/main.dart';
 
 import 'page.dart';
 
@@ -13,16 +14,20 @@ final LatLngBounds sydneyBounds = LatLngBounds(
 );
 
 class MapUiPage extends Page {
-  MapUiPage() : super(const Icon(Icons.map), 'User interface');
+  MapUiPage(this.callback) : super(const Icon(Icons.map), 'User interface');
+
+  final OnMapCreated callback;
 
   @override
   Widget build(BuildContext context) {
-    return const MapUiBody();
+    return MapUiBody(callback);
   }
 }
 
 class MapUiBody extends StatefulWidget {
-  const MapUiBody();
+  const MapUiBody(this.callback);
+
+  final OnMapCreated callback;
 
   @override
   State<StatefulWidget> createState() => MapUiBodyState();
@@ -61,6 +66,7 @@ class MapUiBodyState extends State<MapUiBody> {
 
   Widget _compassToggler() {
     return FlatButton(
+      key: const ValueKey<String>('compassButton'),
       child: Text('${_compassEnabled ? 'disable' : 'enable'} compass'),
       onPressed: () {
         setState(() {
@@ -240,6 +246,9 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   void onMapCreated(GoogleMapController controller) {
+    if (widget.callback != null) {
+      widget.callback(controller);
+    }
     setState(() {
       _isMapCreated = true;
     });

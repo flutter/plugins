@@ -127,7 +127,7 @@ class GoogleMapController {
     });
   }
 
-  // Record SDK calls. This is used for testing.
+  // Record SDK calls. These are used primarily for testing.
 
   Future<void> startRecordingActions() async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
@@ -154,8 +154,8 @@ class GoogleMapController {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    final List<String> recordedActions =
+    final List<dynamic> recordedActions =
         await _channel.invokeMethod('map#getRecordedActions');
-    return recordedActions;
+    return recordedActions.cast<String>();
   }
 }
