@@ -195,6 +195,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
           webView.setWebViewClient(webViewClient);
           break;
+        case "debuggingEnabled":
+          final boolean debuggingEnabled = (boolean) settings.get(key);
+
+          webView.setWebContentsDebuggingEnabled(debuggingEnabled);
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }

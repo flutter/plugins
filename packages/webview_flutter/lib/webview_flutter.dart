@@ -117,6 +117,7 @@ class WebView extends StatefulWidget {
     this.navigationDelegate,
     this.gestureRecognizers,
     this.onPageFinished,
+    this.debuggingEnabled = false,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -204,6 +205,11 @@ class WebView extends StatefulWidget {
   /// directly in the HTML has been loaded and code injected with
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
+
+  /// Allows remote WebView debugging if set to true
+  ///
+  /// Default is `false`
+  final bool debuggingEnabled;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -324,6 +330,7 @@ class _WebSettings {
   _WebSettings({
     this.javascriptMode,
     this.hasNavigationDelegate,
+    this.debuggingEnabled,
   });
 
   static _WebSettings fromWidget(WebView widget) {
@@ -335,11 +342,13 @@ class _WebSettings {
 
   final JavascriptMode javascriptMode;
   final bool hasNavigationDelegate;
+  final bool debuggingEnabled;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javascriptMode.index,
       'hasNavigationDelegate': hasNavigationDelegate,
+      'debuggingEnabled': debuggingEnabled,
     };
   }
 
@@ -351,6 +360,11 @@ class _WebSettings {
     if (hasNavigationDelegate != newSettings.hasNavigationDelegate) {
       updates['hasNavigationDelegate'] = newSettings.hasNavigationDelegate;
     }
+
+    if (debuggingEnabled != newSettings.debuggingEnabled) {
+      updates['debuggingEnabled'] = newSettings.debuggingEnabled;
+    }
+
     return updates;
   }
 }
