@@ -28,7 +28,7 @@ class PurchaseVerificationData {
   /// If the [source] is [PurchaseSource.AppStore], this data is a based64 encoded string. The structure of the payload is defined using ASN.1.
   /// If the [source] is [PurchaseSource.GooglePlay], this data is a JSON String.
   ///
-  /// If the platform is iOS, it is possible the data can be null or your validation of this data turns out invalid. When these happen,
+  /// If the platform is iOS, it is possible the data can be null or your validation of this data turns out invalid. When this happens,
   /// Call [InAppPurchaseConnection.refreshPurchaseVerificationData] to get a new [PurchaseVerificationData] object. And then you can
   /// validate th receipt data again using one of the methods mentioned in [`Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
   final String localVerificationData;
