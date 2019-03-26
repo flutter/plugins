@@ -93,7 +93,7 @@ class PurchaseWrapper {
 
   /// Generate a [PurchaseDetails] object based on the transaction.
   ///
-  /// [PurchaseDetails] is Used to represent a purchase detail for unified iOS and Android API.
+  /// [PurchaseDetails] is used to represent a purchase for the unified payment APIs.
   PurchaseDetails toPurchaseDetails() {
     return PurchaseDetails(
       purchaseID: orderId,
