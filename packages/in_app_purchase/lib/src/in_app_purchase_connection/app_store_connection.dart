@@ -58,7 +58,9 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
   @override
   Future<void> makePayment(
-      {String productID, String applicationUserName, bool sandboxTesting = false}) async {
+      {String productID,
+      String applicationUserName,
+      bool sandboxTesting = false}) async {
     SKPaymentWrapper payment = SKPaymentWrapper(
         productIdentifier: productID,
         quantity: 1,
@@ -69,7 +71,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
   }
 
   @override
-  Future<QueryPastPurchaseResponse> queryPastPurchases(
+  Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
     PurchaseError error;
     List<PurchaseDetails> pastPurchases = [];
@@ -88,9 +90,6 @@ class AppStoreConnection implements InAppPurchaseConnection {
       _observer.cleanUpRestoredTransactions();
       if (restoredTransactions != null) {
         pastPurchases = restoredTransactions
-            .where((SKPaymentTransactionWrapper wrapper) =>
-                wrapper.transactionState ==
-                SKPaymentTransactionStateWrapper.restored)
             .map((SKPaymentTransactionWrapper wrapper) =>
                 wrapper.toPurchaseDetails(receiptData))
             .toList();
@@ -101,7 +100,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
           code: e['errorCode'],
           message: {'message': e['message']});
     }
-    return QueryPastPurchaseResponse(
+    return QueryPurchaseDetailsResponse(
         pastPurchases: pastPurchases, error: error);
   }
 
@@ -164,10 +163,15 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   void updatedTransactions(
       {List<SKPaymentTransactionWrapper> transactions}) async {
     if (_restoreCompleter != null) {
-      _restoredTransactions = transactions.where((transaction) {
-        return transaction.transactionState ==
+      if (_restoredTransactions == null) {
+        _restoredTransactions = [];
+      }
+      _restoredTransactions.addAll(transactions
+          .where((SKPaymentTransactionWrapper wrapper) {
+        return wrapper.transactionState ==
             SKPaymentTransactionStateWrapper.restored;
-      }).toList();
+      }).map((SKPaymentTransactionWrapper wrapper) =>
+              wrapper.originalTransaction));
     } else {
       String receiptData;
       try {

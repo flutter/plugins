@@ -32,7 +32,6 @@ void main() {
       final PurchaseDetails details = dummyPurchase.toPurchaseDetails();
       expect(details.purchaseID, dummyPurchase.orderId);
       expect(details.productId, dummyPurchase.sku);
-      expect(details.originalPurchase, null);
       expect(details.transactionDate, dummyPurchase.purchaseTime.toString());
       expect(details.verificationData.source, PurchaseSource.GooglePlay);
       expect(details.verificationData.localVerificationData,

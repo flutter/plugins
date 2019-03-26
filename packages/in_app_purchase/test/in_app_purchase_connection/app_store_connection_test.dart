@@ -65,13 +65,17 @@ void main() {
 
   group('query purchases list', () {
     test('should get purchase list', () async {
-      QueryPastPurchaseResponse response =
+      QueryPurchaseDetailsResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
       expect(response.pastPurchases.length, 2);
-      expect(response.pastPurchases.first.purchaseID,
-          fakeIOSPlatform.transactions.first.transactionIdentifier);
-      expect(response.pastPurchases.last.purchaseID,
-          fakeIOSPlatform.transactions.last.transactionIdentifier);
+      expect(
+          response.pastPurchases.first.purchaseID,
+          fakeIOSPlatform
+              .transactions.first.originalTransaction.transactionIdentifier);
+      expect(
+          response.pastPurchases.last.purchaseID,
+          fakeIOSPlatform
+              .transactions.last.originalTransaction.transactionIdentifier);
       expect(
           response.pastPurchases.first.verificationData.localVerificationData,
           'dummy base64data');
@@ -84,14 +88,14 @@ void main() {
     test('should get empty result if there is no restored transactions',
         () async {
       fakeIOSPlatform.testRestoredTransactionsNull = true;
-      QueryPastPurchaseResponse response =
+      QueryPurchaseDetailsResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
     });
 
     test('test restore error', () async {
       fakeIOSPlatform.testRestoredError = {'message': 'errorMessage'};
-      QueryPastPurchaseResponse response =
+      QueryPurchaseDetailsResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
       expect(response.error.source, PurchaseSource.AppStore);
@@ -101,7 +105,7 @@ void main() {
     test('receipt error should populate null to verificationData.data',
         () async {
       fakeIOSPlatform.receiptData = null;
-      QueryPastPurchaseResponse response =
+      QueryPurchaseDetailsResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
       expect(
           response.pastPurchases.first.verificationData.localVerificationData,

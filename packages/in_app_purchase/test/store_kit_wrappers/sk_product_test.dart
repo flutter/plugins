@@ -142,11 +142,6 @@ void main() {
       expect(details.verificationData.localVerificationData, 'receipt data');
       expect(details.verificationData.serverVerificationData, 'receipt data');
       expect(details.verificationData.source, PurchaseSource.AppStore);
-      expect(
-          details.originalPurchase.productId,
-          dummyTransaction.originalTransaction
-              .toPurchaseDetails('dummy')
-              .productId);
     });
     test('Should generate correct map of the payment object', () {
       Map map = dummyPayment.toMap();

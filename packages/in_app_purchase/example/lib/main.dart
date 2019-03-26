@@ -140,13 +140,14 @@ class _MyAppState extends State<MyApp> {
               'This app needs special configuration to run. Please see example/README.md for instructions.')));
     }
 
-    print('xyzzy about to query past purchases');
+    // This code of load previous purchases is for demo only. Please do not use this as it is.
+    // In your APP, you should always verify the purchase data using the `verificationData` inside [PurchaseDetails] object before trusting it.
+    // We recommend use your own server to verity the purchase data.
     Map<String, PurchaseDetails> purchases = Map.fromEntries(((await connection
                 .queryPastPurchases())
             .pastPurchases)
         .map((PurchaseDetails purchase) =>
             MapEntry<String, PurchaseDetails>(purchase.productId, purchase)));
-    print('xyzzy list is ${purchases.length} long');
 
     productList.addAll(response.productDetails.map(
       (ProductDetails productDetails) {
@@ -162,7 +163,10 @@ class _MyAppState extends State<MyApp> {
               ? Icon(Icons.check)
               : Text(productDetails.price),
           onTap: () {
-            InAppPurchaseConnection.instance.makePayment(productID: productDetails.id, applicationUserName: null, sandboxTesting: true);
+            InAppPurchaseConnection.instance.makePayment(
+                productID: productDetails.id,
+                applicationUserName: null,
+                sandboxTesting: true);
           },
         );
       },

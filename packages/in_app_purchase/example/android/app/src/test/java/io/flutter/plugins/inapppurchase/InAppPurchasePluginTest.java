@@ -389,13 +389,12 @@ public class InAppPurchasePluginTest {
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("purchaseToken", "mockToken");
     ArgumentCaptor<ConsumeResponseListener> listenerCaptor =
-            ArgumentCaptor.forClass(ConsumeResponseListener.class);
+        ArgumentCaptor.forClass(ConsumeResponseListener.class);
 
     plugin.onMethodCall(new MethodCall(CONSUME_PURCHASE_ASYNC, arguments), result);
 
     // Verify we pass the data to result
-    verify(mockBillingClient)
-            .consumeAsync(eq("mockToken"), listenerCaptor.capture());
+    verify(mockBillingClient).consumeAsync(eq("mockToken"), listenerCaptor.capture());
 
     listenerCaptor.getValue().onConsumeResponse(responseCode, "mockToken");
     verify(result).success(resultCaptor.capture());

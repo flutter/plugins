@@ -119,9 +119,6 @@ class SKPaymentTransactionWrapper {
       transactionDate: transactionTimeStamp != null
           ? (transactionTimeStamp * 1000).toInt().toString()
           : null,
-      originalPurchase: originalTransaction != null
-          ? originalTransaction.toPurchaseDetails(null)
-          : null,
     );
   }
 

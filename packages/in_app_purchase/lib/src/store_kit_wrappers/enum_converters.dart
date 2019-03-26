@@ -19,10 +19,6 @@ class SKTransactionStatusConverter
               .cast<SKPaymentTransactionStateWrapper, dynamic>(),
           json);
 
-  @override
-  int toJson(SKPaymentTransactionStateWrapper object) =>
-      _$SKPaymentTransactionStateWrapperEnumMap[object];
-
   PurchaseStatus toPurchaseStatus(SKPaymentTransactionStateWrapper object) {
     switch (object) {
       case SKPaymentTransactionStateWrapper.purchasing:
@@ -37,6 +33,10 @@ class SKTransactionStatusConverter
 
     throw ArgumentError('$object isn\'t mapped to PurchaseStatus');
   }
+
+  @override
+  int toJson(SKPaymentTransactionStateWrapper object) =>
+      _$SKPaymentTransactionStateWrapperEnumMap[object];
 }
 
 // Define a class so we generate serializer helper methods for the enums

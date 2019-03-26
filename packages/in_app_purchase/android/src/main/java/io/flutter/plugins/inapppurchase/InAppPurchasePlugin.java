@@ -55,7 +55,8 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     static final String QUERY_PURCHASES = "BillingClient#queryPurchases(String)";
     static final String QUERY_PURCHASE_HISTORY_ASYNC =
         "BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)";
-    static final String CONSUME_PURCHASE_ASYNC = "BillingClient#consumeAsync(String, ConsumeResponseListener)";
+    static final String CONSUME_PURCHASE_ASYNC =
+        "BillingClient#consumeAsync(String, ConsumeResponseListener)";
 
     private MethodNames() {};
   }
@@ -205,15 +206,16 @@ public class InAppPurchasePlugin implements MethodCallHandler {
       return;
     }
 
-    ConsumeResponseListener listener = new ConsumeResponseListener() {
-      @Override
-      public void onConsumeResponse(@BillingClient.BillingResponse int responseCode, String outToken) {
-        result.success(responseCode);
-      }
-    };
+    ConsumeResponseListener listener =
+        new ConsumeResponseListener() {
+          @Override
+          public void onConsumeResponse(
+              @BillingClient.BillingResponse int responseCode, String outToken) {
+            result.success(responseCode);
+          }
+        };
     billingClient.consumeAsync(purchaseToken, listener);
   }
-
 
   private void queryPurchases(String skuType, Result result) {
     if (billingClientError(result)) {

@@ -134,7 +134,7 @@ void main() {
         'responseCode': BillingResponseConverter().toJson(responseCode),
         'purchasesList': <Map<String, dynamic>>[]
       });
-      final QueryPastPurchaseResponse response =
+      final QueryPurchaseDetailsResponse response =
           await connection.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
       expect(response.error.message['message'],
@@ -153,7 +153,7 @@ void main() {
 
       // Since queryPastPurchases makes 2 platform method calls (one for each SkuType), the result will contain 2 dummyWrapper instead
       // of 1.
-      final QueryPastPurchaseResponse response =
+      final QueryPurchaseDetailsResponse response =
           await connection.queryPastPurchases();
       expect(response.error, isNull);
       expect(response.pastPurchases.first.purchaseID, dummyPurchase.orderId);
@@ -171,7 +171,7 @@ void main() {
           buildPurchaseMap(dummyPurchase),
         ]
       });
-      final QueryPastPurchaseResponse response =
+      final QueryPurchaseDetailsResponse response =
           await connection.queryPastPurchases();
 
       PurchaseVerificationData receiptData = await GooglePlayConnection.instance
