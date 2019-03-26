@@ -221,7 +221,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 #pragma mark - GMSMapViewDelegate methods
 
 - (void)mapView:(GMSMapView*)mapView willMove:(BOOL)gesture {
-  [_channel invokeMethod:@"camera#onMoveStarted" arguments:@{@"isGesture": @(gesture)}];
+  [_channel invokeMethod:@"camera#onMoveStarted" arguments:@{@"isGesture" : @(gesture)}];
 }
 
 - (void)mapView:(GMSMapView*)mapView didChangeCameraPosition:(GMSCameraPosition*)position {
@@ -236,7 +236,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     [mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
   }
   if (_trackCameraPosition) {
-    [_channel invokeMethod:@"camera#onMove" arguments:@{@"position": PositionToJson(position)}];
+    [_channel invokeMethod:@"camera#onMove" arguments:@{@"position" : PositionToJson(position)}];
   }
 }
 
@@ -259,7 +259,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 #pragma mark - Implementations of JSON conversion functions.
 
 static NSArray* LocationToJson(CLLocationCoordinate2D position) {
-  return @[@(position.latitude), @(position.longitude)];
+  return @[ @(position.latitude), @(position.longitude) ];
 }
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position) {
@@ -267,10 +267,10 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position) {
     return nil;
   }
   return @{
-      @"target": LocationToJson([position target]),
-      @"zoom": @([position zoom]),
-      @"bearing": @([position bearing]),
-      @"tilt": @([position viewingAngle]),
+    @"target" : LocationToJson([position target]),
+    @"zoom" : @([position zoom]),
+    @"bearing" : @([position bearing]),
+    @"tilt" : @([position viewingAngle]),
   };
 }
 
@@ -308,7 +308,7 @@ static GMSCoordinateBounds* ToOptionalBounds(NSArray* data) {
 
 static GMSMapViewType ToMapViewType(NSNumber* json) {
   int value = ToInt(json);
-  return (GMSMapViewType) (value == 0 ? 5 : value);
+  return (GMSMapViewType)(value == 0 ? 5 : value);
 }
 
 static GMSCameraUpdate* ToCameraUpdate(NSArray* data) {
