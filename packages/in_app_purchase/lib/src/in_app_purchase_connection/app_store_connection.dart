@@ -58,12 +58,12 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
   @override
   Future<void> makePayment(
-      {String productID, String applicationUserName}) async {
+      {String productID, String applicationUserName, bool sandboxTesting = false}) async {
     SKPaymentWrapper payment = SKPaymentWrapper(
         productIdentifier: productID,
         quantity: 1,
         applicationUsername: applicationUserName,
-        simulatesAskToBuyInSandbox: true,
+        simulatesAskToBuyInSandbox: sandboxTesting,
         requestData: null);
     SKPaymentQueueWrapper().addPayment(payment);
   }

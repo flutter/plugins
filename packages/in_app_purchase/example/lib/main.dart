@@ -161,6 +161,9 @@ class _MyAppState extends State<MyApp> {
           trailing: previousPurchase != null
               ? Icon(Icons.check)
               : Text(productDetails.price),
+          onTap: () {
+            InAppPurchaseConnection.instance.makePayment(productID: productDetails.id, applicationUserName: null, sandboxTesting: true);
+          },
         );
       },
     ));

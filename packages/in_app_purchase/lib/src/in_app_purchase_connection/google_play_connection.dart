@@ -80,7 +80,7 @@ class GooglePlayConnection
 
   @override
   Future<void> makePayment(
-      {String productID, String applicationUserName}) async {
+      {String productID, String applicationUserName, bool sandboxTesting = false}) async {
     await _billingClient.launchBillingFlow(
         sku: productID, accountId: applicationUserName);
   }

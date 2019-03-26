@@ -232,4 +232,20 @@ void main() {
       expect(response.purchasesList, isEmpty);
     });
   });
+
+  group('consume purchases', () {
+    const String consumeMethodName =
+        'BillingClient#consumeAsync(String, ConsumeResponseListener)';
+    test('consume purchase async success', () async {
+      final BillingResponse expectedCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: consumeMethodName,
+          value: BillingResponseConverter().toJson(expectedCode));
+
+      final BillingResponse responseCode =
+          await billingClient.consumeAsync('dummy token');
+
+      expect(responseCode, equals(expectedCode));
+    });
+  });
 }

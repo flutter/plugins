@@ -194,6 +194,20 @@ class BillingClient {
         <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
   }
 
+  /// Consumes a given in-app product.
+  ///
+  /// Consuming can only be done on an item that's owned, and as a result of consumption, the user will no longer own it.
+  /// Consume is done asynchronously. The method returns a Future containing a [BillingResponse].
+  ///
+  /// This wraps [`BillingClient#consumeAsync(String, ConsumeResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#consumeAsync(java.lang.String,%20com.android.billingclient.api.ConsumeResponseListener))
+  Future<BillingResponse> consumeAsync(String purchaseToken) async {
+    assert(purchaseToken != null);
+    return BillingResponseConverter().fromJson(await channel.invokeMethod(
+      'BillingClient#consumeAsync(String, ConsumeResponseListener)',
+      <String, String>{'purchaseToken': purchaseToken},
+    ));
+  }
+
   Future<void> _callHandler(MethodCall call) async {
     switch (call.method) {
       case _kOnPurchasesUpdated:

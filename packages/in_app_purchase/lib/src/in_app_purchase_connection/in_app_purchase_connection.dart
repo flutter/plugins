@@ -191,7 +191,10 @@ abstract class InAppPurchaseConnection {
   ///
   /// The `productID` is the product ID to create payment for.
   /// The `applicationUserName`
-  Future<void> makePayment({String productID, String applicationUserName});
+  /// The 'sandboxTesting' is only necessary to set to `true` for testing on iOS. The default value is `false`.
+  /// You can find more details on testing payments on iOS [here](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Chapters/ShowUI.html#//apple_ref/doc/uid/TP40008267-CH3-SW11).
+  /// You can find more details on testing payments on Android [here](https://developer.android.com/google/play/billing/billing_testing).
+  Future<void> makePayment({String productID, String applicationUserName, bool sandboxTesting = false});
 
   /// Query all the past purchases.
   ///
