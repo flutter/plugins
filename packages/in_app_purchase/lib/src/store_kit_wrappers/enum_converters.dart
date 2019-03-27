@@ -1,6 +1,5 @@
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:in_app_purchase/in_app_purchase_connection.dart';
 
 part 'enum_converters.g.dart';
 
