@@ -689,8 +689,9 @@ public class CameraPlugin implements MethodCallHandler {
                       captureRequestBuilder.build(), null, null);
                   mediaRecorder.start();
                   result.success(null);
-                } catch (
-                    CameraAccessException | IllegalStateException | IllegalArgumentException e) {
+                } catch (CameraAccessException
+                    | IllegalStateException
+                    | IllegalArgumentException e) {
                   result.error("cameraException", e.getMessage(), null);
                 }
               }
