@@ -14,46 +14,44 @@ void main() {
   enableFlutterDriverExtension(handler: (_) => allTestsCompleter.future);
   tearDownAll(() => allTestsCompleter.complete(null));
 
-  group('$WebView', () {
-    test('initalUrl', () async {
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-      runApp(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            key: GlobalKey(),
-            initialUrl: 'https://flutter.dev/',
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-          ),
+  test('initalUrl', () async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    runApp(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
         ),
-      );
-      final WebViewController controller = await controllerCompleter.future;
-      final String currentUrl = await controller.currentUrl();
-      expect(currentUrl, 'https://flutter.dev/');
-    });
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    final String currentUrl = await controller.currentUrl();
+    expect(currentUrl, 'https://flutter.dev/');
+  });
 
-    test('loadUrl', () async {
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-      runApp(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            key: GlobalKey(),
-            initialUrl: 'https://flutter.dev/',
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-          ),
+  test('loadUrl', () async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    runApp(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
         ),
-      );
-      final WebViewController controller = await controllerCompleter.future;
-      await controller.loadUrl('https://www.google.com/');
-      final String currentUrl = await controller.currentUrl();
-      expect(currentUrl, 'https://www.google.com/');
-    });
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    await controller.loadUrl('https://www.google.com/');
+    final String currentUrl = await controller.currentUrl();
+    expect(currentUrl, 'https://www.google.com/');
   });
 }
