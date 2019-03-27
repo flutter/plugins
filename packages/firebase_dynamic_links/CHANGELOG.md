@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Throw `PlatformException` if there is an error retrieving dynamic link.
+
 ## 0.2.0+4
 
 * Fix crash when receiving `ShortDynamicLink` warnings.
