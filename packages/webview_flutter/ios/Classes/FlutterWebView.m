@@ -64,6 +64,9 @@
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
     configuration.userContentController = userContentController;
+    if (@available(iOS 9.0, *)) {
+      configuration.websiteDataStore = [WKWebsiteDataStore defaultDataStore];
+    }
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
