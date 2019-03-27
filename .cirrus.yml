@@ -27,6 +27,7 @@ task:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+        MAPS_API_KEY: ENCRYPTED[8b59d83bf4e55b0360b7183a2011241f4e22ba27e31cf06037f7e6e59fa7f9022d82ee604547f8a27d1ceba325cc2588]
       create_device_script:
         echo no | avdmanager -v create avd -n test -k "system-images;android-21;default;armeabi-v7a"
       start_emulator_background_script:
