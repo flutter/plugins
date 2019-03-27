@@ -113,7 +113,7 @@ class QueryPurchaseDetailsResponse {
 
   /// The error when fetching past purchases.
   ///
-  /// If fetch is successful, the value is null.
+  /// If the fetch is successful, the value is null.
   final PurchaseError error;
 }
 
