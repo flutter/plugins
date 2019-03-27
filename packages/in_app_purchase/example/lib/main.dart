@@ -133,9 +133,15 @@ class _MyAppState extends State<MyApp> {
     Map<String, PurchaseDetails> purchases = Map.fromEntries(((await connection
                 .queryPastPurchases())
             .pastPurchases)
-        .map((PurchaseDetails purchase) =>
-            MapEntry<String, PurchaseDetails>(purchase.productId, purchase)));
-
+        .map((PurchaseDetails purchase) {
+          print('restored: ${purchase.purchaseID}');
+          if (purchase.status ==PurchaseStatus.pending) {
+            print('restored pending purchased ${purchase.productId}');
+          } else {
+            connection.completePurchase(purchase);
+          }
+          return MapEntry<String, PurchaseDetails>(purchase.productId, purchase);
+        }));
     productList.addAll(response.productDetails.map(
       (ProductDetails productDetails) {
         PurchaseDetails previousPurchase = purchases[productDetails.id];
@@ -150,7 +156,7 @@ class _MyAppState extends State<MyApp> {
               ? Icon(Icons.check)
               : Text(productDetails.price),
           onTap: () {
-            Stream<PurchaseDetails> stream = InAppPurchaseConnection.instance
+            Stream<PurchaseDetails> stream = connection
                 .makePayment(
                     productID: productDetails.id,
                     applicationUserName: null,
@@ -161,8 +167,15 @@ class _MyAppState extends State<MyApp> {
               print(
                   'purchase updated purchase ID: (${purchaseDetails.purchaseID})');
               print('purchase updated status: ({${purchaseDetails.status})');
-              if (purchaseDetails.error != null) {
-                print('purchase error ${purchaseDetails.error.message}');
+              if (purchaseDetails.status == PurchaseStatus.pending) {
+                showPendingUI();
+              } else {
+                if (purchaseDetails.status ==PurchaseStatus.error) {
+                  handleError(purchaseDetails.error);
+                } else if (purchaseDetails.status ==PurchaseStatus.purchased) {
+                  deliverProduct();
+                }
+                connection.completePurchase(purchaseDetails);
               }
             }, onDone: () {
               print(
@@ -176,6 +189,18 @@ class _MyAppState extends State<MyApp> {
     return Card(
         child:
             Column(children: <Widget>[productHeader, Divider()] + productList));
+  }
+
+  void showPendingUI() {
+    print('pending UI showed');
+  }
+
+  void deliverProduct() {
+    print('product delivered');
+  }
+
+  void handleError(PurchaseError error) {
+    print('purchase error ${error.message}');
   }
 
   static ListTile buildListCard(ListTile innerTile) =>
