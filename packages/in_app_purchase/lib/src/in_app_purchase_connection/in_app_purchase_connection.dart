@@ -108,7 +108,7 @@ class QueryPurchaseDetailsResponse {
   ///
   /// If there are no past purchases, or there is an [error] fetching past purchases,
   /// this variable is an empty List.
-  /// You should verify the purchase data using [PurchaseDetails.verificationData] before use the [PurchaseDetails] object.
+  /// You should verify the purchase data using [PurchaseDetails.verificationData] before using the [PurchaseDetails] object.
   final List<PurchaseDetails> pastPurchases;
 
   /// The error when fetching past purchases.
