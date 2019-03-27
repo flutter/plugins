@@ -118,7 +118,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     // This loading previous purchases code is just a demo. Please do not use this as it is.
-    // In your APP, you should always verify the purchase data using the `verificationData` inside [PurchaseDetails] object before trusting it.
+    // In your app you should always verify the purchase data using the `verificationData` inside the [PurchaseDetails] object before trusting it.
     // We recommend use your own server to verity the purchase data.
     Map<String, PurchaseDetails> purchases = Map.fromEntries(((await connection
                 .queryPastPurchases())
