@@ -1,3 +1,7 @@
+## 0.0.2+1
+
+* Update variable name `enableInDevMode` in README.
+
 ## 0.0.2
 
 * Updated the iOS podspec to a static framework to support compatibility with Swift plugins.
