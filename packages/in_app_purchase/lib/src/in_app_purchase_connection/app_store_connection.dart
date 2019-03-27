@@ -95,9 +95,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
       }
     } catch (e) {
       error = PurchaseError(
-          source: PurchaseSource.AppStore,
-          code: e['errorCode'],
-          message: {'message': e['message']});
+          source: PurchaseSource.AppStore, code: e.domain, message: e.userInfo);
     }
     return QueryPurchaseDetailsResponse(
         pastPurchases: pastPurchases, error: error);
@@ -232,7 +230,8 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
 
   void removedTransactions({List<SKPaymentTransactionWrapper> transactions}) {}
 
-  void restoreCompletedTransactionsFailed({Map<String, String> error}) {
+  /// Triggered when there is an error while restoring transactions.
+  void restoreCompletedTransactionsFailed({SKError error}) {
     _restoreCompleter.completeError(error);
   }
 

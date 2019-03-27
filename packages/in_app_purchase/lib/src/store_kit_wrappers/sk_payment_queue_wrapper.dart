@@ -121,8 +121,7 @@ class SKPaymentQueueWrapper {
         }
       case 'restoreCompletedTransactionsFailed':
         {
-          final Map<String, String> error =
-              Map.castFrom<dynamic, dynamic, String, String>(call.arguments);
+          SKError error = SKError.fromJson(call.arguments);
           return Future<void>(() {
             _observer.restoreCompletedTransactionsFailed(error: error);
           });

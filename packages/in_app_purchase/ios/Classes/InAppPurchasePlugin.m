@@ -284,10 +284,7 @@
 
 - (void)handleTransactionRestoreFailed:(NSError *)error {
   [self.callbackChannel invokeMethod:@"restoreCompletedTransactionsFailed"
-                           arguments:@{
-                             @"errorCode" : @"restore_transactions_failed",
-                             @"message" : error.localizedDescription ?: @""
-                           }];
+                           arguments:[FIAObjectTranslator getMapFromNSError:error]];
 }
 
 - (void)restoreCompletedTransactionsFinished {
