@@ -181,6 +181,11 @@ abstract class InAppPurchaseConnection {
 
   /// Make a payment
   ///
+  /// Returns a [Stream] of [PurchaseDetails]. You should [Stream.listen] to the returned [Stream] to get [PurchaseDetails] objects in different [PurchaseDetails.status] and
+  /// update your UI accordingly. When the [PurchaseDetails.status] is [PurchaseStatus.purchased] or [PurchaseStatus.error], you should deliver the content or handle the error, then call
+  /// [completePurchase] to finish the purchasing process.
+  ///
+  ///
   /// The `productID` is the product ID to create payment for.
   /// The `applicationUserName`
   /// The 'sandboxTesting' is only necessary to set to `true` for testing on iOS. The default value is `false`.
@@ -190,6 +195,12 @@ abstract class InAppPurchaseConnection {
       {@required String productID,
       String applicationUserName,
       bool sandboxTesting = false});
+
+  /// Completes a purchase either after delivering the content or the purchase is failed.
+  ///
+  /// Developer is responsible to complete every [PurchaseDetails] whose [PurchaseDetails.status] is [PurchaseStatus.purchased] or [[PurchaseStatus.error].
+  /// Completing a [PurchaseStatus.pending] purchase will cause exception.
+  Future<void> completePurchase(PurchaseDetails purchase);
 
   /// Query all the past purchases.
   ///

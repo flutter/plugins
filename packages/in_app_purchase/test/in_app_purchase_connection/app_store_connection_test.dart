@@ -137,7 +137,6 @@ void main() {
       List<PurchaseDetails> result = await completer.future;
       expect(result.length, 2);
       expect(result.first.productId, 'productID');
-      expect(fakeIOSPlatform.finishedTransactions.length, 1);
     });
   });
 

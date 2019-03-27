@@ -97,7 +97,7 @@ void main() {
       TestPaymentTransactionObserver observer =
           TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
-      await queue.finishTransaction(dummyTransaction);
+      await queue.finishTransaction(dummyTransaction.transactionIdentifier);
       expect(fakeIOSPlatform.transactionsFinished.first,
           equals(dummyTransaction.transactionIdentifier));
     });

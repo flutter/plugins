@@ -62,6 +62,10 @@ class AppStoreConnection implements InAppPurchaseConnection {
   }
 
   @override
+  Future<void> completePurchase(PurchaseDetails purchase) {
+    return _skPaymentQueueWrapper.finishTransaction(purchase.purchaseID);
+  }
+  @override
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
     PurchaseError error;
@@ -130,9 +134,11 @@ class AppStoreConnection implements InAppPurchaseConnection {
 }
 
 class _TransactionObserver implements SKTransactionObserverWrapper {
+
+  StorePaymentDecisionMaker storePaymentDecisionMaker;
+
   Completer<List<SKPaymentTransactionWrapper>> _restoreCompleter;
   List<SKPaymentTransactionWrapper> _restoredTransactions;
-  StorePaymentDecisionMaker storePaymentDecisionMaker;
 
   Map<String, StreamController<PurchaseDetails>> _purchaseStreamControllers;
 
@@ -222,17 +228,6 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
               .remove(transaction.payment.productIdentifier);
         }
       }
-    });
-
-    transactions.where((transaction) {
-      return transaction.transactionState ==
-              SKPaymentTransactionStateWrapper.purchased ||
-          transaction.transactionState ==
-              SKPaymentTransactionStateWrapper.restored ||
-          transaction.transactionState ==
-              SKPaymentTransactionStateWrapper.failed;
-    }).forEach((transaction) {
-      SKPaymentQueueWrapper().finishTransaction(transaction);
     });
   }
 

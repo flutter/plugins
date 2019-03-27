@@ -84,6 +84,10 @@ class GooglePlayConnection
           bool sandboxTesting = false}) =>
       throw UnimplementedError('message');
 
+  Future<void> completePurchase(PurchaseDetails purchase) {
+    return _billingClient.consumeAsync(purchase.verificationData.serverVerificationData);
+  }
+
   @override
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
