@@ -81,7 +81,10 @@ void main() {
     });
 
     test('test restore error', () async {
-      fakeIOSPlatform.testRestoredError = {'message': 'errorMessage'};
+      fakeIOSPlatform.testRestoredError = SKError(
+          code: 123,
+          domain: 'error_test',
+          userInfo: {'message': 'errorMessage'});
       QueryPurchaseDetailsResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
@@ -129,7 +132,7 @@ class FakeIOSPlatform {
   Map<String, SKProductWrapper> validProducts = Map();
   List<SKPaymentTransactionWrapper> transactions = [];
   bool testRestoredTransactionsNull = false;
-  Map<String, String> testRestoredError = null;
+  SKError testRestoredError = null;
 
   void preConfigure() {
     for (String validID in validProductIDs) {

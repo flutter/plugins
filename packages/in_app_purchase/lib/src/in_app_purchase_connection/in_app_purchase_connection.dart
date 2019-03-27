@@ -21,7 +21,6 @@ import 'package:flutter/foundation.dart';
 /// you can refer to Apple's document about [`About Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
 ///
 /// On Android, all purchase information should also be verified manually. See [`Verify a purchase`](https://developer.android.com/google/play/billing/billing_library_overview#Verify).
-///
 /// It is preferable to verify purchases using a server with [serverVerificationData].
 ///
 /// If the platform is iOS, it is possible the data can be null or your validation of this data turns out invalid. When this happens,
