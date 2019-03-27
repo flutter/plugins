@@ -72,12 +72,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
     List<PurchaseDetails> pastPurchases = [];
 
     try {
-      String receiptData;
-      try {
-        receiptData = await SKReceiptManager.retrieveReceiptData();
-      } catch (e) {
-        receiptData = null;
-      }
+      String receiptData = await _observer.getReceiptData();
       final List<SKPaymentTransactionWrapper> restoredTransactions =
           await _observer.getRestoredTransactions(
               queue: _skPaymentQueueWrapper,
@@ -139,8 +134,8 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
 
   Completer<List<SKPaymentTransactionWrapper>> _restoreCompleter;
   List<SKPaymentTransactionWrapper> _restoredTransactions;
-
   Map<String, StreamController<PurchaseDetails>> _purchaseStreamControllers;
+  String _receiptData;
 
   _TransactionObserver({this.storePaymentDecisionMaker});
 
@@ -191,12 +186,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
               wrapper.originalTransaction));
     }
 
-    String receiptData;
-    try {
-      receiptData = await SKReceiptManager.retrieveReceiptData();
-    } catch (e) {
-      receiptData = null;
-    }
+    String receiptData = await getReceiptData();
     transactions.where((transaction) {
       // restored case is already handled in the `if (_restoreCompleter != null)` clause.
       return transaction.transactionState !=
@@ -248,5 +238,15 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     return storePaymentDecisionMaker(
         productDetails: product.toProductDetails(),
         applicationUserName: payment.applicationUsername);
+  }
+
+  Future<String> getReceiptData() async {
+    try {
+      _receiptData = await SKReceiptManager.retrieveReceiptData();
+    } catch (e) {
+      print('Error getting receipt data: $e');
+      _receiptData = null;
+    }
+    return _receiptData;
   }
 }

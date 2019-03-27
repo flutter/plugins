@@ -140,6 +140,28 @@ void main() {
     });
   });
 
+  group('finish transaction', () {
+    test('should finish transactions',
+        () async {
+      List<PurchaseDetails> details = [];
+      Completer completer = Completer();
+      Stream<PurchaseDetails> stream = AppStoreConnection.instance
+          .makePayment(productID: 'productID', applicationUserName: 'appName');
+      stream.listen((purchaseDetails) {
+        details.add(purchaseDetails);
+        if (purchaseDetails.status ==PurchaseStatus.purchased) {
+          AppStoreConnection.instance.completePurchase(purchaseDetails);
+        }
+      }, onDone: () {
+        completer.complete(details);
+      });
+      List<PurchaseDetails> result = await completer.future;
+      expect(result.length, 2);
+      expect(result.first.productId, 'productID');
+      expect(fakeIOSPlatform.finishedTransactions.length, 1);
+    });
+  });
+
   test('should get failed purchase status', () async {
     fakeIOSPlatform.testTransactionFail = true;
     List<PurchaseDetails> details = [];
