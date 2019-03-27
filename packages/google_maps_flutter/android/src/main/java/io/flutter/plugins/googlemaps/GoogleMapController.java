@@ -199,6 +199,13 @@ final class GoogleMapController
           markersController.changeMarkers((List<Object>) markersToChange);
           Object markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers((List<Object>) markerIdsToRemove);
+          result.success(null);
+          break;
+        }
+      case "map#stateSnapshot":
+        {
+          GoogleMapStateSnapshot mapStateSnapshot = GoogleMapStateSnapshot.from(googleMap);
+          result.success(mapStateSnapshot.asList());
           break;
         }
       default:
