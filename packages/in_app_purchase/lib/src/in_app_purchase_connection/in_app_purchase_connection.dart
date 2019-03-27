@@ -127,7 +127,7 @@ abstract class InAppPurchaseConnection {
 
   /// Query all the past purchases.
   ///
-  /// The `applicationUserName` is required if you also passed this when make a purchase.
+  /// The `applicationUserName` is required if you also passed this in when making a purchase.
   /// If you did not use a `applicationUserName` when creating payments, you can ignore this parameter.
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName});
