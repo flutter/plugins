@@ -110,6 +110,12 @@ class PurchaseDetails {
   /// Milliseconds since epoch.
   final String transactionDate;
 
+  /// The status that this [PurchaseDetails] is currently on.
+  PurchaseStatus status;
+
+  /// The error is only available when [status] is [PurchaseStatus.error].
+  PurchaseError error;
+
   PurchaseDetails({
     @required this.purchaseID,
     @required this.productId,
@@ -137,15 +143,6 @@ class QueryPurchaseDetailsResponse {
   final PurchaseError error;
 }
 
-/// Triggered when some [PurchaseDetails] is updated.
-///
-/// Use this method to get different [PurchaseStatus] of the purchase process, and update your UI accordingly.
-/// If `status` is [PurchaseStatus.error], the error message is stored in `error`.
-typedef void PurchaseUpdateListener(
-    {PurchaseDetails purchaseDetails,
-    PurchaseStatus status,
-    PurchaseError error});
-
 /// Triggered when a user initiated an in-app purchase from App Store. (iOS only)
 ///
 /// Return `true` to continue the transaction in your app. If you have multiple [ProductDetails]s, the purchases
@@ -163,16 +160,12 @@ abstract class InAppPurchaseConnection {
   /// Configure necessary callbacks.
   ///
   /// It has to be called in the very beginning of app launching. Preferably before returning your main App Widget in main().
-  static void configure(
-      {PurchaseUpdateListener purchaseUpdateListener,
-      StorePaymentDecisionMaker storePaymentDecisionMaker}) {
+  static void configure({StorePaymentDecisionMaker storePaymentDecisionMaker}) {
     if (Platform.isAndroid) {
       GooglePlayConnection.configure(
-          purchaseUpdateListener: purchaseUpdateListener,
           storePaymentDecisionMaker: storePaymentDecisionMaker);
     } else if (Platform.isIOS) {
       AppStoreConnection.configure(
-          purchaseUpdateListener: purchaseUpdateListener,
           storePaymentDecisionMaker: storePaymentDecisionMaker);
     } else {
       throw UnsupportedError(
@@ -193,8 +186,8 @@ abstract class InAppPurchaseConnection {
   /// The 'sandboxTesting' is only necessary to set to `true` for testing on iOS. The default value is `false`.
   /// You can find more details on testing payments on iOS [here](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Chapters/ShowUI.html#//apple_ref/doc/uid/TP40008267-CH3-SW11).
   /// You can find more details on testing payments on Android [here](https://developer.android.com/google/play/billing/billing_testing).
-  Future<void> makePayment(
-      {String productID,
+  Stream<PurchaseDetails> makePayment(
+      {@required String productID,
       String applicationUserName,
       bool sandboxTesting = false});
 

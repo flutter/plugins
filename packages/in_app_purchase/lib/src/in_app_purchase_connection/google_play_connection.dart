@@ -18,22 +18,22 @@ class GooglePlayConnection
     implements InAppPurchaseConnection {
   GooglePlayConnection._()
       : _billingClient = BillingClient((PurchasesResultWrapper resultWrapper) {
-          for (PurchaseWrapper purchase in resultWrapper.purchasesList) {
-            PurchaseError error = null;
-            if (resultWrapper.responseCode != BillingResponse.ok) {
-              error = PurchaseError(
-                source: PurchaseSource.GooglePlay,
-                code: kRestoredPurchaseErrorCode,
-                message: {'message': resultWrapper.responseCode.toString()},
-              );
-            }
-            _purchaseUpdateListener(
-                purchaseDetails: purchase.toPurchaseDetails(),
-                status: resultWrapper.responseCode == BillingResponse.ok
-                    ? PurchaseStatus.purchased
-                    : PurchaseStatus.error,
-                error: error);
-          }
+          // for (PurchaseWrapper purchase in resultWrapper.purchasesList) {
+          //   PurchaseError error = null;
+          //   if (resultWrapper.responseCode != BillingResponse.ok) {
+          //     error = PurchaseError(
+          //       source: PurchaseSource.GooglePlay,
+          //       code: kRestoredPurchaseErrorCode,
+          //       message: {'message': resultWrapper.responseCode.toString()},
+          //     );
+          //   }
+          //   _purchaseUpdateListener(
+          //       purchaseDetails: purchase.toPurchaseDetails(),
+          //       status: resultWrapper.responseCode == BillingResponse.ok
+          //           ? PurchaseStatus.purchased
+          //           : PurchaseStatus.error,
+          //       error: error);
+          // }
         }) {
     _readyFuture = _connect();
     WidgetsBinding.instance.addObserver(this);
@@ -42,7 +42,6 @@ class GooglePlayConnection
   static GooglePlayConnection _instance;
   final BillingClient _billingClient;
   Future<void> _readyFuture;
-  static PurchaseUpdateListener _purchaseUpdateListener;
   static StorePaymentDecisionMaker _storePaymentDecisionMaker;
 
   @override
@@ -79,13 +78,11 @@ class GooglePlayConnection
   }
 
   @override
-  Future<void> makePayment(
-      {String productID,
-      String applicationUserName,
-      bool sandboxTesting = false}) async {
-    await _billingClient.launchBillingFlow(
-        sku: productID, accountId: applicationUserName);
-  }
+  Stream<PurchaseDetails> makePayment(
+          {@required String productID,
+          String applicationUserName,
+          bool sandboxTesting = false}) =>
+      throw UnimplementedError('message');
 
   @override
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
@@ -149,7 +146,6 @@ class GooglePlayConnection
   static void reset() => _instance = null;
 
   static GooglePlayConnection _getOrCreateInstance() {
-    assert(_purchaseUpdateListener != null);
     assert(_storePaymentDecisionMaker != null);
     if (_instance != null) {
       return _instance;
@@ -159,10 +155,7 @@ class GooglePlayConnection
     return _instance;
   }
 
-  static void configure(
-      {PurchaseUpdateListener purchaseUpdateListener,
-      StorePaymentDecisionMaker storePaymentDecisionMaker}) {
-    _purchaseUpdateListener = purchaseUpdateListener;
+  static void configure({StorePaymentDecisionMaker storePaymentDecisionMaker}) {
     _storePaymentDecisionMaker = storePaymentDecisionMaker;
   }
 

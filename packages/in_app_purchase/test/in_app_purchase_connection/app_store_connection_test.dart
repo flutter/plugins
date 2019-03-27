@@ -19,12 +19,7 @@ void main() {
   final FakeIOSPlatform fakeIOSPlatform = FakeIOSPlatform();
 
   setUpAll(() {
-    AppStoreConnection.configure(purchaseUpdateListener: (
-        {PurchaseDetails purchaseDetails,
-        PurchaseStatus status,
-        PurchaseError error}) {
-      return;
-    }, storePaymentDecisionMaker: (
+    AppStoreConnection.configure(storePaymentDecisionMaker: (
         {ProductDetails productDetails, String applicationUserName}) {
       return true;
     });
@@ -131,24 +126,14 @@ void main() {
         () async {
       List<PurchaseDetails> details = [];
       Completer completer = Completer();
-      PurchaseUpdateListener listener = (
-          {PurchaseDetails purchaseDetails,
-          PurchaseStatus status,
-          PurchaseError error}) {
-        details.add(purchaseDetails);
-        if (status == PurchaseStatus.purchased) {
-          completer.complete(details);
-        }
-      };
-
-      StorePaymentDecisionMaker decisionMaker =
-          ({ProductDetails productDetails, String applicationUserName}) => true;
-
-      AppStoreConnection.configure(
-          purchaseUpdateListener: listener,
-          storePaymentDecisionMaker: decisionMaker);
-      AppStoreConnection.instance
+      Stream<PurchaseDetails> stream = AppStoreConnection.instance
           .makePayment(productID: 'productID', applicationUserName: 'appName');
+      stream.listen((purchaseDetails) {
+        details.add(purchaseDetails);
+      }, onDone: () {
+        completer.complete(details);
+      });
+
       List<PurchaseDetails> result = await completer.future;
       expect(result.length, 2);
       expect(result.first.productId, 'productID');
@@ -160,29 +145,23 @@ void main() {
     fakeIOSPlatform.testTransactionFail = true;
     List<PurchaseDetails> details = [];
     Completer completer = Completer();
-    PurchaseUpdateListener listener = (
-        {PurchaseDetails purchaseDetails,
-        PurchaseStatus status,
-        PurchaseError error}) {
-      details.add(purchaseDetails);
-      if (status == PurchaseStatus.error) {
-        completer.complete(error);
-      }
-    };
+    PurchaseError error;
 
-    StorePaymentDecisionMaker decisionMaker =
-        ({ProductDetails productDetails, String applicationUserName}) => true;
-
-    AppStoreConnection.configure(
-        purchaseUpdateListener: listener,
-        storePaymentDecisionMaker: decisionMaker);
-    AppStoreConnection.instance
+    Stream<PurchaseDetails> stream = AppStoreConnection.instance
         .makePayment(productID: 'productID', applicationUserName: 'appName');
-    PurchaseError error = await completer.future;
+    stream.listen((purchaseDetails) {
+      details.add(purchaseDetails);
+      if (purchaseDetails.status == PurchaseStatus.error) {
+        error = purchaseDetails.error;
+      }
+    }, onDone: () {
+      completer.complete(error);
+    });
 
-    expect(error.code, kPurchaseErrorCode);
-    expect(error.source, PurchaseSource.AppStore);
-    expect(error.message, {'message': 'an error message'});
+    PurchaseError completerError = await completer.future;
+    expect(completerError.code, kPurchaseErrorCode);
+    expect(completerError.source, PurchaseSource.AppStore);
+    expect(completerError.message, {'message': 'an error message'});
   });
 }
 

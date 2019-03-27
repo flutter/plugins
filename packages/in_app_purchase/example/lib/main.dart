@@ -7,25 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase_connection.dart';
 
 void main() {
-  PurchaseUpdateListener updateListener = (
-      {PurchaseDetails purchaseDetails,
-      PurchaseStatus status,
-      PurchaseError error}) {
-    print('purchase updated product ID: (${purchaseDetails.productId})');
-    print('purchase updated purchase ID: (${purchaseDetails.purchaseID})');
-    print('purchase updated status: ($status)');
-    if (error != null) {
-      print('purchase error ${error.message}');
-    }
-  };
-
   StorePaymentDecisionMaker decisionMaker =
       ({ProductDetails productDetails, String applicationUserName}) {
     return true;
   };
 
   InAppPurchaseConnection.configure(
-    purchaseUpdateListener: updateListener,
     storePaymentDecisionMaker: decisionMaker,
   );
   runApp(MyApp());
@@ -163,10 +150,24 @@ class _MyAppState extends State<MyApp> {
               ? Icon(Icons.check)
               : Text(productDetails.price),
           onTap: () {
-            InAppPurchaseConnection.instance.makePayment(
-                productID: productDetails.id,
-                applicationUserName: null,
-                sandboxTesting: true);
+            Stream<PurchaseDetails> stream = InAppPurchaseConnection.instance
+                .makePayment(
+                    productID: productDetails.id,
+                    applicationUserName: null,
+                    sandboxTesting: true);
+            stream.listen((purchaseDetails) {
+              print(
+                  'purchase updated product ID: (${purchaseDetails.productId})');
+              print(
+                  'purchase updated purchase ID: (${purchaseDetails.purchaseID})');
+              print('purchase updated status: ({${purchaseDetails.status})');
+              if (purchaseDetails.error != null) {
+                print('purchase error ${purchaseDetails.error.message}');
+              }
+            }, onDone: () {
+              print(
+                  'Purchase ended. Update UI, deliver the product if the purchase is successful');
+            });
           },
         );
       },
