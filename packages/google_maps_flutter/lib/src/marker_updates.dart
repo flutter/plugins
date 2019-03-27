@@ -24,6 +24,10 @@ class _MarkerUpdates {
     final Set<MarkerId> prevMarkerIds = previousMarkers.keys.toSet();
     final Set<MarkerId> currentMarkerIds = currentMarkers.keys.toSet();
 
+    final Set<Marker> previousMarkersSet =
+        Set<Marker>.of(previousMarkers.values);
+    final Set<Marker> currentMarkersSet = Set<Marker>.of(currentMarkers.values);
+
     Marker idToCurrentMarker(MarkerId id) {
       return currentMarkers[id];
     }
@@ -36,10 +40,8 @@ class _MarkerUpdates {
         .map(idToCurrentMarker)
         .toSet();
 
-    final Set<Marker> _markersToChange = currentMarkerIds
-        .intersection(prevMarkerIds)
-        .map(idToCurrentMarker)
-        .toSet();
+    final Set<Marker> _markersToChange =
+        currentMarkersSet.difference(previousMarkersSet);
 
     markersToAdd = _markersToAdd;
     markerIdsToRemove = _markerIdsToRemove;

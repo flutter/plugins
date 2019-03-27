@@ -274,15 +274,39 @@ class Marker {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final Marker typedOther = other;
-    return markerId == typedOther.markerId;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Marker &&
+          runtimeType == other.runtimeType &&
+          markerId == other.markerId &&
+          alpha == other.alpha &&
+          anchor == other.anchor &&
+          consumeTapEvents == other.consumeTapEvents &&
+          draggable == other.draggable &&
+          flat == other.flat &&
+          icon == other.icon &&
+          infoWindow == other.infoWindow &&
+          position == other.position &&
+          rotation == other.rotation &&
+          visible == other.visible &&
+          zIndex == other.zIndex &&
+          onTap == other.onTap;
 
   @override
-  int get hashCode => markerId.hashCode;
+  int get hashCode =>
+      markerId.hashCode ^
+      alpha.hashCode ^
+      anchor.hashCode ^
+      consumeTapEvents.hashCode ^
+      draggable.hashCode ^
+      flat.hashCode ^
+      icon.hashCode ^
+      infoWindow.hashCode ^
+      position.hashCode ^
+      rotation.hashCode ^
+      visible.hashCode ^
+      zIndex.hashCode ^
+      onTap.hashCode;
 
   @override
   String toString() {
