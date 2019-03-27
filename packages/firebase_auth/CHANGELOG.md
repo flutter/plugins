@@ -1,3 +1,7 @@
+## 0.8.2+1
+
+* Fixed bug where `PhoneCodeAutoRetrievalTimeout` callback was never called.g
+
 ## 0.8.2
 
  * Fixed `linkWithCredential` on Android.
