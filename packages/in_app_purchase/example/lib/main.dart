@@ -117,7 +117,7 @@ class _MyAppState extends State<MyApp> {
               'This app needs special configuration to run. Please see example/README.md for instructions.')));
     }
 
-    // This code of load previous purchases is for demo only. Please do not use this as it is.
+    // This loading previous purchases code is just a demo. Please do not use this as it is.
     // In your APP, you should always verify the purchase data using the `verificationData` inside [PurchaseDetails] object before trusting it.
     // We recommend use your own server to verity the purchase data.
     Map<String, PurchaseDetails> purchases = Map.fromEntries(((await connection
