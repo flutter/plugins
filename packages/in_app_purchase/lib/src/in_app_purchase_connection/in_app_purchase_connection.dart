@@ -107,12 +107,12 @@ class QueryPurchaseDetailsResponse {
   ///
   /// If there are no past purchases, or there is an [error] fetching past purchases,
   /// this variable is an empty List.
-  /// You should verify the purchase data using [PurchaseDetails.verificationData] before use the [PurchaseDetails] object.
+  /// You should verify the purchase data using [PurchaseDetails.verificationData] before using the [PurchaseDetails] object.
   final List<PurchaseDetails> pastPurchases;
 
   /// The error when fetching past purchases.
   ///
-  /// If fetch is successful, the value is null.
+  /// If the fetch is successful, the value is null.
   final PurchaseError error;
 }
 
@@ -126,7 +126,7 @@ abstract class InAppPurchaseConnection {
 
   /// Query all the past purchases.
   ///
-  /// The `applicationUserName` is required if you also passed this when make a purchase.
+  /// The `applicationUserName` is required if you also passed this in when making a purchase.
   /// If you did not use a `applicationUserName` when creating payments, you can ignore this parameter.
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName});
