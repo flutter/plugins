@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
+import 'package:flutter/services.dart';
 import 'package:test/test.dart';
 
 import 'package:flutter/widgets.dart';
@@ -179,60 +182,50 @@ void main() {
     });
   });
 
-  // group('make payment', () {
-  //   final String launchMethodName =
-  //       'BillingClient#launchBillingFlow(Activity, BillingFlowParams)';
-  //   test('serializes and deserializes data', () async {
-  //     final BillingResponse sentCode = BillingResponse.ok;
-  //     stubPlatform.addResponse(
-  //         name: launchMethodName,
-  //         value: BillingResponseConverter().toJson(sentCode));
-  //     final SkuDetailsWrapper skuDetails = dummySkuDetails;
-  //     final String accountId = "hashedAccountId";
+  group('make payment', () {
+    final String launchMethodName =
+        'BillingClient#launchBillingFlow(Activity, BillingFlowParams)';
+    test('serializes and deserializes data', () async {
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+      final BillingResponse sentCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode),
+          additionalStepBeforeReturn: () {
+            // Mock java update purchase callback.
+            MethodCall call = MethodCall(kOnPurchasesUpdated, {
+              'responseCode': BillingResponseConverter().toJson(sentCode),
+              'purchasesList': [
+                {
+                  'orderId': 'orderID1',
+                  'sku': skuDetails.sku,
+                  'isAutoRenewing': false,
+                  'packageName': "package",
+                  'purchaseTime': 1231231231,
+                  'purchaseToken': "token",
+                  'signature': 'sign',
+                  'originalJson': 'json'
+                }
+              ]
+            });
+            connection.billingClient.callHandler(call);
+          });
+      Completer completer = Completer();
+      PurchaseDetails purchaseDetails;
 
-  //     await GooglePlayConnection.instance.makePayment(
-  //         productID: skuDetails.sku, applicationUserName: accountId);
-
-  //     // expect(response.status, PurchaseStatus.purchased);
-  //     // Map<dynamic, dynamic> arguments =
-  //     //     stubPlatform.previousCallMatching(launchMethodName).arguments;
-  //     // expect(arguments['sku'], equals(skuDetails.sku));
-  //     // expect(arguments['accountId'], equals(accountId));
-  //   });
-
-  //   test('handles null accountId', () async {
-  //     final BillingResponse sentCode = BillingResponse.ok;
-  //     stubPlatform.addResponse(
-  //         name: launchMethodName,
-  //         value: BillingResponseConverter().toJson(sentCode));
-  //     final SkuDetailsWrapper skuDetails = dummySkuDetails;
-
-  //     await GooglePlayConnection.instance
-  //         .makePayment(productID: skuDetails.sku, applicationUserName: null);
-
-  //     // expect(response.status, PurchaseStatus.purchased);
-  //     // Map<dynamic, dynamic> arguments =
-  //     //     stubPlatform.previousCallMatching(launchMethodName).arguments;
-  //     // expect(arguments['sku'], equals(skuDetails.sku));
-  //     // expect(arguments['accountId'], isNull);
-  //   });
-
-  //   test('handles error', () async {
-  //     final BillingResponse sentCode = BillingResponse.userCanceled;
-  //     stubPlatform.addResponse(
-  //         name: launchMethodName,
-  //         value: BillingResponseConverter().toJson(sentCode));
-  //     final SkuDetailsWrapper skuDetails = dummySkuDetails;
-
-  //     await GooglePlayConnection.instance
-  //         .makePayment(productID: skuDetails.sku, applicationUserName: null);
-
-  //     // expect(response.status, PurchaseStatus.error);
-  //     // expect(response.error, sentCode.toString());
-  //     // Map<dynamic, dynamic> arguments =
-  //     //     stubPlatform.previousCallMatching(launchMethodName).arguments;
-  //     // expect(arguments['sku'], equals(skuDetails.sku));
-  //     // expect(arguments['accountId'], isNull);
-  //   });
-  // });
+      Stream<PurchaseDetails> purchaseStream =
+          await GooglePlayConnection.instance.makePayment(
+              productID: skuDetails.sku, applicationUserName: accountId);
+      purchaseStream.listen((_) {
+        purchaseDetails = _;
+      }, onDone: () {
+        completer.complete(purchaseDetails);
+      });
+      PurchaseDetails result = await completer.future;
+      expect(result.purchaseID, 'orderID1');
+      expect(result.status, PurchaseStatus.purchased);
+      expect(result.productId, dummySkuDetails.sku);
+    });
+  });
 }

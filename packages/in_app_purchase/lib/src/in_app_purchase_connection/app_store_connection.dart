@@ -65,6 +65,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
   Future<void> completePurchase(PurchaseDetails purchase) {
     return _skPaymentQueueWrapper.finishTransaction(purchase.purchaseID);
   }
+
   @override
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
@@ -79,10 +80,18 @@ class AppStoreConnection implements InAppPurchaseConnection {
               applicationUserName: applicationUserName);
       _observer.cleanUpRestoredTransactions();
       if (restoredTransactions != null) {
-        pastPurchases = restoredTransactions
-            .map((SKPaymentTransactionWrapper wrapper) =>
-                wrapper.toPurchaseDetails(receiptData))
-            .toList();
+        pastPurchases = restoredTransactions.map((transaction) {
+          return transaction.toPurchaseDetails(receiptData)
+            ..status = SKTransactionStatusConverter()
+                .toPurchaseStatus(transaction.transactionState)
+            ..error = transaction.error != null
+                ? PurchaseError(
+                    source: PurchaseSource.AppStore,
+                    code: kPurchaseErrorCode,
+                    message: transaction.error.userInfo,
+                  )
+                : null;
+        }).toList();
       }
     } catch (e) {
       error = PurchaseError(
@@ -129,7 +138,6 @@ class AppStoreConnection implements InAppPurchaseConnection {
 }
 
 class _TransactionObserver implements SKTransactionObserverWrapper {
-
   StorePaymentDecisionMaker storePaymentDecisionMaker;
 
   Completer<List<SKPaymentTransactionWrapper>> _restoreCompleter;
@@ -163,8 +171,9 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
         applicationUsername: applicationUserName,
         simulatesAskToBuyInSandbox: sandboxTesting,
         requestData: null);
+    Stream stream = _purchaseStreamControllers[productID].stream;
     SKPaymentQueueWrapper().addPayment(payment);
-    return _purchaseStreamControllers[productID].stream;
+    return stream;
   }
 
   void cleanUpRestoredTransactions() {

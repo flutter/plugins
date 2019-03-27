@@ -17,37 +17,48 @@ class GooglePlayConnection
     with WidgetsBindingObserver
     implements InAppPurchaseConnection {
   GooglePlayConnection._()
-      : _billingClient = BillingClient((PurchasesResultWrapper resultWrapper) {
-          // for (PurchaseWrapper purchase in resultWrapper.purchasesList) {
-          //   PurchaseError error = null;
-          //   if (resultWrapper.responseCode != BillingResponse.ok) {
-          //     error = PurchaseError(
-          //       source: PurchaseSource.GooglePlay,
-          //       code: kRestoredPurchaseErrorCode,
-          //       message: {'message': resultWrapper.responseCode.toString()},
-          //     );
-          //   }
-          //   _purchaseUpdateListener(
-          //       purchaseDetails: purchase.toPurchaseDetails(),
-          //       status: resultWrapper.responseCode == BillingResponse.ok
-          //           ? PurchaseStatus.purchased
-          //           : PurchaseStatus.error,
-          //       error: error);
-          // }
+      : billingClient = BillingClient((PurchasesResultWrapper resultWrapper) {
+          resultWrapper.purchasesList.forEach((purchase) {
+            PurchaseError error = null;
+            if (resultWrapper.responseCode != BillingResponse.ok) {
+              error = PurchaseError(
+                source: PurchaseSource.GooglePlay,
+                code: kRestoredPurchaseErrorCode,
+                message: {'message': resultWrapper.responseCode.toString()},
+              );
+            }
+            PurchaseDetails purchaseDetails = purchase.toPurchaseDetails()
+              ..status = resultWrapper.responseCode == BillingResponse.ok
+                  ? PurchaseStatus.purchased
+                  : PurchaseStatus.error
+              ..error = error;
+            if(_purchaseStreamControllers[purchase.sku] != null);
+            _purchaseStreamControllers[purchase.sku].add(purchaseDetails);
+            if (resultWrapper.responseCode == BillingResponse.ok) {
+              _purchaseStreamControllers[purchase.sku].close();
+              _purchaseStreamControllers.remove(purchase.sku);
+            }
+          });
         }) {
     _readyFuture = _connect();
     WidgetsBinding.instance.addObserver(this);
+    _purchaseStreamControllers = Map();
   }
   static GooglePlayConnection get instance => _getOrCreateInstance();
   static GooglePlayConnection _instance;
-  final BillingClient _billingClient;
+
+  @visibleForTesting
+  final BillingClient billingClient;
+
   Future<void> _readyFuture;
   static StorePaymentDecisionMaker _storePaymentDecisionMaker;
+  static Map<String, StreamController<PurchaseDetails>>
+      _purchaseStreamControllers;
 
   @override
   Future<bool> isAvailable() async {
     await _readyFuture;
-    return _billingClient.isReady();
+    return billingClient.isReady();
   }
 
   /// Query the product detail list.
@@ -58,9 +69,9 @@ class GooglePlayConnection
   Future<ProductDetailsResponse> queryProductDetails(
       Set<String> identifiers) async {
     List<SkuDetailsResponseWrapper> responses = await Future.wait([
-      _billingClient.querySkuDetails(
+      billingClient.querySkuDetails(
           skuType: SkuType.inapp, skusList: identifiers.toList()),
-      _billingClient.querySkuDetails(
+      billingClient.querySkuDetails(
           skuType: SkuType.subs, skusList: identifiers.toList())
     ]);
     List<ProductDetails> productDetails =
@@ -79,21 +90,29 @@ class GooglePlayConnection
 
   @override
   Stream<PurchaseDetails> makePayment(
-          {@required String productID,
-          String applicationUserName,
-          bool sandboxTesting = false}) =>
-      throw UnimplementedError('message');
+      {@required String productID,
+      String applicationUserName,
+      bool sandboxTesting = false}) {
+    if (_purchaseStreamControllers == null) {
+      _purchaseStreamControllers = Map();
+    }
+    _purchaseStreamControllers[productID] = StreamController();
+    Stream stream = _purchaseStreamControllers[productID].stream;
+    billingClient.launchBillingFlow(sku:productID, accountId: applicationUserName);
+    return stream;
+  }
 
   Future<void> completePurchase(PurchaseDetails purchase) {
-    return _billingClient.consumeAsync(purchase.verificationData.serverVerificationData);
+    return billingClient
+        .consumeAsync(purchase.verificationData.serverVerificationData);
   }
 
   @override
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
     final List<PurchasesResultWrapper> responses = await Future.wait([
-      _billingClient.queryPurchaseHistory(SkuType.inapp),
-      _billingClient.queryPurchaseHistory(SkuType.subs)
+      billingClient.queryPurchaseHistory(SkuType.inapp),
+      billingClient.queryPurchaseHistory(SkuType.subs)
     ]);
 
     Set errorCodeSet = responses
@@ -164,7 +183,7 @@ class GooglePlayConnection
   }
 
   Future<void> _connect() =>
-      _billingClient.startConnection(onBillingServiceDisconnected: () {});
+      billingClient.startConnection(onBillingServiceDisconnected: () {});
 
-  Future<void> _disconnect() => _billingClient.endConnection();
+  Future<void> _disconnect() => billingClient.endConnection();
 }
