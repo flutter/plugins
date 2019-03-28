@@ -14,11 +14,8 @@ class Transaction {
   Firestore _firestore;
 
   Future<DocumentSnapshot> get(DocumentReference documentReference) async {
-    final dynamic result = await Firestore.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('Transaction#get', <String, dynamic>{
+    final Map<String, dynamic> result = await Firestore.channel
+        .invokeMapMethod<String, dynamic>('Transaction#get', <String, dynamic>{
       'app': _firestore.app.name,
       'transactionId': _transactionId,
       'path': documentReference.path,
@@ -33,10 +30,7 @@ class Transaction {
 
   Future<void> delete(DocumentReference documentReference) async {
     return Firestore.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('Transaction#delete', <String, dynamic>{
+        .invokeMethod<void>('Transaction#delete', <String, dynamic>{
       'app': _firestore.app.name,
       'transactionId': _transactionId,
       'path': documentReference.path,
@@ -46,10 +40,7 @@ class Transaction {
   Future<void> update(
       DocumentReference documentReference, Map<String, dynamic> data) async {
     return Firestore.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('Transaction#update', <String, dynamic>{
+        .invokeMethod<void>('Transaction#update', <String, dynamic>{
       'app': _firestore.app.name,
       'transactionId': _transactionId,
       'path': documentReference.path,
@@ -59,10 +50,8 @@ class Transaction {
 
   Future<void> set(
       DocumentReference documentReference, Map<String, dynamic> data) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return Firestore.channel.invokeMethod('Transaction#set', <String, dynamic>{
+    return Firestore.channel
+        .invokeMethod<void>('Transaction#set', <String, dynamic>{
       'app': _firestore.app.name,
       'transactionId': _transactionId,
       'path': documentReference.path,
