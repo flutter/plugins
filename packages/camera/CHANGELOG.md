@@ -1,7 +1,7 @@
 ## 0.4.3+2
 
-* Bump the minimum flutter version to 1.2.0.
-* Add Template type parameter to `invokeMethod` calls.
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
 
 ## 0.4.3+1
 
