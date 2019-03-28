@@ -9,28 +9,7 @@ class GoogleMapTestController {
 
   final MethodChannel _channel;
 
-  Future<GoogleMapStateSnapshot> mapStateSnapshot() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final List<dynamic> stateSnapshot =
-        await _channel.invokeMethod('map#stateSnapshot');
-    return GoogleMapStateSnapshot(
-      compassEnabled: stateSnapshot[0],
-      minZoomPreference: stateSnapshot[1],
-      maxZoomPreference: stateSnapshot[2],
-    );
+  Future<bool> isCompassEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isCompassEnabled');
   }
-}
-
-class GoogleMapStateSnapshot {
-  GoogleMapStateSnapshot({
-    this.compassEnabled,
-    this.minZoomPreference,
-    this.maxZoomPreference,
-  });
-
-  final bool compassEnabled;
-  final double minZoomPreference;
-  final double maxZoomPreference;
 }

@@ -15,7 +15,10 @@ const CameraPosition _kInitialCameraPosition =
     CameraPosition(target: LatLng(0, 0));
 
 class GoogleMapTest extends StatefulWidget {
-  GoogleMapTest(this.mapState, this._controllerCompleter);
+  GoogleMapTest(
+    this.mapState,
+    this._controllerCompleter,
+  );
 
   final _GoogleMapTestState mapState;
   final Completer<GoogleMapController> _controllerCompleter;
@@ -68,17 +71,17 @@ void main() {
   });
 
   test('testCompassToggle', () async {
-    GoogleMapStateSnapshot mapStateSnapshot;
+    bool compassEnabled;
 
-    mapStateSnapshot = await testController.mapStateSnapshot();
-    expect(mapStateSnapshot.compassEnabled, false);
+    compassEnabled = await testController.isCompassEnabled();
+    expect(compassEnabled, false);
 
     mapTestState.toggleCompass();
 
-    // This delay exists for platform channel propagation.
+    // This delay exists as we are waiting for a new build to occur.
     await Future<void>.delayed(Duration(seconds: 1), () {});
 
-    mapStateSnapshot = await testController.mapStateSnapshot();
-    expect(mapStateSnapshot.compassEnabled, true);
+    compassEnabled = await testController.isCompassEnabled();
+    expect(compassEnabled, true);
   });
 }

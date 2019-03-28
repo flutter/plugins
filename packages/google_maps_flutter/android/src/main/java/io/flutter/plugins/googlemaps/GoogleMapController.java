@@ -202,10 +202,9 @@ final class GoogleMapController
           result.success(null);
           break;
         }
-      case "map#stateSnapshot":
+      case "map#isCompassEnabled":
         {
-          GoogleMapStateSnapshot mapStateSnapshot = GoogleMapStateSnapshot.from(googleMap);
-          result.success(mapStateSnapshot.asList());
+          result.success(googleMap.getUiSettings().isCompassEnabled());
           break;
         }
       default:
