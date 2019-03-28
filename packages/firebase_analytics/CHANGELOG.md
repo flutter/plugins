@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Add Login event support
+
 ## 2.0.3
 
 * Add resetAnalyticsData method

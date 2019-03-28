@@ -1,3 +1,7 @@
+## 0.4.3+1
+
+* Catch additional `Exception`s from Android and throw as `CameraException`s.
+
 ## 0.4.3
 
 * Add capability to prepare the capture session for video recording on iOS.
