@@ -1,7 +1,18 @@
-## 0.4.1+4
+## 0.4.1+6
 
 * Bump the minimum flutter version to 1.2.0.
 * Add Template type parameter to `invokeMethod` calls.
+
+## 0.4.1+5
+
+* Update AlarmService to throw a `PluginRegistrantException` if
+  `AlarmService.setPluginRegistrant` has not been called to set a
+  PluginRegistrantCallback. This improves the error message seen when the
+  `AlarmService.setPluginRegistrant` call is omitted.
+
+## 0.4.1+4
+
+* Updated example to remove dependency on Firebase.
 
 ## 0.4.1+3
 
