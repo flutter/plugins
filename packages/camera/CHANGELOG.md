@@ -1,8 +1,11 @@
-## 0.4.3+1
+## 0.4.3+2
 
 * Bump the minimum flutter version to 1.2.0.
 * Add Template type parameter to `invokeMethod` calls.
 
+## 0.4.3+1
+
+* Catch additional `Exception`s from Android and throw as `CameraException`s.
 
 ## 0.4.3
 
