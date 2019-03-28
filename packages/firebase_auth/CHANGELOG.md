@@ -1,3 +1,50 @@
+## 0.8.3
+
+* Make providerId 'const String' to use in 'case' statement.
+
+## 0.8.2+1
+
+* Fixed bug where `PhoneCodeAutoRetrievalTimeout` callback was never called.
+
+## 0.8.2
+
+* Fixed `linkWithCredential` on Android.
+
+## 0.8.1+5
+
+* Added a driver test.
+
+## 0.8.1+4
+
+* Update README.
+* Update the example app with separate pages for registration and sign-in.
+
+## 0.8.1+3
+
+* Reduce compiler warnings in Android plugin
+* Raise errors early when accessing methods that require a Firebase User
+
+## 0.8.1+2
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.8.1+1
+
+* Remove categories.
+
+## 0.8.1
+
+* Fixes Firebase auth phone sign-in for Android.
+
+## 0.8.0+3
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.8.0+2
+
+* Update Google sign-in example in the README.
+
 ## 0.8.0+1
 
 * Update a broken dependency.

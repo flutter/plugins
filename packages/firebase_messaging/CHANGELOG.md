@@ -1,3 +1,16 @@
+## 4.0.0+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 4.0.0
+
+*  **Breaking Change** Update message structure for onMessage to match onLaunch and onResume
+
+## 3.0.1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 3.0.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support

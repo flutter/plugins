@@ -1,4 +1,28 @@
+## 0.1.2+1
+
+* Added a driver test.
+
+## 0.1.2
+
+* Specifying a version for Cloud Functions CocoaPod dependency to prevent build errors on iOS.
+* Fix on iOS when using a null region.
+* Upgrade the firebase_core dependency of the example app.
+
+## 0.1.1+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.1.1
+
+* Support for regions and multiple apps
+
+## 0.1.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 0.1.0
+
 * **Breaking change**. Migrate from the deprecated original Android Support
   Library to AndroidX. This shouldn't result in any functional changes, but it
   requires any Android apps using this plugin to [also

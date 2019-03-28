@@ -1,0 +1,25 @@
+# Below is a list of Flutter team members who are suggested reviewers
+# for contributions to plugins in this repository.
+#
+# These names are just suggestions. It is fine to have your changes
+# reviewed by someone else.
+
+packages/android_alarm_manager/* @bkonyi
+packages/camera/* @bparrishMines @mklim
+packages/cloud_firestore/* @collinjackson @kroikie
+packages/connectivity/* @cyanglaz
+packages/firebase_admob/* @amirh
+packages/firebase_analytics/* @collinjackson @kroikie
+packages/firebase_auth/* @collinjackson @kroikie
+packages/firebase_database/* @collinjackson @kroikie
+packages/firebase_dynamic_links/* @bparrishMines
+packages/firebase_messaging/* @collinjackson @kroikie
+packages/firebase_ml_vision/* @bparrishMines
+packages/firebase_performance/* @bparrishMines
+packages/firebase_storage/* @collinjackson @kroikie
+packages/google_maps_flutter/* @amirh @iskakaushik
+packages/google_sign_in/* @cyanglaz @mehmetf
+packages/image_picker/* @cyanglaz
+packages/in_app_purchase/* @mklim
+packages/package_info/* @cyanglaz
+packages/webview_flutter/* @amirh

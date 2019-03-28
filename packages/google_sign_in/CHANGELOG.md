@@ -1,3 +1,20 @@
+## 4.0.1+2
+
+* Fix README.md to correctly spell `GoogleService-Info.plist`.
+
+## 4.0.1+1
+
+* Remove categories.
+
+## 4.0.1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 4.0.0+1
+
+* Added a better error message for iOS when the app is missing necessary URL schemes.
+
 ## 4.0.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support
