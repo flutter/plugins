@@ -10,6 +10,7 @@ static FlutterError *getFlutterError(NSError *error) {
 
 @interface FLTFirebaseDynamicLinksPlugin ()
 @property(nonatomic, retain) FIRDynamicLink *dynamicLink;
+@property(nonatomic, retain) FlutterError *flutterError;
 @end
 
 @implementation FLTFirebaseDynamicLinksPlugin
@@ -48,7 +49,13 @@ static FlutterError *getFlutterError(NSError *error) {
                                  options:options
                               completion:[self createShortLinkCompletion:result]];
   } else if ([@"FirebaseDynamicLinks#retrieveDynamicLink" isEqualToString:call.method]) {
-    result([self retrieveDynamicLink]);
+    NSMutableDictionary *dict = [self retrieveDynamicLink];
+    if (dict == nil && self.flutterError) {
+      result(self.flutterError);
+      self.flutterError = nil;
+    } else {
+      result(dict);
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -96,9 +103,13 @@ static FlutterError *getFlutterError(NSError *error) {
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(NSUserActivity *)userActivity
       restorationHandler:(void (^)(NSArray *))restorationHandler {
+  usleep(50000);
   BOOL handled = [[FIRDynamicLinks dynamicLinks]
       handleUniversalLink:userActivity.webpageURL
                completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
+                 if (error) {
+                   self.flutterError = getFlutterError(error);
+                 }
                  self.dynamicLink = dynamicLink;
                }];
   return handled;
