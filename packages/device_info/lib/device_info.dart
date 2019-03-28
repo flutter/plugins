@@ -21,11 +21,8 @@ class DeviceInfoPlugin {
   ///
   /// See: https://developer.android.com/reference/android/os/Build.html
   Future<AndroidDeviceInfo> get androidInfo async =>
-      _cachedAndroidDeviceInfo ??= AndroidDeviceInfo._fromMap(
-          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-          // https://github.com/flutter/flutter/issues/26431
-          // ignore: strong_mode_implicit_dynamic_method
-          await channel.invokeMethod('getAndroidDeviceInfo'));
+      _cachedAndroidDeviceInfo ??= AndroidDeviceInfo._fromMap(await channel
+          .invokeMapMethod<String, dynamic>('getAndroidDeviceInfo'));
 
   /// This information does not change from call to call. Cache it.
   IosDeviceInfo _cachedIosDeviceInfo;
@@ -33,11 +30,9 @@ class DeviceInfoPlugin {
   /// Information derived from `UIDevice`.
   ///
   /// See: https://developer.apple.com/documentation/uikit/uidevice
-  Future<IosDeviceInfo> get iosInfo async => _cachedIosDeviceInfo ??=
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      IosDeviceInfo._fromMap(await channel.invokeMethod('getIosDeviceInfo'));
+  Future<IosDeviceInfo> get iosInfo async =>
+      _cachedIosDeviceInfo ??= IosDeviceInfo._fromMap(
+          await channel.invokeMapMethod<String, dynamic>('getIosDeviceInfo'));
 }
 
 /// Information derived from `android.os.Build`.
@@ -130,29 +125,28 @@ class AndroidDeviceInfo {
   final String androidId;
 
   /// Deserializes from the message received from [_kChannel].
-  static AndroidDeviceInfo _fromMap(dynamic message) {
-    final Map<dynamic, dynamic> map = message;
+  static AndroidDeviceInfo _fromMap(Map<String, dynamic> message) {
     return AndroidDeviceInfo._(
-      version: AndroidBuildVersion._fromMap(map['version']),
-      board: map['board'],
-      bootloader: map['bootloader'],
-      brand: map['brand'],
-      device: map['device'],
-      display: map['display'],
-      fingerprint: map['fingerprint'],
-      hardware: map['hardware'],
-      host: map['host'],
-      id: map['id'],
-      manufacturer: map['manufacturer'],
-      model: map['model'],
-      product: map['product'],
-      supported32BitAbis: _fromList(map['supported32BitAbis']),
-      supported64BitAbis: _fromList(map['supported64BitAbis']),
-      supportedAbis: _fromList(map['supportedAbis']),
-      tags: map['tags'],
-      type: map['type'],
-      isPhysicalDevice: map['isPhysicalDevice'],
-      androidId: map['androidId'],
+      version: AndroidBuildVersion._fromMap(message['version']),
+      board: message['board'],
+      bootloader: message['bootloader'],
+      brand: message['brand'],
+      device: message['device'],
+      display: message['display'],
+      fingerprint: message['fingerprint'],
+      hardware: message['hardware'],
+      host: message['host'],
+      id: message['id'],
+      manufacturer: message['manufacturer'],
+      model: message['model'],
+      product: message['product'],
+      supported32BitAbis: _fromList(message['supported32BitAbis']),
+      supported64BitAbis: _fromList(message['supported64BitAbis']),
+      supportedAbis: _fromList(message['supportedAbis']),
+      tags: message['tags'],
+      type: message['type'],
+      isPhysicalDevice: message['isPhysicalDevice'],
+      androidId: message['androidId'],
     );
   }
 
@@ -256,17 +250,16 @@ class IosDeviceInfo {
   final IosUtsname utsname;
 
   /// Deserializes from the map message received from [_kChannel].
-  static IosDeviceInfo _fromMap(dynamic message) {
-    final Map<dynamic, dynamic> map = message;
+  static IosDeviceInfo _fromMap(Map<String, dynamic> message) {
     return IosDeviceInfo._(
-      name: map['name'],
-      systemName: map['systemName'],
-      systemVersion: map['systemVersion'],
-      model: map['model'],
-      localizedModel: map['localizedModel'],
-      identifierForVendor: map['identifierForVendor'],
-      isPhysicalDevice: map['isPhysicalDevice'] == 'true',
-      utsname: IosUtsname._fromMap(map['utsname']),
+      name: message['name'],
+      systemName: message['systemName'],
+      systemVersion: message['systemVersion'],
+      model: message['model'],
+      localizedModel: message['localizedModel'],
+      identifierForVendor: message['identifierForVendor'],
+      isPhysicalDevice: message['isPhysicalDevice'] == 'true',
+      utsname: IosUtsname._fromMap(message['utsname']),
     );
   }
 }
