@@ -196,11 +196,21 @@ abstract class InAppPurchaseConnection {
       String applicationUserName,
       bool sandboxTesting = false});
 
-  /// Completes a purchase either after delivering the content or the purchase is failed.
+  /// Completes a purchase either after delivering the content or the purchase is failed. (iOS only).
   ///
   /// Developer is responsible to complete every [PurchaseDetails] whose [PurchaseDetails.status] is [PurchaseStatus.purchased] or [[PurchaseStatus.error].
   /// Completing a [PurchaseStatus.pending] purchase will cause exception.
+  ///
+  /// This is a non-op on Android.
   Future<void> completePurchase(PurchaseDetails purchase);
+
+  /// Consume a product that is purchased with `purchase` so user can buy it again.
+  ///
+  /// Developer is responsible to consume purchases for consumable items after delivery the product.
+  /// The user cannot buy the same product again until the purchase of the product is consumed.
+  ///
+  /// This is a non-op on Android.
+  Future<void> consumePurchase(PurchaseDetails purchase);
 
   /// Query all the past purchases.
   ///

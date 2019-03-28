@@ -130,18 +130,17 @@ class _MyAppState extends State<MyApp> {
     // This loading previous purchases code is just a demo. Please do not use this as it is.
     // In your app you should always verify the purchase data using the `verificationData` inside the [PurchaseDetails] object before trusting it.
     // We recommend that you use your own server to verity the purchase data.
-    Map<String, PurchaseDetails> purchases = Map.fromEntries(((await connection
-                .queryPastPurchases())
-            .pastPurchases)
-        .map((PurchaseDetails purchase) {
-          print('restored: ${purchase.purchaseID}');
-          if (purchase.status ==PurchaseStatus.pending) {
-            print('restored pending purchased ${purchase.productId}');
-          } else {
-            connection.completePurchase(purchase);
-          }
-          return MapEntry<String, PurchaseDetails>(purchase.productId, purchase);
-        }));
+    Map<String, PurchaseDetails> purchases = Map.fromEntries(
+        ((await connection.queryPastPurchases()).pastPurchases)
+            .map((PurchaseDetails purchase) {
+      print('restored: ${purchase.purchaseID}');
+      if (purchase.status == PurchaseStatus.pending) {
+        print('restored pending purchased ${purchase.productId}');
+      } else {
+        connection.completePurchase(purchase);
+      }
+      return MapEntry<String, PurchaseDetails>(purchase.productId, purchase);
+    }));
     productList.addAll(response.productDetails.map(
       (ProductDetails productDetails) {
         PurchaseDetails previousPurchase = purchases[productDetails.id];
@@ -156,12 +155,11 @@ class _MyAppState extends State<MyApp> {
               ? Icon(Icons.check)
               : Text(productDetails.price),
           onTap: () {
-            Stream<PurchaseDetails> stream = connection
-                .makePayment(
-                    productID: productDetails.id,
-                    applicationUserName: null,
-                    sandboxTesting: true);
-            stream.listen((purchaseDetails) {
+            Stream<PurchaseDetails> stream = connection.makePayment(
+                productID: productDetails.id,
+                applicationUserName: null,
+                sandboxTesting: true);
+            stream.listen((purchaseDetails) async {
               print(
                   'purchase updated product ID: (${purchaseDetails.productId})');
               print(
@@ -170,12 +168,12 @@ class _MyAppState extends State<MyApp> {
               if (purchaseDetails.status == PurchaseStatus.pending) {
                 showPendingUI();
               } else {
-                if (purchaseDetails.status ==PurchaseStatus.error) {
+                if (purchaseDetails.status == PurchaseStatus.error) {
                   handleError(purchaseDetails.error);
-                } else if (purchaseDetails.status ==PurchaseStatus.purchased) {
-                  deliverProduct();
+                } else if (purchaseDetails.status == PurchaseStatus.purchased) {
+                  deliverProduct(purchaseDetails);
                 }
-                connection.completePurchase(purchaseDetails);
+                await connection.completePurchase(purchaseDetails);
               }
             }, onDone: () {
               print(
@@ -195,8 +193,11 @@ class _MyAppState extends State<MyApp> {
     print('pending UI showed');
   }
 
-  void deliverProduct() {
+  void deliverProduct(PurchaseDetails purchaseDetails) {
     print('product delivered');
+    if (purchaseDetails.productId == 'consumable') {
+      InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
+    }
   }
 
   void handleError(PurchaseError error) {

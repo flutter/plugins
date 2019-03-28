@@ -63,8 +63,12 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
   @override
   Future<void> completePurchase(PurchaseDetails purchase) {
-    print(purchase.purchaseID);
     return _skPaymentQueueWrapper.finishTransaction(purchase.purchaseID);
+  }
+
+  @override
+  Future<void> consumePurchase(PurchaseDetails purchase) {
+    return Future<void>.sync(() {});
   }
 
   @override
@@ -186,12 +190,11 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
       if (_restoredTransactions == null) {
         _restoredTransactions = [];
       }
-      _restoredTransactions.addAll(transactions
-          .where((SKPaymentTransactionWrapper wrapper) {
+      _restoredTransactions
+          .addAll(transactions.where((SKPaymentTransactionWrapper wrapper) {
         return wrapper.transactionState ==
             SKPaymentTransactionStateWrapper.restored;
-      }).map((SKPaymentTransactionWrapper wrapper) =>
-              wrapper));
+      }).map((SKPaymentTransactionWrapper wrapper) => wrapper));
     }
 
     String receiptData = await getReceiptData();

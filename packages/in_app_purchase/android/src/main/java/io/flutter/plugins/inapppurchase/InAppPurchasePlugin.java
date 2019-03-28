@@ -105,7 +105,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
         break;
       case MethodNames.CONSUME_PURCHASE_ASYNC:
         consumeAsync((String) call.argument("purchaseToken"), result);
-
+        break;
       default:
         result.notImplemented();
     }

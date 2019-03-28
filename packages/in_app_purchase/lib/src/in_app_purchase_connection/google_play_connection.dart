@@ -102,10 +102,15 @@ class GooglePlayConnection
     return stream;
   }
 
+  @override
   Future<void> completePurchase(PurchaseDetails purchase) {
-    return billingClient
-        .consumeAsync(purchase.verificationData.serverVerificationData);
+    return Future<void>.sync(() {});
   }
+
+  @override
+    Future<void> consumePurchase(PurchaseDetails purchase) {
+      return billingClient.consumeAsync(purchase.verificationData.serverVerificationData);
+    }
 
   @override
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
