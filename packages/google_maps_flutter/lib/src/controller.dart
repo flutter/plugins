@@ -129,9 +129,4 @@ class GoogleMapController {
       'cameraUpdate': cameraUpdate._toJson(),
     });
   }
-
-  // TODO(iskakaushik): dart doc.
-  MethodChannel getMethodChannel() {
-    return channel;
-  }
 }

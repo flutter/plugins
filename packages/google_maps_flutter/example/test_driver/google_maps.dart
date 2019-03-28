@@ -67,7 +67,8 @@ void main() {
         Completer<GoogleMapController>();
     runApp(GoogleMapTest(mapTestState, controllerCompleter));
     controller = await controllerCompleter.future;
-    testController = GoogleMapTestController(controller.getMethodChannel());
+    // ignore: invalid_use_of_visible_for_testing_member
+    testController = GoogleMapTestController(controller.channel);
   });
 
   test('testCompassToggle', () async {
