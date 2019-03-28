@@ -1,10 +1,14 @@
+## 0.8.3
+
+* Make providerId 'const String' to use in 'case' statement.
+
 ## 0.8.2+1
 
-* Fixed bug where `PhoneCodeAutoRetrievalTimeout` callback was never called.g
+* Fixed bug where `PhoneCodeAutoRetrievalTimeout` callback was never called.
 
 ## 0.8.2
 
- * Fixed `linkWithCredential` on Android.
+* Fixed `linkWithCredential` on Android.
 
 ## 0.8.1+5
 
