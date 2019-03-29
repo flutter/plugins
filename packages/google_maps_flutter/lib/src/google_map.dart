@@ -29,6 +29,7 @@ class GoogleMap extends StatefulWidget {
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.markers,
+    this.markersAnimationDuration = 5000,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -67,6 +68,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Markers to be placed on the map.
   final Set<Marker> markers;
+
+  /// Markers animation duration length.
+  final double markersAnimationDuration;
 
   /// Called when the camera starts moving.
   ///
@@ -239,6 +243,7 @@ class _GoogleMapOptions {
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
+    this.markersAnimationDuration,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -253,6 +258,7 @@ class _GoogleMapOptions {
       trackCameraPosition: map.onCameraMove != null,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
+      markersAnimationDuration: map.markersAnimationDuration,
     );
   }
 
@@ -275,6 +281,8 @@ class _GoogleMapOptions {
   final bool zoomGesturesEnabled;
 
   final bool myLocationEnabled;
+  
+  final double markersAnimationDuration;
 
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
@@ -295,6 +303,7 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
+    addIfNonNull('markersAnimationDuration', markersAnimationDuration);
 
     return optionsMap;
   }

@@ -52,6 +52,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   // https://github.com/flutter/flutter/issues/27550
   BOOL _cameraDidInitialSetup;
   FLTMarkersController* _markersController;
+  float _markerAnimationDuration;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -64,6 +65,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     GMSCameraPosition* camera = ToOptionalCameraPosition(args[@"initialCameraPosition"]);
     _mapView = [GMSMapView mapWithFrame:frame camera:camera];
     _trackCameraPosition = NO;
+    _markerAnimationDuration = 5000;
+    
     InterpretMapOptions(args[@"options"], self);
     NSString* channelName =
         [NSString stringWithFormat:@"plugins.flutter.io/google_maps_%lld", viewId];
@@ -80,7 +83,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _cameraDidInitialSetup = NO;
     _markersController = [[FLTMarkersController alloc] init:_channel
                                                     mapView:_mapView
-                                                  registrar:registrar];
+                                                  registrar:registrar
+                                    markerAnimationDuration:_markerAnimationDuration];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
@@ -201,6 +205,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 - (void)setMyLocationEnabled:(BOOL)enabled {
   _mapView.myLocationEnabled = enabled;
   _mapView.settings.myLocationButton = enabled;
+}
+
+- (void)setMarkerAnimationDuration:(float)durationInMs {
+  _markerAnimationDuration = durationInMs;
 }
 
 #pragma mark - GMSMapViewDelegate methods
@@ -366,5 +374,9 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   NSNumber* myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
     [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
+  }
+  NSNumber* durationInMs = data[@"markersAnimationDuration"];
+  if (durationInMs) {
+    [sink setMarkerAnimationDuration:ToFloat(durationInMs)];
   }
 }

@@ -35,7 +35,8 @@
 @interface FLTMarkersController : NSObject
 - (instancetype)init:(FlutterMethodChannel*)methodChannel
              mapView:(GMSMapView*)mapView
-           registrar:(NSObject<FlutterPluginRegistrar>*)registrar;
+           registrar:(NSObject<FlutterPluginRegistrar>*)registrar
+markerAnimationDuration:(float)markerAnimationDuration;
 - (void)addMarkers:(NSArray*)markersToAdd;
 - (void)changeMarkers:(NSArray*)markersToChange;
 - (void)removeMarkerIds:(NSArray*)markerIdsToRemove;

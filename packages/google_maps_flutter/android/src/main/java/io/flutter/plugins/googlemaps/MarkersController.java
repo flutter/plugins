@@ -4,10 +4,13 @@
 
 package io.flutter.plugins.googlemaps;
 
+import android.os.Build;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugins.googlemaps.BuildConfig;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +40,43 @@ class MarkersController {
     }
   }
 
-  void changeMarkers(List<Object> markersToChange) {
+  private static double toDouble(Object o) {
+    return ((Number) o).doubleValue();
+  }
+
+  private static List<?> toList(Object o) {
+    return (List<?>) o;
+  }
+
+  private static LatLng toLatLng(Object o) {
+    final List<?> data = toList(o);
+    return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
+  }
+
+  private static Map<?, ?> toMap(Object o) {
+    return (Map<?, ?>) o;
+  }
+
+  void changeMarkers(List<Object> markersToChange, float durationInMs) {
     if (markersToChange != null) {
       for (Object markerToChange : markersToChange) {
-        changeMarker(markerToChange);
+        if (markerToChange == null) continue;
+        final Map<?, ?> data = toMap(markerToChange);
+        final Object position = data.get("position");
+        if (position == null) continue;
+        String markerId = getMarkerId(markerToChange);
+        MarkerController markerController = markerIdToController.get(markerId);
+        LatLngInterpolator interpolator = new LatLngInterpolator.Linear();
+        if (BuildConfig.VERSION_CODE == Build.VERSION_CODES.HONEYCOMB) {
+          MarkerAnimation.animateMarkerToHC(markerController.getMarker(), toLatLng(position), interpolator, durationInMs);
+        }
+        else if (BuildConfig.VERSION_CODE == Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+          MarkerAnimation.animateMarkerToICS(markerController.getMarker(), toLatLng(position), interpolator, durationInMs);
+        }
+        else {
+          MarkerAnimation.animateMarkerToGB(markerController.getMarker(), toLatLng(position), interpolator, durationInMs);
+        }
+        //changeMarker(markerToChange);
       }
     }
   }

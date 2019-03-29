@@ -16,11 +16,12 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private Object initialMarkers;
+  private float markersAnimationDuration = 5000;
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
     final GoogleMapController controller =
-        new GoogleMapController(id, context, state, registrar, options);
+        new GoogleMapController(id, context, state, registrar, options, markersAnimationDuration);
     controller.init();
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
@@ -90,5 +91,10 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setInitialMarkers(Object initialMarkers) {
     this.initialMarkers = initialMarkers;
+  }
+
+  @Override
+  public void setMarkersAnimationDuration(float durationInMs) {
+    this.markersAnimationDuration = durationInMs;
   }
 }

@@ -67,13 +67,15 @@ final class GoogleMapController
   private final Context context;
   private final MarkersController markersController;
   private List<Object> initialMarkers;
+  private float markersAnimationDuration = 5000;
 
   GoogleMapController(
       int id,
       Context context,
       AtomicInteger activityState,
       PluginRegistry.Registrar registrar,
-      GoogleMapOptions options) {
+      GoogleMapOptions options,
+      float durationInMs) {
     this.id = id;
     this.context = context;
     this.activityState = activityState;
@@ -85,6 +87,7 @@ final class GoogleMapController
     methodChannel.setMethodCallHandler(this);
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
+    this.markersAnimationDuration = durationInMs;
   }
 
   @Override
@@ -196,7 +199,7 @@ final class GoogleMapController
           Object markersToAdd = call.argument("markersToAdd");
           markersController.addMarkers((List<Object>) markersToAdd);
           Object markersToChange = call.argument("markersToChange");
-          markersController.changeMarkers((List<Object>) markersToChange);
+          markersController.changeMarkers((List<Object>) markersToChange, this.markersAnimationDuration);
           Object markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers((List<Object>) markerIdsToRemove);
           break;
@@ -380,6 +383,11 @@ final class GoogleMapController
 
   private void updateInitialMarkers() {
     markersController.addMarkers(initialMarkers);
+  }
+
+  @Override
+  public void setMarkersAnimationDuration(float durationInMs) {
+    this.markersAnimationDuration = durationInMs;
   }
 
   @SuppressLint("MissingPermission")

@@ -215,6 +215,10 @@ class Convert {
     if (myLocationEnabled != null) {
       sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
     }
+    final Object markersAnimationDuration = data.get("markersAnimationDuration");
+    if (markersAnimationDuration != null) {
+      sink.setMarkersAnimationDuration(toFloat(markersAnimationDuration));
+    }
   }
 
   /** Returns the dartMarkerId of the interpreted marker. */

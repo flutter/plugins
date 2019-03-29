@@ -32,6 +32,9 @@ static void InterpretInfoWindow(id<FLTGoogleMapMarkerOptionsSink> sink, NSDictio
 - (void)removeMarker {
   _marker.map = nil;
 }
+- (CLLocationCoordinate2D)getPosition {
+  return _marker.position;
+}
 
 #pragma mark - FLTGoogleMapMarkerOptionsSink methods
 
@@ -173,18 +176,38 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
   FlutterMethodChannel* _methodChannel;
   NSObject<FlutterPluginRegistrar>* _registrar;
   GMSMapView* _mapView;
+  float _markerAnimationDuration;
 }
 - (instancetype)init:(FlutterMethodChannel*)methodChannel
              mapView:(GMSMapView*)mapView
-           registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+           registrar:(NSObject<FlutterPluginRegistrar>*)registrar
+markerAnimationDuration:(float)markerAnimationDuration {
   self = [super init];
   if (self) {
     _methodChannel = methodChannel;
     _mapView = mapView;
     _markerIdToController = [NSMutableDictionary dictionaryWithCapacity:1];
     _registrar = registrar;
+    _markerAnimationDuration = markerAnimationDuration;
   }
   return self;
+}
+- (float)degreesToRadians:(float)degrees {
+  return degrees * M_PI / 180;
+};
+- (float)radiansToDegrees:(float)radians {
+  return radians * 180 / M_PI;
+};
+- (float)getBearing:(CLLocationCoordinate2D)position1 andSecond:(CLLocationCoordinate2D)position2 {
+    float lat1 = [self degreesToRadians:position1.latitude];
+    float lng1 = [self degreesToRadians:position1.longitude];
+    float lat2 = [self degreesToRadians:position2.latitude];
+    float lng2 = [self degreesToRadians:position2.longitude];
+    float degree = [self radiansToDegrees:atan2(sin(lng2-lng1)*cos(lat2), cos(lat1)*sin(lat2)-sin(lat1)*cos(lat2)*cos(lng2-lng1))];
+    if (degree >= 0) {
+        return degree;
+    }
+    return degree+360;
 }
 - (void)addMarkers:(NSArray*)markersToAdd {
   for (NSDictionary* marker in markersToAdd) {
@@ -199,13 +222,32 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
   }
 }
 - (void)changeMarkers:(NSArray*)markersToChange {
+  float fraction = 0.3;
   for (NSDictionary* marker in markersToChange) {
     NSString* markerId = [FLTMarkersController getMarkerId:marker];
     FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
     if (!controller) {
       continue;
     }
-    InterpretMarkerOptions(marker, controller, _registrar);
+    CLLocationCoordinate2D startPosition = [controller getPosition];
+    CLLocationCoordinate2D finalPosition = [FLTMarkersController getPosition:marker];
+    float bearing = [self getBearing:startPosition andSecond:finalPosition];
+    NSMutableDictionary *newMarker = [[NSMutableDictionary alloc] init];
+    NSDictionary *oldMarker = (NSDictionary *)[marker mutableCopy];
+    [newMarker addEntriesFromDictionary:oldMarker];
+    [newMarker setObject:@(bearing) forKey:@"rotation"];
+    
+    [CATransaction begin];
+    [CATransaction setAnimationDuration:_markerAnimationDuration * fraction / 1000];
+    [controller setRotation:bearing];
+    [CATransaction commit];
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_markerAnimationDuration/2000 * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+      [CATransaction begin];
+      [CATransaction setAnimationDuration:_markerAnimationDuration * (1 - fraction) / 1000];
+      InterpretMarkerOptions(newMarker, controller, _registrar);
+      [CATransaction commit];
+    });
   }
 }
 - (void)removeMarkerIds:(NSArray*)markerIdsToRemove {
