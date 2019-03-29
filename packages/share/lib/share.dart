@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
-import 'dart:io';
 
 /// Plugin for summoning a platform share sheet.
 class Share {
