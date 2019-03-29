@@ -94,7 +94,7 @@ class PurchaseWrapper {
   /// Generate a [PurchaseDetails] object based on the transaction.
   ///
   /// [PurchaseDetails] is used to represent a purchase for the unified payment APIs.
-  PurchaseDetails toPurchaseDetails() {
+  PurchaseDetails toPurchaseDetails({String originalPurchaseID}) {
     return PurchaseDetails(
       purchaseID: orderId,
       productId: sku,
@@ -103,6 +103,7 @@ class PurchaseWrapper {
           serverVerificationData: purchaseToken,
           source: PurchaseSource.GooglePlay),
       transactionDate: purchaseTime.toString(),
+      originalPurchaseID: originalPurchaseID,
     );
   }
 }

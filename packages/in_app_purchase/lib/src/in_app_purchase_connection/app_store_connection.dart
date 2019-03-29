@@ -19,8 +19,8 @@ class AppStoreConnection implements InAppPurchaseConnection {
   static AppStoreConnection get instance => _getOrCreateInstance();
   static AppStoreConnection _instance;
 
-  Stream<List<PurchaseDetails>> get purchaseUpdated => _purchaseUpdatedController.stream;
-  static StreamController<List<PurchaseDetails>> _purchaseUpdatedController;
+  Stream<List<PurchaseDetails>> get purchaseUpdatedStream =>
+      _observer.purchaseUpdatedController.stream;
 
   static SKPaymentQueueWrapper _skPaymentQueueWrapper;
   static _TransactionObserver _observer;
@@ -34,23 +34,25 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
     _instance = AppStoreConnection();
     _skPaymentQueueWrapper = SKPaymentQueueWrapper();
-    _observer = _TransactionObserver();
+    _observer = _TransactionObserver(StreamController.broadcast());
     _skPaymentQueueWrapper.setTransactionObserver(observer);
     return _instance;
   }
+
   @override
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
 
   @override
-  Stream<PurchaseDetails> makePayment(
+  void makePayment(
       {String productID,
       String applicationUserName,
       bool sandboxTesting = false}) {
-    return _observer.getPurchaseStream(
-        queue: _skPaymentQueueWrapper,
-        productID: productID,
-        applicationUserName: applicationUserName,
-        sandboxTesting: sandboxTesting);
+    _skPaymentQueueWrapper.addPayment(SKPaymentWrapper(
+        productIdentifier: productID,
+        quantity: 1,
+        applicationUsername: applicationUserName,
+        simulatesAskToBuyInSandbox: sandboxTesting,
+        requestData: null));
   }
 
   @override
@@ -133,13 +135,13 @@ class AppStoreConnection implements InAppPurchaseConnection {
 }
 
 class _TransactionObserver implements SKTransactionObserverWrapper {
+  final StreamController<List<PurchaseDetails>> purchaseUpdatedController;
 
   Completer<List<SKPaymentTransactionWrapper>> _restoreCompleter;
   List<SKPaymentTransactionWrapper> _restoredTransactions;
-  Map<String, StreamController<PurchaseDetails>> _purchaseStreamControllers;
   String _receiptData;
 
-  _TransactionObserver();
+  _TransactionObserver(this.purchaseUpdatedController);
 
   Future<List<SKPaymentTransactionWrapper>> getRestoredTransactions(
       {@required SKPaymentQueueWrapper queue, String applicationUserName}) {
@@ -147,27 +149,6 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     _restoreCompleter = Completer();
     queue.restoreTransactions(applicationUserName: applicationUserName);
     return _restoreCompleter.future;
-  }
-
-  Stream<PurchaseDetails> getPurchaseStream(
-      {@required SKPaymentQueueWrapper queue,
-      @required String productID,
-      String applicationUserName,
-      bool sandboxTesting = false}) {
-    if (_purchaseStreamControllers == null) {
-      _purchaseStreamControllers = Map();
-    }
-    _purchaseStreamControllers[productID] = StreamController();
-
-    SKPaymentWrapper payment = SKPaymentWrapper(
-        productIdentifier: productID,
-        quantity: 1,
-        applicationUsername: applicationUserName,
-        simulatesAskToBuyInSandbox: sandboxTesting,
-        requestData: null);
-    Stream stream = _purchaseStreamControllers[productID].stream;
-    SKPaymentQueueWrapper().addPayment(payment);
-    return stream;
   }
 
   void cleanUpRestoredTransactions() {
@@ -186,41 +167,28 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
         return wrapper.transactionState ==
             SKPaymentTransactionStateWrapper.restored;
       }).map((SKPaymentTransactionWrapper wrapper) => wrapper));
+      return;
     }
 
     String receiptData = await getReceiptData();
-    transactions.where((transaction) {
-      // restored case is already handled in the `if (_restoreCompleter != null)` clause.
-      return transaction.transactionState !=
-          SKPaymentTransactionStateWrapper.restored;
-    }).forEach((transaction) {
-      if (_purchaseStreamControllers != null &&
-          _purchaseStreamControllers[transaction.payment.productIdentifier] !=
-              null) {
-        PurchaseDetails purchaseDetails = transaction
-            .toPurchaseDetails(receiptData)
-              ..status = SKTransactionStatusConverter()
-                  .toPurchaseStatus(transaction.transactionState)
-              ..error = transaction.error != null
-                  ? PurchaseError(
-                      source: PurchaseSource.AppStore,
-                      code: kPurchaseErrorCode,
-                      message: transaction.error.userInfo,
-                    )
-                  : null;
-        StreamController controller =
-            _purchaseStreamControllers[transaction.payment.productIdentifier];
-        controller.add(purchaseDetails);
-        if (transaction.transactionState ==
-                SKPaymentTransactionStateWrapper.purchased ||
-            transaction.transactionState ==
-                SKPaymentTransactionStateWrapper.failed) {
-          controller.close();
-          _purchaseStreamControllers
-              .remove(transaction.payment.productIdentifier);
-        }
-      }
-    });
+    purchaseUpdatedController.add(transactions.map((transaction) {
+      PurchaseDetails purchaseDetails = transaction.toPurchaseDetails(
+        receiptData,
+        originalPurchaseID: transaction.originalTransaction != null
+            ? transaction.originalTransaction.transactionIdentifier
+            : null,
+      )
+        ..status = SKTransactionStatusConverter()
+            .toPurchaseStatus(transaction.transactionState)
+        ..error = transaction.error != null
+            ? PurchaseError(
+                source: PurchaseSource.AppStore,
+                code: kPurchaseErrorCode,
+                message: transaction.error.userInfo,
+              )
+            : null;
+      return purchaseDetails;
+    }).toList());
   }
 
   void removedTransactions({List<SKPaymentTransactionWrapper> transactions}) {}

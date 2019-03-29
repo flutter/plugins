@@ -209,15 +209,16 @@ void main() {
           });
       Completer completer = Completer();
       PurchaseDetails purchaseDetails;
-
-      Stream<PurchaseDetails> purchaseStream =
-          await GooglePlayConnection.instance.makePayment(
-              productID: skuDetails.sku, applicationUserName: accountId);
-      purchaseStream.listen((_) {
-        purchaseDetails = _;
-      }, onDone: () {
+      Stream purchaseStream =
+          GooglePlayConnection.instance.purchaseUpdatedStream;
+      StreamSubscription subscription;
+      subscription = purchaseStream.listen((_) {
+        purchaseDetails = _.first;
         completer.complete(purchaseDetails);
-      });
+        subscription.cancel();
+      }, onDone: () {});
+      await GooglePlayConnection.instance.makePayment(
+          productID: skuDetails.sku, applicationUserName: accountId);
       PurchaseDetails result = await completer.future;
       expect(result.purchaseID, 'orderID1');
       expect(result.status, PurchaseStatus.purchased);

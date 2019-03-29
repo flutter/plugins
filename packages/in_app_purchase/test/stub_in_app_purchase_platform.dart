@@ -10,10 +10,14 @@ typedef Future<void> AdditionalSteps();
 class StubInAppPurchasePlatform {
   Map<String, dynamic> _expectedCalls = <String, dynamic>{};
   Map<String, AdditionalSteps> _additionalSteps = <String, AdditionalSteps>{};
-  void addResponse({String name, dynamic value, AdditionalSteps additionalStepBeforeReturn}) {
+  void addResponse(
+      {String name,
+      dynamic value,
+      AdditionalSteps additionalStepBeforeReturn}) {
     _additionalSteps[name] = additionalStepBeforeReturn;
     _expectedCalls[name] = value;
   }
+
   List<MethodCall> _previousCalls = <MethodCall>[];
   List<MethodCall> get previousCalls => _previousCalls;
   MethodCall previousCallMatching(String name) => _previousCalls
@@ -26,6 +30,7 @@ class StubInAppPurchasePlatform {
     _previousCalls.clear();
     _additionalSteps.clear();
   }
+
   Future<dynamic> fakeMethodCallHandler(MethodCall call) async {
     _previousCalls.add(call);
     if (_expectedCalls.containsKey(call.method)) {

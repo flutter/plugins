@@ -110,18 +110,23 @@ class PurchaseDetails {
   /// Milliseconds since epoch.
   final String transactionDate;
 
+  /// The original purchase ID of this purchase.
+  ///
+  /// Only available when this purchase is a restored purchase.
+  final String originalPurchaseID;
+
   /// The status that this [PurchaseDetails] is currently on.
   PurchaseStatus status;
 
   /// The error is only available when [status] is [PurchaseStatus.error].
   PurchaseError error;
 
-  PurchaseDetails({
-    @required this.purchaseID,
-    @required this.productId,
-    @required this.verificationData,
-    @required this.transactionDate,
-  });
+  PurchaseDetails(
+      {@required this.purchaseID,
+      @required this.productId,
+      @required this.verificationData,
+      @required this.transactionDate,
+      this.originalPurchaseID});
 }
 
 /// The response object for fetching the past purchases.
@@ -145,8 +150,9 @@ class QueryPurchaseDetailsResponse {
 
 /// Basic generic API for making in app purchases across multiple platforms.
 abstract class InAppPurchaseConnection {
-
-  /// Listen to this stream to get real time update for purchases.
+  /// Listen to this broadcast stream to get real time update for purchases.
+  ///
+  /// This stream would never close when the APP is active.
   ///
   /// Purchase updates can happen in several situations:
   /// * When a purchase is triggered by user in the APP.
@@ -154,24 +160,27 @@ abstract class InAppPurchaseConnection {
   /// * If a purchase is not completed([completePurchase] is not called on the purchase object) from the last APP session. Purchase updates will happen when a new APP session starts.
   ///
   /// IMPORTANT! To Avoid losing information on purchase updates, You should listen to this stream as soon as your APP launches, preferably before returning your main App Widget in main().
-  Stream<List<PurchaseDetails>> get purchaseUpdated => _getStream();
+  /// We recommend to have a single subscription listening to the stream at a given time. If you choose to have multiple subscription at the same time, you should be careful at the fact that each subscription will receive all the events after they start to listen.
+  Stream<List<PurchaseDetails>> get purchaseUpdatedStream => _getStream();
 
-  Stream<List<PurchaseDetails>> _purchaseUpdated;
+  Stream<List<PurchaseDetails>> _purchaseUpdatedStream;
 
   Stream<List<PurchaseDetails>> _getStream() {
-    if (_purchaseUpdated != null) {
-      return _purchaseUpdated;
+    if (_purchaseUpdatedStream != null) {
+      return _purchaseUpdatedStream;
     }
 
     if (Platform.isAndroid) {
-      _purchaseUpdated = GooglePlayConnection.instance.purchaseUpdated;
+      _purchaseUpdatedStream =
+          GooglePlayConnection.instance.purchaseUpdatedStream;
     } else if (Platform.isIOS) {
-      _purchaseUpdated = AppStoreConnection.instance.purchaseUpdated;
+      _purchaseUpdatedStream =
+          AppStoreConnection.instance.purchaseUpdatedStream;
     } else {
       throw UnsupportedError(
           'InAppPurchase plugin only works on Android and iOS.');
     }
-    return _purchaseUpdated;
+    return _purchaseUpdatedStream;
   }
 
   /// Returns true if the payment platform is ready and available.
@@ -182,8 +191,8 @@ abstract class InAppPurchaseConnection {
 
   /// Make a payment
   ///
-  /// This method does not return anything. Instead, after triggering this method, purchase updates will be sent to [purchaseUpdated].
-  /// You should [Stream.listen] to [purchaseUpdated] to get [PurchaseDetails] objects in different [PurchaseDetails.status] and
+  /// This method does not return anything. Instead, after triggering this method, purchase updates will be sent to [purchaseUpdatedStream].
+  /// You should [Stream.listen] to [purchaseUpdatedStream] to get [PurchaseDetails] objects in different [PurchaseDetails.status] and
   /// update your UI accordingly. When the [PurchaseDetails.status] is [PurchaseStatus.purchased] or [PurchaseStatus.error], you should deliver the content or handle the error, then call
   /// [completePurchase] to finish the purchasing process.
   ///
@@ -208,16 +217,23 @@ abstract class InAppPurchaseConnection {
 
   /// Consume a product that is purchased with `purchase` so user can buy it again.
   ///
-  /// Developer is responsible to consume purchases for consumable items after delivery the product.
+  /// Developer is responsible to consume purchases for consumable product after delivery the product.
   /// The user cannot buy the same product again until the purchase of the product is consumed.
   ///
-  /// This is a non-op on Android.
+  /// This is a non-op on iOS. In App Store Connect, the product specified as `consumable` category automatically allow
+  /// users to buy multiple times.
   Future<void> consumePurchase(PurchaseDetails purchase);
 
   /// Query all the past purchases.
   ///
   /// The `applicationUserName` is required if you also passed this in when making a purchase.
   /// If you did not use a `applicationUserName` when creating payments, you can ignore this parameter.
+  ///
+  /// A major difference between Android and iOS here is that iOS does not return consumable products when querying past purchases.
+  /// You would need to have your own server to store those information if you need those, although it is not necessary to store those information at all.
+  /// For example, when a user installs your APP on a different phone, you want to restore the past purchases and deliver the products that they previously purchased.
+  /// It is mandatory to restore non-consumable and subscription for them; however, for consumable product, it is up to you to decide if you should restore those.
+  /// If you want to restore the consumable product as well, you need to persist consumable product information for your user on your own server and deliver it to them.
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName});
 

@@ -18,32 +18,37 @@ class GooglePlayConnection
     implements InAppPurchaseConnection {
   GooglePlayConnection._()
       : billingClient = BillingClient((PurchasesResultWrapper resultWrapper) {
-          _purchaseUpdatedController
-              .add(resultWrapper.purchasesList.map((purchase) {
-            PurchaseError error = null;
-            if (resultWrapper.responseCode != BillingResponse.ok) {
-              error = PurchaseError(
-                source: PurchaseSource.GooglePlay,
-                code: kRestoredPurchaseErrorCode,
-                message: {'message': resultWrapper.responseCode.toString()},
-              );
-            }
-            PurchaseDetails purchaseDetails = purchase.toPurchaseDetails()
-              ..status = resultWrapper.responseCode == BillingResponse.ok
-                  ? PurchaseStatus.purchased
-                  : PurchaseStatus.error
-              ..error = error;
-            return purchaseDetails;
-          }));
+          _purchaseUpdatedController.add(
+            resultWrapper.purchasesList.map(
+              (purchase) {
+                PurchaseError error = null;
+                if (resultWrapper.responseCode != BillingResponse.ok) {
+                  error = PurchaseError(
+                    source: PurchaseSource.GooglePlay,
+                    code: kRestoredPurchaseErrorCode,
+                    message: {'message': resultWrapper.responseCode.toString()},
+                  );
+                }
+                PurchaseDetails purchaseDetails = purchase.toPurchaseDetails()
+                  ..status = resultWrapper.responseCode == BillingResponse.ok
+                      ? PurchaseStatus.purchased
+                      : PurchaseStatus.error
+                  ..error = error;
+                return purchaseDetails;
+              },
+            ).toList(),
+          );
         }) {
     _readyFuture = _connect();
     WidgetsBinding.instance.addObserver(this);
-    _purchaseUpdatedController = StreamController();
+    _purchaseUpdatedController = StreamController.broadcast();
+    ;
   }
   static GooglePlayConnection get instance => _getOrCreateInstance();
   static GooglePlayConnection _instance;
 
-  Stream<List<PurchaseDetails>> get purchaseUpdated => _purchaseUpdatedController.stream;
+  Stream<List<PurchaseDetails>> get purchaseUpdatedStream =>
+      _purchaseUpdatedController.stream;
   static StreamController<List<PurchaseDetails>> _purchaseUpdatedController;
 
   @visibleForTesting
@@ -126,7 +131,8 @@ class GooglePlayConnection
         responses.expand((PurchasesResultWrapper response) {
       return response.purchasesList;
     }).map((PurchaseWrapper purchaseWrapper) {
-      return purchaseWrapper.toPurchaseDetails();
+      return purchaseWrapper.toPurchaseDetails(
+          originalPurchaseID: purchaseWrapper.orderId);
     }).toList();
 
     return QueryPurchaseDetailsResponse(

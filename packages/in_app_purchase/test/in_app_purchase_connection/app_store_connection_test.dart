@@ -19,10 +19,6 @@ void main() {
   final FakeIOSPlatform fakeIOSPlatform = FakeIOSPlatform();
 
   setUpAll(() {
-    AppStoreConnection.configure(storePaymentDecisionMaker: (
-        {ProductDetails productDetails, String applicationUserName}) {
-      return true;
-    });
     SystemChannels.platform
         .setMockMethodCallHandler(fakeIOSPlatform.onMethodCall);
   });
@@ -63,14 +59,10 @@ void main() {
       QueryPurchaseDetailsResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
       expect(response.pastPurchases.length, 2);
-      expect(
-          response.pastPurchases.first.purchaseID,
-          fakeIOSPlatform
-              .transactions.first.originalTransaction.transactionIdentifier);
-      expect(
-          response.pastPurchases.last.purchaseID,
-          fakeIOSPlatform
-              .transactions.last.originalTransaction.transactionIdentifier);
+      expect(response.pastPurchases.first.purchaseID,
+          fakeIOSPlatform.transactions.first.transactionIdentifier);
+      expect(response.pastPurchases.last.purchaseID,
+          fakeIOSPlatform.transactions.last.transactionIdentifier);
       expect(
           response.pastPurchases.first.verificationData.localVerificationData,
           'dummy base64data');
@@ -129,63 +121,79 @@ void main() {
         () async {
       List<PurchaseDetails> details = [];
       Completer completer = Completer();
-      Stream<PurchaseDetails> stream = AppStoreConnection.instance
-          .makePayment(productID: 'productID', applicationUserName: 'appName');
-      stream.listen((purchaseDetails) {
-        details.add(purchaseDetails);
-      }, onDone: () {
-        completer.complete(details);
+      Stream<List<PurchaseDetails>> stream =
+          AppStoreConnection.instance.purchaseUpdatedStream;
+
+      StreamSubscription subscription;
+      subscription = stream.listen((purchaseDetailsList) {
+        details.addAll(purchaseDetailsList);
+        print(purchaseDetailsList);
+        if (purchaseDetailsList.first.status == PurchaseStatus.purchased) {
+          completer.complete(details);
+          subscription.cancel();
+        }
       });
+      await AppStoreConnection.instance
+          .makePayment(productID: 'productID', applicationUserName: 'appName');
 
       List<PurchaseDetails> result = await completer.future;
       expect(result.length, 2);
       expect(result.first.productId, 'productID');
     });
+
+    test('should get failed purchase status', () async {
+      fakeIOSPlatform.testTransactionFail = true;
+      List<PurchaseDetails> details = [];
+      Completer completer = Completer();
+      PurchaseError error;
+
+      Stream<List<PurchaseDetails>> stream =
+          AppStoreConnection.instance.purchaseUpdatedStream;
+      StreamSubscription subscription;
+      subscription = stream.listen((purchaseDetailsList) {
+        details.addAll(purchaseDetailsList);
+        purchaseDetailsList.forEach((purchaseDetails) {
+          if (purchaseDetails.status == PurchaseStatus.error) {
+            error = purchaseDetails.error;
+            completer.complete(error);
+            subscription.cancel();
+          }
+        });
+      });
+      await AppStoreConnection.instance
+          .makePayment(productID: 'productID', applicationUserName: 'appName');
+
+      PurchaseError completerError = await completer.future;
+      expect(completerError.code, kPurchaseErrorCode);
+      expect(completerError.source, PurchaseSource.AppStore);
+      expect(completerError.message, {'message': 'an error message'});
+    });
   });
 
   group('finish transaction', () {
-    test('should finish transactions',
-        () async {
+    test('should finish transactions', () async {
       List<PurchaseDetails> details = [];
       Completer completer = Completer();
-      Stream<PurchaseDetails> stream = AppStoreConnection.instance
-          .makePayment(productID: 'productID', applicationUserName: 'appName');
-      stream.listen((purchaseDetails) {
-        details.add(purchaseDetails);
-        if (purchaseDetails.status ==PurchaseStatus.purchased) {
-          AppStoreConnection.instance.completePurchase(purchaseDetails);
-        }
-      }, onDone: () {
-        completer.complete(details);
+      Stream<List<PurchaseDetails>> stream =
+          AppStoreConnection.instance.purchaseUpdatedStream;
+      StreamSubscription subscription;
+      subscription = stream.listen((purchaseDetailsList) {
+        details.addAll(purchaseDetailsList);
+        purchaseDetailsList.forEach((purchaseDetails) {
+          if (purchaseDetails.status == PurchaseStatus.purchased) {
+            AppStoreConnection.instance.completePurchase(purchaseDetails);
+            completer.complete(details);
+            subscription.cancel();
+          }
+        });
       });
+      await AppStoreConnection.instance
+          .makePayment(productID: 'productID', applicationUserName: 'appName');
       List<PurchaseDetails> result = await completer.future;
       expect(result.length, 2);
       expect(result.first.productId, 'productID');
       expect(fakeIOSPlatform.finishedTransactions.length, 1);
     });
-  });
-
-  test('should get failed purchase status', () async {
-    fakeIOSPlatform.testTransactionFail = true;
-    List<PurchaseDetails> details = [];
-    Completer completer = Completer();
-    PurchaseError error;
-
-    Stream<PurchaseDetails> stream = AppStoreConnection.instance
-        .makePayment(productID: 'productID', applicationUserName: 'appName');
-    stream.listen((purchaseDetails) {
-      details.add(purchaseDetails);
-      if (purchaseDetails.status == PurchaseStatus.error) {
-        error = purchaseDetails.error;
-      }
-    }, onDone: () {
-      completer.complete(error);
-    });
-
-    PurchaseError completerError = await completer.future;
-    expect(completerError.code, kPurchaseErrorCode);
-    expect(completerError.source, PurchaseSource.AppStore);
-    expect(completerError.message, {'message': 'an error message'});
   });
 }
 

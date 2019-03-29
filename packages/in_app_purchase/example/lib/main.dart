@@ -22,11 +22,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  StreamSubscription<List<PurchaseDetails>> _subscription;
   @override
   void initState() {
-    Stream purchaseUpdated = InAppPurchaseConnection.instance.purchaseUpdated;
-    purchaseUpdated.listen((purchaseDetailsList) {
-      purchaseDetailsList.foreach((purchaseDetails) {
+    Stream purchaseUpdated =
+        InAppPurchaseConnection.instance.purchaseUpdatedStream;
+    _subscription = purchaseUpdated.listen((purchaseDetailsList) {
+      purchaseDetailsList.forEach((purchaseDetails) {
         print('purchase updated product ID: (${purchaseDetails.productId})');
         print('purchase updated purchase ID: (${purchaseDetails.purchaseID})');
         print('purchase updated status: ({${purchaseDetails.status})');
@@ -41,8 +43,18 @@ class _MyAppState extends State<MyApp> {
           InAppPurchaseConnection.instance.completePurchase(purchaseDetails);
         }
       });
+    }, onDone: () {
+      _subscription.cancel();
+    }, onError: (error) {
+      print('Error on listening to purchaseUpdatesStream $error');
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -169,26 +181,6 @@ class _MyAppState extends State<MyApp> {
                 productID: productDetails.id,
                 applicationUserName: null,
                 sandboxTesting: true);
-            stream.listen((purchaseDetails) async {
-              print(
-                  'purchase updated product ID: (${purchaseDetails.productId})');
-              print(
-                  'purchase updated purchase ID: (${purchaseDetails.purchaseID})');
-              print('purchase updated status: ({${purchaseDetails.status})');
-              if (purchaseDetails.status == PurchaseStatus.pending) {
-                showPendingUI();
-              } else {
-                if (purchaseDetails.status == PurchaseStatus.error) {
-                  handleError(purchaseDetails.error);
-                } else if (purchaseDetails.status == PurchaseStatus.purchased) {
-                  deliverProduct(purchaseDetails);
-                }
-                await connection.completePurchase(purchaseDetails);
-              }
-            }, onDone: () {
-              print(
-                  'Purchase ended. Update UI, deliver the product if the purchase is successful');
-            });
           },
         );
       },
@@ -204,6 +196,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void deliverProduct(PurchaseDetails purchaseDetails) {
+    // IMPORTANT!! Always verify a purchase purchase details before deliver the product.
     print('product delivered');
     if (purchaseDetails.productId == 'consumable') {
       InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
