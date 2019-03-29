@@ -23,10 +23,14 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
-      _traces = [[NSMutableDictionary alloc] init];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
+
+    _traces = [[NSMutableDictionary alloc] init];
+    _httpMetrics = [[NSMutableDictionary alloc] init];
   }
 
   return self;
@@ -68,12 +72,12 @@
 
   NSDictionary *counters = call.arguments[@"counters"];
   [counters enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSNumber *value, BOOL *stop) {
-    [trace incrementCounterNamed:key by:[value integerValue]];
+    [trace setIntValue:[value longLongValue] forMetric:key];
   }];
 
   NSDictionary *attributes = call.arguments[@"attributes"];
   [attributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
-    [trace setValue:key forAttribute:value];
+    [trace setValue:value forAttribute:key];
   }];
 
   [trace stop];
@@ -145,7 +149,7 @@
 
   NSDictionary *attributes = call.arguments[@"attributes"];
   [attributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
-    [metric setValue:key forAttribute:value];
+    [metric setValue:value forAttribute:key];
   }];
 
   [metric stop];

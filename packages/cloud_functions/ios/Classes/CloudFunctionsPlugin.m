@@ -24,8 +24,10 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
   }
   return self;
@@ -35,36 +37,46 @@
   if ([@"CloudFunctions#call" isEqualToString:call.method]) {
     NSString *functionName = call.arguments[@"functionName"];
     NSObject *parameters = call.arguments[@"parameters"];
-    [[FIRFunctions functions]
-        callFunction:functionName
-          withObject:parameters
-          completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
-            if (error) {
-              FlutterError *flutterError;
-              if (error.domain == FIRFunctionsErrorDomain) {
-                NSDictionary *details = [NSMutableDictionary dictionary];
-                [details setValue:[self mapFunctionsErrorCodes:error.code] forKey:@"code"];
-                if (error.localizedDescription != nil) {
-                  [details setValue:error.localizedDescription forKey:@"message"];
-                }
-                if (error.userInfo[FIRFunctionsErrorDetailsKey] != nil) {
-                  [details setValue:error.userInfo[FIRFunctionsErrorDetailsKey] forKey:@"details"];
-                }
+    NSString *appName = call.arguments[@"app"];
+    NSString *region = call.arguments[@"region"];
+    FIRApp *app = [FIRApp appNamed:appName];
+    FIRFunctions *functions;
+    if (region != nil && region != (id)[NSNull null]) {
+      functions = [FIRFunctions functionsForApp:app region:region];
+    } else {
+      functions = [FIRFunctions functionsForApp:app];
+    }
+    FIRHTTPSCallable *function = [functions HTTPSCallableWithName:functionName];
+    [function callWithObject:parameters
+                  completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
+                    if (error) {
+                      FlutterError *flutterError;
+                      if (error.domain == FIRFunctionsErrorDomain) {
+                        NSDictionary *details = [NSMutableDictionary dictionary];
+                        [details setValue:[self mapFunctionsErrorCodes:error.code] forKey:@"code"];
+                        if (error.localizedDescription != nil) {
+                          [details setValue:error.localizedDescription forKey:@"message"];
+                        }
+                        if (error.userInfo[FIRFunctionsErrorDetailsKey] != nil) {
+                          [details setValue:error.userInfo[FIRFunctionsErrorDetailsKey]
+                                     forKey:@"details"];
+                        }
 
-                flutterError =
-                    [FlutterError errorWithCode:@"functionsError"
-                                        message:@"Firebase function failed with exception."
-                                        details:details];
-              } else {
-                flutterError = [FlutterError errorWithCode:nil
-                                                   message:error.localizedDescription
-                                                   details:nil];
-              }
-              result(flutterError);
-            } else {
-              result(callableResult.data);
-            }
-          }];
+                        flutterError =
+                            [FlutterError errorWithCode:@"functionsError"
+                                                message:@"Firebase function failed with exception."
+                                                details:details];
+                      } else {
+                        flutterError = [FlutterError
+                            errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
+                                  message:error.localizedDescription
+                                  details:nil];
+                      }
+                      result(flutterError);
+                    } else {
+                      result(callableResult.data);
+                    }
+                  }];
   } else {
     result(FlutterMethodNotImplemented);
   }

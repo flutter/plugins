@@ -79,8 +79,8 @@ static FIRVisionTextRecognizer *recognizer;
             text:(NSString *)text {
   __block NSMutableArray<NSArray *> *points = [NSMutableArray array];
 
-  for (NSValue *point in points) {
-    [points addObject:@[ @(((__bridge CGPoint *)point)->x), @(((__bridge CGPoint *)point)->y) ]];
+  for (NSValue *point in cornerPoints) {
+    [points addObject:@[ @(point.CGPointValue.x), @(point.CGPointValue.y) ]];
   }
 
   __block NSMutableArray<NSDictionary *> *allLanguageData = [NSMutableArray array];
@@ -93,10 +93,10 @@ static FIRVisionTextRecognizer *recognizer;
   [addTo addEntriesFromDictionary:@{
     @"confidence" : confidence ? confidence : [NSNull null],
     @"points" : points,
-    @"left" : @((int)frame.origin.x),
-    @"top" : @((int)frame.origin.y),
-    @"width" : @((int)frame.size.width),
-    @"height" : @((int)frame.size.height),
+    @"left" : @(frame.origin.x),
+    @"top" : @(frame.origin.y),
+    @"width" : @(frame.size.width),
+    @"height" : @(frame.size.height),
     @"recognizedLanguages" : allLanguageData,
     @"text" : text,
   }];

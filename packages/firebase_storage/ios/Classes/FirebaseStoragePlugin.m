@@ -6,17 +6,11 @@
 
 #import <Firebase/Firebase.h>
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@end
-
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
+static FlutterError *getFlutterError(NSError *error) {
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
 }
-@end
 
 @interface FLTFirebaseStoragePlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
@@ -42,8 +36,10 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
     _storageMap = [[NSMutableDictionary alloc] init];
     _uploadTasks = [NSMutableDictionary<NSNumber *, FIRStorageUploadTask *> dictionary];
@@ -66,6 +62,8 @@
     [self setMaxUploadRetryTime:call result:result];
   } else if ([@"FirebaseStorage#setMaxOperationRetryTime" isEqualToString:call.method]) {
     [self setMaxOperationRetryTime:call result:result];
+  } else if ([@"FirebaseStorage#getReferenceFromUrl" isEqualToString:call.method]) {
+    [self getReferenceFromUrl:call result:result];
   } else if ([@"StorageReference#putFile" isEqualToString:call.method]) {
     [self putFile:call result:result];
   } else if ([@"StorageReference#putData" isEqualToString:call.method]) {
@@ -174,6 +172,11 @@
   NSNumber *time = call.arguments[@"time"];
   storage.maxOperationRetryTime = [time longLongValue] / 1000.0;
   result(nil);
+}
+
+- (void)getReferenceFromUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *fullUrl = call.arguments[@"fullUrl"];
+  result([storage referenceForURL:fullUrl].fullPath);
 }
 
 - (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -303,7 +306,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   [ref dataWithMaxSize:[maxSize longLongValue]
             completion:^(NSData *_Nullable data, NSError *_Nullable error) {
               if (error != nil) {
-                result(error.flutterError);
+                result(getFlutterError(error));
                 return;
               }
               if (data == nil) {
@@ -330,7 +333,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   [task observeStatus:FIRStorageTaskStatusFailure
               handler:^(FIRStorageTaskSnapshot *snapshot) {
                 if (snapshot.error != nil) {
-                  result(snapshot.error.flutterError);
+                  result(getFlutterError(snapshot.error));
                 }
               }];
 }
@@ -340,7 +343,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   FIRStorageReference *ref = [storage.reference child:path];
   [ref metadataWithCompletion:^(FIRStorageMetadata *metadata, NSError *error) {
     if (error != nil) {
-      result(error.flutterError);
+      result(getFlutterError(error));
     } else {
       result([self buildDictionaryFromMetadata:metadata]);
     }
@@ -354,7 +357,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   [ref updateMetadata:[self buildMetadataFromDictionary:metadataDictionary]
            completion:^(FIRStorageMetadata *metadata, NSError *error) {
              if (error != nil) {
-               result(error.flutterError);
+               result(getFlutterError(error));
              } else {
                result([self buildDictionaryFromMetadata:metadata]);
              }
@@ -384,7 +387,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   FIRStorageReference *ref = [storage.reference child:path];
   [ref downloadURLWithCompletion:^(NSURL *URL, NSError *error) {
     if (error != nil) {
-      result(error.flutterError);
+      result(getFlutterError(error));
     } else {
       result(URL.absoluteString);
     }
@@ -396,7 +399,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   FIRStorageReference *ref = [storage.reference child:path];
   [ref deleteWithCompletion:^(NSError *error) {
     if (error != nil) {
-      result(error.flutterError);
+      result(getFlutterError(error));
     } else {
       result(nil);
     }

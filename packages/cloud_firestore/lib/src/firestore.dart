@@ -110,19 +110,21 @@ class Firestore {
         'Transaction timeout must be more than 0 milliseconds');
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
-    final Map<dynamic, dynamic> result = await channel
-        .invokeMethod('Firestore#runTransaction', <String, dynamic>{
+    final Map<String, dynamic> result = await channel
+        .invokeMapMethod<String, dynamic>(
+            'Firestore#runTransaction', <String, dynamic>{
       'app': app.name,
       'transactionId': transactionId,
       'transactionTimeout': timeout.inMilliseconds
     });
-    return result?.cast<String, dynamic>() ?? <String, dynamic>{};
+    return result ?? <String, dynamic>{};
   }
 
   @deprecated
   Future<void> enablePersistence(bool enable) async {
     assert(enable != null);
-    await channel.invokeMethod('Firestore#enablePersistence', <String, dynamic>{
+    await channel
+        .invokeMethod<void>('Firestore#enablePersistence', <String, dynamic>{
       'app': app.name,
       'enable': enable,
     });
@@ -133,7 +135,7 @@ class Firestore {
       String host,
       bool sslEnabled,
       bool timestampsInSnapshotsEnabled}) async {
-    await channel.invokeMethod('Firestore#settings', <String, dynamic>{
+    await channel.invokeMethod<void>('Firestore#settings', <String, dynamic>{
       'app': app.name,
       'persistenceEnabled': persistenceEnabled,
       'host': host,
