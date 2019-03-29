@@ -64,19 +64,21 @@ class MarkersController {
         final Map<?, ?> data = toMap(markerToChange);
         final Object position = data.get("position");
         if (position == null) continue;
-        String markerId = getMarkerId(markerToChange);
-        MarkerController markerController = markerIdToController.get(markerId);
-        LatLngInterpolator interpolator = new LatLngInterpolator.Linear();
-        if (BuildConfig.VERSION_CODE == Build.VERSION_CODES.HONEYCOMB) {
-          MarkerAnimation.animateMarkerToHC(markerController.getMarker(), toLatLng(position), interpolator, durationInMs);
-        }
-        else if (BuildConfig.VERSION_CODE == Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-          MarkerAnimation.animateMarkerToICS(markerController.getMarker(), toLatLng(position), interpolator, durationInMs);
-        }
+        if (durationInMs < 0) changeMarker(markerToChange);
         else {
-          MarkerAnimation.animateMarkerToGB(markerController.getMarker(), toLatLng(position), interpolator, durationInMs);
+          String markerId = getMarkerId(markerToChange);
+          MarkerController markerController = markerIdToController.get(markerId);
+          LatLngInterpolator interpolator = new LatLngInterpolator.Linear();
+          if (BuildConfig.VERSION_CODE == Build.VERSION_CODES.HONEYCOMB) {
+            MarkerAnimation.animateMarkerToHC(markerController.getMarker(), toLatLng(position), interpolator, durationInMs);
+          }
+          else if (BuildConfig.VERSION_CODE == Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            MarkerAnimation.animateMarkerToICS(markerController.getMarker(), toLatLng(position), interpolator, durationInMs);
+          }
+          else {
+            MarkerAnimation.animateMarkerToGB(markerController.getMarker(), toLatLng(position), interpolator, durationInMs);
+          }
         }
-        //changeMarker(markerToChange);
       }
     }
   }

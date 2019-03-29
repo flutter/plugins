@@ -8,6 +8,7 @@
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position);
+static NSDictionary* BoundsToJson(GMSCoordinateBounds* bounds);
 static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json);
 static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
 static GMSCameraUpdate* ToCameraUpdate(NSArray* data);
@@ -65,7 +66,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     GMSCameraPosition* camera = ToOptionalCameraPosition(args[@"initialCameraPosition"]);
     _mapView = [GMSMapView mapWithFrame:frame camera:camera];
     _trackCameraPosition = NO;
-    _markerAnimationDuration = 5000;
+    _markerAnimationDuration = -1;
     
     InterpretMapOptions(args[@"options"], self);
     NSString* channelName =
@@ -234,7 +235,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 }
 
 - (void)mapView:(GMSMapView*)mapView idleAtCameraPosition:(GMSCameraPosition*)position {
-  [_channel invokeMethod:@"camera#onIdle" arguments:@{}];
+  GMSVisibleRegion visibleRegion = [_mapView.projection visibleRegion];
+  GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc]initWithRegion:visibleRegion];
+  [_channel invokeMethod:@"camera#onIdle" arguments:@{@"bounds" : BoundsToJson(bounds)}];
 }
 
 - (BOOL)mapView:(GMSMapView*)mapView didTapMarker:(GMSMarker*)marker {
@@ -264,6 +267,16 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position) {
     @"zoom" : @([position zoom]),
     @"bearing" : @([position bearing]),
     @"tilt" : @([position viewingAngle]),
+  };
+}
+
+static NSDictionary* BoundsToJson(GMSCoordinateBounds* bounds) {
+  if (!bounds) {
+    return nil;
+  }
+  return @{
+    @"southwest" : LocationToJson([bounds southWest]),
+    @"northeast" : LocationToJson([bounds northEast]),
   };
 }
 

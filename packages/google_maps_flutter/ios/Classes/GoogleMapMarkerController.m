@@ -229,25 +229,28 @@ markerAnimationDuration:(float)markerAnimationDuration {
     if (!controller) {
       continue;
     }
-    CLLocationCoordinate2D startPosition = [controller getPosition];
-    CLLocationCoordinate2D finalPosition = [FLTMarkersController getPosition:marker];
-    float bearing = [self getBearing:startPosition andSecond:finalPosition];
-    NSMutableDictionary *newMarker = [[NSMutableDictionary alloc] init];
-    NSDictionary *oldMarker = (NSDictionary *)[marker mutableCopy];
-    [newMarker addEntriesFromDictionary:oldMarker];
-    [newMarker setObject:@(bearing) forKey:@"rotation"];
-    
-    [CATransaction begin];
-    [CATransaction setAnimationDuration:_markerAnimationDuration * fraction / 1000];
-    [controller setRotation:bearing];
-    [CATransaction commit];
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_markerAnimationDuration * fraction / 1000 * NSEC_PER_SEC));
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+    if (_markerAnimationDuration < 0) InterpretMarkerOptions(marker, controller, _registrar);
+    else {
+      CLLocationCoordinate2D startPosition = [controller getPosition];
+      CLLocationCoordinate2D finalPosition = [FLTMarkersController getPosition:marker];
+      float bearing = [self getBearing:startPosition andSecond:finalPosition];
+      NSMutableDictionary *newMarker = [[NSMutableDictionary alloc] init];
+      NSDictionary *oldMarker = (NSDictionary *)[marker mutableCopy];
+      [newMarker addEntriesFromDictionary:oldMarker];
+      [newMarker setObject:@(bearing) forKey:@"rotation"];
+      
       [CATransaction begin];
-      [CATransaction setAnimationDuration:_markerAnimationDuration * (1 - fraction) / 1000];
-      InterpretMarkerOptions(newMarker, controller, _registrar);
+      [CATransaction setAnimationDuration:_markerAnimationDuration * fraction / 1000];
+      [controller setRotation:bearing];
       [CATransaction commit];
-    });
+      dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_markerAnimationDuration * fraction / 1000 * NSEC_PER_SEC));
+      dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+        [CATransaction begin];
+        [CATransaction setAnimationDuration:_markerAnimationDuration * (1 - fraction) / 1000];
+        InterpretMarkerOptions(newMarker, controller, _registrar);
+        [CATransaction commit];
+      });
+    }
   }
 }
 - (void)removeMarkerIds:(NSArray*)markerIdsToRemove {

@@ -97,3 +97,36 @@ class MinMaxZoomPreference {
     return 'MinMaxZoomPreference(minZoom: $minZoom, maxZoom: $maxZoom)';
   }
 }
+
+class MapBounds {
+  /// Creates a map bounds with the specified bounding box
+  const MapBounds({
+    @required this.southwest,
+    @required this.northeast,
+  })  : assert(southwest != null),
+        assert(northeast != null);
+
+  /// The geographical bounding box for the map target.
+  final LatLng southwest;
+  final LatLng northeast;
+
+  dynamic _toJson() => <dynamic>[southwest, northeast];
+
+  static MapBounds fromMap(dynamic json) {
+    if (json == null) {
+      return null;
+    }
+    return MapBounds(
+      southwest: LatLng._fromJson(json['southwest']),
+      northeast: LatLng._fromJson(json['northeast']),
+    );
+  }
+
+  @override
+  int get hashCode => hashValues(southwest, northeast);
+
+  @override
+  String toString() {
+    return 'MapBounds(southwest: $southwest, northeast: $northeast)';
+  }
+}

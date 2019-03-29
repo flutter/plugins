@@ -14,6 +14,14 @@ typedef void MapCreatedCallback(GoogleMapController controller);
 /// This is used in [GoogleMap.onCameraMove].
 typedef void CameraPositionCallback(CameraPosition position);
 
+/// Callback that receives updates to the map bounds.
+///
+/// This callback is triggered when the platform Google Map
+/// registers a camera movement.
+///
+/// This is used in [GoogleMap.onCameraIdle].
+typedef void MapBoundsCallback(MapBounds bounds);
+
 class GoogleMap extends StatefulWidget {
   const GoogleMap({
     @required this.initialCameraPosition,
@@ -29,7 +37,7 @@ class GoogleMap extends StatefulWidget {
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.markers,
-    this.markersAnimationDuration = 5000,
+    this.markersAnimationDuration = -1,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -91,7 +99,7 @@ class GoogleMap extends StatefulWidget {
 
   /// Called when camera movement has ended, there are no pending
   /// animations and the user has stopped interacting with the map.
-  final VoidCallback onCameraIdle;
+  final MapBoundsCallback onCameraIdle;
 
   /// True if a "My Location" layer should be shown on the map.
   ///

@@ -54,7 +54,9 @@ class GoogleMapController {
         break;
       case 'camera#onIdle':
         if (_googleMapState.widget.onCameraIdle != null) {
-          _googleMapState.widget.onCameraIdle();
+          _googleMapState.widget.onCameraIdle(
+            MapBounds.fromMap(call.arguments['bounds']),
+          );
         }
         break;
       case 'marker#onTap':

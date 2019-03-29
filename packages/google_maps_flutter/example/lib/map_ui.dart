@@ -48,7 +48,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _tiltGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
-  double _markersAnimationDuration = 5000;
+  double _markersAnimationDuration = -1;
 
   @override
   void initState() {

@@ -16,7 +16,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private Object initialMarkers;
-  private float markersAnimationDuration = 5000;
+  private float markersAnimationDuration = -1;
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {

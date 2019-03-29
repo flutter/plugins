@@ -67,7 +67,7 @@ final class GoogleMapController
   private final Context context;
   private final MarkersController markersController;
   private List<Object> initialMarkers;
-  private float markersAnimationDuration = 5000;
+  private float markersAnimationDuration = -1;
 
   GoogleMapController(
       int id,
@@ -140,6 +140,7 @@ final class GoogleMapController
   private void animateCamera(CameraUpdate cameraUpdate) {
     googleMap.animateCamera(cameraUpdate);
   }
+
 
   private CameraPosition getCameraPosition() {
     return trackCameraPosition ? googleMap.getCameraPosition() : null;
@@ -234,7 +235,10 @@ final class GoogleMapController
 
   @Override
   public void onCameraIdle() {
-    methodChannel.invokeMethod("camera#onIdle", Collections.singletonMap("map", id));
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("bounds", Convert.toJson(googleMap.getProjection().getVisibleRegion().latLngBounds));
+    methodChannel.invokeMethod("camera#onIdle", arguments);
+    //methodChannel.invokeMethod("camera#onIdle", Collections.singletonMap("map", id));
   }
 
   @Override
