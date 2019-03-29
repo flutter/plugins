@@ -18,6 +18,10 @@ import 'package:in_app_purchase/src/store_kit_wrappers/enum_converters.dart';
 class AppStoreConnection implements InAppPurchaseConnection {
   static AppStoreConnection get instance => _getOrCreateInstance();
   static AppStoreConnection _instance;
+
+  Stream<List<PurchaseDetails>> get purchaseUpdated => _purchaseUpdatedController.stream;
+  static StreamController<List<PurchaseDetails>> _purchaseUpdatedController;
+
   static SKPaymentQueueWrapper _skPaymentQueueWrapper;
   static _TransactionObserver _observer;
 

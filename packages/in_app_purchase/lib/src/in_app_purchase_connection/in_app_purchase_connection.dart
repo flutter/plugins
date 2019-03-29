@@ -154,7 +154,25 @@ abstract class InAppPurchaseConnection {
   /// * If a purchase is not completed([completePurchase] is not called on the purchase object) from the last APP session. Purchase updates will happen when a new APP session starts.
   ///
   /// IMPORTANT! To Avoid losing information on purchase updates, You should listen to this stream as soon as your APP launches, preferably before returning your main App Widget in main().
-  static Stream<List<PurchaseDetails>> purchaseUpdated;
+  Stream<List<PurchaseDetails>> get purchaseUpdated => _getStream();
+
+  Stream<List<PurchaseDetails>> _purchaseUpdated;
+
+  Stream<List<PurchaseDetails>> _getStream() {
+    if (_purchaseUpdated != null) {
+      return _purchaseUpdated;
+    }
+
+    if (Platform.isAndroid) {
+      _purchaseUpdated = GooglePlayConnection.instance.purchaseUpdated;
+    } else if (Platform.isIOS) {
+      _purchaseUpdated = AppStoreConnection.instance.purchaseUpdated;
+    } else {
+      throw UnsupportedError(
+          'InAppPurchase plugin only works on Android and iOS.');
+    }
+    return _purchaseUpdated;
+  }
 
   /// Returns true if the payment platform is ready and available.
   Future<bool> isAvailable();
@@ -164,7 +182,8 @@ abstract class InAppPurchaseConnection {
 
   /// Make a payment
   ///
-  /// Returns a [Stream] of [PurchaseDetails]. You should [Stream.listen] to the returned [Stream] to get [PurchaseDetails] objects in different [PurchaseDetails.status] and
+  /// This method does not return anything. Instead, after triggering this method, purchase updates will be sent to [purchaseUpdated].
+  /// You should [Stream.listen] to [purchaseUpdated] to get [PurchaseDetails] objects in different [PurchaseDetails.status] and
   /// update your UI accordingly. When the [PurchaseDetails.status] is [PurchaseStatus.purchased] or [PurchaseStatus.error], you should deliver the content or handle the error, then call
   /// [completePurchase] to finish the purchasing process.
   ///
@@ -174,7 +193,7 @@ abstract class InAppPurchaseConnection {
   /// The 'sandboxTesting' is only necessary to set to `true` for testing on iOS. The default value is `false`.
   /// You can find more details on testing payments on iOS [here](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Chapters/ShowUI.html#//apple_ref/doc/uid/TP40008267-CH3-SW11).
   /// You can find more details on testing payments on Android [here](https://developer.android.com/google/play/billing/billing_testing).
-  Stream<PurchaseDetails> makePayment(
+  void makePayment(
       {@required String productID,
       String applicationUserName,
       bool sandboxTesting = false});

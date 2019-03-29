@@ -24,6 +24,24 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
+    Stream purchaseUpdated = InAppPurchaseConnection.instance.purchaseUpdated;
+    purchaseUpdated.listen((purchaseDetailsList) {
+      purchaseDetailsList.foreach((purchaseDetails) {
+        print('purchase updated product ID: (${purchaseDetails.productId})');
+        print('purchase updated purchase ID: (${purchaseDetails.purchaseID})');
+        print('purchase updated status: ({${purchaseDetails.status})');
+        if (purchaseDetails.status == PurchaseStatus.pending) {
+          showPendingUI();
+        } else {
+          if (purchaseDetails.status == PurchaseStatus.error) {
+            handleError(purchaseDetails.error);
+          } else if (purchaseDetails.status == PurchaseStatus.purchased) {
+            deliverProduct(purchaseDetails);
+          }
+          InAppPurchaseConnection.instance.completePurchase(purchaseDetails);
+        }
+      });
+    });
     super.initState();
   }
 
@@ -147,7 +165,7 @@ class _MyAppState extends State<MyApp> {
               ? Icon(Icons.check)
               : Text(productDetails.price),
           onTap: () {
-            Stream<PurchaseDetails> stream = connection.makePayment(
+            connection.makePayment(
                 productID: productDetails.id,
                 applicationUserName: null,
                 sandboxTesting: true);
