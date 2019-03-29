@@ -37,8 +37,8 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
       }
 
       [self share:@[ shareText ]
-      withController:[UIApplication sharedApplication].keyWindow.rootViewController
-      atSource:originRect];
+          withController:[UIApplication sharedApplication].keyWindow.rootViewController
+                atSource:originRect];
       result(nil);
     } else if ([@"shareFile" isEqualToString:call.method]) {
       NSString *path = arguments[@"path"];
@@ -53,7 +53,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
         return;
       }
 
-     [self shareFile:path
+      [self shareFile:path
             withMimeType:mimeType
              withSubject:subject
                 withText:text

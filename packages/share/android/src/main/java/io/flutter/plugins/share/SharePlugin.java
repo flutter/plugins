@@ -5,11 +5,11 @@
 package io.flutter.plugins.share;
 
 import android.content.Intent;
-import io.flutter.plugin.common.MethodCall;
 import android.net.Uri;
 import android.os.Environment;
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.io.*;
@@ -84,7 +84,6 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
       mRegistrar.context().startActivity(chooserIntent);
     }
   }
-
 
   private void shareFile(String path, String mimeType, String subject, String text)
       throws IOException {
