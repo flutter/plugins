@@ -241,7 +241,7 @@ markerAnimationDuration:(float)markerAnimationDuration {
     [CATransaction setAnimationDuration:_markerAnimationDuration * fraction / 1000];
     [controller setRotation:bearing];
     [CATransaction commit];
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_markerAnimationDuration/2000 * NSEC_PER_SEC));
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_markerAnimationDuration * fraction / 1000 * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
       [CATransaction begin];
       [CATransaction setAnimationDuration:_markerAnimationDuration * (1 - fraction) / 1000];
