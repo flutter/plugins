@@ -4,6 +4,11 @@
 
 import 'package:flutter/services.dart';
 
+/// Inspect Google Maps state using the platform SDK.
+///
+/// This class is primarily used for testing. The methods on this
+/// class should call "getters" on the GoogleMap object or equivalent
+/// on the platform side.
 class GoogleMapInspector {
   GoogleMapInspector(this._channel);
 
