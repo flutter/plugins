@@ -20,32 +20,20 @@ class AppStoreConnection implements InAppPurchaseConnection {
   static AppStoreConnection _instance;
   static SKPaymentQueueWrapper _skPaymentQueueWrapper;
   static _TransactionObserver _observer;
-  static StorePaymentDecisionMaker _storePaymentDecisionMaker;
 
   static SKTransactionObserverWrapper get observer => _observer;
 
   static AppStoreConnection _getOrCreateInstance() {
-    assert(_storePaymentDecisionMaker != null);
     if (_instance != null) {
       return _instance;
     }
 
     _instance = AppStoreConnection();
     _skPaymentQueueWrapper = SKPaymentQueueWrapper();
-    _observer = _TransactionObserver(
-      storePaymentDecisionMaker: _storePaymentDecisionMaker,
-    );
+    _observer = _TransactionObserver();
     _skPaymentQueueWrapper.setTransactionObserver(observer);
     return _instance;
   }
-
-  static void configure({StorePaymentDecisionMaker storePaymentDecisionMaker}) {
-    _storePaymentDecisionMaker = storePaymentDecisionMaker;
-    if (_observer != null) {
-      _observer.storePaymentDecisionMaker = _storePaymentDecisionMaker;
-    }
-  }
-
   @override
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
 
@@ -141,14 +129,13 @@ class AppStoreConnection implements InAppPurchaseConnection {
 }
 
 class _TransactionObserver implements SKTransactionObserverWrapper {
-  StorePaymentDecisionMaker storePaymentDecisionMaker;
 
   Completer<List<SKPaymentTransactionWrapper>> _restoreCompleter;
   List<SKPaymentTransactionWrapper> _restoredTransactions;
   Map<String, StreamController<PurchaseDetails>> _purchaseStreamControllers;
   String _receiptData;
 
-  _TransactionObserver({this.storePaymentDecisionMaker});
+  _TransactionObserver();
 
   Future<List<SKPaymentTransactionWrapper>> getRestoredTransactions(
       {@required SKPaymentQueueWrapper queue, String applicationUserName}) {
@@ -247,9 +234,8 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
 
   bool shouldAddStorePayment(
       {SKPaymentWrapper payment, SKProductWrapper product}) {
-    return storePaymentDecisionMaker(
-        productDetails: product.toProductDetails(),
-        applicationUserName: payment.applicationUsername);
+    // In this unified API, we always return true to keep it consistent with the behavior on Google Play.
+    return true;
   }
 
   Future<String> getReceiptData() async {

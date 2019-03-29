@@ -7,14 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase_connection.dart';
 
 void main() {
-  StorePaymentDecisionMaker decisionMaker =
-      ({ProductDetails productDetails, String applicationUserName}) {
-    return true;
-  };
-
-  InAppPurchaseConnection.configure(
-    storePaymentDecisionMaker: decisionMaker,
-  );
   runApp(MyApp());
 }
 

@@ -51,7 +51,6 @@ class GooglePlayConnection
   final BillingClient billingClient;
 
   Future<void> _readyFuture;
-  static StorePaymentDecisionMaker _storePaymentDecisionMaker;
   static Map<String, StreamController<PurchaseDetails>>
       _purchaseStreamControllers;
 
@@ -174,17 +173,12 @@ class GooglePlayConnection
   static void reset() => _instance = null;
 
   static GooglePlayConnection _getOrCreateInstance() {
-    assert(_storePaymentDecisionMaker != null);
     if (_instance != null) {
       return _instance;
     }
 
     _instance = GooglePlayConnection._();
     return _instance;
-  }
-
-  static void configure({StorePaymentDecisionMaker storePaymentDecisionMaker}) {
-    _storePaymentDecisionMaker = storePaymentDecisionMaker;
   }
 
   Future<void> _connect() =>

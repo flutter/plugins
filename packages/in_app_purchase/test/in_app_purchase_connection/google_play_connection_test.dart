@@ -26,10 +26,6 @@ void main() {
   const String endConnectionCall = 'BillingClient#endConnection()';
 
   setUpAll(() {
-    GooglePlayConnection.configure(storePaymentDecisionMaker: (
-        {ProductDetails productDetails, String applicationUserName}) {
-      return true;
-    });
     channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler);
   });
 

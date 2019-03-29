@@ -143,35 +143,18 @@ class QueryPurchaseDetailsResponse {
   final PurchaseError error;
 }
 
-/// Triggered when a user initiated an in-app purchase from App Store. (iOS only)
-///
-/// Return `true` to continue the transaction in your app. If you have multiple [ProductDetails]s, the purchases
-/// will continue if one [ProductDetails] has [StorePaymentDecisionMaker] returning `true`.
-/// Return `false` to defer or cancel the purchase. For example, you may need to defer a transaction if the user is in the middle of onboarding.
-/// You can also continue the transaction later by calling
-/// [InAppPurchaseConnection.makePayment] with the [ProductDetails.productID] in the [ProductDetails] object you get from this method.
-///
-/// This method has no effect on Android.
-typedef bool StorePaymentDecisionMaker(
-    {ProductDetails productDetails, String applicationUserName});
-
 /// Basic generic API for making in app purchases across multiple platforms.
 abstract class InAppPurchaseConnection {
-  /// Configure necessary callbacks.
+
+  /// Listen to this stream to get real time update for purchases.
   ///
-  /// It has to be called in the very beginning of app launching. Preferably before returning your main App Widget in main().
-  static void configure({StorePaymentDecisionMaker storePaymentDecisionMaker}) {
-    if (Platform.isAndroid) {
-      GooglePlayConnection.configure(
-          storePaymentDecisionMaker: storePaymentDecisionMaker);
-    } else if (Platform.isIOS) {
-      AppStoreConnection.configure(
-          storePaymentDecisionMaker: storePaymentDecisionMaker);
-    } else {
-      throw UnsupportedError(
-          'InAppPurchase plugin only works on Android and iOS.');
-    }
-  }
+  /// Purchase updates can happen in several situations:
+  /// * When a purchase is triggered by user in the APP.
+  /// * When a purchase is triggered by user from App Store or Google Play.
+  /// * If a purchase is not completed([completePurchase] is not called on the purchase object) from the last APP session. Purchase updates will happen when a new APP session starts.
+  ///
+  /// IMPORTANT! To Avoid losing information on purchase updates, You should listen to this stream as soon as your APP launches, preferably before returning your main App Widget in main().
+  static Stream<List<PurchaseDetails>> purchaseUpdated;
 
   /// Returns true if the payment platform is ready and available.
   Future<bool> isAvailable();
