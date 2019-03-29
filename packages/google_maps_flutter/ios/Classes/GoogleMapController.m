@@ -125,6 +125,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       [_markersController removeMarkerIds:markerIdsToRemove];
     }
     result(nil);
+  } else if ([call.method isEqualToString:@"map#isCompassEnabled"]) {
+    NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
+    result(isCompassEnabled);
   } else {
     result(FlutterMethodNotImplemented);
   }
