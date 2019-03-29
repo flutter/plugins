@@ -4,8 +4,8 @@
 
 import 'package:flutter/services.dart';
 
-class GoogleMapTestController {
-  GoogleMapTestController(this._channel);
+class GoogleMapInspector {
+  GoogleMapInspector(this._channel);
 
   final MethodChannel _channel;
 
