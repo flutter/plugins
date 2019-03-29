@@ -66,6 +66,9 @@ enum NavigationDecision {
 /// See also: [WebView.navigationDelegate].
 typedef NavigationDecision NavigationDelegate(NavigationRequest navigation);
 
+/// Signature for when a [WebView] has finished loading a page.
+typedef void PageFinishedCallback(String url);
+
 final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
 
 /// A named channel for receiving messaged from JavaScript code running inside a web view.
@@ -113,6 +116,7 @@ class WebView extends StatefulWidget {
     this.javascriptChannels,
     this.navigationDelegate,
     this.gestureRecognizers,
+    this.onPageFinished,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -189,6 +193,18 @@ class WebView extends StatefulWidget {
   ///     * When a navigationDelegate is set HTTP requests do not include the HTTP referer header.
   final NavigationDelegate navigationDelegate;
 
+  /// Invoked when a page has finished loading.
+  ///
+  /// This is invoked only for the main frame.
+  ///
+  /// When [onPageFinished] is invoked on Android, the page being rendered may
+  /// not be updated yet.
+  ///
+  /// When invoked on iOS or Android, any Javascript code that is embedded
+  /// directly in the HTML has been loaded and code injected with
+  /// [WebViewController.evaluateJavascript] can assume this.
+  final PageFinishedCallback onPageFinished;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -196,8 +212,6 @@ class WebView extends StatefulWidget {
 class _WebViewState extends State<WebView> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
-
-  _WebSettings _settings;
 
   @override
   Widget build(BuildContext context) {
@@ -247,24 +261,12 @@ class _WebViewState extends State<WebView> {
   void didUpdateWidget(WebView oldWidget) {
     super.didUpdateWidget(oldWidget);
     _assertJavascriptChannelNamesAreUnique();
-    _updateConfiguration(_WebSettings.fromWidget(widget));
-  }
-
-  Future<void> _updateConfiguration(_WebSettings settings) async {
-    _settings = settings;
-    final WebViewController controller = await _controller.future;
-    controller._updateSettings(settings);
-    controller._updateJavascriptChannels(widget.javascriptChannels);
-    controller._navigationDelegate = widget.navigationDelegate;
+    _controller.future.then(
+        (WebViewController controller) => controller._updateWidget(widget));
   }
 
   void _onPlatformViewCreated(int id) {
-    final WebViewController controller = WebViewController._(
-      id,
-      _WebSettings.fromWidget(widget),
-      widget.javascriptChannels,
-      widget.navigationDelegate,
-    );
+    final WebViewController controller = WebViewController._(id, widget);
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
@@ -360,19 +362,18 @@ class _WebSettings {
 class WebViewController {
   WebViewController._(
     int id,
-    this._settings,
-    Set<JavascriptChannel> javascriptChannels,
-    this._navigationDelegate,
+    this._widget,
   ) : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
-    _updateJavascriptChannelsFromSet(javascriptChannels);
+    _settings = _WebSettings.fromWidget(_widget);
+    _updateJavascriptChannelsFromSet(_widget.javascriptChannels);
     _channel.setMethodCallHandler(_onMethodCall);
   }
 
   final MethodChannel _channel;
 
-  NavigationDelegate _navigationDelegate;
-
   _WebSettings _settings;
+
+  WebView _widget;
 
   // Maps a channel name to a channel.
   Map<String, JavascriptChannel> _javascriptChannels =
@@ -391,13 +392,18 @@ class WebViewController {
           url: call.arguments['url'],
           isForMainFrame: call.arguments['isForMainFrame'],
         );
-
         // _navigationDelegate can be null if the widget was rebuilt with no
         // navigation delegate after a navigation happened and just before we
         // got the navigationRequest message.
-        final bool allowNavigation = _navigationDelegate == null ||
-            _navigationDelegate(request) == NavigationDecision.navigate;
+        final bool allowNavigation = _widget.navigationDelegate == null ||
+            _widget.navigationDelegate(request) == NavigationDecision.navigate;
         return allowNavigation;
+      case 'onPageFinished':
+        if (_widget.onPageFinished != null) {
+          _widget.onPageFinished(call.arguments['url']);
+        }
+
+        return null;
     }
     throw MissingPluginException(
         '${call.method} was invoked but has no handler');
@@ -502,6 +508,12 @@ class WebViewController {
     return reload();
   }
 
+  Future<void> _updateWidget(WebView widget) async {
+    _widget = widget;
+    await _updateSettings(_WebSettings.fromWidget(widget));
+    await _updateJavascriptChannels(widget.javascriptChannels);
+  }
+
   Future<void> _updateSettings(_WebSettings setting) async {
     final Map<String, dynamic> updateMap = _settings.updatesMap(setting);
     if (updateMap == null || updateMap.isEmpty) {
@@ -560,6 +572,10 @@ class WebViewController {
   ///
   /// The Future completes with an error if a JavaScript error occurred, or on iOS, if the type of the
   /// evaluated expression is not supported as described above.
+  ///
+  /// When evaluating Javascript in a [WebView], it is best practice to wait for
+  /// the [WebView.onPageFinished] callback. This guarantees all the Javascript
+  /// embedded in the main frame HTML has been loaded.
   Future<String> evaluateJavascript(String javascriptString) async {
     if (_settings.javascriptMode == JavascriptMode.disabled) {
       throw FlutterError(

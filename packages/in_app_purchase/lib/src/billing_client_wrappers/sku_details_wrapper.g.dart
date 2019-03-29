@@ -24,6 +24,24 @@ SkuDetailsWrapper _$SkuDetailsWrapperFromJson(Map json) {
       isRewarded: json['isRewarded'] as bool);
 }
 
+Map<String, dynamic> _$SkuDetailsWrapperToJson(SkuDetailsWrapper instance) =>
+    <String, dynamic>{
+      'description': instance.description,
+      'freeTrialPeriod': instance.freeTrialPeriod,
+      'introductoryPrice': instance.introductoryPrice,
+      'introductoryPriceMicros': instance.introductoryPriceMicros,
+      'introductoryPriceCycles': instance.introductoryPriceCycles,
+      'introductoryPricePeriod': instance.introductoryPricePeriod,
+      'price': instance.price,
+      'priceAmountMicros': instance.priceAmountMicros,
+      'priceCurrencyCode': instance.priceCurrencyCode,
+      'sku': instance.sku,
+      'subscriptionPeriod': instance.subscriptionPeriod,
+      'title': instance.title,
+      'type': const SkuTypeConverter().toJson(instance.type),
+      'isRewarded': instance.isRewarded
+    };
+
 SkuDetailsResponseWrapper _$SkuDetailsResponseWrapperFromJson(Map json) {
   return SkuDetailsResponseWrapper(
       responseCode: const BillingResponseConverter()
@@ -32,3 +50,11 @@ SkuDetailsResponseWrapper _$SkuDetailsResponseWrapperFromJson(Map json) {
           .map((e) => SkuDetailsWrapper.fromJson(e as Map))
           .toList());
 }
+
+Map<String, dynamic> _$SkuDetailsResponseWrapperToJson(
+        SkuDetailsResponseWrapper instance) =>
+    <String, dynamic>{
+      'responseCode':
+          const BillingResponseConverter().toJson(instance.responseCode),
+      'skuDetailsList': instance.skuDetailsList
+    };
