@@ -10,46 +10,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'google_maps_test_controller.dart';
+import 'test_widgets.dart';
 
 const CameraPosition _kInitialCameraPosition =
     CameraPosition(target: LatLng(0, 0));
-
-class GoogleMapTest extends StatefulWidget {
-  GoogleMapTest(
-    this.mapState,
-    this._controllerCompleter,
-  );
-
-  final _GoogleMapTestState mapState;
-  final Completer<GoogleMapController> _controllerCompleter;
-
-  @override
-  _GoogleMapTestState createState() => mapState;
-}
-
-class _GoogleMapTestState extends State<GoogleMapTest> {
-  bool _compassEnabled = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: GoogleMap(
-        initialCameraPosition: _kInitialCameraPosition,
-        compassEnabled: _compassEnabled,
-        onMapCreated: (GoogleMapController controller) {
-          widget._controllerCompleter.complete(controller);
-        },
-      ),
-    );
-  }
-
-  void toggleCompass() {
-    setState(() {
-      _compassEnabled = !_compassEnabled;
-    });
-  }
-}
 
 void main() {
   final Completer<String> allTestsCompleter = Completer<String>();
@@ -57,30 +21,39 @@ void main() {
 
   tearDownAll(() => allTestsCompleter.complete(null));
 
-  _GoogleMapTestState mapTestState;
-  GoogleMapController controller;
-  GoogleMapTestController testController;
-
-  setUp(() async {
-    mapTestState = _GoogleMapTestState();
-    final Completer<GoogleMapController> controllerCompleter =
-        Completer<GoogleMapController>();
-    runApp(GoogleMapTest(mapTestState, controllerCompleter));
-    controller = await controllerCompleter.future;
-    // ignore: invalid_use_of_visible_for_testing_member
-    testController = GoogleMapTestController(controller.channel);
-  });
-
   test('testCompassToggle', () async {
-    bool compassEnabled;
+    final Completer<GoogleMapTestController> controllerCompleter =
+        Completer<GoogleMapTestController>();
 
-    compassEnabled = await testController.isCompassEnabled();
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        initialCameraPosition: _kInitialCameraPosition,
+        compassEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapTestController testController =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapTestController(controller.channel);
+          controllerCompleter.complete(testController);
+        },
+      ),
+    ));
+
+    final GoogleMapTestController testController =
+        await controllerCompleter.future;
+    bool compassEnabled = await testController.isCompassEnabled();
     expect(compassEnabled, false);
 
-    mapTestState.toggleCompass();
-
-    // This delay exists as we are waiting for a new build to occur.
-    await Future<void>.delayed(Duration(seconds: 1), () {});
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        initialCameraPosition: _kInitialCameraPosition,
+        compassEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
 
     compassEnabled = await testController.isCompassEnabled();
     expect(compassEnabled, true);
