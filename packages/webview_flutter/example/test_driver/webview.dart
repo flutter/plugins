@@ -17,7 +17,7 @@ void main() {
   test('initalUrl', () async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
-    runApp(
+    await pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
         child: WebView(
@@ -37,7 +37,7 @@ void main() {
   test('loadUrl', () async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
-    runApp(
+    await pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
         child: WebView(
@@ -54,4 +54,9 @@ void main() {
     final String currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://www.google.com/');
   });
+}
+
+Future<void> pumpWidget(Widget widget) {
+  runApp(widget);
+  return WidgetsBinding.instance.endOfFrame;
 }
