@@ -42,28 +42,50 @@ class WebViewExample extends StatelessWidget {
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
-        return WebView(
-          initialUrl: 'https://flutter.dev',
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
-            _controller.complete(webViewController);
-          },
-          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-          // ignore: prefer_collection_literals
-          javascriptChannels: <JavascriptChannel>[
-            _toasterJavascriptChannel(context),
-          ].toSet(),
-          navigationDelegate: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to $request}');
-              return NavigationDecision.prevent;
-            }
-            print('allowing navigation to $request');
-            return NavigationDecision.navigate;
-          },
-          onPageFinished: (String url) {
-            print('Page finished loading: $url');
-          },
+        return Column(
+          children: <Widget>[
+            Container(
+              height: 300,
+              width: MediaQuery.of(context).size.width,
+              child: WebView(
+                initialUrl: 'https://flutter.dev',
+                javascriptMode: JavascriptMode.unrestricted,
+                onWebViewCreated: (WebViewController webViewController) {
+                  _controller.complete(webViewController);
+                },
+                // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+                // ignore: prefer_collection_literals
+                javascriptChannels: <JavascriptChannel>[
+                  _toasterJavascriptChannel(context),
+                ].toSet(),
+                navigationDelegate: (NavigationRequest request) {
+                  if (request.url.startsWith('https://www.youtube.com/')) {
+                    print('blocking navigation to $request}');
+                    return NavigationDecision.prevent;
+                  }
+                  print('allowing navigation to $request');
+                  return NavigationDecision.navigate;
+                },
+                onPageFinished: (String url) {
+                  print('Page finished loading: $url');
+                },
+              ),
+            ),
+            Container(
+              height: 300,
+              width: MediaQuery.of(context).size.width,
+              child: const WebView(
+                initialUrl: 'http://flutter.dev',
+                htmlString: """
+<u><em><strong>You can do HTML too!</strong></em></u><br />
+<img src="https://upload.wikimedia.org/wikipedia/commons/1/17/Google-flutter-logo.png" style="float: left">
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+<img src="https://upload.wikimedia.org/wikipedia/commons/1/17/Google-flutter-logo.png" style="float: right"> 
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  """,
+              ),
+            ),
+          ],
         );
       }),
       floatingActionButton: favoriteButton(),

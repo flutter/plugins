@@ -112,6 +112,7 @@ class WebView extends StatefulWidget {
     Key key,
     this.onWebViewCreated,
     this.initialUrl,
+    this.htmlString,
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -136,6 +137,7 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String initialUrl;
+  final String htmlString;
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -294,11 +296,15 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 
 class _CreationParams {
   _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames});
+      {this.initialUrl,
+      this.htmlString,
+      this.settings,
+      this.javascriptChannelNames});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
       initialUrl: widget.initialUrl,
+      htmlString: widget.htmlString,
       settings: _WebSettings.fromWidget(widget),
       javascriptChannelNames:
           _extractChannelNames(widget.javascriptChannels).toList(),
@@ -307,6 +313,8 @@ class _CreationParams {
 
   final String initialUrl;
 
+  final String htmlString;
+
   final _WebSettings settings;
 
   final List<String> javascriptChannelNames;
@@ -314,6 +322,7 @@ class _CreationParams {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'initialUrl': initialUrl,
+      'htmlString': htmlString,
       'settings': settings.toMap(),
       'javascriptChannelNames': javascriptChannelNames,
     };

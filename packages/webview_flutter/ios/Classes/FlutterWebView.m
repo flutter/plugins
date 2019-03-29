@@ -75,8 +75,16 @@
     NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self applySettings:settings];
 
+    NSString* HTMLString = args[@"htmlString"];
     NSString* initialUrl = args[@"initialUrl"];
-    if ([initialUrl isKindOfClass:[NSString class]]) {
+
+    if ([HTMLString isKindOfClass:[NSString class]]) {
+      NSURL* nsUrl;
+      if (initialUrl != nil) {
+        nsUrl = [NSURL URLWithString:initialUrl];
+      }
+      [_webView loadHTMLString:HTMLString baseURL:nsUrl];
+    } else if ([initialUrl isKindOfClass:[NSString class]]) {
       [self loadUrl:initialUrl];
     }
   }

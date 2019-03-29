@@ -33,6 +33,19 @@ void main() {
     await tester.pumpWidget(const WebView());
   });
 
+  testWidgets('HTML string', (WidgetTester tester) async {
+    await tester.pumpWidget(const WebView(
+      htmlString: """
+<u><em><strong>html</strong></em></u><br />
+     """,
+    ));
+    final String htmlStringParam =
+        fakePlatformViewsController.lastCreatedView.params["htmlString"];
+
+    expect(
+        htmlStringParam.trim(), '<u><em><strong>html</strong></em></u><br />');
+  });
+
   testWidgets('Initial url', (WidgetTester tester) async {
     WebViewController controller;
     await tester.pumpWidget(
@@ -686,7 +699,7 @@ void main() {
 }
 
 class FakePlatformWebView {
-  FakePlatformWebView(int id, Map<dynamic, dynamic> params) {
+  FakePlatformWebView(int id, this.params) {
     if (params.containsKey('initialUrl')) {
       final String initialUrl = params['initialUrl'];
       if (initialUrl != null) {
@@ -707,6 +720,7 @@ class FakePlatformWebView {
   }
 
   MethodChannel channel;
+  final Map<dynamic, dynamic> params;
 
   List<String> history = <String>[];
   int currentPosition = -1;
