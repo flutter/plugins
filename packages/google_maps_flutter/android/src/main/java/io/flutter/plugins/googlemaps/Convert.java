@@ -122,7 +122,7 @@ class Convert {
     }
     final Map<String, Object> data = new HashMap<>();
     data.put("bearing", position.bearing);
-    data.put("target", toJson(position.target));
+    data.put("target", latLngToJson(position.target));
     data.put("tilt", position.tilt);
     data.put("zoom", position.zoom);
     return data;
@@ -146,7 +146,7 @@ class Convert {
     return data;
   }
 
-  static Object toJson(LatLng latLng) {
+  static Object latLngToJson(LatLng latLng) {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 
@@ -320,7 +320,7 @@ class Convert {
     }
     final Object endCap = data.get("endCap");
     if (endCap != null) {
-      sink.setEndCap(_toCap(endCap));
+      sink.setEndCap(toCap(endCap));
     }
     final Object geodesic = data.get("geodesic");
     if (geodesic != null) {
@@ -332,7 +332,7 @@ class Convert {
     }
     final Object startCap = data.get("startCap");
     if (startCap != null) {
-      sink.setStartCap(_toCap(startCap));
+      sink.setStartCap(toCap(startCap));
     }
     final Object visible = data.get("visible");
     if (visible != null) {
@@ -348,11 +348,11 @@ class Convert {
     }
     final Object points = data.get("points");
     if (points != null) {
-      sink.setPoints(_toPoints(points));
+      sink.setPoints(toPoints(points));
     }
     final Object pattern = data.get("pattern");
     if (pattern != null) {
-      sink.setPattern(_toPattern(pattern));
+      sink.setPattern(toPattern(pattern));
     }
     final String polylineId = (String) data.get("polylineId");
     if (polylineId == null) {
@@ -362,7 +362,7 @@ class Convert {
     }
   }
 
-  private static List<LatLng> _toPoints(Object o) {
+  private static List<LatLng> toPoints(Object o) {
     final List<?> data = toList(o);
     final List<LatLng> points = new ArrayList<>(data.size());
 
@@ -373,7 +373,7 @@ class Convert {
     return points;
   }
 
-  private static List<PatternItem> _toPattern(Object o) {
+  private static List<PatternItem> toPattern(Object o) {
     final List<?> data = toList(o);
 
     if (data.isEmpty()) {
@@ -402,7 +402,7 @@ class Convert {
     return pattern;
   }
 
-  private static Cap _toCap(Object o) {
+  private static Cap toCap(Object o) {
     final List<?> data = toList(o);
     switch (toString(data.get(0))) {
       case "buttCap":

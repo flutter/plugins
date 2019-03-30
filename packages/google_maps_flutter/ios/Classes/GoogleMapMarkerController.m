@@ -236,18 +236,6 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
   [_methodChannel invokeMethod:@"marker#onTap" arguments:@{@"markerId" : markerId}];
   return controller.consumeTapEvents;
 }
-- (BOOL)onMarkerDrag:(NSString*)markerId position:(CLLocationCoordinate2D)position {
-  if (!markerId) {
-    return NO;
-  }
-  FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
-  if (!controller) {
-    return NO;
-  }
-  [_methodChannel invokeMethod:@"marker#onDrag"
-                     arguments:@{@"markerId" : markerId, @"position" : PositionToJson(position)}];
-  return controller.consumeTapEvents;
-}
 - (void)onInfoWindowTap:(NSString*)markerId {
   if (markerId && _markerIdToController[markerId]) {
     [_methodChannel invokeMethod:@"infoWindow#onTap" arguments:@{@"markerId" : markerId}];

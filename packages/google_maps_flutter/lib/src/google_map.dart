@@ -71,7 +71,7 @@ class GoogleMap extends StatefulWidget {
   /// Markers to be placed on the map.
   final Set<Marker> markers;
 
-  // Polylines to be placed on the map.
+  /// Polylines to be placed on the map.
   final Set<Polyline> polylines;
 
   /// Called when the camera starts moving.
@@ -231,12 +231,6 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(markerIdParam != null);
     final MarkerId markerId = MarkerId(markerIdParam);
     _markers[markerId].onTap();
-  }
-
-  void onMarkerDrag(String markerIdParam, LatLng position) {
-    assert(markerIdParam != null);
-    final MarkerId markerId = MarkerId(markerIdParam);
-    _markers[markerId].onDrag(position);
   }
 
   void onPolylineTap(String polylineIdParam) {

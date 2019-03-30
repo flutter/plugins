@@ -49,6 +49,7 @@ class PolylineBuilder implements PolylineOptionsSink {
 
   @Override
   public void setConsumeTapEvents(boolean consumeTapEvents) {
+    this.consumeTapEvents = consumeTapEvents;
     polylineOptions.clickable(consumeTapEvents);
   }
 

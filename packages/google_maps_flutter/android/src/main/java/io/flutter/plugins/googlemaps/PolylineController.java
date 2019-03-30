@@ -24,6 +24,7 @@ class PolylineController implements PolylineOptionsSink {
 
   @Override
   public void setConsumeTapEvents(boolean consumeTapEvents) {
+    this.consumeTapEvents = consumeTapEvents;
     polyline.setClickable(consumeTapEvents);
   }
 

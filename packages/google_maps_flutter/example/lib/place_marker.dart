@@ -87,9 +87,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
       onTap: () {
         _onMarkerTapped(markerId);
       },
-      onDrag: (LatLng position) {
-        print(position);
-      },
     );
 
     setState(() {

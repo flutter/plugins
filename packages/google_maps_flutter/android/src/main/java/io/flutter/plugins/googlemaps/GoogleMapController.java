@@ -47,7 +47,6 @@ final class GoogleMapController
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener,
-        GoogleMap.OnMarkerDragListener,
         GoogleMap.OnPolylineClickListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
@@ -162,7 +161,6 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
-    googleMap.setOnMarkerDragListener(this);
     googleMap.setOnPolylineClickListener(this);
     updateMyLocationEnabled();
     markersController.setGoogleMap(googleMap);
@@ -227,6 +225,7 @@ final class GoogleMapController
           polylinesController.changePolylines((List<Object>) polylinesToChange);
           Object polylineIdsToRemove = call.argument("polylineIdsToRemove");
           polylinesController.removePolylines((List<Object>) polylineIdsToRemove);
+          result.success(null);
           break;
         }
 
@@ -266,17 +265,6 @@ final class GoogleMapController
   @Override
   public boolean onMarkerClick(Marker marker) {
     return markersController.onMarkerTap(marker.getId());
-  }
-
-  @Override
-  public void onMarkerDragStart(Marker marker) {}
-
-  @Override
-  public void onMarkerDrag(Marker marker) {}
-
-  @Override
-  public void onMarkerDragEnd(Marker marker) {
-    markersController.onMarkerDrag(marker.getId(), marker.getPosition());
   }
 
   @Override

@@ -60,10 +60,6 @@ class GoogleMapController {
       case 'marker#onTap':
         _googleMapState.onMarkerTap(call.arguments['markerId']);
         break;
-      case 'marker#onDrag':
-        _googleMapState.onMarkerDrag(call.arguments['markerId'],
-            LatLng._fromJson(call.arguments['position']));
-        break;
       case 'infoWindow#onTap':
         _googleMapState.onInfoWindowTap(call.arguments['markerId']);
         break;
@@ -122,7 +118,7 @@ class GoogleMapController {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod(
+    await channel.invokeMethod(
       'polylines#update',
       polylineUpdates._toMap(),
     );

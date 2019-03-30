@@ -16,7 +16,7 @@ dev_dependencies:
   # https://github.com/dart-lang/pub/issues/2101 is resolved.
   flutter_driver:
     sdk: flutter
-  test: ^1.6.0
+  test: any
 
 flutter:
   plugin:

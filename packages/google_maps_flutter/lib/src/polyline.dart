@@ -27,10 +27,8 @@ class PolylineId {
   }
 }
 
-/// Configuration options for [Polyline] instances.
-///
-/// When used to change configuration, null values will be interpreted as
-/// "do not change this configuration option".
+/// Draws a line through geographical locations on the map.
+@immutable
 class Polyline {
   const Polyline({
     @required this.polylineId,
@@ -51,21 +49,21 @@ class Polyline {
   /// Uniquely identifies a [Polyline].
   final PolylineId polylineId;
 
-  /// If you want to handle events fired when the user taps the polyline, set this property to true.
-  /// You can change this value at any time. The default is false.
+  /// True if the polyline consumes tap events. If not, the map will not trigger polylineTapped callback.
   final bool consumeTapEvents;
 
   /// Line segment color in ARGB format, the same format used by Color. The default value is black (0xff000000).
   final Color color;
 
-  /// The cap at the end vertex of the polyline. The default end cap is ButtCap.
-  final Cap endCap;
-
   /// Indicates whether the segments of the polyline should be drawn as geodesics, as opposed to straight lines
-  /// on the Mercator projection. A geodesic is the shortest path between two points on the Earth's surface.
+  /// on the Mercator projection.
+  ///
+  /// A geodesic is the shortest path between two points on the Earth's surface.
   /// The geodesic curve is constructed assuming the Earth is a sphere
   final bool geodesic;
 
+  /// Joint type of the polyline line segments.
+  ///
   /// The joint type defines the shape to be used when joining adjacent line segments at all vertices of the
   /// polyline except the start and end vertices. See JointType for supported joint types. The default value is
   /// mitered.
@@ -78,24 +76,36 @@ class Polyline {
   /// length in pixels) and Dot (circular, centered on the line, diameter defined by line width in pixels).
   final List<PatternItem> pattern;
 
-  /// The vertices of the line. Line segments are drawn between consecutive points. A polyline is not closed by
+  /// The vertices of the polyline to be drawn.
+  ///
+  /// Line segments are drawn between consecutive points. A polyline is not closed by
   /// default; to form a closed polyline, the start and end points must be the same.
   final List<LatLng> points;
 
-  /// The cap at the start vertex of the polyline. The default start cap is ButtCap.
+  /// The cap at the start vertex of the polyline.
+  ///
+  /// The default start cap is ButtCap.
   final Cap startCap;
 
-  /// Indicates if the polyline is visible or invisible, i.e., whether it is drawn on the map. An invisible
-  /// polyline is not drawn, but retains all of its other properties. The default is true, i.e., visible.
+  /// The cap at the end vertex of the polyline.
+  ///
+  /// The default end cap is ButtCap.
+  final Cap endCap;
+
+  /// True if the marker is visible.
   final bool visible;
 
-  /// Line segment width in screen pixels. The width is constant and independent of the camera's zoom level.
+  /// Width of the polyline, used to define the width of the line segment to be drawn.
+  ///
+  /// The width is constant and independent of the camera's zoom level.
   /// The default value is 10.
   final int width;
 
-  /// The order in which this tile overlay is drawn with respect to other overlays. An overlay with a larger
-  /// z-index is drawn over overlays with smaller z-indices. The order of overlays with the same z-index is
-  /// arbitrary. The default zIndex is 0.
+  /// The z-index of the polyline, used to determine relative drawing order of
+  /// map overlays.
+  ///
+  /// Overlays are drawn in order of z-index, so that lower values means drawn
+  /// earlier, and thus appearing to be closer to the surface of the Earth.
   final int zIndex;
 
   /// Callbacks to receive tap events for polyline placed on this map.
