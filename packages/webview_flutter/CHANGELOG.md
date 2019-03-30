@@ -1,4 +1,4 @@
-## 0.3.5+3
+## 0.3.6+3
 
 - Make sure to post javascript channel messages from the platform thread.
 

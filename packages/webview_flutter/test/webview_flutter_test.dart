@@ -683,6 +683,28 @@ void main() {
       expect(platformWebView.currentUrl, 'https://flutter.dev');
     });
   });
+
+  group('debuggingEnabled', () {
+    testWidgets('enable debugging', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        debuggingEnabled: true,
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      expect(platformWebView.debuggingEnabled, true);
+    });
+
+    testWidgets('defaults to false', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      expect(platformWebView.debuggingEnabled, false);
+    });
+  });
 }
 
 class FakePlatformWebView {
@@ -701,6 +723,8 @@ class FakePlatformWebView {
     javascriptMode = JavascriptMode.values[params['settings']['jsMode']];
     hasNavigationDelegate =
         params['settings']['hasNavigationDelegate'] ?? false;
+    debuggingEnabled = params['settings']['debuggingEnabled'];
+    
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
@@ -718,6 +742,7 @@ class FakePlatformWebView {
   List<String> javascriptChannelNames;
 
   bool hasNavigationDelegate;
+  bool debuggingEnabled;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
