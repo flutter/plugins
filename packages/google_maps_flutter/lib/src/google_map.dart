@@ -16,6 +16,7 @@ typedef void CameraPositionCallback(CameraPosition position);
 
 class GoogleMap extends StatefulWidget {
   const GoogleMap({
+    Key key,
     @required this.initialCameraPosition,
     this.onMapCreated,
     this.gestureRecognizers,
@@ -32,7 +33,8 @@ class GoogleMap extends StatefulWidget {
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
-  }) : assert(initialCameraPosition != null);
+  })  : assert(initialCameraPosition != null),
+        super(key: key);
 
   final MapCreatedCallback onMapCreated;
 
