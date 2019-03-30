@@ -82,12 +82,14 @@ class FlutterWebViewClient {
 
   private String parseWebViewErrorCode(int errorCode) {
     switch (errorCode) {
+      case WebViewClient.ERROR_HOST_LOOKUP:
       case WebViewClient.ERROR_CONNECT:
+      case WebViewClient.ERROR_TIMEOUT:
+      case WebViewClient.ERROR_IO:
+      case WebViewClient.ERROR_BAD_URL:
         return "connect";
       case WebViewClient.ERROR_FAILED_SSL_HANDSHAKE:
         return "failedSslHandshake";
-      case WebViewClient.ERROR_BAD_URL:
-        return "badUrl";
       case WebViewClient.ERROR_TOO_MANY_REQUESTS:
         return "tooManyRequests";
       case WebViewClient.ERROR_REDIRECT_LOOP:
@@ -125,6 +127,7 @@ class FlutterWebViewClient {
       map.put("url", request.getUrl().toString());
       map.put("description", errorResponse.getReasonPhrase());
       map.put("isForMainFrame", request.isForMainFrame());
+      map.put("statusCode", errorResponse.getStatusCode());
     } else {
       // before Lollipop we only receive errors for the main frame.
       map.put("isForMainFrame", true);

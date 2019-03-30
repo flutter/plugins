@@ -54,6 +54,46 @@ void main() {
     final String currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://www.google.com/');
   });
+
+  group('error handling', () {
+    test('invalid host', () async {
+      final Completer<WebViewError> errorCompleter = Completer<WebViewError>();
+      testWebViewError('https://example.invalid/', errorCompleter);
+      final WebViewError error = await errorCompleter.future;
+      expect(error, isNotNull);
+      expect(error.isConnectError, true);
+      expect(error.connectErrorType, WebViewConnectErrorType.connect);
+    });
+    test('internal server error', () async {
+      final Completer<WebViewError> errorCompleter = Completer<WebViewError>();
+      testWebViewError('https://httpstat.us/500', errorCompleter);
+      final WebViewError error = await errorCompleter.future;
+      expect(error, isNotNull);
+      expect(error.isConnectError, false);
+      expect(error.statusCode, 500);
+    });
+  });
+}
+
+Future<void> testWebViewError(
+    String initialUrl, Completer<WebViewError> errorCompleter) async {
+  await pumpWidget(
+    Directionality(
+      textDirection: TextDirection.ltr,
+      child: WebView(
+        key: GlobalKey(),
+        initialUrl: initialUrl,
+        onWebViewCreated: (WebViewController controller) {},
+        onReceivedError: (WebViewError error) {
+          errorCompleter.complete(error);
+        },
+        onPageFinished: (String url) {
+          // fail if page finished without error.
+          errorCompleter.complete(null);
+        },
+      ),
+    ),
+  );
 }
 
 Future<void> pumpWidget(Widget widget) {

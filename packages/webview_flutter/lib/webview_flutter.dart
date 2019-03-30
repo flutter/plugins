@@ -82,9 +82,7 @@ enum WebViewConnectErrorType {
   /// validation date, unknown root certificates).
   failedSslHandshake,
 
-  /// Given URL was invalid or unable to parse.
-  badUrl,
-
+  /// Too many requests during this load.
   tooManyRequests,
 
   /// Too many requests during this load. (android only).
@@ -98,7 +96,6 @@ const Map<String, WebViewConnectErrorType> _webViewConnectErrorTypes =
     <String, WebViewConnectErrorType>{
   'connect': WebViewConnectErrorType.connect,
   'failedSslHandshake': WebViewConnectErrorType.failedSslHandshake,
-  'badUrl': WebViewConnectErrorType.badUrl,
   'tooManyRequests': WebViewConnectErrorType.tooManyRequests,
   'redirectLoop': WebViewConnectErrorType.redirectLoop,
   'unknown': WebViewConnectErrorType.unknown,
@@ -112,6 +109,7 @@ class WebViewError {
     @required this.isForMainFrame,
     @required this.isConnectError,
     this.connectErrorType,
+    this.statusCode = 0,
   });
 
   /// URL of the page when the error happened. (might be null if unknown)
@@ -129,6 +127,10 @@ class WebViewError {
 
   /// Error type for connection errors. (null for other error types).
   final WebViewConnectErrorType connectErrorType;
+
+  /// statusCode of response (if `isConnectError` is false)
+  /// Not supported on Android API < 21.
+  final int statusCode;
 }
 
 typedef void ReceivedErrorCallback(WebViewError error);
@@ -501,6 +503,7 @@ class WebViewController {
             isForMainFrame: call.arguments['isForMainFrame'] ?? true,
             isConnectError: isConnectError,
             connectErrorType: connectErrorType,
+            statusCode: call.arguments['statusCode'] ?? 0,
           ));
         }
         return null;

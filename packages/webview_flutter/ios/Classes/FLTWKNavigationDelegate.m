@@ -60,9 +60,20 @@
   [_methodChannel invokeMethod:@"onPageFinished" arguments:@{@"url" : webView.URL.absoluteString}];
 }
 
+// copied from
+// https://github.com/chromium/chromium/blob/master/ios/web/web_state/ui/web_kit_constants.h
+typedef NS_ENUM(NSInteger, WebKitError) {
+  // Can not change location URL.
+  WebKitErrorCannotShowUrl = 101,
+};
+
 - (NSString *)parseErrorCode:(NSInteger)errorCode {
   switch (errorCode) {
+    case WebKitErrorCannotShowUrl:
     case NSURLErrorNotConnectedToInternet:
+    case NSURLErrorCannotFindHost:
+    case NSURLErrorUnsupportedURL:
+    case NSURLErrorBadURL:
       return @"connect";
     case NSURLErrorSecureConnectionFailed:
     case NSURLErrorServerCertificateUntrusted:
@@ -72,9 +83,6 @@
       return @"failedSslHandshake";
     case NSURLErrorHTTPTooManyRedirects:
       return @"redirectLoop";
-    case NSURLErrorUnsupportedURL:
-    case NSURLErrorBadURL:
-      return @"badUrl";
     default:
       return @"unknown";
   }
@@ -122,6 +130,7 @@
                          arguments:@{
                            @"isConnectError" : @NO,
                            @"url" : response.URL.absoluteString,
+                           @"statusCode" : @(response.statusCode),
                            @"description" :
                                [NSHTTPURLResponse localizedStringForStatusCode:response.statusCode],
                          }];
