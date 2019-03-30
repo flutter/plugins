@@ -1,3 +1,19 @@
+## 0.3.5+2
+
+* Fix crash from `NavigationDelegate` on later versions of Android.
+
+## 0.3.5+1
+
+* Fix a bug where updates to onPageFinished were ignored.
+
+## 0.3.5
+
+* Added an onPageFinished callback.
+
+## 0.3.4
+
+* Support specifying navigation delegates that can prevent navigations from being executed.
+
 ## 0.3.3+2
 
 * Exclude LongPress handler from semantics tree since it does nothing.

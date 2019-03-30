@@ -205,6 +205,12 @@ public class CameraPlugin implements MethodCallHandler {
           camera.takePicture((String) call.argument("path"), result);
           break;
         }
+      case "prepareForVideoRecording":
+        {
+          // This optimization is not required for Android.
+          result.success(null);
+          break;
+        }
       case "startVideoRecording":
         {
           final String filePath = call.argument("filePath");
@@ -683,8 +689,10 @@ public class CameraPlugin implements MethodCallHandler {
                       captureRequestBuilder.build(), null, null);
                   mediaRecorder.start();
                   result.success(null);
-                } catch (CameraAccessException e) {
-                  result.error("cameraAccess", e.getMessage(), null);
+                } catch (CameraAccessException
+                    | IllegalStateException
+                    | IllegalArgumentException e) {
+                  result.error("cameraException", e.getMessage(), null);
                 }
               }
 
@@ -746,7 +754,7 @@ public class CameraPlugin implements MethodCallHandler {
                 captureRequestBuilder.set(
                     CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
                 cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
-              } catch (CameraAccessException e) {
+              } catch (CameraAccessException | IllegalStateException | IllegalArgumentException e) {
                 sendErrorEvent(e.getMessage());
               }
             }
@@ -791,7 +799,7 @@ public class CameraPlugin implements MethodCallHandler {
                 captureRequestBuilder.set(
                     CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
                 cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
-              } catch (CameraAccessException e) {
+              } catch (CameraAccessException | IllegalStateException | IllegalArgumentException e) {
                 sendErrorEvent(e.getMessage());
               }
             }
