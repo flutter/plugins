@@ -1,3 +1,8 @@
+## 0.9.7+2
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
 ## 0.9.7+1
 
 * Update README with example of getting a document.
