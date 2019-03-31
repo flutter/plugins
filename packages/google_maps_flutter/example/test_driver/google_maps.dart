@@ -63,7 +63,7 @@ void main() {
         southwest: const LatLng(0, 0), northeast: const LatLng(0, 0));
 
     final Completer<GoogleMapController> mapControllerCompleter =
-    Completer<GoogleMapController>();
+        Completer<GoogleMapController>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -76,9 +76,9 @@ void main() {
       ),
     ));
     final GoogleMapController mapController =
-    await mapControllerCompleter.future;
+        await mapControllerCompleter.future;
     final LatLngBounds firstVisibleRegion =
-    await mapController.getVisibleRegion();
+        await mapController.getVisibleRegion();
     expect(firstVisibleRegion, isNotNull);
     expect(firstVisibleRegion.southwest, isNotNull);
     expect(firstVisibleRegion.northeast, isNotNull);
@@ -87,7 +87,7 @@ void main() {
     await mapController.moveCamera(CameraUpdate.scrollBy(100, 100));
 
     final LatLngBounds secondVisibleRegion =
-    await mapController.getVisibleRegion();
+        await mapController.getVisibleRegion();
 
     expect(secondVisibleRegion, isNotNull);
     expect(secondVisibleRegion.southwest, isNotNull);
