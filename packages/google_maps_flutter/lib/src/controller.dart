@@ -136,7 +136,7 @@ class GoogleMapController {
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     final Map<dynamic, dynamic> latLngBounds =
-        await _channel.invokeMethod('map#getVisibleRegion');
+        await channel.invokeMethod('map#getVisibleRegion');
     final LatLng southwest = LatLng._fromJson(latLngBounds['southwest']);
     final LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
 

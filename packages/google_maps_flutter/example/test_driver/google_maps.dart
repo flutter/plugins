@@ -57,4 +57,43 @@ void main() {
     compassEnabled = await inspector.isCompassEnabled();
     expect(compassEnabled, true);
   });
+
+  test('testGetVisibleRegion', () async {
+    final LatLngBounds zeroLatLngBounds = LatLngBounds(
+        southwest: const LatLng(0, 0), northeast: const LatLng(0, 0));
+
+    final Completer<GoogleMapController> mapControllerCompleter =
+    Completer<GoogleMapController>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: GlobalKey(),
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          mapControllerCompleter.complete(controller);
+        },
+      ),
+    ));
+    final GoogleMapController mapController =
+    await mapControllerCompleter.future;
+    final LatLngBounds firstVisibleRegion =
+    await mapController.getVisibleRegion();
+    expect(firstVisibleRegion, isNotNull);
+    expect(firstVisibleRegion.southwest, isNotNull);
+    expect(firstVisibleRegion.northeast, isNotNull);
+    expect(firstVisibleRegion, isNot(zeroLatLngBounds));
+
+    await mapController.moveCamera(CameraUpdate.scrollBy(100, 100));
+
+    final LatLngBounds secondVisibleRegion =
+    await mapController.getVisibleRegion();
+
+    expect(secondVisibleRegion, isNotNull);
+    expect(secondVisibleRegion.southwest, isNotNull);
+    expect(secondVisibleRegion.northeast, isNotNull);
+    expect(secondVisibleRegion, isNot(zeroLatLngBounds));
+
+    expect(firstVisibleRegion, isNot(secondVisibleRegion));
+  });
 }
