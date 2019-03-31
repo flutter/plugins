@@ -177,11 +177,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       query = query.orderBy(orderByFieldName, direction);
     }
     @SuppressWarnings("unchecked")
-    Object[] startAtDocument = (Object[]) parameters.get("startAtDocument");
+    ArrayList startAtDocument = (ArrayList) parameters.get("startAtDocument");
     if (startAtDocument != null)
     {
-      String documentId = (String) startAtDocument[0];
-      Map<String, Object> documentData = (Map<String, Object>) startAtDocument[1];
+      String documentId = (String) startAtDocument.get(0);
+      Map<String, Object> documentData = (Map<String, Object>) startAtDocument.get(1);
       query = query.orderBy(FieldPath.documentId());
       List<Object> data = new ArrayList<>();
       if (orderBy == null) return query;
@@ -193,11 +193,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       query = query.startAfter(data.toArray());
     }
     @SuppressWarnings("unchecked")
-    Object[] startAfterDocument = (Object[]) parameters.get("startAfterDocument");
+    ArrayList startAfterDocument = (ArrayList) parameters.get("startAfterDocument");
     if (startAfterDocument != null)
     {
-      String documentId = (String) startAfterDocument[0];
-      Map<String, Object> documentData = (Map<String, Object>) startAfterDocument[1];
+      String documentId = (String) startAfterDocument.get(0);
+      Map<String, Object> documentData = (Map<String, Object>) startAfterDocument.get(1);
       query = query.orderBy(FieldPath.documentId());
       List<Object> data = new ArrayList<>();
       if (orderBy == null) return query;
@@ -215,11 +215,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     List<Object> startAfter = (List<Object>) parameters.get("startAfter");
     if (startAfter != null) query = query.startAfter(startAfter.toArray());
     @SuppressWarnings("unchecked")
-    Object[] endAtDocument = (Object[]) parameters.get("endAtDocument");
+    ArrayList endAtDocument = (ArrayList) parameters.get("endAtDocument");
     if (endAtDocument != null)
     {
-      String documentId = (String) endAtDocument[0];
-      Map<String, Object> documentData = (Map<String, Object>) endAtDocument[1];
+      String documentId = (String) endAtDocument.get(0);
+      Map<String, Object> documentData = (Map<String, Object>) endAtDocument.get(1);
       query = query.orderBy(FieldPath.documentId());
       List<Object> data = new ArrayList<>();
       if (orderBy == null) return query;
@@ -231,11 +231,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       query = query.endAt(data.toArray());
     }
     @SuppressWarnings("unchecked")
-    Object[] endBeforeDocument = (Object[]) parameters.get("endBeforeDocument");
+    ArrayList endBeforeDocument = (ArrayList) parameters.get("endBeforeDocument");
     if (endBeforeDocument != null)
     {
-      String documentId = (String) endBeforeDocument[0];
-      Map<String, Object> documentData = (Map<String, Object>) endBeforeDocument[1];
+      String documentId = (String) endBeforeDocument.get(0);
+      Map<String, Object> documentData = (Map<String, Object>) endBeforeDocument.get(1);
       query = query.orderBy(FieldPath.documentId());
       List<Object> data = new ArrayList<>();
       if (orderBy == null) return query;
