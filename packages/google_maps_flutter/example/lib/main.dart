@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter_example/map_data_ui.dart';
 import 'animate_camera.dart';
 import 'map_ui.dart';
 import 'move_camera.dart';
@@ -12,6 +13,7 @@ import 'scrolling_map.dart';
 
 final List<Page> _allPages = <Page>[
   MapUiPage(),
+  MapDataUiPage(),
   AnimateCameraPage(),
   MoveCameraPage(),
   PlaceMarkerPage(),

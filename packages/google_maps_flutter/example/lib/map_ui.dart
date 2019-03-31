@@ -31,8 +31,6 @@ class MapUiBody extends StatefulWidget {
 class MapUiBodyState extends State<MapUiBody> {
   MapUiBodyState();
 
-  GoogleMapController mapController;
-
   static final CameraPosition _kInitialPosition = const CameraPosition(
     target: LatLng(-33.852, 151.211),
     zoom: 11.0,
@@ -172,37 +170,6 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
-  Widget _getVisibleRegionButton() {
-    return FlatButton(
-      child: const Text('getVisibleRegion'),
-      onPressed: mapController == null
-          ? null
-          : () async {
-              final LatLngBounds latLngBounds =
-                  await mapController.getVisibleRegion();
-
-              showDialog<dynamic>(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('VisibleRegion'),
-                    content: Text(
-                        'northeast: ${latLngBounds.northeast},\nsouthwest: ${latLngBounds.southwest}'),
-                    actions: <Widget>[
-                      FlatButton(
-                        child: const Text('Close'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final GoogleMap googleMap = GoogleMap(
@@ -254,7 +221,6 @@ class MapUiBodyState extends State<MapUiBody> {
               _tiltToggler(),
               _zoomToggler(),
               _myLocationToggler(),
-              _getVisibleRegionButton(),
             ],
           ),
         ),
@@ -275,7 +241,6 @@ class MapUiBodyState extends State<MapUiBody> {
 
   void onMapCreated(GoogleMapController controller) {
     setState(() {
-      mapController = controller;
       _isMapCreated = true;
     });
   }

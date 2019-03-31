@@ -134,7 +134,7 @@ class Convert {
   public static Object toJson(LatLngBounds latLngBounds) {
     final Map<String, Object> arguments = new HashMap<>(2);
     arguments.put("southwest", toJson(latLngBounds.southwest));
-    arguments.put("northeast", toJson(latLngBounds.southwest));
+    arguments.put("northeast", toJson(latLngBounds.northeast));
     return arguments;
   }
 

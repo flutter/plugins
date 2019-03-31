@@ -130,7 +130,7 @@ class GoogleMapController {
     });
   }
 
-  /// Return [LatLngBounds] defining the polygon that is visible in a map.
+  /// Return [LatLngBounds] defining the region that is visible in a map.
   Future<LatLngBounds> getVisibleRegion() async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
