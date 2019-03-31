@@ -1,3 +1,6 @@
+## 0.9.7+3
+* Bump Android dependencies to latest.
+
 ## 0.9.7+2
 
 * Bump the minimum Flutter version to 1.2.0.
