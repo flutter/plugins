@@ -4,53 +4,26 @@
 
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
+import 'package:in_app_purchase/store_kit_wrappers.dart';
+import 'sk_test_stub_objects.dart';
 
 void main() {
-  final Map<String, dynamic> subMap = <String, dynamic>{
-    'numberOfUnits': 1,
-    'unit': 2
-  };
-  final Map<String, dynamic> discountMap = <String, dynamic>{
-    'price': 1.0,
-    'currencyCode': 'USD',
-    'numberOfPeriods': 1,
-    'paymentMode': 2,
-    'subscriptionPeriod': subMap,
-  };
-  final Map<String, dynamic> productMap = <String, dynamic>{
-    'productIdentifier': 'id',
-    'localizedTitle': 'title',
-    'localizedDescription': 'description',
-    'currencyCode': 'USD',
-    'downloadContentVersion': 'version',
-    'subscriptionGroupIdentifier': 'com.group',
-    'price': 1.0,
-    'downloadable': true,
-    'downloadContentLengths': <int>[1, 2],
-    'subscriptionPeriod': subMap,
-    'introductoryPrice': discountMap,
-  };
-
-  final Map<String, List<dynamic>> productResponseMap = <String, List<dynamic>>{
-    'products': <Map<String, dynamic>>[productMap],
-    'invalidProductIdentifiers': <String>['123'],
-  };
-
-  group('product request wrapper test', () {
+  group('product related object wrapper test', () {
     test(
         'SKProductSubscriptionPeriodWrapper should have property values consistent with map',
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
-          SKProductSubscriptionPeriodWrapper.fromMap(subMap);
-      expect(wrapper.numberOfUnits, subMap['numberOfUnits']);
-      expect(wrapper.unit, SubscriptionPeriodUnit.values[subMap['unit']]);
+          SKProductSubscriptionPeriodWrapper.fromJson(
+              buildSubscriptionPeriodMap(dummySubscription));
+      expect(wrapper, equals(dummySubscription));
     });
 
     test(
         'SKProductSubscriptionPeriodWrapper should have properties to be null if map is empty',
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
-          SKProductSubscriptionPeriodWrapper.fromMap(<String, dynamic>{});
+          SKProductSubscriptionPeriodWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.numberOfUnits, null);
       expect(wrapper.unit, null);
     });
@@ -59,85 +32,37 @@ void main() {
         'SKProductDiscountWrapper should have property values consistent with map',
         () {
       final SKProductDiscountWrapper wrapper =
-          SKProductDiscountWrapper.fromMap(discountMap);
-      expect(wrapper.price, discountMap['price']);
-      expect(wrapper.currencyCode, discountMap['currencyCode']);
-      expect(wrapper.numberOfPeriods, discountMap['numberOfPeriods']);
-      expect(wrapper.paymentMode,
-          ProductDiscountPaymentMode.values[discountMap['paymentMode']]);
-      expect(
-          wrapper.subscriptionPeriod.unit,
-          SubscriptionPeriodUnit
-              .values[discountMap['subscriptionPeriod']['unit']]);
-      expect(wrapper.subscriptionPeriod.numberOfUnits,
-          discountMap['subscriptionPeriod']['numberOfUnits']);
+          SKProductDiscountWrapper.fromJson(buildDiscountMap(dummyDiscount));
+      expect(wrapper, equals(dummyDiscount));
     });
 
     test(
         'SKProductDiscountWrapper should have properties to be null if map is empty',
         () {
       final SKProductDiscountWrapper wrapper =
-          SKProductDiscountWrapper.fromMap(<String, dynamic>{});
+          SKProductDiscountWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.price, null);
-      expect(wrapper.currencyCode, null);
+      expect(wrapper.priceLocale, null);
       expect(wrapper.numberOfPeriods, null);
       expect(wrapper.paymentMode, null);
       expect(wrapper.subscriptionPeriod, null);
     });
 
-    void testMatchingProductMap(
-        SKProductWrapper wrapper, Map<String, dynamic> productMap) {
-      expect(wrapper.productIdentifier, productMap['productIdentifier']);
-      expect(wrapper.localizedTitle, productMap['localizedTitle']);
-      expect(wrapper.localizedDescription, productMap['localizedDescription']);
-      expect(wrapper.currencyCode, productMap['currencyCode']);
-      expect(
-          wrapper.downloadContentVersion, productMap['downloadContentVersion']);
-      expect(wrapper.subscriptionGroupIdentifier,
-          productMap['subscriptionGroupIdentifier']);
-      expect(wrapper.price, productMap['price']);
-      expect(wrapper.downloadable, productMap['downloadable']);
-      expect(
-          wrapper.downloadContentLengths, productMap['downloadContentLengths']);
-      expect(wrapper.introductoryPrice.price,
-          productMap['introductoryPrice']['price']);
-      expect(wrapper.introductoryPrice.numberOfPeriods,
-          productMap['introductoryPrice']['numberOfPeriods']);
-      expect(
-          wrapper.introductoryPrice.paymentMode,
-          ProductDiscountPaymentMode
-              .values[productMap['introductoryPrice']['paymentMode']]);
-      expect(
-          wrapper.introductoryPrice.subscriptionPeriod.unit,
-          SubscriptionPeriodUnit.values[productMap['introductoryPrice']
-              ['subscriptionPeriod']['unit']]);
-      expect(
-          wrapper.introductoryPrice.subscriptionPeriod.numberOfUnits,
-          productMap['introductoryPrice']['subscriptionPeriod']
-              ['numberOfUnits']);
-      expect(
-          wrapper.subscriptionPeriod.unit,
-          SubscriptionPeriodUnit
-              .values[productMap['subscriptionPeriod']['unit']]);
-      expect(wrapper.subscriptionPeriod.numberOfUnits,
-          productMap['subscriptionPeriod']['numberOfUnits']);
-    }
-
     test('SKProductWrapper should have property values consistent with map',
         () {
-      final SKProductWrapper wrapper = SKProductWrapper.fromMap(productMap);
-      testMatchingProductMap(wrapper, productMap);
+      final SKProductWrapper wrapper =
+          SKProductWrapper.fromJson(buildProductMap(dummyProductWrapper));
+      expect(wrapper, equals(dummyProductWrapper));
     });
 
-    test(
-        'SKProductDiscountWrapper should have properties to be null if map is empty',
+    test('SKProductWrapper should have properties to be null if map is empty',
         () {
       final SKProductWrapper wrapper =
-          SKProductWrapper.fromMap(<String, dynamic>{});
+          SKProductWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.productIdentifier, null);
       expect(wrapper.localizedTitle, null);
       expect(wrapper.localizedDescription, null);
-      expect(wrapper.currencyCode, null);
+      expect(wrapper.priceLocale, null);
       expect(wrapper.downloadContentVersion, null);
       expect(wrapper.subscriptionGroupIdentifier, null);
       expect(wrapper.price, null);
@@ -145,13 +70,22 @@ void main() {
       expect(wrapper.subscriptionPeriod, null);
     });
 
+    test('toProductDetails() should return correct Product object', () {
+      final SKProductWrapper wrapper =
+          SKProductWrapper.fromJson(buildProductMap(dummyProductWrapper));
+      final ProductDetails product = wrapper.toProductDetails();
+      expect(product.title, wrapper.localizedTitle);
+      expect(product.description, wrapper.localizedDescription);
+      expect(product.id, wrapper.productIdentifier);
+      expect(product.price,
+          wrapper.priceLocale.currencySymbol + wrapper.price.toString());
+    });
+
     test('SKProductResponse wrapper should match', () {
       final SkProductResponseWrapper wrapper =
-          SkProductResponseWrapper.fromMap(productResponseMap);
-      testMatchingProductMap(
-          wrapper.products[0], productResponseMap['products'][0]);
-      expect(wrapper.invalidProductIdentifiers,
-          productResponseMap['invalidProductIdentifiers']);
+          SkProductResponseWrapper.fromJson(
+              buildProductResponseMap(dummyProductResponseWrapper));
+      expect(wrapper, equals(dummyProductResponseWrapper));
     });
     test('SKProductResponse wrapper should default to empty list', () {
       final Map<String, List<dynamic>> productResponseMapEmptyList =
@@ -160,9 +94,54 @@ void main() {
         'invalidProductIdentifiers': <String>[],
       };
       final SkProductResponseWrapper wrapper =
-          SkProductResponseWrapper.fromMap(productResponseMapEmptyList);
+          SkProductResponseWrapper.fromJson(productResponseMapEmptyList);
       expect(wrapper.products.length, 0);
       expect(wrapper.invalidProductIdentifiers.length, 0);
+    });
+
+    test('LocaleWrapper should have property values consistent with map', () {
+      final SKPriceLocaleWrapper wrapper =
+          SKPriceLocaleWrapper.fromJson(buildLocaleMap(dummyLocale));
+      expect(wrapper, equals(dummyLocale));
+    });
+  });
+
+  group('Payment queue related object tests', () {
+    test('Should construct correct SKPaymentWrapper from json', () {
+      SKPaymentWrapper payment =
+          SKPaymentWrapper.fromJson(dummyPayment.toMap());
+      expect(payment, equals(dummyPayment));
+    });
+
+    test('Should construct correct SKError from json', () {
+      SKError error = SKError.fromJson(buildErrorMap(dummyError));
+      expect(error, equals(dummyError));
+    });
+
+    test('Should construct correct SKDownloadWrapper from json', () {
+      SKDownloadWrapper download =
+          SKDownloadWrapper.fromJson(buildDownloadMap(dummyDownload));
+      expect(download, equals(dummyDownload));
+    });
+
+    test('Should construct correct SKTransactionWrapper from json', () {
+      SKPaymentTransactionWrapper transaction =
+          SKPaymentTransactionWrapper.fromJson(
+              buildTransactionMap(dummyTransaction));
+      expect(transaction, equals(dummyTransaction));
+    });
+
+    test('Should generate correct map of the payment object', () {
+      Map map = dummyPayment.toMap();
+      expect(map['productIdentifier'], dummyPayment.productIdentifier);
+      expect(map['applicationUsername'], dummyPayment.applicationUsername);
+
+      expect(map['requestData'], dummyPayment.requestData);
+
+      expect(map['quantity'], dummyPayment.quantity);
+
+      expect(map['simulatesAskToBuyInSandbox'],
+          dummyPayment.simulatesAskToBuyInSandbox);
     });
   });
 }

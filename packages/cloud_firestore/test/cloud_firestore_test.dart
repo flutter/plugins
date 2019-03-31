@@ -163,7 +163,9 @@ void main() {
       test('get', () async {
         final DocumentReference documentReference =
             firestore.document('foo/bar');
-        await transaction.get(documentReference);
+        final DocumentSnapshot snapshot =
+            await transaction.get(documentReference);
+        expect(snapshot.reference.firestore, firestore);
         expect(log, <Matcher>[
           isMethodCall('Transaction#get', arguments: <String, dynamic>{
             'app': app.name,
@@ -493,6 +495,7 @@ void main() {
       test('get', () async {
         final DocumentSnapshot snapshot =
             await collectionReference.document('bar').get();
+        expect(snapshot.reference.firestore, firestore);
         expect(
           log,
           equals(<Matcher>[

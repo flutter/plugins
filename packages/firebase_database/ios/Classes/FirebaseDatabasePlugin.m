@@ -6,28 +6,27 @@
 
 #import <Firebase/Firebase.h>
 
-@interface FLTFirebaseDatabasePlugin ()
-@end
+static FlutterError *getFlutterError(NSError *error) {
+  if (error == nil) return nil;
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@property(readonly, nonatomic) NSDictionary *dictionary;
-@end
-
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
 }
 
-- (NSDictionary *)dictionary {
+static NSDictionary *getDictionaryFromError(NSError *error) {
+  if (!error) {
+    return nil;
+  }
   return @{
-    @"code" : @(self.code),
-    @"message" : self.domain ?: [NSNull null],
-    @"details" : self.localizedDescription ?: [NSNull null],
+    @"code" : @(error.code),
+    @"message" : error.domain ?: [NSNull null],
+    @"details" : error.localizedDescription ?: [NSNull null],
   };
 }
+
+@interface FLTFirebaseDatabasePlugin ()
+
 @end
 
 FIRDatabaseReference *getReference(FIRDatabase *database, NSDictionary *arguments) {
@@ -150,8 +149,10 @@ id roundDoubles(id value) {
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
     self.updatedSnapshots = [NSMutableDictionary new];
   }
@@ -173,7 +174,7 @@ id roundDoubles(id value) {
   }
   void (^defaultCompletionBlock)(NSError *, FIRDatabaseReference *) =
       ^(NSError *error, FIRDatabaseReference *ref) {
-        result(error.flutterError);
+        result(getFlutterError(error));
       };
   if ([@"FirebaseDatabase#goOnline" isEqualToString:call.method]) {
     [database goOnline];
@@ -280,7 +281,7 @@ id roundDoubles(id value) {
           // Invoke transaction completion on the Dart side.
           result(@{
             @"transactionKey" : call.arguments[@"transactionKey"],
-            @"error" : error.dictionary ?: [NSNull null],
+            @"error" : getDictionaryFromError(error) ?: [NSNull null],
             @"committed" : [NSNumber numberWithBool:committed],
             @"snapshot" : @{@"key" : snapshot.key ?: [NSNull null], @"value" : snapshot.value}
           });
@@ -314,7 +315,7 @@ id roundDoubles(id value) {
           [self.channel invokeMethod:@"Error"
                            arguments:@{
                              @"handle" : [NSNumber numberWithUnsignedInteger:handle],
-                             @"error" : error.dictionary,
+                             @"error" : getDictionaryFromError(error),
                            }];
         }];
     result([NSNumber numberWithUnsignedInteger:handle]);

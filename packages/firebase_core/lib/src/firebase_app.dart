@@ -57,8 +57,7 @@ class FirebaseApp {
   /// can interact with the default app should configure it automatically at
   /// plugin registration time.
   ///
-  /// Changing the options of a configured app is not supported. Reconfiguring
-  /// an existing app will assert that the options haven't changed.
+  /// Changing the options of a configured app is not supported.
   static Future<FirebaseApp> configure({
     @required String name,
     @required FirebaseOptions options,
@@ -69,7 +68,6 @@ class FirebaseApp {
     assert(options.googleAppID != null);
     final FirebaseApp existingApp = await FirebaseApp.appNamed(name);
     if (existingApp != null) {
-      assert(await existingApp.options == options);
       return existingApp;
     }
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.

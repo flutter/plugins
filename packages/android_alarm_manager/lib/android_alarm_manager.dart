@@ -43,10 +43,7 @@ void _alarmManagerCallbackDispatcher() {
 
   // Once we've finished initializing, let the native portion of the plugin
   // know that it can start scheduling alarms.
-  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-  // https://github.com/flutter/flutter/issues/26431
-  // ignore: strong_mode_implicit_dynamic_method
-  _channel.invokeMethod('AlarmService.initialized');
+  _channel.invokeMethod<void>('AlarmService.initialized');
 }
 
 /// A Flutter plugin for registering Dart callbacks with the Android
@@ -69,11 +66,8 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    final dynamic r = await _channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('AlarmService.start', <dynamic>[handle.toRawHandle()]);
+    final bool r = await _channel.invokeMethod<bool>(
+        'AlarmService.start', <dynamic>[handle.toRawHandle()]);
     return r ?? false;
   }
 
@@ -97,6 +91,10 @@ class AndroidAlarmManager {
   /// alarm fires. If `wakeup` is false (the default), the device will not be
   /// woken up to service the alarm.
   ///
+  /// If `rescheduleOnReboot` is passed as `true`, the alarm will be persisted
+  /// across reboots. If `rescheduleOnReboot` is false (the default), the alarm
+  /// will not be rescheduled after a reboot and will not be executed.
+  ///
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> oneShot(
@@ -105,6 +103,7 @@ class AndroidAlarmManager {
     dynamic Function() callback, {
     bool exact = false,
     bool wakeup = false,
+    bool rescheduleOnReboot = false,
   }) async {
     final int now = DateTime.now().millisecondsSinceEpoch;
     final int first = now + delay.inMilliseconds;
@@ -112,14 +111,12 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final dynamic r = await _channel.invokeMethod('Alarm.oneShot', <dynamic>[
+    final bool r = await _channel.invokeMethod<bool>('Alarm.oneShot', <dynamic>[
       id,
       exact,
       wakeup,
       first,
+      rescheduleOnReboot,
       handle.toRawHandle(),
     ]);
     return (r == null) ? false : r;
@@ -145,6 +142,10 @@ class AndroidAlarmManager {
   /// alarm fires. If `wakeup` is false (the default), the device will not be
   /// woken up to service the alarm.
   ///
+  /// If `rescheduleOnReboot` is passed as `true`, the alarm will be persisted
+  /// across reboots. If `rescheduleOnReboot` is false (the default), the alarm
+  /// will not be rescheduled after a reboot and will not be executed.
+  ///
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> periodic(
@@ -153,6 +154,7 @@ class AndroidAlarmManager {
     dynamic Function() callback, {
     bool exact = false,
     bool wakeup = false,
+    bool rescheduleOnReboot = false,
   }) async {
     final int now = DateTime.now().millisecondsSinceEpoch;
     final int period = duration.inMilliseconds;
@@ -161,11 +163,16 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final dynamic r = await _channel.invokeMethod('Alarm.periodic',
-        <dynamic>[id, exact, wakeup, first, period, handle.toRawHandle()]);
+    final bool r = await _channel.invokeMethod<bool>(
+        'Alarm.periodic', <dynamic>[
+      id,
+      exact,
+      wakeup,
+      first,
+      period,
+      rescheduleOnReboot,
+      handle.toRawHandle()
+    ]);
     return (r == null) ? false : r;
   }
 
@@ -177,11 +184,8 @@ class AndroidAlarmManager {
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> cancel(int id) async {
-    final dynamic r =
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await _channel.invokeMethod('Alarm.cancel', <dynamic>[id]);
+    final bool r =
+        await _channel.invokeMethod<bool>('Alarm.cancel', <dynamic>[id]);
     return (r == null) ? false : r;
   }
 }
