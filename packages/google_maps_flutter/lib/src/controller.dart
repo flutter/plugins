@@ -7,12 +7,11 @@ part of google_maps_flutter;
 /// Controller for a single GoogleMap instance running on the host platform.
 class GoogleMapController {
   GoogleMapController._(
-    MethodChannel channel,
+    this.channel,
     CameraPosition initialCameraPosition,
     this._googleMapState,
-  )   : assert(channel != null),
-        _channel = channel {
-    _channel.setMethodCallHandler(_handleMethodCall);
+  ) : assert(channel != null) {
+    channel.setMethodCallHandler(_handleMethodCall);
   }
 
   static Future<GoogleMapController> init(
@@ -34,7 +33,8 @@ class GoogleMapController {
     );
   }
 
-  final MethodChannel _channel;
+  @visibleForTesting
+  final MethodChannel channel;
 
   final _GoogleMapState _googleMapState;
 
@@ -81,7 +81,7 @@ class GoogleMapController {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod(
+    await channel.invokeMethod(
       'map#update',
       <String, dynamic>{
         'options': optionsUpdate,
@@ -100,7 +100,7 @@ class GoogleMapController {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod(
+    await channel.invokeMethod(
       'markers#update',
       markerUpdates._toMap(),
     );
@@ -114,7 +114,7 @@ class GoogleMapController {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('camera#animate', <String, dynamic>{
+    await channel.invokeMethod('camera#animate', <String, dynamic>{
       'cameraUpdate': cameraUpdate._toJson(),
     });
   }
@@ -127,7 +127,7 @@ class GoogleMapController {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('camera#move', <String, dynamic>{
+    await channel.invokeMethod('camera#move', <String, dynamic>{
       'cameraUpdate': cameraUpdate._toJson(),
     });
   }

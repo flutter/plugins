@@ -110,25 +110,21 @@ class Firestore {
         'Transaction timeout must be more than 0 milliseconds');
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
-    final Map<dynamic, dynamic> result = await channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('Firestore#runTransaction', <String, dynamic>{
+    final Map<String, dynamic> result = await channel
+        .invokeMapMethod<String, dynamic>(
+            'Firestore#runTransaction', <String, dynamic>{
       'app': app.name,
       'transactionId': transactionId,
       'transactionTimeout': timeout.inMilliseconds
     });
-    return result?.cast<String, dynamic>() ?? <String, dynamic>{};
+    return result ?? <String, dynamic>{};
   }
 
   @deprecated
   Future<void> enablePersistence(bool enable) async {
     assert(enable != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod('Firestore#enablePersistence', <String, dynamic>{
+    await channel
+        .invokeMethod<void>('Firestore#enablePersistence', <String, dynamic>{
       'app': app.name,
       'enable': enable,
     });
@@ -139,10 +135,7 @@ class Firestore {
       String host,
       bool sslEnabled,
       bool timestampsInSnapshotsEnabled}) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod('Firestore#settings', <String, dynamic>{
+    await channel.invokeMethod<void>('Firestore#settings', <String, dynamic>{
       'app': app.name,
       'persistenceEnabled': persistenceEnabled,
       'host': host,
