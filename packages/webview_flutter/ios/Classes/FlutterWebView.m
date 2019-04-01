@@ -242,7 +242,7 @@
     } else if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
         id allow = settings[key];
         if ([allow isKindOfClass:[NSNumber class]]) {
-            _webView.configuration.allowsInlineMediaPlayback = allow.boolValue;
+            _webView.configuration.allowsInlineMediaPlayback = [allow boolValue];
         }
     } else {
       NSLog(@"webview_flutter: unknown setting key: %@", key);
