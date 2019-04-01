@@ -349,8 +349,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
                 (Boolean) arguments.get("androidInstallIfNotAvailable"),
                 arguments.get("androidMinimumVersion").toString())
             .build();
-    // TODO: Why is this symbol not found?
-    //.setDynamicLinkDomain(arguments.get("dynamicLinkDomain").toString());
+
     firebaseAuth
         .sendSignInLinkToEmail(email, actionCodeSettings)
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
