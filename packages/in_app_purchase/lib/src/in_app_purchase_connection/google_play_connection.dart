@@ -20,7 +20,7 @@ class GooglePlayConnection
       : billingClient = BillingClient((PurchasesResultWrapper resultWrapper) {
           _purchaseUpdatedController.add(
             resultWrapper.purchasesList.map(
-              (purchase) {
+              (PurchaseWrapper purchase) {
                 PurchaseError error = null;
                 if (resultWrapper.responseCode != BillingResponse.ok) {
                   error = PurchaseError(

@@ -79,7 +79,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
               applicationUserName: applicationUserName);
       _observer.cleanUpRestoredTransactions();
       if (restoredTransactions != null) {
-        pastPurchases = restoredTransactions.map((transaction) {
+        pastPurchases = restoredTransactions.map((SKPaymentTransactionWrapper transaction) {
           return transaction.toPurchaseDetails(receiptData)
             ..status = SKTransactionStatusConverter()
                 .toPurchaseStatus(transaction.transactionState)
@@ -171,7 +171,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     }
 
     String receiptData = await getReceiptData();
-    purchaseUpdatedController.add(transactions.map((transaction) {
+    purchaseUpdatedController.add(transactions.map((SKPaymentTransactionWrapper transaction) {
       PurchaseDetails purchaseDetails = transaction.toPurchaseDetails(
         receiptData,
         originalPurchaseID: transaction.originalTransaction != null
