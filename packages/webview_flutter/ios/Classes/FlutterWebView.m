@@ -60,8 +60,26 @@
       [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
     }
 
+    NSDictionary<NSString*, id>* settings = args[@"settings"];
+
+    id allowsInlineMediaPlayback = settings[@"allowsInlineMediaPlayback"];
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
     configuration.userContentController = userContentController;
+    if ([allowsInlineMediaPlayback isKindOfClass:[NSNumber class]]) {
+      configuration.allowsInlineMediaPlayback = [allowsInlineMediaPlayback boolValue];
+        configuration.allowsInlineMediaPlayback = YES;
+        if (@available(iOS 9.0, *)) {
+            configuration.allowsPictureInPictureMediaPlayback = YES;
+        } else {
+            // Fallback on earlier versions
+        }
+        if (@available(iOS 10.0, *)) {
+            configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
+        } else {
+            // Fallback on earlier versions
+            configuration.mediaPlaybackRequiresUserAction = NO;
+        }
+    }
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     _webView.navigationDelegate = self;
@@ -69,7 +87,6 @@
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
     }];
-    NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self applySettings:settings];
 
     NSString* initialUrl = args[@"initialUrl"];
@@ -239,11 +256,6 @@
           NSLog(@"webview_flutter: prior to iOS 9.0, a custom userAgent is not supported.");
         }
       }
-    } else if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
-        id allow = settings[key];
-        if ([allow isKindOfClass:[NSNumber class]]) {
-            _webView.configuration.allowsInlineMediaPlayback = [allow boolValue];
-        }
     } else {
       NSLog(@"webview_flutter: unknown setting key: %@", key);
     }
