@@ -540,6 +540,11 @@ class WebViewController {
     return _channel.invokeMethod("reload");
   }
 
+  /// Accessor the UserAgent.
+  Future<String> userAgent() async {
+    return await _channel.invokeMethod('userAgent');
+  }
+
   /// Clears all caches used by the [WebView].
   ///
   /// The following caches are cleared:

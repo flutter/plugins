@@ -112,6 +112,8 @@
     [self onRemoveJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"clearCache"]) {
     [self clearCache:result];
+  } else if ([[call method] isEqualToString:@"userAgent"]) {
+    [self onUserAgent:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -226,6 +228,22 @@
     // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
     NSLog(@"Clearing cache is not supported for Flutter WebViews prior to iOS 9.");
   }
+}
+
+- (void)onUserAgent:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [_webView evaluateJavaScript:@"navigator.userAgent"
+             completionHandler:^(NSString* userAgent, NSError* error) {
+               if (error) {
+                 result([FlutterError
+                     errorWithCode:@"userAgent_failed"
+                           message:@"Failed getting UserAgent"
+                           details:[NSString stringWithFormat:
+                                                 @"webview_flutter: fail evaluating JavaScript: %@",
+                                                 [error localizedDescription]]]);
+               } else {
+                 result(userAgent);
+               }
+             }];
 }
 
 - (void)applySettings:(NSDictionary<NSString*, id>*)settings {
