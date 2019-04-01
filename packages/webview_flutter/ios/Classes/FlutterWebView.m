@@ -239,6 +239,11 @@
           NSLog(@"webview_flutter: prior to iOS 9.0, a custom userAgent is not supported.");
         }
       }
+    } else if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
+        id allow = settings[key];
+        if ([allow isKindOfClass:[NSNumber class]]) {
+            _webView.configuration.allowsInlineMediaPlayback = allow.boolValue;
+        }
     } else {
       NSLog(@"webview_flutter: unknown setting key: %@", key);
     }
@@ -321,7 +326,7 @@
     didFailNavigation:(WKNavigation*)navigation
             withError:(NSError*)error {
   [_channel invokeMethod:@"onReceivedError"
-               arguments:@{@"url" : _webView.URL, @"description" : [error localizedDescription]}];
+               arguments:@{@"url" : _webView.URL.absoluteString, @"description" : [error localizedDescription]}];
 }
 
 - (void)webView:(WKWebView*)webView
@@ -329,7 +334,7 @@
                        withError:(NSError*)error {
   [_channel invokeMethod:@"onReceivedError"
                arguments:@{
-                 @"url" : _webView.URL ?: [NSNull null],
+                 @"url" : _webView.URL.absoluteString ?: [NSNull null],
                  @"description" : [error localizedDescription]
                }];
 }

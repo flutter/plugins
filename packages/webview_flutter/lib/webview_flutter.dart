@@ -80,6 +80,7 @@ class WebView extends StatefulWidget {
     this.javascriptChannels,
     this.gestureRecognizers,
     this.userAgent,
+    this.allowsInlineMediaPlayback,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -105,6 +106,8 @@ class WebView extends StatefulWidget {
 
   /// User Agent String for the webview.
   final String userAgent;
+
+  final bool allowsInlineMediaPlayback;
 
   /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
   ///
@@ -262,20 +265,24 @@ class _CreationParams {
 }
 
 class _WebSettings {
-  _WebSettings({this.javascriptMode, this.userAgent});
+  _WebSettings({this.javascriptMode, this.userAgent, this.allowsInlineMediaPlayback});
 
   static _WebSettings fromWidget(WebView widget) {
     return _WebSettings(
-        javascriptMode: widget.javascriptMode, userAgent: widget.userAgent);
+        javascriptMode: widget.javascriptMode,
+        userAgent: widget.userAgent,
+        allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback);
   }
 
   final JavascriptMode javascriptMode;
   final String userAgent;
+  final bool allowsInlineMediaPlayback;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javascriptMode.index,
-      'userAgent': userAgent
+      'userAgent': userAgent,
+      'allowsInlineMediaPlayback': allowsInlineMediaPlayback,
     };
   }
 
