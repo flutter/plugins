@@ -20,6 +20,7 @@ The plugins are still under development, and some APIs might not be available ye
 | [firebase_analytics][analytics_pub] | ![pub package][analytics_badge] | [Firebase Analytics][analytics_product] | [`packages/firebase_analytics`][analytics_code] |
 | [firebase_auth][auth_pub] | ![pub package][auth_badge] | [Firebase Authentication][auth_product] | [`packages/firebase_auth`][auth_code] |
 | [firebase_core][core_pub] | ![pub package][core_badge] | [Firebase Core][core_product] | [`packages/firebase_core`][core_code] |
+| [firebase_crashlytics][crash_pub] | ![pub package][crash_badge] | [Firebase Crashlytics][crash_product] | [`packages/firebase_crashlytics`][crash_code] |
 | [firebase_database][database_pub] | ![pub package][database_badge] | [Firebase Realtime Database][database_product] | [`packages/firebase_database`][database_code] |
 | [firebase_dynamic_links][dynamic_links_pub] | ![pub package][dynamic_links_badge] | [Firebase Dynamic Links][dynamic_links_product] | [`packages/firebase_dynamic_links`][dynamic_links_code] |
 | [firebase_messaging][messaging_pub] | ![pub package][messaging_badge] | [Firebase Cloud Messaging][messaging_product] | [`packages/firebase_messaging`][messaging_code] |
@@ -47,6 +48,11 @@ The plugins are still under development, and some APIs might not be available ye
 [core_product]: https://firebase.google.com/
 [core_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_core
 [core_badge]: https://img.shields.io/pub/v/firebase_core.svg
+
+[crash_pub]: https://pub.dartlang.org/packages/firebase_crashlytics
+[crash_product]: https://firebase.google.com/products/crashlytics/
+[crash_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_crashlytics
+[crash_badge]: https://img.shields.io/pub/v/firebase_crashlytics.svg
 
 [database_pub]: https://pub.dartlang.org/packages/firebase_database
 [database_product]: https://firebase.google.com/products/database/

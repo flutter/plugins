@@ -10,11 +10,11 @@ dependencies:
   cupertino_icons: ^0.1.0
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
   google_maps_flutter:
     path: ../
+  flutter_driver:
+    sdk: flutter
+  test: ^1.6.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

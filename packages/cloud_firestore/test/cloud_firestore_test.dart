@@ -21,6 +21,10 @@ void main() {
     const Map<String, dynamic> kMockDocumentSnapshotData = <String, dynamic>{
       '1': 2
     };
+    const Map<String, dynamic> kMockSnapshotMetadata = <String, dynamic>{
+      "hasPendingWrites": false,
+      "isFromCache": false,
+    };
 
     setUp(() async {
       mockHandleId = 0;
@@ -54,12 +58,14 @@ void main() {
                     'handle': handle,
                     'paths': <String>["${methodCall.arguments['path']}/0"],
                     'documents': <dynamic>[kMockDocumentSnapshotData],
+                    'metadatas': <Map<String, dynamic>>[kMockSnapshotMetadata],
                     'documentChanges': <dynamic>[
                       <String, dynamic>{
                         'oldIndex': -1,
                         'newIndex': 0,
                         'type': 'DocumentChangeType.added',
                         'document': kMockDocumentSnapshotData,
+                        'metadata': kMockSnapshotMetadata,
                       },
                     ],
                   }),
@@ -80,6 +86,7 @@ void main() {
                     'handle': handle,
                     'path': methodCall.arguments['path'],
                     'data': kMockDocumentSnapshotData,
+                    'metadata': kMockSnapshotMetadata,
                   }),
                 ),
                 (_) {},
@@ -90,12 +97,14 @@ void main() {
             return <String, dynamic>{
               'paths': <String>["${methodCall.arguments['path']}/0"],
               'documents': <dynamic>[kMockDocumentSnapshotData],
+              'metadatas': <Map<String, dynamic>>[kMockSnapshotMetadata],
               'documentChanges': <dynamic>[
                 <String, dynamic>{
                   'oldIndex': -1,
                   'newIndex': 0,
                   'type': 'DocumentChangeType.added',
                   'document': kMockDocumentSnapshotData,
+                  'metadata': kMockSnapshotMetadata,
                 },
               ],
             };
@@ -105,10 +114,15 @@ void main() {
             if (methodCall.arguments['path'] == 'foo/bar') {
               return <String, dynamic>{
                 'path': 'foo/bar',
-                'data': <String, dynamic>{'key1': 'val1'}
+                'data': <String, dynamic>{'key1': 'val1'},
+                'metadata': kMockSnapshotMetadata,
               };
             } else if (methodCall.arguments['path'] == 'foo/notExists') {
-              return <String, dynamic>{'path': 'foo/notExists', 'data': null};
+              return <String, dynamic>{
+                'path': 'foo/notExists',
+                'data': null,
+                'metadata': kMockSnapshotMetadata,
+              };
             }
             throw PlatformException(code: 'UNKNOWN_PATH');
           case 'Firestore#runTransaction':
@@ -117,10 +131,15 @@ void main() {
             if (methodCall.arguments['path'] == 'foo/bar') {
               return <String, dynamic>{
                 'path': 'foo/bar',
-                'data': <String, dynamic>{'key1': 'val1'}
+                'data': <String, dynamic>{'key1': 'val1'},
+                'metadata': kMockSnapshotMetadata,
               };
             } else if (methodCall.arguments['path'] == 'foo/notExists') {
-              return <String, dynamic>{'path': 'foo/notExists', 'data': null};
+              return <String, dynamic>{
+                'path': 'foo/notExists',
+                'data': null,
+                'metadata': kMockSnapshotMetadata,
+              };
             }
             throw PlatformException(code: 'UNKNOWN_PATH');
           case 'Transaction#set':
