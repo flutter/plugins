@@ -22,13 +22,14 @@ void main() {
   tearDownAll(() => allTestsCompleter.complete(null));
 
   test('testCompassToggle', () async {
+    final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
-        key: const ValueKey<String>("test_1"),
+        key: key,
         initialCameraPosition: _kInitialCameraPosition,
         compassEnabled: false,
         onMapCreated: (GoogleMapController controller) {
@@ -47,7 +48,7 @@ void main() {
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
-        key: const ValueKey<String>("test_1"),
+        key: key,
         initialCameraPosition: _kInitialCameraPosition,
         compassEnabled: true,
         onMapCreated: (GoogleMapController controller) {
@@ -61,6 +62,7 @@ void main() {
   });
 
   test('updateMinMaxZoomLevels', () async {
+    final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
@@ -70,7 +72,7 @@ void main() {
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
-        key: const ValueKey<String>("test_2"),
+        key: key,
         initialCameraPosition: _kInitialCameraPosition,
         minMaxZoomPreference: initialZoomLevel,
         onMapCreated: (GoogleMapController controller) {
@@ -89,7 +91,7 @@ void main() {
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
-        key: const ValueKey<String>("test_2"),
+        key: key,
         initialCameraPosition: _kInitialCameraPosition,
         minMaxZoomPreference: finalZoomLevel,
         onMapCreated: (GoogleMapController controller) {
