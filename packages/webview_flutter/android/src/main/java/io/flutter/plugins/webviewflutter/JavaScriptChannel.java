@@ -26,7 +26,7 @@ class JavaScriptChannel {
    * @param methodChannel the Flutter WebView method channel to which JS messages are sent
    * @param javaScriptChannelName the name of the JavaScript channel, this is sent over the method
    *     channel with each message to let the Dart code know which JavaScript channel the message
-   * @param platformThreadHandler
+   *     was sent through
    */
   JavaScriptChannel(
       MethodChannel methodChannel, String javaScriptChannelName, Handler platformThreadHandler) {
