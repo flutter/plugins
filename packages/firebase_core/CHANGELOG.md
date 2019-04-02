@@ -1,3 +1,8 @@
+## 0.3.1+2
+
+* Bump the minimum flutter version to 1.2.0.
+* Add Template type parameter to `invokeMethod` calls.
+
 ## 0.3.1+1
 
 * Add nil check on static functions to prevent crashes or unwanted behaviors.
