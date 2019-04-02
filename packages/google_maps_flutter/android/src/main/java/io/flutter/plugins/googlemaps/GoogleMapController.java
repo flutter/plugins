@@ -214,6 +214,12 @@ final class GoogleMapController
           zoomLevels.add(googleMap.getMinZoomLevel());
           zoomLevels.add(googleMap.getMaxZoomLevel());
           result.success(zoomLevels);
+          break;
+        }
+      case "map#isZoomGesturesEnabled":
+        {
+          result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
+          break;
         }
       default:
         result.notImplemented();

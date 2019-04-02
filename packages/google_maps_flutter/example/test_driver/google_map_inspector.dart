@@ -25,4 +25,8 @@ class GoogleMapInspector {
             .cast<double>();
     return MinMaxZoomPreference(zoomLevels[0], zoomLevels[1]);
   }
+
+  Future<bool> isZoomGesturesEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isZoomGesturesEnabled');
+  }
 }
