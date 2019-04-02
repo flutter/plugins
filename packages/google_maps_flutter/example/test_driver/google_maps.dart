@@ -28,6 +28,7 @@ void main() {
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
+        key: const ValueKey<String>("test_1"),
         initialCameraPosition: _kInitialCameraPosition,
         compassEnabled: false,
         onMapCreated: (GoogleMapController controller) {
@@ -46,6 +47,7 @@ void main() {
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
+        key: const ValueKey<String>("test_1"),
         initialCameraPosition: _kInitialCameraPosition,
         compassEnabled: true,
         onMapCreated: (GoogleMapController controller) {
@@ -68,6 +70,7 @@ void main() {
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
+        key: const ValueKey<String>("test_2"),
         initialCameraPosition: _kInitialCameraPosition,
         minMaxZoomPreference: initialZoomLevel,
         onMapCreated: (GoogleMapController controller) {
@@ -86,6 +89,7 @@ void main() {
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
+        key: const ValueKey<String>("test_2"),
         initialCameraPosition: _kInitialCameraPosition,
         minMaxZoomPreference: finalZoomLevel,
         onMapCreated: (GoogleMapController controller) {

@@ -21,7 +21,8 @@ class GoogleMapInspector {
 
   Future<MinMaxZoomPreference> getMinMaxZoomLevels() async {
     final List<double> zoomLevels =
-        await _channel.invokeMethod<List<double>>('map#getMinMaxZoomLevels');
+        (await _channel.invokeMethod<List<dynamic>>('map#getMinMaxZoomLevels'))
+            .cast<double>();
     return MinMaxZoomPreference(zoomLevels[0], zoomLevels[1]);
   }
 }
