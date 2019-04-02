@@ -32,6 +32,10 @@ String defaultNameExtractor(RouteSettings settings) => settings.name;
 ///   settings: RouteSettings(name: '/contact/123',
 ///   builder: ContactDetail(123)))),
 ///
+/// Navigator.pushReplacement(context, MaterialPageRoute(
+///   settings: RouteSettings(name: '/contact/123',
+///   builder: ContactDetail(123)))),
+///
 /// Navigator.pop(context);
 /// ```
 ///
