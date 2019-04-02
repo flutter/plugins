@@ -102,6 +102,9 @@ public class AlarmService extends JobIntentService {
     // as a background view and does not create a drawing surface.
     sBackgroundFlutterView = new FlutterNativeView(context, true);
     if (mAppBundlePath != null && !sStarted.get()) {
+      if (sPluginRegistrantCallback == null) {
+        throw new PluginRegistrantException();
+      }
       Log.i(TAG, "Starting AlarmService...");
       FlutterRunArguments args = new FlutterRunArguments();
       args.bundlePath = mAppBundlePath;

@@ -1,7 +1,11 @@
-## 2.0.4
+## 2.1.1
 
 * Bump the minimum flutter version to 1.2.0.
 * Add Template type parameter to `invokeMethod` calls.
+
+## 2.1.0
+
+* Add Login event support
 
 ## 2.0.3
 

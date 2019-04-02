@@ -1,3 +1,16 @@
+## 0.9.8
+
+* Add metadata field to DocumentSnapshot.
+
+## 0.9.7+2
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
+## 0.9.7+1
+
+* Update README with example of getting a document.
+
 ## 0.9.7
 
 * Fixes a NoSuchMethodError when using getDocuments on iOS (introduced in 0.9.6).
