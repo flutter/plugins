@@ -44,20 +44,14 @@ class FirebaseAuth {
 
     StreamController<FirebaseUser> controller;
     controller = StreamController<FirebaseUser>.broadcast(onListen: () {
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      _handle = channel.invokeMethod('startListeningAuthState',
+      _handle = channel.invokeMethod<int>('startListeningAuthState',
           <String, String>{"app": app.name}).then<int>((dynamic v) => v);
       _handle.then((int handle) {
         _authStateChangedControllers[handle] = controller;
       });
     }, onCancel: () {
       _handle.then((int handle) async {
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await channel.invokeMethod("stopListeningAuthState",
+        await channel.invokeMethod<void>("stopListeningAuthState",
             <String, dynamic>{"id": handle, "app": app.name});
         _authStateChangedControllers.remove(handle);
       });
@@ -78,11 +72,9 @@ class FirebaseAuth {
   /// Errors:
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Anonymous accounts are not enabled.
   Future<FirebaseUser> signInAnonymously() async {
-    final Map<dynamic, dynamic> data = await channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('signInAnonymously', <String, String>{"app": app.name});
+    final Map<String, dynamic> data = await channel
+        .invokeMapMethod<String, dynamic>(
+            'signInAnonymously', <String, String>{"app": app.name});
     final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
@@ -102,10 +94,8 @@ class FirebaseAuth {
   }) async {
     assert(email != null);
     assert(password != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+    final Map<String, dynamic> data =
+        await channel.invokeMapMethod<String, dynamic>(
       'createUserWithEmailAndPassword',
       <String, String>{'email': email, 'password': password, 'app': app.name},
     );
@@ -126,14 +116,10 @@ class FirebaseAuth {
     @required String email,
   }) async {
     assert(email != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final List<dynamic> providers = await channel.invokeMethod(
+    return await channel.invokeListMethod<String>(
       'fetchSignInMethodsForEmail',
       <String, String>{'email': email, 'app': app.name},
     );
-    return providers?.cast<String>();
   }
 
   /// Triggers the Firebase Authentication backend to send a password-reset
@@ -147,10 +133,7 @@ class FirebaseAuth {
     @required String email,
   }) async {
     assert(email != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return await channel.invokeMethod(
+    return await channel.invokeMethod<void>(
       'sendPasswordResetEmail',
       <String, String>{'email': email, 'app': app.name},
     );
@@ -205,10 +188,8 @@ class FirebaseAuth {
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Google accounts are not enabled.
   Future<FirebaseUser> signInWithCredential(AuthCredential credential) async {
     assert(credential != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+    final Map<String, dynamic> data =
+        await channel.invokeMapMethod<String, dynamic>(
       'signInWithCredential',
       <String, dynamic>{
         'app': app.name,
@@ -288,10 +269,7 @@ class FirebaseAuth {
       'app': app.name,
     };
 
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod('verifyPhoneNumber', params);
+    await channel.invokeMethod<void>('verifyPhoneNumber', params);
   }
 
   /// Tries to sign in a user with a given Custom Token [token].
@@ -314,10 +292,8 @@ class FirebaseAuth {
   ///     Ensure your app's SHA1 is correct in the Firebase console.
   Future<FirebaseUser> signInWithCustomToken({@required String token}) async {
     assert(token != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+    final Map<String, dynamic> data =
+        await channel.invokeMapMethod<String, dynamic>(
       'signInWithCustomToken',
       <String, String>{'token': token, 'app': app.name},
     );
@@ -331,19 +307,14 @@ class FirebaseAuth {
   /// the [onAuthStateChanged] stream.
   Future<void> signOut() async {
     return await channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod("signOut", <String, String>{'app': app.name});
+        .invokeMethod<void>("signOut", <String, String>{'app': app.name});
   }
 
   /// Returns the currently signed-in [FirebaseUser] or [null] if there is none.
   Future<FirebaseUser> currentUser() async {
-    final Map<dynamic, dynamic> data = await channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod("currentUser", <String, String>{'app': app.name});
+    final Map<String, dynamic> data = await channel
+        .invokeMapMethod<String, dynamic>(
+            "currentUser", <String, String>{'app': app.name});
     final FirebaseUser currentUser =
         data == null ? null : FirebaseUser._(data, app);
     return currentUser;
@@ -365,10 +336,8 @@ class FirebaseAuth {
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that this type of account is not enabled.
   Future<FirebaseUser> linkWithCredential(AuthCredential credential) async {
     assert(credential != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+    final Map<String, dynamic> data =
+        await channel.invokeMapMethod<String, dynamic>(
       'linkWithCredential',
       <String, dynamic>{
         'app': app.name,
@@ -385,10 +354,8 @@ class FirebaseAuth {
   /// code should follow the conventions defined by the IETF in BCP47.
   Future<void> setLanguageCode(String language) async {
     assert(language != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await FirebaseAuth.channel.invokeMethod('setLanguageCode', <String, String>{
+    await FirebaseAuth.channel
+        .invokeMethod<void>('setLanguageCode', <String, String>{
       'language': language,
       'app': app.name,
     });
