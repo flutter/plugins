@@ -1,3 +1,7 @@
+## 0.5.0
+
+* Add a key parameter to the GoogleMap widget.
+
 ## 0.4.0
 
 * Change events are call backs on GoogleMap widget.

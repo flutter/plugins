@@ -89,6 +89,9 @@ Which must be reflected in the application's `AndroidManifest.xml`. E.g.:
         ...
 ```
 
+**Note:** Not calling `AlarmService.setPluginRegistrant` will result in an exception being
+thrown when an alarm eventually fires.
+
 For help getting started with Flutter, view our online
 [documentation](http://flutter.io/).
 
