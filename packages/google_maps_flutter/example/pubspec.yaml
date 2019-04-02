@@ -14,7 +14,7 @@ dev_dependencies:
     path: ../
   flutter_driver:
     sdk: flutter
-  test: any
+  test: ^1.6.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
