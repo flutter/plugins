@@ -274,7 +274,7 @@ class _EmailLinkSignInSectionState extends State<_EmailLinkSignInSection>
       email: _userEmail,
       url: '<Url with domain from your Firebase project>',
       handleCodeInApp: true,
-      iOSBundleID: '',
+      iOSBundleID: 'io.flutter.plugins.firebaseAuthExample',
       androidPackageName: 'io.flutter.plugins.firebaseauthexample',
       androidInstallIfNotAvailable: true,
       androidMinimumVersion: "1",
