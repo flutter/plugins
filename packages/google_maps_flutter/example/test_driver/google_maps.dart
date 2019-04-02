@@ -57,4 +57,44 @@ void main() {
     compassEnabled = await inspector.isCompassEnabled();
     expect(compassEnabled, true);
   });
+
+  test('updateMinMaxZoomLevels', () async {
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    const MinMaxZoomPreference initialZoomLevel = MinMaxZoomPreference(2, 4);
+    const MinMaxZoomPreference finalZoomLevel = MinMaxZoomPreference(3, 8);
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        initialCameraPosition: _kInitialCameraPosition,
+        minMaxZoomPreference: initialZoomLevel,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    MinMaxZoomPreference zoomLevel = await inspector.getMinMaxZoomLevels();
+    expect(zoomLevel, equals(initialZoomLevel));
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        initialCameraPosition: _kInitialCameraPosition,
+        minMaxZoomPreference: finalZoomLevel,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
+
+    zoomLevel = await inspector.getMinMaxZoomLevels();
+    expect(zoomLevel, equals(finalZoomLevel));
+  });
 }
