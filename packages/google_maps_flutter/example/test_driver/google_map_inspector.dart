@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 /// Inspect Google Maps state using the platform SDK.
 ///
@@ -16,5 +17,12 @@ class GoogleMapInspector {
 
   Future<bool> isCompassEnabled() async {
     return await _channel.invokeMethod<bool>('map#isCompassEnabled');
+  }
+
+  Future<MinMaxZoomPreference> getMinMaxZoomLevels() async {
+    final List<double> zoomLevels =
+        (await _channel.invokeMethod<List<dynamic>>('map#getMinMaxZoomLevels'))
+            .cast<double>();
+    return MinMaxZoomPreference(zoomLevels[0], zoomLevels[1]);
   }
 }

@@ -128,6 +128,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isCompassEnabled"]) {
     NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
     result(isCompassEnabled);
+  } else if ([call.method isEqualToString:@"map#getMinMaxZoomLevels"]) {
+    NSArray* zoomLevels = @[ @(_mapView.minZoom), @(_mapView.maxZoom) ];
+    result(zoomLevels);
   } else {
     result(FlutterMethodNotImplemented);
   }
