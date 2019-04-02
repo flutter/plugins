@@ -1,4 +1,4 @@
-## 0.10.0
+## 0.9.8
 
 * Add metadata field to DocumentSnapshot.
 
