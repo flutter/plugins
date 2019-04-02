@@ -21,8 +21,12 @@ class Transaction {
       'path': documentReference.path,
     });
     if (result != null) {
-      return DocumentSnapshot._(documentReference.path,
-          result['data']?.cast<String, dynamic>(), _firestore);
+      return DocumentSnapshot._(
+          documentReference.path,
+          result['data']?.cast<String, dynamic>(),
+          SnapshotMetadata._(result['metadata']['hasPendingWrites'],
+              result['metadata']['isFromCache']),
+          _firestore);
     } else {
       return null;
     }
