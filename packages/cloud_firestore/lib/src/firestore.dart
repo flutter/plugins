@@ -119,7 +119,7 @@ class Firestore {
       'transactionId': transactionId,
       'transactionTimeout': timeout.inMilliseconds
     });
-    return result ?? <String, dynamic>{};
+    return result?.cast<String, dynamic>() ?? <String, dynamic>{};
   }
 
   @deprecated
