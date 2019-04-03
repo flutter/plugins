@@ -1,3 +1,8 @@
+## 0.5.1+1
+
+* Check iOS camera authorizationStatus and return an error, if the access was
+  denied.
+
 ## 0.5.1
 
 * Android: Do not delete original image after scaling if the image is from gallery.
@@ -157,6 +162,7 @@
 
 * Updated dependencies
 * **Breaking Change**: You need to add a maven section with the "https://maven.google.com" endpoint to the repository section of your `android/build.gradle`. For example:
+
 ```gradle
 allprojects {
     repositories {

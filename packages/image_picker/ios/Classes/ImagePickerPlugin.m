@@ -7,6 +7,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Photos/Photos.h>
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 
 @interface FLTImagePickerPlugin () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 @end
@@ -61,7 +62,7 @@ static const int SOURCE_GALLERY = 1;
 
     switch (imageSource) {
       case SOURCE_CAMERA:
-        [self showCamera];
+        [self checkAuthorization];
         break;
       case SOURCE_GALLERY:
         [self showPhotoLibrary];
@@ -88,7 +89,7 @@ static const int SOURCE_GALLERY = 1;
 
     switch (imageSource) {
       case SOURCE_CAMERA:
-        [self showCamera];
+        [self checkAuthorization];
         break;
       case SOURCE_GALLERY:
         [self showPhotoLibrary];
@@ -116,6 +117,42 @@ static const int SOURCE_GALLERY = 1;
                       cancelButtonTitle:@"OK"
                       otherButtonTitles:nil] show];
   }
+}
+
+- (void)checkAuthorization {
+  AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+  
+  switch (status) {
+    case AVAuthorizationStatusAuthorized:
+      [self showCamera];
+      break;
+    case AVAuthorizationStatusNotDetermined: {
+      [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+        if (granted) {
+          dispatch_async(dispatch_get_main_queue(), ^{
+            if (granted) {
+              [self showCamera];
+            }
+          });
+        } else {
+          dispatch_async(dispatch_get_main_queue(), ^{
+            [self errorNoAccess];
+          });
+        }
+      }];
+    }; break;
+    case AVAuthorizationStatusDenied:
+    case AVAuthorizationStatusRestricted:
+    default:
+      [self errorNoAccess];
+      break;
+  }
+}
+
+- (void)errorNoAccess {
+  _result([FlutterError errorWithCode:@"camera_access_denied"
+                             message:@"The user did not allow camera access."
+                             details:nil]);
 }
 
 - (void)showPhotoLibrary {
