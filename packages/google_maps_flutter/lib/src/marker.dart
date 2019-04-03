@@ -11,9 +11,6 @@ dynamic _offsetToJson(Offset offset) {
   return <dynamic>[offset.dx, offset.dy];
 }
 
-/// Defination for marker drag callback
-typedef void MarkerDragCallback(LatLng position);
-
 /// Text labels for a [Marker] info window.
 class InfoWindow {
   const InfoWindow({
@@ -163,7 +160,6 @@ class Marker {
     this.visible = true,
     this.zIndex = 0.0,
     this.onTap,
-    this.onDrag,
   }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
 
   /// Uniquely identifies a [Marker].
@@ -220,9 +216,6 @@ class Marker {
   /// Callbacks to receive tap events for markers placed on this map.
   final VoidCallback onTap;
 
-  /// Callbacks to receive drag events for markers placed on this map.
-  final MarkerDragCallback onDrag;
-
   /// Creates a new [Marker] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Marker copyWith({
@@ -238,7 +231,6 @@ class Marker {
     bool visibleParam,
     double zIndexParam,
     VoidCallback onTapParam,
-    MarkerDragCallback onDragParam,
   }) {
     return Marker(
       markerId: markerId,
@@ -254,7 +246,6 @@ class Marker {
       visible: visibleParam ?? visible,
       zIndex: zIndexParam ?? zIndex,
       onTap: onTapParam ?? onTap,
-      onDrag: onDragParam ?? onDrag,
     );
   }
 
