@@ -29,4 +29,16 @@ class GoogleMapInspector {
   Future<bool> isZoomGesturesEnabled() async {
     return await _channel.invokeMethod<bool>('map#isZoomGesturesEnabled');
   }
+
+  Future<bool> isRotateGesturesEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isRotateGesturesEnabled');
+  }
+
+  Future<bool> isTiltGesturesEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isTiltGesturesEnabled');
+  }
+
+  Future<bool> isScrollGesturesEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isScrollGesturesEnabled');
+  }
 }
