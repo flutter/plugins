@@ -128,7 +128,7 @@ class DocumentReference {
             'Query#removeListener',
             <String, dynamic>{'handle': handle},
           );
-          Firestore._queryObservers.remove(handle);
+          Firestore._documentObservers.remove(handle);
         });
       },
     );
