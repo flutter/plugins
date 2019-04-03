@@ -1,3 +1,7 @@
+## 0.9.8
+
+* Adds support for email link authentication.
+
 ## 0.9.7+1
 
 * Update README with example of getting a document.
