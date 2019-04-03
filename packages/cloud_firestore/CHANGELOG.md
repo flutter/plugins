@@ -1,6 +1,14 @@
-## 0.9.8
+## 0.9.10
 
 * Bump Android dependencies to latest.
+
+## 0.9.9
+
+* Remove `invokeMapMethod` calls to prevent crash.
+
+## 0.9.8
+
+* Add metadata field to DocumentSnapshot.
 
 ## 0.9.7+2
 
