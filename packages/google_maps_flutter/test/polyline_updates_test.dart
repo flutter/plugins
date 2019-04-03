@@ -125,7 +125,7 @@ void main() {
 
     final Polyline update = platformGoogleMap.polylinesToChange.first;
     expect(update, equals(m2));
-    expect(update.geodesic, 'changed');
+    expect(update.geodesic, true);
   });
 
   testWidgets("Multi Update", (WidgetTester tester) async {
