@@ -187,7 +187,6 @@ class _EmailLinkSignInSectionState extends State<_EmailLinkSignInSection>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    print('$state!');
     if (state == AppLifecycleState.resumed) {
       final Uri link = await _retrieveDynamicLink();
 
