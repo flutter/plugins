@@ -1,3 +1,7 @@
+## 0.9.9
+
+* Remove `invokeMapMethod` calls to prevent crash.
+
 ## 0.9.8
 
 * Add metadata field to DocumentSnapshot.
