@@ -1,6 +1,6 @@
 ## 0.5.1
 
-* Update android gradle version.
+* Update Android gradle version.
 * Added infrastructure to write integration tests.
 
 ## 0.5.0
