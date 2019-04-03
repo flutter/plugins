@@ -2,7 +2,7 @@
 
 * Support for cloud_firestore running in the background on Android.
 * Fixed a bug in cleanup for DocumentReference.snapshots().
-* Added an integration test for DocumentReference.snapshots().
+* Additional integration testing.
 
 ## 0.9.9
 
