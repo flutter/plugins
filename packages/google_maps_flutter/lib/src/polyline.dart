@@ -37,7 +37,7 @@ class Polyline {
     this.endCap = Cap.buttCap,
     this.geodesic = false,
     this.jointType = JointType.mitered,
-    this.points = const <LatLng>[],
+    this.points = const <LatLng> [],
     this.pattern = const <PatternItem> [],
     this.startCap = Cap.buttCap,
     this.visible = true,
