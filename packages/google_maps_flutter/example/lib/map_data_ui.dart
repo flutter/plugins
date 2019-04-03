@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_flutter_example/page.dart';
+import 'page.dart';
 
 class MapDataUiPage extends Page {
   MapDataUiPage() : super(const Icon(Icons.map), 'Map data');
