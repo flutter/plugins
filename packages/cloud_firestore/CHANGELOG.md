@@ -1,4 +1,4 @@
-## 0.9.8+1
+## 0.9.9
 
 * Remove `invokeMapMethod` calls to prevent crash.
 
