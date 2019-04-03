@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Fix to initialize Fabric.
+
 ## 0.0.2+1
 
 * Update variable name `enableInDevMode` in README.
