@@ -36,8 +36,8 @@ class MapUiBodyState extends State<MapUiBody> {
     zoom: 11.0,
   );
 
-  GoogleMapController mapController;
   CameraPosition _position = _kInitialPosition;
+  bool _isMapCreated = false;
   bool _isMoving = false;
   bool _compassEnabled = true;
   CameraTargetBounds _cameraTargetBounds = CameraTargetBounds.unbounded;
@@ -59,12 +59,6 @@ class MapUiBodyState extends State<MapUiBody> {
     super.initState();
   }
 
-  void _onMapChanged() {
-    setState(() {
-      _extractMapInfo();
-    });
-  }
-
   void _onLocationClick(LatLng location) {
     _tappedLocation = location;
   }
@@ -81,14 +75,8 @@ class MapUiBodyState extends State<MapUiBody> {
     _tapped = location;
   }
 
-  void _extractMapInfo() {
-    _position = mapController.cameraPosition;
-    _isMoving = mapController.isCameraMoving;
-  }
-
   @override
   void dispose() {
-    mapController.removeListener(_onMapChanged);
     super.dispose();
   }
 
@@ -218,19 +206,20 @@ class MapUiBodyState extends State<MapUiBody> {
   @override
   Widget build(BuildContext context) {
     final GoogleMap googleMap = GoogleMap(
-        onMapCreated: onMapCreated,
-        initialCameraPosition: _kInitialPosition,
-        trackCameraPosition: true,
-        compassEnabled: _compassEnabled,
-        cameraTargetBounds: _cameraTargetBounds,
-        minMaxZoomPreference: _minMaxZoomPreference,
-        mapType: _mapType,
-        rotateGesturesEnabled: _rotateGesturesEnabled,
-        scrollGesturesEnabled: _scrollGesturesEnabled,
-        tiltGesturesEnabled: _tiltGesturesEnabled,
-        zoomGesturesEnabled: _zoomGesturesEnabled,
-        myLocationEnabled: _myLocationEnabled,
-        myLocationButtonEnabled: _myLocationButtonEnabled);
+      onMapCreated: onMapCreated,
+      initialCameraPosition: _kInitialPosition,
+      compassEnabled: _compassEnabled,
+      cameraTargetBounds: _cameraTargetBounds,
+      minMaxZoomPreference: _minMaxZoomPreference,
+      mapType: _mapType,
+      rotateGesturesEnabled: _rotateGesturesEnabled,
+      scrollGesturesEnabled: _scrollGesturesEnabled,
+      tiltGesturesEnabled: _tiltGesturesEnabled,
+      zoomGesturesEnabled: _zoomGesturesEnabled,
+      myLocationEnabled: _myLocationEnabled,
+      myLocationButtonEnabled: _myLocationButtonEnabled,
+      onCameraMove: _updateCameraPosition,
+    );
 
     final List<Widget> columnChildren = <Widget>[
       Padding(
@@ -245,7 +234,7 @@ class MapUiBodyState extends State<MapUiBody> {
       ),
     ];
 
-    if (mapController != null) {
+    if (_isMapCreated) {
       columnChildren.add(
         Expanded(
           child: ListView(
@@ -285,15 +274,15 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  void _updateCameraPosition(CameraPosition position) {
+    setState(() {
+      _position = position;
+    });
+  }
+
   void onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-    mapController.addListener(_onMapChanged);
-    mapController.onMapLongTapped.add(_onMapLongTapped);
-    mapController.onMapTapped.add(_onMapTapped);
-    mapController.onLocationButtonClick.add(_onLocationButtonClick);
-    mapController.onLocationClick.add(_onLocationClick);
-    mapController.onMapLongTapped.add(_onMapLongTapped);
-    _extractMapInfo();
-    setState(() {});
+    setState(() {
+      _isMapCreated = true;
+    });
   }
 }

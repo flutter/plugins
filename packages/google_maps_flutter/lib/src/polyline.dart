@@ -9,70 +9,25 @@ part of google_maps_flutter;
 ///
 /// Polylines are owned by a single [GoogleMapController] which fires events
 /// as polylines are added, updated, tapped, and removed.
+@immutable
 class Polyline {
-  @visibleForTesting
-  Polyline(this._id, this._options);
-
-  /// A unique identifier for this Polyline.
-  ///
-  /// The identirifer is an arbitrary unique string.
-  final String _id;
-  String get id => _id;
-
-  PolylineOptions _options;
-
-  /// The polyline configuration options most recently applied programmatically
-  /// via the map controller.
-  ///
-  /// The returned value does not reflect any changes made to the polyline through
-  /// touch events. Add listeners to the owning map controller to track those.
-  PolylineOptions get options => _options;
-}
-
-enum Cap { ButtCap, RoundCap, SquareCap }
-enum PatternItem { Dash, Dot, Gap }
-
-class Pattern {
-  const Pattern({
-    this.length,
-    this.patternItem,
+  const Polyline(
+      {@required this.polylineId,
+      this.points,
+      this.clickable,
+      this.color,
+      this.endCap,
+      this.geodesic,
+      this.jointType,
+      this.pattern,
+      this.startCap,
+      this.visible,
+      this.width,
+      this.zIndex,
+      this.onTap,
   });
 
-  final int length;
-  final PatternItem patternItem;
-
-  dynamic _toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
-    json['length'] = length;
-    json['pattern'] = patternItem.toString();
-    return json;
-  }
-}
-
-enum JointType { Bevel, Default, Route }
-
-/// Configuration options for [Marker] instances.
-///
-/// When used to change configuration, null values will be interpreted as
-/// "do not change this configuration option".
-class PolylineOptions {
-  /// Creates a set of polyline configuration options.
-  ///
-  /// By default, every non-specified field is null, meaning no desire to change
-  /// polyline defaults or current configuration.
-  const PolylineOptions({
-    this.points,
-    this.clickable,
-    this.color,
-    this.endCap,
-    this.geodesic,
-    this.jointType,
-    this.pattern,
-    this.startCap,
-    this.visible,
-    this.width,
-    this.zIndex,
-  });
+  final PolylineId polylineId;
 
   /// Adds a vertex to the end of the polyline being built.
   ///
@@ -113,37 +68,19 @@ class PolylineOptions {
   /// earlier, and thus appearing to be closer to the surface of the Earth.
   final double zIndex;
 
-  /// Default marker options.
-  ///
-  /// Specifies a marker that
-  /// * is visible; [visible] is true
-  /// * is placed at the base of the drawing order; [zIndex] is 0.0
-  static const PolylineOptions defaultOptions = PolylineOptions(
-    points: <LatLng>[
-      LatLng(0.0, 0.0),
-      LatLng(1.0, 1.0),
-    ],
-    clickable: true,
-    color: 0xff000000,
-    endCap: Cap.ButtCap,
-    geodesic: false,
-    jointType: JointType.Default,
-    pattern: <Pattern>[],
-    startCap: Cap.ButtCap,
-    visible: true,
-    width: 10,
-    zIndex: 0.0,
-  );
+  /// Callbacks to receive tap events for markers placed on this map.
+  final VoidCallback onTap;
 
   /// Creates a new options object whose values are the same as this instance,
   /// unless overwritten by the specified [changes].
   ///
   /// Returns this instance, if [changes] is null.
-  PolylineOptions copyWith(PolylineOptions changes) {
+  Polyline copyWith(Polyline changes) {
     if (changes == null) {
       return this;
     }
-    return PolylineOptions(
+    return Polyline(
+      polylineId: changes.polylineId ?? polylineId,
       points: changes.points ?? points,
       clickable: changes.clickable ?? clickable,
       color: changes.color ?? color,
@@ -155,6 +92,7 @@ class PolylineOptions {
       visible: changes.visible ?? visible,
       width: changes.width ?? width,
       zIndex: changes.zIndex ?? zIndex,
+      onTap: changes.onTap ?? onTap,
     );
   }
 
@@ -181,6 +119,7 @@ class PolylineOptions {
       }
     }
 
+    addIfPresent('polylineId', polylineId);
     addIfPresent('points', pointsJson);
     addIfPresent('clickable', clickable);
     addIfPresent('color', color);
@@ -194,4 +133,84 @@ class PolylineOptions {
     addIfPresent('zIndex', zIndex);
     return json;
   }
+
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    final Polyline typedOther = other;
+    return polylineId == typedOther.polylineId;
+  }
+
+  @override
+  int get hashCode => polylineId.hashCode;
+
+  @override
+  String toString() {
+    return 'Polyline{polylineId: $polylineId, points: $points, clickable: $clickable, color: $color, endCap: $endCap, geodesic: $geodesic, jointType: $jointType, pattern: $pattern, startCap: $startCap, visible: $visible, width: $width, zIndex: $zIndex}';
+  }
+}
+
+enum Cap { ButtCap, RoundCap, SquareCap }
+enum PatternItem { Dash, Dot, Gap }
+
+class Pattern {
+  const Pattern({
+    this.length,
+    this.patternItem,
+  });
+
+  final int length;
+  final PatternItem patternItem;
+
+  dynamic _toJson() {
+    final Map<String, dynamic> json = <String, dynamic>{};
+    json['length'] = length;
+    json['pattern'] = patternItem.toString();
+    return json;
+  }
+}
+
+enum JointType { Bevel, Default, Route }
+
+class PolylineId {
+  PolylineId(this.value) : assert(value != null);
+
+  /// value of the [PolylineId].
+  final String value;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    final PolylineId typedOther = other;
+    return value == typedOther.value;
+  }
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  String toString() {
+    return 'PolylineId{value: $value}';
+  }
+}
+
+Map<PolylineId, Polyline> _keyByPolylineId(Iterable<Polyline> polylines) {
+  if (polylines == null) {
+    return <PolylineId, Polyline>{};
+  }
+  return Map<PolylineId, Polyline>.fromEntries(polylines.map(
+      (Polyline polyline) =>
+          MapEntry<PolylineId, Polyline>(polyline.polylineId, polyline)));
+}
+
+List<Map<String, dynamic>> _serializePolylineSet(Set<Polyline> polylines) {
+  if (polylines == null) {
+    return null;
+  }
+  return polylines
+      .map<Map<String, dynamic>>((Polyline m) => m._toJson())
+      .toList();
 }

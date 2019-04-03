@@ -39,6 +39,7 @@
     self.shouldAddStorePayment = shouldAddStorePayment;
     self.updatedDownloads = updatedDownloads;
     self.transactionsSetter = [NSMutableDictionary new];
+    [queue addTransactionObserver:self];
   }
   return self;
 }
@@ -51,13 +52,23 @@
   [self.queue finishTransaction:transaction];
 }
 
+- (void)restoreTransactions:(nullable NSString *)applicationName {
+  if (applicationName) {
+    [self.queue restoreCompletedTransactionsWithApplicationUsername:applicationName];
+  } else {
+    [self.queue restoreCompletedTransactions];
+  }
+}
+
 #pragma mark - observing
 // Sent when the transaction array has changed (additions or state changes).  Client should check
 // state of transactions and finish as appropriate.
 - (void)paymentQueue:(SKPaymentQueue *)queue
     updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
   for (SKPaymentTransaction *transaction in transactions) {
-    [self.transactionsSetter setObject:transaction forKey:transaction.transactionIdentifier];
+    if (transaction.transactionIdentifier) {
+      [self.transactionsSetter setObject:transaction forKey:transaction.transactionIdentifier];
+    }
   }
   // notify dart through callbacks.
   self.transactionsUpdated(transactions);

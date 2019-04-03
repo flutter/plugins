@@ -28,7 +28,10 @@ interface GoogleMapOptionsSink {
 
   void setMyLocationEnabled(boolean myLocationEnabled);
 
-  void setMapToolbarEnabled(boolean mapToolbarEnabled);
+  void setInitialMarkers(Object initialMarkers);
 
+  void setInitialPolylines(Object initialPolylines);
+  
   void setMyLocationButtonEnabled(boolean myLocationButtonEnabled);
+
 }

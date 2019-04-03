@@ -7,8 +7,32 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import '../channel.dart';
+import 'purchase_wrapper.dart';
 import 'sku_details_wrapper.dart';
 import 'enum_converters.dart';
+
+const String _kOnPurchasesUpdated =
+    'PurchasesUpdatedListener#onPurchasesUpdated(int, List<Purchase>)';
+const String _kOnBillingServiceDisconnected =
+    'BillingClientStateListener#onBillingServiceDisconnected()';
+
+/// Callback triggered by Play in response to purchase activity.
+///
+/// This callback is triggered in response to all purchase activity while an
+/// instance of `BillingClient` is active. This includes purchases initiated by
+/// the app ([BillingClient.launchBillingFlow]) as well as purchases made in
+/// Play itself while this app is open.
+///
+/// This does not provide any hooks for purchases made in the past. See
+/// [BillingClient.queryPurchases] and [BillingClient.queryPurchaseHistory].
+///
+/// All purchase information should also be verified manually, with your server
+/// if at all possible. See ["Verify a
+/// purchase"](https://developer.android.com/google/play/billing/billing_library_overview#Verify).
+///
+/// Wraps a
+/// [`PurchasesUpdatedListener`](https://developer.android.com/reference/com/android/billingclient/api/PurchasesUpdatedListener.html).
+typedef void PurchasesUpdatedListener(PurchasesResultWrapper purchasesResult);
 
 /// This class can be used directly instead of [InAppPurchaseConnection] to call
 /// Play-specific billing APIs.
@@ -23,8 +47,10 @@ import 'enum_converters.dart';
 /// some minor changes to account for language differences. Callbacks have been
 /// converted to futures where appropriate.
 class BillingClient {
-  BillingClient() {
+  BillingClient(PurchasesUpdatedListener onPurchasesUpdated) {
+    assert(onPurchasesUpdated != null);
     channel.setMethodCallHandler(_callHandler);
+    _callbacks[_kOnPurchasesUpdated] = [onPurchasesUpdated];
   }
 
   // Occasionally methods in the native layer require a Dart callback to be
@@ -35,7 +61,7 @@ class BillingClient {
   // matching callback here to remember, and then once its twin is triggered it
   // sends the handle back over the platform channel. We then access that handle
   // in this array and call it in Dart code. See also [_callHandler].
-  List<Map<String, Function>> _callbacks = <Map<String, Function>>[];
+  Map<String, List<Function>> _callbacks = <String, List<Function>>{};
 
   /// Calls
   /// [`BillingClient#isReady()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#isReady())
@@ -56,13 +82,12 @@ class BillingClient {
   Future<BillingResponse> startConnection(
       {@required
           OnBillingServiceDisconnected onBillingServiceDisconnected}) async {
-    final Map<String, Function> callbacks = <String, Function>{
-      'OnBillingServiceDisconnected': onBillingServiceDisconnected,
-    };
-    _callbacks.add(callbacks);
+    List<Function> disconnectCallbacks =
+        _callbacks[_kOnBillingServiceDisconnected] ??= [];
+    disconnectCallbacks.add(onBillingServiceDisconnected);
     return BillingResponseConverter().fromJson(await channel.invokeMethod(
         "BillingClient#startConnection(BillingClientStateListener)",
-        <String, dynamic>{'handle': _callbacks.length - 1}));
+        <String, dynamic>{'handle': disconnectCallbacks.length - 1}));
   }
 
   /// Calls
@@ -109,8 +134,8 @@ class BillingClient {
   /// to complete the transaction there.
   ///
   /// This method returns a [BillingResponse] representing the initial attempt
-  /// to show the Google Play purchase screen.
-  /// TODO(mklim, flutter/flutter#26326): Expose onPurchasesUpdated() result.
+  /// to show the Google Play billing flow. Actual purchase updates are
+  /// delivered via the [PurchasesUpdatedListener].
   ///
   /// This method calls through to
   /// [`BillingClient#launchBillingFlow`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#launchbillingflow).
@@ -132,12 +157,55 @@ class BillingClient {
         arguments));
   }
 
+  /// Fetches recent purchases for the given [SkuType].
+  ///
+  /// This only fetches whatever purchase history Play happens to have cached
+  /// in memory.
+  ///
+  /// All purchase information should also be verified manually, with your server
+  /// if at all possible. See ["Verify a
+  /// purchase"](https://developer.android.com/google/play/billing/billing_library_overview#Verify).
+  ///
+  /// This wraps [`BillingClient#queryPurchases(String
+  /// skutype)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#querypurchases).
+  Future<PurchasesResultWrapper> queryPurchases(SkuType skuType) async {
+    assert(skuType != null);
+    return PurchasesResultWrapper.fromJson(await channel.invokeMapMethod(
+        'BillingClient#queryPurchases(String)',
+        <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
+  }
+
+  /// Fetches purchase history for the given [SkuType].
+  ///
+  /// This makes a network request via Play and returns the most recent purchase
+  /// for each [SkuDetailsWrapper] of the given [SkuType].
+  ///
+  /// All purchase information should also be verified manually, with your
+  /// server if at all possible. See ["Verify a
+  /// purchase"](https://developer.android.com/google/play/billing/billing_library_overview#Verify).
+  ///
+  /// This wraps [`BillingClient#queryPurchaseHistoryAsync(String skuType,
+  /// PurchaseHistoryResponseListener
+  /// listener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#querypurchasehistoryasync).
+  Future<PurchasesResultWrapper> queryPurchaseHistory(SkuType skuType) async {
+    assert(skuType != null);
+    return PurchasesResultWrapper.fromJson(await channel.invokeMapMethod(
+        'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)',
+        <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
+  }
+
   Future<void> _callHandler(MethodCall call) async {
     switch (call.method) {
-      case 'BillingClientStateListener#onBillingServiceDisconnected()':
+      case _kOnPurchasesUpdated:
+        // The purchases updated listener is a singleton.
+        assert(_callbacks[_kOnPurchasesUpdated].length == 1);
+        final PurchasesUpdatedListener listener =
+            _callbacks[_kOnPurchasesUpdated].first;
+        listener(PurchasesResultWrapper.fromJson(call.arguments));
+        break;
+      case _kOnBillingServiceDisconnected:
         final int handle = call.arguments['handle'];
-        await _callbacks[handle]['OnBillingServiceDisconnected']();
-        _callbacks.removeAt(handle);
+        await _callbacks[_kOnBillingServiceDisconnected][handle]();
         break;
     }
   }
@@ -162,6 +230,9 @@ enum BillingResponse {
   // further changes.
   @JsonValue(-2)
   featureNotSupported,
+
+  @JsonValue(-1)
+  serviceDisconnected,
 
   @JsonValue(0)
   ok,

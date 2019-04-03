@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: _error == null
                   ? Text(
                       'Button tapped $_counter time${_counter == 1 ? '' : 's'}.\n\n'
-                          'This includes all devices, ever.',
+                      'This includes all devices, ever.',
                     )
                   : Text(
                       'Error retrieving button tap count:\n${_error.message}',

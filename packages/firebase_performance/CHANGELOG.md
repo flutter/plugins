@@ -1,3 +1,8 @@
+## 0.1.0+4
+
+* Remove deprecated methods for iOS.
+* Fix bug where `Trace` attributes were not set correctly.
+
 ## 0.1.0+3
 
 * Log messages about automatic configuration of the default app are now less confusing.
