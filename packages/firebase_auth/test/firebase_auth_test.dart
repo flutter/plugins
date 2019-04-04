@@ -130,7 +130,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('sendSignInLinkToEmail', arguments: <String, dynamic>{
+          isMethodCall('sendLinkToEmail', arguments: <String, dynamic>{
             'email': 'test@example.com',
             'url': 'http://www.example.com/',
             'handleCodeInApp': true,
