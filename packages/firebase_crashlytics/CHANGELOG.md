@@ -1,3 +1,7 @@
+## 0.0.2+2
+
+* Added an integration test.
+
 ## 0.0.2+1
 
 * Update variable name `enableInDevMode` in README.
