@@ -192,7 +192,7 @@ class FirebaseAuth {
   }
 
   /// Checks if link is an email sign-in link.
-  Future<bool> isSignInWithEmailLink({String link}) async {
+  Future<bool> isSignInWithEmailLink(String link) async {
     return await channel.invokeMethod(
       'isSignInWithEmailLink',
       <String, String>{'link': link, 'app': app.name},
