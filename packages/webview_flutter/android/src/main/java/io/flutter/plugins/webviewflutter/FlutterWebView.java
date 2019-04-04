@@ -181,6 +181,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
             webView.getSettings().setUserAgentString(agent.toString());
           }
           break;
+        case "allowsInlineMediaPlayback":
+          // iOS only setting.
+          break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }

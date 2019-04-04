@@ -83,6 +83,7 @@
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     _webView.navigationDelegate = self;
+    _webView.UIDelegate = self;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
@@ -355,6 +356,14 @@
     decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction
                     decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
   decisionHandler(WKNavigationActionPolicyAllow);
+}
+
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
+    if (!navigationAction.targetFrame.isMainFrame) {
+        // TODO let flutter decide what to do!
+        [webView loadRequest:navigationAction.request];
+    }
+    return nil;
 }
 
 @end
