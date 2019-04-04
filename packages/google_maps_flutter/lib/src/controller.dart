@@ -107,6 +107,7 @@ class GoogleMapController {
   ///
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMarkers(_MarkerUpdates markerUpdates) async {
+    print("UPDATE MARKERS CALLS");
     assert(markerUpdates != null);
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
@@ -127,7 +128,7 @@ class GoogleMapController {
     assert(polylineUpdates != null);
     // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod(
-      'polyline#update',
+      'polylines#update',
       polylineUpdates._toMap(),
     );
   }

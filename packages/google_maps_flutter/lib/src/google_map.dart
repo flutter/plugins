@@ -153,6 +153,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'initialCameraPosition': widget.initialCameraPosition?._toMap(),
       'options': _googleMapOptions.toMap(),
       'markersToAdd': _serializeMarkerSet(widget.markers),
+      'polylinesToAdd': _serializePolylineSet(widget.polylines),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
@@ -189,6 +190,7 @@ class _GoogleMapState extends State<GoogleMap> {
     super.didUpdateWidget(oldWidget);
     _updateOptions();
     _updateMarkers();
+    _updatePolylines();
   }
 
   void _updateOptions() async {

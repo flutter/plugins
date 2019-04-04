@@ -34,8 +34,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   Map<PolylineId, Polyline> polylines = <PolylineId, Polyline>{};
   PolylineId selectedPolyline;
   int _polylineIdCounter = 1;
-  Polyline _selectedPolyline;
-
+  
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
   }
@@ -46,6 +45,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   }
 
   void _onPolylineTapped(PolylineId polylineId) {
+    print('Poly tapped');
     final Polyline tappedPolyline = polylines[polylineId];
     if (tappedPolyline != null) {
       setState(() {
@@ -54,6 +54,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
           polylines[selectedPolyline] = resetOld;
         }
         selectedPolyline = polylineId;
+        print('Poly line is $polylineId');
         final Polyline newPolyline = tappedPolyline.copyWith();
         polylines[polylineId] = newPolyline;
       });
@@ -93,6 +94,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     if (_polylineIdCounter == 12) {
       return;
     }
+    print('Adding Polyline');
 
     final String polylineIdVal = 'polyline_id_$_polylineIdCounter';
     _polylineIdCounter++;
@@ -121,16 +123,18 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
       polylineId: polylineId,
       points: points,
       clickable: true,
-      color: _getColor(), width: 10, visible: true,
+      color: _getColor(),
+      width: 10,
+      visible: true,
       onTap: () {
         _onPolylineTapped(polylineId);
       },
     );
+    print('Polyline $polylineId added');
     setState(() {
       polylines[polylineId] = polyline;
     });
   }
-
 
   void _remove() {
     setState(() {
@@ -150,9 +154,9 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   }
 
   Future<void> _changeStartCap() async {
-
     Cap newCap = Cap.ButtCap;
-    switch (_selectedPolyline.startCap) {
+    final Polyline polyline = polylines[selectedPolyline];
+    switch (polyline.startCap) {
       case Cap.ButtCap:
         newCap = Cap.RoundCap;
         break;
@@ -162,19 +166,19 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
       default:
         newCap = Cap.ButtCap;
     }
-    
-    final Polyline polyline = polylines[selectedPolyline];
+
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
         startCapParam: newCap,
       );
     });
-    
   }
 
   Future<void> _changeEndCap() async {
     Cap newCap = Cap.ButtCap;
-    switch (_selectedPolyline.endCap) {
+    final Polyline polyline = polylines[selectedPolyline];
+    
+    switch (polyline.endCap) {
       case Cap.ButtCap:
         newCap = Cap.RoundCap;
         break;
@@ -184,7 +188,6 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
       default:
         newCap = Cap.ButtCap;
     }
-    final Polyline polyline = polylines[selectedPolyline];
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
         endCapParam: newCap,
@@ -194,7 +197,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
 
   Future<void> _changeZIndex() async {
     final Polyline polyline = polylines[selectedPolyline];
-    final double current = _selectedPolyline.zIndex;
+    final double current = polyline.zIndex;
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
         zIndexParam: current == 12.0 ? 0.0 : current + 1.0,
@@ -212,8 +215,8 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   }
 
   Future<void> _changeWidth() async {
-    final double current = _selectedPolyline.width;
     final Polyline polyline = polylines[selectedPolyline];
+    final double current = polyline.width;
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
         widthParam: current > 40.0 ? 5.0 : current + 3.0,
@@ -222,8 +225,9 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   }
 
   Future<void> _changeJointType() async {
-    final JointType current = _selectedPolyline.jointType;
     JointType nextJointType = JointType.Default;
+    final Polyline polyline = polylines[selectedPolyline];
+    final JointType current = polyline.jointType;
     switch (current) {
       case JointType.Default:
         nextJointType = JointType.Bevel;
@@ -235,7 +239,6 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
         nextJointType = JointType.Default;
         break;
     }
-    final Polyline polyline = polylines[selectedPolyline];
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
         jointTypeParam: nextJointType,
@@ -244,8 +247,8 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   }
 
   Future<void> _changePattern() async {
-    final List<Pattern> current = _selectedPolyline.pattern;
     final Polyline polyline = polylines[selectedPolyline];
+    final List<Pattern> current = polyline.pattern;
     if (current.isNotEmpty) {
       setState(() {
         polylines[selectedPolyline] = polyline.copyWith(
@@ -253,13 +256,11 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
         );
       });
     } else {
-       setState(() {
-        polylines[selectedPolyline] = polyline.copyWith(
-          patternParam: <Pattern>[
-            const Pattern(length: 20, patternItem: PatternItem.Dash),
-            const Pattern(length: 10, patternItem: PatternItem.Gap),
-          ]
-        );
+      setState(() {
+        polylines[selectedPolyline] = polyline.copyWith(patternParam: <Pattern>[
+          const Pattern(length: 20, patternItem: PatternItem.Dash),
+          const Pattern(length: 10, patternItem: PatternItem.Gap),
+        ]);
       });
     }
   }
@@ -280,6 +281,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                 target: LatLng(-33.852, 151.211),
                 zoom: 11.0,
               ),
+              polylines: Set<Polyline>.of(polylines.values),
             ),
           ),
         ),
@@ -294,12 +296,12 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                       children: <Widget>[
                         FlatButton(
                           child: const Text('add'),
-                          onPressed: (_polylineIdCounter == 12) ? null : _add,
+                          onPressed: (_polylineIdCounter >= 12) ? null : _add,
                         ),
                         FlatButton(
                           child: const Text('remove'),
                           onPressed:
-                              (_selectedPolyline == null) ? null : _remove,
+                              (selectedPolyline == null) ? null : _remove,
                         ),
                       ],
                     ),
@@ -307,47 +309,47 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                       children: <Widget>[
                         FlatButton(
                           child: const Text('toggle visible'),
-                          onPressed: (_selectedPolyline == null)
+                          onPressed: (selectedPolyline == null)
                               ? null
                               : _toggleVisible,
                         ),
                         FlatButton(
                           child: const Text('change zIndex'),
-                          onPressed: (_selectedPolyline == null)
+                          onPressed: (selectedPolyline == null)
                               ? null
                               : _changeZIndex,
                         ),
                         FlatButton(
                           child: const Text('change color'),
                           onPressed:
-                              (_selectedPolyline == null) ? null : _changeColor,
+                              (selectedPolyline == null) ? null : _changeColor,
                         ),
                         FlatButton(
                           child: const Text('change start cap'),
-                          onPressed: (_selectedPolyline == null)
+                          onPressed: (selectedPolyline == null)
                               ? null
                               : _changeStartCap,
                         ),
                         FlatButton(
                           child: const Text('change end cap'),
-                          onPressed: (_selectedPolyline == null)
+                          onPressed: (selectedPolyline == null)
                               ? null
                               : _changeEndCap,
                         ),
                         FlatButton(
                           child: const Text('change width'),
                           onPressed:
-                              (_selectedPolyline == null) ? null : _changeWidth,
+                              (selectedPolyline == null) ? null : _changeWidth,
                         ),
                         FlatButton(
                           child: const Text('change pattern'),
-                          onPressed: (_selectedPolyline == null)
+                          onPressed: (selectedPolyline == null)
                               ? null
                               : _changePattern,
                         ),
                         FlatButton(
                           child: const Text('change joint type'),
-                          onPressed: (_selectedPolyline == null)
+                          onPressed: (selectedPolyline == null)
                               ? null
                               : _changeJointType,
                         ),

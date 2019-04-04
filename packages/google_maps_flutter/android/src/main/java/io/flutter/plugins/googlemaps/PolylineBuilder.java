@@ -14,23 +14,24 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.List;
 
 class PolylineBuilder implements PolylineOptionsSink {
-  private final GoogleMapController mapController;
   private final PolylineOptions polylineOptions;
-  private boolean consumesTapEvents;
+  private boolean consumeTapEvents;
 
-  PolylineBuilder(GoogleMapController mapController) {
-    this.mapController = mapController;
+  PolylineBuilder() {
     this.polylineOptions = new PolylineOptions();
   }
+ 
+  PolylineOptions build() {
+    return this.polylineOptions;
+  }
 
-  String build() {
-    final Polyline polyline = mapController.addPolyline(polylineOptions, consumesTapEvents);
-    return polyline.getId();
+  boolean consumeTapEvents() {
+    return this.consumeTapEvents;
   }
 
   @Override
   public void setConsumeTapEvents(boolean consumesTapEvents) {
-    this.consumesTapEvents = consumesTapEvents;
+    this.consumeTapEvents = consumesTapEvents;
   }
 
   @Override

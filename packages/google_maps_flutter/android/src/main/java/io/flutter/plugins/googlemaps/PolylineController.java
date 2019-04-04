@@ -15,21 +15,14 @@ import java.util.List;
 /** Controller of a single Polyline on the map. */
 class PolylineController implements PolylineOptionsSink {
   private final Polyline polyline;
-  private final OnPolylineTappedListener onTappedListener;
+  private final String googleMapsPolylineId;
   private boolean consumeTapEvents;
 
   PolylineController(
-      Polyline polyline, boolean consumeTapEvents, OnPolylineTappedListener onTappedListener) {
+      Polyline polyline, boolean consumeTapEvents) {
     this.polyline = polyline;
     this.consumeTapEvents = consumeTapEvents;
-    this.onTappedListener = onTappedListener;
-  }
-
-  boolean onTap() {
-    if (onTappedListener != null) {
-      onTappedListener.onPolylineTapped(polyline);
-    }
-    return consumeTapEvents;
+    this.googleMapsPolylineId = polyline.getId();
   }
 
   void remove() {
@@ -93,5 +86,13 @@ class PolylineController implements PolylineOptionsSink {
 
   public void setZIndex(float zIndex) {
     polyline.setZIndex(zIndex);
+  }
+
+  String getGoogleMapsPolylineId() {
+    return googleMapsPolylineId;
+  }
+
+  boolean consumeTapEvents() {
+    return consumeTapEvents;
   }
 }

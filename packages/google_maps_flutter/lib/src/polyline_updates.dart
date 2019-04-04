@@ -10,6 +10,7 @@ part of google_maps_flutter;
 class _PolylineUpdates {
   /// Computes [_PolylineUpdates] given previous and current [Polylines]s.
   _PolylineUpdates.from(Set<Polyline> previous, Set<Polyline> current) {
+    print('_PolylineUpdates....');
     if (previous == null) {
       previous = Set<Polyline>.identity();
     }
@@ -18,13 +19,16 @@ class _PolylineUpdates {
       current = Set<Polyline>.identity();
     }
 
-    final Map<PolylineId, Polyline> previousPolylines = _keyByPolylineId(previous);
-    final Map<PolylineId, Polyline> currentPolylines = _keyByPolylineId(current);
+    final Map<PolylineId, Polyline> previousPolylines =
+        _keyByPolylineId(previous);
+    final Map<PolylineId, Polyline> currentPolylines =
+        _keyByPolylineId(current);
 
     final Set<PolylineId> prevPolylinesIds = previousPolylines.keys.toSet();
     final Set<PolylineId> currentPolylinesIds = currentPolylines.keys.toSet();
 
     Polyline idToCurrentPolyline(PolylineId id) {
+      print('returning current  ${currentPolylines[id]}');
       return currentPolylines[id];
     }
 
@@ -44,6 +48,7 @@ class _PolylineUpdates {
     polylinesToAdd = _polylinesToAdd;
     polylineIdsToRemove = _polylineIdsToRemove;
     polylinesToChange = _polylinesToChange;
+    print('Ended');
   }
 
   Set<Polyline> polylinesToAdd;

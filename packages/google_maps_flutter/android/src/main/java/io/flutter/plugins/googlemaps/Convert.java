@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import android.util.Log;
 
 /** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
@@ -128,12 +129,12 @@ class Convert {
     return data;
   }
 
-  static Object toJson(String markerId) {
-    if (markerId == null) {
+  static Object toJson(String value, String key) {
+    if (value == null) {
       return null;
     }
     final Map<String, Object> data = new HashMap<>(1);
-    data.put("markerId", markerId);
+    data.put(key, value);
     return data;
   }
 
@@ -280,16 +281,16 @@ class Convert {
     }
     final Object myLocationEnabled = data.get("myLocationEnabled");
     if (myLocationEnabled != null) {
-      sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
+    //  sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
     }
     final Object myLocationButtonEnabled = data.get("myLocationButtonEnabled");
     if (myLocationButtonEnabled != null) {
-      sink.setMyLocationButtonEnabled(toBoolean(myLocationButtonEnabled));
+    //  sink.setMyLocationButtonEnabled(toBoolean(myLocationButtonEnabled));
     }
-    final Object mapToolbarEnabled = data.get("mapToolbarEnabled");
-    if (mapToolbarEnabled != null) {
-      sink.setMapToolbarEnabled(toBoolean(mapToolbarEnabled));
-    }
+    // final Object mapToolbarEnabled = data.get("mapToolbarEnabled");
+    // if (mapToolbarEnabled != null) {
+    //   sink.setMapToolbarEnabled(toBoolean(mapToolbarEnabled));
+    // }
   }
 
   /** Returns the dartMarkerId of the interpreted marker. */
@@ -364,9 +365,9 @@ class Convert {
     }
   }
 
-  static void interpretPolylineOptions(Object o, PolylineOptionsSink sink) {
+  static String interpretPolylineOptions(Object o, PolylineOptionsSink sink) {
     final Map<?, ?> data = toMap(o);
-
+    Log.d("TAG", "Interpret time...");
     final Object points = data.get("points");
     if (points != null) {
       final List<?> pointData = toList(points);
@@ -425,6 +426,13 @@ class Convert {
     final Object zIndex = data.get("zIndex");
     if (zIndex != null) {
       sink.setZIndex(toFloat(zIndex));
+    }
+    Log.d("TAG", "Converting polyline id");
+    final String polylineId = (String) data.get("polylineId");
+    if (polylineId == null) {
+      throw new IllegalArgumentException("polylineId was null");
+    } else {
+      return polylineId;
     }
   }
 }

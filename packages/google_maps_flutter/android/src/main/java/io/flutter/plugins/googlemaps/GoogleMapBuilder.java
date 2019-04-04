@@ -24,8 +24,8 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     final GoogleMapController controller =
         new GoogleMapController(id, context, state, registrar, options);
     controller.init();
-    controller.setMyLocationEnabled(myLocationEnabled);
-    controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
+    //controller.setMyLocationEnabled(myLocationEnabled);
+    //controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
     controller.setInitialMarkers(initialMarkers);
     controller.setInitialPolylines(initialPolylines);

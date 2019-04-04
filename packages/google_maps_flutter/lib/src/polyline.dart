@@ -58,17 +58,17 @@ class Polyline {
   /// Sets the width of the polyline
   final double width;
 
-  /// True if the marker is visible.
+  /// True if the polyline is visible.
   final bool visible;
 
-  /// The z-index of the marker, used to determine relative drawing order of
+  /// The z-index of the polyline, used to determine relative drawing order of
   /// map overlays.
   ///
   /// Overlays are drawn in order of z-index, so that lower values means drawn
   /// earlier, and thus appearing to be closer to the surface of the Earth.
   final double zIndex;
 
-  /// Callbacks to receive tap events for markers placed on this map.
+  /// Callbacks to receive tap events for polylines placed on this map.
   final VoidCallback onTap;
 
   /// Creates a new options object whose values are the same as this instance,
@@ -86,7 +86,8 @@ class Polyline {
       Cap startCapParam,
       bool visibleParam,
       double widthParam,
-      double zIndexParam}) {
+      double zIndexParam,
+    VoidCallback onTapParam,}) {
     return Polyline(
         polylineId: polylineId,
         points: pointsParam ?? points,
@@ -99,7 +100,8 @@ class Polyline {
         startCap: startCapParam ?? startCap,
         visible: visibleParam ?? visible,
         width: widthParam ?? width,
-        zIndex: zIndexParam ?? zIndex);
+        zIndex: zIndexParam ?? zIndex,
+      onTap: onTapParam ?? onTap,);
   }
 
   dynamic _toJson() {
@@ -125,7 +127,7 @@ class Polyline {
       }
     }
 
-    addIfPresent('polylineId', polylineId);
+    addIfPresent('polylineId', polylineId.value);
     addIfPresent('points', pointsJson);
     addIfPresent('clickable', clickable);
     addIfPresent('color', color);
@@ -153,7 +155,7 @@ class Polyline {
 
   @override
   String toString() {
-    return 'Polyline{polylineId: $polylineId, points: $points, clickable: $clickable, color: $color, endCap: $endCap, geodesic: $geodesic, jointType: $jointType, pattern: $pattern, startCap: $startCap, visible: $visible, width: $width, zIndex: $zIndex}';
+    return 'Polyline{polylineId: $polylineId, points: $points, clickable: $clickable, color: $color, endCap: $endCap, geodesic: $geodesic, jointType: $jointType, pattern: $pattern, startCap: $startCap, visible: $visible, width: $width, zIndex: $zIndex, onTap: $onTap}';
   }
 }
 

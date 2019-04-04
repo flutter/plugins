@@ -53,8 +53,8 @@ final class GoogleMapController
         GoogleMap.OnPolylineClickListener,
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnMyLocationButtonClickListener,
-        GoogleMap.OnMyLocationClickListener,
+      //  GoogleMap.OnMyLocationButtonClickListener,
+      //  GoogleMap.OnMyLocationClickListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
@@ -170,8 +170,8 @@ final class GoogleMapController
     googleMap.setOnPolylineClickListener(this);
     googleMap.setOnMapLongClickListener(this);
     googleMap.setOnMapClickListener(this);
-    googleMap.setOnMyLocationButtonClickListener(this);
-    googleMap.setOnMyLocationClickListener(this);
+   // googleMap.setOnMyLocationButtonClickListener(this);
+   // googleMap.setOnMyLocationClickListener(this);
     updateMyLocationEnabled();
     updateMyLocationButtonEnabled();
     markersController.setGoogleMap(googleMap);
@@ -182,6 +182,7 @@ final class GoogleMapController
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
+    Log.d(TAG, "ON METHOD CALL ------ " + call.method);
     switch (call.method) {
       case "map#waitForMap":
         if (googleMap != null) {
@@ -224,7 +225,8 @@ final class GoogleMapController
           break;
         }
       case "polylines#update":
-        {
+    {
+      Log.e(TAG,"I am here");
           Object polylinesToAdd = call.argument("polylinesToAdd");
           polylinesController.addPolylines((List<Object>) polylinesToAdd);
           Object polylinesToChange = call.argument("polylinesToChange");
@@ -252,8 +254,11 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
           break;
         }
-      default:
+      default: {
+        Log.e(TAG, "Message not implemented: " + call.method);
         result.notImplemented();
+      }
+      
     }
   }
 
@@ -291,8 +296,24 @@ final class GoogleMapController
   }
 
   @Override
-  public boolean onPolylineClick(Polyline polyline) {
-    return polylinesController.onPolylineTap(polyline.getId());
+  public void onPolylineClick(Polyline polyline) {
+    polylinesController.onPolylineTap(polyline.getId());
+  }
+
+  @Override
+  public void onMapClick(LatLng latlng) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("latitude", latlng.latitude);
+    arguments.put("longitude", latlng.longitude);
+    methodChannel.invokeMethod("map#onTap", arguments);
+  }
+
+  @Override
+  public void onMapLongClick(LatLng latlng) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("latitude", latlng.latitude);
+    arguments.put("longitude", latlng.longitude);
+    methodChannel.invokeMethod("map#onLongTap", arguments);
   }
 
   @Override
@@ -399,10 +420,10 @@ final class GoogleMapController
     googleMap.getUiSettings().setTiltGesturesEnabled(tiltGesturesEnabled);
   }
 
-  @Override
-  public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
-    googleMap.getUiSettings().setMapToolbarEnabled(mapToolbarEnabled);
-  }
+  //@Override
+  //public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
+  //  googleMap.getUiSettings().setMapToolbarEnabled(mapToolbarEnabled);
+  //}
 
   @Override
   public void setMyLocationButtonEnabled(boolean myLocationButtonEnabled) {
@@ -478,7 +499,7 @@ final class GoogleMapController
   }
 
   private void updateMyLocationButtonEnabled() {
-    googleMap.setMyLocationButtonEnabled = myLocationButtonEnabled;
+   // googleMap.setMyLocationButtonEnabled = myLocationButtonEnabled;
   }
 
   private boolean hasLocationPermission() {
