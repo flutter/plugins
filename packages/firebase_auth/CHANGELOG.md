@@ -1,3 +1,7 @@
+## 0.8.4
+
+* Adds support for email link authentication.
+
 ## 0.8.3
 
 * Make providerId 'const String' to use in 'case' statement.

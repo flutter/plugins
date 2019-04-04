@@ -1,7 +1,3 @@
-## 0.9.11
-
-* Adds support for email link authentication.
-
 ## 0.9.10
 
 * Support for cloud_firestore running in the background on Android.
@@ -20,7 +16,6 @@
 
 * Bump the minimum Flutter version to 1.2.0.
 * Add template type parameter to `invokeMethod` calls.
->>>>>>> origin/master
 
 ## 0.9.7+1
 
