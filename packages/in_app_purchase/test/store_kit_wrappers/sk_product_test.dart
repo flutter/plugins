@@ -79,6 +79,8 @@ void main() {
       expect(product.id, wrapper.productIdentifier);
       expect(product.price,
           wrapper.priceLocale.currencySymbol + wrapper.price.toString());
+      expect(product.skProduct, wrapper);
+      expect(product.skuDetail, null);
     });
 
     test('SKProductResponse wrapper should match', () {

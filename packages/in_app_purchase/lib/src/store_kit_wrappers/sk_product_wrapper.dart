@@ -305,6 +305,7 @@ class SKProductWrapper {
       title: localizedTitle,
       description: localizedDescription,
       price: priceLocale.currencySymbol + price,
+      skProduct: this,
     );
   }
 }
