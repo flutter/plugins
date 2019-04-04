@@ -7,6 +7,9 @@ import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 
 /// The class represents the information of a product.
+///
+/// This class unifies the BillingClient's [SkuDetailsWrapper] and StoreKit's [SKProductWrapper]. You can use the common attributes in
+/// This class for simple operations. If you would like to see the detailed representation of the product, instead,  use [skuDetails] on Android and [skProduct] on iOS.
 class ProductDetails {
   ProductDetails(
       {@required this.id,
