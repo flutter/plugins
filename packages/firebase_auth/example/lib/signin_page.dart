@@ -269,7 +269,7 @@ class _EmailLinkSignInSectionState extends State<_EmailLinkSignInSection>
   Future<void> _signInWithEmailAndLink() async {
     _userEmail = _emailController.text;
 
-    return await _auth.sendSignInLink(
+    return await _auth.sendSignInWithEmailLink(
       email: _userEmail,
       url: '<Url with domain from your Firebase project>',
       handleCodeInApp: true,
