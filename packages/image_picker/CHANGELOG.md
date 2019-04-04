@@ -1,4 +1,4 @@
-## 0.5.0+10
+## 0.5.1
 
 * Android: Do not delete original image after scaling if the image is from gallery.
 
