@@ -1,3 +1,7 @@
+## 0.5.2
+
+* Added onTap for callback for GoogleMap.
+
 ## 0.5.1
 
 * Update Android gradle version.
