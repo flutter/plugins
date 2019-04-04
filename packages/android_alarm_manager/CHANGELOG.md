@@ -1,3 +1,8 @@
+## 0.4.1+6
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
 ## 0.4.1+5
 
 * Update AlarmService to throw a `PluginRegistrantException` if

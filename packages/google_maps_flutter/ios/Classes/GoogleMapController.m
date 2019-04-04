@@ -125,6 +125,24 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       [_markersController removeMarkerIds:markerIdsToRemove];
     }
     result(nil);
+  } else if ([call.method isEqualToString:@"map#isCompassEnabled"]) {
+    NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
+    result(isCompassEnabled);
+  } else if ([call.method isEqualToString:@"map#getMinMaxZoomLevels"]) {
+    NSArray* zoomLevels = @[ @(_mapView.minZoom), @(_mapView.maxZoom) ];
+    result(zoomLevels);
+  } else if ([call.method isEqualToString:@"map#isZoomGesturesEnabled"]) {
+    NSNumber* isZoomGesturesEnabled = @(_mapView.settings.zoomGestures);
+    result(isZoomGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isTiltGesturesEnabled"]) {
+    NSNumber* isTiltGesturesEnabled = @(_mapView.settings.tiltGestures);
+    result(isTiltGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isRotateGesturesEnabled"]) {
+    NSNumber* isRotateGesturesEnabled = @(_mapView.settings.rotateGestures);
+    result(isRotateGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isScrollGesturesEnabled"]) {
+    NSNumber* isScrollGesturesEnabled = @(_mapView.settings.scrollGestures);
+    result(isScrollGesturesEnabled);
   } else {
     result(FlutterMethodNotImplemented);
   }
