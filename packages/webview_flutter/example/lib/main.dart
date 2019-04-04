@@ -53,8 +53,12 @@ class WebViewExample extends StatelessWidget {
           javascriptChannels: <JavascriptChannel>[
             _toasterJavascriptChannel(context),
           ].toSet(),
+          iOSWebViewConfiguration: const IOSWebViewConfiguration(
+            allowsInlineMediaPlayback: true,
+          ),
           navigationDelegate: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
+            if (request.url.startsWith('https://www.youtube.com/') &&
+                !request.url.contains('embed')) {
               print('blocking navigation to $request}');
               return NavigationDecision.prevent;
             }

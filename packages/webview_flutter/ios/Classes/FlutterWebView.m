@@ -65,6 +65,8 @@
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
     configuration.userContentController = userContentController;
 
+    [self applyConfiguration:args[@"iOSWebViewConfiguration"] toWebViewConfiguration:configuration];
+
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.navigationDelegate = _navigationDelegate;
@@ -225,6 +227,64 @@
   } else {
     // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
     NSLog(@"Clearing cache is not supported for Flutter WebViews prior to iOS 9.");
+  }
+}
+
+- (void)applyConfiguration:(NSDictionary<NSString*, id>*)dict
+    toWebViewConfiguration:(WKWebViewConfiguration*)configuration {
+  if (!dict || [dict isEqual:[NSNull null]]) {
+    return;
+  }
+
+  NSDictionary<NSString*, NSNumber*>* simpleProperties = @{
+    @"suppressesIncrementalRendering" : @0,
+    @"allowsInlineMediaPlayback" : @0,
+    @"applicationNameForUserAgent" : @9,
+    @"allowsAirPlayForMediaPlayback" : @9,
+    @"allowsPictureInPictureMediaPlayback" : @9,
+    @"ignoresViewportScaleLimits" : @10,
+  };
+  for (NSString* key in dict) {
+    id value = dict[key];
+    if ([value isEqual:[NSNull null]]) {
+      continue;
+    }
+    NSNumber* minIosVersion = simpleProperties[key];
+    if (minIosVersion) {
+      switch (minIosVersion.intValue) {
+        case 0:
+          [configuration setValue:value forKey:key];
+          break;
+        case 9:
+          if (@available(iOS 9.0, *)) {
+            [configuration setValue:value forKey:key];
+          } else {
+            NSLog(@"webview_flutter: %@ not supported prior to iOS 9.0", key);
+          }
+          break;
+        case 10:
+          if (@available(iOS 10.0, *)) {
+            [configuration setValue:value forKey:key];
+          } else {
+            NSLog(@"webview_flutter: %@ not supported prior to iOS 9.0", key);
+          }
+          break;
+      }
+    } else if ([key isEqualToString:@"mediaTypesRequiringUserActionForPlayback"]) {
+      if (@available(iOS 10.0, *)) {
+        if ([value isEqualToString:@"none"]) {
+          configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
+        } else if ([value isEqualToString:@"video"]) {
+          configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeVideo;
+        } else if ([value isEqualToString:@"audio"]) {
+          configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeAudio;
+        } else if ([value isEqualToString:@"all"]) {
+          NSLog(@"webview_flutter: Unsupported media type %@", value);
+        }
+      } else {
+        configuration.mediaPlaybackRequiresUserAction = ![value isEqualToString:@"none"];
+      }
+    }
   }
 }
 

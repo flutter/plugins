@@ -100,6 +100,78 @@ class JavascriptChannel {
   final JavascriptMessageHandler onMessageReceived;
 }
 
+enum AudiovisualMediaTypes {
+  audio,
+  video,
+}
+
+/// iOS specific web view configuration settings for initializing the WebView
+/// https://developer.apple.com/documentation/webkit/wkwebviewconfiguration
+class IOSWebViewConfiguration {
+  const IOSWebViewConfiguration({
+    this.applicationNameForUserAgent,
+    this.ignoresViewportScaleLimits,
+    this.suppressesIncrementalRendering,
+    this.allowsInlineMediaPlayback,
+    this.allowsAirPlayForMediaPlayback,
+    this.allowsPictureInPictureMediaPlayback,
+    this.mediaTypesRequiringUserActionForPlayback,
+  });
+
+  /// The name of the application as used in the user agent string. (>= iOS 9)
+  final String applicationNameForUserAgent;
+
+  /// A Boolean value that determines whether a WKWebView
+  /// object should always allow scaling of the webpage. (>= iOS 10)
+  final bool ignoresViewportScaleLimits;
+
+  /// A Boolean value indicating whether the web view suppresses content rendering until it is fully loaded into memory.
+  final bool suppressesIncrementalRendering;
+
+  /// A Boolean value indicating whether HTML5 videos play inline or use the native full-screen controller.
+  final bool allowsInlineMediaPlayback;
+
+  /// A Boolean value indicating whether AirPlay is allowed. (>= iOS 9)
+  final bool allowsAirPlayForMediaPlayback;
+
+  /// A Boolean value indicating whether HTML5 videos can play picture-in-picture. (>= iOS 9)
+  final bool allowsPictureInPictureMediaPlayback;
+
+  /// Determines which media types require a user gesture to begin playing.
+  /// (>= iOS 10, before that if this is not empty require user action)
+  final Set<AudiovisualMediaTypes> mediaTypesRequiringUserActionForPlayback;
+
+  Map<String, dynamic> toMap() {
+    String mediaTypes;
+    if (mediaTypesRequiringUserActionForPlayback != null) {
+      switch (mediaTypesRequiringUserActionForPlayback.length) {
+        case 0:
+          mediaTypes = 'none';
+          break;
+        case 1:
+          mediaTypes = <AudiovisualMediaTypes, String>{
+            AudiovisualMediaTypes.audio: 'audio',
+            AudiovisualMediaTypes.video: 'video'
+          }[mediaTypesRequiringUserActionForPlayback.first];
+          break;
+        case 2:
+          mediaTypes = 'all';
+          break;
+      }
+    }
+    return <String, dynamic>{
+      'applicationNameForUserAgent': applicationNameForUserAgent,
+      'ignoresViewportScaleLimits': ignoresViewportScaleLimits,
+      'suppressesIncrementalRendering': suppressesIncrementalRendering,
+      'allowsInlineMediaPlayback': allowsInlineMediaPlayback,
+      'allowsAirPlayForMediaPlayback': allowsAirPlayForMediaPlayback,
+      'allowsPictureInPictureMediaPlayback':
+          allowsPictureInPictureMediaPlayback,
+      'mediaTypesRequiringUserActionForPlayback': mediaTypes,
+    };
+  }
+}
+
 /// A web view widget for showing html content.
 class WebView extends StatefulWidget {
   /// Creates a new web view.
@@ -112,6 +184,7 @@ class WebView extends StatefulWidget {
     Key key,
     this.onWebViewCreated,
     this.initialUrl,
+    this.iOSWebViewConfiguration,
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -136,6 +209,9 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String initialUrl;
+
+  /// iOS specific initialization configuration.
+  final IOSWebViewConfiguration iOSWebViewConfiguration;
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -294,14 +370,19 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 
 class _CreationParams {
   _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames});
+      {this.initialUrl,
+      this.settings,
+      this.javascriptChannelNames,
+      this.iOSWebViewConfiguration});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
       initialUrl: widget.initialUrl,
       settings: _WebSettings.fromWidget(widget),
-      javascriptChannelNames:
-          _extractChannelNames(widget.javascriptChannels).toList(),
+      javascriptChannelNames: _extractChannelNames(
+        widget.javascriptChannels,
+      ).toList(),
+      iOSWebViewConfiguration: widget.iOSWebViewConfiguration,
     );
   }
 
@@ -311,11 +392,14 @@ class _CreationParams {
 
   final List<String> javascriptChannelNames;
 
+  final IOSWebViewConfiguration iOSWebViewConfiguration;
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'initialUrl': initialUrl,
       'settings': settings.toMap(),
       'javascriptChannelNames': javascriptChannelNames,
+      'iOSWebViewConfiguration': iOSWebViewConfiguration?.toMap(),
     };
   }
 }
