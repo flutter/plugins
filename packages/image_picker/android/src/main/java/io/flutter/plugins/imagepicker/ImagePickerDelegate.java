@@ -369,7 +369,7 @@ public class ImagePickerDelegate
   private void handleChooseImageResult(int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK && data != null) {
       String path = fileUtils.getPathFromUri(activity, data.getData());
-      handleImageResult(path);
+      handleImageResult(path, false);
       return;
     }
 
@@ -395,7 +395,7 @@ public class ImagePickerDelegate
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
-              handleImageResult(path);
+              handleImageResult(path, true);
             }
           });
       return;
@@ -422,7 +422,7 @@ public class ImagePickerDelegate
     finishWithSuccess(null);
   }
 
-  private void handleImageResult(String path) {
+  private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
     if (pendingResult != null) {
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
@@ -431,7 +431,7 @@ public class ImagePickerDelegate
       finishWithSuccess(finalImagePath);
 
       //delete original file if scaled
-      if (!finalImagePath.equals(path)) {
+      if (!finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }
     } else {
