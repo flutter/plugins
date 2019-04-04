@@ -118,7 +118,7 @@ void main() {
     });
 
     test('sendSignInLinkToEmail', () async {
-      await auth.sendSignInLinkToEmail(
+      await auth.sendSignInLink(
         email: 'test@example.com',
         url: 'http://www.example.com/',
         handleCodeInApp: true,
