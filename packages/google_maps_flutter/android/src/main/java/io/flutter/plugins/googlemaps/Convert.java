@@ -127,7 +127,7 @@ class Convert {
     return data;
   }
 
-  private static Object toJson(LatLng latLng) {
+  static Object toJson(LatLng latLng) {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 

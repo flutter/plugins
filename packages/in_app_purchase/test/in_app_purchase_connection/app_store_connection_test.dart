@@ -63,6 +63,10 @@ void main() {
           fakeIOSPlatform.transactions.first.transactionIdentifier);
       expect(response.pastPurchases.last.purchaseID,
           fakeIOSPlatform.transactions.last.transactionIdentifier);
+      expect(response.pastPurchases.first.purchaseID,
+          fakeIOSPlatform.transactions.first.transactionIdentifier);
+      expect(response.pastPurchases.last.purchaseID,
+          fakeIOSPlatform.transactions.last.transactionIdentifier);
       expect(
           response.pastPurchases.first.verificationData.localVerificationData,
           'dummy base64data');
@@ -78,6 +82,7 @@ void main() {
       QueryPurchaseDetailsResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
+      fakeIOSPlatform.testRestoredTransactionsNull = false;
     });
 
     test('test restore error', () async {
@@ -108,8 +113,8 @@ void main() {
 
   group('refresh receipt data', () {
     test('should refresh receipt data', () async {
-      PurchaseVerificationData receiptData = await AppStoreConnection.instance
-          .refreshPurchaseVerificationData(null);
+      PurchaseVerificationData receiptData =
+          await AppStoreConnection.instance.refreshPurchaseVerificationData();
       expect(receiptData.source, PurchaseSource.AppStore);
       expect(receiptData.localVerificationData, 'refreshed receipt data');
       expect(receiptData.serverVerificationData, 'refreshed receipt data');

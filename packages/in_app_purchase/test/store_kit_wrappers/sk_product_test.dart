@@ -80,6 +80,8 @@ void main() {
       expect(product.id, wrapper.productIdentifier);
       expect(product.price,
           wrapper.priceLocale.currencySymbol + wrapper.price.toString());
+      expect(product.skProduct, wrapper);
+      expect(product.skuDetail, null);
     });
 
     test('SKProductResponse wrapper should match', () {
@@ -142,6 +144,8 @@ void main() {
       expect(details.verificationData.localVerificationData, 'receipt data');
       expect(details.verificationData.serverVerificationData, 'receipt data');
       expect(details.verificationData.source, PurchaseSource.AppStore);
+      expect(details.skPaymentTransaction, dummyTransaction);
+      expect(details.billingClientPurchase, null);
     });
     test('Should generate correct map of the payment object', () {
       Map map = dummyPayment.toMap();

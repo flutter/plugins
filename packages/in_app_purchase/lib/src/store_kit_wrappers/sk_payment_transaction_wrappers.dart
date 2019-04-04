@@ -106,8 +106,7 @@ class SKPaymentTransactionWrapper {
   /// Generate a [PurchaseDetails] object based on the transaction.
   ///
   /// [PurchaseDetails] is Used to represent a purchase detail for unified iOS and Android API.
-  PurchaseDetails toPurchaseDetails(String base64EncodedReceipt,
-      {String originalPurchaseID}) {
+  PurchaseDetails toPurchaseDetails(String base64EncodedReceipt) {
     return PurchaseDetails(
       purchaseID: transactionIdentifier,
       productId: payment.productIdentifier,
@@ -118,7 +117,7 @@ class SKPaymentTransactionWrapper {
       transactionDate: transactionTimeStamp != null
           ? (transactionTimeStamp * 1000).toInt().toString()
           : null,
-      originalPurchaseID: originalPurchaseID,
+      skPaymentTransaction: this,
     );
   }
 

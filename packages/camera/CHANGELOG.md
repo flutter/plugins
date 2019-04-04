@@ -1,3 +1,12 @@
+## 0.4.3+2
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
+## 0.4.3+1
+
+* Catch additional `Exception`s from Android and throw as `CameraException`s.
+
 ## 0.4.3
 
 * Add capability to prepare the capture session for video recording on iOS.

@@ -18,12 +18,11 @@ import 'package:in_app_purchase/src/store_kit_wrappers/enum_converters.dart';
 class AppStoreConnection implements InAppPurchaseConnection {
   static AppStoreConnection get instance => _getOrCreateInstance();
   static AppStoreConnection _instance;
+  static SKPaymentQueueWrapper _skPaymentQueueWrapper;
+  static _TransactionObserver _observer;
 
   Stream<List<PurchaseDetails>> get purchaseUpdatedStream =>
       _observer.purchaseUpdatedController.stream;
-
-  static SKPaymentQueueWrapper _skPaymentQueueWrapper;
-  static _TransactionObserver _observer;
 
   static SKTransactionObserverWrapper get observer => _observer;
 
@@ -102,8 +101,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
   }
 
   @override
-  Future<PurchaseVerificationData> refreshPurchaseVerificationData(
-      PurchaseDetails purchase) async {
+  Future<PurchaseVerificationData> refreshPurchaseVerificationData() async {
     await SKRequestMaker().startRefreshReceiptRequest();
     String receipt = await SKReceiptManager.retrieveReceiptData();
     return PurchaseVerificationData(
@@ -176,9 +174,6 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
         .add(transactions.map((SKPaymentTransactionWrapper transaction) {
       PurchaseDetails purchaseDetails = transaction.toPurchaseDetails(
         receiptData,
-        originalPurchaseID: transaction.originalTransaction != null
-            ? transaction.originalTransaction.transactionIdentifier
-            : null,
       )
         ..status = SKTransactionStatusConverter()
             .toPurchaseStatus(transaction.transactionState)

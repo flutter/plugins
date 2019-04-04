@@ -68,6 +68,8 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
       }
     } catch (JSONException e) {
       result.error("error", "JSON error: " + e.getMessage(), null);
+    } catch (PluginRegistrantException e) {
+      result.error("error", "AlarmManager error: " + e.getMessage(), null);
     }
   }
 

@@ -1,3 +1,11 @@
+## 0.0.3
+
+* Rely on firebase_core to add the Android dependency on Firebase instead of hardcoding the version ourselves
+
+## 0.0.2+1
+
+* Update variable name `enableInDevMode` in README.
+
 ## 0.0.2
 
 * Updated the iOS podspec to a static framework to support compatibility with Swift plugins.
