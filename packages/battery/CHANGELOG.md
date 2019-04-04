@@ -1,3 +1,7 @@
+## 0.3.0+3
+
+* Fix `batteryLevel` usage example in README
+
 ## 0.3.0+2
 
 * Bump the minimum Flutter version to 1.2.0.
