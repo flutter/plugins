@@ -157,7 +157,7 @@ class FirebaseAuth {
   }
 
   /// Sends a sign in with email link to provided email address.
-  Future<void> sendSignInLink({
+  Future<void> sendSignInWithEmailLink({
     @required String email,
     @required String url,
     @required bool handleCodeInApp,
