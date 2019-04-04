@@ -149,10 +149,9 @@ abstract class InAppPurchaseConnection {
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName});
 
-  /// A utility method in case there is an issue with getting the verification data originally.
+  /// A utility method in case there is an issue with getting the verification data originally on iOS.
   ///
-  /// On Android, it is a non-op. We directly return the verification data in the `purchase` that is passed in.
-  /// See [PurchaseVerificationData] for more details on when to use this.
+  /// Throws an [Exception] on Android.
   Future<PurchaseVerificationData> refreshPurchaseVerificationData(
       PurchaseDetails purchase);
 
