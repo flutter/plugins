@@ -15,7 +15,9 @@ void main() {
   tearDownAll(() => allTestsCompleter.complete(null));
 
   test('onError', () async {
-    Crashlytics.instance.setUserName('testing');
+    // This is currently only testing that we can log errors without crashing.
+    await Crashlytics.instance.setUserName('testing');
+    await Crashlytics.instance.setUserIdentifier('hello');
     Crashlytics.instance.log('testing');
     await Crashlytics.instance.onError(
       FlutterErrorDetails(
