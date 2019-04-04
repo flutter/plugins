@@ -156,7 +156,8 @@ class FirebaseAuth {
     );
   }
 
-  Future<void> sendLinkToEmail({
+  /// Sends a sign in with email link to provided email address.
+  Future<void> sendSignInLink({
     @required String email,
     @required String url,
     @required bool handleCodeInApp,
@@ -190,6 +191,7 @@ class FirebaseAuth {
     );
   }
 
+  /// Checks if link is an email sign-in link.
   Future<bool> isSignInWithEmailLink({String link}) async {
     return await channel.invokeMethod(
       'isSignInWithEmailLink',
@@ -197,6 +199,14 @@ class FirebaseAuth {
     );
   }
 
+  /// Signs in using an email address and email sign-in link.
+  ///
+  /// Errors:
+  ///   • `ERROR_NOT_ALLOWED` - Indicates that email and email sign-in link
+  ///      accounts are not enabled. Enable them in the Auth section of the
+  ///      Firebase console.
+  ///   • `ERROR_DISABLED` - Indicates the user's account is disabled.
+  ///   • `ERROR_INVALID` - Indicates the email address is invalid.
   Future<FirebaseUser> signInWithEmailAndLink(
       {String email, String link}) async {
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
