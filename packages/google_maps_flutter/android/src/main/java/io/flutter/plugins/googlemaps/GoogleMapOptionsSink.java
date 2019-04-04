@@ -34,4 +34,5 @@ interface GoogleMapOptionsSink {
   
   void setMyLocationButtonEnabled(boolean myLocationButtonEnabled);
 
+  void setMapToolbarEnabled(boolean mapToolbarEnabled);
 }

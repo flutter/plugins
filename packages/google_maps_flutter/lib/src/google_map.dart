@@ -14,28 +14,34 @@ typedef void MapCreatedCallback(GoogleMapController controller);
 /// This is used in [GoogleMap.onCameraMove].
 typedef void CameraPositionCallback(CameraPosition position);
 
+typedef void LocationCallback(LatLng position);
+
 class GoogleMap extends StatefulWidget {
-  const GoogleMap({
-    Key key,
-    @required this.initialCameraPosition,
-    this.onMapCreated,
-    this.gestureRecognizers,
-    this.compassEnabled = true,
-    this.cameraTargetBounds = CameraTargetBounds.unbounded,
-    this.mapType = MapType.normal,
-    this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
-    this.rotateGesturesEnabled = true,
-    this.scrollGesturesEnabled = true,
-    this.zoomGesturesEnabled = true,
-    this.tiltGesturesEnabled = true,
-    this.myLocationEnabled = false,
-    this.myLocationButtonEnabled = false,
-    this.markers,
-    this.polylines,
-    this.onCameraMoveStarted,
-    this.onCameraMove,
-    this.onCameraIdle,
-  })  : assert(initialCameraPosition != null),
+  const GoogleMap(
+      {Key key,
+      @required this.initialCameraPosition,
+      this.onMapCreated,
+      this.gestureRecognizers,
+      this.compassEnabled = true,
+      this.cameraTargetBounds = CameraTargetBounds.unbounded,
+      this.mapType = MapType.normal,
+      this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
+      this.rotateGesturesEnabled = true,
+      this.scrollGesturesEnabled = true,
+      this.zoomGesturesEnabled = true,
+      this.tiltGesturesEnabled = true,
+      this.myLocationEnabled = false,
+      this.myLocationButtonEnabled = false,
+      this.mapToolbarEnabled = false,
+      this.markers,
+      this.polylines,
+      this.onCameraMoveStarted,
+      this.onCameraMove,
+      this.onCameraIdle,
+      this.onLocationButtonTapped,
+      this.onMapLongTapped,
+      this.onMapTapped})
+      : assert(initialCameraPosition != null),
         super(key: key);
 
   final MapCreatedCallback onMapCreated;
@@ -124,6 +130,9 @@ class GoogleMap extends StatefulWidget {
   /// myLocationEnabled must be true for this button to be displayed, if myLocationButtonEnabled is true the location button is displayed else it is not.
   final bool myLocationButtonEnabled;
 
+  /// Sets whether the Map Toolbar is enabled/disabled.
+  final bool mapToolbarEnabled;
+
   /// Which gestures should be consumed by the map.
   ///
   /// It is possible for other gesture recognizers to be competing with the map on pointer
@@ -134,6 +143,15 @@ class GoogleMap extends StatefulWidget {
   /// When this set is empty or null, the map will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+
+  /// Invoked when the map is tapped, a LatLng is returned
+  final LocationCallback onMapTapped;
+
+  /// Invoked when the map is tapped for a long period the latlng is returned
+  final LocationCallback onMapLongTapped;
+
+  /// Invoked when the location button is pressed, the current location is returned as a LatLng
+  final LocationCallback onLocationButtonTapped;
 
   @override
   State createState() => _GoogleMapState();
@@ -253,12 +271,14 @@ class _GoogleMapState extends State<GoogleMap> {
     //JANIZA
     final LatLng latLng = LatLng(latitudeParam, longitudeParam);
     print('onMapTapped called $latLng');
+    widget.onMapTapped(latLng);
   }
 
   void onMapLongTapped(double latitudeParam, double longitudeParam) {
     //JANIZA
     final LatLng latLng = LatLng(latitudeParam, longitudeParam);
     print('onMapLongTapped called $latLng');
+    widget.onMapLongTapped(latLng);
   }
 }
 
@@ -279,6 +299,7 @@ class _GoogleMapOptions {
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
     this.myLocationButtonEnabled,
+    this.mapToolbarEnabled,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -294,6 +315,7 @@ class _GoogleMapOptions {
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
+      mapToolbarEnabled: map.mapToolbarEnabled,
     );
   }
 
@@ -319,6 +341,8 @@ class _GoogleMapOptions {
 
   final bool myLocationButtonEnabled;
 
+  final bool mapToolbarEnabled;
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -339,6 +363,7 @@ class _GoogleMapOptions {
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
+    addIfNonNull('mapToolbarEnabled', mapToolbarEnabled);
     return optionsMap;
   }
 

@@ -53,8 +53,8 @@ final class GoogleMapController
         GoogleMap.OnPolylineClickListener,
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMapLongClickListener,
-      //  GoogleMap.OnMyLocationButtonClickListener,
-      //  GoogleMap.OnMyLocationClickListener,
+        GoogleMap.OnMyLocationButtonClickListener,
+        GoogleMap.OnMyLocationClickListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
@@ -70,6 +70,7 @@ final class GoogleMapController
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
+  private boolean mapToolbarEnabled = false;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
@@ -170,10 +171,9 @@ final class GoogleMapController
     googleMap.setOnPolylineClickListener(this);
     googleMap.setOnMapLongClickListener(this);
     googleMap.setOnMapClickListener(this);
-   // googleMap.setOnMyLocationButtonClickListener(this);
-   // googleMap.setOnMyLocationClickListener(this);
+    googleMap.setOnMyLocationButtonClickListener(this);
+    googleMap.setOnMyLocationClickListener(this);
     updateMyLocationEnabled();
-    updateMyLocationButtonEnabled();
     markersController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     updateInitialMarkers();
@@ -225,8 +225,7 @@ final class GoogleMapController
           break;
         }
       case "polylines#update":
-    {
-      Log.e(TAG,"I am here");
+        {
           Object polylinesToAdd = call.argument("polylinesToAdd");
           polylinesController.addPolylines((List<Object>) polylinesToAdd);
           Object polylinesToChange = call.argument("polylinesToChange");
@@ -314,6 +313,21 @@ final class GoogleMapController
     arguments.put("latitude", latlng.latitude);
     arguments.put("longitude", latlng.longitude);
     methodChannel.invokeMethod("map#onLongTap", arguments);
+  }
+
+  @Override
+  public boolean onMyLocationButtonClick() {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    methodChannel.invokeMethod("map#onLocationButtonTap", arguments);
+    return true;
+  }
+
+  @Override
+  public void onMyLocationClick(Location location) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("latitude", location.getLatitude());
+    arguments.put("longitude", location.getLongitude());
+    methodChannel.invokeMethod("map#onMyLocationTap", arguments);
   }
 
   @Override
@@ -420,10 +434,10 @@ final class GoogleMapController
     googleMap.getUiSettings().setTiltGesturesEnabled(tiltGesturesEnabled);
   }
 
-  //@Override
-  //public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
-  //  googleMap.getUiSettings().setMapToolbarEnabled(mapToolbarEnabled);
-  //}
+  @Override
+  public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
+    googleMap.getUiSettings().setMapToolbarEnabled(mapToolbarEnabled);
+  }
 
   @Override
   public void setMyLocationButtonEnabled(boolean myLocationButtonEnabled) {
@@ -498,10 +512,6 @@ final class GoogleMapController
     }
   }
 
-  private void updateMyLocationButtonEnabled() {
-   // googleMap.setMyLocationButtonEnabled = myLocationButtonEnabled;
-  }
-
   private boolean hasLocationPermission() {
     return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED
@@ -516,4 +526,5 @@ final class GoogleMapController
     return context.checkPermission(
         permission, android.os.Process.myPid(), android.os.Process.myUid());
   }
+
 }

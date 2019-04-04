@@ -49,6 +49,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
   bool _myLocationButtonEnabled = true;
+  bool _mapToolbarEnabled = true;
   int _locationButton = 0;
   LatLng _tapped = const LatLng(0, 0);
   LatLng _tappedLong = const LatLng(0, 0);
@@ -68,11 +69,16 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   void _onMapLongTapped(LatLng location) {
-    _tappedLong = location;
+    print('Example got the long tappp $location');
+    setState(() {
+      _tappedLong = location;
+    });
   }
 
   void _onMapTapped(LatLng location) {
-    _tapped = location;
+    setState(() {
+      _tapped = location;
+    });
   }
 
   @override
@@ -203,6 +209,17 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Widget _mapToolbarToggler() {
+    return FlatButton(
+      child: Text('${_mapToolbarEnabled ? 'disable' : 'enable'} map toolbar'),
+      onPressed: () {
+        setState(() {
+          _mapToolbarEnabled = !_mapToolbarEnabled;
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final GoogleMap googleMap = GoogleMap(
@@ -218,7 +235,10 @@ class MapUiBodyState extends State<MapUiBody> {
       zoomGesturesEnabled: _zoomGesturesEnabled,
       myLocationEnabled: _myLocationEnabled,
       myLocationButtonEnabled: _myLocationButtonEnabled,
+      mapToolbarEnabled: _mapToolbarEnabled,
       onCameraMove: _updateCameraPosition,
+      onMapTapped: _onMapTapped,
+      onMapLongTapped: _onMapLongTapped,
     );
 
     final List<Widget> columnChildren = <Widget>[
@@ -262,6 +282,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _zoomToggler(),
               _myLocationToggler(),
               _myLocationButtonToggler(),
+              _mapToolbarToggler(),
             ],
           ),
         ),

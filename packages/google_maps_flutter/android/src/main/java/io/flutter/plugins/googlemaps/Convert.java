@@ -281,16 +281,16 @@ class Convert {
     }
     final Object myLocationEnabled = data.get("myLocationEnabled");
     if (myLocationEnabled != null) {
-    //  sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
+      sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
     }
     final Object myLocationButtonEnabled = data.get("myLocationButtonEnabled");
     if (myLocationButtonEnabled != null) {
-    //  sink.setMyLocationButtonEnabled(toBoolean(myLocationButtonEnabled));
+      sink.setMyLocationButtonEnabled(toBoolean(myLocationButtonEnabled));
     }
-    // final Object mapToolbarEnabled = data.get("mapToolbarEnabled");
-    // if (mapToolbarEnabled != null) {
-    //   sink.setMapToolbarEnabled(toBoolean(mapToolbarEnabled));
-    // }
+    final Object mapToolbarEnabled = data.get("mapToolbarEnabled");
+    if (mapToolbarEnabled != null) {
+      sink.setMapToolbarEnabled(toBoolean(mapToolbarEnabled));
+    }
   }
 
   /** Returns the dartMarkerId of the interpreted marker. */
