@@ -162,7 +162,6 @@
 
 * Updated dependencies
 * **Breaking Change**: You need to add a maven section with the "https://maven.google.com" endpoint to the repository section of your `android/build.gradle`. For example:
-
 ```gradle
 allprojects {
     repositories {

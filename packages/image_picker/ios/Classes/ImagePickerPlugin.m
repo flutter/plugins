@@ -4,10 +4,10 @@
 
 #import "ImagePickerPlugin.h"
 
+#import <AVFoundation/AVFoundation.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Photos/Photos.h>
 #import <UIKit/UIKit.h>
-#import <AVFoundation/AVFoundation.h>
 
 @interface FLTImagePickerPlugin () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 @end
@@ -121,38 +121,49 @@ static const int SOURCE_GALLERY = 1;
 
 - (void)checkAuthorization {
   AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-  
+
   switch (status) {
     case AVAuthorizationStatusAuthorized:
       [self showCamera];
       break;
     case AVAuthorizationStatusNotDetermined: {
-      [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
-        if (granted) {
-          dispatch_async(dispatch_get_main_queue(), ^{
-            if (granted) {
-              [self showCamera];
-            }
-          });
-        } else {
-          dispatch_async(dispatch_get_main_queue(), ^{
-            [self errorNoAccess];
-          });
-        }
-      }];
+      [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
+                               completionHandler:^(BOOL granted) {
+                                 if (granted) {
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                     if (granted) {
+                                       [self showCamera];
+                                     }
+                                   });
+                                 } else {
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                     [self errorNoAccess:AVAuthorizationStatusDenied];
+                                   });
+                                 }
+                               }];
     }; break;
     case AVAuthorizationStatusDenied:
     case AVAuthorizationStatusRestricted:
     default:
-      [self errorNoAccess];
+      [self errorNoAccess:status];
       break;
   }
 }
 
-- (void)errorNoAccess {
-  _result([FlutterError errorWithCode:@"camera_access_denied"
-                             message:@"The user did not allow camera access."
-                             details:nil]);
+- (void)errorNoAccess:(AVAuthorizationStatus)status {
+  switch (status) {
+    case AVAuthorizationStatusRestricted:
+      _result([FlutterError errorWithCode:@"camera_access_restricted"
+                                  message:@"The user is not allowed to use the camera."
+                                  details:nil]);
+      break;
+    case AVAuthorizationStatusDenied:
+    default:
+      _result([FlutterError errorWithCode:@"camera_access_denied"
+                                  message:@"The user did not allow camera access."
+                                  details:nil]);
+      break;
+  }
 }
 
 - (void)showPhotoLibrary {
@@ -166,9 +177,10 @@ static const int SOURCE_GALLERY = 1;
   NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
   UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
-  // The method dismissViewControllerAnimated does not immediately prevent further
-  // didFinishPickingMediaWithInfo invocations. A nil check is necessary to prevent below code to
-  // be unwantly executed multiple times and cause a crash.
+  // The method dismissViewControllerAnimated does not immediately prevent
+  // further didFinishPickingMediaWithInfo invocations. A nil check is necessary
+  // to prevent below code to be unwantly executed multiple times and cause a
+  // crash.
   if (!_result) {
     return;
   }
