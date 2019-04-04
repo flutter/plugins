@@ -20,5 +20,17 @@ void main() {
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isTrue);
     });
+
+    test('isSignInWithEmailLink', () async {
+      var emailLink1 = 'https://www.example.com/action?mode=signIn&' +
+          'oobCode=oobCode&apiKey=API_KEY';
+      var emailLink2 = 'https://www.example.com/action?mode=verifyEmail&' +
+          'oobCode=oobCode&apiKey=API_KEY';
+      var emailLink3 = 'https://www.example.com/action?mode=signIn';
+      expect(await auth.isSignInWithEmailLink(emailLink1), true);
+      expect(await auth.isSignInWithEmailLink(emailLink2), false);
+      expect(await auth.isSignInWithEmailLink(emailLink3), false);
+    });
+
   });
 }
