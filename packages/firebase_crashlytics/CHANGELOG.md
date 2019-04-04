@@ -1,6 +1,6 @@
 ## 0.0.3
 
-* Fix to initialize Fabric.
+* Initialize Fabric automatically, preventing crashes that could occur when setting user data.
 
 ## 0.0.2+1
 
