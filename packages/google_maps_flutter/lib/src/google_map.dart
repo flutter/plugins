@@ -249,14 +249,15 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void onMapTapped(double latitudeParam, double longitudeParam) {
     //JANIZA
-        final LatLng latLng = LatLng(latitudeParam, longitudeParam);
-        
+    final LatLng latLng = LatLng(latitudeParam, longitudeParam);
+    print('onMapTapped called $latLng');
   }
 
   void onMapLongTapped(double latitudeParam, double longitudeParam) {
     //JANIZA
+    final LatLng latLng = LatLng(latitudeParam, longitudeParam);
+    print('onMapLongTapped called $latLng');
   }
-
 }
 
 /// Configuration options for the GoogleMaps user interface.

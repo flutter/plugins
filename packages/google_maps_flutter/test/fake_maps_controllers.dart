@@ -160,7 +160,7 @@ class FakePlatformGoogleMap {
     for (Map<dynamic, dynamic> polylineData in polylinesData) {
       final String polylineId = polylineData['polylineId'];
 
-      final List<LatLng>  points = polylineData['points'];
+      final List<LatLng> points = polylineData['points'];
       final bool clickable = polylineData['clickable'];
       final int color = polylineData['color'];
       final Cap endCap = polylineData['endCap'];
@@ -171,23 +171,23 @@ class FakePlatformGoogleMap {
       final bool visible = polylineData['visible'];
       final double width = polylineData['width'];
       final double zIndex = polylineData['zIndex'];
-      
 
       result.add(Polyline(
-        polylineId: PolylineId(polylineId),
-        points: points,
-        clickable: clickable,
-        color: color,
-        endCap: endCap,
-        geodesic: geodesic,
-        jointType: jointType,
-        pattern: pattern,
-        startCap: startCap,
-        visible: visible,
-        width: width,
-        zIndex: zIndex
-      ));
+          polylineId: PolylineId(polylineId),
+          points: points,
+          clickable: clickable,
+          color: color,
+          endCap: endCap,
+          geodesic: geodesic,
+          jointType: jointType,
+          pattern: pattern,
+          startCap: startCap,
+          visible: visible,
+          width: width,
+          zIndex: zIndex));
     }
+
+    return result;
   }
 
   void updateOptions(Map<dynamic, dynamic> options) {

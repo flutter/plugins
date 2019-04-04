@@ -11,20 +11,20 @@ part of google_maps_flutter;
 /// as polylines are added, updated, tapped, and removed.
 @immutable
 class Polyline {
-  const Polyline(
-      {@required this.polylineId,
-      this.points,
-      this.clickable,
-      this.color,
-      this.endCap,
-      this.geodesic,
-      this.jointType,
-      this.pattern,
-      this.startCap,
-      this.visible,
-      this.width,
-      this.zIndex,
-      this.onTap,
+  const Polyline({
+    @required this.polylineId,
+    this.points,
+    this.clickable,
+    this.color,
+    this.endCap,
+    this.geodesic,
+    this.jointType,
+    this.pattern,
+    this.startCap,
+    this.visible,
+    this.width,
+    this.zIndex,
+    this.onTap,
   });
 
   final PolylineId polylineId;
@@ -75,25 +75,31 @@ class Polyline {
   /// unless overwritten by the specified [changes].
   ///
   /// Returns this instance, if [changes] is null.
-  Polyline copyWith(Polyline changes) {
-    if (changes == null) {
-      return this;
-    }
+  Polyline copyWith(
+      {List<LatLng> pointsParam,
+      bool clickableParam,
+      int colorParam,
+      Cap endCapParam,
+      bool geodesicParam,
+      JointType jointTypeParam,
+      List<Pattern> patternParam,
+      Cap startCapParam,
+      bool visibleParam,
+      double widthParam,
+      double zIndexParam}) {
     return Polyline(
-      polylineId: changes.polylineId ?? polylineId,
-      points: changes.points ?? points,
-      clickable: changes.clickable ?? clickable,
-      color: changes.color ?? color,
-      endCap: changes.endCap ?? endCap,
-      geodesic: changes.geodesic ?? geodesic,
-      jointType: changes.jointType ?? jointType,
-      pattern: changes.pattern ?? pattern,
-      startCap: changes.startCap ?? startCap,
-      visible: changes.visible ?? visible,
-      width: changes.width ?? width,
-      zIndex: changes.zIndex ?? zIndex,
-      onTap: changes.onTap ?? onTap,
-    );
+        polylineId: polylineId,
+        points: pointsParam ?? points,
+        clickable: clickableParam ?? clickable,
+        color: colorParam ?? color,
+        endCap: endCapParam ?? endCap,
+        geodesic: geodesicParam ?? geodesic,
+        jointType: jointTypeParam ?? jointType,
+        pattern: patternParam ?? pattern,
+        startCap: startCapParam ?? startCap,
+        visible: visibleParam ?? visible,
+        width: widthParam ?? width,
+        zIndex: zIndexParam ?? zIndex);
   }
 
   dynamic _toJson() {
@@ -133,7 +139,6 @@ class Polyline {
     addIfPresent('zIndex', zIndex);
     return json;
   }
-
 
   @override
   bool operator ==(Object other) {

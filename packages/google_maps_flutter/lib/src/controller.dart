@@ -125,8 +125,9 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updatePolylines(_PolylineUpdates polylineUpdates) async {
     assert(polylineUpdates != null);
+    // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod(
-      'polylines#update',
+      'polyline#update',
       polylineUpdates._toMap(),
     );
   }
