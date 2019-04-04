@@ -1,4 +1,8 @@
-## 0.9.10
+## 0.9.11
+
+* Bump Android dependencies to latest.
+
+# 0.9.10
 
 * Support for cloud_firestore running in the background on Android.
 * Fixed a bug in cleanup for DocumentReference.snapshots().
