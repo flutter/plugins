@@ -185,7 +185,10 @@ final class GoogleMapController
             LatLngBounds latLngBounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
             result.success(Convert.toJson(latLngBounds));
           } else {
-            result.error("map not created", "calling getVisibleRegion before making a map", null);
+            result.error(
+                "GoogleMap uninitialized",
+                "getVisibleRegion called prior to map initialization",
+                null);
           }
           break;
         }

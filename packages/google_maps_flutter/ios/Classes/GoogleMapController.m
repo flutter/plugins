@@ -118,8 +118,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
       result(GMSCoordinateBoundsToJson(bounds));
     } else {
-      result([FlutterError errorWithCode:@"map not created"
-                                 message:@"calling getVisibleRegion before making a map"
+      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                 message:@"getVisibleRegion called prior to map initialization"
                                  details:nil]);
     }
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
