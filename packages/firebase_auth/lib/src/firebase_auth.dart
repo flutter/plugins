@@ -348,9 +348,20 @@ class FirebaseAuth {
         data == null ? null : FirebaseUser._(data, app);
     return currentUser;
   }
-  
-  Future<FirebaseUser> linkWithEmailAndLink(
-      {String email, String link}) async {
+
+  /// Associates the current Firebase user with an email.
+  /// The link has to be sent using [sendSignInWithEmailLink] first.
+  ///
+  /// Errors:
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the credential is malformed or has expired.
+  ///   • `ERROR_CREDENTIAL_ALREADY_IN_USE` - If the account is already in use by a different account.
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
+  ///   • `ERROR_PROVIDER_ALREADY_LINKED` - If the current user already has an account of this type linked.
+  ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that this type of account is not enabled.
+  Future<FirebaseUser> linkWithEmailAndLink({String email, String link}) async {
+    assert(email != null);
+    assert(link != null);
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
       'linkWithEmailAndLink',
       <String, dynamic>{
