@@ -1,6 +1,6 @@
 ## 0.8.4
 
-* Adds support for email link authentication.
+* Adds support for email link authentication and linking.
 
 ## 0.8.3
 
