@@ -8,6 +8,8 @@ import 'package:json_annotation/json_annotation.dart';
 import 'sk_product_wrapper.dart';
 import 'sk_download_wrapper.dart';
 import 'sk_payment_queue_wrapper.dart';
+import 'enum_converters.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/in_app_purchase_connection.dart';
 
 part 'sk_payment_transaction_wrappers.g.dart';
 
@@ -22,7 +24,7 @@ abstract class SKTransactionObserverWrapper {
   void removedTransactions({List<SKPaymentTransactionWrapper> transactions});
 
   /// Triggered when there is an error while restoring transactions.
-  void restoreCompletedTransactions({Error error});
+  void restoreCompletedTransactionsFailed({SKError error});
 
   /// Triggered when payment queue has finished sending restored transactions.
   void paymentQueueRestoreCompletedTransactionsFinished();
@@ -101,7 +103,23 @@ class SKPaymentTransactionWrapper {
     return _$SKPaymentTransactionWrapperFromJson(map);
   }
 
+  /// Generate a [PurchaseDetails] object based on the transaction.
+  ///
+  /// [PurchaseDetails] is Used to represent a purchase detail for unified iOS and Android API.
+  PurchaseDetails toPurchaseDetails(String base64EncodedReceipt) {
+    return PurchaseDetails(
+      purchaseID: transactionIdentifier,
+      productId: payment.productIdentifier,
+      verificationData: PurchaseVerificationData(
+          localVerificationData: base64EncodedReceipt,
+          serverVerificationData: base64EncodedReceipt,
+          source: PurchaseSource.AppStore),
+      transactionDate: (transactionTimeStamp * 1000).toInt().toString(),
+    );
+  }
+
   /// Current transaction state.
+  @SKTransactionStatusConverter()
   final SKPaymentTransactionStateWrapper transactionState;
 
   /// The payment that is created and added to the payment queue which generated this transaction.
@@ -115,7 +133,7 @@ class SKPaymentTransactionWrapper {
 
   /// The timestamp of the transaction.
   ///
-  /// Milliseconds since epoch.
+  /// Seconds since epoch.
   /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased] or [SKPaymentTransactionStateWrapper.restored].
   final double transactionTimeStamp;
 
