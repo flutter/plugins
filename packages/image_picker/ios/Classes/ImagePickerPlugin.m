@@ -106,6 +106,11 @@ static const int SOURCE_GALLERY = 1;
 }
 
 - (void)showCamera {
+  @synchronized(self) {
+    if (_imagePickerController.beingPresented) {
+      return;
+    }
+  }
   // Camera is not available on simulators
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
