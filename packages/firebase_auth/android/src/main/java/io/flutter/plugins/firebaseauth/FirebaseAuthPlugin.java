@@ -124,7 +124,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         break;
       case "linkWithEmailAndLink":
         handleLinkWithEmailAndLink(call, result, getAuth(call));
-      break;
+        break;
       case "unlinkFromProvider":
         handleUnlinkFromProvider(call, result, getAuth(call));
         break;
