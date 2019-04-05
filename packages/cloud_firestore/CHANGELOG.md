@@ -1,3 +1,8 @@
+## 0.9.12
+
+* Move Android dependency to Gradle BoM to help maintain compatibility
+  with other FlutterFire plugins.
+
 ## 0.9.11
 
 * Bump Android dependencies to latest.
