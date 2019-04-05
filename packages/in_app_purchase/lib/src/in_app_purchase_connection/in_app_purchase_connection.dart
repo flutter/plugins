@@ -126,7 +126,7 @@ class PurchaseDetails {
   final String purchaseID;
 
   /// The product identifier of the purchase.
-  final String productId;
+  final String productID;
 
   /// The verification data of the purchase.
   ///
@@ -157,7 +157,7 @@ class PurchaseDetails {
 
   PurchaseDetails({
     @required this.purchaseID,
-    @required this.productId,
+    @required this.productID,
     @required this.verificationData,
     @required this.transactionDate,
     this.skPaymentTransaction = null,

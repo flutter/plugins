@@ -97,7 +97,7 @@ class PurchaseWrapper {
   PurchaseDetails toPurchaseDetails() {
     return PurchaseDetails(
       purchaseID: orderId,
-      productId: sku,
+      productID: sku,
       verificationData: PurchaseVerificationData(
           localVerificationData: originalJson,
           serverVerificationData: purchaseToken,

@@ -36,9 +36,9 @@ class GooglePlayConnection
                   ..error = error;
                 // auto consume logic for buyConsumable.
                 if (_productIDsToConsume != null &&
-                    _productIDsToConsume.contains(purchaseDetails.productId)) {
+                    _productIDsToConsume.contains(purchaseDetails.productID)) {
                   _consume(purchaseDetails);
-                  _productIDsToConsume.remove(purchaseDetails.productId);
+                  _productIDsToConsume.remove(purchaseDetails.productID);
                   if (_productIDsToConsume.isEmpty) {
                     _productIDsToConsume = null;
                   }

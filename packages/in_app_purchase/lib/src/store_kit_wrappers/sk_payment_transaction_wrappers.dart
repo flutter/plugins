@@ -109,7 +109,7 @@ class SKPaymentTransactionWrapper {
   PurchaseDetails toPurchaseDetails(String base64EncodedReceipt) {
     return PurchaseDetails(
       purchaseID: transactionIdentifier,
-      productId: payment.productIdentifier,
+      productID: payment.productIdentifier,
       verificationData: PurchaseVerificationData(
           localVerificationData: base64EncodedReceipt,
           serverVerificationData: base64EncodedReceipt,

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase_connection.dart';
 
@@ -10,7 +11,7 @@ void main() {
   runApp(MyApp());
 }
 
-const bool Auto_Consume = true;
+const bool Auto_Consume = false;
 
 const List<String> _kProductIds = <String>[
   'consumable',
@@ -31,7 +32,7 @@ class _MyAppState extends State<MyApp> {
         InAppPurchaseConnection.instance.purchaseUpdatedStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) {
-        print('purchase updated product ID: (${purchaseDetails.productId})');
+        print('purchase updated product ID: (${purchaseDetails.productID})');
         print('purchase updated purchase ID: (${purchaseDetails.purchaseID})');
         print('purchase updated status: ({${purchaseDetails.status})');
         if (purchaseDetails.status == PurchaseStatus.pending) {
@@ -42,10 +43,10 @@ class _MyAppState extends State<MyApp> {
           } else if (purchaseDetails.status == PurchaseStatus.purchased) {
             deliverProduct(purchaseDetails);
           }
-          if (TargetPlatform == TargetPlatform.iOS) {
+          if (Platform.isIOS) {
             InAppPurchaseConnection.instance.completePurchase(purchaseDetails);
-          } else if (TargetPlatform == TargetPlatform.android) {
-            if (!Auto_Consume && purchaseDetails.productId == 'consumable') {
+          } else if (Platform.isAndroid) {
+            if (!Auto_Consume && purchaseDetails.productID == 'consumable') {
               InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
             }
           }
@@ -163,13 +164,20 @@ class _MyAppState extends State<MyApp> {
     Map<String, PurchaseDetails> purchases = Map.fromEntries(
         ((await connection.queryPastPurchases()).pastPurchases)
             .map((PurchaseDetails purchase) {
-      print('restored: ${purchase.purchaseID}');
+      print('restored productID: ${purchase.productID}');
+      print('restored purchaseID: ${purchase.purchaseID}');
       if (purchase.status == PurchaseStatus.pending) {
-        print('restored pending purchased ${purchase.productId}');
+        print('restored pending purchased ${purchase.productID}');
       } else {
-        connection.completePurchase(purchase);
+        if (Platform.isIOS) {
+          InAppPurchaseConnection.instance.completePurchase(purchase);
+        }
+        if (Platform.isAndroid && purchase.productID == 'consumable') {
+          print('consume restored');
+          InAppPurchaseConnection.instance.consumePurchase(purchase);
+        }
       }
-      return MapEntry<String, PurchaseDetails>(purchase.productId, purchase);
+      return MapEntry<String, PurchaseDetails>(purchase.productID, purchase);
     }));
     productList.addAll(response.productDetails.map(
       (ProductDetails productDetails) {
@@ -192,8 +200,7 @@ class _MyAppState extends State<MyApp> {
             if (productDetails.id == 'consumable') {
               connection.buyConsumable(
                   purchaseParam: purchaseParam,
-                  autoConsume:
-                      Auto_Consume || TargetPlatform == TargetPlatform.iOS);
+                  autoConsume: Auto_Consume || Platform.isIOS);
             } else {
               connection.buyNonConsumable(purchaseParam: purchaseParam);
             }
