@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 class PolylinesController {
 
   private final Map<String, PolylineController> polylineIdToController;
