@@ -65,6 +65,12 @@ class GoogleMapController {
         _googleMapState.onMapLongTapped(
             call.arguments['latitude'], call.arguments['longitude']);
         break;
+      case 'map#onLocationButtonTap':
+        _googleMapState.onLocationButtonTapped();
+        break;        
+      case 'map#onMyLocationTap':
+        _googleMapState.onMyLocationTapped(call.arguments['latitude'], call.arguments['longitude']);
+        break;        
       case 'camera#onIdle':
         if (_googleMapState.widget.onCameraIdle != null) {
           _googleMapState.widget.onCameraIdle();
@@ -107,7 +113,6 @@ class GoogleMapController {
   ///
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMarkers(_MarkerUpdates markerUpdates) async {
-    print("UPDATE MARKERS CALLS");
     assert(markerUpdates != null);
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431

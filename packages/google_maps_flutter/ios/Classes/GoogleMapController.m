@@ -5,12 +5,6 @@
 #import "GoogleMapController.h"
 #import "JsonConversions.h"
 
-#define UIColorFromRGB(rgbValue)                                       \
-  [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16)) / 255.0 \
-                  green:((float)((rgbValue & 0xFF00) >> 8)) / 255.0    \
-                   blue:((float)(rgbValue & 0xFF)) / 255.0             \
-                  alpha:1.0]
-
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position);
@@ -241,7 +235,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 }
 
 - (void)setMapToolbarEnabled:(BOOL)enabled {
-  //_mapView.settings. = enabled;
+  // map tool bar not available in iOS
 }
 
 - (void)setMyLocationButtonEnabled:(BOOL)enabled {
@@ -279,11 +273,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   return [_markersController onMarkerTap:markerId];
 }
 
-- (BOOL)mapView:(GMSMapView*)mapView didTapPolyline:(GMSPolyline*)polyline {
-  NSString* polylineId = polyline.userData[0];
-  return [_polylinesController onPolylineTap:polylineId];
-}
-
 - (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
   [_markersController onInfoWindowTap:markerId];
@@ -291,7 +280,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
   NSString* polylineId = overlay.userData[0];
-  [_channel invokeMethod:@"polyline#onTap" arguments:@{@"polyline" : polylineId}];
+  [_polylinesController onPolylineTap:polylineId];
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
@@ -306,14 +295,14 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
          arguments:@{@"latitude" : @(coordinate.latitude), @"longitude" : @(coordinate.longitude)}];
 }
 
-- (BOOL)didTapMyLocationButtonForMapView:(GMSMapView*)mapView {
-  [_channel invokeMethod:@"location#buttonClick" arguments:@{}];
+- (BOOL)didTapMyLocationButtonForMapView:(GMSMapView *) mapView {
+  [_channel invokeMethod:@"map#onLocationButtonTap" arguments:@{}];
   return false;
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapMyLocation:(CLLocationCoordinate2D)location {
   [_channel
-      invokeMethod:@"location#locationClick"
+      invokeMethod:@"map#onMyLocationTap"
          arguments:@{@"latitude" : @(location.latitude), @"longitude" : @(location.longitude)}];
 }
 
@@ -445,38 +434,12 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   if (myLocationEnabled) {
     [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
   }
-}
-
-static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink,
-                                     NSObject<FlutterPluginRegistrar>* registrar) {
-  NSDictionary* data = json;
-
-  id points = data[@"points"];
-  if (points) {
-    [sink setPoints:toPath(points)];
+  NSNumber* myLocationButtonEnabled = data[@"myLocationButtonEnabled"];
+  if (myLocationButtonEnabled) {
+    [sink setMyLocationButtonEnabled:ToBool(myLocationButtonEnabled)];
   }
-  id clickable = data[@"clickable"];
-  if (clickable) {
-    [sink setClickable:toBool(clickable)];
-  }
-  id color = data[@"color"];
-  if (color) {
-    [sink setColor:UIColorFromRGB(toInt(color))];
-  }
-  id geodesic = data[@"geodesic"];
-  if (geodesic) {
-    [sink setGeodesic:toBool(geodesic)];
-  }
-  id width = data[@"width"];
-  if (width) {
-    [sink setWidth:(CGFloat)toFloat(width)];
-  }
-  id visible = data[@"visible"];
-  if (visible) {
-    [sink setVisible:toBool(visible)];
-  }
-  id zIndex = data[@"zIndex"];
-  if (zIndex) {
-    [sink setZIndex:toInt(zIndex)];
+  NSNumber* mapToolbarEnabled = data[@"mapToolbarEnabled"];
+  if (mapToolbarEnabled) {
+    [sink setMapToolbarEnabled:ToBool(mapToolbarEnabled)];
   }
 }

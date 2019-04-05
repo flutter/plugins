@@ -61,15 +61,18 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   void _onLocationClick(LatLng location) {
+     setState(() {
     _tappedLocation = location;
+     });
   }
 
   void _onLocationButtonClick() {
-    _locationButton++;
+    setState(() {
+      _locationButton++;
+    });
   }
 
   void _onMapLongTapped(LatLng location) {
-    print('Example got the long tappp $location');
     setState(() {
       _tappedLong = location;
     });
@@ -239,6 +242,8 @@ class MapUiBodyState extends State<MapUiBody> {
       onCameraMove: _updateCameraPosition,
       onMapTapped: _onMapTapped,
       onMapLongTapped: _onMapLongTapped,
+      onLocationButtonTapped: _onLocationButtonClick,
+      onMyLocationTapped: _onLocationClick,
     );
 
     final List<Widget> columnChildren = <Widget>[

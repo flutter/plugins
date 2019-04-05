@@ -32,4 +32,16 @@
                      [FLTGoogleMapJsonConversions toDouble:data[1]]);
 }
 
+
++ (GMSPath*)toPath:(NSArray*)data {
+  GMSMutablePath* path = [GMSMutablePath path];
+  for (id object in data) {
+    NSArray* d = object;
+    [path addCoordinate:CLLocationCoordinate2DMake(
+        [FLTGoogleMapJsonConversions toDouble:d[0]],
+        [FLTGoogleMapJsonConversions toDouble:d[1]]
+    )];
+  }
+  return path;
+}
 @end

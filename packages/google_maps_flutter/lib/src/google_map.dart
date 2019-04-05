@@ -39,6 +39,7 @@ class GoogleMap extends StatefulWidget {
       this.onCameraMove,
       this.onCameraIdle,
       this.onLocationButtonTapped,
+      this.onMyLocationTapped,
       this.onMapLongTapped,
       this.onMapTapped})
       : assert(initialCameraPosition != null),
@@ -150,8 +151,11 @@ class GoogleMap extends StatefulWidget {
   /// Invoked when the map is tapped for a long period the latlng is returned
   final LocationCallback onMapLongTapped;
 
-  /// Invoked when the location button is pressed, the current location is returned as a LatLng
-  final LocationCallback onLocationButtonTapped;
+  /// Invoked when the location button is pressed
+  final VoidCallback onLocationButtonTapped;
+
+  /// Invoked when the my location icon is pressed, the current location is returned as a LatLng
+  final LocationCallback onMyLocationTapped;
 
   @override
   State createState() => _GoogleMapState();
@@ -268,17 +272,22 @@ class _GoogleMapState extends State<GoogleMap> {
   }
 
   void onMapTapped(double latitudeParam, double longitudeParam) {
-    //JANIZA
     final LatLng latLng = LatLng(latitudeParam, longitudeParam);
-    print('onMapTapped called $latLng');
     widget.onMapTapped(latLng);
   }
 
   void onMapLongTapped(double latitudeParam, double longitudeParam) {
-    //JANIZA
     final LatLng latLng = LatLng(latitudeParam, longitudeParam);
-    print('onMapLongTapped called $latLng');
     widget.onMapLongTapped(latLng);
+  }
+
+  void onMyLocationTapped(double latitudeParam, double longitudeParam) {
+    final LatLng latLng = LatLng(latitudeParam, longitudeParam);
+    widget.onMyLocationTapped(latLng);
+  }
+
+  void onLocationButtonTapped() {
+    widget.onLocationButtonTapped();
   }
 }
 

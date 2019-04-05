@@ -4,6 +4,7 @@
 
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import "GoogleMapController.h"
 
 // Defines polyline UI options writable from Flutter.
 @protocol FLTGoogleMapPolylineOptionsSink
@@ -21,5 +22,19 @@
 // Defines polyline controllable by Flutter.
 @interface FLTGoogleMapPolylineController : NSObject <FLTGoogleMapPolylineOptionsSink>
 @property(atomic, readonly) NSString* polylineId;
-- (instancetype)initWithPath:(GMSPath*)path mapView:(GMSMapView*)mapView;
+- (instancetype)initWithPath:(GMSPath*)path
+                  polylineId:(NSString*)polylineId 
+                     mapView:(GMSMapView*)mapView;
+- (BOOL)consumeTapEvents;
+- (void)removePolyline;
+@end
+
+@interface FLTPolylinesController : NSObject
+- (instancetype)init:(FlutterMethodChannel*)methodChannel
+             mapView:(GMSMapView*)mapView
+           registrar:(NSObject<FlutterPluginRegistrar>*)registrar;
+- (void)addPolylines:(NSArray*)polylinesToAdd;
+- (void)changePolylines:(NSArray*)polylinesToChange;
+- (void)removePolylineIds:(NSArray*)polylineIdsToRemove;
+- (BOOL)onPolylineTap:(NSString*)polylineId;
 @end

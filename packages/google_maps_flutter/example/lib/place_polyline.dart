@@ -45,7 +45,6 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   }
 
   void _onPolylineTapped(PolylineId polylineId) {
-    print('Poly tapped');
     final Polyline tappedPolyline = polylines[polylineId];
     if (tappedPolyline != null) {
       setState(() {
@@ -54,7 +53,6 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
           polylines[selectedPolyline] = resetOld;
         }
         selectedPolyline = polylineId;
-        print('Poly line is $polylineId');
         final Polyline newPolyline = tappedPolyline.copyWith();
         polylines[polylineId] = newPolyline;
       });
@@ -94,8 +92,6 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     if (_polylineIdCounter == 12) {
       return;
     }
-    print('Adding Polyline');
-
     final String polylineIdVal = 'polyline_id_$_polylineIdCounter';
     _polylineIdCounter++;
     final PolylineId polylineId = PolylineId(polylineIdVal);
@@ -130,7 +126,6 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
         _onPolylineTapped(polylineId);
       },
     );
-    print('Polyline $polylineId added');
     setState(() {
       polylines[polylineId] = polyline;
     });

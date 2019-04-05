@@ -78,7 +78,6 @@ class PolylinesController {
   }
 
   private void addPolyline(Object polyline) {
-    Log.d("TAG","Adding Polyline");
     if (polyline == null) {
       return;
     }
@@ -89,7 +88,6 @@ class PolylinesController {
   }
 
   private void addPolyline(String polylineId, PolylineOptions polylineOptions, boolean consumeTapEvents) {
-    Log.d("TAG","Adding Polyline");
     final Polyline polyline = googleMap.addPolyline(polylineOptions);
     PolylineController controller = new PolylineController(polyline, consumeTapEvents);
     polylineIdToController.put(polylineId, controller);
@@ -97,8 +95,6 @@ class PolylinesController {
   }
 
   private void changePolyline(Object polyline) {
-    Log.d("TAG","Changing Polyline");
-   
     if (polyline == null) {
       return;
     }
@@ -111,8 +107,6 @@ class PolylinesController {
 
   @SuppressWarnings("unchecked")
   private static String getPolylineId(Object polyline) {
-    Log.d("TAG","Getting polyline id");
-   
     Map<String, Object> polylineMap = (Map<String, Object>) polyline;
     return (String) polylineMap.get("polylineId");
   }

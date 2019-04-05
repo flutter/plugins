@@ -12,4 +12,5 @@
 + (float)toFloat:(NSNumber*)data;
 + (CLLocationCoordinate2D)toLocation:(NSArray*)data;
 + (CGPoint)toPoint:(NSArray*)data;
++ (GMSPath*)toPath:(NSArray*)data;
 @end
