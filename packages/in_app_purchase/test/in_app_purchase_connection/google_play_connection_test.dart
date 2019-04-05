@@ -208,4 +208,10 @@ void main() {
       expect(result.productId, dummySkuDetails.sku);
     });
   });
+
+  group('complete purchase', () {
+    test('calling complete purchase on android should throw', () async {
+      expect(()=>connection.completePurchase(null), throwsException);
+    });
+  });
 }

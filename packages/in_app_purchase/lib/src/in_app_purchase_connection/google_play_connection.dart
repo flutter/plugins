@@ -100,7 +100,7 @@ class GooglePlayConnection
 
   @override
   Future<void> completePurchase(PurchaseDetails purchase) {
-    return Future<void>.sync(() {});
+    throw Exception('complete purchase is not available on Android');
   }
 
   @override

@@ -174,8 +174,8 @@ void main() {
     });
   });
 
-  group('finish transaction', () {
-    test('should finish transactions', () async {
+  group('complete purchase', () {
+    test('should complete purchase', () async {
       List<PurchaseDetails> details = [];
       Completer completer = Completer();
       Stream<List<PurchaseDetails>> stream =
@@ -199,6 +199,13 @@ void main() {
       expect(fakeIOSPlatform.finishedTransactions.length, 1);
     });
   });
+
+    group('consume purchase', () {
+    test('should throw when calling consume purchase on iOS', () async {
+      expect(()=>AppStoreConnection.instance.consumePurchase(null), throwsException);
+    });
+  });
+
 }
 
 class FakeIOSPlatform {

@@ -61,7 +61,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
   @override
   Future<void> consumePurchase(PurchaseDetails purchase) {
-    return Future<void>.sync(() {});
+    throw Exception('consume purchase is not available on Android');
   }
 
   @override
