@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'animate_camera.dart';
-import 'map_data_ui.dart';
+import 'map_coordinates.dart';
 import 'map_ui.dart';
 import 'move_camera.dart';
 import 'page.dart';
@@ -13,7 +13,7 @@ import 'scrolling_map.dart';
 
 final List<Page> _allPages = <Page>[
   MapUiPage(),
-  MapDataUiPage(),
+  MapCoordinatesPage(),
   AnimateCameraPage(),
   MoveCameraPage(),
   PlaceMarkerPage(),
