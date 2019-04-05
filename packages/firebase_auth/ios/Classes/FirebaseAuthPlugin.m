@@ -117,6 +117,14 @@ int nextHandle = 0;
                                                             forObject:nil
                                                                 error:error];
                                                    }];
+  } else if ([@"linkWithEmailAndLink" isEqualToString:call.method]) {
+    NSString *email = call.arguments[@"email"];
+    NSString *link = call.arguments[@"link"];
+    [[self getAuth:call.arguments].currentUser
+        linkWithCredential:[credentialWithEmail:email link:link]
+                completion:^(FIRUser *user, NSError *error) {
+                  [self sendResult:result forUser:user error:error];
+                }];
   } else if ([@"signInWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
