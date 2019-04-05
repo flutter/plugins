@@ -13,6 +13,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import java.util.Map;
 
 class FlutterCookieManager implements MethodCallHandler {
 
@@ -34,6 +35,9 @@ class FlutterCookieManager implements MethodCallHandler {
       case "clearCookies":
         clearCookies(result);
         break;
+      case "addCookie":
+        addCookie(methodCall, result);
+        break;
       default:
         result.notImplemented();
     }
@@ -54,5 +58,18 @@ class FlutterCookieManager implements MethodCallHandler {
       cookieManager.removeAllCookie();
       result.success(hasCookies);
     }
+  }
+
+  private static void addCookie(final MethodCall methodCall, final Result result) {
+    final String domain = methodCall.argument("domain");
+    final Map<String, String> cookie = methodCall.argument("cookie");
+
+    CookieManager cookieManager = CookieManager.getInstance();
+    for (Map.Entry<String, String> entry: cookie.entrySet()) {
+      final String cookieString = entry.getKey() + "=" + entry.getValue() + ";";
+      cookieManager.setCookie(domain, cookieString);
+    }
+
+    result.success(null);
   }
 }

@@ -665,6 +665,12 @@ class CookieManager {
       // ignore: strong_mode_implicit_dynamic_method
       .invokeMethod('clearCookies')
       .then<bool>((dynamic result) => result);
+
+  Future<void> addCookie(String domain, Map<String, String> cookie) =>
+      _channel.invokeMethod(
+        'addCookie',
+        <String, dynamic>{'domain': domain, 'cookie': cookie},
+      );
 }
 
 // Throws an ArgumentError if `url` is not a valid URL string.
