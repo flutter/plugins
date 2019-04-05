@@ -360,7 +360,7 @@ class FirebaseAuth {
   ///   • `ERROR_PROVIDER_ALREADY_LINKED` - If the current user already has an account of this type linked.
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that this type of account is not enabled.
   Future<FirebaseUser> linkWithEmailAndLink({
-    @required String email, 
+    @required String email,
     @required String link,
   }) async {
     assert(email != null);
