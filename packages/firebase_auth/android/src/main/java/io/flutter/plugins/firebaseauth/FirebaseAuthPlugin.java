@@ -15,6 +15,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.FirebaseTooManyRequestsException;
+import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -94,6 +95,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         break;
       case "sendPasswordResetEmail":
         handleSendPasswordResetEmail(call, result, getAuth(call));
+        break;
+      case "sendLinkToEmail":
+        handleSendLinkToEmail(call, result, getAuth(call));
+        break;
+      case "isSignInWithEmailLink":
+        handleIsSignInWithEmailLink(call, result, getAuth(call));
+        break;
+      case "signInWithEmailAndLink":
+        handleSignInWithEmailAndLink(call, result, getAuth(call));
         break;
       case "sendEmailVerification":
         handleSendEmailVerification(call, result, getAuth(call));
@@ -324,6 +334,43 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .sendPasswordResetEmail(email)
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleSendLinkToEmail(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    Map<String, Object> arguments = call.arguments();
+    String email = arguments.get("email").toString();
+    ActionCodeSettings actionCodeSettings =
+        ActionCodeSettings.newBuilder()
+            .setUrl(arguments.get("url").toString())
+            .setHandleCodeInApp((Boolean) arguments.get("handleCodeInApp"))
+            .setIOSBundleId(arguments.get("iOSBundleID").toString())
+            .setAndroidPackageName(
+                arguments.get("androidPackageName").toString(),
+                (Boolean) arguments.get("androidInstallIfNotAvailable"),
+                arguments.get("androidMinimumVersion").toString())
+            .build();
+
+    firebaseAuth
+        .sendSignInLinkToEmail(email, actionCodeSettings)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleIsSignInWithEmailLink(
+      MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    Map<String, String> arguments = call.arguments();
+    String link = arguments.get("link");
+    Boolean isSignInWithEmailLink = firebaseAuth.isSignInWithEmailLink(link);
+    result.success(isSignInWithEmailLink);
+  }
+
+  private void handleSignInWithEmailAndLink(
+      MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    Map<String, String> arguments = call.arguments();
+    String email = arguments.get("email");
+    String link = arguments.get("link");
+    firebaseAuth
+        .signInWithEmailLink(email, link)
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSendEmailVerification(
