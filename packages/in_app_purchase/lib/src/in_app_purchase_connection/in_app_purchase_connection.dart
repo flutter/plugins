@@ -152,8 +152,7 @@ abstract class InAppPurchaseConnection {
   /// A utility method in case there is an issue with getting the verification data originally on iOS.
   ///
   /// Throws an [Exception] on Android.
-  Future<PurchaseVerificationData> refreshPurchaseVerificationData(
-      PurchaseDetails purchase);
+  Future<PurchaseVerificationData> refreshPurchaseVerificationData();
 
   /// The [InAppPurchaseConnection] implemented for this platform.
   ///

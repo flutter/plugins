@@ -70,8 +70,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
   }
 
   @override
-  Future<PurchaseVerificationData> refreshPurchaseVerificationData(
-      PurchaseDetails purchase) async {
+  Future<PurchaseVerificationData> refreshPurchaseVerificationData() async {
     await SKRequestMaker().startRefreshReceiptRequest();
     String receipt = await SKReceiptManager.retrieveReceiptData();
     return PurchaseVerificationData(

@@ -71,8 +71,7 @@ class GooglePlayConnection
   }
 
   @override
-  Future<PurchaseVerificationData> refreshPurchaseVerificationData(
-      PurchaseDetails purchase) async {
+  Future<PurchaseVerificationData> refreshPurchaseVerificationData() async {
     throw Exception(
         'The method <refreshPurchaseVerificationData> only works on iOS.');
   }
