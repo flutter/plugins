@@ -359,7 +359,10 @@ class FirebaseAuth {
   ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
   ///   • `ERROR_PROVIDER_ALREADY_LINKED` - If the current user already has an account of this type linked.
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that this type of account is not enabled.
-  Future<FirebaseUser> linkWithEmailAndLink({String email, String link}) async {
+  Future<FirebaseUser> linkWithEmailAndLink({
+    @required String email, 
+    @required String link,
+  }) async {
     assert(email != null);
     assert(link != null);
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
