@@ -132,7 +132,6 @@ void main() {
       StreamSubscription subscription;
       subscription = stream.listen((purchaseDetailsList) {
         details.addAll(purchaseDetailsList);
-        print(purchaseDetailsList);
         if (purchaseDetailsList.first.status == PurchaseStatus.purchased) {
           completer.complete(details);
           subscription.cancel();
