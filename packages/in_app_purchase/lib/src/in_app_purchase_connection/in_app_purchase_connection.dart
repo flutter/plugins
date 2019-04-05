@@ -93,6 +93,27 @@ class PurchaseError {
   final Map<String, dynamic> message;
 }
 
+/// The parameter object for generating a purchase.
+class PurchaseParam {
+  PurchaseParam({@required this.productDetails, this.applicationUserName, this.sandboxTesting});
+
+  /// The product to create payment for.
+  ///
+  /// It has to match one of the valid [ProductDetails] objects that you get from [ProductDetailsResponse] after calling [InAppPurchaseConnection.queryProductDetails].
+  final ProductDetails productDetails;
+
+  /// An opaque id for the user's account that's unique to your app. (Optional)
+  ///
+  /// Used to help the store detect irregular activity.
+  /// Do not pass in a clear text, your developer ID, the user’s Apple ID, or the
+  /// user's Google ID for this field.
+  /// For example, you can use a one-way hash of the user’s account name on your server.
+  final String applicationUserName;
+
+  /// The 'sandboxTesting' is only available on iOS, set it to `true` for testing in AppStore's sandbox environment. The default value is `false`.
+  final bool sandboxTesting;
+}
+
 /// Represents the transaction details of a purchase.
 ///
 /// This class unifies the BillingClient's [PurchaseWrapper] and StoreKit's [SKPaymentTransactionWrapper]. You can use the common attributes in
@@ -201,27 +222,66 @@ abstract class InAppPurchaseConnection {
   /// Query product details list that match the given set of identifiers.
   Future<ProductDetailsResponse> queryProductDetails(Set<String> identifiers);
 
-  /// Make a payment
+  /// Buy a non consumable product or subscription.
+  ///
+  /// Non consumable items are the items that user can only buy once, for example, a purchase that unlocks a special content in your APP.
+  /// Subscriptions are also non consumable products.
+  ///
+  /// You need to restore all the non consumable products for user when they switch their phones.
+  ///
+  /// On iOS, you can define your product as a non consumable items in the [App Store Connect](https://appstoreconnect.apple.com/login).
+  /// Unfortunately, [Google Play Console](https://play.google.com/) defaults all the products as non consumable. You have to consume the consumable items manually calling [consumePurchase].
   ///
   /// This method does not return anything. Instead, after triggering this method, purchase updates will be sent to [purchaseUpdatedStream].
   /// You should [Stream.listen] to [purchaseUpdatedStream] to get [PurchaseDetails] objects in different [PurchaseDetails.status] and
   /// update your UI accordingly. When the [PurchaseDetails.status] is [PurchaseStatus.purchased] or [PurchaseStatus.error], you should deliver the content or handle the error, then call
   /// [completePurchase] to finish the purchasing process.
   ///
-  ///
-  /// The `productID` is the product ID to create payment for.
-  /// The `applicationUserName`
-  /// The 'sandboxTesting' is only necessary to set to `true` for testing on iOS. The default value is `false`.
   /// You can find more details on testing payments on iOS [here](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Chapters/ShowUI.html#//apple_ref/doc/uid/TP40008267-CH3-SW11).
   /// You can find more details on testing payments on Android [here](https://developer.android.com/google/play/billing/billing_testing).
-  void makePayment(
-      {@required String productID,
-      String applicationUserName,
-      bool sandboxTesting = false});
+  ///
+  /// See also:
+  ///
+  ///  * [buyConsumable], for buying a consumable product.
+  ///  * [queryPastPurchases], for restoring non consumable products.
+  ///
+  /// Calling this method for consumable items will cause unwanted behaviors!
+  void buyNonConsumable({@required PurchaseParam purchaseParam});
+
+  /// Buy a consumable product.
+  ///
+  /// Non consumable items are the items that user can buy multiple times, for example, a health potion.
+  ///
+  /// It is not mandatory to restore non consumable products for user when they switch their phones. If you'd like to restore non consumable purchases, you should keep track of those purchase on your own server
+  /// and restore the purchase for your users.
+  ///
+  /// On iOS, you can define your product as a consumable items in the [App Store Connect](https://appstoreconnect.apple.com/login).
+  /// Unfortunately, [Google Play Console](https://play.google.com/) defaults all the products as non consumable. You have to consume the consumable items manually calling [consumePurchase].
+  ///
+  /// The `autoConsume` is for Android only since iOS will automatically consume your purchase if the product is categorized as `consumable` on `App Store Connect`.
+  /// The `autoConsume` if `true` by default, and we will call [consumePurchase] after a successful purchase for you. If you'd like to have an advance purchase flow management. You should set it to `false` and
+  /// consume the purchase when you see fit. Fail to consume a purchase will cause user never be able to buy the same item again. Setting this to `false` on iOS will throw an `Exception`.
+  ///
+  /// This method does not return anything. Instead, after triggering this method, purchase updates will be sent to [purchaseUpdatedStream].
+  /// You should [Stream.listen] to [purchaseUpdatedStream] to get [PurchaseDetails] objects in different [PurchaseDetails.status] and
+  /// update your UI accordingly. When the [PurchaseDetails.status] is [PurchaseStatus.purchased] or [PurchaseStatus.error], you should deliver the content or handle the error, then call
+  /// [completePurchase] to finish the purchasing process.
+  ///
+  /// You can find more details on testing payments on iOS [here](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Chapters/ShowUI.html#//apple_ref/doc/uid/TP40008267-CH3-SW11).
+  /// You can find more details on testing payments on Android [here](https://developer.android.com/google/play/billing/billing_testing).
+  ///
+  /// See also:
+  ///
+  ///  * [buyNonConsumable], for buying a non consumable product or subscription.
+  ///  * [queryPastPurchases], for restoring non consumable products.
+  ///  * [consumePurchase], for consume consumable products on Android.
+  ///
+  /// Calling this method for non consumable items will cause unwanted behaviors!
+  void buyConsumable({@required PurchaseParam purchaseParam, bool autoConsume = true});
 
   /// Completes a purchase either after delivering the content or the purchase is failed. (iOS only).
   ///
-  /// Developer is responsible to complete every [PurchaseDetails] whose [PurchaseDetails.status] is [PurchaseStatus.purchased] or [[PurchaseStatus.error].
+  /// You are responsible to complete every [PurchaseDetails] whose [PurchaseDetails.status] is [PurchaseStatus.purchased] or [[PurchaseStatus.error].
   /// Completing a [PurchaseStatus.pending] purchase will cause exception.
   ///
   /// It throws an [Exception] on Android.
@@ -229,19 +289,17 @@ abstract class InAppPurchaseConnection {
 
   /// Consume a product that is purchased with `purchase` so user can buy it again. (Android only).
   ///
-  /// Developer is responsible to consume purchases for consumable product after delivery the product.
+  /// You are responsible to consume purchases for consumable product after delivery the product.
   /// The user cannot buy the same product again until the purchase of the product is consumed.
   ///
   /// It throws an [Exception] on iOS.
-  Future<void> consumePurchase(PurchaseDetails purchase);
+  Future<BillingResponse> consumePurchase(PurchaseDetails purchase);
 
   /// Query all the past purchases.
   ///
   /// The `applicationUserName` is required if you also passed this in when making a purchase.
   /// If you did not use a `applicationUserName` when creating payments, you can ignore this parameter.
   ///
-  /// A major difference between Android and iOS here is that iOS does not return consumable products when querying past purchases.
-  /// You would need to have your own server to store those information if you need those, although it is not necessary to store those information at all.
   /// For example, when a user installs your APP on a different phone, you want to restore the past purchases and deliver the products that they previously purchased.
   /// It is mandatory to restore non-consumable and subscription for them; however, for consumable product, it is up to you to decide if you should restore those.
   /// If you want to restore the consumable product as well, you need to persist consumable product information for your user on your own server and deliver it to them.

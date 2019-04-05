@@ -10,6 +10,7 @@ import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/enum_converters.dart';
+import '../../billing_client_wrappers.dart';
 
 /// An [InAppPurchaseConnection] that wraps StoreKit.
 ///
@@ -42,25 +43,29 @@ class AppStoreConnection implements InAppPurchaseConnection {
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
 
   @override
-  void makePayment(
-      {String productID,
-      String applicationUserName,
-      bool sandboxTesting = false}) {
+  void buyNonConsumable(
+      {@required PurchaseParam purchaseParam}) {
     _skPaymentQueueWrapper.addPayment(SKPaymentWrapper(
-        productIdentifier: productID,
+        productIdentifier: purchaseParam.productDetails.id,
         quantity: 1,
-        applicationUsername: applicationUserName,
-        simulatesAskToBuyInSandbox: sandboxTesting,
+        applicationUsername: purchaseParam.applicationUserName,
+        simulatesAskToBuyInSandbox: purchaseParam.sandboxTesting,
         requestData: null));
   }
 
   @override
-  Future<void> completePurchase(PurchaseDetails purchase) {
-    return _skPaymentQueueWrapper.finishTransaction(purchase.purchaseID);
+   void buyConsumable({@required PurchaseParam purchaseParam, bool autoConsume = true}) {
+     assert(autoConsume == true, 'On iOS, we should always auto consume');
+     buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   @override
-  Future<void> consumePurchase(PurchaseDetails purchase) {
+  Future<void> completePurchase(PurchaseDetails purchase) {
+    return _skPaymentQueueWrapper.finishTransaction(purchase.skPaymentTransaction);
+  }
+
+  @override
+  Future<BillingResponse> consumePurchase(PurchaseDetails purchase) {
     throw Exception('consume purchase is not available on Android');
   }
 

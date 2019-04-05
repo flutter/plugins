@@ -34,6 +34,14 @@ class GooglePlayConnection
                       ? PurchaseStatus.purchased
                       : PurchaseStatus.error
                   ..error = error;
+                // auto consume logic for buyConsumable.
+                if (_productIDsToConsume != null && _productIDsToConsume.contains(purchaseDetails.productId)) {
+                  _consume(purchaseDetails);
+                  _productIDsToConsume.remove(purchaseDetails.productId);
+                  if (_productIDsToConsume.isEmpty) {
+                    _productIDsToConsume = null;
+                  }
+                }
                 return purchaseDetails;
               },
             ).toList(),
@@ -55,6 +63,7 @@ class GooglePlayConnection
   final BillingClient billingClient;
 
   Future<void> _readyFuture;
+  static Set<String> _productIDsToConsume;
 
   @override
   Future<bool> isAvailable() async {
@@ -90,12 +99,21 @@ class GooglePlayConnection
   }
 
   @override
-  void makePayment(
-      {@required String productID,
-      String applicationUserName,
-      bool sandboxTesting = false}) {
+  void buyNonConsumable(
+      {@required PurchaseParam purchaseParam}) {
     billingClient.launchBillingFlow(
-        sku: productID, accountId: applicationUserName);
+        sku: purchaseParam.productDetails.id, accountId: purchaseParam.applicationUserName);
+  }
+
+  @override
+   void buyConsumable({@required PurchaseParam purchaseParam, bool autoConsume = true}) {
+     if (autoConsume == true) {
+       if (_productIDsToConsume == null) {
+         _productIDsToConsume = Set<String>();
+         _productIDsToConsume.add(purchaseParam.productDetails.id);
+       }
+     }
+     buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   @override
@@ -104,7 +122,7 @@ class GooglePlayConnection
   }
 
   @override
-  Future<void> consumePurchase(PurchaseDetails purchase) {
+  Future<BillingResponse> consumePurchase(PurchaseDetails purchase) {
     return billingClient
         .consumeAsync(purchase.verificationData.serverVerificationData);
   }
@@ -174,6 +192,10 @@ class GooglePlayConnection
 
     _instance = GooglePlayConnection._();
     return _instance;
+  }
+
+  static _consume(PurchaseDetails purchase) {
+    instance.consumePurchase(purchase);
   }
 
   Future<void> _connect() =>

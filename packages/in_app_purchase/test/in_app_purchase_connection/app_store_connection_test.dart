@@ -122,7 +122,7 @@ void main() {
   });
 
   group('make payment', () {
-    test('should get purchase objects in the purchase update callback',
+    test('buying non consumable, should get purchase objects in the purchase update callback',
         () async {
       List<PurchaseDetails> details = [];
       Completer completer = Completer();
@@ -137,12 +137,44 @@ void main() {
           subscription.cancel();
         }
       });
+      final PurchaseParam purchaseParam = PurchaseParam(productDetails: dummyProductWrapper.toProductDetails(), applicationUserName: 'appName');
       await AppStoreConnection.instance
-          .makePayment(productID: 'productID', applicationUserName: 'appName');
+          .buyNonConsumable(purchaseParam: purchaseParam);
 
       List<PurchaseDetails> result = await completer.future;
       expect(result.length, 2);
-      expect(result.first.productId, 'productID');
+      expect(result.first.productId, dummyProductWrapper.productIdentifier);
+    });
+
+    test('buying consumable, should get purchase objects in the purchase update callback',
+        () async {
+      List<PurchaseDetails> details = [];
+      Completer completer = Completer();
+      Stream<List<PurchaseDetails>> stream =
+          AppStoreConnection.instance.purchaseUpdatedStream;
+
+      StreamSubscription subscription;
+      subscription = stream.listen((purchaseDetailsList) {
+        details.addAll(purchaseDetailsList);
+        if (purchaseDetailsList.first.status == PurchaseStatus.purchased) {
+          completer.complete(details);
+          subscription.cancel();
+        }
+      });
+      final PurchaseParam purchaseParam = PurchaseParam(productDetails: dummyProductWrapper.toProductDetails(), applicationUserName: 'appName');
+      await AppStoreConnection.instance
+          .buyConsumable(purchaseParam: purchaseParam);
+
+      List<PurchaseDetails> result = await completer.future;
+      expect(result.length, 2);
+      expect(result.first.productId, dummyProductWrapper.productIdentifier);
+    });
+
+    test('buying consumable, should throw when autoConsume is false',
+        () async {
+      final PurchaseParam purchaseParam = PurchaseParam(productDetails: dummyProductWrapper.toProductDetails(), applicationUserName: 'appName');
+      expect(() => AppStoreConnection.instance
+          .buyConsumable(purchaseParam: purchaseParam, autoConsume: false), throwsA(TypeMatcher<AssertionError>()));
     });
 
     test('should get failed purchase status', () async {
@@ -164,8 +196,9 @@ void main() {
           }
         });
       });
+      final PurchaseParam purchaseParam = PurchaseParam(productDetails: dummyProductWrapper.toProductDetails(), applicationUserName: 'appName');
       await AppStoreConnection.instance
-          .makePayment(productID: 'productID', applicationUserName: 'appName');
+          .buyNonConsumable(purchaseParam: purchaseParam);
 
       PurchaseError completerError = await completer.future;
       expect(completerError.code, kPurchaseErrorCode);
@@ -191,11 +224,12 @@ void main() {
           }
         });
       });
+      final PurchaseParam purchaseParam = PurchaseParam(productDetails: dummyProductWrapper.toProductDetails(), applicationUserName: 'appName');
       await AppStoreConnection.instance
-          .makePayment(productID: 'productID', applicationUserName: 'appName');
+          .buyNonConsumable(purchaseParam: purchaseParam);
       List<PurchaseDetails> result = await completer.future;
       expect(result.length, 2);
-      expect(result.first.productId, 'productID');
+      expect(result.first.productId, dummyProductWrapper.productIdentifier);
       expect(fakeIOSPlatform.finishedTransactions.length, 1);
     });
   });

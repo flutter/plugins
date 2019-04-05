@@ -177,10 +177,12 @@ class _MyAppState extends State<MyApp> {
               ? Icon(Icons.check)
               : Text(productDetails.price),
           onTap: () {
-            connection.makePayment(
-                productID: productDetails.id,
-                applicationUserName: null,
-                sandboxTesting: true);
+            PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails, applicationUserName: null, sandboxTesting: true);
+            if (productDetails.id == 'consumable') {
+              connection.buyConsumable(purchaseParam: purchaseParam);
+            } else {
+              connection.buyNonConsumable(purchaseParam: purchaseParam);
+            }
           },
         );
       },
@@ -198,9 +200,6 @@ class _MyAppState extends State<MyApp> {
   void deliverProduct(PurchaseDetails purchaseDetails) {
     // IMPORTANT!! Always verify a purchase purchase details before deliver the product.
     print('product delivered');
-    if (purchaseDetails.productId == 'consumable') {
-      InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
-    }
   }
 
   void handleError(PurchaseError error) {
