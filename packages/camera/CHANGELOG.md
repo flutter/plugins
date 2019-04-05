@@ -1,3 +1,9 @@
+## 0.4.4
+
+* Added rotation metadata to iOS recorded videos.
+* **Breaking change**. The `aspectRatio` parameter now returns width/height instead of height/width as aspect ratio is always width:height.
+* **Breaking change**. Due to platform specific handling of Texture objects, the `CameraPreview` now use an `AspectRatio` and `RotatedBox` widget internally to display the preview with the correct ratio and rotation. Users should not wrap `CameraPreview` in a `AspectRatio` anymore.
+
 ## 0.4.3+2
 
 * Bump the minimum Flutter version to 1.2.0.

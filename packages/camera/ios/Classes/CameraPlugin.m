@@ -96,6 +96,7 @@ static FlutterError *getFlutterError(NSError *error) {
   float yxAtan = (atan2(_motionManager.accelerometerData.acceleration.y,
                         _motionManager.accelerometerData.acceleration.x)) *
                  180 / M_PI;
+
   if (isNearValue(-90.0, yxAtan)) {
     return UIImageOrientationRight;
   } else if (isNearValueABS(180.0, yxAtan)) {
@@ -184,14 +185,15 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)};
   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
   [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
-
   AVCaptureConnection *connection =
       [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports
                                              output:_captureVideoOutput];
+
   if ([_captureDevice position] == AVCaptureDevicePositionFront) {
     connection.videoMirrored = YES;
   }
-  connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+  connection.videoOrientation = AVCaptureVideoOrientationLandscapeRight;
+
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
   [_captureSession addConnection:connection];
@@ -536,21 +538,28 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     [self setUpCaptureSessionForAudio];
   }
   _videoWriter = [[AVAssetWriter alloc] initWithURL:outputURL
-                                           fileType:AVFileTypeQuickTimeMovie
+                                           fileType:AVFileTypeMPEG4
                                               error:&error];
   NSParameterAssert(_videoWriter);
   if (error) {
     _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
     return NO;
   }
+
   NSDictionary *videoSettings = [NSDictionary
       dictionaryWithObjectsAndKeys:AVVideoCodecH264, AVVideoCodecKey,
-                                   [NSNumber numberWithInt:_previewSize.height], AVVideoWidthKey,
-                                   [NSNumber numberWithInt:_previewSize.width], AVVideoHeightKey,
+                                   [NSNumber numberWithInt:_previewSize.width], AVVideoWidthKey,
+                                   [NSNumber numberWithInt:_previewSize.height], AVVideoHeightKey,
                                    nil];
+
   _videoWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo
                                                          outputSettings:videoSettings];
+
   NSParameterAssert(_videoWriterInput);
+  // Add orientation metadata.
+  CGFloat rotationDegrees = [self getDeviceRotation];
+  _videoWriterInput.transform = CGAffineTransformMakeRotation(rotationDegrees * M_PI / 180);
+
   _videoWriterInput.expectsMediaDataInRealTime = YES;
 
   // Add the audio input
@@ -568,6 +577,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   _audioWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeAudio
                                                          outputSettings:audioOutputSettings];
   _audioWriterInput.expectsMediaDataInRealTime = YES;
+
   [_videoWriter addInput:_videoWriterInput];
   [_videoWriter addInput:_audioWriterInput];
   [_captureVideoOutput setSampleBufferDelegate:self queue:_dispatchQueue];
@@ -603,6 +613,32 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     }
   }
 }
+
+- (float)getDeviceRotation {
+  float const threshold = 45.0;
+  BOOL (^isNearValue)(float value1, float value2) = ^BOOL(float value1, float value2) {
+    return fabsf(value1 - value2) < threshold;
+  };
+  BOOL (^isNearValueABS)(float value1, float value2) = ^BOOL(float value1, float value2) {
+    return isNearValue(fabsf(value1), fabsf(value2));
+  };
+  float yxAtan = (atan2(_motionManager.accelerometerData.acceleration.y,
+                        _motionManager.accelerometerData.acceleration.x)) *
+                 180 / M_PI;
+  if (isNearValue(-90.0, yxAtan)) {
+    return 90;
+  } else if (isNearValueABS(180.0, yxAtan)) {
+    return 0;
+  } else if (isNearValueABS(0.0, yxAtan)) {
+    return 180;
+  } else if (isNearValue(90.0, yxAtan)) {
+    return 270;
+  }
+  // If none of the above, then the device is likely facing straight down or straight up -- just
+  // pick something arbitrary
+  return 0;
+}
+
 @end
 
 @interface CameraPlugin ()

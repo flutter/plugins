@@ -94,10 +94,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
         ),
       );
     } else {
-      return AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: CameraPreview(controller),
-      );
+      return CameraPreview(controller);
     }
   }
 
