@@ -1,7 +1,6 @@
-## 0.8.5
+## 0.8.4+1
 
 * Adds linking for email link authentication.
-* Fixed `linkWithCredential` on Android again.
 
 ## 0.8.4
 
