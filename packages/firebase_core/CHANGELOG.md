@@ -1,3 +1,8 @@
+## 0.3.2
+
+* Move Android dependency to Gradle BoM to help maintain compatability
+  with other FlutterFire plugins.
+
 ## 0.3.1+1
 
 * Add nil check on static functions to prevent crashes or unwanted behaviors.

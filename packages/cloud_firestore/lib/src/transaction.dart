@@ -14,15 +14,20 @@ class Transaction {
   Firestore _firestore;
 
   Future<DocumentSnapshot> get(DocumentReference documentReference) async {
-    final Map<String, dynamic> result = await Firestore.channel
-        .invokeMapMethod<String, dynamic>('Transaction#get', <String, dynamic>{
+    final Map<dynamic, dynamic> result = await Firestore.channel
+        .invokeMethod<Map<dynamic, dynamic>>(
+            'Transaction#get', <String, dynamic>{
       'app': _firestore.app.name,
       'transactionId': _transactionId,
       'path': documentReference.path,
     });
     if (result != null) {
-      return DocumentSnapshot._(documentReference.path,
-          result['data']?.cast<String, dynamic>(), _firestore);
+      return DocumentSnapshot._(
+          documentReference.path,
+          result['data']?.cast<String, dynamic>(),
+          SnapshotMetadata._(result['metadata']['hasPendingWrites'],
+              result['metadata']['isFromCache']),
+          _firestore);
     } else {
       return null;
     }

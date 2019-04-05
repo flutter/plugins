@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase_connection.dart';
 
@@ -54,10 +53,10 @@ class _MyAppState extends State<MyApp> {
               future: _buildProductList(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.error != null) {
+                  print(snapshot.error);
                   return Center(
-                    child: buildListCard(ListTile(
-                        title: Text('Error fetching products'),
-                        subtitle: snapshot.error)),
+                    child: buildListCard(
+                        ListTile(title: Text('Error fetching products'))),
                   );
                 } else if (!snapshot.hasData) {
                   return Card(
@@ -117,6 +116,32 @@ class _MyAppState extends State<MyApp> {
           subtitle: Text(
               'This app needs special configuration to run. Please see example/README.md for instructions.')));
     }
+
+    // This loading previous purchases code is just a demo. Please do not use this as it is.
+    // In your app you should always verify the purchase data using the `verificationData` inside the [PurchaseDetails] object before trusting it.
+    // We recommend that you use your own server to verity the purchase data.
+    Map<String, PurchaseDetails> purchases = Map.fromEntries(((await connection
+                .queryPastPurchases())
+            .pastPurchases)
+        .map((PurchaseDetails purchase) =>
+            MapEntry<String, PurchaseDetails>(purchase.productId, purchase)));
+
+    productList.addAll(response.productDetails.map(
+      (ProductDetails productDetails) {
+        PurchaseDetails previousPurchase = purchases[productDetails.id];
+        return ListTile(
+          title: Text(
+            productDetails.title,
+          ),
+          subtitle: Text(
+            productDetails.description,
+          ),
+          trailing: previousPurchase != null
+              ? Icon(Icons.check)
+              : Text(productDetails.price),
+        );
+      },
+    ));
 
     return Card(
         child:
