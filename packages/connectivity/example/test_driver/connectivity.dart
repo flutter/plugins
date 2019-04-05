@@ -15,14 +15,9 @@ void main() {
       _connectivity = Connectivity();
     });
 
-    test('test _checkConnectivity', () async {
-      final ConnectivityResult result = await _connectivity.checkConnectivity();
-      expect(result, isNotNull);
-    });
-
     test('test connectivity result', () async {
       final ConnectivityResult result = await _connectivity.checkConnectivity();
-      print(result);
+      expect(result, isNotNull);
       switch (result) {
         case ConnectivityResult.wifi:
           expect((_connectivity.getWifiName()), completes);

@@ -1,6 +1,6 @@
 ## 0.4.2+2
 
-* Add test driver.
+* Add integration test.
 
 ## 0.4.2+1
 
