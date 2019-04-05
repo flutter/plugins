@@ -1,16 +1,14 @@
-<<<<<<< HEAD
 ## 0.4.4
 
 * Added 2 new quality presets (veryHigh and veryLow).
 * Now quality presets match on Android and iOS
 * Now quality presets can be used to control image capture quality.
 ** NOTE: ** Existing presets have been updated, this will affect the quality of pictures and videos in existing apps.
-=======
+
 ## 0.4.3+2
 
 * Bump the minimum Flutter version to 1.2.0.
 * Add template type parameter to `invokeMethod` calls.
->>>>>>> 6926dc47b948249a078b3f51d6948d83a939e950
 
 ## 0.4.3+1
 
