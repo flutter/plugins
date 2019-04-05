@@ -154,19 +154,27 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   // At least 2 user videos show a black screen when in portrait mode if we directly use the
   // videoTrack.preferredTransform Setting tx to the height of the video instead of 0, properly
   // displays the video https://github.com/flutter/flutter/issues/17606#issuecomment-413473181
-  if (transform.tx == 0 && transform.ty == 0) {
-    NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
-    NSLog(@"TX and TY are 0. Rotation: %ld. Natural width,height: %f, %f", (long)rotationDegrees,
-          videoTrack.naturalSize.width, videoTrack.naturalSize.height);
+  NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
+  // This prevents the video to be rendered out of the screen if the metadata contain a rotation but
+  // no translation to compensate the shift induced by the rotation.
+  if (rotationDegrees != 0 && transform.tx == 0 && transform.ty == 0) {
+    NSLog(@"Adding translation to compensate rotation. Rotation = %ld. Natural (width, height) = "
+          @"(%f, %f)",
+          (long)rotationDegrees, videoTrack.naturalSize.width, videoTrack.naturalSize.height);
+    NSLog(@"Uncompensated transform (a, b, c, d, tx, ty) = (%f, %f, %f, %f, %f, %f)", transform.a,
+          transform.b, transform.c, transform.d, transform.tx, transform.ty);
     if (rotationDegrees == 90) {
-      NSLog(@"Setting transform tx");
       transform.tx = videoTrack.naturalSize.height;
       transform.ty = 0;
+    } else if (rotationDegrees == 180) {
+      transform.tx = videoTrack.naturalSize.width;
+      transform.ty = videoTrack.naturalSize.height;
     } else if (rotationDegrees == 270) {
-      NSLog(@"Setting transform ty");
       transform.tx = 0;
       transform.ty = videoTrack.naturalSize.width;
     }
+    NSLog(@"Compensated transform (a, b, c, d, tx, ty) = (%f, %f, %f, %f, %f, %f)", transform.a,
+          transform.b, transform.c, transform.d, transform.tx, transform.ty);
   }
   return transform;
 }

@@ -1,3 +1,7 @@
+## 0.10.0+5
+
+* iOS: Fixed orientation and position issue for some videos metadata.
+
 ## 0.10.0+4
 
 * Android: Upgrade ExoPlayer to 2.9.6.
