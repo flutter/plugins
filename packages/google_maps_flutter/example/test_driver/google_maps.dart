@@ -286,8 +286,9 @@ void main() {
     final GoogleMapController mapController =
         await mapControllerCompleter.future;
 
-    //workaround for passing on tablet
-    await Future<dynamic>.delayed(Duration(seconds: 3));
+    // TODO(iskakaushik): We might need to wait here for some device configurations.
+    // https://github.com/flutter/flutter/issues/30575
+    // await Future<dynamic>.delayed(Duration(seconds: 3));
 
     final LatLngBounds firstVisibleRegion =
         await mapController.getVisibleRegion();
@@ -307,9 +308,11 @@ void main() {
     final LatLngBounds latLngBounds =
         LatLngBounds(southwest: southWest, northeast: northEast);
 
-    //padding 1 - workaround for passing on tablet
+    // TODO(iskakaushik): non-zero padding is needed for some device configurations
+    // https://github.com/flutter/flutter/issues/30575
+    final double padding = 0;
     await mapController
-        .moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, 1));
+        .moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, padding));
 
     final LatLngBounds secondVisibleRegion =
         await mapController.getVisibleRegion();
