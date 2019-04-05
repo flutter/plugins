@@ -12,11 +12,9 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <!-- Update this value to your google maps api key. -->
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyDy7W8dsNjqEu30Xld1Cz47IX2AuVbmnaU"/>
-<!--         
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${mapsApiKey}" /> -->
+            android:value="${mapsApiKey}" />
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

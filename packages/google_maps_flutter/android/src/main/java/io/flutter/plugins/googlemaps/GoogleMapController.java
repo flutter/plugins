@@ -182,7 +182,6 @@ final class GoogleMapController
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    Log.d(TAG, "ON METHOD CALL ------ " + call.method);
     switch (call.method) {
       case "map#waitForMap":
         if (googleMap != null) {
