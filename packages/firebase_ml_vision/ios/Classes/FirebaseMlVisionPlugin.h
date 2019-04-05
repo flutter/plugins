@@ -20,10 +20,7 @@
 @interface FaceDetector : NSObject <Detector>
 @end
 
-@interface LabelDetector : NSObject <Detector>
-@end
-
-@interface CloudLabelDetector : NSObject <Detector>
+@interface ImageLabeler : NSObject <Detector>
 @end
 
 @interface TextRecognizer : NSObject <Detector>

@@ -95,7 +95,6 @@ class LatLngBounds {
     }
   }
 
-
   @visibleForTesting
   static LatLngBounds fromList(dynamic json) {
     if (json == null) {

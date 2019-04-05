@@ -26,9 +26,18 @@ void main() {
     });
 
     test('getDocuments', () async {
-      final CollectionReference reference = firestore.collection('messages');
-      final QuerySnapshot snapshot = await reference.getDocuments();
-      expect(snapshot.documents.length, isNonZero);
+      final Query query = firestore
+          .collection('messages')
+          .where('message', isEqualTo: 'Hello world!')
+          .limit(1);
+      final QuerySnapshot querySnapshot = await query.getDocuments();
+      expect(querySnapshot.documents.first['message'], 'Hello world!');
+      final DocumentReference firstDoc =
+          querySnapshot.documents.first.reference;
+      final DocumentSnapshot documentSnapshot = await firstDoc.get();
+      expect(documentSnapshot.data['message'], 'Hello world!');
+      final DocumentSnapshot snapshot = await firstDoc.snapshots().first;
+      expect(snapshot.data['message'], 'Hello world!');
     });
   });
 }

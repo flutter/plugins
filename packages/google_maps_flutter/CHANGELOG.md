@@ -1,6 +1,15 @@
-## 0.5.1
+## 0.5.3
 
 * Add method getVisibleRegion for get the latlng bounds of the visible map area.
+
+## 0.5.2
+
+* Added onTap for callback for GoogleMap.
+
+## 0.5.1
+
+* Update Android gradle version.
+* Added infrastructure to write integration tests.
 
 ## 0.5.0
 

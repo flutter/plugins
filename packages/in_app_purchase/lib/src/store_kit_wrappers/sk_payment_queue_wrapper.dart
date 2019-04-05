@@ -119,11 +119,11 @@ class SKPaymentQueueWrapper {
             _observer.removedTransactions(transactions: transactions);
           });
         }
-      case 'restoreCompletedTransactions':
+      case 'restoreCompletedTransactionsFailed':
         {
-          final Error error = call.arguments;
+          SKError error = SKError.fromJson(call.arguments);
           return Future<void>(() {
-            _observer.restoreCompletedTransactions(error: error);
+            _observer.restoreCompletedTransactionsFailed(error: error);
           });
         }
       case 'paymentQueueRestoreCompletedTransactionsFinished':

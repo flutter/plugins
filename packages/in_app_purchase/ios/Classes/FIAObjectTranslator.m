@@ -153,6 +153,7 @@
     [downloads addObject:[FIAObjectTranslator getMapFromSKDownload:download]];
   }
   [map setObject:downloads forKey:@"downloads"];
+
   return map;
 }
 

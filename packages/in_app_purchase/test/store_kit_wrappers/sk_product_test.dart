@@ -6,6 +6,7 @@ import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/in_app_purchase_connection.dart';
 import 'sk_test_stub_objects.dart';
 
 void main() {
@@ -131,6 +132,17 @@ void main() {
       expect(transaction, equals(dummyTransaction));
     });
 
+    test('toPurchaseDetails() should return correct PurchaseDetail object', () {
+      PurchaseDetails details =
+          dummyTransaction.toPurchaseDetails('receipt data');
+      expect(dummyTransaction.transactionIdentifier, details.purchaseID);
+      expect(dummyTransaction.payment.productIdentifier, details.productId);
+      expect((dummyTransaction.transactionTimeStamp * 1000).toInt().toString(),
+          details.transactionDate);
+      expect(details.verificationData.localVerificationData, 'receipt data');
+      expect(details.verificationData.serverVerificationData, 'receipt data');
+      expect(details.verificationData.source, PurchaseSource.AppStore);
+    });
     test('Should generate correct map of the payment object', () {
       Map map = dummyPayment.toMap();
       expect(map['productIdentifier'], dummyPayment.productIdentifier);
