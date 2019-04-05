@@ -224,16 +224,15 @@ abstract class InAppPurchaseConnection {
   /// Developer is responsible to complete every [PurchaseDetails] whose [PurchaseDetails.status] is [PurchaseStatus.purchased] or [[PurchaseStatus.error].
   /// Completing a [PurchaseStatus.pending] purchase will cause exception.
   ///
-  /// This is a non-op on Android.
+  /// It throws an [Exception] on Android.
   Future<void> completePurchase(PurchaseDetails purchase);
 
-  /// Consume a product that is purchased with `purchase` so user can buy it again.
+  /// Consume a product that is purchased with `purchase` so user can buy it again. (Android only).
   ///
   /// Developer is responsible to consume purchases for consumable product after delivery the product.
   /// The user cannot buy the same product again until the purchase of the product is consumed.
   ///
-  /// This is a non-op on iOS. In App Store Connect, the product specified as `consumable` category automatically allow
-  /// users to buy multiple times.
+  /// It throws an [Exception] on iOS.
   Future<void> consumePurchase(PurchaseDetails purchase);
 
   /// Query all the past purchases.
