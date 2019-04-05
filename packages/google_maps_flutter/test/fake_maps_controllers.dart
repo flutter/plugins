@@ -51,7 +51,7 @@ class FakePlatformGoogleMap {
 
   Set<Marker> markersToChange;
 
-  Set<PolylineId> polylinesIdsToRemove;
+  Set<PolylineId> polylineIdsToRemove;
 
   Set<Polyline> polylinesToAdd;
 
@@ -136,7 +136,7 @@ class FakePlatformGoogleMap {
       return;
     }
     polylinesToAdd = _deserializePolylines(polylineUpdates['polylinesToAdd']);
-    polylinesIdsToRemove =
+    polylineIdsToRemove =
         _deserializePolylineIds(polylineUpdates['polylineIdsToRemove']);
     polylinesToChange =
         _deserializePolylines(polylineUpdates['polylinesToChange']);
@@ -159,14 +159,11 @@ class FakePlatformGoogleMap {
     final Set<Polyline> result = Set<Polyline>();
     for (Map<dynamic, dynamic> polylineData in polylinesData) {
       final String polylineId = polylineData['polylineId'];
-
-      final List<LatLng> points = polylineData['points'];
       final bool clickable = polylineData['clickable'];
       final int color = polylineData['color'];
       final Cap endCap = polylineData['endCap'];
       final bool geodesic = polylineData['geodesic'];
       final JointType jointType = polylineData['jointType'];
-      final List<Pattern> pattern = polylineData['pattern'];
       final Cap startCap = polylineData['startCap'];
       final bool visible = polylineData['visible'];
       final double width = polylineData['width'];
@@ -174,13 +171,11 @@ class FakePlatformGoogleMap {
 
       result.add(Polyline(
           polylineId: PolylineId(polylineId),
-          points: points,
           clickable: clickable,
           color: color,
           endCap: endCap,
           geodesic: geodesic,
           jointType: jointType,
-          pattern: pattern,
           startCap: startCap,
           visible: visible,
           width: width,
