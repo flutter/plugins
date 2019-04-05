@@ -153,7 +153,7 @@ void main() {
   group('refresh receipt data', () {
     test('should throw on android', () {
       expect(GooglePlayConnection.instance.refreshPurchaseVerificationData(),
-          throws);
+          throwsException);
     });
   });
 }
