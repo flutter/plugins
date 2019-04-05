@@ -41,14 +41,23 @@ class Convert {
               FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
       case "fromBytes":
-        if (data.size() == 2) {
-          Bitmap bitmap = toBitmap(data.get(1));
-          return BitmapDescriptorFactory.fromBitmap(bitmap);
-        } else {
-          return BitmapDescriptorFactory.defaultMarker();
-        }
+        return getBitmapFromBytes(data);
       default:
         throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
+    }
+  }
+
+  private static BitmapDescriptor getBitmapFromBytes(List<?> data) {
+    if (data.size() == 2) {
+      try {
+        Bitmap bitmap = toBitmap(data.get(1));
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+      } catch (Exception e) {
+        throw new IllegalArgumentException("Unable to interpret bytes as a valid image.", e);
+      }
+    } else {
+      throw new IllegalArgumentException(
+          "fromBytes should have exactly one argument, the bytes. Got: " + data.size());
     }
   }
 
@@ -169,10 +178,14 @@ class Convert {
     return (int) toFractionalPixels(o, density);
   }
 
-  static Bitmap toBitmap(Object o) {
+  private static Bitmap toBitmap(Object o) {
     byte[] bmpData = (byte[]) o;
     Bitmap bitmap = BitmapFactory.decodeByteArray(bmpData, 0, bmpData.length);
-    return bitmap;
+    if (bitmap == null) {
+      throw new IllegalArgumentException("Unable to decode bytes as a valid bitmap.");
+    } else {
+      return bitmap;
+    }
   }
 
   private static Point toPoint(Object o, float density) {
