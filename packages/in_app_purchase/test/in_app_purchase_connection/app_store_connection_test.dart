@@ -122,7 +122,8 @@ void main() {
   });
 
   group('make payment', () {
-    test('buying non consumable, should get purchase objects in the purchase update callback',
+    test(
+        'buying non consumable, should get purchase objects in the purchase update callback',
         () async {
       List<PurchaseDetails> details = [];
       Completer completer = Completer();
@@ -137,7 +138,9 @@ void main() {
           subscription.cancel();
         }
       });
-      final PurchaseParam purchaseParam = PurchaseParam(productDetails: dummyProductWrapper.toProductDetails(), applicationUserName: 'appName');
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: dummyProductWrapper.toProductDetails(),
+          applicationUserName: 'appName');
       await AppStoreConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
 
@@ -146,7 +149,8 @@ void main() {
       expect(result.first.productId, dummyProductWrapper.productIdentifier);
     });
 
-    test('buying consumable, should get purchase objects in the purchase update callback',
+    test(
+        'buying consumable, should get purchase objects in the purchase update callback',
         () async {
       List<PurchaseDetails> details = [];
       Completer completer = Completer();
@@ -161,7 +165,9 @@ void main() {
           subscription.cancel();
         }
       });
-      final PurchaseParam purchaseParam = PurchaseParam(productDetails: dummyProductWrapper.toProductDetails(), applicationUserName: 'appName');
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: dummyProductWrapper.toProductDetails(),
+          applicationUserName: 'appName');
       await AppStoreConnection.instance
           .buyConsumable(purchaseParam: purchaseParam);
 
@@ -170,11 +176,14 @@ void main() {
       expect(result.first.productId, dummyProductWrapper.productIdentifier);
     });
 
-    test('buying consumable, should throw when autoConsume is false',
-        () async {
-      final PurchaseParam purchaseParam = PurchaseParam(productDetails: dummyProductWrapper.toProductDetails(), applicationUserName: 'appName');
-      expect(() => AppStoreConnection.instance
-          .buyConsumable(purchaseParam: purchaseParam, autoConsume: false), throwsA(TypeMatcher<AssertionError>()));
+    test('buying consumable, should throw when autoConsume is false', () async {
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: dummyProductWrapper.toProductDetails(),
+          applicationUserName: 'appName');
+      expect(
+          () => AppStoreConnection.instance
+              .buyConsumable(purchaseParam: purchaseParam, autoConsume: false),
+          throwsA(TypeMatcher<AssertionError>()));
     });
 
     test('should get failed purchase status', () async {
@@ -196,7 +205,9 @@ void main() {
           }
         });
       });
-      final PurchaseParam purchaseParam = PurchaseParam(productDetails: dummyProductWrapper.toProductDetails(), applicationUserName: 'appName');
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: dummyProductWrapper.toProductDetails(),
+          applicationUserName: 'appName');
       await AppStoreConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
 
@@ -224,7 +235,9 @@ void main() {
           }
         });
       });
-      final PurchaseParam purchaseParam = PurchaseParam(productDetails: dummyProductWrapper.toProductDetails(), applicationUserName: 'appName');
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: dummyProductWrapper.toProductDetails(),
+          applicationUserName: 'appName');
       await AppStoreConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
       List<PurchaseDetails> result = await completer.future;
@@ -234,12 +247,12 @@ void main() {
     });
   });
 
-    group('consume purchase', () {
+  group('consume purchase', () {
     test('should throw when calling consume purchase on iOS', () async {
-      expect(()=>AppStoreConnection.instance.consumePurchase(null), throwsException);
+      expect(() => AppStoreConnection.instance.consumePurchase(null),
+          throwsException);
     });
   });
-
 }
 
 class FakeIOSPlatform {

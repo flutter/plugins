@@ -75,9 +75,11 @@ class SKPaymentQueueWrapper {
   /// call this method after the transaction is successfully processed and the functionality purchased by the user is unlocked.
   /// It will throw a Platform exception if the [SKPaymentTransactionWrapper.transactionState] is [SKPaymentTransactionStateWrapper.purchasing].
   /// This method calls StoreKit's [`-[SKPaymentQueue finishTransaction:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506003-finishtransaction?language=objc).
-  Future<void> finishTransaction(SKPaymentTransactionWrapper transaction) async {
+  Future<void> finishTransaction(
+      SKPaymentTransactionWrapper transaction) async {
     await channel.invokeMethod(
-        '-[InAppPurchasePlugin finishTransaction:result:]', transaction.transactionIdentifier);
+        '-[InAppPurchasePlugin finishTransaction:result:]',
+        transaction.transactionIdentifier);
   }
 
   /// Restore transactions to maintain access to content that customers have already purchased.

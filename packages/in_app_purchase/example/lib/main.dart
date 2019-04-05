@@ -10,6 +10,8 @@ void main() {
   runApp(MyApp());
 }
 
+const bool Auto_Consume = true;
+
 const List<String> _kProductIds = <String>[
   'consumable',
   'upgrade',
@@ -28,7 +30,7 @@ class _MyAppState extends State<MyApp> {
     Stream purchaseUpdated =
         InAppPurchaseConnection.instance.purchaseUpdatedStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
-      purchaseDetailsList.forEach((purchaseDetails) {
+      purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) {
         print('purchase updated product ID: (${purchaseDetails.productId})');
         print('purchase updated purchase ID: (${purchaseDetails.purchaseID})');
         print('purchase updated status: ({${purchaseDetails.status})');
@@ -40,7 +42,13 @@ class _MyAppState extends State<MyApp> {
           } else if (purchaseDetails.status == PurchaseStatus.purchased) {
             deliverProduct(purchaseDetails);
           }
-          InAppPurchaseConnection.instance.completePurchase(purchaseDetails);
+          if (TargetPlatform == TargetPlatform.iOS) {
+            InAppPurchaseConnection.instance.completePurchase(purchaseDetails);
+          } else if (TargetPlatform == TargetPlatform.android) {
+            if (!Auto_Consume && purchaseDetails.productId == 'consumable') {
+              InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
+            }
+          }
         }
       });
     }, onDone: () {
@@ -177,9 +185,15 @@ class _MyAppState extends State<MyApp> {
               ? Icon(Icons.check)
               : Text(productDetails.price),
           onTap: () {
-            PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails, applicationUserName: null, sandboxTesting: true);
+            PurchaseParam purchaseParam = PurchaseParam(
+                productDetails: productDetails,
+                applicationUserName: null,
+                sandboxTesting: true);
             if (productDetails.id == 'consumable') {
-              connection.buyConsumable(purchaseParam: purchaseParam);
+              connection.buyConsumable(
+                  purchaseParam: purchaseParam,
+                  autoConsume:
+                      Auto_Consume || TargetPlatform == TargetPlatform.iOS);
             } else {
               connection.buyNonConsumable(purchaseParam: purchaseParam);
             }

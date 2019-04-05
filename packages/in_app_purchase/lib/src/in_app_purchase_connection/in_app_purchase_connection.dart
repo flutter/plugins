@@ -95,7 +95,10 @@ class PurchaseError {
 
 /// The parameter object for generating a purchase.
 class PurchaseParam {
-  PurchaseParam({@required this.productDetails, this.applicationUserName, this.sandboxTesting});
+  PurchaseParam(
+      {@required this.productDetails,
+      this.applicationUserName,
+      this.sandboxTesting});
 
   /// The product to create payment for.
   ///
@@ -277,7 +280,8 @@ abstract class InAppPurchaseConnection {
   ///  * [consumePurchase], for consume consumable products on Android.
   ///
   /// Calling this method for non consumable items will cause unwanted behaviors!
-  void buyConsumable({@required PurchaseParam purchaseParam, bool autoConsume = true});
+  void buyConsumable(
+      {@required PurchaseParam purchaseParam, bool autoConsume = true});
 
   /// Completes a purchase either after delivering the content or the purchase is failed. (iOS only).
   ///

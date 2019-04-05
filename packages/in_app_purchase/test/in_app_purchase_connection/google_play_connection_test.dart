@@ -202,16 +202,19 @@ void main() {
         completer.complete(purchaseDetails);
         subscription.cancel();
       }, onDone: () {});
-      final PurchaseParam purchaseParam = PurchaseParam(productDetails: skuDetails.toProductDetails(), applicationUserName: accountId);
-      await GooglePlayConnection.instance.buyNonConsumable(
-          purchaseParam: purchaseParam);
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: skuDetails.toProductDetails(),
+          applicationUserName: accountId);
+      await GooglePlayConnection.instance
+          .buyNonConsumable(purchaseParam: purchaseParam);
       PurchaseDetails result = await completer.future;
       expect(result.purchaseID, 'orderID1');
       expect(result.status, PurchaseStatus.purchased);
       expect(result.productId, dummySkuDetails.sku);
     });
 
-    test('buy consumable with auto consume, serializes and deserializes data', () async {
+    test('buy consumable with auto consume, serializes and deserializes data',
+        () async {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
       final String accountId = "hashedAccountId";
       final BillingResponse sentCode = BillingResponse.ok;
@@ -246,9 +249,7 @@ void main() {
           additionalStepBeforeReturn: (dynamic args) {
             String purchaseToken = args['purchaseToken'];
             consumeCompleter.complete((purchaseToken));
-          }
-      );
-
+          });
 
       Completer completer = Completer();
       PurchaseDetails purchaseDetails;
@@ -260,14 +261,19 @@ void main() {
         completer.complete(purchaseDetails);
         subscription.cancel();
       }, onDone: () {});
-      final PurchaseParam purchaseParam = PurchaseParam(productDetails: skuDetails.toProductDetails(), applicationUserName: accountId);
-      await GooglePlayConnection.instance.buyConsumable(
-          purchaseParam: purchaseParam);
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: skuDetails.toProductDetails(),
+          applicationUserName: accountId);
+      await GooglePlayConnection.instance
+          .buyConsumable(purchaseParam: purchaseParam);
       PurchaseDetails result = await completer.future;
-      expect(result.billingClientPurchase.purchaseToken, await consumeCompleter.future);
+      expect(result.billingClientPurchase.purchaseToken,
+          await consumeCompleter.future);
     });
 
-  test('buy consumable without auto consume, consume api should not receive calls', () async {
+    test(
+        'buy consumable without auto consume, consume api should not receive calls',
+        () async {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
       final String accountId = "hashedAccountId";
       final BillingResponse sentCode = BillingResponse.ok;
@@ -302,8 +308,7 @@ void main() {
           additionalStepBeforeReturn: (dynamic args) {
             String purchaseToken = args['purchaseToken'];
             consumeCompleter.complete((purchaseToken));
-          }
-      );
+          });
 
       Stream purchaseStream =
           GooglePlayConnection.instance.purchaseUpdatedStream;
@@ -312,9 +317,11 @@ void main() {
         consumeCompleter.complete(null);
         subscription.cancel();
       }, onDone: () {});
-      final PurchaseParam purchaseParam = PurchaseParam(productDetails: skuDetails.toProductDetails(), applicationUserName: accountId);
-      await GooglePlayConnection.instance.buyConsumable(
-          purchaseParam: purchaseParam, autoConsume: false);
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: skuDetails.toProductDetails(),
+          applicationUserName: accountId);
+      await GooglePlayConnection.instance
+          .buyConsumable(purchaseParam: purchaseParam, autoConsume: false);
       expect(null, await consumeCompleter.future);
     });
   });
@@ -326,11 +333,10 @@ void main() {
       final BillingResponse expectedCode = BillingResponse.ok;
       stubPlatform.addResponse(
           name: consumeMethodName,
-          value: BillingResponseConverter().toJson(expectedCode)
-          );
+          value: BillingResponseConverter().toJson(expectedCode));
 
-      final BillingResponse responseCode =
-          await GooglePlayConnection.instance.consumePurchase(dummyPurchase.toPurchaseDetails());
+      final BillingResponse responseCode = await GooglePlayConnection.instance
+          .consumePurchase(dummyPurchase.toPurchaseDetails());
 
       expect(responseCode, equals(expectedCode));
     });
@@ -338,7 +344,7 @@ void main() {
 
   group('complete purchase', () {
     test('calling complete purchase on android should throw', () async {
-      expect(()=>connection.completePurchase(null), throwsException);
+      expect(() => connection.completePurchase(null), throwsException);
     });
   });
 }

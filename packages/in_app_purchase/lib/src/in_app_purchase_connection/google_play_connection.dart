@@ -35,7 +35,8 @@ class GooglePlayConnection
                       : PurchaseStatus.error
                   ..error = error;
                 // auto consume logic for buyConsumable.
-                if (_productIDsToConsume != null && _productIDsToConsume.contains(purchaseDetails.productId)) {
+                if (_productIDsToConsume != null &&
+                    _productIDsToConsume.contains(purchaseDetails.productId)) {
                   _consume(purchaseDetails);
                   _productIDsToConsume.remove(purchaseDetails.productId);
                   if (_productIDsToConsume.isEmpty) {
@@ -99,21 +100,22 @@ class GooglePlayConnection
   }
 
   @override
-  void buyNonConsumable(
-      {@required PurchaseParam purchaseParam}) {
+  void buyNonConsumable({@required PurchaseParam purchaseParam}) {
     billingClient.launchBillingFlow(
-        sku: purchaseParam.productDetails.id, accountId: purchaseParam.applicationUserName);
+        sku: purchaseParam.productDetails.id,
+        accountId: purchaseParam.applicationUserName);
   }
 
   @override
-   void buyConsumable({@required PurchaseParam purchaseParam, bool autoConsume = true}) {
-     if (autoConsume == true) {
-       if (_productIDsToConsume == null) {
-         _productIDsToConsume = Set<String>();
-         _productIDsToConsume.add(purchaseParam.productDetails.id);
-       }
-     }
-     buyNonConsumable(purchaseParam: purchaseParam);
+  void buyConsumable(
+      {@required PurchaseParam purchaseParam, bool autoConsume = true}) {
+    if (autoConsume == true) {
+      if (_productIDsToConsume == null) {
+        _productIDsToConsume = Set<String>();
+        _productIDsToConsume.add(purchaseParam.productDetails.id);
+      }
+    }
+    buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   @override
