@@ -138,7 +138,7 @@ void main() {
       PurchaseDetails details =
           dummyTransaction.toPurchaseDetails('receipt data');
       expect(dummyTransaction.transactionIdentifier, details.purchaseID);
-      expect(dummyTransaction.payment.productIdentifier, details.productId);
+      expect(dummyTransaction.payment.productIdentifier, details.productID);
       expect((dummyTransaction.transactionTimeStamp * 1000).toInt().toString(),
           details.transactionDate);
       expect(details.verificationData.localVerificationData, 'receipt data');

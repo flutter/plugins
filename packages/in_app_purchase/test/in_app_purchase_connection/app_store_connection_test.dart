@@ -146,7 +146,7 @@ void main() {
 
       List<PurchaseDetails> result = await completer.future;
       expect(result.length, 2);
-      expect(result.first.productId, dummyProductWrapper.productIdentifier);
+      expect(result.first.productID, dummyProductWrapper.productIdentifier);
     });
 
     test(
@@ -173,7 +173,7 @@ void main() {
 
       List<PurchaseDetails> result = await completer.future;
       expect(result.length, 2);
-      expect(result.first.productId, dummyProductWrapper.productIdentifier);
+      expect(result.first.productID, dummyProductWrapper.productIdentifier);
     });
 
     test('buying consumable, should throw when autoConsume is false', () async {
@@ -242,7 +242,7 @@ void main() {
           .buyNonConsumable(purchaseParam: purchaseParam);
       List<PurchaseDetails> result = await completer.future;
       expect(result.length, 2);
-      expect(result.first.productId, dummyProductWrapper.productIdentifier);
+      expect(result.first.productID, dummyProductWrapper.productIdentifier);
       expect(fakeIOSPlatform.finishedTransactions.length, 1);
     });
   });

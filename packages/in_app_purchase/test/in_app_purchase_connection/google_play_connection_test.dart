@@ -210,7 +210,7 @@ void main() {
       PurchaseDetails result = await completer.future;
       expect(result.purchaseID, 'orderID1');
       expect(result.status, PurchaseStatus.purchased);
-      expect(result.productId, dummySkuDetails.sku);
+      expect(result.productID, dummySkuDetails.sku);
     });
 
     test('buy consumable with auto consume, serializes and deserializes data',
