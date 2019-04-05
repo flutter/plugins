@@ -121,7 +121,7 @@ int nextHandle = 0;
     NSString *email = call.arguments[@"email"];
     NSString *link = call.arguments[@"link"];
     [[self getAuth:call.arguments].currentUser
-        linkWithCredential:[credentialWithEmail:email link:link]
+        linkWithCredential:[FIREmailAuthProvider credentialWithEmail:email link:link]
                 completion:^(FIRUser *user, NSError *error) {
                   [self sendResult:result forUser:user error:error];
                 }];
