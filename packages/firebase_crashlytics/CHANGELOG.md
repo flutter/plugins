@@ -1,3 +1,15 @@
+## 0.0.4+1
+
+* Added an integration test.
+
+## 0.0.4
+
+* Initialize Fabric automatically, preventing crashes that could occur when setting user data.
+
+## 0.0.3
+
+* Rely on firebase_core to add the Android dependency on Firebase instead of hardcoding the version ourselves.
+
 ## 0.0.2+1
 
 * Update variable name `enableInDevMode` in README.

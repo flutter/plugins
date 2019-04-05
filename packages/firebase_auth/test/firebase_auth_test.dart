@@ -43,9 +43,12 @@ void main() {
           case "getIdToken":
             return kMockIdToken;
             break;
+          case "isSignInWithEmailLink":
+            return true;
           case "startListeningAuthState":
             return mockHandleId++;
             break;
+          case "sendLinkToEmail":
           case "sendPasswordResetEmail":
           case "updateEmail":
           case "updatePassword":
@@ -110,6 +113,62 @@ void main() {
             'getIdToken',
             arguments: <String, dynamic>{'refresh': true, 'app': auth.app.name},
           ),
+        ],
+      );
+    });
+
+    test('sendSignInWithEmailLink', () async {
+      await auth.sendSignInWithEmailLink(
+        email: 'test@example.com',
+        url: 'http://www.example.com/',
+        handleCodeInApp: true,
+        iOSBundleID: 'com.example.app',
+        androidPackageName: 'com.example.app',
+        androidInstallIfNotAvailable: false,
+        androidMinimumVersion: "12",
+      );
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('sendLinkToEmail', arguments: <String, dynamic>{
+            'email': 'test@example.com',
+            'url': 'http://www.example.com/',
+            'handleCodeInApp': true,
+            'iOSBundleID': 'com.example.app',
+            'androidPackageName': 'com.example.app',
+            'androidInstallIfNotAvailable': false,
+            'androidMinimumVersion': '12',
+            'app': auth.app.name,
+          }),
+        ],
+      );
+    });
+
+    test('isSignInWithEmailLink', () async {
+      final bool result = await auth.isSignInWithEmailLink('foo');
+      expect(result, true);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('isSignInWithEmailLink',
+              arguments: <String, String>{'link': 'foo', 'app': auth.app.name}),
+        ],
+      );
+    });
+
+    test('signInWithEmailAndLink', () async {
+      await auth.signInWithEmailAndLink(
+        email: 'test@example.com',
+        link: '<Url with domain from your Firebase project>',
+      );
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('signInWithEmailAndLink', arguments: <String, dynamic>{
+            'email': 'test@example.com',
+            'link': '<Url with domain from your Firebase project>',
+            'app': auth.app.name,
+          }),
         ],
       );
     });

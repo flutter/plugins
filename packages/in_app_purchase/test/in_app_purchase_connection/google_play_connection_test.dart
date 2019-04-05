@@ -8,10 +8,12 @@ import 'package:flutter/widgets.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/google_play_connection.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/in_app_purchase_connection.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import '../stub_in_app_purchase_platform.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
 import '../billing_client_wrappers/sku_details_wrapper_test.dart';
+import '../billing_client_wrappers/purchase_wrapper_test.dart';
 
 void main() {
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
@@ -110,6 +112,65 @@ void main() {
       final ProductDetailsResponse response =
           await connection.queryProductDetails(<String>['invalid'].toSet());
       expect(response.notFoundIDs.first, 'invalid');
+    });
+  });
+
+  group('queryPurchaseDetails', () {
+    final String queryMethodName =
+        'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)';
+    test('handles error', () async {
+      final BillingResponse responseCode = BillingResponse.developerError;
+      stubPlatform.addResponse(name: queryMethodName, value: <dynamic, dynamic>{
+        'responseCode': BillingResponseConverter().toJson(responseCode),
+        'purchasesList': <Map<String, dynamic>>[]
+      });
+      final QueryPurchaseDetailsResponse response =
+          await connection.queryPastPurchases();
+      expect(response.pastPurchases, isEmpty);
+      expect(response.error.message['message'],
+          BillingResponse.developerError.toString());
+      expect(response.error.source, PurchaseSource.GooglePlay);
+    });
+
+    test('returns SkuDetailsResponseWrapper', () async {
+      final BillingResponse responseCode = BillingResponse.ok;
+      stubPlatform.addResponse(name: queryMethodName, value: <String, dynamic>{
+        'responseCode': BillingResponseConverter().toJson(responseCode),
+        'purchasesList': <Map<String, dynamic>>[
+          buildPurchaseMap(dummyPurchase),
+        ]
+      });
+
+      // Since queryPastPurchases makes 2 platform method calls (one for each SkuType), the result will contain 2 dummyWrapper instead
+      // of 1.
+      final QueryPurchaseDetailsResponse response =
+          await connection.queryPastPurchases();
+      expect(response.error, isNull);
+      expect(response.pastPurchases.first.purchaseID, dummyPurchase.orderId);
+    });
+  });
+
+  group('refresh receipt data', () {
+    final String queryMethodName =
+        'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)';
+    test('should refresh receipt data', () async {
+      final BillingResponse responseCode = BillingResponse.ok;
+      stubPlatform.addResponse(name: queryMethodName, value: <String, dynamic>{
+        'responseCode': BillingResponseConverter().toJson(responseCode),
+        'purchasesList': <Map<String, dynamic>>[
+          buildPurchaseMap(dummyPurchase),
+        ]
+      });
+      final QueryPurchaseDetailsResponse response =
+          await connection.queryPastPurchases();
+
+      PurchaseVerificationData receiptData = await GooglePlayConnection.instance
+          .refreshPurchaseVerificationData(response.pastPurchases.first);
+      expect(receiptData.source, PurchaseSource.GooglePlay);
+      expect(receiptData.localVerificationData,
+          response.pastPurchases.first.verificationData.localVerificationData);
+      expect(receiptData.serverVerificationData,
+          response.pastPurchases.first.verificationData.serverVerificationData);
     });
   });
 }

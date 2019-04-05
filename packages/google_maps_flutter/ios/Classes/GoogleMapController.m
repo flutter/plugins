@@ -8,6 +8,7 @@
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position);
+static NSArray* LocationToJson(CLLocationCoordinate2D position);
 static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json);
 static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
 static GMSCameraUpdate* ToCameraUpdate(NSArray* data);
@@ -128,6 +129,21 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isCompassEnabled"]) {
     NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
     result(isCompassEnabled);
+  } else if ([call.method isEqualToString:@"map#getMinMaxZoomLevels"]) {
+    NSArray* zoomLevels = @[ @(_mapView.minZoom), @(_mapView.maxZoom) ];
+    result(zoomLevels);
+  } else if ([call.method isEqualToString:@"map#isZoomGesturesEnabled"]) {
+    NSNumber* isZoomGesturesEnabled = @(_mapView.settings.zoomGestures);
+    result(isZoomGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isTiltGesturesEnabled"]) {
+    NSNumber* isTiltGesturesEnabled = @(_mapView.settings.tiltGestures);
+    result(isTiltGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isRotateGesturesEnabled"]) {
+    NSNumber* isRotateGesturesEnabled = @(_mapView.settings.rotateGestures);
+    result(isRotateGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isScrollGesturesEnabled"]) {
+    NSNumber* isScrollGesturesEnabled = @(_mapView.settings.scrollGestures);
+    result(isScrollGesturesEnabled);
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -240,6 +256,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 - (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
   [_markersController onInfoWindowTap:markerId];
+}
+
+- (void)mapView:(GMSMapView*)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
+  [_channel invokeMethod:@"map#onTap" arguments:@{@"position" : LocationToJson(coordinate)}];
 }
 
 @end

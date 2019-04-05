@@ -1,3 +1,21 @@
+## 0.9.11
+
+* Bump Android dependencies to latest.
+
+# 0.9.10
+
+* Support for cloud_firestore running in the background on Android.
+* Fixed a bug in cleanup for DocumentReference.snapshots().
+* Additional integration testing.
+
+## 0.9.9
+
+* Remove `invokeMapMethod` calls to prevent crash.
+
+## 0.9.8
+
+* Add metadata field to DocumentSnapshot.
+
 ## 0.9.7+2
 
 * Bump the minimum Flutter version to 1.2.0.
