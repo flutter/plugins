@@ -11,6 +11,9 @@ enum _ImageType { file, bytes }
 /// Rotation is counter-clockwise.
 enum ImageRotation { rotation0, rotation90, rotation180, rotation270 }
 
+/// Indicates whether a model is ran on device or in the cloud.
+enum ModelType { onDevice, cloud }
+
 /// The Firebase machine learning vision API.
 ///
 /// You can get an instance by calling [FirebaseVision.instance] and then get
@@ -45,17 +48,23 @@ class FirebaseVision {
     return FaceDetector._(options ?? const FaceDetectorOptions());
   }
 
-  /// Creates an instance of [LabelDetector].
-  LabelDetector labelDetector([LabelDetectorOptions options]) {
-    return LabelDetector._(options ?? const LabelDetectorOptions());
+  /// Creates an on device instance of [ImageLabeler].
+  ImageLabeler imageLabeler([ImageLabelerOptions options]) {
+    return ImageLabeler._(
+      options: options ?? const ImageLabelerOptions(),
+      modelType: ModelType.onDevice,
+    );
   }
 
   /// Creates an instance of [TextRecognizer].
   TextRecognizer textRecognizer() => TextRecognizer._();
 
-  /// Creates an instance of [CloudLabelDetector].
-  CloudLabelDetector cloudLabelDetector([CloudDetectorOptions options]) {
-    return CloudLabelDetector._(options ?? const CloudDetectorOptions());
+  /// Creates a cloud instance of [ImageLabeler].
+  ImageLabeler cloudImageLabeler([CloudImageLabelerOptions options]) {
+    return ImageLabeler._(
+      options: options ?? const CloudImageLabelerOptions(),
+      modelType: ModelType.cloud,
+    );
   }
 }
 

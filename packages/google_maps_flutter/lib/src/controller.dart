@@ -66,6 +66,9 @@ class GoogleMapController {
       case 'polyline#onTap':
         _googleMapState.onPolylineTap(call.arguments['polylineId']);
         break;
+      case 'map#onTap':
+        _googleMapState.onTap(LatLng._fromJson(call.arguments['position']));
+        break;
       default:
         throw MissingPluginException();
     }

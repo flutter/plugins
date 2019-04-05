@@ -78,22 +78,22 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
     [sink setVisible:ToBool(visible)];
   }
 
-  id zIndex = data[@"zIndex"];
+  NSNumber* zIndex = data[@"zIndex"];
   if (zIndex) {
     [sink setZIndex:ToInt(zIndex)];
   }
 
-  id points = data[@"points"];
+  NSArray* points = data[@"points"];
   if (points) {
     [sink setPoints:ToPoints(points)];
   }
 
-  id strokeColor = data[@"color"];
+  NSArray* strokeColor = data[@"color"];
   if (strokeColor) {
     [sink setColor:ToColor(strokeColor)];
   }
 
-  id strokeWidth = data[@"width"];
+  NSNumber* strokeWidth = data[@"width"];
   if (strokeWidth) {
     [sink setStrokeWidth:ToInt(strokeWidth)];
   }
