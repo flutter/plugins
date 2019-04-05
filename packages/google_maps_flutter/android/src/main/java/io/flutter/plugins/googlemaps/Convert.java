@@ -5,6 +5,7 @@
 package io.flutter.plugins.googlemaps;
 
 import android.graphics.Point;
+import android.location.Location;
 import android.util.Log;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -138,8 +139,12 @@ class Convert {
     return data;
   }
 
-  private static Object toJson(LatLng latLng) {
+  static Object toJson(LatLng latLng) {
     return Arrays.asList(latLng.latitude, latLng.longitude);
+  }
+
+  static Object toJson(Location location) {
+    return Arrays.asList(location.getLatitude(), location.getLongitude());
   }
 
   private static LatLng toLatLng(Object o) {

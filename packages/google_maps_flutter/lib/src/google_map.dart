@@ -14,35 +14,33 @@ typedef void MapCreatedCallback(GoogleMapController controller);
 /// This is used in [GoogleMap.onCameraMove].
 typedef void CameraPositionCallback(CameraPosition position);
 
-typedef void LocationCallback(LatLng position);
-
 class GoogleMap extends StatefulWidget {
-  const GoogleMap(
-      {Key key,
-      @required this.initialCameraPosition,
-      this.onMapCreated,
-      this.gestureRecognizers,
-      this.compassEnabled = true,
-      this.cameraTargetBounds = CameraTargetBounds.unbounded,
-      this.mapType = MapType.normal,
-      this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
-      this.rotateGesturesEnabled = true,
-      this.scrollGesturesEnabled = true,
-      this.zoomGesturesEnabled = true,
-      this.tiltGesturesEnabled = true,
-      this.myLocationEnabled = false,
-      this.myLocationButtonEnabled = false,
-      this.mapToolbarEnabled = false,
-      this.markers,
-      this.polylines,
-      this.onCameraMoveStarted,
-      this.onCameraMove,
-      this.onCameraIdle,
-      this.onLocationButtonTapped,
-      this.onMyLocationTapped,
-      this.onMapLongTapped,
-      this.onMapTapped})
-      : assert(initialCameraPosition != null),
+  const GoogleMap({
+    Key key,
+    @required this.initialCameraPosition,
+    this.onMapCreated,
+    this.gestureRecognizers,
+    this.compassEnabled = true,
+    this.cameraTargetBounds = CameraTargetBounds.unbounded,
+    this.mapType = MapType.normal,
+    this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
+    this.rotateGesturesEnabled = true,
+    this.scrollGesturesEnabled = true,
+    this.zoomGesturesEnabled = true,
+    this.tiltGesturesEnabled = true,
+    this.myLocationEnabled = false,
+    this.myLocationButtonEnabled = false,
+    this.mapToolbarEnabled = false,
+    this.markers,
+    this.polylines,
+    this.onCameraMoveStarted,
+    this.onCameraMove,
+    this.onCameraIdle,
+    this.onLocationButtonTap,
+    this.onMyLocationTap,
+    this.onLongTap,
+    this.onTap,
+  })  : assert(initialCameraPosition != null),
         super(key: key);
 
   final MapCreatedCallback onMapCreated;
@@ -103,6 +101,9 @@ class GoogleMap extends StatefulWidget {
   /// animations and the user has stopped interacting with the map.
   final VoidCallback onCameraIdle;
 
+  /// Called every time a [GoogleMap] is tapped.
+  final ArgumentCallback<LatLng> onTap;
+
   /// True if a "My Location" layer should be shown on the map.
   ///
   /// This layer includes a location indicator at the current device location,
@@ -145,17 +146,14 @@ class GoogleMap extends StatefulWidget {
   /// were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
-  /// Invoked when the map is tapped, a LatLng is returned
-  final LocationCallback onMapTapped;
-
   /// Invoked when the map is tapped for a long period the latlng is returned
-  final LocationCallback onMapLongTapped;
+  final ArgumentCallback<LatLng> onLongTap;
 
   /// Invoked when the location button is pressed
-  final VoidCallback onLocationButtonTapped;
+  final VoidCallback onLocationButtonTap;
 
   /// Invoked when the my location icon is pressed, the current location is returned as a LatLng
-  final LocationCallback onMyLocationTapped;
+  final ArgumentCallback<LatLng> onMyLocationTap;
 
   @override
   State createState() => _GoogleMapState();
@@ -271,23 +269,23 @@ class _GoogleMapState extends State<GoogleMap> {
     _markers[markerId].infoWindow.onTap();
   }
 
-  void onMapTapped(double latitudeParam, double longitudeParam) {
-    final LatLng latLng = LatLng(latitudeParam, longitudeParam);
-    widget.onMapTapped(latLng);
+  void onLongTap(LatLng position) {
+    assert(position != null);
+    widget.onLongTap(position);
   }
 
-  void onMapLongTapped(double latitudeParam, double longitudeParam) {
-    final LatLng latLng = LatLng(latitudeParam, longitudeParam);
-    widget.onMapLongTapped(latLng);
+  void onMyLocationTap(LatLng position) {
+    assert(position != null);
+    widget.onMyLocationTap(position);
   }
 
-  void onMyLocationTapped(double latitudeParam, double longitudeParam) {
-    final LatLng latLng = LatLng(latitudeParam, longitudeParam);
-    widget.onMyLocationTapped(latLng);
+  void onLocationButtonTap() {
+    widget.onLocationButtonTap();
   }
 
-  void onLocationButtonTapped() {
-    widget.onLocationButtonTapped();
+  void onTap(LatLng position) {
+    assert(position != null);
+    widget.onTap(position);
   }
 }
 

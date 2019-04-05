@@ -240,10 +240,10 @@ class MapUiBodyState extends State<MapUiBody> {
       myLocationButtonEnabled: _myLocationButtonEnabled,
       mapToolbarEnabled: _mapToolbarEnabled,
       onCameraMove: _updateCameraPosition,
-      onMapTapped: _onMapTapped,
-      onMapLongTapped: _onMapLongTapped,
-      onLocationButtonTapped: _onLocationButtonClick,
-      onMyLocationTapped: _onLocationClick,
+      onTap: _onMapTapped,
+      onLongTap: _onMapLongTapped,
+      onLocationButtonTap: _onLocationButtonClick,
+      onMyLocationTap: _onLocationClick,
     );
 
     final List<Widget> columnChildren = <Widget>[

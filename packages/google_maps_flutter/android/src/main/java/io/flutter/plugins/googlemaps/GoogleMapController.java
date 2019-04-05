@@ -252,12 +252,34 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
           break;
         }
+      case "map#isScrollGesturesEnabled":
+        {
+          result.success(googleMap.getUiSettings().isScrollGesturesEnabled());
+          break;
+        }
+      case "map#isTiltGesturesEnabled":
+        {
+          result.success(googleMap.getUiSettings().isTiltGesturesEnabled());
+          break;
+        }
+      case "map#isRotateGesturesEnabled":
+        {
+          result.success(googleMap.getUiSettings().isRotateGesturesEnabled());
+          break;
+        }
       default:
         {
           Log.e(TAG, "Message not implemented: " + call.method);
           result.notImplemented();
         }
     }
+  }
+
+  @Override
+  public void onMapClick(LatLng latLng) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("position", Convert.toJson(latLng));
+    methodChannel.invokeMethod("map#onTap", arguments);
   }
 
   @Override
@@ -299,18 +321,9 @@ final class GoogleMapController
   }
 
   @Override
-  public void onMapClick(LatLng latlng) {
-    final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("latitude", latlng.latitude);
-    arguments.put("longitude", latlng.longitude);
-    methodChannel.invokeMethod("map#onTap", arguments);
-  }
-
-  @Override
   public void onMapLongClick(LatLng latlng) {
     final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("latitude", latlng.latitude);
-    arguments.put("longitude", latlng.longitude);
+    arguments.put("position", Convert.toJson(latlng));
     methodChannel.invokeMethod("map#onLongTap", arguments);
   }
 
@@ -324,8 +337,7 @@ final class GoogleMapController
   @Override
   public void onMyLocationClick(Location location) {
     final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("latitude", location.getLatitude());
-    arguments.put("longitude", location.getLongitude());
+    arguments.put("position", Convert.toJson(location));
     methodChannel.invokeMethod("map#onMyLocationTap", arguments);
   }
 

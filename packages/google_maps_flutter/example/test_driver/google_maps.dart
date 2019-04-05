@@ -143,4 +143,124 @@ void main() {
     zoomGesturesEnabled = await inspector.isZoomGesturesEnabled();
     expect(zoomGesturesEnabled, true);
   });
+
+  test('testRotateGesturesEnabled', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        rotateGesturesEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    bool rotateGesturesEnabled = await inspector.isRotateGesturesEnabled();
+    expect(rotateGesturesEnabled, false);
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        rotateGesturesEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
+
+    rotateGesturesEnabled = await inspector.isRotateGesturesEnabled();
+    expect(rotateGesturesEnabled, true);
+  });
+
+  test('testTiltGesturesEnabled', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        tiltGesturesEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    bool tiltGesturesEnabled = await inspector.isTiltGesturesEnabled();
+    expect(tiltGesturesEnabled, false);
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        tiltGesturesEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
+
+    tiltGesturesEnabled = await inspector.isTiltGesturesEnabled();
+    expect(tiltGesturesEnabled, true);
+  });
+
+  test('testScrollGesturesEnabled', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        scrollGesturesEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    bool scrollGesturesEnabled = await inspector.isScrollGesturesEnabled();
+    expect(scrollGesturesEnabled, false);
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        scrollGesturesEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
+
+    scrollGesturesEnabled = await inspector.isScrollGesturesEnabled();
+    expect(scrollGesturesEnabled, true);
+  });
 }

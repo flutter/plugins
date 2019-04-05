@@ -56,22 +56,6 @@ class GoogleMapController {
       case 'polyline#onTap':
         _googleMapState.onPolylineTap(call.arguments['polylineId']);
         break;
-
-      case 'map#onTap':
-        _googleMapState.onMapTapped(
-            call.arguments['latitude'], call.arguments['longitude']);
-        break;
-      case 'map#onLongTap':
-        _googleMapState.onMapLongTapped(
-            call.arguments['latitude'], call.arguments['longitude']);
-        break;
-      case 'map#onLocationButtonTap':
-        _googleMapState.onLocationButtonTapped();
-        break;
-      case 'map#onMyLocationTap':
-        _googleMapState.onMyLocationTapped(
-            call.arguments['latitude'], call.arguments['longitude']);
-        break;
       case 'camera#onIdle':
         if (_googleMapState.widget.onCameraIdle != null) {
           _googleMapState.widget.onCameraIdle();
@@ -82,6 +66,19 @@ class GoogleMapController {
         break;
       case 'infoWindow#onTap':
         _googleMapState.onInfoWindowTap(call.arguments['markerId']);
+        break;
+      case 'map#onTap':
+        _googleMapState.onTap(LatLng._fromJson(call.arguments['position']));
+        break;
+      case 'map#onLongTap':
+        _googleMapState.onLongTap(LatLng._fromJson(call.arguments['position']));
+        break;
+      case 'map#onLocationButtonTap':
+        _googleMapState.onLocationButtonTap();
+        break;
+      case 'map#onMyLocationTap':
+        _googleMapState
+            .onMyLocationTap(LatLng._fromJson(call.arguments['position']));
         break;
       default:
         throw MissingPluginException();
