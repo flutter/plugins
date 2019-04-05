@@ -117,6 +117,33 @@ int nextHandle = 0;
                                                             forObject:nil
                                                                 error:error];
                                                    }];
+  } else if ([@"sendLinkToEmail" isEqualToString:call.method]) {
+    NSString *email = call.arguments[@"email"];
+    FIRActionCodeSettings *actionCodeSettings = [FIRActionCodeSettings new];
+    actionCodeSettings.URL = [NSURL URLWithString:call.arguments[@"url"]];
+    actionCodeSettings.handleCodeInApp = call.arguments[@"handleCodeInApp"];
+    [actionCodeSettings setIOSBundleID:call.arguments[@"iOSBundleID"]];
+    [actionCodeSettings setAndroidPackageName:call.arguments[@"androidPackageName"]
+                        installIfNotAvailable:call.arguments[@"androidInstallIfNotAvailable"]
+                               minimumVersion:call.arguments[@"androidMinimumVersion"]];
+    [[self getAuth:call.arguments] sendSignInLinkToEmail:email
+                                      actionCodeSettings:actionCodeSettings
+                                              completion:^(NSError *_Nullable error) {
+                                                [self sendResult:result forObject:nil error:error];
+                                              }];
+  } else if ([@"isSignInWithEmailLink" isEqualToString:call.method]) {
+    NSString *link = call.arguments[@"link"];
+    BOOL status = [[self getAuth:call.arguments] isSignInWithEmailLink:link];
+    [self sendResult:result forObject:[NSNumber numberWithBool:status] error:nil];
+  } else if ([@"signInWithEmailAndLink" isEqualToString:call.method]) {
+    NSString *email = call.arguments[@"email"];
+    NSString *link = call.arguments[@"link"];
+    [[self getAuth:call.arguments]
+        signInWithEmail:email
+                   link:link
+             completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
+               [self sendResult:result forUser:authResult.user error:error];
+             }];
   } else if ([@"signInWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
