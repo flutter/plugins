@@ -1,4 +1,4 @@
-## 0.5.1+1
+## 0.5.2
 
 * Check iOS camera authorizationStatus and return an error, if the access was
   denied.
