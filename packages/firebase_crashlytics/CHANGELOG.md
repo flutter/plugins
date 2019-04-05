@@ -1,3 +1,7 @@
+## 0.0.4+1
+
+* Added an integration test.
+
 ## 0.0.4
 
 * Initialize Fabric automatically, preventing crashes that could occur when setting user data.
