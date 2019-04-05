@@ -173,6 +173,23 @@ void main() {
       );
     });
 
+    test('linkWithEmailAndLink', () async {
+      await auth.linkWithEmailAndLink(
+        email: 'test@example.com',
+        link: '<Url with domain from your Firebase project>',
+      );
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('linkWithEmailAndLink', arguments: <String, dynamic>{
+            'email': 'test@example.com',
+            'link': '<Url with domain from your Firebase project>',
+            'app': auth.app.name,
+          }),
+        ],
+      );
+    });
+
     test('createUserWithEmailAndPassword', () async {
       final FirebaseUser user = await auth.createUserWithEmailAndPassword(
         email: kMockEmail,
