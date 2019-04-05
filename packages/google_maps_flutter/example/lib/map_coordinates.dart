@@ -70,9 +70,11 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
     );
   }
 
-  void onMapCreated(GoogleMapController controller) {
+  void onMapCreated(GoogleMapController controller) async {
+    final LatLngBounds visibleRegion = await controller.getVisibleRegion();
     setState(() {
       mapController = controller;
+      _visibleRegion = visibleRegion;
     });
   }
 
