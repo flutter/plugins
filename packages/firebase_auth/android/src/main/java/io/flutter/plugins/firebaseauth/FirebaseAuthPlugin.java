@@ -266,13 +266,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     exceptionMap.put("message", e.getMessage());
     return exceptionMap;
   }
-  
+
   private void handleLinkWithEmailAndLink(
       MethodCall call, Result result, FirebaseAuth firebaseAuth) {
     Map<String, String> arguments = call.arguments();
     String email = arguments.get("email");
     String link = arguments.get("link");
-    
+
     AuthCredential credential = EmailAuthProvider.getCredentialWithLink(email, link);
     firebaseAuth
         .getCurrentUser()
