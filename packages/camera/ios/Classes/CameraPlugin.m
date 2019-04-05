@@ -467,9 +467,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       _eventSink(@{@"event" : @"error", @"errorDescription" : @"Setup Writer Failed"});
       return;
     }
-    [_captureSession stopRunning];
     _isRecording = YES;
-    [_captureSession startRunning];
     result(nil);
   } else {
     _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
@@ -725,6 +723,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       [_registry unregisterTexture:textureId];
       [_camera close];
       _dispatchQueue = nil;
+      result(nil);
+    } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
+      [_camera setUpCaptureSessionForAudio];
       result(nil);
     } else if ([@"startVideoRecording" isEqualToString:call.method]) {
       [_camera startVideoRecordingAtPath:call.arguments[@"filePath"] result:result];

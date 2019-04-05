@@ -1,3 +1,11 @@
+## 4.0.1+3
+
+* Update example to gracefully handle null user information.
+
+## 4.0.1+2
+
+* Fix README.md to correctly spell `GoogleService-Info.plist`.
+
 ## 4.0.1+1
 
 * Remove categories.
