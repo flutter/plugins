@@ -18,8 +18,7 @@ class PolylineController implements PolylineOptionsSink {
   private final String googleMapsPolylineId;
   private boolean consumeTapEvents;
 
-  PolylineController(
-      Polyline polyline, boolean consumeTapEvents) {
+  PolylineController(Polyline polyline, boolean consumeTapEvents) {
     this.polyline = polyline;
     this.consumeTapEvents = consumeTapEvents;
     this.googleMapsPolylineId = polyline.getId();

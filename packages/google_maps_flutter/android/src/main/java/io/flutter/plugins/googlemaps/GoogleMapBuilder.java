@@ -110,5 +110,4 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
     this.mapToolbarEnabled = mapToolbarEnabled;
   }
-
 }

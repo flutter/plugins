@@ -23,7 +23,7 @@
 @interface FLTGoogleMapPolylineController : NSObject <FLTGoogleMapPolylineOptionsSink>
 @property(atomic, readonly) NSString* polylineId;
 - (instancetype)initWithPath:(GMSPath*)path
-                  polylineId:(NSString*)polylineId 
+                  polylineId:(NSString*)polylineId
                      mapView:(GMSMapView*)mapView;
 - (BOOL)consumeTapEvents;
 - (void)removePolyline;

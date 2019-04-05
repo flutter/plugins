@@ -67,10 +67,11 @@ class GoogleMapController {
         break;
       case 'map#onLocationButtonTap':
         _googleMapState.onLocationButtonTapped();
-        break;        
+        break;
       case 'map#onMyLocationTap':
-        _googleMapState.onMyLocationTapped(call.arguments['latitude'], call.arguments['longitude']);
-        break;        
+        _googleMapState.onMyLocationTapped(
+            call.arguments['latitude'], call.arguments['longitude']);
+        break;
       case 'camera#onIdle':
         if (_googleMapState.widget.onCameraIdle != null) {
           _googleMapState.widget.onCameraIdle();

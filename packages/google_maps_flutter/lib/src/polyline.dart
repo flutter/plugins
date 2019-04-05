@@ -75,33 +75,35 @@ class Polyline {
   /// unless overwritten by the specified [changes].
   ///
   /// Returns this instance, if [changes] is null.
-  Polyline copyWith(
-      {List<LatLng> pointsParam,
-      bool clickableParam,
-      int colorParam,
-      Cap endCapParam,
-      bool geodesicParam,
-      JointType jointTypeParam,
-      List<Pattern> patternParam,
-      Cap startCapParam,
-      bool visibleParam,
-      double widthParam,
-      double zIndexParam,
-    VoidCallback onTapParam,}) {
+  Polyline copyWith({
+    List<LatLng> pointsParam,
+    bool clickableParam,
+    int colorParam,
+    Cap endCapParam,
+    bool geodesicParam,
+    JointType jointTypeParam,
+    List<Pattern> patternParam,
+    Cap startCapParam,
+    bool visibleParam,
+    double widthParam,
+    double zIndexParam,
+    VoidCallback onTapParam,
+  }) {
     return Polyline(
-        polylineId: polylineId,
-        points: pointsParam ?? points,
-        clickable: clickableParam ?? clickable,
-        color: colorParam ?? color,
-        endCap: endCapParam ?? endCap,
-        geodesic: geodesicParam ?? geodesic,
-        jointType: jointTypeParam ?? jointType,
-        pattern: patternParam ?? pattern,
-        startCap: startCapParam ?? startCap,
-        visible: visibleParam ?? visible,
-        width: widthParam ?? width,
-        zIndex: zIndexParam ?? zIndex,
-      onTap: onTapParam ?? onTap,);
+      polylineId: polylineId,
+      points: pointsParam ?? points,
+      clickable: clickableParam ?? clickable,
+      color: colorParam ?? color,
+      endCap: endCapParam ?? endCap,
+      geodesic: geodesicParam ?? geodesic,
+      jointType: jointTypeParam ?? jointType,
+      pattern: patternParam ?? pattern,
+      startCap: startCapParam ?? startCap,
+      visible: visibleParam ?? visible,
+      width: widthParam ?? width,
+      zIndex: zIndexParam ?? zIndex,
+      onTap: onTapParam ?? onTap,
+    );
   }
 
   dynamic _toJson() {

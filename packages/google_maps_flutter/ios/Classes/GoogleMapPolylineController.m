@@ -18,7 +18,7 @@ static uint64_t _nextPolylineId = 0;
   GMSMapView* _mapView;
   BOOL _consumeTapEvents;
 }
-- (instancetype)initWithPath:(GMSPath*)path 
+- (instancetype)initWithPath:(GMSPath*)path
                   polylineId:(NSString*)polylineId
                      mapView:(GMSMapView*)mapView {
   self = [super init];
@@ -87,8 +87,7 @@ static CGPoint ToPoint(NSArray* data) { return [FLTGoogleMapJsonConversions toPo
 static GMSPath* ToPath(NSArray* data) { return [FLTGoogleMapJsonConversions toPath:data]; }
 
 static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolylineOptionsSink> sink,
-                                   NSObject<FlutterPluginRegistrar>* registrar) {
-
+                                     NSObject<FlutterPluginRegistrar>* registrar) {
   NSArray* points = data[@"points"];
   if (points) {
     [sink setPoints:ToPath(points)];

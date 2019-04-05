@@ -5,6 +5,7 @@
 package io.flutter.plugins.googlemaps;
 
 import android.graphics.Point;
+import android.util.Log;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -27,7 +28,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import android.util.Log;
 
 /** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {

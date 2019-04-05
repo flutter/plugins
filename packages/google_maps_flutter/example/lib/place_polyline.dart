@@ -34,7 +34,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   Map<PolylineId, Polyline> polylines = <PolylineId, Polyline>{};
   PolylineId selectedPolyline;
   int _polylineIdCounter = 1;
-  
+
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
   }
@@ -172,7 +172,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   Future<void> _changeEndCap() async {
     Cap newCap = Cap.ButtCap;
     final Polyline polyline = polylines[selectedPolyline];
-    
+
     switch (polyline.endCap) {
       case Cap.ButtCap:
         newCap = Cap.RoundCap;
@@ -310,9 +310,8 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                         ),
                         FlatButton(
                           child: const Text('change zIndex'),
-                          onPressed: (selectedPolyline == null)
-                              ? null
-                              : _changeZIndex,
+                          onPressed:
+                              (selectedPolyline == null) ? null : _changeZIndex,
                         ),
                         FlatButton(
                           child: const Text('change color'),
@@ -327,9 +326,8 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                         ),
                         FlatButton(
                           child: const Text('change end cap'),
-                          onPressed: (selectedPolyline == null)
-                              ? null
-                              : _changeEndCap,
+                          onPressed:
+                              (selectedPolyline == null) ? null : _changeEndCap,
                         ),
                         FlatButton(
                           child: const Text('change width'),

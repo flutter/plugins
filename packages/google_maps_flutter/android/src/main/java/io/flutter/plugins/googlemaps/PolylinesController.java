@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.util.Log;
 
 class PolylinesController {
 
@@ -87,7 +86,8 @@ class PolylinesController {
     addPolyline(polylineId, options, polylineBuilder.consumeTapEvents());
   }
 
-  private void addPolyline(String polylineId, PolylineOptions polylineOptions, boolean consumeTapEvents) {
+  private void addPolyline(
+      String polylineId, PolylineOptions polylineOptions, boolean consumeTapEvents) {
     final Polyline polyline = googleMap.addPolyline(polylineOptions);
     PolylineController controller = new PolylineController(polyline, consumeTapEvents);
     polylineIdToController.put(polylineId, controller);

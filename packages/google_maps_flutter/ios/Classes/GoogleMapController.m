@@ -87,8 +87,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       [_markersController addMarkers:markersToAdd];
     }
     _polylinesController = [[FLTPolylinesController alloc] init:_channel
-                                                    mapView:_mapView
-                                                  registrar:registrar];
+                                                        mapView:_mapView
+                                                      registrar:registrar];
     id polylinesToAdd = args[@"polylinesToAdd"];
     if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
       [_polylinesController addPolylines:polylinesToAdd];
@@ -295,7 +295,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
          arguments:@{@"latitude" : @(coordinate.latitude), @"longitude" : @(coordinate.longitude)}];
 }
 
-- (BOOL)didTapMyLocationButtonForMapView:(GMSMapView *) mapView {
+- (BOOL)didTapMyLocationButtonForMapView:(GMSMapView*)mapView {
   [_channel invokeMethod:@"map#onLocationButtonTap" arguments:@{}];
   return false;
 }

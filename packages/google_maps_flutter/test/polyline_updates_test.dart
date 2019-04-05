@@ -96,7 +96,8 @@ void main() {
 
   testWidgets("Updating a polyline", (WidgetTester tester) async {
     final Polyline m1 = Polyline(polylineId: PolylineId("polyline_1"));
-    final Polyline m2 = Polyline(polylineId: PolylineId("polyline_1"), width: 4);
+    final Polyline m2 =
+        Polyline(polylineId: PolylineId("polyline_1"), width: 4);
 
     await tester.pumpWidget(_mapWithPolylines(_toSet(m1: m1)));
     await tester.pumpWidget(_mapWithPolylines(_toSet(m1: m2)));
@@ -110,7 +111,6 @@ void main() {
     expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
   });
 
-  
   testWidgets("Multi Update", (WidgetTester tester) async {
     Polyline m1 = Polyline(polylineId: PolylineId("polyline_1"));
     Polyline m2 = Polyline(polylineId: PolylineId("polyline_2"));

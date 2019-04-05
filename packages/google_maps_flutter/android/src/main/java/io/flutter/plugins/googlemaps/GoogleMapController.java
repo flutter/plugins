@@ -252,11 +252,11 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
           break;
         }
-      default: {
-        Log.e(TAG, "Message not implemented: " + call.method);
-        result.notImplemented();
-      }
-      
+      default:
+        {
+          Log.e(TAG, "Message not implemented: " + call.method);
+          result.notImplemented();
+        }
     }
   }
 
@@ -469,7 +469,6 @@ final class GoogleMapController
       updateMyLocationEnabled();
     }
   }
-  
 
   @Override
   public void setInitialMarkers(Object initialMarkers) {
@@ -525,5 +524,4 @@ final class GoogleMapController
     return context.checkPermission(
         permission, android.os.Process.myPid(), android.os.Process.myUid());
   }
-
 }

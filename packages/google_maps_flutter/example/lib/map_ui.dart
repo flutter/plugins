@@ -61,9 +61,9 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   void _onLocationClick(LatLng location) {
-     setState(() {
-    _tappedLocation = location;
-     });
+    setState(() {
+      _tappedLocation = location;
+    });
   }
 
   void _onLocationButtonClick() {

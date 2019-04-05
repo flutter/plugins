@@ -9,7 +9,6 @@ package io.flutter.plugins.googlemaps;
 import com.google.android.gms.maps.model.Cap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PatternItem;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.List;
 
@@ -20,7 +19,7 @@ class PolylineBuilder implements PolylineOptionsSink {
   PolylineBuilder() {
     this.polylineOptions = new PolylineOptions();
   }
- 
+
   PolylineOptions build() {
     return this.polylineOptions;
   }
