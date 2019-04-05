@@ -45,6 +45,7 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-core:16.0.4'
+        implementation 'com.google.firebase:firebase-bom:17.0.0'
+        api 'com.google.firebase:firebase-core'
     }
 }

@@ -3,6 +3,7 @@ package io.flutter.plugins.firebasedynamiclinks;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
@@ -83,6 +84,13 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
                   }
                 }
                 result.success(null);
+              }
+            })
+        .addOnFailureListener(
+            new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+                result.error(e.getClass().getSimpleName(), e.getMessage(), null);
               }
             });
   }
