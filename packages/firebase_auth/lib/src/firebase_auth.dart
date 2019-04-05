@@ -348,6 +348,20 @@ class FirebaseAuth {
         data == null ? null : FirebaseUser._(data, app);
     return currentUser;
   }
+  
+  Future<FirebaseUser> linkWithEmailAndLink(
+      {String email, String link}) async {
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+      'linkWithEmailAndLink',
+      <String, dynamic>{
+        'app': app.name,
+        'email': email,
+        'link': link,
+      },
+    );
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
+    return currentUser;
+  }
 
   /// Associates a user account from a third-party identity provider with this
   /// user and returns additional identity provider data.
