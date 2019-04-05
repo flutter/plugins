@@ -268,7 +268,7 @@ final class GoogleMapController
   @Override
   public void onMapClick(LatLng latLng) {
     final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("position", Convert.toJson(latLng));
+    arguments.put("position", Convert.latLngToJson(latLng));
     methodChannel.invokeMethod("map#onTap", arguments);
   }
 
