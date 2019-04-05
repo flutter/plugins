@@ -144,6 +144,9 @@ class FakePlatformGoogleMap {
 
   Set<PolylineId> _deserializePolylineIds(List<dynamic> polylineIds) {
     if (polylineIds == null) {
+      // TODO: Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
+      // ignore: prefer_collection_literals
       return Set<PolylineId>();
     }
     return polylineIds
@@ -153,9 +156,15 @@ class FakePlatformGoogleMap {
 
   Set<Polyline> _deserializePolylines(dynamic polylines) {
     if (polylines == null) {
+      // TODO: Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
+      // ignore: prefer_collection_literals
       return Set<Polyline>();
     }
     final List<dynamic> polylinesData = polylines;
+    // TODO: Remove this when collection literals makes it to stable.
+    // https://github.com/flutter/flutter/issues/28312
+    // ignore: prefer_collection_literals
     final Set<Polyline> result = Set<Polyline>();
     for (Map<dynamic, dynamic> polylineData in polylinesData) {
       final String polylineId = polylineData['polylineId'];
