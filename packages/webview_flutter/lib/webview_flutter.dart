@@ -19,6 +19,15 @@ enum JavascriptMode {
   unrestricted,
 }
 
+
+enum GeolocationMode {
+  /// Gelocation is disabled.
+  default_setting,
+
+  /// Geolocation is enabled
+  enabled,
+}
+
 /// A message that was sent by JavaScript code running in a [WebView].
 class JavascriptMessage {
   /// Constructs a JavaScript message object.
@@ -113,12 +122,14 @@ class WebView extends StatefulWidget {
     this.onWebViewCreated,
     this.initialUrl,
     this.javascriptMode = JavascriptMode.disabled,
+    this.geolocationMode = GeolocationMode.default_setting,
     this.javascriptChannels,
     this.navigationDelegate,
     this.gestureRecognizers,
     this.onPageFinished,
   })  : assert(javascriptMode != null),
-        super(key: key);
+        assert(geolocationMode != null),
+        super(key: key); 
 
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback onWebViewCreated;
@@ -139,6 +150,8 @@ class WebView extends StatefulWidget {
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
+  /// Whether Geolocation is enabled. Geolocation requires JS to be enabled too
+  final GeolocationMode geolocationMode;
 
   /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
   ///
@@ -323,22 +336,26 @@ class _CreationParams {
 class _WebSettings {
   _WebSettings({
     this.javascriptMode,
+    this.geolocationMode,
     this.hasNavigationDelegate,
   });
 
   static _WebSettings fromWidget(WebView widget) {
     return _WebSettings(
       javascriptMode: widget.javascriptMode,
+      geolocationMode: widget.geolocationMode,
       hasNavigationDelegate: widget.navigationDelegate != null,
     );
   }
 
   final JavascriptMode javascriptMode;
+  final GeolocationMode geolocationMode;
   final bool hasNavigationDelegate;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javascriptMode.index,
+      'geolocationMode': geolocationMode.index,
       'hasNavigationDelegate': hasNavigationDelegate,
     };
   }
@@ -347,6 +364,9 @@ class _WebSettings {
     final Map<String, dynamic> updates = <String, dynamic>{};
     if (javascriptMode != newSettings.javascriptMode) {
       updates['jsMode'] = newSettings.javascriptMode.index;
+    }
+    if (geolocationMode != newSettings.geolocationMode){
+      updates['geolocationMode']  = newSettings.geolocationMode.index;
     }
     if (hasNavigationDelegate != newSettings.hasNavigationDelegate) {
       updates['hasNavigationDelegate'] = newSettings.hasNavigationDelegate;

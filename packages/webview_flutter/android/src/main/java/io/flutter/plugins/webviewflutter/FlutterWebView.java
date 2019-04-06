@@ -12,6 +12,8 @@ import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebChromeClient;
+import android.webkit.GeolocationPermissions;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -106,6 +108,26 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(null);
   }
 
+  private void updateGeolocationMode(int mode){
+
+    switch (mode) {
+      case 0: // disabled
+        // webView.getSettings().setJavaScriptEnabled(false);
+        break;
+      case 1: // unrestricted
+        webView.getSettings().setJavaScriptEnabled(true); // Need JS for Geolocation
+        webView.setWebChromeClient(new WebChromeClient() {
+          public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+              callback.invoke(origin, true, false);
+          }
+        });
+        // webView.getSettings().setGeolocationDatabasePath( context.getFilesDir().getPath() ); // Set this to assets folder?
+        break;
+      default:
+        throw new IllegalArgumentException("Trying to set unknown Geolocation mode: " + mode);
+    }
+  }
+
   private void canGoBack(MethodCall methodCall, Result result) {
     result.success(webView.canGoBack());
   }
@@ -187,6 +209,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "jsMode":
           updateJsMode((Integer) settings.get(key));
           break;
+        case "geolocationMode":
+          updateGeolocationMode((Integer) settings.get(key));
+          break;
+
         case "hasNavigationDelegate":
           final boolean hasNavigationDelegate = (boolean) settings.get(key);
 
