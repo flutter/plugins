@@ -1,3 +1,7 @@
+## 0.5.3
+
+* Added support setting marker icons from bytes.
+
 ## 0.5.2
 
 * Added onTap for callback for GoogleMap.
