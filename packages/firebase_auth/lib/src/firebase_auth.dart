@@ -268,6 +268,8 @@ class FirebaseAuth {
   ///       Resolve this case by calling [fetchSignInMethodsForEmail] and then asking the user to sign in using one of them.
   ///       This error will only be thrown if the "One account per email address" setting is enabled in the Firebase console (recommended).
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Google accounts are not enabled.
+  ///   • `ERROR_INVALID_ACTION_CODE` - If the action code in the link is malformed, expired, or has already been used.
+  ///       This can only occur when using [EmailAuthProvider.getCredentialWithLink] to obtain the credential.
   Future<FirebaseUser> signInWithCredential(AuthCredential credential) async {
     assert(credential != null);
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
@@ -428,6 +430,8 @@ class FirebaseAuth {
   ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
   ///   • `ERROR_PROVIDER_ALREADY_LINKED` - If the current user already has an account of this type linked.
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that this type of account is not enabled.
+  ///   • `ERROR_INVALID_ACTION_CODE` - If the action code in the link is malformed, expired, or has already been used.
+  ///       This can only occur when using [EmailAuthProvider.getCredentialWithLink] to obtain the credential.
   Future<FirebaseUser> linkWithCredential(AuthCredential credential) async {
     assert(credential != null);
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
