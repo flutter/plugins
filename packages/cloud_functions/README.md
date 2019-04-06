@@ -23,6 +23,14 @@ with Xcode, and within Xcode place the file inside ios/Runner. Don't follow the 
 "Add Firebase SDK" and "Add initialization code" in the Firebase assistant.
 1. Add `cloud_functions` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
+## Gradle BoM setup 
+
+If you are using a Gradle version earlier than Gradle 5 then you must add `enableFeaturePreview('IMPROVED_POM_SUPPORT')`
+to the Android app's `settings.gradle` file. See example app.
+
+The use of Gradle BoM (Bill of Materials) helps ensure that the latest versions of the FlutterFire plugins
+work well together.
+
 ## Usage
 
 ```dart

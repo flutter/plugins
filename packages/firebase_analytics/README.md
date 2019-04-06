@@ -11,6 +11,14 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 ## Usage
 To use this plugin, add `firebase_analytics` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure firebase analytics for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
 
+## Gradle BoM setup 
+
+If you are using a Gradle version earlier than Gradle 5 then you must add `enableFeaturePreview('IMPROVED_POM_SUPPORT')`
+to the Android app's `settings.gradle` file. See example app.
+
+The use of Gradle BoM (Bill of Materials) helps ensure that the latest versions of the FlutterFire plugins
+work well together.
+
 ## Track PageRoute Transitions
 
 To track `PageRoute` transitions, add a `FirebaseAnalyticsObserver` to the list of `NavigatorObservers` on your

@@ -50,6 +50,14 @@ Failure to add this tag will result in the app crashing at app launch with a mes
 On Android, this value must be the same as the App ID value set in your 
 `AndroidManifest.xml`.
 
+## Gradle BoM setup 
+
+If you are using a Gradle version earlier than Gradle 5 then you must add `enableFeaturePreview('IMPROVED_POM_SUPPORT')`
+to the Android app's `settings.gradle` file. See example app.
+
+The use of Gradle BoM (Bill of Materials) helps ensure that the latest versions of the FlutterFire plugins
+work well together.
+
 ## Using banners and interstitials
 Banner and interstitial ads can be configured with target information.
 And in the example below, the ads are given test ad unit IDs for a quick start.
