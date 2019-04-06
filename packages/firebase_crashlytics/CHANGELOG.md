@@ -1,4 +1,8 @@
-<<<<<<< Updated upstream
+## 0.0.5
+
+* Move Android dependency to Gradle BoM to help maintain compatability
+  with other FlutterFire plugins.
+
 ## 0.0.4+1
 
 * Added an integration test.
@@ -10,12 +14,6 @@
 ## 0.0.3
 
 * Rely on firebase_core to add the Android dependency on Firebase instead of hardcoding the version ourselves.
-=======
-## 0.0.3
-
-* Move Android dependency to Gradle BoM to help maintain compatability
-  with other FlutterFire plugins.
->>>>>>> Stashed changes
 
 ## 0.0.2+1
 

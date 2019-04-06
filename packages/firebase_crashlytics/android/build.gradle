@@ -37,10 +37,6 @@ android {
 }
 
 dependencies {
-<<<<<<< Updated upstream
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
-=======
     implementation 'com.google.firebase:firebase-bom:17.0.0'
     implementation 'com.crashlytics.sdk.android:crashlytics'
->>>>>>> Stashed changes
 }
