@@ -4,6 +4,8 @@
 
 package io.flutter.plugins.googlemaps;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,8 +40,24 @@ class Convert {
           return BitmapDescriptorFactory.fromAsset(
               FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
+      case "fromBytes":
+        return getBitmapFromBytes(data);
       default:
         throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
+    }
+  }
+
+  private static BitmapDescriptor getBitmapFromBytes(List<?> data) {
+    if (data.size() == 2) {
+      try {
+        Bitmap bitmap = toBitmap(data.get(1));
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+      } catch (Exception e) {
+        throw new IllegalArgumentException("Unable to interpret bytes as a valid image.", e);
+      }
+    } else {
+      throw new IllegalArgumentException(
+          "fromBytes should have exactly one argument, the bytes. Got: " + data.size());
     }
   }
 
@@ -158,6 +176,16 @@ class Convert {
 
   private static int toPixels(Object o, float density) {
     return (int) toFractionalPixels(o, density);
+  }
+
+  private static Bitmap toBitmap(Object o) {
+    byte[] bmpData = (byte[]) o;
+    Bitmap bitmap = BitmapFactory.decodeByteArray(bmpData, 0, bmpData.length);
+    if (bitmap == null) {
+      throw new IllegalArgumentException("Unable to decode bytes as a valid bitmap.");
+    } else {
+      return bitmap;
+    }
   }
 
   private static Point toPoint(Object o, float density) {
