@@ -10,10 +10,8 @@ gradle.buildFinished { buildResult ->
         rootProject.ext.set(ANDROIDX_WARNING, true);
     }
 }
-
 group 'io.flutter.plugins.webviewflutter'
 version '1.0-SNAPSHOT'
-
 buildscript {
     repositories {
         google()
@@ -24,16 +22,13 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.3.0'
     }
 }
-
 rootProject.allprojects {
     repositories {
         google()
         jcenter()
     }
 }
-
 apply plugin: 'com.android.library'
-
 android {
     compileSdkVersion 28
 
@@ -47,5 +42,10 @@ android {
 
     dependencies {
         implementation 'androidx.webkit:webkit:1.0.0'
+        implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     }
+}
+
+dependencies {
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }
