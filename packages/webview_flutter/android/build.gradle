@@ -42,10 +42,6 @@ android {
 
     dependencies {
         implementation 'androidx.webkit:webkit:1.0.0'
-        implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+        // implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     }
-}
-
-dependencies {
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }

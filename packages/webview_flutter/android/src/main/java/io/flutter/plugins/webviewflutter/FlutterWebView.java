@@ -18,6 +18,7 @@ import android.app.AlertDialog;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.content.DialogInterface;
+import android.Manifest;
 
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -29,8 +30,8 @@ import io.flutter.plugin.platform.PlatformView;
 import java.util.List;
 import java.util.Map;
 
-import android.support.v4.content.ContextCompat;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.app.ActivityCompat;
 
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
@@ -146,21 +147,24 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
          callback.invoke(origin, true, false);
         }
        });
-      if (ContextCompat.checkSelfPermission(activity, Manifest.permission.FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-       ContextCompat.checkSelfPermission(activity, Manifest.permission.COARSE) != PackageManager.PERMISSION_GRANTED) {
-       ActivityCompat.requestPermissions(activity,
-        new String[] {
-         Manifest.permission.FINE_LOCATION
-        },
-        MY_PERMISSIONS_REQUEST_FINE_LOCATION);
-       // Create the AlertDialog object and return it
-       builder.create().show();
 
-      } else {
-       // Create the AlertDialog object and return it
-       builder.create().show();
+    //   if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+    //    ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    //    ActivityCompat.requestPermissions(activity,
+    //     new String[] {
+    //      Manifest.permission.ACCESS_FINE_LOCATION
+    //     },
+    //     MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+    //    // Create the AlertDialog object and return it
+    //    builder.create().show();
 
-      }
+    //   } else {
+    //    // Create the AlertDialog object and return it
+    //    builder.create().show();
+
+    //   }
+
+       builder.create().show();
 
      }
     });

@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 typedef void WebViewCreatedCallback(WebViewController controller);
 
@@ -18,7 +19,6 @@ enum JavascriptMode {
   /// JavaScript execution is not restricted.
   unrestricted,
 }
-
 
 enum GeolocationMode {
   /// Gelocation is disabled.
@@ -129,7 +129,7 @@ class WebView extends StatefulWidget {
     this.onPageFinished,
   })  : assert(javascriptMode != null),
         assert(geolocationMode != null),
-        super(key: key); 
+        super(key: key);
 
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback onWebViewCreated;
@@ -150,6 +150,7 @@ class WebView extends StatefulWidget {
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
+
   /// Whether Geolocation is enabled. Geolocation requires JS to be enabled too
   final GeolocationMode geolocationMode;
 
@@ -266,6 +267,11 @@ class _WebViewState extends State<WebView> {
 
   @override
   void initState() {
+    PermissionHandler().shouldShowRequestPermissionRationale(PermissionGroup.location);
+    PermissionHandler().requestPermissions([PermissionGroup.location]).then(
+        (Map<PermissionGroup, PermissionStatus> permission) {
+      setState(() {});
+    });
     super.initState();
     _assertJavascriptChannelNamesAreUnique();
   }
@@ -365,8 +371,8 @@ class _WebSettings {
     if (javascriptMode != newSettings.javascriptMode) {
       updates['jsMode'] = newSettings.javascriptMode.index;
     }
-    if (geolocationMode != newSettings.geolocationMode){
-      updates['geolocationMode']  = newSettings.geolocationMode.index;
+    if (geolocationMode != newSettings.geolocationMode) {
+      updates['geolocationMode'] = newSettings.geolocationMode.index;
     }
     if (hasNavigationDelegate != newSettings.hasNavigationDelegate) {
       updates['hasNavigationDelegate'] = newSettings.hasNavigationDelegate;
