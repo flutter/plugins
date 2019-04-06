@@ -229,8 +229,8 @@ void main() {
               'app': auth.app.name,
               'provider': 'password',
               'data': <String, String>{
-                email: 'test@example.com',
-                link: '<Url with domain from your Firebase project>',
+                'email': 'test@example.com',
+                'link': '<Url with domain from your Firebase project>',
               },
             },
           ),
@@ -254,8 +254,8 @@ void main() {
               'app': auth.app.name,
               'provider': 'password',
               'data': <String, String>{
-                email: 'test@example.com',
-                link: '<Url with domain from your Firebase project>',
+                'email': 'test@example.com',
+                'link': '<Url with domain from your Firebase project>',
               },
             },
           ),
@@ -263,7 +263,7 @@ void main() {
       );
     });
 
-    test('EmailAuthProvider (withLink) signInWithCredential', () async {
+    test('EmailAuthProvider (withLink) reauthenticateWithCredential', () async {
       final FirebaseUser user = await auth.currentUser();
       log.clear();
       final AuthCredential credential = EmailAuthProvider.getCredentialWithLink(
@@ -280,8 +280,8 @@ void main() {
               'app': auth.app.name,
               'provider': 'password',
               'data': <String, String>{
-                email: 'test@example.com',
-                link: '<Url with domain from your Firebase project>',
+                'email': 'test@example.com',
+                'link': '<Url with domain from your Firebase project>',
               }
             },
           ),
