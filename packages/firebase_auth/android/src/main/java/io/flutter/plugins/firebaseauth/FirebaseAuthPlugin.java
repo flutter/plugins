@@ -416,8 +416,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case EmailAuthProvider.PROVIDER_ID:
         {
           String email = data.get("email");
-          String password = data.get("password");
-          credential = EmailAuthProvider.getCredential(email, password);
+          credential = data.containsKey("password") ? EmailAuthProvider.getCredential(email, data.get("password")) 
+              : EmailAuthProvider.getCredentialWithLink(email, data.get("link"));
           break;
         }
       case GoogleAuthProvider.PROVIDER_ID:
