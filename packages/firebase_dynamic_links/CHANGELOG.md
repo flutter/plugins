@@ -1,3 +1,8 @@
+## 0.2.2
+
+* Move Android dependency to Gradle BoM to help maintain compatability
+  with other FlutterFire plugins.
+
 ## 0.2.1
 
 * Throw `PlatformException` if there is an error retrieving dynamic link.

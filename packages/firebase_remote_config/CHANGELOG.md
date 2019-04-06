@@ -1,3 +1,8 @@
+## 0.1.1
+
+* Move Android dependency to Gradle BoM to help maintain compatability
+  with other FlutterFire plugins.
+
 ## 0.1.0+2
 
 * Log messages about automatic configuration of the default app are now less confusing.

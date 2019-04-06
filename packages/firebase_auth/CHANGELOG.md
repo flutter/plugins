@@ -1,3 +1,8 @@
+## 0.8.5
+
+* Move Android dependency to Gradle BoM to help maintain compatability
+  with other FlutterFire plugins.
+
 ## 0.8.4
 
 * Adds support for email link authentication.

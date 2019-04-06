@@ -45,6 +45,7 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-perf:16.1.2'
+        implementation 'com.google.firebase:firebase-bom:17.0.0'
+        api 'com.google.firebase:firebase-perf'
     }
 }

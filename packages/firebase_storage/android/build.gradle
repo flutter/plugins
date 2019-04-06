@@ -53,7 +53,8 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-storage:16.0.3'
+        implementation 'com.google.firebase:firebase-bom:17.0.0'
+        api 'com.google.firebase:firebase-storage'
         implementation 'androidx.annotation:annotation:1.0.0'
     }
 }

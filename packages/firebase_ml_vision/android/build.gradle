@@ -45,7 +45,12 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
+<<<<<<< Updated upstream
         api 'com.google.firebase:firebase-ml-vision:19.0.2'
+=======
+        implementation 'com.google.firebase:firebase-bom:17.0.0'
+        api 'com.google.firebase:firebase-ml-vision'
+>>>>>>> Stashed changes
         implementation 'androidx.annotation:annotation:1.0.0'
         implementation 'androidx.exifinterface:exifinterface:1.0.0'
     }

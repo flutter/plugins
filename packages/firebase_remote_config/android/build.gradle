@@ -45,7 +45,8 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-config:16.0.1'
+        implementation 'com.google.firebase:firebase-bom:17.0.0'
+        api 'com.google.firebase:firebase-config'
         implementation 'androidx.annotation:annotation:1.0.0'
     }
 }

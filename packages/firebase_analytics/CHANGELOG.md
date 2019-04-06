@@ -1,3 +1,8 @@
+## 2.1.2
+
+* Move Android dependency to Gradle BoM to help maintain compatability
+  with other FlutterFire plugins.
+
 ## 2.1.1
 
 * Added screen_view tracking of Navigator.pushReplacement

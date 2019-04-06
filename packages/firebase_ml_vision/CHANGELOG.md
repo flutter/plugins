@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 ## 0.7.0
 
 * **Breaking Change** Unified and enhanced on-device and cloud image-labeling API.
@@ -6,6 +7,12 @@
   `Label` renamed to `ImageLabel`.
   `LabelDetector` renamed to `ImageLabeler`.
   Removed `CloudLabelDetector` and replaced it with a cloud `ImageLabeler`.
+=======
+## 0.6.1
+
+* Move Android dependency to Gradle BoM to help maintain compatability
+  with other FlutterFire plugins.
+>>>>>>> Stashed changes
 
 ## 0.6.0+2
 

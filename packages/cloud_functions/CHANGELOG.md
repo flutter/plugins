@@ -1,3 +1,8 @@
+## 0.1.3
+
+* Move Android dependency to Gradle BoM to help maintain compatability
+  with other FlutterFire plugins.
+
 ## 0.1.2+1
 
 * Added a driver test.

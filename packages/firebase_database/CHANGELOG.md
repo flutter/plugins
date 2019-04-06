@@ -1,3 +1,8 @@
+## 2.0.3
+
+* Move Android dependency to Gradle BoM to help maintain compatability
+  with other FlutterFire plugins.
+
 ## 2.0.2
 
 * Fix the issue that `getDictionaryFromError` always returns non nil result even when the parameter is nil.
