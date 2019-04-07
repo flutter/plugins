@@ -54,7 +54,7 @@ class SharedPreferences {
   /// Reads a value of any type from persistent storage.
   dynamic get(String key) {
     dynamic value = _preferenceCache[key];
-    if (value != null && value is List) {
+    if (value != null && value is List<String>) {
       value = List<String>.from(value);
     }
     return value;
