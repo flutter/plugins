@@ -195,6 +195,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
           webView.setWebViewClient(webViewClient);
           break;
+        case "zoomEnabled":
+          updateZoomMode((boolean) settings.get(key));
+          break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
@@ -212,6 +215,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       default:
         throw new IllegalArgumentException("Trying to set unknown JavaScript mode: " + mode);
     }
+  }
+
+  private void updateZoomMode(boolean mode) {
+    webView.getSettings().setLoadWithOverviewMode(true);
+    webView.getSettings().setUseWideViewPort(true);
+    // Pop-up zoom controls disabled. This is a temporary stop because dialog is not responding to touch events.
+    webView.getSettings().setDisplayZoomControls(false);
+    webView.getSettings().setBuiltInZoomControls(mode);
   }
 
   private void registerJavaScriptChannelNames(List<String> channelNames) {

@@ -117,6 +117,7 @@ class WebView extends StatefulWidget {
     this.navigationDelegate,
     this.gestureRecognizers,
     this.onPageFinished,
+    this.zoomEnabled = false,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -204,6 +205,10 @@ class WebView extends StatefulWidget {
   /// directly in the HTML has been loaded and code injected with
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
+  
+  /// Enable/Disable zoom
+  /// Note: no-op on IOS
+  final bool zoomEnabled;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -324,22 +329,26 @@ class _WebSettings {
   _WebSettings({
     this.javascriptMode,
     this.hasNavigationDelegate,
+    this.zoomEnabled,
   });
 
   static _WebSettings fromWidget(WebView widget) {
     return _WebSettings(
       javascriptMode: widget.javascriptMode,
       hasNavigationDelegate: widget.navigationDelegate != null,
+      zoomEnabled: widget.zoomEnabled,
     );
   }
 
   final JavascriptMode javascriptMode;
   final bool hasNavigationDelegate;
+  final bool zoomEnabled;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javascriptMode.index,
       'hasNavigationDelegate': hasNavigationDelegate,
+      'zoomEnabled': zoomEnabled,
     };
   }
 
@@ -350,6 +359,9 @@ class _WebSettings {
     }
     if (hasNavigationDelegate != newSettings.hasNavigationDelegate) {
       updates['hasNavigationDelegate'] = newSettings.hasNavigationDelegate;
+    }
+    if (zoomEnabled != newSettings.zoomEnabled) {
+      updates['zoomEnabled'] = newSettings.zoomEnabled;
     }
     return updates;
   }
