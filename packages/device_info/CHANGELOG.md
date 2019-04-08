@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Added an additional unit test for IosDeviceInfo.
+
 ## 0.3.0
 
 * Added ability to get Android ID for Android devices
