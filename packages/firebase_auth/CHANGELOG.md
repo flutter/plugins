@@ -1,3 +1,7 @@
+## 0.8.4+1
+
+* Adds credential for email authentication with link.
+
 ## 0.8.4
 
 * Adds support for email link authentication.

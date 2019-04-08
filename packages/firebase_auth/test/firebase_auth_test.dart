@@ -213,6 +213,82 @@ void main() {
       );
     });
 
+    test('EmailAuthProvider (withLink) linkWithCredential', () async {
+      final AuthCredential credential = EmailAuthProvider.getCredentialWithLink(
+        email: 'test@example.com',
+        link: '<Url with domain from your Firebase project>',
+      );
+      final FirebaseUser user = await auth.linkWithCredential(credential);
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithCredential',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+              'provider': 'password',
+              'data': <String, String>{
+                'email': 'test@example.com',
+                'link': '<Url with domain from your Firebase project>',
+              },
+            },
+          ),
+        ],
+      );
+    });
+
+    test('EmailAuthProvider (withLink) signInWithCredential', () async {
+      final AuthCredential credential = EmailAuthProvider.getCredentialWithLink(
+        email: 'test@example.com',
+        link: '<Url with domain from your Firebase project>',
+      );
+      final FirebaseUser user = await auth.signInWithCredential(credential);
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'signInWithCredential',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+              'provider': 'password',
+              'data': <String, String>{
+                'email': 'test@example.com',
+                'link': '<Url with domain from your Firebase project>',
+              },
+            },
+          ),
+        ],
+      );
+    });
+
+    test('EmailAuthProvider (withLink) reauthenticateWithCredential', () async {
+      final FirebaseUser user = await auth.currentUser();
+      log.clear();
+      final AuthCredential credential = EmailAuthProvider.getCredentialWithLink(
+        email: 'test@example.com',
+        link: '<Url with domain from your Firebase project>',
+      );
+      await user.reauthenticateWithCredential(credential);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'reauthenticateWithCredential',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+              'provider': 'password',
+              'data': <String, String>{
+                'email': 'test@example.com',
+                'link': '<Url with domain from your Firebase project>',
+              }
+            },
+          ),
+        ],
+      );
+    });
+
     test('TwitterAuthProvider linkWithCredential', () async {
       final AuthCredential credential = TwitterAuthProvider.getCredential(
         authToken: kMockIdToken,
