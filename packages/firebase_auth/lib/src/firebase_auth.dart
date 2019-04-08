@@ -94,7 +94,7 @@ class FirebaseAuth {
   ///
   /// Errors:
   ///   • `ERROR_WEAK_PASSWORD` - If the password is not strong enough.
-  ///   • `ERROR_INVALID_CREDENTIAL` - If the email address is malformed.
+  ///   • `ERROR_INVALID_EMAIL` - If the email address is malformed.
   ///   • `ERROR_EMAIL_ALREADY_IN_USE` - If the email is already in use by a different account.
   Future<FirebaseUser> createUserWithEmailAndPassword({
     @required String email,
