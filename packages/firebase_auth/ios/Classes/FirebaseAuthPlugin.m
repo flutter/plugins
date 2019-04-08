@@ -353,8 +353,13 @@ int nextHandle = 0;
   FIRAuthCredential *credential;
   if ([FIREmailAuthProviderID isEqualToString:provider]) {
     NSString *email = data[@"email"];
-    NSString *password = data[@"password"];
-    credential = [FIREmailAuthProvider credentialWithEmail:email password:password];
+    if ([data objectForKey:@"password"]) {
+      NSString *password = data[@"password"];
+      credential = [FIREmailAuthProvider credentialWithEmail:email password:password];
+    } else {
+      NSString *link = data[@"link"];
+      credential = [FIREmailAuthProvider credentialWithEmail:email link:link];
+    }
   } else if ([FIRGoogleAuthProviderID isEqualToString:provider]) {
     NSString *idToken = data[@"idToken"];
     NSString *accessToken = data[@"accessToken"];
