@@ -85,7 +85,7 @@ class Connectivity {
     return wifiName;
   }
 
-  /// Obtains the wifi BSSID of the connected network
+  /// Obtains the wifi BSSID of the connected network.
   ///
   /// Please note that it DOESN'T WORK on emulators (returns null).
   ///
