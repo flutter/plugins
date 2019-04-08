@@ -4,12 +4,10 @@
 
 import 'dart:async';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/services.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-
-import 'package:flutter/services.dart';
-
-import 'package:firebase_analytics/firebase_analytics.dart';
 
 void main() {
   group('filterOutNulls', () {
@@ -98,7 +96,7 @@ void main() {
     });
 
     test('setAnalyticsCollectionEnabled', () async {
-      await analytics.android.setAnalyticsCollectionEnabled(false);
+      await analytics.setAnalyticsCollectionEnabled(false);
       expect(invokedMethod, 'setAnalyticsCollectionEnabled');
       expect(arguments, false);
     });
@@ -113,6 +111,11 @@ void main() {
       await analytics.android.setSessionTimeoutDuration(234);
       expect(invokedMethod, 'setSessionTimeoutDuration');
       expect(arguments, 234);
+    });
+
+    test('resetAnalyticsData', () async {
+      await analytics.resetAnalyticsData();
+      expect(invokedMethod, 'resetAnalyticsData');
     });
   });
 
@@ -227,6 +230,12 @@ void main() {
             ));
 
     smokeTest('login', () => analytics.logLogin());
+
+    smokeTest(
+        'login',
+        () => analytics.logLogin(
+              loginMethod: 'email',
+            ));
 
     smokeTest(
         'post_score',

@@ -97,12 +97,18 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     Map<String, Object> data = new HashMap<>();
     List<String> paths = new ArrayList<>();
     List<Map<String, Object>> documents = new ArrayList<>();
+    List<Map<String, Object>> metadatas = new ArrayList<>();
     for (DocumentSnapshot document : querySnapshot.getDocuments()) {
       paths.add(document.getReference().getPath());
       documents.add(document.getData());
+      Map<String, Object> metadata = new HashMap<String, Object>();
+      metadata.put("hasPendingWrites", document.getMetadata().hasPendingWrites());
+      metadata.put("isFromCache", document.getMetadata().isFromCache());
+      metadatas.add(metadata);
     }
     data.put("paths", paths);
     data.put("documents", documents);
+    data.put("metadatas", metadatas);
 
     List<Map<String, Object>> documentChanges = new ArrayList<>();
     for (DocumentChange documentChange : querySnapshot.getDocumentChanges()) {
@@ -124,6 +130,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       change.put("newIndex", documentChange.getNewIndex());
       change.put("document", documentChange.getDocument().getData());
       change.put("path", documentChange.getDocument().getReference().getPath());
+      Map<String, Object> metadata = new HashMap();
+      metadata.put(
+          "hasPendingWrites", documentChange.getDocument().getMetadata().hasPendingWrites());
+      metadata.put("isFromCache", documentChange.getDocument().getMetadata().isFromCache());
+      change.put("metadata", metadata);
       documentChanges.add(change);
     }
     data.put("documentChanges", documentChanges);
@@ -205,7 +216,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         return;
       }
       Map<String, Object> arguments = new HashMap<>();
+      Map<String, Object> metadata = new HashMap<>();
       arguments.put("handle", handle);
+      metadata.put("hasPendingWrites", documentSnapshot.getMetadata().hasPendingWrites());
+      metadata.put("isFromCache", documentSnapshot.getMetadata().isFromCache());
+      arguments.put("metadata", metadata);
       if (documentSnapshot.exists()) {
         arguments.put("data", documentSnapshot.getData());
         arguments.put("path", documentSnapshot.getReference().getPath());
@@ -286,14 +301,16 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                             @SuppressWarnings("unchecked")
                             @Override
                             public void success(Object doTransactionResult) {
-                              transactionTCS.setResult((Map<String, Object>) doTransactionResult);
+                              transactionTCS.trySetResult(
+                                  (Map<String, Object>) doTransactionResult);
                             }
 
                             @Override
                             public void error(
                                 String errorCode, String errorMessage, Object errorDetails) {
                               // result.error(errorCode, errorMessage, errorDetails);
-                              transactionTCS.setException(new Exception("Do transaction failed."));
+                              transactionTCS.trySetException(
+                                  new Exception("Do transaction failed."));
                             }
 
                             @Override
@@ -338,6 +355,10 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                 } else {
                   snapshotMap.put("data", null);
                 }
+                Map<String, Object> metadata = new HashMap();
+                metadata.put("hasPendingWrites", documentSnapshot.getMetadata().hasPendingWrites());
+                metadata.put("isFromCache", documentSnapshot.getMetadata().isFromCache());
+                snapshotMap.put("metadata", metadata);
                 result.success(snapshotMap);
               } catch (FirebaseFirestoreException e) {
                 result.error("Error performing Transaction#get", e.getMessage(), null);
@@ -543,6 +564,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                       Map<String, Object> snapshotMap = new HashMap<>();
+                      Map<String, Object> metadata = new HashMap<>();
+                      metadata.put(
+                          "hasPendingWrites", documentSnapshot.getMetadata().hasPendingWrites());
+                      metadata.put("isFromCache", documentSnapshot.getMetadata().isFromCache());
+                      snapshotMap.put("metadata", metadata);
                       snapshotMap.put("path", documentSnapshot.getReference().getPath());
                       if (documentSnapshot.exists()) {
                         snapshotMap.put("data", documentSnapshot.getData());

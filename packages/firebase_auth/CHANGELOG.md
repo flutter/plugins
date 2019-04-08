@@ -1,3 +1,45 @@
+## 0.8.4+2
+
+* Fixes an error in the documentation of createUserWithEmailAndPassword.
+
+## 0.8.4+1
+
+* Adds credential for email authentication with link.
+
+## 0.8.4
+
+* Adds support for email link authentication.
+
+## 0.8.3
+
+* Make providerId 'const String' to use in 'case' statement.
+
+## 0.8.2+1
+
+* Fixed bug where `PhoneCodeAutoRetrievalTimeout` callback was never called.
+
+## 0.8.2
+
+* Fixed `linkWithCredential` on Android.
+
+## 0.8.1+5
+
+* Added a driver test.
+
+## 0.8.1+4
+
+* Update README.
+* Update the example app with separate pages for registration and sign-in.
+
+## 0.8.1+3
+
+* Reduce compiler warnings in Android plugin
+* Raise errors early when accessing methods that require a Firebase User
+
+## 0.8.1+2
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
 ## 0.8.1+1
 
 * Remove categories.

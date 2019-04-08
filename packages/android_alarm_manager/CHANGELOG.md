@@ -1,3 +1,24 @@
+## 0.4.1+6
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
+## 0.4.1+5
+
+* Update AlarmService to throw a `PluginRegistrantException` if
+  `AlarmService.setPluginRegistrant` has not been called to set a
+  PluginRegistrantCallback. This improves the error message seen when the
+  `AlarmService.setPluginRegistrant` call is omitted.
+
+## 0.4.1+4
+
+* Updated example to remove dependency on Firebase.
+
+## 0.4.1+3
+
+* Update README.md to include instructions for setting the WAKE_LOCK permission.
+* Updated example application to use the WAKE_LOCK permission.
+
 ## 0.4.1+2
 
 * Include a missing API dependency.

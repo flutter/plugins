@@ -7,7 +7,7 @@
 #import <Firebase/Firebase.h>
 
 static FlutterError *getFlutterError(NSError *error) {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)error.code]
                              message:error.domain
                              details:error.localizedDescription];
 }
@@ -36,8 +36,10 @@ static FlutterError *getFlutterError(NSError *error) {
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
     _storageMap = [[NSMutableDictionary alloc] init];
     _uploadTasks = [NSMutableDictionary<NSNumber *, FIRStorageUploadTask *> dictionary];
@@ -60,6 +62,8 @@ static FlutterError *getFlutterError(NSError *error) {
     [self setMaxUploadRetryTime:call result:result];
   } else if ([@"FirebaseStorage#setMaxOperationRetryTime" isEqualToString:call.method]) {
     [self setMaxOperationRetryTime:call result:result];
+  } else if ([@"FirebaseStorage#getReferenceFromUrl" isEqualToString:call.method]) {
+    [self getReferenceFromUrl:call result:result];
   } else if ([@"StorageReference#putFile" isEqualToString:call.method]) {
     [self putFile:call result:result];
   } else if ([@"StorageReference#putData" isEqualToString:call.method]) {
@@ -168,6 +172,11 @@ static FlutterError *getFlutterError(NSError *error) {
   NSNumber *time = call.arguments[@"time"];
   storage.maxOperationRetryTime = [time longLongValue] / 1000.0;
   result(nil);
+}
+
+- (void)getReferenceFromUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *fullUrl = call.arguments[@"fullUrl"];
+  result([storage referenceForURL:fullUrl].fullPath);
 }
 
 - (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {

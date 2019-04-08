@@ -45,8 +45,8 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-ml-vision:17.0.1'
-        api 'com.google.firebase:firebase-ml-vision-image-label-model:16.2.0'
+        api 'com.google.firebase:firebase-ml-vision:19.0.2'
         implementation 'androidx.annotation:annotation:1.0.0'
+        implementation 'androidx.exifinterface:exifinterface:1.0.0'
     }
 }

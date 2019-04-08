@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase_connection.dart';
 
 void main() => runApp(MyApp());
+
+const List<String> _kProductIds = <String>[
+  'consumable',
+  'upgrade',
+  'subscription'
+];
 
 class MyApp extends StatefulWidget {
   @override
@@ -27,55 +32,40 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('IAP Example'),
         ),
-        body: Column(
+        body: ListView(
           children: [
             FutureBuilder(
               future: _buildConnectionCheckTile(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (!snapshot.hasData) {
-                  return Column(children: <Widget>[
-                    buildListCard(
-                        ListTile(title: const Text('Trying to connect...')))
-                  ]);
-                } else if (snapshot.error != null) {
-                  return Column(children: <Widget>[
-                    buildListCard(ListTile(
-                        title: Text(
-                            'Error connecting: ' + snapshot.error.toString())))
-                  ]);
+                if (snapshot.error != null) {
+                  return buildListCard(ListTile(
+                      title: Text(
+                          'Error connecting: ' + snapshot.error.toString())));
+                } else if (!snapshot.hasData) {
+                  return Card(
+                      child:
+                          ListTile(title: const Text('Trying to connect...')));
                 }
-                return Column(
-                  children: snapshot.data,
-                );
+                return snapshot.data;
               },
             ),
-            Expanded(
-              child: FutureBuilder(
-                future: InAppPurchaseConnection.instance.queryProductDetails(
-                    <String>['consumable', 'upgrade', 'subscription'].toSet()),
-                builder: (BuildContext context,
-                    AsyncSnapshot<ProductDetailsResponse> snapshot) {
-                  if (!snapshot.hasData) {
-                    return Column(children: <Widget>[
-                      buildListCard(ListTile(title: const Text('Loading...')))
-                    ]);
-                  } else if (snapshot.error != null) {
-                    return Center(
-                      child: Text('Error: ' + snapshot.error.toString()),
-                    );
-                  }
-                  return Column(
-                    children: <Widget>[
-                      Center(child: Text('Products')),
-                      Expanded(
-                        child: ListView(
-                          children: _buildProductList(snapshot.data),
-                        ),
-                      ),
-                    ],
+            FutureBuilder(
+              future: _buildProductList(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.error != null) {
+                  print(snapshot.error);
+                  return Center(
+                    child: buildListCard(
+                        ListTile(title: Text('Error fetching products'))),
                   );
-                },
-              ),
+                } else if (!snapshot.hasData) {
+                  return Card(
+                      child: (ListTile(
+                          leading: CircularProgressIndicator(),
+                          title: Text('Fetching products...'))));
+                }
+                return snapshot.data;
+              },
             ),
           ],
         ),
@@ -83,47 +73,79 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Future<List<ListTile>> _buildConnectionCheckTile() async {
+  Future<Card> _buildConnectionCheckTile() async {
     final bool available = await InAppPurchaseConnection.instance.isAvailable();
-    final Widget storeHeader = buildListCard(
-      ListTile(
-        leading: Icon(available ? Icons.check : Icons.block),
-        title: Text(
-            'The store is ' + (available ? 'available' : 'unavailable') + '.'),
-      ),
+    final Widget storeHeader = ListTile(
+      leading: Icon(available ? Icons.check : Icons.block,
+          color: available ? Colors.green : ThemeData.light().errorColor),
+      title: Text(
+          'The store is ' + (available ? 'available' : 'unavailable') + '.'),
     );
-    final List<ListTile> children = <ListTile>[storeHeader];
+    final List<Widget> children = <Widget>[storeHeader];
 
     if (!available) {
-      children.add(
-        buildListCard(
-          ListTile(
-            title: Text('Not connected',
-                style: TextStyle(color: ThemeData.light().errorColor)),
-            subtitle: const Text(
-                'Unable to connect to the payments processor. Has this app been configured correctly? See the example README for instructions.'),
-          ),
+      children.addAll([
+        Divider(),
+        ListTile(
+          title: Text('Not connected',
+              style: TextStyle(color: ThemeData.light().errorColor)),
+          subtitle: const Text(
+              'Unable to connect to the payments processor. Has this app been configured correctly? See the example README for instructions.'),
         ),
-      );
+      ]);
     }
-    return children;
+    return Card(child: Column(children: children));
   }
 
-  List<ListTile> _buildProductList(ProductDetailsResponse response) {
-    List<ListTile> productDetailsCards = response.productDetails.map(
+  Future<Card> _buildProductList() async {
+    InAppPurchaseConnection connection = InAppPurchaseConnection.instance;
+    final bool available = await connection.isAvailable();
+    if (!available) {
+      return Card();
+    }
+    final ListTile productHeader = ListTile(
+        title: Text('Products for Sale',
+            style: Theme.of(context).textTheme.headline));
+    ProductDetailsResponse response =
+        await connection.queryProductDetails(_kProductIds.toSet());
+    List<ListTile> productList = <ListTile>[];
+    if (!response.notFoundIDs.isEmpty) {
+      productList.add(ListTile(
+          title: Text('[${response.notFoundIDs.join(", ")}] not found',
+              style: TextStyle(color: ThemeData.light().errorColor)),
+          subtitle: Text(
+              'This app needs special configuration to run. Please see example/README.md for instructions.')));
+    }
+
+    // This loading previous purchases code is just a demo. Please do not use this as it is.
+    // In your app you should always verify the purchase data using the `verificationData` inside the [PurchaseDetails] object before trusting it.
+    // We recommend that you use your own server to verity the purchase data.
+    Map<String, PurchaseDetails> purchases = Map.fromEntries(((await connection
+                .queryPastPurchases())
+            .pastPurchases)
+        .map((PurchaseDetails purchase) =>
+            MapEntry<String, PurchaseDetails>(purchase.productId, purchase)));
+
+    productList.addAll(response.productDetails.map(
       (ProductDetails productDetails) {
-        return buildListCard(ListTile(
+        PurchaseDetails previousPurchase = purchases[productDetails.id];
+        return ListTile(
           title: Text(
             productDetails.title,
           ),
           subtitle: Text(
             productDetails.description,
           ),
-          trailing: Text(productDetails.price),
-        ));
+          trailing: previousPurchase != null
+              ? Icon(Icons.check)
+              : Text(productDetails.price),
+        );
       },
-    ).toList();
-    return productDetailsCards;
+    ));
+
+    return Card(
+        child:
+            Column(children: <Widget>[productHeader, Divider()] + productList));
   }
 
   static ListTile buildListCard(ListTile innerTile) =>

@@ -1,6 +1,39 @@
+## 0.5.2
+
+* Check iOS camera authorizationStatus and return an error, if the access was
+  denied.
+
+## 0.5.1
+
+* Android: Do not delete original image after scaling if the image is from gallery.
+
+## 0.5.0+9
+
+* Remove unnecessary temp video file path.
+
+## 0.5.0+8
+
+* Fixed wrong GooglePhotos authority of image Uri.
+
+## 0.5.0+7
+
+* Fix a crash when selecting images from yandex.disk and dropbox.
+
+## 0.5.0+6
+
+* Delete the original image if it was scaled.
+
+## 0.5.0+5
+
+* Remove unnecessary camera permission.
+
+## 0.5.0+4
+
+* Preserve transparency when saving images.
+
 ## 0.5.0+3
 
-* Fixed am Android crash when Image Picker is registered without an activity.
+* Fixed an Android crash when Image Picker is registered without an activity.
 
 ## 0.5.0+2
 
