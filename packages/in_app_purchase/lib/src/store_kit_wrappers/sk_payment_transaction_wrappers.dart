@@ -115,6 +115,7 @@ class SKPaymentTransactionWrapper {
           serverVerificationData: base64EncodedReceipt,
           source: PurchaseSource.AppStore),
       transactionDate: (transactionTimeStamp * 1000).toInt().toString(),
+      skPaymentTransaction: this,
     );
   }
 

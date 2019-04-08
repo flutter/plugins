@@ -103,6 +103,7 @@ class PurchaseWrapper {
           serverVerificationData: purchaseToken,
           source: PurchaseSource.GooglePlay),
       transactionDate: purchaseTime.toString(),
+      billingClientPurchase: this,
     );
   }
 }

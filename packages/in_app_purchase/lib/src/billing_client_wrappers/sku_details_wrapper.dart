@@ -133,6 +133,7 @@ class SkuDetailsWrapper {
       title: title,
       description: description,
       price: price,
+      skuDetail: this,
     );
   }
 }

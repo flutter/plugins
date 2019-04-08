@@ -8,6 +8,8 @@ import 'app_store_connection.dart';
 import 'google_play_connection.dart';
 import 'product_details.dart';
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/store_kit_wrappers.dart';
+import 'package:in_app_purchase/billing_client_wrappers.dart';
 
 /// Represents the data that is used to verify purchases.
 ///
@@ -72,6 +74,9 @@ class PurchaseError {
 }
 
 /// Represents the transaction details of a purchase.
+///
+/// This class unifies the BillingClient's [PurchaseWrapper] and StoreKit's [SKPaymentTransactionWrapper]. You can use the common attributes in
+/// This class for simple operations. If you would like to see the detailed representation of the product, instead,  use [PurchaseWrapper] on Android and [SKPaymentTransactionWrapper] on iOS.
 class PurchaseDetails {
   /// A unique identifier of the purchase.
   final String purchaseID;
@@ -90,11 +95,23 @@ class PurchaseDetails {
   /// Milliseconds since epoch.
   final String transactionDate;
 
+  /// Points back to the `StoreKits`'s [SKPaymentTransactionWrapper] object that generated this [PurchaseDetails] object.
+  ///
+  /// This is null on Android.
+  final SKPaymentTransactionWrapper skPaymentTransaction;
+
+  /// Points back to the `BillingClient`'s [PurchaseWrapper] object that generated this [PurchaseDetails] object.
+  ///
+  /// This is null on Android.
+  final PurchaseWrapper billingClientPurchase;
+
   PurchaseDetails({
     @required this.purchaseID,
     @required this.productId,
     @required this.verificationData,
     @required this.transactionDate,
+    this.skPaymentTransaction = null,
+    this.billingClientPurchase = null,
   });
 }
 
@@ -132,12 +149,10 @@ abstract class InAppPurchaseConnection {
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName});
 
-  /// A utility method in case there is an issue with getting the verification data originally.
+  /// A utility method in case there is an issue with getting the verification data originally on iOS.
   ///
-  /// On Android, it is a non-op. We directly return the verification data in the `purchase` that is passed in.
-  /// See [PurchaseVerificationData] for more details on when to use this.
-  Future<PurchaseVerificationData> refreshPurchaseVerificationData(
-      PurchaseDetails purchase);
+  /// Throws an [Exception] on Android.
+  Future<PurchaseVerificationData> refreshPurchaseVerificationData();
 
   /// The [InAppPurchaseConnection] implemented for this platform.
   ///

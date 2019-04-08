@@ -38,6 +38,8 @@ void main() {
           dummyPurchase.originalJson);
       expect(details.verificationData.serverVerificationData,
           dummyPurchase.purchaseToken);
+      expect(details.skPaymentTransaction, null);
+      expect(details.billingClientPurchase, dummyPurchase);
     });
   });
 

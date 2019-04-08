@@ -110,8 +110,8 @@ void main() {
 
   group('refresh receipt data', () {
     test('should refresh receipt data', () async {
-      PurchaseVerificationData receiptData = await AppStoreConnection.instance
-          .refreshPurchaseVerificationData(null);
+      PurchaseVerificationData receiptData =
+          await AppStoreConnection.instance.refreshPurchaseVerificationData();
       expect(receiptData.source, PurchaseSource.AppStore);
       expect(receiptData.localVerificationData, 'refreshed receipt data');
       expect(receiptData.serverVerificationData, 'refreshed receipt data');

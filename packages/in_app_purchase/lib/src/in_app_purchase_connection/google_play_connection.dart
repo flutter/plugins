@@ -70,13 +70,10 @@ class GooglePlayConnection
     );
   }
 
-  /// This is a non-op.
-  ///
-  /// There is no refreshing verification data on Google Play.
   @override
-  Future<PurchaseVerificationData> refreshPurchaseVerificationData(
-      PurchaseDetails purchase) async {
-    return purchase.verificationData;
+  Future<PurchaseVerificationData> refreshPurchaseVerificationData() async {
+    throw Exception(
+        'The method <refreshPurchaseVerificationData> only works on iOS.');
   }
 
   @override

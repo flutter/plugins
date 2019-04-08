@@ -3,15 +3,21 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/store_kit_wrappers.dart';
+import 'package:in_app_purchase/billing_client_wrappers.dart';
 
 /// The class represents the information of a product.
+///
+/// This class unifies the BillingClient's [SkuDetailsWrapper] and StoreKit's [SKProductWrapper]. You can use the common attributes in
+/// This class for simple operations. If you would like to see the detailed representation of the product, instead,  use [skuDetails] on Android and [skProduct] on iOS.
 class ProductDetails {
-  ProductDetails({
-    @required this.id,
-    @required this.title,
-    @required this.description,
-    @required this.price,
-  });
+  ProductDetails(
+      {@required this.id,
+      @required this.title,
+      @required this.description,
+      @required this.price,
+      this.skProduct = null,
+      this.skuDetail = null});
 
   /// The identifier of the product, specified in App Store Connect or Sku in Google Play console.
   final String id;
@@ -25,6 +31,16 @@ class ProductDetails {
   /// The price of the product, specified in the App Store Connect or Sku in Google Play console based on the platform.
   /// Formatted with currency symbol ("$0.99").
   final String price;
+
+  /// Points back to the `StoreKits`'s [SKProductWrapper] object that generated this [ProductDetails] object.
+  ///
+  /// This is null on Android.
+  final SKProductWrapper skProduct;
+
+  /// Points back to the `BillingClient1`'s [SkuDetailsWrapper] object that generated this [ProductDetails] object.
+  ///
+  /// This is null on Android.
+  final SkuDetailsWrapper skuDetail;
 }
 
 /// The response returned by [InAppPurchaseConnection.queryProductDetails].
