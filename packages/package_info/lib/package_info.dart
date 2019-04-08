@@ -26,6 +26,11 @@ class PackageInfo {
 
   static Future<PackageInfo> _fromPlatform;
 
+  @visibleForTesting
+  static void resetPackageInfo() {
+    _fromPlatform = null;
+  }
+
   /// Retrieves package information from the platform.
   /// The result is cached.
   static Future<PackageInfo> fromPlatform() async {

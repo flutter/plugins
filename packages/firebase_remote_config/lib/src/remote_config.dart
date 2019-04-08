@@ -34,6 +34,11 @@ class RemoteConfig extends ChangeNotifier {
     return _instanceCompleter.future;
   }
 
+  @visibleForTesting
+  static void resetRemoteConfig() {
+    _instanceCompleter = Completer<RemoteConfig>();
+  }
+
   static void _getRemoteConfigInstance() async {
     final Map<dynamic, dynamic> properties =
         // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
