@@ -179,6 +179,19 @@ final class GoogleMapController
           result.success(Convert.toJson(getCameraPosition()));
           break;
         }
+      case "map#getVisibleRegion":
+        {
+          if (googleMap != null) {
+            LatLngBounds latLngBounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
+            result.success(Convert.toJson(latLngBounds));
+          } else {
+            result.error(
+                "GoogleMap uninitialized",
+                "getVisibleRegion called prior to map initialization",
+                null);
+          }
+          break;
+        }
       case "camera#move":
         {
           final CameraUpdate cameraUpdate =
