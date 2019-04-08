@@ -11,7 +11,8 @@ void main() {
   runApp(MyApp());
 }
 
-const bool Auto_Consume = false;
+// Switch this to true if you want to try out auto consume when buying a consumable.
+const bool kAutoConsume = false;
 
 const List<String> _kProductIds = <String>[
   'consumable',
@@ -26,32 +27,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   StreamSubscription<List<PurchaseDetails>> _subscription;
+
+  bool _purchasePending = false;
   @override
   void initState() {
     Stream purchaseUpdated =
         InAppPurchaseConnection.instance.purchaseUpdatedStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
-      purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) {
-        print('purchase updated product ID: (${purchaseDetails.productID})');
-        print('purchase updated purchase ID: (${purchaseDetails.purchaseID})');
-        print('purchase updated status: ({${purchaseDetails.status})');
-        if (purchaseDetails.status == PurchaseStatus.pending) {
-          showPendingUI();
-        } else {
-          if (purchaseDetails.status == PurchaseStatus.error) {
-            handleError(purchaseDetails.error);
-          } else if (purchaseDetails.status == PurchaseStatus.purchased) {
-            deliverProduct(purchaseDetails);
-          }
-          if (Platform.isIOS) {
-            InAppPurchaseConnection.instance.completePurchase(purchaseDetails);
-          } else if (Platform.isAndroid) {
-            if (!Auto_Consume && purchaseDetails.productID == 'consumable') {
-              InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
-            }
-          }
-        }
-      });
+      _listenToPurchaseUpdated(purchaseDetailsList);
     }, onDone: () {
       _subscription.cancel();
     }, onError: (error) {
@@ -68,47 +51,68 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> stack = [];
+    stack.add(
+      ListView(
+        children: [
+          FutureBuilder(
+            future: _buildConnectionCheckTile(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.error != null) {
+                return buildListCard(ListTile(
+                    title: Text(
+                        'Error connecting: ' + snapshot.error.toString())));
+              } else if (!snapshot.hasData) {
+                return Card(
+                    child: ListTile(title: const Text('Trying to connect...')));
+              }
+              return snapshot.data;
+            },
+          ),
+          FutureBuilder(
+            future: _buildProductList(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.error != null) {
+                print(snapshot.error);
+                return Center(
+                  child: buildListCard(
+                      ListTile(title: Text('Error fetching products'))),
+                );
+              } else if (!snapshot.hasData) {
+                return Card(
+                    child: (ListTile(
+                        leading: CircularProgressIndicator(),
+                        title: Text('Fetching products...'))));
+              }
+              return snapshot.data;
+            },
+          ),
+        ],
+      ),
+    );
+    if (_purchasePending) {
+      stack.add(
+        Stack(
+          children: [
+            new Opacity(
+              opacity: 0.3,
+              child: const ModalBarrier(dismissible: false, color: Colors.grey),
+            ),
+            new Center(
+              child: new CircularProgressIndicator(),
+            ),
+          ],
+        ),
+      );
+    }
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('IAP Example'),
         ),
-        body: ListView(
-          children: [
-            FutureBuilder(
-              future: _buildConnectionCheckTile(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.error != null) {
-                  return buildListCard(ListTile(
-                      title: Text(
-                          'Error connecting: ' + snapshot.error.toString())));
-                } else if (!snapshot.hasData) {
-                  return Card(
-                      child:
-                          ListTile(title: const Text('Trying to connect...')));
-                }
-                return snapshot.data;
-              },
-            ),
-            FutureBuilder(
-              future: _buildProductList(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.error != null) {
-                  print(snapshot.error);
-                  return Center(
-                    child: buildListCard(
-                        ListTile(title: Text('Error fetching products'))),
-                  );
-                } else if (!snapshot.hasData) {
-                  return Card(
-                      child: (ListTile(
-                          leading: CircularProgressIndicator(),
-                          title: Text('Fetching products...'))));
-                }
-                return snapshot.data;
-              },
-            ),
-          ],
+        body: Stack(
+          children: stack,
         ),
       ),
     );
@@ -166,16 +170,12 @@ class _MyAppState extends State<MyApp> {
             .map((PurchaseDetails purchase) {
       print('restored productID: ${purchase.productID}');
       print('restored purchaseID: ${purchase.purchaseID}');
-      if (purchase.status == PurchaseStatus.pending) {
-        print('restored pending purchased ${purchase.productID}');
-      } else {
-        if (Platform.isIOS) {
-          InAppPurchaseConnection.instance.completePurchase(purchase);
-        }
-        if (Platform.isAndroid && purchase.productID == 'consumable') {
-          print('consume restored');
-          InAppPurchaseConnection.instance.consumePurchase(purchase);
-        }
+      if (Platform.isIOS) {
+        InAppPurchaseConnection.instance.completePurchase(purchase);
+      }
+      if (Platform.isAndroid && purchase.productID == 'consumable') {
+        print('consume restored');
+        InAppPurchaseConnection.instance.consumePurchase(purchase);
       }
       return MapEntry<String, PurchaseDetails>(purchase.productID, purchase);
     }));
@@ -183,29 +183,33 @@ class _MyAppState extends State<MyApp> {
       (ProductDetails productDetails) {
         PurchaseDetails previousPurchase = purchases[productDetails.id];
         return ListTile(
-          title: Text(
-            productDetails.title,
-          ),
-          subtitle: Text(
-            productDetails.description,
-          ),
-          trailing: previousPurchase != null
-              ? Icon(Icons.check)
-              : Text(productDetails.price),
-          onTap: () {
-            PurchaseParam purchaseParam = PurchaseParam(
-                productDetails: productDetails,
-                applicationUserName: null,
-                sandboxTesting: true);
-            if (productDetails.id == 'consumable') {
-              connection.buyConsumable(
-                  purchaseParam: purchaseParam,
-                  autoConsume: Auto_Consume || Platform.isIOS);
-            } else {
-              connection.buyNonConsumable(purchaseParam: purchaseParam);
-            }
-          },
-        );
+            title: Text(
+              productDetails.title,
+            ),
+            subtitle: Text(
+              productDetails.description,
+            ),
+            trailing: previousPurchase != null
+                ? Icon(Icons.check)
+                : FlatButton(
+                    child: Text(productDetails.price),
+                    color: Colors.green[800],
+                    textColor: Colors.white,
+                    onPressed: () {
+                      PurchaseParam purchaseParam = PurchaseParam(
+                          productDetails: productDetails,
+                          applicationUserName: null,
+                          sandboxTesting: true);
+                      if (productDetails.id == 'consumable') {
+                        connection.buyConsumable(
+                            purchaseParam: purchaseParam,
+                            autoConsume: kAutoConsume || Platform.isIOS);
+                      } else {
+                        connection.buyNonConsumable(
+                            purchaseParam: purchaseParam);
+                      }
+                    },
+                  ));
       },
     ));
 
@@ -215,18 +219,66 @@ class _MyAppState extends State<MyApp> {
   }
 
   void showPendingUI() {
+    setState(() {
+      _purchasePending = true;
+    });
     print('pending UI showed');
   }
 
   void deliverProduct(PurchaseDetails purchaseDetails) {
     // IMPORTANT!! Always verify a purchase purchase details before deliver the product.
+    setState(() {
+      _purchasePending = false;
+    });
     print('product delivered');
   }
 
   void handleError(PurchaseError error) {
+    setState(() {
+      _purchasePending = false;
+    });
     print('purchase error ${error.message}');
+  }
+
+  Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) {
+    // IMPORTANT!! Always verify a purchase before delivering the product.
+    // For the purpose of an example, we directly return true.
+    return Future<bool>.value(true);
+  }
+
+  void _handleInvalidPurchase(PurchaseDetails purchaseDetails) {
+    // handle invalid purchase here if  _verifyPurchase` failed.
   }
 
   static ListTile buildListCard(ListTile innerTile) =>
       ListTile(title: Card(child: innerTile));
+
+  void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
+    purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+      print('purchase updated product ID: (${purchaseDetails.productID})');
+      print('purchase updated purchase ID: (${purchaseDetails.purchaseID})');
+      print('purchase updated status: ({${purchaseDetails.status})');
+      if (purchaseDetails.status == PurchaseStatus.pending) {
+        showPendingUI();
+      } else {
+        if (purchaseDetails.status == PurchaseStatus.error) {
+          handleError(purchaseDetails.error);
+        } else if (purchaseDetails.status == PurchaseStatus.purchased) {
+          bool valid = await _verifyPurchase(purchaseDetails);
+          if (valid) {
+            deliverProduct(purchaseDetails);
+          } else {
+            _handleInvalidPurchase(purchaseDetails);
+          }
+        }
+        if (Platform.isIOS) {
+          InAppPurchaseConnection.instance.completePurchase(purchaseDetails);
+        } else if (Platform.isAndroid) {
+          if (!kAutoConsume && purchaseDetails.productID == 'consumable') {
+            InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
+          }
+        }
+      }
+    });
+  }
 }

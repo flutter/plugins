@@ -5,13 +5,13 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
 import 'package:test/test.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/google_play_connection.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/in_app_purchase_connection.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import '../stub_in_app_purchase_platform.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
@@ -157,7 +157,7 @@ void main() {
   group('refresh receipt data', () {
     test('should throw on android', () {
       expect(GooglePlayConnection.instance.refreshPurchaseVerificationData(),
-          throwsException);
+          throwsUnsupportedError);
     });
   });
 
@@ -344,7 +344,7 @@ void main() {
 
   group('complete purchase', () {
     test('calling complete purchase on android should throw', () async {
-      expect(() => connection.completePurchase(null), throwsException);
+      expect(() => connection.completePurchase(null), throwsUnsupportedError);
     });
   });
 }

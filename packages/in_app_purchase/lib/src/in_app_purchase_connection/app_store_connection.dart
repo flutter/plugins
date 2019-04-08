@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
 
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
@@ -67,7 +68,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
   @override
   Future<BillingResponse> consumePurchase(PurchaseDetails purchase) {
-    throw Exception('consume purchase is not available on Android');
+    throw UnsupportedError('consume purchase is not available on Android');
   }
 
   @override
@@ -83,21 +84,20 @@ class AppStoreConnection implements InAppPurchaseConnection {
               queue: _skPaymentQueueWrapper,
               applicationUserName: applicationUserName);
       _observer.cleanUpRestoredTransactions();
-      if (restoredTransactions != null) {
-        pastPurchases =
-            restoredTransactions.map((SKPaymentTransactionWrapper transaction) {
-          return transaction.toPurchaseDetails(receiptData)
-            ..status = SKTransactionStatusConverter()
-                .toPurchaseStatus(transaction.transactionState)
-            ..error = transaction.error != null
-                ? PurchaseError(
-                    source: PurchaseSource.AppStore,
-                    code: kPurchaseErrorCode,
-                    message: transaction.error.userInfo,
-                  )
-                : null;
-        }).toList();
-      }
+      pastPurchases =
+          restoredTransactions.map((SKPaymentTransactionWrapper transaction) {
+            assert(transaction.transactionState == SKPaymentTransactionStateWrapper.restored);
+        return transaction.toPurchaseDetails(receiptData)
+          ..status = SKTransactionStatusConverter()
+              .toPurchaseStatus(transaction.transactionState)
+          ..error = transaction.error != null
+              ? PurchaseError(
+                  source: PurchaseSource.AppStore,
+                  code: kPurchaseErrorCode,
+                  message: transaction.error.userInfo,
+                )
+              : null;
+      }).toList();
     } catch (e) {
       error = PurchaseError(
           source: PurchaseSource.AppStore, code: e.domain, message: e.userInfo);
@@ -202,7 +202,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   }
 
   void paymentQueueRestoreCompletedTransactionsFinished() {
-    _restoreCompleter.complete(_restoredTransactions);
+    _restoreCompleter.complete(_restoredTransactions??[]);
   }
 
   void updatedDownloads({List<SKDownloadWrapper> downloads}) {}
