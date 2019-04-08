@@ -86,7 +86,8 @@ class AppStoreConnection implements InAppPurchaseConnection {
       _observer.cleanUpRestoredTransactions();
       pastPurchases =
           restoredTransactions.map((SKPaymentTransactionWrapper transaction) {
-            assert(transaction.transactionState == SKPaymentTransactionStateWrapper.restored);
+        assert(transaction.transactionState ==
+            SKPaymentTransactionStateWrapper.restored);
         return transaction.toPurchaseDetails(receiptData)
           ..status = SKTransactionStatusConverter()
               .toPurchaseStatus(transaction.transactionState)
@@ -202,7 +203,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   }
 
   void paymentQueueRestoreCompletedTransactionsFinished() {
-    _restoreCompleter.complete(_restoredTransactions??[]);
+    _restoreCompleter.complete(_restoredTransactions ?? []);
   }
 
   void updatedDownloads({List<SKDownloadWrapper> downloads}) {}
