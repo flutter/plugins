@@ -29,10 +29,14 @@ class ImagePicker {
   /// If specified, the image will be at most [maxWidth] wide and
   /// [maxHeight] tall. Otherwise the image will be returned at it's
   /// original width and height.
+  /// If the image is captured with a camera AND scaled (by maxHeight or maxWidth)
+  /// then the original (non-scaled) image will be deleted only if
+  /// [deleteCapturedOriginalIfScaled] == true.
   static Future<File> pickImage({
     @required ImageSource source,
     double maxWidth,
     double maxHeight,
+    bool deleteCapturedOriginalIfScaled,
   }) async {
     assert(source != null);
 
@@ -53,6 +57,7 @@ class ImagePicker {
         'source': source.index,
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
+        'deleteCapturedOriginalIfScaled': deleteCapturedOriginalIfScaled,
       },
     );
 
