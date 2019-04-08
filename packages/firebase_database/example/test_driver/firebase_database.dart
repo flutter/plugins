@@ -14,15 +14,15 @@ void main() {
 
     test('runTransaction', () async {
       final DatabaseReference ref = database.reference().child('counter');
-      final int value = await ref.once() ?? 0;
+      final DataSnapshot snapshot = await ref.once();
+      final int value = snapshot.value ?? 0;
       final TransactionResult transactionResult =
-        await ref.runTransaction((MutableData mutableData) async {
+          await ref.runTransaction((MutableData mutableData) async {
         mutableData.value = (mutableData.value ?? 0) + 1;
         return mutableData;
       });
       assert(transactionResult.committed, true);
       assert(transactionResult.dataSnapshot.value > value, true);
     });
-
   });
 }

@@ -40,14 +40,14 @@ void main() {
       expect(snapshot.data['message'], 'Hello world!');
     });
 
-
     test('runTransaction', () async {
       final DocumentReference ref = firestore.collection('messages').document();
       await ref.updateData(<String, dynamic>{
         'message': 'testing',
         'created_at': FieldValue.serverTimestamp(),
       });
-      final Map<String, dynamic> result = await Firestore.instance.runTransaction(
+      final Map<String, dynamic> result =
+          await Firestore.instance.runTransaction(
         (Transaction tx) async {
           final DocumentSnapshot snapshot = await tx.get(ref);
           expect(snapshot['message'], 'testing');
@@ -61,6 +61,5 @@ void main() {
       final DocumentSnapshot nonexistentSnapshot = await ref.get();
       assert(nonexistentSnapshot.exists, false);
     });
-
   });
 }
