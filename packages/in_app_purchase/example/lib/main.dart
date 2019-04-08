@@ -74,8 +74,9 @@ class _MyAppState extends State<MyApp> {
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.error != null) {
                 return Center(
-                  child: buildListCard(
-                      ListTile(title: Text('Error fetching products ${snapshot.error}'))),
+                  child: buildListCard(ListTile(
+                      title:
+                          Text('Error fetching products ${snapshot.error}'))),
                 );
               } else if (!snapshot.hasData) {
                 return Card(
