@@ -218,7 +218,6 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     try {
       _receiptData = await SKReceiptManager.retrieveReceiptData();
     } catch (e) {
-      print('Error getting receipt data: $e');
       _receiptData = null;
     }
     return _receiptData;

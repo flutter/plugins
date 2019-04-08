@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
     }, onDone: () {
       _subscription.cancel();
     }, onError: (error) {
-      print('Error on listening to purchaseUpdatesStream $error');
+      // handle error here.
     });
     super.initState();
   }
@@ -73,10 +73,9 @@ class _MyAppState extends State<MyApp> {
             future: _buildProductList(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.error != null) {
-                print(snapshot.error);
                 return Center(
                   child: buildListCard(
-                      ListTile(title: Text('Error fetching products'))),
+                      ListTile(title: Text('Error fetching products ${snapshot.error}'))),
                 );
               } else if (!snapshot.hasData) {
                 return Card(
@@ -168,13 +167,10 @@ class _MyAppState extends State<MyApp> {
     Map<String, PurchaseDetails> purchases = Map.fromEntries(
         ((await connection.queryPastPurchases()).pastPurchases)
             .map((PurchaseDetails purchase) {
-      print('restored productID: ${purchase.productID}');
-      print('restored purchaseID: ${purchase.purchaseID}');
       if (Platform.isIOS) {
         InAppPurchaseConnection.instance.completePurchase(purchase);
       }
       if (Platform.isAndroid && purchase.productID == 'consumable') {
-        print('consume restored');
         InAppPurchaseConnection.instance.consumePurchase(purchase);
       }
       return MapEntry<String, PurchaseDetails>(purchase.productID, purchase);
@@ -222,7 +218,6 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _purchasePending = true;
     });
-    print('pending UI showed');
   }
 
   void deliverProduct(PurchaseDetails purchaseDetails) {
@@ -230,14 +225,12 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _purchasePending = false;
     });
-    print('product delivered');
   }
 
   void handleError(PurchaseError error) {
     setState(() {
       _purchasePending = false;
     });
-    print('purchase error ${error.message}');
   }
 
   Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) {
@@ -255,9 +248,6 @@ class _MyAppState extends State<MyApp> {
 
   void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
-      print('purchase updated product ID: (${purchaseDetails.productID})');
-      print('purchase updated purchase ID: (${purchaseDetails.purchaseID})');
-      print('purchase updated status: ({${purchaseDetails.status})');
       if (purchaseDetails.status == PurchaseStatus.pending) {
         showPendingUI();
       } else {
