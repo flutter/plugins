@@ -1,3 +1,7 @@
+## 0.8.4+2
+
+* Fixes an error in the documentation of createUserWithEmailAndPassword.
+
 ## 0.8.4+1
 
 * Adds credential for email authentication with link.
