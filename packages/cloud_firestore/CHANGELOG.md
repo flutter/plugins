@@ -1,6 +1,6 @@
 ## 0.9.13
 
-* Remove Gradle BoM to avoid Gradle version issues. 
+* Remove Gradle BoM to avoid Gradle version issues.
 
 ## 0.9.12
 
