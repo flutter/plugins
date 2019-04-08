@@ -39,5 +39,28 @@ void main() {
       final DocumentSnapshot snapshot = await firstDoc.snapshots().first;
       expect(snapshot.data['message'], 'Hello world!');
     });
+
+
+    test('runTransaction', () async {
+      final DocumentReference ref = firestore.collection('messages').document();
+      await ref.updateData(<String, dynamic>{
+        'message': 'testing',
+        'created_at': FieldValue.serverTimestamp(),
+      });
+      final Map<String, dynamic> result = await Firestore.instance.runTransaction(
+        (Transaction tx) async {
+          DocumentSnapshot snapshot = await tx.get(ref);
+          expect(snapshot['message'], 'testing');
+          await tx.update(ref, <String, dynamic>{'message': 'testing2'});
+        },
+      );
+      assert(result['message'], 'testing2');
+      DocumentSnapshot updatedSnapshot = await ref.get();
+      assert(updatedSnapshot['message'], 'testing2');
+      await ref.delete();
+      DocumentSnapshot nonexistentSnapshot = await ref.get();
+      assert(nonexistentSnapshot.exists, false);
+    });
+
   });
 }
