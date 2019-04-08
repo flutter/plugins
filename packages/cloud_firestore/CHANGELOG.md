@@ -1,3 +1,7 @@
+## 0.9.13
+
+* Remove Gradle BoM to avoid Gradle version issues. 
+
 ## 0.9.12
 
 * Move Android dependency to Gradle BoM to help maintain compatibility

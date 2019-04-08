@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Remove Gradle BoM to avoid Gradle version issues.
+
 ## 0.3.2
 
 * Move Android dependency to Gradle BoM to help maintain compatability

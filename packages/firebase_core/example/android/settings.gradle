@@ -14,4 +14,3 @@ plugins.each { name, path ->
     project(":$name").projectDir = pluginDirectory
 }
 
-enableFeaturePreview('IMPROVED_POM_SUPPORT')
