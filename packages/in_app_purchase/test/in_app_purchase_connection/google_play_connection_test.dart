@@ -151,26 +151,9 @@ void main() {
   });
 
   group('refresh receipt data', () {
-    final String queryMethodName =
-        'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)';
-    test('should refresh receipt data', () async {
-      final BillingResponse responseCode = BillingResponse.ok;
-      stubPlatform.addResponse(name: queryMethodName, value: <String, dynamic>{
-        'responseCode': BillingResponseConverter().toJson(responseCode),
-        'purchasesList': <Map<String, dynamic>>[
-          buildPurchaseMap(dummyPurchase),
-        ]
-      });
-      final QueryPurchaseDetailsResponse response =
-          await connection.queryPastPurchases();
-
-      PurchaseVerificationData receiptData = await GooglePlayConnection.instance
-          .refreshPurchaseVerificationData(response.pastPurchases.first);
-      expect(receiptData.source, PurchaseSource.GooglePlay);
-      expect(receiptData.localVerificationData,
-          response.pastPurchases.first.verificationData.localVerificationData);
-      expect(receiptData.serverVerificationData,
-          response.pastPurchases.first.verificationData.serverVerificationData);
+    test('should throw on android', () {
+      expect(GooglePlayConnection.instance.refreshPurchaseVerificationData(),
+          throwsException);
     });
   });
 }
