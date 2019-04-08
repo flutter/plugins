@@ -1,3 +1,22 @@
+## 0.9.13
+
+* Remove Gradle BoM to avoid Gradle version issues. 
+
+## 0.9.12
+
+* Move Android dependency to Gradle BoM to help maintain compatibility
+  with other FlutterFire plugins.
+
+## 0.9.11
+
+* Bump Android dependencies to latest.
+
+# 0.9.10
+
+* Support for cloud_firestore running in the background on Android.
+* Fixed a bug in cleanup for DocumentReference.snapshots().
+* Additional integration testing.
+
 ## 0.9.9
 
 * Remove `invokeMapMethod` calls to prevent crash.

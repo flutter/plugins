@@ -42,6 +42,7 @@ class GoogleMap extends StatefulWidget {
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
+    this.onTap,
   })  : assert(initialCameraPosition != null),
         super(key: key);
 
@@ -102,6 +103,9 @@ class GoogleMap extends StatefulWidget {
   /// Called when camera movement has ended, there are no pending
   /// animations and the user has stopped interacting with the map.
   final MapBoundsCallback onCameraIdle;
+
+  /// Called every time a [GoogleMap] is tapped.
+  final ArgumentCallback<LatLng> onTap;
 
   /// True if a "My Location" layer should be shown on the map.
   ///
@@ -234,6 +238,11 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(markerIdParam != null);
     final MarkerId markerId = MarkerId(markerIdParam);
     _markers[markerId].infoWindow.onTap();
+  }
+
+  void onTap(LatLng position) {
+    assert(position != null);
+    widget.onTap(position);
   }
 }
 

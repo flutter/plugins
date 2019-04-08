@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -212,6 +215,37 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
+  void _setMarkerIcon(BitmapDescriptor assetIcon) {
+    if (selectedMarker == null) {
+      return;
+    }
+
+    final Marker marker = markers[selectedMarker];
+    setState(() {
+      markers[selectedMarker] = marker.copyWith(
+        iconParam: assetIcon,
+      );
+    });
+  }
+
+  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
+    final Completer<BitmapDescriptor> bitmapIcon =
+        Completer<BitmapDescriptor>();
+    final ImageConfiguration config = createLocalImageConfiguration(context);
+
+    const AssetImage("assets/red_square.png")
+        .resolve(config)
+        .addListener((ImageInfo image, bool sync) async {
+      final ByteData bytes =
+          await image.image.toByteData(format: ImageByteFormat.png);
+      final BitmapDescriptor bitmap =
+          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
+      bitmapIcon.complete(bitmap);
+    });
+
+    return await bitmapIcon.future;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -295,6 +329,16 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                         FlatButton(
                           child: const Text('change zIndex'),
                           onPressed: _changeZIndex,
+                        ),
+                        FlatButton(
+                          child: const Text('set marker icon'),
+                          onPressed: () {
+                            _getAssetIcon(context).then(
+                              (BitmapDescriptor icon) {
+                                _setMarkerIcon(icon);
+                              },
+                            );
+                          },
                         ),
                       ],
                     ),

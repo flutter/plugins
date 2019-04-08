@@ -1,3 +1,12 @@
+## 0.5.2
+
+* Check iOS camera authorizationStatus and return an error, if the access was
+  denied.
+
+## 0.5.1
+
+* Android: Do not delete original image after scaling if the image is from gallery.
+
 ## 0.5.0+9
 
 * Remove unnecessary temp video file path.

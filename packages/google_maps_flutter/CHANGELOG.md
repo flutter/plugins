@@ -1,3 +1,16 @@
+## 0.5.3
+
+* Added support setting marker icons from bytes.
+
+## 0.5.2
+
+* Added onTap for callback for GoogleMap.
+
+## 0.5.1
+
+* Update Android gradle version.
+* Added infrastructure to write integration tests.
+
 ## 0.5.0
 
 * Add a key parameter to the GoogleMap widget.
