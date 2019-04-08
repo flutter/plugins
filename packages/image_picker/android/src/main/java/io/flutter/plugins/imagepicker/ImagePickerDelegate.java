@@ -395,7 +395,8 @@ public class ImagePickerDelegate
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
-              boolean shouldDeleteOriginalIfScaled = methodCall.argument("deleteCapturedOriginalIfScaled");
+              Boolean shouldDeleteOriginalIfScaled = methodCall.argument("deleteCapturedOriginalIfScaled");
+              if (shouldDeleteOriginalIfScaled == null) shouldDeleteOriginalIfScaled = true;
               handleImageResult(path, shouldDeleteOriginalIfScaled);
             }
           });
