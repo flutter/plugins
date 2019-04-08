@@ -42,7 +42,7 @@ void main() {
 
     test('runTransaction', () async {
       final DocumentReference ref = firestore.collection('messages').document();
-      await ref.updateData(<String, dynamic>{
+      await ref.setData(<String, dynamic>{
         'message': 'testing',
         'created_at': FieldValue.serverTimestamp(),
       });
