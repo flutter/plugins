@@ -198,7 +198,7 @@ class BillingClient {
   /// Consumes a given in-app product.
   ///
   /// Consuming can only be done on an item that's owned, and as a result of consumption, the user will no longer own it.
-  /// Consume is done asynchronously. The method returns a Future containing a [BillingResponse].
+  /// Consumption is done asynchronously. The method returns a Future containing a [BillingResponse].
   ///
   /// This wraps [`BillingClient#consumeAsync(String, ConsumeResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#consumeAsync(java.lang.String,%20com.android.billingclient.api.ConsumeResponseListener))
   Future<BillingResponse> consumeAsync(String purchaseToken) async {
