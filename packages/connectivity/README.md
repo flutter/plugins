@@ -33,7 +33,7 @@ import 'package:connectivity/connectivity.dart';
 @override
 initState() {
   super.initState();
-  
+
   subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
     // Got a new connectivity status!
   })
@@ -43,7 +43,7 @@ initState() {
 @override
 dispose() {
   super.dispose();
-  
+
   subscription.cancel();
 }
 ```

@@ -35,6 +35,51 @@ class GooglePlayConnection
   }
 
   @override
+  Future<QueryPurchaseDetailsResponse> queryPastPurchases(
+      {String applicationUserName}) async {
+    final List<PurchasesResultWrapper> responses = await Future.wait([
+      _billingClient.queryPurchaseHistory(SkuType.inapp),
+      _billingClient.queryPurchaseHistory(SkuType.subs)
+    ]);
+
+    Set errorCodeSet = responses
+        .where((PurchasesResultWrapper response) =>
+            response.responseCode != BillingResponse.ok)
+        .map((PurchasesResultWrapper response) =>
+            response.responseCode.toString())
+        .toSet();
+
+    String errorMessage =
+        errorCodeSet.isNotEmpty ? errorCodeSet.join(', ') : null;
+
+    List<PurchaseDetails> pastPurchases =
+        responses.expand((PurchasesResultWrapper response) {
+      return response.purchasesList;
+    }).map((PurchaseWrapper purchaseWrapper) {
+      return purchaseWrapper.toPurchaseDetails();
+    }).toList();
+
+    return QueryPurchaseDetailsResponse(
+      pastPurchases: pastPurchases,
+      error: errorMessage != null
+          ? PurchaseError(
+              source: PurchaseSource.GooglePlay,
+              code: 'restore_transactions_failed',
+              message: {'message': errorMessage})
+          : null,
+    );
+  }
+
+  /// This is a non-op.
+  ///
+  /// There is no refreshing verification data on Google Play.
+  @override
+  Future<PurchaseVerificationData> refreshPurchaseVerificationData(
+      PurchaseDetails purchase) async {
+    return purchase.verificationData;
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.paused:
