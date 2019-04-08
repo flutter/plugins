@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 const MethodChannel _kChannel =
     MethodChannel('plugins.flutter.io/package_info');
