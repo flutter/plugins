@@ -94,7 +94,7 @@ class FirebaseAuth {
   ///
   /// Errors:
   ///   • `ERROR_WEAK_PASSWORD` - If the password is not strong enough.
-  ///   • `ERROR_INVALID_CREDENTIAL` - If the email address is malformed.
+  ///   • `ERROR_INVALID_EMAIL` - If the email address is malformed.
   ///   • `ERROR_EMAIL_ALREADY_IN_USE` - If the email is already in use by a different account.
   Future<FirebaseUser> createUserWithEmailAndPassword({
     @required String email,
@@ -156,6 +156,71 @@ class FirebaseAuth {
     );
   }
 
+  /// Sends a sign in with email link to provided email address.
+  Future<void> sendSignInWithEmailLink({
+    @required String email,
+    @required String url,
+    @required bool handleCodeInApp,
+    @required String iOSBundleID,
+    @required String androidPackageName,
+    @required bool androidInstallIfNotAvailable,
+    @required String androidMinimumVersion,
+  }) async {
+    assert(email != null);
+    assert(url != null);
+    assert(handleCodeInApp != null);
+    assert(iOSBundleID != null);
+    assert(androidPackageName != null);
+    assert(androidInstallIfNotAvailable != null);
+    assert(androidMinimumVersion != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await channel.invokeMethod(
+      'sendLinkToEmail',
+      <String, dynamic>{
+        'email': email,
+        'url': url,
+        'handleCodeInApp': handleCodeInApp,
+        'iOSBundleID': iOSBundleID,
+        'androidPackageName': androidPackageName,
+        'androidInstallIfNotAvailable': androidInstallIfNotAvailable,
+        'androidMinimumVersion': androidMinimumVersion,
+        'app': app.name,
+      },
+    );
+  }
+
+  /// Checks if link is an email sign-in link.
+  Future<bool> isSignInWithEmailLink(String link) async {
+    return await channel.invokeMethod(
+      'isSignInWithEmailLink',
+      <String, String>{'link': link, 'app': app.name},
+    );
+  }
+
+  /// Signs in using an email address and email sign-in link.
+  ///
+  /// Errors:
+  ///   • `ERROR_NOT_ALLOWED` - Indicates that email and email sign-in link
+  ///      accounts are not enabled. Enable them in the Auth section of the
+  ///      Firebase console.
+  ///   • `ERROR_DISABLED` - Indicates the user's account is disabled.
+  ///   • `ERROR_INVALID` - Indicates the email address is invalid.
+  Future<FirebaseUser> signInWithEmailAndLink(
+      {String email, String link}) async {
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+      'signInWithEmailAndLink',
+      <String, dynamic>{
+        'app': app.name,
+        'email': email,
+        'link': link,
+      },
+    );
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
+    return currentUser;
+  }
+
   /// Tries to sign in a user with the given email address and password.
   ///
   /// If successful, it also signs the user in into the app and updates
@@ -203,6 +268,8 @@ class FirebaseAuth {
   ///       Resolve this case by calling [fetchSignInMethodsForEmail] and then asking the user to sign in using one of them.
   ///       This error will only be thrown if the "One account per email address" setting is enabled in the Firebase console (recommended).
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Google accounts are not enabled.
+  ///   • `ERROR_INVALID_ACTION_CODE` - If the action code in the link is malformed, expired, or has already been used.
+  ///       This can only occur when using [EmailAuthProvider.getCredentialWithLink] to obtain the credential.
   Future<FirebaseUser> signInWithCredential(AuthCredential credential) async {
     assert(credential != null);
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
@@ -363,6 +430,8 @@ class FirebaseAuth {
   ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
   ///   • `ERROR_PROVIDER_ALREADY_LINKED` - If the current user already has an account of this type linked.
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that this type of account is not enabled.
+  ///   • `ERROR_INVALID_ACTION_CODE` - If the action code in the link is malformed, expired, or has already been used.
+  ///       This can only occur when using [EmailAuthProvider.getCredentialWithLink] to obtain the credential.
   Future<FirebaseUser> linkWithCredential(AuthCredential credential) async {
     assert(credential != null);
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
@@ -429,7 +498,7 @@ class FirebaseAuth {
       case 'phoneCodeAutoRetrievalTimeout':
         final int handle = call.arguments['handle'];
         final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
-            _phoneAuthCallbacks[handle]['PhoneCodeAutoRetrievealTimeout'];
+            _phoneAuthCallbacks[handle]['PhoneCodeAuthRetrievalTimeout'];
         final String verificationId = call.arguments['verificationId'];
         codeAutoRetrievalTimeout(verificationId);
         break;

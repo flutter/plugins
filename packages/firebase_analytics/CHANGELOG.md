@@ -1,3 +1,11 @@
+## 2.1.1
+
+* Added screen_view tracking of Navigator.pushReplacement
+
+## 2.1.0
+
+* Add Login event support
+
 ## 2.0.3
 
 * Add resetAnalyticsData method

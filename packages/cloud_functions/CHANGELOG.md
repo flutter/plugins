@@ -1,3 +1,7 @@
+## 0.1.2+1
+
+* Added a driver test.
+
 ## 0.1.2
 
 * Specifying a version for Cloud Functions CocoaPod dependency to prevent build errors on iOS.

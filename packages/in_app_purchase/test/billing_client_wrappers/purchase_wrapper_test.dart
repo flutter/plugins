@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
 import 'package:test/test.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
@@ -25,6 +26,20 @@ void main() {
           PurchaseWrapper.fromJson(buildPurchaseMap(expected));
 
       expect(parsed, equals(expected));
+    });
+
+    test('toPurchaseDetails() should return correct PurchaseDetail object', () {
+      final PurchaseDetails details = dummyPurchase.toPurchaseDetails();
+      expect(details.purchaseID, dummyPurchase.orderId);
+      expect(details.productID, dummyPurchase.sku);
+      expect(details.transactionDate, dummyPurchase.purchaseTime.toString());
+      expect(details.verificationData.source, PurchaseSource.GooglePlay);
+      expect(details.verificationData.localVerificationData,
+          dummyPurchase.originalJson);
+      expect(details.verificationData.serverVerificationData,
+          dummyPurchase.purchaseToken);
+      expect(details.skPaymentTransaction, null);
+      expect(details.billingClientPurchase, dummyPurchase);
     });
   });
 

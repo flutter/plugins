@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
@@ -54,6 +55,8 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     static final String QUERY_PURCHASES = "BillingClient#queryPurchases(String)";
     static final String QUERY_PURCHASE_HISTORY_ASYNC =
         "BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)";
+    static final String CONSUME_PURCHASE_ASYNC =
+        "BillingClient#consumeAsync(String, ConsumeResponseListener)";
 
     private MethodNames() {};
   }
@@ -99,6 +102,9 @@ public class InAppPurchasePlugin implements MethodCallHandler {
         break;
       case MethodNames.QUERY_PURCHASE_HISTORY_ASYNC:
         queryPurchaseHistoryAsync((String) call.argument("skuType"), result);
+        break;
+      case MethodNames.CONSUME_PURCHASE_ASYNC:
+        consumeAsync((String) call.argument("purchaseToken"), result);
         break;
       default:
         result.notImplemented();
@@ -193,6 +199,22 @@ public class InAppPurchasePlugin implements MethodCallHandler {
       paramsBuilder.setAccountId(accountId);
     }
     result.success(billingClient.launchBillingFlow(activity, paramsBuilder.build()));
+  }
+
+  private void consumeAsync(String purchaseToken, final Result result) {
+    if (billingClientError(result)) {
+      return;
+    }
+
+    ConsumeResponseListener listener =
+        new ConsumeResponseListener() {
+          @Override
+          public void onConsumeResponse(
+              @BillingClient.BillingResponse int responseCode, String outToken) {
+            result.success(responseCode);
+          }
+        };
+    billingClient.consumeAsync(purchaseToken, listener);
   }
 
   private void queryPurchases(String skuType, Result result) {
