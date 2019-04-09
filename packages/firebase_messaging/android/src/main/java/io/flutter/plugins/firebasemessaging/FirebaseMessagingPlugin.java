@@ -9,9 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -168,19 +168,25 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   private boolean sendMessageFromIntent(String method, Intent intent) {
     if (CLICK_ACTION_VALUE.equals(intent.getAction())
         || CLICK_ACTION_VALUE.equals(intent.getStringExtra("click_action"))) {
-      Map<String, String> message = new HashMap<>();
+      Map<String, Object> message = new HashMap<>();
       Bundle extras = intent.getExtras();
 
       if (extras == null) {
         return false;
       }
 
+      Map<String, Object> notificationMap = new HashMap<>();
+      Map<String, Object> dataMap = new HashMap<>();
+
       for (String key : extras.keySet()) {
         Object extra = extras.get(key);
         if (extra != null) {
-          message.put(key, extra.toString());
+          dataMap.put(key, extra);
         }
       }
+
+      message.put("notification", notificationMap);
+      message.put("data", dataMap);
 
       channel.invokeMethod(method, message);
       return true;

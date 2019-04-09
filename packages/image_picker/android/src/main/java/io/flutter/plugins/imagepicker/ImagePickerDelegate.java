@@ -12,9 +12,9 @@ import android.content.pm.ResolveInfo;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -68,11 +68,9 @@ public class ImagePickerDelegate
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
   @VisibleForTesting static final int REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION = 2344;
-  @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
   @VisibleForTesting static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION = 2354;
-  @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
 
   @VisibleForTesting final String fileProviderName;
 
@@ -186,7 +184,7 @@ public class ImagePickerDelegate
 
   public void chooseVideoFromGallery(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
-      finishWithAlreadyActiveError();
+      finishWithAlreadyActiveError(result);
       return;
     }
 
@@ -208,13 +206,7 @@ public class ImagePickerDelegate
 
   public void takeVideoWithCamera(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
-      finishWithAlreadyActiveError();
-      return;
-    }
-
-    if (!permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
-      permissionManager.askForPermission(
-          Manifest.permission.CAMERA, REQUEST_CAMERA_VIDEO_PERMISSION);
+      finishWithAlreadyActiveError(result);
       return;
     }
 
@@ -242,7 +234,7 @@ public class ImagePickerDelegate
 
   public void chooseImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
-      finishWithAlreadyActiveError();
+      finishWithAlreadyActiveError(result);
       return;
     }
 
@@ -264,13 +256,7 @@ public class ImagePickerDelegate
 
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
-      finishWithAlreadyActiveError();
-      return;
-    }
-
-    if (!permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
-      permissionManager.askForPermission(
-          Manifest.permission.CAMERA, REQUEST_CAMERA_IMAGE_PERMISSION);
+      finishWithAlreadyActiveError(result);
       return;
     }
 
@@ -347,16 +333,6 @@ public class ImagePickerDelegate
           launchPickVideoFromGalleryIntent();
         }
         break;
-      case REQUEST_CAMERA_IMAGE_PERMISSION:
-        if (permissionGranted) {
-          launchTakeImageWithCameraIntent();
-        }
-        break;
-      case REQUEST_CAMERA_VIDEO_PERMISSION:
-        if (permissionGranted) {
-          launchTakeVideoWithCameraIntent();
-        }
-        break;
       default:
         return false;
     }
@@ -393,7 +369,7 @@ public class ImagePickerDelegate
   private void handleChooseImageResult(int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK && data != null) {
       String path = fileUtils.getPathFromUri(activity, data.getData());
-      handleImageResult(path);
+      handleImageResult(path, false);
       return;
     }
 
@@ -419,7 +395,7 @@ public class ImagePickerDelegate
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
-              handleImageResult(path);
+              handleImageResult(path, true);
             }
           });
       return;
@@ -446,13 +422,18 @@ public class ImagePickerDelegate
     finishWithSuccess(null);
   }
 
-  private void handleImageResult(String path) {
+  private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
     if (pendingResult != null) {
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
 
       String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
       finishWithSuccess(finalImagePath);
+
+      //delete original file if scaled
+      if (!finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
+        new File(path).delete();
+      }
     } else {
       throw new IllegalStateException("Received image from picker that was not requested");
     }
@@ -482,8 +463,8 @@ public class ImagePickerDelegate
     clearMethodCallAndResult();
   }
 
-  private void finishWithAlreadyActiveError() {
-    finishWithError("already_active", "Image picker is already active");
+  private void finishWithAlreadyActiveError(MethodChannel.Result result) {
+    result.error("already_active", "Image picker is already active", null);
   }
 
   private void finishWithError(String errorCode, String errorMessage) {

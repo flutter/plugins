@@ -1,8 +1,8 @@
-# ML Kit for Firebase
+# ML Kit Vision for Firebase
 
 [![pub package](https://img.shields.io/pub/v/firebase_ml_vision.svg)](https://pub.dartlang.org/packages/firebase_ml_vision)
 
-A Flutter plugin to use the [ML Kit for Firebase API](https://firebase.google.com/docs/ml-kit/).
+A Flutter plugin to use the [ML Kit Vision for Firebase API](https://firebase.google.com/docs/ml-kit/).
 
 For Flutter plugins for other Firebase products, see [FlutterFire.md](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
 
@@ -13,6 +13,20 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 To use this plugin, add `firebase_ml_vision` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure Firebase for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
 
 ### Android
+If you're using the on-device `LabelDetector`, include the latest matching [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android) dependency in your app-level build.gradle file.
+
+```
+android {
+    dependencies {
+        // ...
+
+        api 'com.google.firebase:firebase-ml-vision-image-label-model:17.0.2'
+    }
+}
+```
+
+If you receive compilation errors, try an earlier version of [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android).
+
 Optional but recommended: If you use the on-device API, configure your app to automatically download the ML model to the device after your app is installed from the Play Store. To do so, add the following declaration to your app's AndroidManifest.xml file:
 
 ```xml
@@ -25,7 +39,18 @@ Optional but recommended: If you use the on-device API, configure your app to au
 </application>
 ```
 
-## Using an On-device FirbaseVisionDetector
+### iOS
+If you're using one of the on-device APIs, include the corresponding ML Kit library model in your
+`Podfile`. Then run `pod update` in a terminal within the same directory as your `Podfile`.
+
+```
+pod 'Firebase/MLVisionBarcodeModel'
+pod 'Firebase/MLVisionFaceModel'
+pod 'Firebase/MLVisionLabelModel'
+pod 'Firebase/MLVisionTextModel'
+```
+
+## Using an ML Vision Detector
 
 ### 1. Create a `FirebaseVisionImage`.
 
@@ -61,9 +86,9 @@ final LabelDetector detector = FirebaseVision.instance.labelDetector(
 ```dart
 final List<Barcode> barcodes = await barcodeDetector.detectInImage(visionImage);
 final List<Label> labels = await cloudLabelDetector.detectInImage(visionImage);
-final List<Face> faces = await faceDetector.detectInImage(visionImage);
+final List<Face> faces = await faceDetector.processImage(visionImage);
 final List<Label> labels = await labelDetector.detectInImage(visionImage);
-final VisionText visionText = await textRecognizer.detectInImage(visionImage);
+final VisionText visionText = await textRecognizer.processImage(visionImage);
 ```
 
 ### 4. Extract data.
@@ -77,7 +102,7 @@ for (Barcode barcode in barcodes) {
 
   final String rawValue = barcode.rawValue;
 
-  final BarcordeValueType valueType = barcode.valueType;
+  final BarcodeValueType valueType = barcode.valueType;
 
   // See API reference for complete list of supported types
   switch (valueType) {
@@ -153,4 +178,4 @@ for (TextBlock block in visionText.blocks) {
 
 ## Getting Started
 
-See the `example` directory for a complete sample app using ML Kit for Firebase.
+See the `example` directory for a complete sample app using ML Kit Vision for Firebase.

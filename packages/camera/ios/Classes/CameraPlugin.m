@@ -1,24 +1,43 @@
 #import "CameraPlugin.h"
 #import <AVFoundation/AVFoundation.h>
+#import <Accelerate/Accelerate.h>
+#import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@end
-
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
+static FlutterError *getFlutterError(NSError *error) {
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
 }
-@end
 
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
 @property(readonly, nonatomic) FlutterResult result;
+@property(readonly, nonatomic) CMMotionManager *motionManager;
+@property(readonly, nonatomic) AVCaptureDevicePosition cameraPosition;
 
-- initWithPath:(NSString *)filename result:(FlutterResult)result;
+- initWithPath:(NSString *)filename
+            result:(FlutterResult)result
+     motionManager:(CMMotionManager *)motionManager
+    cameraPosition:(AVCaptureDevicePosition)cameraPosition;
+@end
+
+@interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
+@property FlutterEventSink eventSink;
+@end
+
+@implementation FLTImageStreamHandler
+
+- (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
+  _eventSink = nil;
+  return nil;
+}
+
+- (FlutterError *_Nullable)onListenWithArguments:(id _Nullable)arguments
+                                       eventSink:(nonnull FlutterEventSink)events {
+  _eventSink = events;
+  return nil;
+}
 @end
 
 @implementation FLTSavePhotoDelegate {
@@ -26,11 +45,16 @@
   FLTSavePhotoDelegate *selfReference;
 }
 
-- initWithPath:(NSString *)path result:(FlutterResult)result {
+- initWithPath:(NSString *)path
+            result:(FlutterResult)result
+     motionManager:(CMMotionManager *)motionManager
+    cameraPosition:(AVCaptureDevicePosition)cameraPosition {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _path = path;
   _result = result;
+  _motionManager = motionManager;
+  _cameraPosition = cameraPosition;
   selfReference = self;
   return self;
 }
@@ -43,19 +67,50 @@
                                    error:(NSError *)error {
   selfReference = nil;
   if (error) {
-    _result([error flutterError]);
+    _result(getFlutterError(error));
     return;
   }
   NSData *data = [AVCapturePhotoOutput
       JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer
                             previewPhotoSampleBuffer:previewPhotoSampleBuffer];
+  UIImage *image = [UIImage imageWithCGImage:[UIImage imageWithData:data].CGImage
+                                       scale:1.0
+                                 orientation:[self getImageRotation]];
   // TODO(sigurdm): Consider writing file asynchronously.
-  bool success = [data writeToFile:_path atomically:YES];
+  bool success = [UIImageJPEGRepresentation(image, 1.0) writeToFile:_path atomically:YES];
   if (!success) {
     _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
     return;
   }
   _result(nil);
+}
+
+- (UIImageOrientation)getImageRotation {
+  float const threshold = 45.0;
+  BOOL (^isNearValue)(float value1, float value2) = ^BOOL(float value1, float value2) {
+    return fabsf(value1 - value2) < threshold;
+  };
+  BOOL (^isNearValueABS)(float value1, float value2) = ^BOOL(float value1, float value2) {
+    return isNearValue(fabsf(value1), fabsf(value2));
+  };
+  float yxAtan = (atan2(_motionManager.accelerometerData.acceleration.y,
+                        _motionManager.accelerometerData.acceleration.x)) *
+                 180 / M_PI;
+  if (isNearValue(-90.0, yxAtan)) {
+    return UIImageOrientationRight;
+  } else if (isNearValueABS(180.0, yxAtan)) {
+    return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationUp
+                                                          : UIImageOrientationDown;
+  } else if (isNearValueABS(0.0, yxAtan)) {
+    return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationDown /*rotate 180* */
+                                                          : UIImageOrientationUp /*do not rotate*/;
+  } else if (isNearValue(90.0, yxAtan)) {
+    return UIImageOrientationLeft;
+  }
+  // If none of the above, then the device is likely facing straight down or straight up -- just
+  // pick something arbitrary
+  // TODO: Maybe use the UIInterfaceOrientation if in these scenarios
+  return UIImageOrientationUp;
 }
 @end
 
@@ -66,6 +121,7 @@
 @property(readonly, nonatomic) int64_t textureId;
 @property(nonatomic, copy) void (^onFrameAvailable)();
 @property(nonatomic) FlutterEventChannel *eventChannel;
+@property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 @property(readonly, nonatomic) AVCaptureDevice *captureDevice;
@@ -83,34 +139,37 @@
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isAudioSetup;
+@property(assign, nonatomic) BOOL isStreamingImages;
+@property(nonatomic) CMMotionManager *motionManager;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
+                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error;
+
 - (void)start;
 - (void)stop;
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result;
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
+- (void)stopImageStream;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
 @end
 
-@implementation FLTCam
+@implementation FLTCam {
+  dispatch_queue_t _dispatchQueue;
+}
+// Format used for video and image streaming.
+FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
+
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
+                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
+  _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
-  AVCaptureSessionPreset preset;
-  if ([resolutionPreset isEqualToString:@"high"]) {
-    preset = AVCaptureSessionPresetHigh;
-  } else if ([resolutionPreset isEqualToString:@"medium"]) {
-    preset = AVCaptureSessionPresetMedium;
-  } else {
-    NSAssert([resolutionPreset isEqualToString:@"low"], @"Unknown resolution preset %@",
-             resolutionPreset);
-    preset = AVCaptureSessionPresetLow;
-  }
-  _captureSession.sessionPreset = preset;
+
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
@@ -119,13 +178,10 @@
     *error = localError;
     return nil;
   }
-  CMVideoDimensions dimensions =
-      CMVideoFormatDescriptionGetDimensions([[_captureDevice activeFormat] formatDescription]);
-  _previewSize = CGSizeMake(dimensions.width, dimensions.height);
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
-      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA)};
+      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)};
   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
   [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
 
@@ -142,6 +198,11 @@
   _capturePhotoOutput = [AVCapturePhotoOutput new];
   [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
   [_captureSession addOutput:_capturePhotoOutput];
+  _motionManager = [[CMMotionManager alloc] init];
+  [_motionManager startAccelerometerUpdates];
+
+  [self setCaptureSessionPreset:resolutionPreset];
+
   return self;
 }
 
@@ -156,9 +217,65 @@
 - (void)captureToFile:(NSString *)path result:(FlutterResult)result {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   [settings setHighResolutionPhotoEnabled:YES];
-  [_capturePhotoOutput capturePhotoWithSettings:settings
-                                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
-                                                                                    result:result]];
+  [_capturePhotoOutput
+      capturePhotoWithSettings:settings
+                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
+                                                                   result:result
+                                                            motionManager:_motionManager
+                                                           cameraPosition:_captureDevice.position]];
+}
+
+- (void)setCaptureSessionPreset:(NSString *)resolutionPreset {
+  int presetIndex;
+  if ([resolutionPreset isEqualToString:@"high"]) {
+    presetIndex = 0;
+  } else if ([resolutionPreset isEqualToString:@"medium"]) {
+    presetIndex = 2;
+  } else {
+    NSAssert([resolutionPreset isEqualToString:@"low"], @"Unknown resolution preset %@",
+             resolutionPreset);
+    presetIndex = 3;
+  }
+
+  switch (presetIndex) {
+    case 0:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
+        _previewSize = CGSizeMake(3840, 2160);
+        break;
+      }
+    case 1:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
+        _previewSize = CGSizeMake(1920, 1080);
+        break;
+      }
+    case 2:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
+        _previewSize = CGSizeMake(1280, 720);
+        break;
+      }
+    case 3:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset640x480;
+        _previewSize = CGSizeMake(640, 480);
+        break;
+      }
+    case 4:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset352x288;
+        _previewSize = CGSizeMake(352, 288);
+        break;
+      }
+    default: {
+      NSException *exception = [NSException
+          exceptionWithName:@"NoAvailableCaptureSessionException"
+                     reason:@"No capture session available for current capture session."
+                   userInfo:nil];
+      @throw exception;
+    }
+  }
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
@@ -184,6 +301,65 @@
       @"errorDescription" : @"sample buffer is not ready. Skipping sample"
     });
     return;
+  }
+  if (_isStreamingImages) {
+    if (_imageStreamHandler.eventSink) {
+      CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+      CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+
+      size_t imageWidth = CVPixelBufferGetWidth(pixelBuffer);
+      size_t imageHeight = CVPixelBufferGetHeight(pixelBuffer);
+
+      NSMutableArray *planes = [NSMutableArray array];
+
+      const Boolean isPlanar = CVPixelBufferIsPlanar(pixelBuffer);
+      size_t planeCount;
+      if (isPlanar) {
+        planeCount = CVPixelBufferGetPlaneCount(pixelBuffer);
+      } else {
+        planeCount = 1;
+      }
+
+      for (int i = 0; i < planeCount; i++) {
+        void *planeAddress;
+        size_t bytesPerRow;
+        size_t height;
+        size_t width;
+
+        if (isPlanar) {
+          planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
+          bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
+          height = CVPixelBufferGetHeightOfPlane(pixelBuffer, i);
+          width = CVPixelBufferGetWidthOfPlane(pixelBuffer, i);
+        } else {
+          planeAddress = CVPixelBufferGetBaseAddress(pixelBuffer);
+          bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
+          height = CVPixelBufferGetHeight(pixelBuffer);
+          width = CVPixelBufferGetWidth(pixelBuffer);
+        }
+
+        NSNumber *length = @(bytesPerRow * height);
+        NSData *bytes = [NSData dataWithBytes:planeAddress length:length.unsignedIntegerValue];
+
+        NSMutableDictionary *planeBuffer = [NSMutableDictionary dictionary];
+        planeBuffer[@"bytesPerRow"] = @(bytesPerRow);
+        planeBuffer[@"width"] = @(width);
+        planeBuffer[@"height"] = @(height);
+        planeBuffer[@"bytes"] = [FlutterStandardTypedData typedDataWithBytes:bytes];
+
+        [planes addObject:planeBuffer];
+      }
+
+      NSMutableDictionary *imageBuffer = [NSMutableDictionary dictionary];
+      imageBuffer[@"width"] = [NSNumber numberWithUnsignedLong:imageWidth];
+      imageBuffer[@"height"] = [NSNumber numberWithUnsignedLong:imageHeight];
+      imageBuffer[@"format"] = @(videoFormat);
+      imageBuffer[@"planes"] = planes;
+
+      _imageStreamHandler.eventSink(imageBuffer);
+
+      CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+    }
   }
   if (_isRecording) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
@@ -262,6 +438,7 @@
   if (_latestPixelBuffer) {
     CFRelease(_latestPixelBuffer);
   }
+  [_motionManager stopAccelerometerUpdates];
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
@@ -269,6 +446,7 @@
   while (!OSAtomicCompareAndSwapPtrBarrier(pixelBuffer, nil, (void **)&_latestPixelBuffer)) {
     pixelBuffer = _latestPixelBuffer;
   }
+
   return pixelBuffer;
 }
 
@@ -282,15 +460,14 @@
   _eventSink = events;
   return nil;
 }
+
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result {
   if (!_isRecording) {
     if (![self setupWriterForPath:path]) {
       _eventSink(@{@"event" : @"error", @"errorDescription" : @"Setup Writer Failed"});
       return;
     }
-    [_captureSession stopRunning];
     _isRecording = YES;
-    [_captureSession startRunning];
     result(nil);
   } else {
     _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
@@ -317,7 +494,33 @@
         [NSError errorWithDomain:NSCocoaErrorDomain
                             code:NSURLErrorResourceUnavailable
                         userInfo:@{NSLocalizedDescriptionKey : @"Video is not recording!"}];
-    result([error flutterError]);
+    result(getFlutterError(error));
+  }
+}
+
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
+  if (!_isStreamingImages) {
+    FlutterEventChannel *eventChannel =
+        [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/camera/imageStream"
+                                  binaryMessenger:messenger];
+
+    _imageStreamHandler = [[FLTImageStreamHandler alloc] init];
+    [eventChannel setStreamHandler:_imageStreamHandler];
+
+    _isStreamingImages = YES;
+  } else {
+    _eventSink(
+        @{@"event" : @"error", @"errorDescription" : @"Images from camera are already streaming!"});
+  }
+}
+
+- (void)stopImageStream {
+  if (_isStreamingImages) {
+    _isStreamingImages = NO;
+    _imageStreamHandler = nil;
+  } else {
+    _eventSink(
+        @{@"event" : @"error", @"errorDescription" : @"Images from camera are not streaming!"});
   }
 }
 
@@ -367,9 +570,8 @@
   _audioWriterInput.expectsMediaDataInRealTime = YES;
   [_videoWriter addInput:_videoWriterInput];
   [_videoWriter addInput:_audioWriterInput];
-  dispatch_queue_t queue = dispatch_queue_create("MyQueue", NULL);
-  [_captureVideoOutput setSampleBufferDelegate:self queue:queue];
-  [_audioOutput setSampleBufferDelegate:self queue:queue];
+  [_captureVideoOutput setSampleBufferDelegate:self queue:_dispatchQueue];
+  [_audioOutput setSampleBufferDelegate:self queue:_dispatchQueue];
 
   return YES;
 }
@@ -409,7 +611,9 @@
 @property(readonly, nonatomic) FLTCam *camera;
 @end
 
-@implementation CameraPlugin
+@implementation CameraPlugin {
+  dispatch_queue_t _dispatchQueue;
+}
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/camera"
@@ -429,12 +633,18 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"init" isEqualToString:call.method]) {
-    if (_camera) {
-      [_camera close];
-    }
-    result(nil);
-  } else if ([@"availableCameras" isEqualToString:call.method]) {
+  if (_dispatchQueue == nil) {
+    _dispatchQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
+  }
+
+  // Invoke the plugin on another dispatch queue to avoid blocking the UI.
+  dispatch_async(_dispatchQueue, ^{
+    [self handleMethodCallAsync:call result:result];
+  });
+}
+
+- (void)handleMethodCallAsync:(FlutterMethodCall *)call result:(FlutterResult)result {
+  if ([@"availableCameras" isEqualToString:call.method]) {
     AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
         discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
                               mediaType:AVMediaTypeVideo
@@ -458,6 +668,7 @@
       [reply addObject:@{
         @"name" : [device uniqueID],
         @"lensFacing" : lensFacing,
+        @"sensorOrientation" : @90,
       }];
     }
     result(reply);
@@ -467,9 +678,10 @@
     NSError *error;
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
+                                       dispatchQueue:_dispatchQueue
                                                error:&error];
     if (error) {
-      result([error flutterError]);
+      result(getFlutterError(error));
     } else {
       if (_camera) {
         [_camera close];
@@ -495,6 +707,12 @@
       });
       [cam start];
     }
+  } else if ([@"startImageStream" isEqualToString:call.method]) {
+    [_camera startImageStreamWithMessenger:_messenger];
+    result(nil);
+  } else if ([@"stopImageStream" isEqualToString:call.method]) {
+    [_camera stopImageStream];
+    result(nil);
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
@@ -504,6 +722,10 @@
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_camera close];
+      _dispatchQueue = nil;
+      result(nil);
+    } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
+      [_camera setUpCaptureSessionForAudio];
       result(nil);
     } else if ([@"startVideoRecording" isEqualToString:call.method]) {
       [_camera startVideoRecordingAtPath:call.arguments[@"filePath"] result:result];

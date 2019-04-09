@@ -4,10 +4,9 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart';
-
-import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 /// Firebase Analytics API.
 class FirebaseAnalytics {
@@ -55,10 +54,27 @@ class FirebaseAnalytics {
           'Prefix "$kReservedPrefix" is reserved and cannot be used.');
     }
 
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('logEvent', <String, dynamic>{
       'name': name,
       'parameters': parameters,
     });
+  }
+
+  /// Sets whether analytics collection is enabled for this app on this device.
+  ///
+  /// This setting is persisted across app sessions. By default it is enabled.
+  Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
+    if (enabled == null) {
+      throw ArgumentError.notNull('enabled');
+    }
+
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod('setAnalyticsCollectionEnabled', enabled);
   }
 
   /// Sets the user ID property.
@@ -67,6 +83,9 @@ class FirebaseAnalytics {
   ///
   /// [1]: https://www.google.com/policies/privacy/
   Future<void> setUserId(String id) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('setUserId', id);
   }
 
@@ -94,6 +113,9 @@ class FirebaseAnalytics {
       throw ArgumentError.notNull('screenName');
     }
 
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('setCurrentScreen', <String, String>{
       'screenName': screenName,
       'screenClassOverride': screenClassOverride,
@@ -128,10 +150,21 @@ class FirebaseAnalytics {
     if (name.startsWith('firebase_'))
       throw ArgumentError.value(name, 'name', '"firebase_" prefix is reserved');
 
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('setUserProperty', <String, String>{
       'name': name,
       'value': value,
     });
+  }
+
+  /// Clears all analytics data for this app from the device and resets the app instance id.
+  Future<void> resetAnalyticsData() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod('resetAnalyticsData');
   }
 
   /// Logs the standard `add_payment_info` event.
@@ -437,8 +470,13 @@ class FirebaseAnalytics {
   /// has logged in.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#LOGIN
-  Future<void> logLogin() {
-    return logEvent(name: 'login');
+  Future<void> logLogin({String loginMethod}) {
+    return logEvent(
+      name: 'login',
+      parameters: filterOutNulls(<String, dynamic>{
+        _METHOD: loginMethod,
+      }),
+    );
   }
 
   /// Logs the standard `post_score` event.
@@ -782,11 +820,16 @@ class FirebaseAnalyticsAndroid {
   /// Sets whether analytics collection is enabled for this app on this device.
   ///
   /// This setting is persisted across app sessions. By default it is enabled.
+  /// Deprecated: Use [FirebaseAnalytics.setAnalyticsCollectionEnabled] instead.
+  @deprecated
   Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
     if (enabled == null) {
       throw ArgumentError.notNull('enabled');
     }
 
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('setAnalyticsCollectionEnabled', enabled);
   }
 
@@ -798,6 +841,9 @@ class FirebaseAnalyticsAndroid {
       throw ArgumentError.notNull('milliseconds');
     }
 
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('setMinimumSessionDuration', milliseconds);
   }
 
@@ -809,6 +855,9 @@ class FirebaseAnalyticsAndroid {
       throw ArgumentError.notNull('milliseconds');
     }
 
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('setSessionTimeoutDuration', milliseconds);
   }
 }

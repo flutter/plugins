@@ -8,6 +8,8 @@ A Flutter plugin for iOS and Android allowing access to the device cameras.
 
 * Display live camera preview in a widget.
 * Snapshots can be captured and saved to a file.
+* Record video.
+* Add access to the image stream from Dart.
 
 ## Installation
 
