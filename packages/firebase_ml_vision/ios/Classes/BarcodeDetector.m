@@ -94,8 +94,8 @@ NSDictionary *visionBarcodeSMSToDictionary(FIRVisionBarcodeSMS *sms) {
 
 NSDictionary *visionBarcodeURLToDictionary(FIRVisionBarcodeURLBookmark *url) {
   return @{
-    @"title" : url.title,
-    @"url" : url.url,
+    @"title" : url.title ? url.title : [NSNull null],
+    @"url" : url.url ? url.url : [NSNull null],
   };
 }
 

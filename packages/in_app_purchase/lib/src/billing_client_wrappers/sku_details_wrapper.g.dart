@@ -20,46 +20,41 @@ SkuDetailsWrapper _$SkuDetailsWrapperFromJson(Map json) {
       sku: json['sku'] as String,
       subscriptionPeriod: json['subscriptionPeriod'] as String,
       title: json['title'] as String,
-      type: _$enumDecode(_$SkuTypeEnumMap, json['type']),
+      type: const SkuTypeConverter().fromJson(json['type'] as String),
       isRewarded: json['isRewarded'] as bool);
 }
 
-T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
-  if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return enumValues.entries
-      .singleWhere((e) => e.value == source,
-          orElse: () => throw ArgumentError(
-              '`$source` is not one of the supported values: '
-              '${enumValues.values.join(', ')}'))
-      .key;
-}
-
-const _$SkuTypeEnumMap = <SkuType, dynamic>{
-  SkuType.inapp: 'inapp',
-  SkuType.subs: 'subs'
-};
+Map<String, dynamic> _$SkuDetailsWrapperToJson(SkuDetailsWrapper instance) =>
+    <String, dynamic>{
+      'description': instance.description,
+      'freeTrialPeriod': instance.freeTrialPeriod,
+      'introductoryPrice': instance.introductoryPrice,
+      'introductoryPriceMicros': instance.introductoryPriceMicros,
+      'introductoryPriceCycles': instance.introductoryPriceCycles,
+      'introductoryPricePeriod': instance.introductoryPricePeriod,
+      'price': instance.price,
+      'priceAmountMicros': instance.priceAmountMicros,
+      'priceCurrencyCode': instance.priceCurrencyCode,
+      'sku': instance.sku,
+      'subscriptionPeriod': instance.subscriptionPeriod,
+      'title': instance.title,
+      'type': const SkuTypeConverter().toJson(instance.type),
+      'isRewarded': instance.isRewarded
+    };
 
 SkuDetailsResponseWrapper _$SkuDetailsResponseWrapperFromJson(Map json) {
   return SkuDetailsResponseWrapper(
-      responseCode:
-          _$enumDecode(_$BillingResponseEnumMap, json['responseCode']),
+      responseCode: const BillingResponseConverter()
+          .fromJson(json['responseCode'] as int),
       skuDetailsList: (json['skuDetailsList'] as List)
           .map((e) => SkuDetailsWrapper.fromJson(e as Map))
           .toList());
 }
 
-const _$BillingResponseEnumMap = <BillingResponse, dynamic>{
-  BillingResponse.featureNotSupported: -2,
-  BillingResponse.ok: 0,
-  BillingResponse.userCanceled: 1,
-  BillingResponse.serviceUnavailable: 2,
-  BillingResponse.billingUnavailable: 3,
-  BillingResponse.itemUnavailable: 4,
-  BillingResponse.developerError: 5,
-  BillingResponse.error: 6,
-  BillingResponse.itemAlreadyOwned: 7,
-  BillingResponse.itemNotOwned: 8
-};
+Map<String, dynamic> _$SkuDetailsResponseWrapperToJson(
+        SkuDetailsResponseWrapper instance) =>
+    <String, dynamic>{
+      'responseCode':
+          const BillingResponseConverter().toJson(instance.responseCode),
+      'skuDetailsList': instance.skuDetailsList
+    };

@@ -77,6 +77,24 @@ class LatLngBounds {
     return <dynamic>[southwest._toJson(), northeast._toJson()];
   }
 
+  /// Returns whether this rectangle contains the given [LatLng].
+  bool contains(LatLng point) {
+    return _containsLatitude(point.latitude) &&
+        _containsLongitude(point.longitude);
+  }
+
+  bool _containsLatitude(double lat) {
+    return (southwest.latitude <= lat) && (lat <= northeast.latitude);
+  }
+
+  bool _containsLongitude(double lng) {
+    if (southwest.longitude <= northeast.longitude) {
+      return southwest.longitude <= lng && lng <= northeast.longitude;
+    } else {
+      return southwest.longitude <= lng || lng <= northeast.longitude;
+    }
+  }
+
   @visibleForTesting
   static LatLngBounds fromList(dynamic json) {
     if (json == null) {

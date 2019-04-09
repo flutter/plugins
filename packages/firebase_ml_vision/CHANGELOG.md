@@ -1,3 +1,36 @@
+## 0.7.0
+
+* **Breaking Change** Unified and enhanced on-device and cloud image-labeling API.
+  `iOS` now requires minimum deployment target of 9.0. Add `platform :ios, '9.0'` in your `Podfile`.
+  Updated to latest version of `Firebase/MLVision` on `iOS`. Please run `pod update` in directory containing your `iOS` project `Podfile`.
+  `Label` renamed to `ImageLabel`.
+  `LabelDetector` renamed to `ImageLabeler`.
+  Removed `CloudLabelDetector` and replaced it with a cloud `ImageLabeler`.
+
+## 0.6.0+2
+
+* Update README.md
+* Fix crash when receiving barcode urls on iOS.
+
+## 0.6.0+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.6.0
+
+* **Breaking Change** Removed on-device model dependencies from plugin.
+  `Android` now requires adding the on-device label detector dependency manually.
+  `iOS` now requires adding the on-device barcode/face/label/text detector dependencies manually.
+  See the `README.md` for more details. https://pub.dartlang.org/packages/firebase_ml_vision#-readme-tab-
+
+## 0.5.1+2
+
+* Fixes bug where image file needs to be rotated.
+
+## 0.5.1+1
+
+* Remove categories.
+
 ## 0.5.1
 
 * iOS now handles non-planar buffers from `FirebaseVisionImage.fromBytes()`.

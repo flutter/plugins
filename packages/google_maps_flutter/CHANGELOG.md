@@ -1,3 +1,63 @@
+## 0.5.4
+
+* Add method getVisibleRegion for get the latlng bounds of the visible map area.
+
+## 0.5.3
+
+* Added support setting marker icons from bytes.
+
+## 0.5.2
+
+* Added onTap for callback for GoogleMap.
+
+## 0.5.1
+
+* Update Android gradle version.
+* Added infrastructure to write integration tests.
+
+## 0.5.0
+
+* Add a key parameter to the GoogleMap widget.
+
+## 0.4.0
+
+* Change events are call backs on GoogleMap widget.
+* GoogleMapController no longer handles change events.
+* trackCameraPosition is inferred from GoogleMap.onCameraMove being set.
+
+## 0.3.0+3
+
+* Update Android play-services-maps to 16.1.0
+
+## 0.3.0+2
+
+* Address an issue on iOS where icons were not loading.
+* Add apache http library required false for Android.
+
+## 0.3.0+1
+
+* Add NSNull Checks for markers controller in iOS.
+* Also address an issue where initial markers are set before initialization.
+
+## 0.3.0
+
+* **Breaking change**. Changed the Marker API to be
+  widget based, it was controller based. Also changed the
+  example app to account for the same.
+
+## 0.2.0+6
+
+* Updated the sample app in README.md.
+
+## 0.2.0+5
+
+* Skip the Gradle Android permissions lint for MyLocation (https://github.com/flutter/flutter/issues/28339)
+* Suppress unchecked cast warning for the PlatformViewFactory creation parameters.
+
+## 0.2.0+4
+
+* Fixed a crash when the plugin is registered by a background FlutterView.
+
 ## 0.2.0+3
 
 * Fixed a memory leak on Android - the map was not properly disposed.
