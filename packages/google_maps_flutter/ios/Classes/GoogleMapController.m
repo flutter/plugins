@@ -419,79 +419,11 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   }
   NSNumber* myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
-    [sink setMyLocationEnabled:toBool(myLocationEnabled)];
+    [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
   }
   id mapStyle = data[@"mapStyle"];
-  if (mapStyle) {
-    NSString* styleString = mapStyle;
-    [sink setMapStyle:(styleString)];
-  }
-}
-
-static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
-                                   NSObject<FlutterPluginRegistrar>* registrar) {
-  NSDictionary* data = json;
-  id alpha = data[@"alpha"];
-  if (alpha) {
-    [sink setAlpha:toFloat(alpha)];
-  }
-  id anchor = data[@"anchor"];
-  if (anchor) {
-    [sink setAnchor:toPoint(anchor)];
-  }
-  id draggable = data[@"draggable"];
-  if (draggable) {
-    [sink setDraggable:toBool(draggable)];
-  }
-  id icon = data[@"icon"];
-  if (icon) {
-    NSArray* iconData = icon;
-    UIImage* image;
-    if ([iconData[0] isEqualToString:@"defaultMarker"]) {
-      CGFloat hue = (iconData.count == 1) ? 0.0f : toDouble(iconData[1]);
-      image = [GMSMarker markerImageWithColor:[UIColor colorWithHue:hue / 360.0
-                                                         saturation:1.0
-                                                         brightness:0.7
-                                                              alpha:1.0]];
-    } else if ([iconData[0] isEqualToString:@"fromAsset"]) {
-      if (iconData.count == 2) {
-        image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
-      } else {
-        image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]
-                                                     fromPackage:iconData[2]]];
-      }
+    if (mapStyle) {
+      NSString* styleString = mapStyle;
+      [sink setMapStyle:(styleString)];
     }
-    [sink setIcon:image];
-  }
-  id flat = data[@"flat"];
-  if (flat) {
-    [sink setFlat:toBool(flat)];
-  }
-  id infoWindowAnchor = data[@"infoWindowAnchor"];
-  if (infoWindowAnchor) {
-    [sink setInfoWindowAnchor:toPoint(infoWindowAnchor)];
-  }
-  id infoWindowText = data[@"infoWindowText"];
-  if (infoWindowText) {
-    NSArray* infoWindowTextData = infoWindowText;
-    NSString* title = (infoWindowTextData[0] == [NSNull null]) ? nil : infoWindowTextData[0];
-    NSString* snippet = (infoWindowTextData[1] == [NSNull null]) ? nil : infoWindowTextData[1];
-    [sink setInfoWindowTitle:title snippet:snippet];
-  }
-  id position = data[@"position"];
-  if (position) {
-    [sink setPosition:toLocation(position)];
-  }
-  id rotation = data[@"rotation"];
-  if (rotation) {
-    [sink setRotation:toDouble(rotation)];
-  }
-  id visible = data[@"visible"];
-  if (visible) {
-    [sink setVisible:toBool(visible)];
-  }
-  id zIndex = data[@"zIndex"];
-  if (zIndex) {
-    [sink setZIndex:toInt(zIndex)];
-  }
 }
