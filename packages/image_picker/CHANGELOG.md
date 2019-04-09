@@ -1,3 +1,6 @@
+## 0.5.3
+* Fixed incorrect path being returned from GooglePhotos
+
 ## 0.5.2
 
 * Check iOS camera authorizationStatus and return an error, if the access was
