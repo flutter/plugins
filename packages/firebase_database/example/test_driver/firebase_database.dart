@@ -20,8 +20,8 @@ void main() {
         mutableData.value = (mutableData.value ?? 0) + 1;
         return mutableData;
       });
-      assert(transactionResult.committed, true);
-      assert(transactionResult.dataSnapshot.value > value, true);
+      expect(transactionResult.committed, true);
+      expect(transactionResult.dataSnapshot.value > value, true);
     });
   });
 }
