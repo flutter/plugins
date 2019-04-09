@@ -451,15 +451,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         }
       case PhoneAuthProvider.PROVIDER_ID:
         {
-<<<<<<< HEAD
-          String verificationId = data.get("verificationId");
-          String smsCode = data.get("smsCode");
-          credential = PhoneAuthProvider.getCredential(verificationId, smsCode);
-=======
           String accessToken = data.get("verificationId");
           String smsCode = data.get("smsCode");
           credential = PhoneAuthProvider.getCredential(accessToken, smsCode);
->>>>>>> origin/master
           break;
         }
       default:
