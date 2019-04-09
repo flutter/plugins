@@ -178,7 +178,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
                 "data": <String, String>{
                   "id": "2",
                   "status": "out of stock",
-                }
+                },
               }),
           tooltip: 'Simulate Message',
           child: const Icon(Icons.message),
