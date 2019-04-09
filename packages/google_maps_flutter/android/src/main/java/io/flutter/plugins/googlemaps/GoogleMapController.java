@@ -186,14 +186,14 @@ final class GoogleMapController
       case "map#update":
         {
           Convert.interpretGoogleMapOptions(call.argument("options"), this);
-          result.success(Convert.toJson(getCameraPosition()));
+          result.success(Convert.latlngBoundsToJson(getCameraPosition()));
           break;
         }
       case "map#getVisibleRegion":
         {
           if (googleMap != null) {
             LatLngBounds latLngBounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
-            result.success(Convert.toJson(latLngBounds));
+            result.success(Convert.latlngBoundsToJson(latLngBounds));
           } else {
             result.error(
                 "GoogleMap uninitialized",
@@ -304,7 +304,7 @@ final class GoogleMapController
       return;
     }
     final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("position", Convert.toJson(googleMap.getCameraPosition()));
+    arguments.put("position", Convert.latlngBoundsToJson(googleMap.getCameraPosition()));
     methodChannel.invokeMethod("camera#onMove", arguments);
   }
 

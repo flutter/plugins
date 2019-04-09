@@ -134,7 +134,7 @@ class Convert {
     return ((Number) o).intValue();
   }
 
-  static Object toJson(CameraPosition position) {
+  static Object latlngBoundsToJson(CameraPosition position) {
     if (position == null) {
       return null;
     }
@@ -168,10 +168,10 @@ class Convert {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 
-  public static Object toJson(LatLngBounds latLngBounds) {
+  public static Object latlngBoundsToJson(LatLngBounds latLngBounds) {
     final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("southwest", toJson(latLngBounds.southwest));
-    arguments.put("northeast", toJson(latLngBounds.northeast));
+    arguments.put("southwest", latLngToJson(latLngBounds.southwest));
+    arguments.put("northeast", latLngToJson(latLngBounds.northeast));
     return arguments;
   }
 

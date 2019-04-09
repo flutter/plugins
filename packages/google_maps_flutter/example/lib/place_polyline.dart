@@ -4,7 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class PlacePolylinePage extends Page {
-  PlacePolylinePage() : super(const Icon(Icons.map), 'Place polyline');
+  PlacePolylinePage() : super(const Icon(Icons.linear_scale), 'Place polyline');
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +89,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
       if (polylines.containsKey(selectedPolyline)) {
         polylines.remove(selectedPolyline);
       }
+      selectedPolyline = null;
     });
   }
 
