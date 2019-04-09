@@ -119,7 +119,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     });
   }
 
-  Future<void> _toggleGeodesic() async {
+  void _toggleGeodesic() {
     final Polyline polyline = polylines[selectedPolyline];
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
@@ -128,7 +128,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     });
   }
 
-  Future<void> _toggleVisible() async {
+  void _toggleVisible() {
     final Polyline polyline = polylines[selectedPolyline];
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
@@ -137,7 +137,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     });
   }
 
-  Future<void> _changeColor() async {
+  void _changeColor() {
     final Polyline polyline = polylines[selectedPolyline];
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
@@ -146,7 +146,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     });
   }
 
-  Future<void> _changeWidth() async {
+  void _changeWidth() {
     final Polyline polyline = polylines[selectedPolyline];
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
@@ -155,7 +155,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     });
   }
 
-  Future<void> _changeJointType() async {
+  void _changeJointType() {
     final Polyline polyline = polylines[selectedPolyline];
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
@@ -164,7 +164,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     });
   }
 
-  Future<void> _changeEndCap() async {
+  void _changeEndCap() {
     final Polyline polyline = polylines[selectedPolyline];
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
@@ -173,7 +173,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     });
   }
 
-  Future<void> _changeStartCap() async {
+  void _changeStartCap() {
     final Polyline polyline = polylines[selectedPolyline];
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
@@ -182,7 +182,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     });
   }
 
-  Future<void> _changePattern() async {
+  void _changePattern() {
     final Polyline polyline = polylines[selectedPolyline];
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
@@ -292,10 +292,11 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
 
   List<LatLng> _createPoints() {
     final List<LatLng> points = <LatLng>[];
-    points.add(_createLatLng(51.4816, -3.1791));
-    points.add(_createLatLng(53.0430, -2.9925));
-    points.add(_createLatLng(53.1396, -4.2739));
-    points.add(_createLatLng(52.4153, -4.0829));
+    final double offset = _polylineIdCounter.ceilToDouble();
+    points.add(_createLatLng(51.4816 + offset, -3.1791));
+    points.add(_createLatLng(53.0430 + offset, -2.9925));
+    points.add(_createLatLng(53.1396 + offset, -4.2739));
+    points.add(_createLatLng(52.4153 + offset, -4.0829));
     return points;
   }
 
