@@ -1,5 +1,6 @@
 ## 0.5.3
-* Fixed incorrect path being returned from GooglePhotos
+
+* Fixed incorrect path being returned from Google Photos on Android.
 
 ## 0.5.2
 
