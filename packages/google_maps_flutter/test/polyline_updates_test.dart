@@ -193,7 +193,7 @@ void main() {
     },
     // The test is currently broken due to a bug (we're updating all polylines
     // instead of just the ones that were changed):
-    // https://github.com/flutter/flutter/issues/27823
+    // https://github.com/flutter/flutter/issues/30764
     // TODO(amirh): enable this test when the issue is fixed.
     skip: true,
   );
