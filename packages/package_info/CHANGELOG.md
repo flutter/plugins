@@ -1,3 +1,7 @@
+## 0.4.0+3
+
+* Added resetPackageInfo method to reset the static variable during application testing
+
 ## 0.4.0+2
 
 * Android: Using new method for BuildNumber in new android versions
