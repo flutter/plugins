@@ -1,3 +1,7 @@
+## 0.5.5
+
+* Enable iOS accessibility.
+
 ## 0.5.4
 
 * Add method getVisibleRegion for get the latlng bounds of the visible map area.
