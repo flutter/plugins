@@ -39,7 +39,7 @@ class ProductDetails {
 
   /// Points back to the `BillingClient1`'s [SkuDetailsWrapper] object that generated this [ProductDetails] object.
   ///
-  /// This is null on Android.
+  /// This is null on iOS.
   final SkuDetailsWrapper skuDetail;
 }
 

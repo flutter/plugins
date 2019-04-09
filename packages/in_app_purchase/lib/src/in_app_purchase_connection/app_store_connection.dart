@@ -5,10 +5,13 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
 
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
+import 'package:in_app_purchase/src/store_kit_wrappers/enum_converters.dart';
+import '../../billing_client_wrappers.dart';
 
 /// An [InAppPurchaseConnection] that wraps StoreKit.
 ///
@@ -20,6 +23,9 @@ class AppStoreConnection implements InAppPurchaseConnection {
   static SKPaymentQueueWrapper _skPaymentQueueWrapper;
   static _TransactionObserver _observer;
 
+  Stream<List<PurchaseDetails>> get purchaseUpdatedStream =>
+      _observer.purchaseUpdatedController.stream;
+
   static SKTransactionObserverWrapper get observer => _observer;
 
   static AppStoreConnection _getOrCreateInstance() {
@@ -29,7 +35,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
     _instance = AppStoreConnection();
     _skPaymentQueueWrapper = SKPaymentQueueWrapper();
-    _observer = _TransactionObserver();
+    _observer = _TransactionObserver(StreamController.broadcast());
     _skPaymentQueueWrapper.setTransactionObserver(observer);
     return _instance;
   }
@@ -38,29 +44,61 @@ class AppStoreConnection implements InAppPurchaseConnection {
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
 
   @override
+  void buyNonConsumable({@required PurchaseParam purchaseParam}) {
+    _skPaymentQueueWrapper.addPayment(SKPaymentWrapper(
+        productIdentifier: purchaseParam.productDetails.id,
+        quantity: 1,
+        applicationUsername: purchaseParam.applicationUserName,
+        simulatesAskToBuyInSandbox: purchaseParam.sandboxTesting,
+        requestData: null));
+  }
+
+  @override
+  void buyConsumable(
+      {@required PurchaseParam purchaseParam, bool autoConsume = true}) {
+    assert(autoConsume == true, 'On iOS, we should always auto consume');
+    buyNonConsumable(purchaseParam: purchaseParam);
+  }
+
+  @override
+  Future<void> completePurchase(PurchaseDetails purchase) {
+    return _skPaymentQueueWrapper
+        .finishTransaction(purchase.skPaymentTransaction);
+  }
+
+  @override
+  Future<BillingResponse> consumePurchase(PurchaseDetails purchase) {
+    throw UnsupportedError('consume purchase is not available on Android');
+  }
+
+  @override
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
     PurchaseError error;
     List<PurchaseDetails> pastPurchases = [];
 
     try {
-      String receiptData;
-      try {
-        receiptData = await SKReceiptManager.retrieveReceiptData();
-      } catch (e) {
-        receiptData = null;
-      }
+      String receiptData = await _observer.getReceiptData();
       final List<SKPaymentTransactionWrapper> restoredTransactions =
           await _observer.getRestoredTransactions(
               queue: _skPaymentQueueWrapper,
               applicationUserName: applicationUserName);
       _observer.cleanUpRestoredTransactions();
-      if (restoredTransactions != null) {
-        pastPurchases = restoredTransactions
-            .map((SKPaymentTransactionWrapper wrapper) =>
-                wrapper.toPurchaseDetails(receiptData))
-            .toList();
-      }
+      pastPurchases =
+          restoredTransactions.map((SKPaymentTransactionWrapper transaction) {
+        assert(transaction.transactionState ==
+            SKPaymentTransactionStateWrapper.restored);
+        return transaction.toPurchaseDetails(receiptData)
+          ..status = SKTransactionStatusConverter()
+              .toPurchaseStatus(transaction.transactionState)
+          ..error = transaction.error != null
+              ? PurchaseError(
+                  source: PurchaseSource.AppStore,
+                  code: kPurchaseErrorCode,
+                  message: transaction.error.userInfo,
+                )
+              : null;
+      }).toList();
     } catch (e) {
       error = PurchaseError(
           source: PurchaseSource.AppStore, code: e.domain, message: e.userInfo);
@@ -84,6 +122,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
   /// This method only returns [ProductDetailsResponse].
   /// To get detailed Store Kit product list, use [SkProductResponseWrapper.startProductRequest]
   /// to get the [SKProductResponseWrapper].
+  @override
   Future<ProductDetailsResponse> queryProductDetails(
       Set<String> identifiers) async {
     final SKRequestMaker requestMaker = SKRequestMaker();
@@ -102,8 +141,13 @@ class AppStoreConnection implements InAppPurchaseConnection {
 }
 
 class _TransactionObserver implements SKTransactionObserverWrapper {
+  final StreamController<List<PurchaseDetails>> purchaseUpdatedController;
+
   Completer<List<SKPaymentTransactionWrapper>> _restoreCompleter;
   List<SKPaymentTransactionWrapper> _restoredTransactions;
+  String _receiptData;
+
+  _TransactionObserver(this.purchaseUpdatedController);
 
   Future<List<SKPaymentTransactionWrapper>> getRestoredTransactions(
       {@required SKPaymentQueueWrapper queue, String applicationUserName}) {
@@ -118,22 +162,39 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     _restoreCompleter = null;
   }
 
-  /// Triggered when any transactions are updated.
-  void updatedTransactions({List<SKPaymentTransactionWrapper> transactions}) {
+  void updatedTransactions(
+      {List<SKPaymentTransactionWrapper> transactions}) async {
     if (_restoreCompleter != null) {
       if (_restoredTransactions == null) {
         _restoredTransactions = [];
       }
-      _restoredTransactions.addAll(transactions
-          .where((SKPaymentTransactionWrapper wrapper) {
+      _restoredTransactions
+          .addAll(transactions.where((SKPaymentTransactionWrapper wrapper) {
         return wrapper.transactionState ==
             SKPaymentTransactionStateWrapper.restored;
-      }).map((SKPaymentTransactionWrapper wrapper) =>
-              wrapper.originalTransaction));
+      }).map((SKPaymentTransactionWrapper wrapper) => wrapper));
+      return;
     }
+
+    String receiptData = await getReceiptData();
+    purchaseUpdatedController
+        .add(transactions.map((SKPaymentTransactionWrapper transaction) {
+      PurchaseDetails purchaseDetails = transaction.toPurchaseDetails(
+        receiptData,
+      )
+        ..status = SKTransactionStatusConverter()
+            .toPurchaseStatus(transaction.transactionState)
+        ..error = transaction.error != null
+            ? PurchaseError(
+                source: PurchaseSource.AppStore,
+                code: kPurchaseErrorCode,
+                message: transaction.error.userInfo,
+              )
+            : null;
+      return purchaseDetails;
+    }).toList());
   }
 
-  /// Triggered when any transactions are removed from the payment queue.
   void removedTransactions({List<SKPaymentTransactionWrapper> transactions}) {}
 
   /// Triggered when there is an error while restoring transactions.
@@ -141,23 +202,24 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     _restoreCompleter.completeError(error);
   }
 
-  /// Triggered when payment queue has finished sending restored transactions.
   void paymentQueueRestoreCompletedTransactionsFinished() {
-    _restoreCompleter.complete(_restoredTransactions);
+    _restoreCompleter.complete(_restoredTransactions ?? []);
   }
 
-  /// Triggered when any download objects are updated.
   void updatedDownloads({List<SKDownloadWrapper> downloads}) {}
 
-  /// Triggered when a user initiated an in-app purchase from App Store.
-  ///
-  /// Return `true` to continue the transaction in your app. If you have multiple [SKTransactionObserverWrapper]s, the transaction
-  /// will continue if one [SKTransactionObserverWrapper] has [shouldAddStorePayment] returning `true`.
-  /// Return `false` to defer or cancel the transaction. For example, you may need to defer a transaction if the user is in the middle of onboarding.
-  /// You can also continue the transaction later by calling
-  /// [addPayment] with the [SKPaymentWrapper] object you get from this method.
   bool shouldAddStorePayment(
       {SKPaymentWrapper payment, SKProductWrapper product}) {
+    // In this unified API, we always return true to keep it consistent with the behavior on Google Play.
     return true;
+  }
+
+  Future<String> getReceiptData() async {
+    try {
+      _receiptData = await SKReceiptManager.retrieveReceiptData();
+    } catch (e) {
+      _receiptData = null;
+    }
+    return _receiptData;
   }
 }

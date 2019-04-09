@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/in_app_purchase_connection.dart';
 import 'sk_test_stub_objects.dart';
 
 void main() {
@@ -138,7 +138,7 @@ void main() {
       PurchaseDetails details =
           dummyTransaction.toPurchaseDetails('receipt data');
       expect(dummyTransaction.transactionIdentifier, details.purchaseID);
-      expect(dummyTransaction.payment.productIdentifier, details.productId);
+      expect(dummyTransaction.payment.productIdentifier, details.productID);
       expect((dummyTransaction.transactionTimeStamp * 1000).toInt().toString(),
           details.transactionDate);
       expect(details.verificationData.localVerificationData, 'receipt data');
