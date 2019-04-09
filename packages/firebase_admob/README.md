@@ -143,7 +143,7 @@ When the AdMob SDK decides it's time to grant an in-app reward, it does so via
 the `RewardedVideoAdEvent.rewarded` event:
 ```dart
 RewardedVideoAd.instance.listener =
-    (RewardedVideoAdEvent event, [String rewardType, int rewardAmount]) {
+    (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
   if (event == RewardedVideoAdEvent.rewarded) {
     setState(() {
       // Here, apps should update state to reflect the reward.

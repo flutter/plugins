@@ -56,6 +56,7 @@ import java.util.List;
     info.put("signature", purchase.getSignature());
     info.put("sku", purchase.getSku());
     info.put("isAutoRenewing", purchase.isAutoRenewing());
+    info.put("originalJson", purchase.getOriginalJson());
     return info;
   }
 

@@ -4,10 +4,9 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart';
-
-import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 /// Firebase Analytics API.
 class FirebaseAnalytics {
@@ -158,6 +157,14 @@ class FirebaseAnalytics {
       'name': name,
       'value': value,
     });
+  }
+
+  /// Clears all analytics data for this app from the device and resets the app instance id.
+  Future<void> resetAnalyticsData() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod('resetAnalyticsData');
   }
 
   /// Logs the standard `add_payment_info` event.
@@ -463,8 +470,13 @@ class FirebaseAnalytics {
   /// has logged in.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#LOGIN
-  Future<void> logLogin() {
-    return logEvent(name: 'login');
+  Future<void> logLogin({String loginMethod}) {
+    return logEvent(
+      name: 'login',
+      parameters: filterOutNulls(<String, dynamic>{
+        _METHOD: loginMethod,
+      }),
+    );
   }
 
   /// Logs the standard `post_score` event.

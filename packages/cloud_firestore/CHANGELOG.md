@@ -1,3 +1,49 @@
+## 0.9.13
+
+* Remove Gradle BoM to avoid Gradle version issues.
+
+## 0.9.12
+
+* Move Android dependency to Gradle BoM to help maintain compatibility
+  with other FlutterFire plugins.
+
+## 0.9.11
+
+* Bump Android dependencies to latest.
+
+# 0.9.10
+
+* Support for cloud_firestore running in the background on Android.
+* Fixed a bug in cleanup for DocumentReference.snapshots().
+* Additional integration testing.
+
+## 0.9.9
+
+* Remove `invokeMapMethod` calls to prevent crash.
+
+## 0.9.8
+
+* Add metadata field to DocumentSnapshot.
+
+## 0.9.7+2
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
+## 0.9.7+1
+
+* Update README with example of getting a document.
+
+## 0.9.7
+
+* Fixes a NoSuchMethodError when using getDocuments on iOS (introduced in 0.9.6).
+* Adds a driver test for getDocuments.
+
+## 0.9.6
+
+* On iOS, update null checking to match the recommended pattern usage in the Firebase documentation.
+* Fixes a case where snapshot errors might result in plugin crash.
+
 ## 0.9.5+2
 
 * Fixing PlatformException(Error 0, null, null) which happened when a successful operation was performed.

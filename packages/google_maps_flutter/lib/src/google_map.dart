@@ -6,8 +6,17 @@ part of google_maps_flutter;
 
 typedef void MapCreatedCallback(GoogleMapController controller);
 
+/// Callback that receives updates to the camera position.
+///
+/// This callback is triggered when the platform Google Map
+/// registers a camera movement.
+///
+/// This is used in [GoogleMap.onCameraMove].
+typedef void CameraPositionCallback(CameraPosition position);
+
 class GoogleMap extends StatefulWidget {
   const GoogleMap({
+    Key key,
     @required this.initialCameraPosition,
     this.onMapCreated,
     this.gestureRecognizers,
@@ -19,11 +28,15 @@ class GoogleMap extends StatefulWidget {
     this.scrollGesturesEnabled = true,
     this.zoomGesturesEnabled = true,
     this.tiltGesturesEnabled = true,
-    this.trackCameraPosition = false,
     this.myLocationEnabled = false,
     this.markers,
+    this.onCameraMoveStarted,
+    this.onCameraMove,
+    this.onCameraIdle,
+    this.onTap,
     this.mapStyle,
-  }) : assert(initialCameraPosition != null);
+  })  : assert(initialCameraPosition != null),
+        super(key: key);
 
   final MapCreatedCallback onMapCreated;
 
@@ -56,11 +69,32 @@ class GoogleMap extends StatefulWidget {
   /// True if the map view should respond to tilt gestures.
   final bool tiltGesturesEnabled;
 
-  /// True if the map view should relay camera move events to Flutter.
-  final bool trackCameraPosition;
-
-  // Markers to be placed on the map.
+  /// Markers to be placed on the map.
   final Set<Marker> markers;
+
+  /// Called when the camera starts moving.
+  ///
+  /// This can be initiated by the following:
+  /// 1. Non-gesture animation initiated in response to user actions.
+  ///    For example: zoom buttons, my location button, or marker clicks.
+  /// 2. Programmatically initiated animation.
+  /// 3. Camera motion initiated in response to user gestures on the map.
+  ///    For example: pan, tilt, pinch to zoom, or rotate.
+  final VoidCallback onCameraMoveStarted;
+
+  /// Called repeatedly as the camera continues to move after an
+  /// onCameraMoveStarted call.
+  ///
+  /// This may be called as often as once every frame and should
+  /// not perform expensive operations.
+  final CameraPositionCallback onCameraMove;
+
+  /// Called when camera movement has ended, there are no pending
+  /// animations and the user has stopped interacting with the map.
+  final VoidCallback onCameraIdle;
+
+  /// Called every time a [GoogleMap] is tapped.
+  final ArgumentCallback<LatLng> onTap;
 
   /// True if a "My Location" layer should be shown on the map.
   ///
@@ -88,6 +122,7 @@ class GoogleMap extends StatefulWidget {
   final bool myLocationEnabled;
 
   /// The style to be used for the map. The JSON file can be created here at https://mapstyle.withgoogle.com/
+  ///
   /// Add the json file to the assets folder and link it in pubspec.yaml.
   /// Then you can load the file as string like below
   ///
@@ -218,6 +253,11 @@ class _GoogleMapState extends State<GoogleMap> {
     final MarkerId markerId = MarkerId(markerIdParam);
     _markers[markerId].infoWindow.onTap();
   }
+
+  void onTap(LatLng position) {
+    assert(position != null);
+    widget.onTap(position);
+  }
 }
 
 /// Configuration options for the GoogleMaps user interface.
@@ -248,7 +288,7 @@ class _GoogleMapOptions {
       rotateGesturesEnabled: map.rotateGesturesEnabled,
       scrollGesturesEnabled: map.scrollGesturesEnabled,
       tiltGesturesEnabled: map.tiltGesturesEnabled,
-      trackCameraPosition: map.trackCameraPosition,
+      trackCameraPosition: map.onCameraMove != null,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
       mapStyle: map.mapStyle,

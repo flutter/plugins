@@ -26,6 +26,7 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -33,6 +34,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +52,7 @@ final class GoogleMapController
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
+        GoogleMap.OnMapClickListener,
         PlatformView {
 
   private static final String TAG = "GoogleMapController";
@@ -157,6 +160,7 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
+    googleMap.setOnMapClickListener(this);
     updateMyLocationEnabled();
     markersController.setGoogleMap(googleMap);
     updateInitialMarkers();
@@ -176,6 +180,19 @@ final class GoogleMapController
         {
           Convert.interpretGoogleMapOptions(call.argument("options"), this);
           result.success(Convert.toJson(getCameraPosition()));
+          break;
+        }
+      case "map#getVisibleRegion":
+        {
+          if (googleMap != null) {
+            LatLngBounds latLngBounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
+            result.success(Convert.toJson(latLngBounds));
+          } else {
+            result.error(
+                "GoogleMap uninitialized",
+                "getVisibleRegion called prior to map initialization",
+                null);
+          }
           break;
         }
       case "camera#move":
@@ -202,11 +219,52 @@ final class GoogleMapController
           markersController.changeMarkers((List<Object>) markersToChange);
           Object markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers((List<Object>) markerIdsToRemove);
+          result.success(null);
+          break;
+        }
+      case "map#isCompassEnabled":
+        {
+          result.success(googleMap.getUiSettings().isCompassEnabled());
+          break;
+        }
+      case "map#getMinMaxZoomLevels":
+        {
+          List<Float> zoomLevels = new ArrayList<>(2);
+          zoomLevels.add(googleMap.getMinZoomLevel());
+          zoomLevels.add(googleMap.getMaxZoomLevel());
+          result.success(zoomLevels);
+          break;
+        }
+      case "map#isZoomGesturesEnabled":
+        {
+          result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
+          break;
+        }
+      case "map#isScrollGesturesEnabled":
+        {
+          result.success(googleMap.getUiSettings().isScrollGesturesEnabled());
+          break;
+        }
+      case "map#isTiltGesturesEnabled":
+        {
+          result.success(googleMap.getUiSettings().isTiltGesturesEnabled());
+          break;
+        }
+      case "map#isRotateGesturesEnabled":
+        {
+          result.success(googleMap.getUiSettings().isRotateGesturesEnabled());
           break;
         }
       default:
         result.notImplemented();
     }
+  }
+
+  @Override
+  public void onMapClick(LatLng latLng) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("position", Convert.toJson(latLng));
+    methodChannel.invokeMethod("map#onTap", arguments);
   }
 
   @Override

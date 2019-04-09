@@ -164,6 +164,9 @@ public class CameraPlugin implements MethodCallHandler {
                 cameraManager.getCameraCharacteristics(cameraName);
             details.put("name", cameraName);
             @SuppressWarnings("ConstantConditions")
+            int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+            details.put("sensorOrientation", sensorOrientation);
+
             int lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
             switch (lensFacing) {
               case CameraMetadata.LENS_FACING_FRONT:
@@ -200,6 +203,12 @@ public class CameraPlugin implements MethodCallHandler {
       case "takePicture":
         {
           camera.takePicture((String) call.argument("path"), result);
+          break;
+        }
+      case "prepareForVideoRecording":
+        {
+          // This optimization is not required for Android.
+          result.success(null);
           break;
         }
       case "startVideoRecording":
@@ -680,8 +689,10 @@ public class CameraPlugin implements MethodCallHandler {
                       captureRequestBuilder.build(), null, null);
                   mediaRecorder.start();
                   result.success(null);
-                } catch (CameraAccessException e) {
-                  result.error("cameraAccess", e.getMessage(), null);
+                } catch (CameraAccessException
+                    | IllegalStateException
+                    | IllegalArgumentException e) {
+                  result.error("cameraException", e.getMessage(), null);
                 }
               }
 
@@ -743,7 +754,7 @@ public class CameraPlugin implements MethodCallHandler {
                 captureRequestBuilder.set(
                     CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
                 cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
-              } catch (CameraAccessException e) {
+              } catch (CameraAccessException | IllegalStateException | IllegalArgumentException e) {
                 sendErrorEvent(e.getMessage());
               }
             }
@@ -788,7 +799,7 @@ public class CameraPlugin implements MethodCallHandler {
                 captureRequestBuilder.set(
                     CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
                 cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
-              } catch (CameraAccessException e) {
+              } catch (CameraAccessException | IllegalStateException | IllegalArgumentException e) {
                 sendErrorEvent(e.getMessage());
               }
             }

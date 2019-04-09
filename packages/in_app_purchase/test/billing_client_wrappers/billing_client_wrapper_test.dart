@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
 
 import 'package:in_app_purchase/billing_client_wrappers.dart';
@@ -10,15 +10,17 @@ import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart
 import 'package:in_app_purchase/src/channel.dart';
 import '../stub_in_app_purchase_platform.dart';
 import 'sku_details_wrapper_test.dart';
+import 'purchase_wrapper_test.dart';
 
 void main() {
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
   BillingClient billingClient;
+
   setUpAll(() =>
       channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler));
 
   setUp(() {
-    billingClient = BillingClient();
+    billingClient = BillingClient((PurchasesResultWrapper _) {});
     stubPlatform.reset();
   });
 
@@ -88,7 +90,7 @@ void main() {
       final BillingResponse responseCode = BillingResponse.ok;
       stubPlatform.addResponse(name: queryMethodName, value: <String, dynamic>{
         'responseCode': BillingResponseConverter().toJson(responseCode),
-        'skuDetailsList': <Map<String, dynamic>>[buildSkuMap(dummyWrapper)]
+        'skuDetailsList': <Map<String, dynamic>>[buildSkuMap(dummySkuDetails)]
       });
 
       final SkuDetailsResponseWrapper response = await billingClient
@@ -96,7 +98,7 @@ void main() {
               skuType: SkuType.inapp, skusList: <String>['invalid']);
 
       expect(response.responseCode, equals(responseCode));
-      expect(response.skuDetailsList, contains(dummyWrapper));
+      expect(response.skuDetailsList, contains(dummySkuDetails));
     });
   });
 
@@ -109,11 +111,11 @@ void main() {
       stubPlatform.addResponse(
           name: launchMethodName,
           value: BillingResponseConverter().toJson(sentCode));
-      final SkuDetailsWrapper skuDetails = dummyWrapper;
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
       final String accountId = "hashedAccountId";
 
       final BillingResponse receivedCode = await billingClient
-          .launchBillingFlow(skuDetails: skuDetails, accountId: accountId);
+          .launchBillingFlow(sku: skuDetails.sku, accountId: accountId);
 
       expect(receivedCode, equals(sentCode));
       Map<dynamic, dynamic> arguments =
@@ -127,16 +129,123 @@ void main() {
       stubPlatform.addResponse(
           name: launchMethodName,
           value: BillingResponseConverter().toJson(sentCode));
-      final SkuDetailsWrapper skuDetails = dummyWrapper;
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
 
       final BillingResponse receivedCode =
-          await billingClient.launchBillingFlow(skuDetails: skuDetails);
+          await billingClient.launchBillingFlow(sku: skuDetails.sku);
 
       expect(receivedCode, equals(sentCode));
       Map<dynamic, dynamic> arguments =
           stubPlatform.previousCallMatching(launchMethodName).arguments;
       expect(arguments['sku'], equals(skuDetails.sku));
       expect(arguments['accountId'], isNull);
+    });
+  });
+
+  group('queryPurchases', () {
+    const String queryPurchasesMethodName =
+        'BillingClient#queryPurchases(String)';
+
+    test('serializes and deserializes data', () async {
+      final BillingResponse expectedCode = BillingResponse.ok;
+      final List<PurchaseWrapper> expectedList = <PurchaseWrapper>[
+        dummyPurchase
+      ];
+      stubPlatform
+          .addResponse(name: queryPurchasesMethodName, value: <String, dynamic>{
+        'responseCode': BillingResponseConverter().toJson(expectedCode),
+        'purchasesList': expectedList
+            .map((PurchaseWrapper purchase) => buildPurchaseMap(purchase))
+            .toList(),
+      });
+
+      final PurchasesResultWrapper response =
+          await billingClient.queryPurchases(SkuType.inapp);
+
+      expect(response.responseCode, equals(expectedCode));
+      expect(response.purchasesList, equals(expectedList));
+    });
+
+    test('checks for null params', () async {
+      expect(() => billingClient.queryPurchases(null), throwsAssertionError);
+    });
+
+    test('handles empty purchases', () async {
+      final BillingResponse expectedCode = BillingResponse.userCanceled;
+      stubPlatform
+          .addResponse(name: queryPurchasesMethodName, value: <String, dynamic>{
+        'responseCode': BillingResponseConverter().toJson(expectedCode),
+        'purchasesList': [],
+      });
+
+      final PurchasesResultWrapper response =
+          await billingClient.queryPurchases(SkuType.inapp);
+
+      expect(response.responseCode, equals(expectedCode));
+      expect(response.purchasesList, isEmpty);
+    });
+  });
+
+  group('queryPurchaseHistory', () {
+    const String queryPurchaseHistoryMethodName =
+        'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)';
+
+    test('serializes and deserializes data', () async {
+      final BillingResponse expectedCode = BillingResponse.ok;
+      final List<PurchaseWrapper> expectedList = <PurchaseWrapper>[
+        dummyPurchase
+      ];
+      stubPlatform.addResponse(
+          name: queryPurchaseHistoryMethodName,
+          value: <String, dynamic>{
+            'responseCode': BillingResponseConverter().toJson(expectedCode),
+            'purchasesList': expectedList
+                .map((PurchaseWrapper purchase) => buildPurchaseMap(purchase))
+                .toList(),
+          });
+
+      final PurchasesResultWrapper response =
+          await billingClient.queryPurchaseHistory(SkuType.inapp);
+
+      expect(response.responseCode, equals(expectedCode));
+      expect(response.purchasesList, equals(expectedList));
+    });
+
+    test('checks for null params', () async {
+      expect(
+          () => billingClient.queryPurchaseHistory(null), throwsAssertionError);
+    });
+
+    test('handles empty purchases', () async {
+      final BillingResponse expectedCode = BillingResponse.userCanceled;
+      stubPlatform.addResponse(
+          name: queryPurchaseHistoryMethodName,
+          value: <String, dynamic>{
+            'responseCode': BillingResponseConverter().toJson(expectedCode),
+            'purchasesList': [],
+          });
+
+      final PurchasesResultWrapper response =
+          await billingClient.queryPurchaseHistory(SkuType.inapp);
+
+      expect(response.responseCode, equals(expectedCode));
+      expect(response.purchasesList, isEmpty);
+    });
+  });
+
+  group('consume purchases', () {
+    const String consumeMethodName =
+        'BillingClient#consumeAsync(String, ConsumeResponseListener)';
+    test('consume purchase async success', () async {
+      final BillingResponse expectedCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: consumeMethodName,
+          value: BillingResponseConverter().toJson(expectedCode));
+
+      final BillingResponse responseCode =
+          await billingClient.consumeAsync('dummy token');
+
+      expect(responseCode, equals(expectedCode));
     });
   });
 }
