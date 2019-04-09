@@ -48,8 +48,7 @@ void main() {
       });
       final DocumentSnapshot initialSnapshot = await ref.get();
       expect(initialSnapshot.data['message'], 'testing');
-      final dynamic result =
-          await firestore.runTransaction(
+      final dynamic result = await firestore.runTransaction(
         (Transaction tx) async {
           final DocumentSnapshot snapshot = await tx.get(ref);
           expect(snapshot['message'], 'testing');
