@@ -21,7 +21,7 @@
 - (instancetype)initPolylineWithPath:(GMSMutablePath*)path
                           polylineId:(NSString*)polylineId
                              mapView:(GMSMapView*)mapView;
-- (void)removeMarker;
+- (void)removePolyline;
 @end
 
 @interface FLTPolylinesController : NSObject

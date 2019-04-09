@@ -14,7 +14,6 @@
                              mapView:(GMSMapView*)mapView {
   self = [super init];
   if (self) {
-    GMSMutablePath* path = [GMSMutablePath path];
     _polyline = [GMSPolyline polylineWithPath:path];
     _mapView = mapView;
     _polylineId = polylineId;
