@@ -38,11 +38,10 @@
 - (void)setZIndex:(int)zIndex {
   _polyline.zIndex = zIndex;
 }
-- (void)setPoints:(NSMutableArray*)points {
+- (void)setPoints:(NSArray<CLLocation*>*)points {
   GMSMutablePath* path = [GMSMutablePath path];
 
-  for (NSObject* point in points) {
-    CLLocation* location = (CLLocation*)point;
+  for (CLLocation* location in points) {
     [path addCoordinate:location.coordinate];
   }
   _polyline.path = path;
@@ -60,11 +59,11 @@ static int ToInt(NSNumber* data) { return [FLTGoogleMapJsonConversions toInt:dat
 
 static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:data]; }
 
-static NSMutableArray* ToPoints(NSArray* data) {
+static NSArray<CLLocation*>* ToPoints(NSArray* data) {
   return [FLTGoogleMapJsonConversions toPoints:data];
 }
 
-static UIColor* ToColor(NSArray* data) { return [FLTGoogleMapJsonConversions toColor:data]; }
+static UIColor* ToColor(NSNumber* data) { return [FLTGoogleMapJsonConversions toColor:data]; }
 
 static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolylineOptionsSink> sink,
                                      NSObject<FlutterPluginRegistrar>* registrar) {
@@ -88,7 +87,7 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
     [sink setPoints:ToPoints(points)];
   }
 
-  NSArray* strokeColor = data[@"color"];
+  NSNumber* strokeColor = data[@"color"];
   if (strokeColor) {
     [sink setColor:ToColor(strokeColor)];
   }
@@ -164,10 +163,9 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
 }
 + (GMSMutablePath*)getPath:(NSDictionary*)polyline {
   NSArray* pointArray = polyline[@"points"];
-  NSMutableArray* points = ToPoints(pointArray);
+  NSArray<CLLocation*>* points = ToPoints(pointArray);
   GMSMutablePath* path = [GMSMutablePath path];
-  for (NSObject* point in points) {
-    CLLocation* location = (CLLocation*)point;
+  for (CLLocation* location in points) {
     [path addCoordinate:location.coordinate];
   }
   return path;

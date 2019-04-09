@@ -13,6 +13,6 @@
 + (CLLocationCoordinate2D)toLocation:(NSArray*)data;
 + (CGPoint)toPoint:(NSArray*)data;
 + (NSArray*)positionToJson:(CLLocationCoordinate2D)position;
-+ (UIColor*)toColor:(NSArray*)data;
-+ (NSMutableArray*)toPoints:(NSArray*)data;
++ (UIColor*)toColor:(NSNumber*)data;
++ (NSArray<CLLocation*>*)toPoints:(NSArray*)data;
 @end
