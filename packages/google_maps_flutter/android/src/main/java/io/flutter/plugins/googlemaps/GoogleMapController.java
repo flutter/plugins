@@ -69,7 +69,6 @@ final class GoogleMapController
   private MethodChannel.Result mapReadyResult;
   private final int registrarActivityHashCode;
   private final Context context;
-
   private final MarkersController markersController;
   private List<Object> initialMarkers;
   private String mapStyle = "";
