@@ -336,8 +336,8 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
-
     addIfNonNull('mapStyle', mapStyle);
+
     return optionsMap;
   }
 
