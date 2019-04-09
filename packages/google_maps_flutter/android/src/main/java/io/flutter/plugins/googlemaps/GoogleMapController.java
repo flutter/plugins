@@ -385,7 +385,7 @@ final class GoogleMapController
 
   @Override
   public void setMapStyle(String mapStyle) {
-    if (this.mapStyle.equals(mapStyle)) {
+    if (mapStyle == null || this.mapStyle.equals(mapStyle)) {
       return;
     }
     this.mapStyle = mapStyle;
