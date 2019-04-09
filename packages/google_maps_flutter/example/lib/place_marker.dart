@@ -34,6 +34,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
 
   GoogleMapController controller;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  Map<MarkerId, ClusterItem> clusterItems = <MarkerId, ClusterItem>{};
   MarkerId selectedMarker;
   int _markerIdCounter = 1;
 
@@ -92,6 +93,34 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     setState(() {
       markers[markerId] = marker;
     });
+  }
+
+  void _addCluster() {
+    final int markerCount = markers.length;
+    if (markerCount == 12) {
+      return;
+    }
+    final String markerIdVal = 'marker_id_$_markerIdCounter';
+    _markerIdCounter++;
+    final MarkerId markerId = MarkerId(markerIdVal);
+
+
+    final ClusterItem clusterItem = ClusterItem(
+      markerId: markerId,
+      position: LatLng(
+        center.latitude + sin(_markerIdCounter * pi / 6.0) / 20.0,
+        center.longitude + cos(_markerIdCounter * pi / 6.0) / 20.0,
+      ),
+      infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
+      onTap: () {
+        _onMarkerTapped(markerId);
+      },
+    );
+
+    setState(() {
+      clusterItems[markerId] = clusterItem;
+    });
+
   }
 
   void _remove() {
@@ -232,6 +261,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
               // https://github.com/flutter/flutter/issues/28312
               // ignore: prefer_collection_literals
               markers: Set<Marker>.of(markers.values),
+              clusterItems: Set<ClusterItem>.of(clusterItems.values),
             ),
           ),
         ),
@@ -259,6 +289,10 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                         FlatButton(
                           child: const Text('change info anchor'),
                           onPressed: _changeInfoAnchor,
+                        ),
+                        FlatButton(
+                          child: const Text('add cluster'),
+                          onPressed: _addCluster,
                         ),
                       ],
                     ),

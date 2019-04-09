@@ -40,6 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
+
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
     implements Application.ActivityLifecycleCallbacks,
@@ -69,7 +72,10 @@ final class GoogleMapController
   private final int registrarActivityHashCode;
   private final Context context;
   private final MarkersController markersController;
+  private final ClusterController clusterController;
   private List<Object> initialMarkers;
+  private List<Object> initialClusterItems;
+  private ClusterManager<ClusterItemController> mClusterManager;
 
   GoogleMapController(
       int id,
@@ -88,6 +94,8 @@ final class GoogleMapController
     methodChannel.setMethodCallHandler(this);
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
+    this.clusterController = new ClusterController(methodChannel);
+
   }
 
   @Override
@@ -148,6 +156,7 @@ final class GoogleMapController
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
+    this.mClusterManager = new ClusterManager<ClusterItemController>(context, googleMap);
     googleMap.setOnInfoWindowClickListener(this);
     if (mapReadyResult != null) {
       mapReadyResult.success(null);
@@ -160,7 +169,17 @@ final class GoogleMapController
     googleMap.setOnMapClickListener(this);
     updateMyLocationEnabled();
     markersController.setGoogleMap(googleMap);
+    clusterController.setGoogleMap(googleMap);
+    clusterController.setClusterManager(mClusterManager);
+    googleMap.setOnCameraIdleListener(mClusterManager);
+    googleMap.setOnMarkerClickListener(mClusterManager);
+    googleMap.setOnInfoWindowClickListener(mClusterManager);
+    mClusterManager.setOnClusterItemClickListener(clusterController);
+    mClusterManager.setOnClusterClickListener(clusterController);
+    mClusterManager.setOnClusterInfoWindowClickListener(clusterController);
+    mClusterManager.setOnClusterItemInfoWindowClickListener(clusterController);
     updateInitialMarkers();
+    updateInitialClusterItems();
   }
 
   @Override
@@ -206,6 +225,19 @@ final class GoogleMapController
           result.success(null);
           break;
         }
+        case "cluster#update":
+        {
+          Object clusterItemsToAdd = call.argument("clusterItemsToAdd");
+          clusterController.addClusterItems((List<Object>) clusterItemsToAdd);   
+          Object clusterItemsToChange = call.argument("clusterItemsToChange");
+          clusterController.changeClusterItems((List<Object>) clusterItemsToChange);
+          Object clusterItemsIdsToRemove = call.argument("clusterItemsIdsToRemove");
+          clusterController.removeClusterItems((List<Object>) clusterItemsIdsToRemove);       
+          //Log.d(TAG, "onMethodCall: !clusterItemsToAdd! " + clusterItemsToAdd);
+          result.success(null);
+          break;
+        }
+
       case "map#isCompassEnabled":
         {
           result.success(googleMap.getUiSettings().isCompassEnabled());
@@ -423,8 +455,21 @@ final class GoogleMapController
     }
   }
 
+  @Override
+  public void setInitialClusterItems(Object initialClusterItems) {
+    this.initialClusterItems = (List<Object>) initialClusterItems;
+    if (googleMap != null) {
+      updateInitialClusterItems();
+    }
+  }
+
+
   private void updateInitialMarkers() {
     markersController.addMarkers(initialMarkers);
+  }
+
+  private void updateInitialClusterItems() {
+    clusterController.addClusterItems(initialClusterItems);
   }
 
   @SuppressLint("MissingPermission")

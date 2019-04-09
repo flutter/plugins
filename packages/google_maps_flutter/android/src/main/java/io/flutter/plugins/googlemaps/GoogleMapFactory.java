@@ -3,6 +3,8 @@ package io.flutter.plugins.googlemaps;
 import static io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import android.content.Context;
+import android.util.Log;
+
 import com.google.android.gms.maps.model.CameraPosition;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
@@ -34,6 +36,9 @@ public class GoogleMapFactory extends PlatformViewFactory {
     }
     if (params.containsKey("markersToAdd")) {
       builder.setInitialMarkers(params.get("markersToAdd"));
+    }
+    if (params.containsKey("clusterItemsToAdd")) {
+      builder.setInitialClusterItems(params.get("clusterItemsToAdd"));
     }
     return builder.build(id, context, mActivityState, mPluginRegistrar);
   }

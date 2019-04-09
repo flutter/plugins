@@ -21,3 +21,5 @@ part 'src/marker.dart';
 part 'src/marker_updates.dart';
 part 'src/location.dart';
 part 'src/ui.dart';
+part 'src/clusterItem.dart';
+part 'src/cluster_updates.dart';

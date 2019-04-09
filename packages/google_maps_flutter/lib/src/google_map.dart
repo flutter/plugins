@@ -30,10 +30,12 @@ class GoogleMap extends StatefulWidget {
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.markers,
+    this.clusterItems,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
     this.onTap,
+    
   })  : assert(initialCameraPosition != null),
         super(key: key);
 
@@ -70,6 +72,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Markers to be placed on the map.
   final Set<Marker> markers;
+
+  /// Cluster Items to be placed on the map.
+  final Set<ClusterItem> clusterItems;
 
   /// Called when the camera starts moving.
   ///
@@ -140,6 +145,7 @@ class _GoogleMapState extends State<GoogleMap> {
       Completer<GoogleMapController>();
 
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
+  Map<MarkerId, ClusterItem> _clusterItems = <MarkerId, ClusterItem>{};
   _GoogleMapOptions _googleMapOptions;
 
   @override
@@ -148,6 +154,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'initialCameraPosition': widget.initialCameraPosition?._toMap(),
       'options': _googleMapOptions.toMap(),
       'markersToAdd': _serializeMarkerSet(widget.markers),
+      'clusterItemsToAdd': _serializeClusterSet(widget.clusterItems),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
@@ -176,6 +183,7 @@ class _GoogleMapState extends State<GoogleMap> {
     super.initState();
     _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
     _markers = _keyByMarkerId(widget.markers);
+    _clusterItems = _keyByClusterItemId(widget.clusterItems);
   }
 
   @override
@@ -183,6 +191,7 @@ class _GoogleMapState extends State<GoogleMap> {
     super.didUpdateWidget(oldWidget);
     _updateOptions();
     _updateMarkers();
+    _updateCluster();
   }
 
   void _updateOptions() async {
@@ -202,6 +211,13 @@ class _GoogleMapState extends State<GoogleMap> {
     controller._updateMarkers(
         _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
     _markers = _keyByMarkerId(widget.markers);
+  }
+
+  void _updateCluster() async {
+    final GoogleMapController controller = await _controller.future;
+    controller._updateCluster(
+        _ClusterUpdates.from(_clusterItems.values.toSet(), widget.clusterItems));
+    _clusterItems = _keyByClusterItemId(widget.clusterItems);
   }
 
   Future<void> onPlatformViewCreated(int id) async {

@@ -10,10 +10,8 @@ gradle.buildFinished { buildResult ->
         rootProject.ext.set(ANDROIDX_WARNING, true);
     }
 }
-
 group 'io.flutter.plugins.googlemaps'
 version '1.0-SNAPSHOT'
-
 buildscript {
     repositories {
         google()
@@ -24,16 +22,13 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.3.2'
     }
 }
-
 rootProject.allprojects {
     repositories {
         google()
         jcenter()
     }
 }
-
 apply plugin: 'com.android.library'
-
 android {
     compileSdkVersion 28
 
@@ -47,5 +42,6 @@ android {
 
     dependencies {
         implementation 'com.google.android.gms:play-services-maps:16.1.0'
+        implementation 'com.google.maps.android:android-maps-utils:0.5+'
     }
 }
