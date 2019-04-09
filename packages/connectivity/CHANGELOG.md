@@ -1,3 +1,7 @@
+## 0.4.2+2
+
+* Add integration test.
+
 ## 0.4.2+1
 
 * Bump the minimum Flutter version to 1.2.0.

@@ -66,6 +66,8 @@ void main() {
       expect(product.description, wrapper.description);
       expect(product.id, wrapper.sku);
       expect(product.price, wrapper.price);
+      expect(product.skuDetail, wrapper);
+      expect(product.skProduct, null);
     });
 
     test('handles empty list of skuDetails', () {

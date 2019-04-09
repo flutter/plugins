@@ -1,3 +1,15 @@
+## 0.5.5
+
+* Enable iOS accessibility.
+
+## 0.5.4
+
+* Add method getVisibleRegion for get the latlng bounds of the visible map area.
+
+## 0.5.3
+
+* Added support setting marker icons from bytes.
+
 ## 0.5.2
 
 * Added onTap for callback for GoogleMap.
