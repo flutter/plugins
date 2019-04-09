@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
+import 'package:flutter/services.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
 import 'package:test/test.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/google_play_connection.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/in_app_purchase_connection.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import '../stub_in_app_purchase_platform.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
@@ -22,8 +25,9 @@ void main() {
       'BillingClient#startConnection(BillingClientStateListener)';
   const String endConnectionCall = 'BillingClient#endConnection()';
 
-  setUpAll(() =>
-      channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler));
+  setUpAll(() {
+    channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler);
+  });
 
   setUp(() {
     WidgetsFlutterBinding.ensureInitialized();
@@ -153,7 +157,194 @@ void main() {
   group('refresh receipt data', () {
     test('should throw on android', () {
       expect(GooglePlayConnection.instance.refreshPurchaseVerificationData(),
-          throwsException);
+          throwsUnsupportedError);
+    });
+  });
+
+  group('make payment', () {
+    final String launchMethodName =
+        'BillingClient#launchBillingFlow(Activity, BillingFlowParams)';
+    const String consumeMethodName =
+        'BillingClient#consumeAsync(String, ConsumeResponseListener)';
+    test('buy non consumable, serializes and deserializes data', () async {
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+      final BillingResponse sentCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode),
+          additionalStepBeforeReturn: (_) {
+            // Mock java update purchase callback.
+            MethodCall call = MethodCall(kOnPurchasesUpdated, {
+              'responseCode': BillingResponseConverter().toJson(sentCode),
+              'purchasesList': [
+                {
+                  'orderId': 'orderID1',
+                  'sku': skuDetails.sku,
+                  'isAutoRenewing': false,
+                  'packageName': "package",
+                  'purchaseTime': 1231231231,
+                  'purchaseToken': "token",
+                  'signature': 'sign',
+                  'originalJson': 'json'
+                }
+              ]
+            });
+            connection.billingClient.callHandler(call);
+          });
+      Completer completer = Completer();
+      PurchaseDetails purchaseDetails;
+      Stream purchaseStream =
+          GooglePlayConnection.instance.purchaseUpdatedStream;
+      StreamSubscription subscription;
+      subscription = purchaseStream.listen((_) {
+        purchaseDetails = _.first;
+        completer.complete(purchaseDetails);
+        subscription.cancel();
+      }, onDone: () {});
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: skuDetails.toProductDetails(),
+          applicationUserName: accountId);
+      await GooglePlayConnection.instance
+          .buyNonConsumable(purchaseParam: purchaseParam);
+      PurchaseDetails result = await completer.future;
+      expect(result.purchaseID, 'orderID1');
+      expect(result.status, PurchaseStatus.purchased);
+      expect(result.productID, dummySkuDetails.sku);
+    });
+
+    test('buy consumable with auto consume, serializes and deserializes data',
+        () async {
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+      final BillingResponse sentCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode),
+          additionalStepBeforeReturn: (_) {
+            // Mock java update purchase callback.
+            MethodCall call = MethodCall(kOnPurchasesUpdated, {
+              'responseCode': BillingResponseConverter().toJson(sentCode),
+              'purchasesList': [
+                {
+                  'orderId': 'orderID1',
+                  'sku': skuDetails.sku,
+                  'isAutoRenewing': false,
+                  'packageName': "package",
+                  'purchaseTime': 1231231231,
+                  'purchaseToken': "token",
+                  'signature': 'sign',
+                  'originalJson': 'json'
+                }
+              ]
+            });
+            connection.billingClient.callHandler(call);
+          });
+      Completer consumeCompleter = Completer();
+      // adding call back for consume purchase
+      final BillingResponse expectedCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: consumeMethodName,
+          value: BillingResponseConverter().toJson(expectedCode),
+          additionalStepBeforeReturn: (dynamic args) {
+            String purchaseToken = args['purchaseToken'];
+            consumeCompleter.complete((purchaseToken));
+          });
+
+      Completer completer = Completer();
+      PurchaseDetails purchaseDetails;
+      Stream purchaseStream =
+          GooglePlayConnection.instance.purchaseUpdatedStream;
+      StreamSubscription subscription;
+      subscription = purchaseStream.listen((_) {
+        purchaseDetails = _.first;
+        completer.complete(purchaseDetails);
+        subscription.cancel();
+      }, onDone: () {});
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: skuDetails.toProductDetails(),
+          applicationUserName: accountId);
+      await GooglePlayConnection.instance
+          .buyConsumable(purchaseParam: purchaseParam);
+      PurchaseDetails result = await completer.future;
+      expect(result.billingClientPurchase.purchaseToken,
+          await consumeCompleter.future);
+    });
+
+    test(
+        'buy consumable without auto consume, consume api should not receive calls',
+        () async {
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+      final BillingResponse sentCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode),
+          additionalStepBeforeReturn: (_) {
+            // Mock java update purchase callback.
+            MethodCall call = MethodCall(kOnPurchasesUpdated, {
+              'responseCode': BillingResponseConverter().toJson(sentCode),
+              'purchasesList': [
+                {
+                  'orderId': 'orderID1',
+                  'sku': skuDetails.sku,
+                  'isAutoRenewing': false,
+                  'packageName': "package",
+                  'purchaseTime': 1231231231,
+                  'purchaseToken': "token",
+                  'signature': 'sign',
+                  'originalJson': 'json'
+                }
+              ]
+            });
+            connection.billingClient.callHandler(call);
+          });
+      Completer consumeCompleter = Completer();
+      // adding call back for consume purchase
+      final BillingResponse expectedCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: consumeMethodName,
+          value: BillingResponseConverter().toJson(expectedCode),
+          additionalStepBeforeReturn: (dynamic args) {
+            String purchaseToken = args['purchaseToken'];
+            consumeCompleter.complete((purchaseToken));
+          });
+
+      Stream purchaseStream =
+          GooglePlayConnection.instance.purchaseUpdatedStream;
+      StreamSubscription subscription;
+      subscription = purchaseStream.listen((_) {
+        consumeCompleter.complete(null);
+        subscription.cancel();
+      }, onDone: () {});
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: skuDetails.toProductDetails(),
+          applicationUserName: accountId);
+      await GooglePlayConnection.instance
+          .buyConsumable(purchaseParam: purchaseParam, autoConsume: false);
+      expect(null, await consumeCompleter.future);
+    });
+  });
+
+  group('consume purchases', () {
+    const String consumeMethodName =
+        'BillingClient#consumeAsync(String, ConsumeResponseListener)';
+    test('consume purchase async success', () async {
+      final BillingResponse expectedCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: consumeMethodName,
+          value: BillingResponseConverter().toJson(expectedCode));
+
+      final BillingResponse responseCode = await GooglePlayConnection.instance
+          .consumePurchase(dummyPurchase.toPurchaseDetails());
+
+      expect(responseCode, equals(expectedCode));
+    });
+  });
+
+  group('complete purchase', () {
+    test('calling complete purchase on android should throw', () async {
+      expect(() => connection.completePurchase(null), throwsUnsupportedError);
     });
   });
 }

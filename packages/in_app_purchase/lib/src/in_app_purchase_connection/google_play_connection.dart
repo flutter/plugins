@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
 import '../../billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
@@ -17,29 +18,70 @@ class GooglePlayConnection
     with WidgetsBindingObserver
     implements InAppPurchaseConnection {
   GooglePlayConnection._()
-      : _billingClient = BillingClient((PurchasesResultWrapper _) {
-          // TODO(mklim): wire this in to the generic interface
+      : billingClient = BillingClient((PurchasesResultWrapper resultWrapper) {
+          _purchaseUpdatedController
+              .add(_getPurchaseDetailsFromResult(resultWrapper));
         }) {
     _readyFuture = _connect();
     WidgetsBinding.instance.addObserver(this);
+    _purchaseUpdatedController = StreamController.broadcast();
+    ;
   }
   static GooglePlayConnection get instance => _getOrCreateInstance();
   static GooglePlayConnection _instance;
-  final BillingClient _billingClient;
+
+  Stream<List<PurchaseDetails>> get purchaseUpdatedStream =>
+      _purchaseUpdatedController.stream;
+  static StreamController<List<PurchaseDetails>> _purchaseUpdatedController;
+
+  @visibleForTesting
+  final BillingClient billingClient;
+
   Future<void> _readyFuture;
+  static Set<String> _productIDsToConsume;
 
   @override
   Future<bool> isAvailable() async {
     await _readyFuture;
-    return _billingClient.isReady();
+    return billingClient.isReady();
+  }
+
+  @override
+  void buyNonConsumable({@required PurchaseParam purchaseParam}) {
+    billingClient.launchBillingFlow(
+        sku: purchaseParam.productDetails.id,
+        accountId: purchaseParam.applicationUserName);
+  }
+
+  @override
+  void buyConsumable(
+      {@required PurchaseParam purchaseParam, bool autoConsume = true}) {
+    if (autoConsume == true) {
+      if (_productIDsToConsume == null) {
+        _productIDsToConsume = Set<String>();
+        _productIDsToConsume.add(purchaseParam.productDetails.id);
+      }
+    }
+    buyNonConsumable(purchaseParam: purchaseParam);
+  }
+
+  @override
+  Future<void> completePurchase(PurchaseDetails purchase) {
+    throw UnsupportedError('complete purchase is not available on Android');
+  }
+
+  @override
+  Future<BillingResponse> consumePurchase(PurchaseDetails purchase) {
+    return billingClient
+        .consumeAsync(purchase.verificationData.serverVerificationData);
   }
 
   @override
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
     final List<PurchasesResultWrapper> responses = await Future.wait([
-      _billingClient.queryPurchaseHistory(SkuType.inapp),
-      _billingClient.queryPurchaseHistory(SkuType.subs)
+      billingClient.queryPurchaseHistory(SkuType.inapp),
+      billingClient.queryPurchaseHistory(SkuType.subs)
     ]);
 
     Set errorCodeSet = responses
@@ -64,7 +106,7 @@ class GooglePlayConnection
       error: errorMessage != null
           ? PurchaseError(
               source: PurchaseSource.GooglePlay,
-              code: 'restore_transactions_failed',
+              code: kRestoredPurchaseErrorCode,
               message: {'message': errorMessage})
           : null,
     );
@@ -72,7 +114,7 @@ class GooglePlayConnection
 
   @override
   Future<PurchaseVerificationData> refreshPurchaseVerificationData() async {
-    throw Exception(
+    throw UnsupportedError(
         'The method <refreshPurchaseVerificationData> only works on iOS.');
   }
 
@@ -101,10 +143,14 @@ class GooglePlayConnection
     return _instance;
   }
 
-  Future<void> _connect() =>
-      _billingClient.startConnection(onBillingServiceDisconnected: () {});
+  static _consume(PurchaseDetails purchase) {
+    instance.consumePurchase(purchase);
+  }
 
-  Future<void> _disconnect() => _billingClient.endConnection();
+  Future<void> _connect() =>
+      billingClient.startConnection(onBillingServiceDisconnected: () {});
+
+  Future<void> _disconnect() => billingClient.endConnection();
 
   /// Query the product detail list.
   ///
@@ -114,9 +160,9 @@ class GooglePlayConnection
   Future<ProductDetailsResponse> queryProductDetails(
       Set<String> identifiers) async {
     List<SkuDetailsResponseWrapper> responses = await Future.wait([
-      _billingClient.querySkuDetails(
+      billingClient.querySkuDetails(
           skuType: SkuType.inapp, skusList: identifiers.toList()),
-      _billingClient.querySkuDetails(
+      billingClient.querySkuDetails(
           skuType: SkuType.subs, skusList: identifiers.toList())
     ]);
     List<ProductDetails> productDetails =
@@ -131,5 +177,36 @@ class GooglePlayConnection
     List<String> notFoundIDS = identifiers.difference(successIDS).toList();
     return ProductDetailsResponse(
         productDetails: productDetails, notFoundIDs: notFoundIDS);
+  }
+
+  static List<PurchaseDetails> _getPurchaseDetailsFromResult(
+      PurchasesResultWrapper resultWrapper) {
+    return resultWrapper.purchasesList.map(
+      (PurchaseWrapper purchase) {
+        PurchaseError error = null;
+        if (resultWrapper.responseCode != BillingResponse.ok) {
+          error = PurchaseError(
+            source: PurchaseSource.GooglePlay,
+            code: kRestoredPurchaseErrorCode,
+            message: {'message': resultWrapper.responseCode.toString()},
+          );
+        }
+        PurchaseDetails purchaseDetails = purchase.toPurchaseDetails()
+          ..status = resultWrapper.responseCode == BillingResponse.ok
+              ? PurchaseStatus.purchased
+              : PurchaseStatus.error
+          ..error = error;
+        // auto consume logic for buyConsumable.
+        if (_productIDsToConsume != null &&
+            _productIDsToConsume.contains(purchaseDetails.productID)) {
+          _consume(purchaseDetails);
+          _productIDsToConsume.remove(purchaseDetails.productID);
+          if (_productIDsToConsume.isEmpty) {
+            _productIDsToConsume = null;
+          }
+        }
+        return purchaseDetails;
+      },
+    ).toList();
   }
 }

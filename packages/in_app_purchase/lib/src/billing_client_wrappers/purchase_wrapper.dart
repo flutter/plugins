@@ -4,8 +4,8 @@
 
 import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/in_app_purchase_connection.dart';
 import 'enum_converters.dart';
 import 'billing_client_wrapper.dart';
 
@@ -97,7 +97,7 @@ class PurchaseWrapper {
   PurchaseDetails toPurchaseDetails() {
     return PurchaseDetails(
       purchaseID: orderId,
-      productId: sku,
+      productID: sku,
       verificationData: PurchaseVerificationData(
           localVerificationData: originalJson,
           serverVerificationData: purchaseToken,
