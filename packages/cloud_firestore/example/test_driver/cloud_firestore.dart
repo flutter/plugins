@@ -51,11 +51,11 @@ void main() {
       final dynamic result = await firestore.runTransaction(
         (Transaction tx) async {
           final DocumentSnapshot snapshot = await tx.get(ref);
-          expect(snapshot['message'], 'testing');
           await tx.update(ref, <String, dynamic>{'message': 'testing2'});
+          return { 'hello': 'world' };
         },
       );
-      expect(result['message'], 'testing2');
+      expect(result['hello'], 'world');
       final DocumentSnapshot updatedSnapshot = await ref.get();
       expect(updatedSnapshot['message'], 'testing2');
       await ref.delete();
