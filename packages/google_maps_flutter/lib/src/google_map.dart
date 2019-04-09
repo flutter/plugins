@@ -121,10 +121,21 @@ class GoogleMap extends StatefulWidget {
   /// when the map tries to turn on the My Location layer.
   final bool myLocationEnabled;
 
-  /// The style to be used for the map. The JSON file can be created here at https://mapstyle.withgoogle.com/
+  /// The style to be used for the map.
   ///
+  /// The JSON file can be created at https://mapstyle.withgoogle.com/
+  ///
+  /// With style options you can customize the presentation of the standard Google
+  /// map styles, changing the visual display of features like roads, parks, and
+  /// other points of interest. As well as changing the style of these features,
+  /// you can also hide features entirely. This means that you can emphasize
+  /// particular components of the map or make the map complement the content
+  /// of your app.
+  ///
+  /// Customize the styling of the base map using a JSON object defined by a string.
   /// Add the json file to the assets folder and link it in pubspec.yaml.
-  /// Then you can load the file as string like below
+  ///
+  /// Then you can load the file as string like below:
   ///
   /// String _mapStyle;
   ///
