@@ -1,6 +1,6 @@
 package io.flutter.plugins.imagepicker;
 
-import androidx.core.content.FileProvider;
+import android.support.v4.content.FileProvider;
 
 /**
  * Providing a custom {@code FileProvider} prevents manifest {@code <provider>} name collisions.
