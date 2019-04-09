@@ -132,4 +132,17 @@ class GoogleMapController {
       'cameraUpdate': cameraUpdate._toJson(),
     });
   }
+
+  /// Return [LatLngBounds] defining the region that is visible in a map.
+  Future<LatLngBounds> getVisibleRegion() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    final Map<dynamic, dynamic> latLngBounds =
+        await channel.invokeMethod('map#getVisibleRegion');
+    final LatLng southwest = LatLng._fromJson(latLngBounds['southwest']);
+    final LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
+
+    return LatLngBounds(northeast: northeast, southwest: southwest);
+  }
 }
