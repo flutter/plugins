@@ -422,8 +422,8 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
     [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
   }
   id mapStyle = data[@"mapStyle"];
-    if (mapStyle) {
-      NSString* styleString = mapStyle;
-      [sink setMapStyle:(styleString)];
-    }
+  if (mapStyle) {
+    NSString* styleString = mapStyle;
+    [sink setMapStyle:(styleString)];
+  }
 }
