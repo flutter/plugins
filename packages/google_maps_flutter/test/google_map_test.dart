@@ -383,4 +383,18 @@ void main() {
 
     expect(platformGoogleMap.myLocationEnabled, true);
   });
+
+  test('build LatLngBounds', () async {
+    final LatLngBounds bounds = LatLngBoundsBuilder()
+        .include(const LatLng(1, 0))
+        .include(const LatLng(1, 1))
+        .include(const LatLng(0, 1))
+        .include(const LatLng(0, 0))
+        .build();
+
+    expect(
+        bounds,
+        LatLngBounds(
+            southwest: const LatLng(0, 0), northeast: const LatLng(1, 1)));
+  });
 }
