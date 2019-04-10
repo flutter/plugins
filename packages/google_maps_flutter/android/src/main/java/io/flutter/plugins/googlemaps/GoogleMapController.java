@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.maps.android.MarkerManager;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 
@@ -68,6 +69,7 @@ final class GoogleMapController implements Application.ActivityLifecycleCallback
   private List<Object> initialMarkers;
   private List<Object> initialClusterItems;
   private ClusterManager<ClusterItemController> mClusterManager;
+  private MarkerManager mMarkerManager;
 
   GoogleMapController(int id, Context context, AtomicInteger activityState, PluginRegistry.Registrar registrar,
       GoogleMapOptions options) {
@@ -82,7 +84,7 @@ final class GoogleMapController implements Application.ActivityLifecycleCallback
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
     this.clusterController = new ClusterController(methodChannel);
-
+    this.markersController.setOnMarkerClickListener(this);
   }
 
   @Override
@@ -143,7 +145,9 @@ final class GoogleMapController implements Application.ActivityLifecycleCallback
   public void onMapReady(GoogleMap googleMap) {
 
     this.googleMap = googleMap;
-    this.mClusterManager = new ClusterManager<ClusterItemController>(context, googleMap);
+    this.mMarkerManager = new MarkerManager(googleMap);
+    this.mClusterManager = new ClusterManager<ClusterItemController>(context, googleMap, mMarkerManager);
+    this.markersController.setMarkerManager(this.mMarkerManager);
     googleMap.setOnInfoWindowClickListener(this);
     CustomClusterRenderer customRenderer = new CustomClusterRenderer(context, googleMap, mClusterManager);
     if (mapReadyResult != null) {
@@ -153,14 +157,16 @@ final class GoogleMapController implements Application.ActivityLifecycleCallback
     googleMap.setOnCameraMoveStartedListener(this);
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
-    googleMap.setOnMarkerClickListener(this);
+    // googleMap.setOnMarkerClickListener(this);
     googleMap.setOnMapClickListener(this);
     updateMyLocationEnabled();
     markersController.setGoogleMap(googleMap);
     clusterController.setGoogleMap(googleMap);
     clusterController.setClusterManager(mClusterManager);
     googleMap.setOnCameraIdleListener(mClusterManager);
-    googleMap.setOnMarkerClickListener(mClusterManager);
+    // googleMap.setOnMarkerClickListener(mClusterManager);
+    googleMap.setOnMarkerClickListener(mMarkerManager);
+
     googleMap.setOnInfoWindowClickListener(mClusterManager);
     mClusterManager.setOnClusterItemClickListener(clusterController);
     mClusterManager.setOnClusterClickListener(clusterController);

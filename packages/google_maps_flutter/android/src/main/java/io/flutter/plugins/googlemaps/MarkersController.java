@@ -7,6 +7,9 @@ package io.flutter.plugins.googlemaps;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.MarkerManager;
+import com.google.maps.android.clustering.ClusterManager;
+
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +21,8 @@ class MarkersController {
   private final Map<String, String> googleMapsMarkerIdToDartMarkerId;
   private final MethodChannel methodChannel;
   private GoogleMap googleMap;
+  MarkerManager markerManager;
+  private  GoogleMap.OnMarkerClickListener mOnMarkerClickListener;
 
   MarkersController(MethodChannel methodChannel) {
     this.markerIdToController = new HashMap<>();
@@ -25,8 +30,16 @@ class MarkersController {
     this.methodChannel = methodChannel;
   }
 
+  void setMarkerManager(MarkerManager markerManager) {
+    this.markerManager = markerManager;
+  }
+
   void setGoogleMap(GoogleMap googleMap) {
     this.googleMap = googleMap;
+  }
+
+  void setOnMarkerClickListener(GoogleMap.OnMarkerClickListener onMarkerClickListener) {
+    mOnMarkerClickListener = onMarkerClickListener;
   }
 
   void addMarkers(List<Object> markersToAdd) {
@@ -94,7 +107,10 @@ class MarkersController {
   }
 
   private void addMarker(String markerId, MarkerOptions markerOptions, boolean consumeTapEvents) {
-    final Marker marker = googleMap.addMarker(markerOptions);
+    // final Marker marker = googleMap.addMarker(markerOptions);
+    MarkerManager.Collection collection = markerManager.newCollection();
+    final Marker marker = collection.addMarker(markerOptions);
+    collection.setOnMarkerClickListener(mOnMarkerClickListener);
     MarkerController controller = new MarkerController(marker, consumeTapEvents);
     markerIdToController.put(markerId, controller);
     googleMapsMarkerIdToDartMarkerId.put(marker.getId(), markerId);
