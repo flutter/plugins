@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
 import 'package:json_annotation/json_annotation.dart';

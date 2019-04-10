@@ -120,7 +120,7 @@ void main() {
       SKError error = SKError.fromJson(buildErrorMap(dummyError));
       expect(error, equals(dummyError));
     });
-    
+
     test('Should construct correct SKTransactionWrapper from json', () {
       SKPaymentTransactionWrapper transaction =
           SKPaymentTransactionWrapper.fromJson(
