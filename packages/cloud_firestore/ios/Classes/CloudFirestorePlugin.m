@@ -503,7 +503,6 @@ const UInt8 TIMESTAMP = 136;
     }];
   } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
-    //FIRQuery *query;
     getQuery(call.arguments, ^(FIRQuery *query) {
       id<FIRListenerRegistration> listener = [query
                                               addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
@@ -567,7 +566,6 @@ const UInt8 TIMESTAMP = 136;
     _listeners[handle] = listener;
     result(handle);
   } else if ([@"Query#getDocuments" isEqualToString:call.method]) {
-    //FIRQuery *query;
     getQuery(call.arguments, ^(FIRQuery *query) {
       [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
                                           NSError *_Nullable error) {
