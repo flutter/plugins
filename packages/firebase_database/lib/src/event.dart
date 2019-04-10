@@ -69,5 +69,5 @@ class DatabaseError {
   String get details => _data['details'];
 
   @override
-  String toString() => message ?? super.toString();
+  String toString() => "$runtimeType($code, $message, $details)";
 }
