@@ -1,3 +1,15 @@
+## 2.1.1
+
+* Added screen_view tracking of Navigator.pushReplacement
+
+## 2.1.0
+
+* Add Login event support
+
+## 2.0.3
+
+* Add resetAnalyticsData method
+
 ## 2.0.2+1
 
 * Log messages about automatic configuration of the default app are now less confusing.

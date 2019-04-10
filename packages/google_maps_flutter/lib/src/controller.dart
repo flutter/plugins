@@ -5,23 +5,13 @@
 part of google_maps_flutter;
 
 /// Controller for a single GoogleMap instance running on the host platform.
-///
-/// Change listeners are notified upon changes to any of
-///
-/// * the [options] property
-/// * the [isCameraMoving] property
-/// * the [cameraPosition] property
-///
-/// Listeners are notified after changes have been applied on the platform side.
-class GoogleMapController extends ChangeNotifier {
+class GoogleMapController {
   GoogleMapController._(
-    MethodChannel channel,
+    this.channel,
     CameraPosition initialCameraPosition,
     this._googleMapState,
-  )   : assert(channel != null),
-        _channel = channel {
-    _cameraPosition = initialCameraPosition;
-    _channel.setMethodCallHandler(_handleMethodCall);
+  ) : assert(channel != null) {
+    channel.setMethodCallHandler(_handleMethodCall);
   }
 
   static Future<GoogleMapController> init(
@@ -43,38 +33,38 @@ class GoogleMapController extends ChangeNotifier {
     );
   }
 
-  final MethodChannel _channel;
-
-  /// True if the map camera is currently moving.
-  bool get isCameraMoving => _isCameraMoving;
-  bool _isCameraMoving = false;
+  @visibleForTesting
+  final MethodChannel channel;
 
   final _GoogleMapState _googleMapState;
-
-  /// Returns the most recent camera position reported by the platform side.
-  /// Will be null, if [GoogleMap.trackCameraPosition] is false.
-  CameraPosition get cameraPosition => _cameraPosition;
-  CameraPosition _cameraPosition;
 
   Future<dynamic> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'camera#onMoveStarted':
-        _isCameraMoving = true;
-        notifyListeners();
+        if (_googleMapState.widget.onCameraMoveStarted != null) {
+          _googleMapState.widget.onCameraMoveStarted();
+        }
         break;
       case 'camera#onMove':
-        _cameraPosition = CameraPosition.fromMap(call.arguments['position']);
-        notifyListeners();
+        if (_googleMapState.widget.onCameraMove != null) {
+          _googleMapState.widget.onCameraMove(
+            CameraPosition.fromMap(call.arguments['position']),
+          );
+        }
         break;
       case 'camera#onIdle':
-        _isCameraMoving = false;
-        notifyListeners();
+        if (_googleMapState.widget.onCameraIdle != null) {
+          _googleMapState.widget.onCameraIdle();
+        }
         break;
       case 'marker#onTap':
         _googleMapState.onMarkerTap(call.arguments['markerId']);
         break;
       case 'infoWindow#onTap':
         _googleMapState.onInfoWindowTap(call.arguments['markerId']);
+        break;
+      case 'map#onTap':
+        _googleMapState.onTap(LatLng._fromJson(call.arguments['position']));
         break;
       default:
         throw MissingPluginException();
@@ -92,14 +82,12 @@ class GoogleMapController extends ChangeNotifier {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    final dynamic json = await _channel.invokeMethod(
+    await channel.invokeMethod(
       'map#update',
       <String, dynamic>{
         'options': optionsUpdate,
       },
     );
-    _cameraPosition = CameraPosition.fromMap(json);
-    notifyListeners();
   }
 
   /// Updates marker configuration.
@@ -113,11 +101,10 @@ class GoogleMapController extends ChangeNotifier {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod(
+    await channel.invokeMethod(
       'markers#update',
       markerUpdates._toMap(),
     );
-    notifyListeners();
   }
 
   /// Starts an animated change of the map camera position.
@@ -128,7 +115,7 @@ class GoogleMapController extends ChangeNotifier {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('camera#animate', <String, dynamic>{
+    await channel.invokeMethod('camera#animate', <String, dynamic>{
       'cameraUpdate': cameraUpdate._toJson(),
     });
   }
@@ -141,8 +128,21 @@ class GoogleMapController extends ChangeNotifier {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('camera#move', <String, dynamic>{
+    await channel.invokeMethod('camera#move', <String, dynamic>{
       'cameraUpdate': cameraUpdate._toJson(),
     });
+  }
+
+  /// Return [LatLngBounds] defining the region that is visible in a map.
+  Future<LatLngBounds> getVisibleRegion() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    final Map<dynamic, dynamic> latLngBounds =
+        await channel.invokeMethod('map#getVisibleRegion');
+    final LatLng southwest = LatLng._fromJson(latLngBounds['southwest']);
+    final LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
+
+    return LatLngBounds(northeast: northeast, southwest: southwest);
   }
 }

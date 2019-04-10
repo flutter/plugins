@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -46,6 +47,7 @@ class SignInPageState extends State<SignInPage> {
           scrollDirection: Axis.vertical,
           children: <Widget>[
             _EmailPasswordForm(),
+            _EmailLinkSignInSection(),
             _AnonymouslySignInSection(),
             _GoogleSignInSection(),
             _PhoneSignInSection(Scaffold.of(context)),
@@ -153,6 +155,129 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
     } else {
       _success = false;
     }
+  }
+}
+
+class _EmailLinkSignInSection extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _EmailLinkSignInSectionState();
+}
+
+class _EmailLinkSignInSectionState extends State<_EmailLinkSignInSection>
+    with WidgetsBindingObserver {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+
+  bool _success;
+  String _userEmail;
+  String _userID;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      final Uri link = await _retrieveDynamicLink();
+
+      if (link != null) {
+        final FirebaseUser user = await _auth.signInWithEmailAndLink(
+          email: _userEmail,
+          link: link.toString(),
+        );
+
+        if (user != null) {
+          _userID = user.uid;
+          _success = true;
+        } else {
+          _success = false;
+        }
+      } else {
+        _success = false;
+      }
+
+      setState(() {});
+    }
+  }
+
+  Future<Uri> _retrieveDynamicLink() async {
+    final PendingDynamicLinkData data =
+        await FirebaseDynamicLinks.instance.retrieveDynamicLink();
+    return data?.link;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            child: const Text('Test sign in with email and link'),
+            padding: const EdgeInsets.all(16),
+            alignment: Alignment.center,
+          ),
+          TextFormField(
+            controller: _emailController,
+            decoration: InputDecoration(labelText: 'Email'),
+            validator: (String value) {
+              if (value.isEmpty) {
+                return 'Please enter your email.';
+              }
+            },
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            alignment: Alignment.center,
+            child: RaisedButton(
+              onPressed: () async {
+                if (_formKey.currentState.validate()) {
+                  _signInWithEmailAndLink();
+                }
+              },
+              child: const Text('Submit'),
+            ),
+          ),
+          Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              _success == null
+                  ? ''
+                  : (_success
+                      ? 'Successfully signed in, uid: ' + _userID
+                      : 'Sign in failed'),
+              style: TextStyle(color: Colors.red),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<void> _signInWithEmailAndLink() async {
+    _userEmail = _emailController.text;
+
+    return await _auth.sendSignInWithEmailLink(
+      email: _userEmail,
+      url: '<Url with domain from your Firebase project>',
+      handleCodeInApp: true,
+      iOSBundleID: 'io.flutter.plugins.firebaseAuthExample',
+      androidPackageName: 'io.flutter.plugins.firebaseauthexample',
+      androidInstallIfNotAvailable: true,
+      androidMinimumVersion: "1",
+    );
   }
 }
 

@@ -1,3 +1,11 @@
+## 0.4.0+3
+
+* Add integration test.
+
+## 0.4.0+2
+
+* Android: Using new method for BuildNumber in new android versions
+
 ## 0.4.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX

@@ -1,3 +1,12 @@
+## 0.4.2+2
+
+* Add integration test.
+
+## 0.4.2+1
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
 ## 0.4.2
 
 * Adding getWifiIP() to obtain current wifi network's IP.

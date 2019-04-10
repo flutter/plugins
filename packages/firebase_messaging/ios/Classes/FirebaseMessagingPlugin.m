@@ -98,7 +98,7 @@
       }
     }];
   } else if ([@"autoInitEnabled" isEqualToString:method]) {
-    BOOL *value = [[FIRMessaging messaging] isAutoInitEnabled];
+    BOOL value = [[FIRMessaging messaging] isAutoInitEnabled];
     result([NSNumber numberWithBool:value]);
   } else if ([@"setAutoInitEnabled" isEqualToString:method]) {
     NSNumber *value = call.arguments;
@@ -173,7 +173,7 @@
   [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeProd];
 #endif
 
-  [_channel invokeMethod:@"onToken" arguments:[[FIRInstanceID instanceID] token]];
+  [_channel invokeMethod:@"onToken" arguments:[FIRMessaging messaging].FCMToken];
 }
 
 - (void)application:(UIApplication *)application

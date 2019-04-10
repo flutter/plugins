@@ -95,7 +95,7 @@ class FileUtils {
 
       // Return the remote address
       if (isGooglePhotosUri(uri)) {
-        return uri.getLastPathSegment();
+        return null;
       }
 
       return getDataColumn(context, uri, null, null);
@@ -116,7 +116,13 @@ class FileUtils {
     try {
       cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
       if (cursor != null && cursor.moveToFirst()) {
-        final int column_index = cursor.getColumnIndexOrThrow(column);
+        final int column_index = cursor.getColumnIndex(column);
+
+        //yandex.disk and dropbox do not have _data column
+        if (column_index == -1) {
+          return null;
+        }
+
         return cursor.getString(column_index);
       }
     } finally {
@@ -181,6 +187,6 @@ class FileUtils {
   }
 
   private static boolean isGooglePhotosUri(Uri uri) {
-    return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    return "com.google.android.apps.photos.contentprovider".equals(uri.getAuthority());
   }
 }
