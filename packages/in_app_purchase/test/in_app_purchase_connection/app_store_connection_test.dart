@@ -287,7 +287,6 @@ class FakeIOSPlatform {
       originalTransaction: dummyTransaction,
       transactionTimeStamp: 123123123.022,
       transactionState: SKPaymentTransactionStateWrapper.restored,
-      downloads: null,
       error: null,
     );
     SKPaymentTransactionWrapper tran2 = SKPaymentTransactionWrapper(
@@ -296,7 +295,6 @@ class FakeIOSPlatform {
       originalTransaction: dummyTransaction,
       transactionTimeStamp: 123123123.022,
       transactionState: SKPaymentTransactionStateWrapper.restored,
-      downloads: null,
       error: null,
     );
 
@@ -314,7 +312,6 @@ class FakeIOSPlatform {
         transactionTimeStamp: 123123.121,
         transactionIdentifier: id,
         error: null,
-        downloads: null,
         originalTransaction: null);
   }
 
@@ -326,7 +323,6 @@ class FakeIOSPlatform {
         transactionTimeStamp: 123123.121,
         transactionIdentifier: id,
         error: null,
-        downloads: null,
         originalTransaction: null);
   }
 
@@ -340,7 +336,6 @@ class FakeIOSPlatform {
             code: 0,
             domain: 'ios_domain',
             userInfo: {'message': 'an error message'}),
-        downloads: null,
         originalTransaction: null);
   }
 

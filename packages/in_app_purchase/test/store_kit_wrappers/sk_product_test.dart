@@ -121,12 +121,6 @@ void main() {
       expect(error, equals(dummyError));
     });
 
-    test('Should construct correct SKDownloadWrapper from json', () {
-      SKDownloadWrapper download =
-          SKDownloadWrapper.fromJson(buildDownloadMap(dummyDownload));
-      expect(download, equals(dummyDownload));
-    });
-
     test('Should construct correct SKTransactionWrapper from json', () {
       SKPaymentTransactionWrapper transaction =
           SKPaymentTransactionWrapper.fromJson(

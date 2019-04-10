@@ -177,8 +177,6 @@ class TestPaymentTransactionObserver extends SKTransactionObserverWrapper {
 
   void paymentQueueRestoreCompletedTransactionsFinished() {}
 
-  void updatedDownloads({List<SKDownloadWrapper> downloads}) {}
-
   bool shouldAddStorePayment(
       {SKPaymentWrapper payment, SKProductWrapper product}) {
     return true;

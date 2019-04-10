@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'sk_product_wrapper.dart';
-import 'sk_download_wrapper.dart';
 import 'sk_payment_queue_wrapper.dart';
 import 'enum_converters.dart';
 
@@ -28,9 +26,6 @@ abstract class SKTransactionObserverWrapper {
 
   /// Triggered when payment queue has finished sending restored transactions.
   void paymentQueueRestoreCompletedTransactionsFinished();
-
-  /// Triggered when any download objects are updated.
-  void updatedDownloads({List<SKDownloadWrapper> downloads});
 
   /// Triggered when a user initiated an in-app purchase from App Store.
   ///
@@ -87,7 +82,6 @@ class SKPaymentTransactionWrapper {
     @required this.originalTransaction,
     @required this.transactionTimeStamp,
     @required this.transactionIdentifier,
-    @required this.downloads,
     @required this.error,
   });
 
@@ -147,14 +141,6 @@ class SKPaymentTransactionWrapper {
   /// The value of this string corresponds to the same property in the receipt.
   final String transactionIdentifier;
 
-  /// An array of the [SKDownloadWrapper] object of this transaction.
-  ///
-  /// Only available if the transaction contains downloadable contents.
-  ///
-  /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased].
-  /// Must be used to download the transaction's content before the transaction is finished.
-  final List<SKDownloadWrapper> downloads;
-
   /// The error object, only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
   final SKError error;
 
@@ -172,7 +158,6 @@ class SKPaymentTransactionWrapper {
         typedOther.originalTransaction == originalTransaction &&
         typedOther.transactionTimeStamp == transactionTimeStamp &&
         typedOther.transactionIdentifier == transactionIdentifier &&
-        DeepCollectionEquality().equals(typedOther.downloads, downloads) &&
         typedOther.error == error;
   }
 
