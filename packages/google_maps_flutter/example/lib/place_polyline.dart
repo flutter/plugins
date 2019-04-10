@@ -41,7 +41,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   List<int> widths = <int>[10, 20, 5];
 
   int jointTypesIndex = 0;
-  List<int> jointTypes = <int>[
+  List<JointType> jointTypes = <JointType>[
     JointType.mitered,
     JointType.bevel,
     JointType.round
@@ -187,7 +187,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     final Polyline polyline = polylines[selectedPolyline];
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
-        patternParam: patterns[++patternsIndex % patterns.length],
+        patternsParam: patterns[++patternsIndex % patterns.length],
       );
     });
   }

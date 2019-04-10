@@ -38,7 +38,7 @@ class Polyline {
     this.geodesic = false,
     this.jointType = JointType.mitered,
     this.points = const <LatLng>[],
-    this.pattern = const <PatternItem>[],
+    this.patterns = const <PatternItem>[],
     this.startCap = Cap.buttCap,
     this.visible = true,
     this.width = 10,
@@ -49,7 +49,9 @@ class Polyline {
   /// Uniquely identifies a [Polyline].
   final PolylineId polylineId;
 
-  /// True if the polyline consumes tap events. If not, the map will not trigger polylineTapped callback.
+  /// True if the [Polyline] consumes tap events.
+  ///
+  /// If this is false, [onTap] callback will not be triggered.
   final bool consumeTapEvents;
 
   /// Line segment color in ARGB format, the same format used by Color. The default value is black (0xff000000).
@@ -65,16 +67,18 @@ class Polyline {
   /// Joint type of the polyline line segments.
   ///
   /// The joint type defines the shape to be used when joining adjacent line segments at all vertices of the
-  /// polyline except the start and end vertices. See JointType for supported joint types. The default value is
+  /// polyline except the start and end vertices. See [JointType] for supported joint types. The default value is
   /// mitered.
-  final int jointType;
+  ///
+  /// Supported on Android only.
+  final JointType jointType;
 
   /// The stroke pattern for the polyline.
   ///
   /// Solid or a sequence of PatternItem objects to be repeated along the line.
   /// Available PatternItem types: Gap (defined by gap length in pixels), Dash (defined by line width and dash
   /// length in pixels) and Dot (circular, centered on the line, diameter defined by line width in pixels).
-  final List<PatternItem> pattern;
+  final List<PatternItem> patterns;
 
   /// The vertices of the polyline to be drawn.
   ///
@@ -85,11 +89,15 @@ class Polyline {
   /// The cap at the start vertex of the polyline.
   ///
   /// The default start cap is ButtCap.
+  ///
+  /// Supported on Android only.
   final Cap startCap;
 
   /// The cap at the end vertex of the polyline.
   ///
   /// The default end cap is ButtCap.
+  ///
+  /// Supported on Android only.
   final Cap endCap;
 
   /// True if the marker is visible.
@@ -111,17 +119,15 @@ class Polyline {
   /// Callbacks to receive tap events for polyline placed on this map.
   final VoidCallback onTap;
 
-  /// Creates a new options object whose values are the same as this instance,
-  /// unless overwritten by the specified [changes].
-  ///
-  /// Returns this instance, if [changes] is null.
+  /// Creates a new [Polyline] object whose values are the same as this instance,
+  /// unless overwritten by the specified parameters.
   Polyline copyWith({
     Color colorParam,
     bool consumeTapEventsParam,
     Cap endCapParam,
     bool geodesicParam,
-    int jointTypeParam,
-    List<PatternItem> patternParam,
+    JointType jointTypeParam,
+    List<PatternItem> patternsParam,
     List<LatLng> pointsParam,
     Cap startCapParam,
     bool visibleParam,
@@ -136,7 +142,7 @@ class Polyline {
       endCap: endCapParam ?? endCap,
       geodesic: geodesicParam ?? geodesic,
       jointType: jointTypeParam ?? jointType,
-      pattern: patternParam ?? pattern,
+      patterns: patternsParam ?? patterns,
       points: pointsParam ?? points,
       startCap: startCapParam ?? startCap,
       visible: visibleParam ?? visible,
@@ -160,7 +166,7 @@ class Polyline {
     addIfPresent('color', color.value);
     addIfPresent('endCap', endCap?._toJson());
     addIfPresent('geodesic', geodesic);
-    addIfPresent('jointType', jointType);
+    addIfPresent('jointType', jointType?.value);
     addIfPresent('startCap', startCap?._toJson());
     addIfPresent('visible', visible);
     addIfPresent('width', width);
@@ -170,7 +176,7 @@ class Polyline {
       json['points'] = _pointsToJson();
     }
 
-    if (pattern != null) {
+    if (patterns != null) {
       json['pattern'] = _patternToJson();
     }
 
@@ -198,7 +204,7 @@ class Polyline {
 
   dynamic _patternToJson() {
     final List<dynamic> result = <dynamic>[];
-    for (final PatternItem patternItem in pattern) {
+    for (final PatternItem patternItem in patterns) {
       if (patternItem != null) {
         result.add(patternItem._toJson());
       }
