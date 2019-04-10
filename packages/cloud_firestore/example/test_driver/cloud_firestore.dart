@@ -90,30 +90,30 @@ void main() {
       List<DocumentSnapshot> results;
 
       // startAtDocument
-      snapshot = await messages.where('test_run', isEqualTo: testRun).orderBy('created_at').startAtDocument(snapshot1).getDocuments();
+      snapshot = await messages.where('test_run', isEqualTo: testRun).startAtDocument(snapshot1).getDocuments();
       results = snapshot.documents;
       expect(results.length, 2);
-      expect(results[0].data['message'], 'testing1');
-      expect(results[1].data['message'], 'testing2');
+      expect(results[0].data['message'], 'pagination testing1');
+      expect(results[1].data['message'], 'pagination testing2');
 
       // startAfterDocument
-      snapshot = await messages.where('test_run', isEqualTo: testRun).orderBy('created_at').startAfterDocument(snapshot1).getDocuments();
+      snapshot = await messages.where('test_run', isEqualTo: testRun).startAfterDocument(snapshot1).getDocuments();
       results = snapshot.documents;
       expect(results.length, 1);
-      expect(results[1].data['message'], 'testing2');
+      expect(results[0].data['message'], 'pagination testing2');
 
       // endAtDocument
-      snapshot = await messages.where('test_run', isEqualTo: testRun).orderBy('created_at').endAtDocument(snapshot2).getDocuments();
+      snapshot = await messages.where('test_run', isEqualTo: testRun).endAtDocument(snapshot2).getDocuments();
       results = snapshot.documents;
       expect(results.length, 2);
-      expect(results[0].data['message'], 'testing1');
-      expect(results[1].data['message'], 'testing2');
+      expect(results[0].data['message'], 'pagination testing1');
+      expect(results[1].data['message'], 'pagination testing2');
 
       // endAfterDocument
-      snapshot = await messages.where('test_run', isEqualTo: testRun).orderBy('created_at').endBeforeDocument(snapshot1).getDocuments();
+      snapshot = await messages.where('test_run', isEqualTo: testRun).endBeforeDocument(snapshot1).getDocuments();
       results = snapshot.documents;
       expect(results.length, 1);
-      expect(results[1].data['message'], 'testing1');
+      expect(results[0].data['message'], 'pagination testing1');
 
       // Clean up
       await doc1.delete();
