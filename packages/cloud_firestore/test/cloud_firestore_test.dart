@@ -552,35 +552,46 @@ void main() {
 
     group('Query', () {
       test('getDocuments', () async {
-        final QuerySnapshot snapshot = await collectionReference.getDocuments();
-        final DocumentSnapshot document = snapshot.documents.first;
+        QuerySnapshot snapshot = await collectionReference.getDocuments();
+        DocumentSnapshot document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
-        final QuerySnapshot startAtQuery =
+
+        // startAtDocument
+        snapshot =
             await collectionReference.startAtDocument(document).getDocuments();
+        document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
-        final QuerySnapshot startAfterQuery = await collectionReference
+
+        // startAfterDocument
+        snapshot = await collectionReference
             .startAfterDocument(document)
             .getDocuments();
+        document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
-        final QuerySnapshot endAtQuery =
+
+        // endAtDocument
+        snapshot =
             await collectionReference.endAtDocument(document).getDocuments();
+        document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
-        final QuerySnapshot endBeforeQuery = await collectionReference
+
+        // endBeforeDocument
+        snapshot = await collectionReference
             .endBeforeDocument(document)
             .getDocuments();
+        document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
-        final MethodCall call = log[1];
-        print(call.arguments['parameters']['startAtDocument']);
+
         expect(
           log,
           equals(
