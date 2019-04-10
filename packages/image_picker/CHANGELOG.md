@@ -1,3 +1,7 @@
+## 0.5.3
+
+* Fixed incorrect path being returned from Google Photos on Android.
+
 ## 0.5.2
 
 * Check iOS camera authorizationStatus and return an error, if the access was
