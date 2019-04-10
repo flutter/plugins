@@ -17,7 +17,6 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,26 +55,15 @@ public class CloudFunctionsPlugin implements MethodCallHandler {
                     } else {
                       if (task.getException() instanceof FirebaseFunctionsException) {
                         FirebaseFunctionsException exception =
-                                (FirebaseFunctionsException) task.getException();
+                            (FirebaseFunctionsException) task.getException();
                         Map<String, Object> exceptionMap = new HashMap<>();
                         exceptionMap.put("code", exception.getCode().name());
                         exceptionMap.put("message", exception.getMessage());
                         exceptionMap.put("details", exception.getDetails());
                         result.error(
-                                "functionsError",
-                                "Cloud function failed with exception.",
-                                exceptionMap);
-                      } else if (task.getException() instanceof SocketTimeoutException) {
-                        SocketTimeoutException exception =
-                                (SocketTimeoutException) task.getException();
-                        Map < String, Object > exceptionMap = new HashMap < > ();
-                        exceptionMap.put("code", FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name());
-                        exceptionMap.put("message", exception.getMessage());
-                        exceptionMap.put("details", "SocketTimeoutException");
-                        result.error(
-                                "functionsError",
-                                "Cloud function failed with exception.",
-                                exceptionMap);
+                            "functionsError",
+                            "Cloud function failed with exception.",
+                            exceptionMap);
                       } else {
                         Exception exception = task.getException();
                         result.error(null, exception.getMessage(), null);
