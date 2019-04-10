@@ -1,3 +1,7 @@
+## 0.9.13+1
+
+* Added an integration test for transactions.
+
 ## 0.9.13
 
 * Remove Gradle BoM to avoid Gradle version issues.

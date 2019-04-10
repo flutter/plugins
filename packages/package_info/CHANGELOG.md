@@ -1,6 +1,8 @@
-## 0.4.0+3
-
+## 0.4.0+4
 * Added resetPackageInfo method to reset the static variable during application testing
+
+## 0.4.0+3
+* Add integration test.
 
 ## 0.4.0+2
 

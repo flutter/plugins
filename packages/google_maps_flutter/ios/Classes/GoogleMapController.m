@@ -65,6 +65,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
     GMSCameraPosition* camera = ToOptionalCameraPosition(args[@"initialCameraPosition"]);
     _mapView = [GMSMapView mapWithFrame:frame camera:camera];
+    _mapView.accessibilityElementsHidden = NO;
     _trackCameraPosition = NO;
     InterpretMapOptions(args[@"options"], self);
     NSString* channelName =
