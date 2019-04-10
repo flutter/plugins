@@ -32,4 +32,30 @@
                      [FLTGoogleMapJsonConversions toDouble:data[1]]);
 }
 
++ (NSArray*)positionToJson:(CLLocationCoordinate2D)position {
+  return @[ @(position.latitude), @(position.longitude) ];
+}
+
++ (UIColor*)toColor:(NSNumber*)numberColor {
+  long value = [numberColor longValue];
+  return [UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
+                         green:((float)((value & 0xFF00) >> 8)) / 255.0
+                          blue:((float)(value & 0xFF)) / 255.0
+                         alpha:1.0];
+}
+
++ (NSArray<CLLocation*>*)toPoints:(NSArray*)data {
+  NSMutableArray* points = [[NSMutableArray alloc] init];
+  for (unsigned i = 0; i < [data count]; i++) {
+    NSNumber* latitude = data[i][0];
+    NSNumber* longitude = data[i][1];
+    CLLocation* point =
+        [[CLLocation alloc] initWithLatitude:[FLTGoogleMapJsonConversions toDouble:latitude]
+                                   longitude:[FLTGoogleMapJsonConversions toDouble:longitude]];
+    [points addObject:point];
+  }
+
+  return points;
+}
+
 @end
