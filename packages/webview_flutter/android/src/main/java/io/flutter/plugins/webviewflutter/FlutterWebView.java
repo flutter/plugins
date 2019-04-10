@@ -134,7 +134,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private void reload(MethodCall methodCall, Result result) {
     webView.reload();
     result.success(null);
-    webView.stopLoading();
   }
 
   private void stopLoading(MethodCall methodCall, Result result) {

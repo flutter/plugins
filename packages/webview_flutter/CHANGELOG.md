@@ -1,3 +1,9 @@
+## 0.3.6
+
+* Added an `onPageStarted` callback.
+* Added an `onReceivedError` callback for errors happening while loading pages.
+* Added `stopLoading`.
+
 ## 0.3.5+3
 
 * Make sure to post javascript channel messages from the platform thread.
