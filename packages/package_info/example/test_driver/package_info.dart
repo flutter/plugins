@@ -12,6 +12,7 @@ void main() {
   group('package_info test driver', () {
     test('test package info result', () async {
       final PackageInfo info = await PackageInfo.fromPlatform();
+      // These tests are based on the example app. The tests should be updated if any related info changes.
       if (Platform.isAndroid) {
         expect(info.appName, 'package_info_example');
         expect(info.buildNumber, '1');
