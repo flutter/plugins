@@ -134,11 +134,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
         center.latitude + sin(_markerIdCounter * pi / 6.0) / 20.0,
         center.longitude + cos(_markerIdCounter * pi / 6.0) / 20.0,
       ),
-      infoWindow: InfoWindow(title: markerIdVal, snippet: '*', onTap: (){
-        print("infoWindow opTap: ID= $markerId");
-      }),
+      infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
       onTap: () {
-        print("clusterItem opTap: ID= $markerId");
         _onClusterMarkerTapped(markerId);
       },
       
@@ -160,15 +157,9 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
 
 void _removeCluster() {
     setState(() {
-      print("_removeCluster selectedMarker=$selectedMarker");
       if (clusterItems.containsKey(selectedMarker)) {
-        print("remove");
         clusterItems.remove(selectedMarker);
-        clusterItems.forEach( (k,v) => print(k));
-          
-        
       }
-      print("end");
     });
   }
 
@@ -339,10 +330,6 @@ void _removeCluster() {
                           child: const Text('remove cluster'),
                           onPressed: _removeCluster,
                         ),
-                        // FlatButton(
-                        //   child: const Text('change cluster info'),
-                        //   onPressed: _changeCluster,
-                        // ),
                       ],
                     ),
                     Column(
