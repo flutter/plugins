@@ -163,14 +163,17 @@ class GoogleSignIn {
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
   /// specified domain. By default, the list of accounts will not be restricted.
-  GoogleSignIn({this.signInOption, this.scopes, this.hostedDomain});
+  GoogleSignIn(
+      {this.signInOption, this.scopes, this.hostedDomain, this.serverClientID});
 
   /// Factory for creating default sign in user experience.
-  factory GoogleSignIn.standard({List<String> scopes, String hostedDomain}) {
+  factory GoogleSignIn.standard(
+      {List<String> scopes, String hostedDomain, String serverClientID}) {
     return GoogleSignIn(
         signInOption: SignInOption.standard,
         scopes: scopes,
-        hostedDomain: hostedDomain);
+        hostedDomain: hostedDomain,
+        serverClientID: serverClientID);
   }
 
   /// Factory for creating sign in suitable for games. This option must not be
@@ -206,6 +209,9 @@ class GoogleSignIn {
 
   /// Domain to restrict sign-in to.
   final String hostedDomain;
+
+  /// The client ID of the home web server.
+  final String serverClientID;
 
   StreamController<GoogleSignInAccount> _currentUserController =
       StreamController<GoogleSignInAccount>.broadcast();
@@ -246,6 +252,7 @@ class GoogleSignIn {
         'signInOption': (signInOption ?? SignInOption.standard).toString(),
         'scopes': scopes ?? <String>[],
         'hostedDomain': hostedDomain,
+        'serverClientID': serverClientID,
       })
         ..catchError((dynamic _) {
           // Invalidate initialization if it errored out.
