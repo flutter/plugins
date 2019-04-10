@@ -65,7 +65,7 @@ class ClusterController implements ClusterManager.OnClusterItemClickListener, Cl
 
     private void addClusterItem(String markerId, MarkerOptions markerOptions, boolean consumeTapEvents) {
         LatLng latLng = markerOptions.getPosition();
-        ClusterItemController clusterItem = new ClusterItemController(latLng.latitude, latLng.longitude, markerId);
+        ClusterItemController clusterItem = new ClusterItemController(latLng.latitude, latLng.longitude, markerOptions.getTitle(), markerOptions.getSnippet(), markerId);
         this.mClusterManager.addItem(clusterItem);
     }
 
