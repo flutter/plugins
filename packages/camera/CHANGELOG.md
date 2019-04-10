@@ -1,3 +1,7 @@
+## 0.4.4
+
+* Allow to install the plugin on Android API 16+.
+
 ## 0.4.3+2
 
 * Bump the minimum Flutter version to 1.2.0.

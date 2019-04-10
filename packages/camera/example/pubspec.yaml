@@ -9,6 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
   video_player: ^0.10.0
+  device_info: ^0.4.0+1
 
 dev_dependencies:
   flutter_test:

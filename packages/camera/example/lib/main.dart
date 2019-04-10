@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
@@ -358,10 +359,19 @@ List<CameraDescription> cameras;
 
 Future<void> main() async {
   // Fetch the available cameras before initializing the app.
-  try {
-    cameras = await availableCameras();
-  } on CameraException catch (e) {
-    logError(e.code, e.description);
+  final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  if (androidInfo.version.sdkInt < 21) {
+    runApp(MaterialApp(
+        home: Scaffold(
+            body: Center(
+                child: const Text('Android version < 21 not compatible')))));
+  } else {
+    try {
+      cameras = await availableCameras();
+    } on CameraException catch (e) {
+      logError(e.code, e.description);
+    }
+    runApp(CameraApp());
   }
-  runApp(CameraApp());
 }
