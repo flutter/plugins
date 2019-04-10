@@ -51,7 +51,7 @@ void main() {
       final dynamic result = await firestore.runTransaction(
         (Transaction tx) async {
           final DocumentSnapshot snapshot = await tx.get(ref);
-          final Map<String, dynamic> updatedData = new Map<String, dynamic>.from(snapshot.data);
+          final Map<String, dynamic> updatedData = Map<String, dynamic>.from(snapshot.data);
           updatedData['message'] = 'testing2';
           await tx.update(ref, updatedData);
           return updatedData;
