@@ -66,6 +66,13 @@ class GoogleMapController {
       case 'map#onTap':
         _googleMapState.onTap(LatLng._fromJson(call.arguments['position']));
         break;
+      case 'clusterItem#onTap':
+        _googleMapState.onCusterItemTap(call.arguments['markerId']);
+        break;
+      case 'custerItemInfoWindow#onTap':
+        _googleMapState.onCusterItemInfoWindowTap(call.arguments['markerId']);
+        break;
+
       default:
         throw MissingPluginException();
     }

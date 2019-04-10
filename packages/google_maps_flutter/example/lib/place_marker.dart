@@ -111,10 +111,14 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
         center.latitude + sin(_markerIdCounter * pi / 6.0) / 20.0,
         center.longitude + cos(_markerIdCounter * pi / 6.0) / 20.0,
       ),
-      infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
+      infoWindow: InfoWindow(title: markerIdVal, snippet: '*', onTap: (){
+        print("infoWindow opTap: ID= $markerId");
+      }),
       onTap: () {
+        print("clusterItem opTap: ID= $markerId");
         _onMarkerTapped(markerId);
       },
+      
     );
 
     setState(() {

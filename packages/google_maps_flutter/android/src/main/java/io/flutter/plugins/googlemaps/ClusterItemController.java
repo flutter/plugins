@@ -7,19 +7,22 @@ public class ClusterItemController implements ClusterItem {
     private final String mTitle;
     private final String mSnippet;
     private final String googleMapsClusterItemId;
+    private boolean consumeTapEvents;
 
-    public ClusterItemController(double lat, double lng, String clusterItemId) {
+    public ClusterItemController(double lat, double lng, String clusterItemId, boolean consumeTapEvents) {
         mPosition = new LatLng(lat, lng);
         mTitle = "";
         mSnippet = "";
         this.googleMapsClusterItemId =clusterItemId;
+        this.consumeTapEvents = consumeTapEvents;
     }
 
-    public ClusterItemController(double lat, double lng, String title, String snippet, String clusterItemId) {
+    public ClusterItemController(double lat, double lng, String title, String snippet, String clusterItemId, boolean consumeTapEvents) {
         mPosition = new LatLng(lat, lng);
         mTitle = title;
         mSnippet = snippet;
         this.googleMapsClusterItemId =clusterItemId;
+        this.consumeTapEvents = consumeTapEvents;
     }
 
     @Override
@@ -40,4 +43,13 @@ public class ClusterItemController implements ClusterItem {
     String getGoogleMapsClusterItemId() {
         return googleMapsClusterItemId;
     }
+
+    public void setConsumeTapEvents(boolean consumeTapEvents) {
+        this.consumeTapEvents = consumeTapEvents;
+    }
+
+    boolean consumeTapEvents() {
+        return consumeTapEvents;
+    }
+
 }

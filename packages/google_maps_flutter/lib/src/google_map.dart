@@ -248,6 +248,19 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(position != null);
     widget.onTap(position);
   }
+
+  void onCusterItemTap(String clusterItemIdParam) {
+    assert(clusterItemIdParam != null);
+    final MarkerId markerId = MarkerId(clusterItemIdParam);
+    _clusterItems[markerId].onTap();
+  }
+
+  void onCusterItemInfoWindowTap(String clusterItemIdParam) {
+    assert(clusterItemIdParam != null);
+    final MarkerId markerId = MarkerId(clusterItemIdParam);
+    _clusterItems[markerId].infoWindow.onTap();
+  }
+
 }
 
 /// Configuration options for the GoogleMaps user interface.
