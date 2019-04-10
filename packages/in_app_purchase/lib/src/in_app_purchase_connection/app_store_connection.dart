@@ -206,8 +206,6 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     _restoreCompleter.complete(_restoredTransactions ?? []);
   }
 
-  void updatedDownloads({List<SKDownloadWrapper> downloads}) {}
-
   bool shouldAddStorePayment(
       {SKPaymentWrapper payment, SKProductWrapper product}) {
     // In this unified API, we always return true to keep it consistent with the behavior on Google Play.
