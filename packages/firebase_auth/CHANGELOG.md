@@ -1,3 +1,15 @@
+## 0.8.4+2
+
+* Fixes an error in the documentation of createUserWithEmailAndPassword.
+
+## 0.8.4+1
+
+* Adds credential for email authentication with link.
+
+## 0.8.4
+
+* Adds support for email link authentication.
+
 ## 0.8.3
 
 * Make providerId 'const String' to use in 'case' statement.

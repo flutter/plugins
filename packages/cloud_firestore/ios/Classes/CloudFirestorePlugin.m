@@ -172,9 +172,14 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
 NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
   NSMutableArray *paths = [NSMutableArray array];
   NSMutableArray *documents = [NSMutableArray array];
+  NSMutableArray *metadatas = [NSMutableArray array];
   for (FIRDocumentSnapshot *document in snapshot.documents) {
     [paths addObject:document.reference.path];
     [documents addObject:document.data];
+    [metadatas addObject:@{
+      @"hasPendingWrites" : @(document.metadata.hasPendingWrites),
+      @"isFromCache" : @(document.metadata.isFromCache),
+    }];
   }
   NSMutableArray *documentChanges = [NSMutableArray array];
   for (FIRDocumentChange *documentChange in snapshot.documentChanges) {
@@ -191,18 +196,23 @@ NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
         break;
     }
     [documentChanges addObject:@{
-                                 @"type" : type,
-                                 @"document" : documentChange.document.data,
-                                 @"path" : documentChange.document.reference.path,
-                                 @"oldIndex" : [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
-                                 @"newIndex" : [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
-                                 }];
+      @"type" : type,
+      @"document" : documentChange.document.data,
+      @"path" : documentChange.document.reference.path,
+      @"oldIndex" : [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
+      @"newIndex" : [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
+      @"metadata" : @{
+        @"hasPendingWrites" : @(documentChange.document.metadata.hasPendingWrites),
+        @"isFromCache" : @(documentChange.document.metadata.isFromCache),
+      },
+    }];
   }
   return @{
-           @"paths" : paths,
-           @"documentChanges" : documentChanges,
-           @"documents" : documents,
-           };
+    @"paths" : paths,
+    @"documentChanges" : documentChanges,
+    @"documents" : documents,
+    @"metadatas" : metadatas,
+  };
 }
 
 const UInt8 DATE_TIME = 128;
@@ -421,9 +431,13 @@ const UInt8 TIMESTAMP = 136;
                                    details:nil]);
       } else if (snapshot != nil) {
         result(@{
-                 @"path" : snapshot.reference.path,
-                 @"data" : snapshot.exists ? snapshot.data : [NSNull null]
-                 });
+          @"path" : snapshot.reference.path,
+          @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+          @"metadata" : @{
+            @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
+            @"isFromCache" : @(snapshot.metadata.isFromCache),
+          },
+        });
       } else {
         result(nil);
       }
@@ -478,9 +492,13 @@ const UInt8 TIMESTAMP = 136;
         result(getFlutterError(error));
       } else {
         result(@{
-                 @"path" : snapshot.reference.path,
-                 @"data" : snapshot.exists ? snapshot.data : [NSNull null]
-                 });
+          @"path" : snapshot.reference.path,
+          @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+          @"metadata" : @{
+            @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
+            @"isFromCache" : @(snapshot.metadata.isFromCache),
+          },
+        });
       }
     }];
   } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
@@ -505,7 +523,36 @@ const UInt8 TIMESTAMP = 136;
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     FIRDocumentReference *document = getDocumentReference(call.arguments);
     id<FIRListenerRegistration> listener =
-    [document addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
+        [document addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
+          if (snapshot == nil) {
+            result(getFlutterError(error));
+            return;
+          }
+          [self.channel invokeMethod:@"DocumentSnapshot"
+                           arguments:@{
+                             @"handle" : handle,
+                             @"path" : snapshot ? snapshot.reference.path : [NSNull null],
+                             @"data" : snapshot && snapshot.exists ? snapshot.data : [NSNull null],
+                             @"metadata" : snapshot ? @{
+                               @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
+                               @"isFromCache" : @(snapshot.metadata.isFromCache),
+                             }
+                                                    : [NSNull null],
+                           }];
+        }];
+    _listeners[handle] = listener;
+    result(handle);
+  } else if ([@"Query#getDocuments" isEqualToString:call.method]) {
+    FIRQuery *query;
+    @try {
+      query = getQuery(call.arguments);
+    } @catch (NSException *exception) {
+      result([FlutterError errorWithCode:@"invalid_query"
+                                 message:[exception name]
+                                 details:[exception reason]]);
+    }
+    [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
+                                        NSError *_Nullable error) {
       if (snapshot == nil) {
         result(getFlutterError(error));
         return;
