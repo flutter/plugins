@@ -221,7 +221,6 @@ final class GoogleMapController implements Application.ActivityLifecycleCallback
           clusterController.changeClusterItems((List<Object>) clusterItemsToChange);
           Object clusterItemsIdsToRemove = call.argument("clusterItemsIdsToRemove");
           clusterController.removeClusterItems((List<Object>) clusterItemsIdsToRemove);
-          // Log.d(TAG, "onMethodCall: !clusterItemsToAdd! " + clusterItemsToAdd);
           result.success(null);
           break;
         }

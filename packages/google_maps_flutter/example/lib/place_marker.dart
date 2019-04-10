@@ -67,6 +67,28 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     }
   }
 
+
+  void _onClusterMarkerTapped(MarkerId markerId) {
+    final ClusterItem tappedClusterItem = clusterItems[markerId];
+    print("tappedClusterItem=$tappedClusterItem, markerId=$markerId");
+    if (tappedClusterItem != null) {
+      setState(() {
+        if (clusterItems.containsKey(selectedMarker)) {
+          final ClusterItem resetOld = clusterItems[selectedMarker]
+              .copyWith(iconParam: BitmapDescriptor.defaultMarker);
+          clusterItems[selectedMarker] = resetOld;
+        }
+        selectedMarker = markerId;
+        final ClusterItem newClusterItem = tappedClusterItem.copyWith(
+          iconParam: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueGreen,
+          ),
+        );
+        clusterItems[markerId] = newClusterItem;
+      });
+    }
+  }
+
   void _add() {
     final int markerCount = markers.length;
 
@@ -117,7 +139,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
       }),
       onTap: () {
         print("clusterItem opTap: ID= $markerId");
-        _onMarkerTapped(markerId);
+        _onClusterMarkerTapped(markerId);
       },
       
     );
@@ -133,6 +155,20 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
       if (markers.containsKey(selectedMarker)) {
         markers.remove(selectedMarker);
       }
+    });
+  }
+
+void _removeCluster() {
+    setState(() {
+      print("_removeCluster selectedMarker=$selectedMarker");
+      if (clusterItems.containsKey(selectedMarker)) {
+        print("remove");
+        clusterItems.remove(selectedMarker);
+        clusterItems.forEach( (k,v) => print(k));
+          
+        
+      }
+      print("end");
     });
   }
 
@@ -299,6 +335,14 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                           child: const Text('add cluster'),
                           onPressed: _addCluster,
                         ),
+                        FlatButton(
+                          child: const Text('remove cluster'),
+                          onPressed: _removeCluster,
+                        ),
+                        // FlatButton(
+                        //   child: const Text('change cluster info'),
+                        //   onPressed: _changeCluster,
+                        // ),
                       ],
                     ),
                     Column(

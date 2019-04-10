@@ -59,7 +59,9 @@ class _ClusterUpdates {
       }
     }
     addIfNonNull('clusterItemsToAdd', _serializeClusterSet(clusterItemsToAdd));
-
+    addIfNonNull('clusterItemsToChange', _serializeClusterSet(clusterItemsToChange));
+    addIfNonNull('clusterItemsIdsToRemove',
+      clusterItemsIdsToRemove.map<dynamic>((MarkerId m) => m.value).toList());
     return updateMap;
   }
 

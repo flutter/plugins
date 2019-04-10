@@ -48,7 +48,6 @@ class ClusterController implements ClusterManager.OnClusterItemClickListener, Cl
         if (itemsToAdd != null) {
             for (Object itemToAdd : itemsToAdd) {
                 addClusterItem(itemToAdd);
-
             }
             this.mClusterManager.cluster();
         }
@@ -69,6 +68,8 @@ class ClusterController implements ClusterManager.OnClusterItemClickListener, Cl
         ClusterItemController clusterItem = new ClusterItemController(latLng.latitude, latLng.longitude,
                 markerOptions.getTitle(), markerOptions.getSnippet(), markerId, consumeTapEvents, markerOptions.getIcon());
         this.mClusterManager.addItem(clusterItem);
+
+        clusterItemIdToController.put(markerId, clusterItem);
     }
 
     void changeClusterItems(List<Object> ClusterItemToChange) {
@@ -102,9 +103,9 @@ class ClusterController implements ClusterManager.OnClusterItemClickListener, Cl
             String clusterItemId = (String) rawClusterItemId;
             final ClusterItemController clusterItemController = clusterItemIdToController.remove(clusterItemId);
             if (clusterItemController != null) {
-                // TODO: to be done
-                // clusterItemController.remove();
                 googleMapsClusterItemIdToDartMarkerId.remove(clusterItemController.getGoogleMapsClusterItemId());
+                mClusterManager.removeItem(clusterItemController);
+                mClusterManager.cluster();
             }
         }
     }
