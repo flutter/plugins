@@ -630,7 +630,10 @@ void main() {
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
-                    'startAfterDocument': ['0', kMockDocumentSnapshotData],
+                    'startAfterDocument': <dynamic>[
+                      '0',
+                      kMockDocumentSnapshotData
+                    ],
                   },
                 },
               ),
@@ -642,7 +645,7 @@ void main() {
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
-                    'endAtDocument': ['0', kMockDocumentSnapshotData],
+                    'endAtDocument': <dynamic>['0', kMockDocumentSnapshotData],
                   },
                 },
               ),
@@ -654,7 +657,10 @@ void main() {
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
-                    'endBeforeDocument': ['0', kMockDocumentSnapshotData],
+                    'endBeforeDocument': <dynamic>[
+                      '0',
+                      kMockDocumentSnapshotData
+                    ],
                   },
                 },
               ),
