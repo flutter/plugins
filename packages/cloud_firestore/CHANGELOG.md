@@ -1,3 +1,8 @@
+## 0.9.14
+
+* Support for `startAtDocument`, `startAfterDocument`, `endAtDocument`, `endBeforeDocument`.
+* Added additional unit and integration tests.
+
 ## 0.9.13+1
 
 * Added an integration test for transactions.
