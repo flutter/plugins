@@ -58,7 +58,23 @@ void main() {
   group('error handling', () {
     test('invalid host', () async {
       final Completer<WebViewError> errorCompleter = Completer<WebViewError>();
-      testWebViewError('https://example.invalid/', errorCompleter);
+      await pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: 'https://example.invalid/',
+            onWebViewCreated: (WebViewController controller) {},
+            onReceivedError: (WebViewError error) {
+              errorCompleter.complete(error);
+            },
+            onPageFinished: (String url) {
+              // fail if page finished without error.
+              errorCompleter.complete(null);
+            },
+          ),
+        ),
+      );
       final WebViewError error = await errorCompleter.future;
       expect(error, isNotNull);
       expect(error.isConnectError, true);
@@ -66,34 +82,29 @@ void main() {
     });
     test('internal server error', () async {
       final Completer<WebViewError> errorCompleter = Completer<WebViewError>();
-      testWebViewError('https://httpstat.us/500', errorCompleter);
+      await pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: 'https://httpstat.us/500',
+            onWebViewCreated: (WebViewController controller) {},
+            onReceivedError: (WebViewError error) {
+              errorCompleter.complete(error);
+            },
+            onPageFinished: (String url) {
+              // fail if page finished without error.
+              errorCompleter.complete(null);
+            },
+          ),
+        ),
+      );
       final WebViewError error = await errorCompleter.future;
       expect(error, isNotNull);
       expect(error.isConnectError, false);
       expect(error.statusCode, 500);
     });
   });
-}
-
-Future<void> testWebViewError(
-    String initialUrl, Completer<WebViewError> errorCompleter) async {
-  await pumpWidget(
-    Directionality(
-      textDirection: TextDirection.ltr,
-      child: WebView(
-        key: GlobalKey(),
-        initialUrl: initialUrl,
-        onWebViewCreated: (WebViewController controller) {},
-        onReceivedError: (WebViewError error) {
-          errorCompleter.complete(error);
-        },
-        onPageFinished: (String url) {
-          // fail if page finished without error.
-          errorCompleter.complete(null);
-        },
-      ),
-    ),
-  );
 }
 
 Future<void> pumpWidget(Widget widget) {
