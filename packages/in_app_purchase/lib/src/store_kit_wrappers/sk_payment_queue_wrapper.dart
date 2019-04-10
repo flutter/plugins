@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter/services.dart';
 import 'sk_payment_transaction_wrappers.dart';
 import 'sk_product_wrapper.dart';
-import 'sk_download_wrapper.dart';
 
 part 'sk_payment_queue_wrapper.g.dart';
 
@@ -132,14 +131,6 @@ class SKPaymentQueueWrapper {
             _observer.paymentQueueRestoreCompletedTransactionsFinished();
           });
         }
-      case 'updatedDownloads':
-        {
-          final List<SKDownloadWrapper> downloads =
-              _getDownloadList(call.arguments);
-          return Future<void>(() {
-            _observer.updatedDownloads(downloads: downloads);
-          });
-        }
       case 'shouldAddStorePayment':
         {
           SKPaymentWrapper payment =
@@ -167,15 +158,6 @@ class SKPaymentQueueWrapper {
             (dynamic map) => SKPaymentTransactionWrapper.fromJson(map))
         .toList();
     return transactions;
-  }
-
-  // Get download wrapper object list from arguments.
-  List<SKDownloadWrapper> _getDownloadList(dynamic arguments) {
-    final List<SKDownloadWrapper> downloads = arguments
-        .map<SKDownloadWrapper>(
-            (dynamic map) => SKDownloadWrapper.fromJson(map))
-        .toList();
-    return downloads;
   }
 }
 
