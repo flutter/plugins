@@ -8,7 +8,7 @@
 
 static FlutterError *getFlutterError(NSError *error) {
   if (error == nil) return nil;
-  
+
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
                              message:error.domain
                              details:error.localizedDescription];
@@ -23,7 +23,7 @@ FIRDocumentReference *getDocumentReference(NSDictionary *arguments) {
   return [getFirestore(arguments) documentWithPath:arguments[@"path"]];
 }
 
-typedef void (^QueryCompletionBlock)(FIRQuery* query);
+typedef void (^QueryCompletionBlock)(FIRQuery *query);
 void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
   __block FIRQuery *query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
   NSDictionary *parameters = arguments[@"parameters"];
@@ -71,7 +71,7 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
   id startAtDocument = parameters[@"startAtDocument"];
   if (startAtDocument) {
     NSArray *startAtValues = startAtDocument;
-    NSMutableArray *startAtQueryValues = [[NSMutableArray alloc]init];
+    NSMutableArray *startAtQueryValues = [[NSMutableArray alloc] init];
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     NSString *startAtDocId = startAtValues[0];
     NSDictionary *startAtData = startAtValues[1];
@@ -82,7 +82,7 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
         [startAtQueryValues addObject:[startAtData objectForKey:fieldName]];
       }
     }
-    
+
     [startAtQueryValues addObject:startAtDocId];
     query = [query queryStartingAtValues:startAtQueryValues];
     return handler(query);
@@ -95,7 +95,7 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
   id startAfterDocument = parameters[@"startAfterDocument"];
   if (startAfterDocument) {
     NSArray *startAfterValues = startAfterDocument;
-    NSMutableArray *startAfterQueryValues = [[NSMutableArray alloc]init];
+    NSMutableArray *startAfterQueryValues = [[NSMutableArray alloc] init];
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     NSString *startAfterDocId = startAfterValues[0];
     NSDictionary *startAfterData = startAfterValues[1];
@@ -106,7 +106,7 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
         [startAfterQueryValues addObject:[startAfterData objectForKey:fieldName]];
       }
     }
-    
+
     [startAfterQueryValues addObject:startAfterDocId];
     query = [query queryStartingAfterValues:startAfterQueryValues];
     return handler(query);
@@ -119,7 +119,7 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
   id endAtDocument = parameters[@"endAtDocument"];
   if (endAtDocument) {
     NSArray *endingAtValues = endAtDocument;
-    NSMutableArray *endingAtQueryValues = [[NSMutableArray alloc]init];
+    NSMutableArray *endingAtQueryValues = [[NSMutableArray alloc] init];
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     NSString *endAtDocId = endingAtValues[0];
     NSDictionary *endAtData = endingAtValues[1];
@@ -130,7 +130,7 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
         [endingAtQueryValues addObject:[endAtData objectForKey:fieldName]];
       }
     }
-    
+
     [endingAtQueryValues addObject:endAtDocId];
     query = [query queryEndingAtValues:endingAtQueryValues];
     return handler(query);
@@ -143,7 +143,7 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
   id endBeforeDocument = parameters[@"endBeforeDocument"];
   if (endBeforeDocument) {
     NSArray *endBeforeValues = endBeforeDocument;
-    NSMutableArray *endBeforeQueryValues = [[NSMutableArray alloc]init];
+    NSMutableArray *endBeforeQueryValues = [[NSMutableArray alloc] init];
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     NSString *endBeforeDocId = endBeforeValues[0];
     NSDictionary *endBeforeData = endBeforeValues[1];
@@ -154,16 +154,13 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
         [endBeforeQueryValues addObject:[endBeforeData objectForKey:fieldName]];
       }
     }
-    
+
     [endBeforeQueryValues addObject:endBeforeDocId];
     query = [query queryEndingBeforeValues:endBeforeQueryValues];
     return handler(query);
   }
   return handler(query);
 }
-
-
-
 
 NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
   NSMutableArray *paths = [NSMutableArray array];
@@ -350,10 +347,10 @@ const UInt8 TIMESTAMP = 136;
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FirestoreReaderWriter *firestoreReaderWriter = [FirestoreReaderWriter new];
   FlutterMethodChannel *channel =
-  [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cloud_firestore"
-                              binaryMessenger:[registrar messenger]
-                                        codec:[FlutterStandardMethodCodec
-                                               codecWithReaderWriter:firestoreReaderWriter]];
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cloud_firestore"
+                                  binaryMessenger:[registrar messenger]
+                                            codec:[FlutterStandardMethodCodec
+                                                      codecWithReaderWriter:firestoreReaderWriter]];
   FLTCloudFirestorePlugin *instance = [[FLTCloudFirestorePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
@@ -383,44 +380,44 @@ const UInt8 TIMESTAMP = 136;
   };
   if ([@"Firestore#runTransaction" isEqualToString:call.method]) {
     [getFirestore(call.arguments)
-     runTransactionWithBlock:^id(FIRTransaction *transaction, NSError **pError) {
-       NSNumber *transactionId = call.arguments[@"transactionId"];
-       NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
-       
-       self->transactions[transactionId] = transaction;
-       
-       dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-       
-       [self.channel invokeMethod:@"DoTransaction"
-                        arguments:call.arguments
-                           result:^(id doTransactionResult) {
-                             self->transactionResults[transactionId] = doTransactionResult;
-                             dispatch_semaphore_signal(semaphore);
-                           }];
-       
-       dispatch_semaphore_wait(
-                               semaphore,
-                               dispatch_time(DISPATCH_TIME_NOW, [transactionTimeout integerValue] * 1000000));
-       
-       return self->transactionResults[transactionId];
-     }
-     completion:^(id transactionResult, NSError *error) {
-       if (error != nil) {
-         result([FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
-                                    message:error.localizedDescription
-                                    details:nil]);
-       }
-       result(transactionResult);
-     }];
+        runTransactionWithBlock:^id(FIRTransaction *transaction, NSError **pError) {
+          NSNumber *transactionId = call.arguments[@"transactionId"];
+          NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
+
+          self->transactions[transactionId] = transaction;
+
+          dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+          [self.channel invokeMethod:@"DoTransaction"
+                           arguments:call.arguments
+                              result:^(id doTransactionResult) {
+                                self->transactionResults[transactionId] = doTransactionResult;
+                                dispatch_semaphore_signal(semaphore);
+                              }];
+
+          dispatch_semaphore_wait(
+              semaphore,
+              dispatch_time(DISPATCH_TIME_NOW, [transactionTimeout integerValue] * 1000000));
+
+          return self->transactionResults[transactionId];
+        }
+        completion:^(id transactionResult, NSError *error) {
+          if (error != nil) {
+            result([FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
+                                       message:error.localizedDescription
+                                       details:nil]);
+          }
+          result(transactionResult);
+        }];
   } else if ([@"Transaction#get" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
       FIRDocumentReference *document = getDocumentReference(call.arguments);
       FIRTransaction *transaction = self->transactions[transactionId];
       NSError *error = [[NSError alloc] init];
-      
+
       FIRDocumentSnapshot *snapshot = [transaction getDocument:document error:&error];
-      
+
       if (error != nil) {
         result([FlutterError errorWithCode:[NSString stringWithFormat:@"%tu", [error code]]
                                    message:[error localizedDescription]
@@ -443,7 +440,7 @@ const UInt8 TIMESTAMP = 136;
       NSNumber *transactionId = call.arguments[@"transactionId"];
       FIRDocumentReference *document = getDocumentReference(call.arguments);
       FIRTransaction *transaction = self->transactions[transactionId];
-      
+
       [transaction updateData:call.arguments[@"data"] forDocument:document];
       result(nil);
     });
@@ -452,7 +449,7 @@ const UInt8 TIMESTAMP = 136;
       NSNumber *transactionId = call.arguments[@"transactionId"];
       FIRDocumentReference *document = getDocumentReference(call.arguments);
       FIRTransaction *transaction = self->transactions[transactionId];
-      
+
       [transaction setData:call.arguments[@"data"] forDocument:document];
       result(nil);
     });
@@ -461,7 +458,7 @@ const UInt8 TIMESTAMP = 136;
       NSNumber *transactionId = call.arguments[@"transactionId"];
       FIRDocumentReference *document = getDocumentReference(call.arguments);
       FIRTransaction *transaction = self->transactions[transactionId];
-      
+
       [transaction deleteDocument:document];
       result(nil);
     });
@@ -501,19 +498,19 @@ const UInt8 TIMESTAMP = 136;
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     getQuery(call.arguments, ^(FIRQuery *query) {
       id<FIRListenerRegistration> listener = [query
-                                              addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
-                                                if (snapshot == nil) {
-                                                  result(getFlutterError(error));
-                                                  return;
-                                                }
-                                                NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
-                                                [arguments setObject:handle forKey:@"handle"];
-                                                [self.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
-                                              }];
+          addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
+            if (snapshot == nil) {
+              result(getFlutterError(error));
+              return;
+            }
+            NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
+            [arguments setObject:handle forKey:@"handle"];
+            [self.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
+          }];
       self->_listeners[handle] = listener;
       result(handle);
     });
-    
+
   } else if ([@"Query#addDocumentListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     FIRDocumentReference *document = getDocumentReference(call.arguments);
@@ -554,10 +551,10 @@ const UInt8 TIMESTAMP = 136;
       }
       [self.channel invokeMethod:@"DocumentSnapshot"
                        arguments:@{
-                                   @"handle" : handle,
-                                   @"path" : snapshot ? snapshot.reference.path : [NSNull null],
-                                   @"data" : snapshot && snapshot.exists ? snapshot.data : [NSNull null],
-                                   }];
+                         @"handle" : handle,
+                         @"path" : snapshot ? snapshot.reference.path : [NSNull null],
+                         @"data" : snapshot && snapshot.exists ? snapshot.data : [NSNull null],
+                       }];
     }];
     _listeners[handle] = listener;
     result(handle);

@@ -557,19 +557,25 @@ void main() {
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
-        final QuerySnapshot startAtQuery = await collectionReference.startAtDocument(document).getDocuments();
+        final QuerySnapshot startAtQuery =
+            await collectionReference.startAtDocument(document).getDocuments();
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
-        final QuerySnapshot startAfterQuery = await collectionReference.startAfterDocument(document).getDocuments();
+        final QuerySnapshot startAfterQuery = await collectionReference
+            .startAfterDocument(document)
+            .getDocuments();
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
-        final QuerySnapshot endAtQuery = await collectionReference.endAtDocument(document).getDocuments();
+        final QuerySnapshot endAtQuery =
+            await collectionReference.endAtDocument(document).getDocuments();
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
-        final QuerySnapshot endBeforeQuery = await collectionReference.endBeforeDocument(document).getDocuments();
+        final QuerySnapshot endBeforeQuery = await collectionReference
+            .endBeforeDocument(document)
+            .getDocuments();
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
@@ -598,7 +604,10 @@ void main() {
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
-                    'startAtDocument': <dynamic>['0', kMockDocumentSnapshotData],
+                    'startAtDocument': <dynamic>[
+                      '0',
+                      kMockDocumentSnapshotData
+                    ],
                   },
                 },
               ),

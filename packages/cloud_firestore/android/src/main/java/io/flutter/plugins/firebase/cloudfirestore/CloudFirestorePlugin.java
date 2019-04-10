@@ -189,8 +189,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     }
     @SuppressWarnings("unchecked")
     ArrayList startAtDocument = (ArrayList) parameters.get("startAtDocument");
-    if (startAtDocument != null)
-    {
+    if (startAtDocument != null) {
       String documentId = (String) startAtDocument.get(0);
       Map<String, Object> documentData = (Map<String, Object>) startAtDocument.get(1);
       query = query.orderBy(FieldPath.documentId());
@@ -205,8 +204,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     }
     @SuppressWarnings("unchecked")
     ArrayList startAfterDocument = (ArrayList) parameters.get("startAfterDocument");
-    if (startAfterDocument != null)
-    {
+    if (startAfterDocument != null) {
       String documentId = (String) startAfterDocument.get(0);
       Map<String, Object> documentData = (Map<String, Object>) startAfterDocument.get(1);
       query = query.orderBy(FieldPath.documentId());
@@ -228,8 +226,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     if (startAfter != null) query = query.startAfter(startAfter.toArray());
     @SuppressWarnings("unchecked")
     ArrayList endAtDocument = (ArrayList) parameters.get("endAtDocument");
-    if (endAtDocument != null)
-    {
+    if (endAtDocument != null) {
       String documentId = (String) endAtDocument.get(0);
       Map<String, Object> documentData = (Map<String, Object>) endAtDocument.get(1);
       query = query.orderBy(FieldPath.documentId());
@@ -245,8 +242,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     }
     @SuppressWarnings("unchecked")
     ArrayList endBeforeDocument = (ArrayList) parameters.get("endBeforeDocument");
-    if (endBeforeDocument != null)
-    {
+    if (endBeforeDocument != null) {
       String documentId = (String) endBeforeDocument.get(0);
       Map<String, Object> documentData = (Map<String, Object>) endBeforeDocument.get(1);
       query = query.orderBy(FieldPath.documentId());
