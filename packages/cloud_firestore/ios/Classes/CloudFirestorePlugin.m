@@ -75,7 +75,6 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     NSString *startAtDocId = startAtValues[0];
     NSDictionary *startAtData = startAtValues[1];
-    //Get orderBy values
     if (orderBy) {
       for (id item in orderBy) {
         NSArray *orderByParameters = item;
@@ -100,7 +99,6 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     NSString *startAfterDocId = startAfterValues[0];
     NSDictionary *startAfterData = startAfterValues[1];
-    //Get orderBy values
     if (orderBy) {
       for (id item in orderBy) {
         NSArray *orderByParameters = item;
@@ -125,7 +123,6 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     NSString *endAtDocId = endingAtValues[0];
     NSDictionary *endAtData = endingAtValues[1];
-    //Get orderBy values
     if (orderBy) {
       for (id item in orderBy) {
         NSArray *orderByParameters = item;
@@ -150,7 +147,6 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     NSString *endBeforeDocId = endBeforeValues[0];
     NSDictionary *endBeforeData = endBeforeValues[1];
-    //Get orderBy values
     if (orderBy) {
       for (id item in orderBy) {
         NSArray *orderByParameters = item;
