@@ -554,6 +554,27 @@ void main() {
       test('getDocuments', () async {
         final QuerySnapshot snapshot = await collectionReference.getDocuments();
         final DocumentSnapshot document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+        final QuerySnapshot startAtQuery = await collectionReference.startAtDocument(document).getDocuments();
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+        final QuerySnapshot startAfterQuery = await collectionReference.startAfterDocument(document).getDocuments();
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+        final QuerySnapshot endAtQuery = await collectionReference.endAtDocument(document).getDocuments();
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+        final QuerySnapshot endBeforeQuery = await collectionReference.endBeforeDocument(document).getDocuments();
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+        final MethodCall call = log[1];
+        print(call.arguments['parameters']['startAtDocument']);
         expect(
           log,
           equals(
@@ -569,12 +590,57 @@ void main() {
                   },
                 },
               ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'foo',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'startAtDocument': <dynamic>['0', kMockDocumentSnapshotData],
+                  },
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'foo',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'startAfterDocument': ['0', kMockDocumentSnapshotData],
+                  },
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'foo',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'endAtDocument': ['0', kMockDocumentSnapshotData],
+                  },
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'foo',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'endBeforeDocument': ['0', kMockDocumentSnapshotData],
+                  },
+                },
+              ),
             ],
           ),
         );
-        expect(document.documentID, equals('0'));
-        expect(document.reference.path, equals('foo/0'));
-        expect(document.data, equals(kMockDocumentSnapshotData));
       });
     });
 
