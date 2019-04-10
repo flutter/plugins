@@ -118,10 +118,10 @@ void main() {
       expect(results[0].data['message'], 'pagination testing1');
       expect(results[1].data['message'], 'pagination testing2');
 
-      // endAfterDocument
+      // endBeforeDocument
       snapshot = await messages
           .where('test_run', isEqualTo: testRun)
-          .endBeforeDocument(snapshot1)
+          .endBeforeDocument(snapshot2)
           .getDocuments();
       results = snapshot.documents;
       expect(results.length, 1);
