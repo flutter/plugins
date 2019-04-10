@@ -201,7 +201,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         data.add(documentData.get(orderByFieldName));
       }
       data.add(documentId);
-      query = query.startAfter(data.toArray());
+      query = query.startAt(data.toArray());
     }
     @SuppressWarnings("unchecked")
     ArrayList startAfterDocument = (ArrayList) parameters.get("startAfterDocument");
