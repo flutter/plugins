@@ -1,3 +1,7 @@
+## 0.5.6
+
+* Add support for Polylines on GoogleMap.
+
 ## 0.5.5
 
 * Enable iOS accessibility.
