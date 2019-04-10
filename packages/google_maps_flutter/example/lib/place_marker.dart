@@ -106,6 +106,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
 
 
     final ClusterItem clusterItem = ClusterItem(
+      icon: BitmapDescriptor.defaultMarkerWithHue(160),
       markerId: markerId,
       position: LatLng(
         center.latitude + sin(_markerIdCounter * pi / 6.0) / 20.0,

@@ -44,18 +44,10 @@ import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 
 /** Controller of a single GoogleMaps MapView instance. */
-final class GoogleMapController
-    implements Application.ActivityLifecycleCallbacks,
-        GoogleMap.OnCameraIdleListener,
-        GoogleMap.OnCameraMoveListener,
-        GoogleMap.OnCameraMoveStartedListener,
-        GoogleMap.OnInfoWindowClickListener,
-        GoogleMap.OnMarkerClickListener,
-        GoogleMapOptionsSink,
-        MethodChannel.MethodCallHandler,
-        OnMapReadyCallback,
-        GoogleMap.OnMapClickListener,
-        PlatformView {
+final class GoogleMapController implements Application.ActivityLifecycleCallbacks, GoogleMap.OnCameraIdleListener,
+    GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnInfoWindowClickListener,
+    GoogleMap.OnMarkerClickListener, GoogleMapOptionsSink, MethodChannel.MethodCallHandler, OnMapReadyCallback,
+    GoogleMap.OnMapClickListener, PlatformView {
 
   private static final String TAG = "GoogleMapController";
   private final int id;
@@ -77,11 +69,7 @@ final class GoogleMapController
   private List<Object> initialClusterItems;
   private ClusterManager<ClusterItemController> mClusterManager;
 
-  GoogleMapController(
-      int id,
-      Context context,
-      AtomicInteger activityState,
-      PluginRegistry.Registrar registrar,
+  GoogleMapController(int id, Context context, AtomicInteger activityState, PluginRegistry.Registrar registrar,
       GoogleMapOptions options) {
     this.id = id;
     this.context = context;
@@ -89,8 +77,7 @@ final class GoogleMapController
     this.registrar = registrar;
     this.mapView = new MapView(context, options);
     this.density = context.getResources().getDisplayMetrics().density;
-    methodChannel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_maps_" + id);
+    methodChannel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_maps_" + id);
     methodChannel.setMethodCallHandler(this);
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
@@ -134,8 +121,7 @@ final class GoogleMapController
         // Nothing to do, the activity has been completely destroyed.
         break;
       default:
-        throw new IllegalArgumentException(
-            "Cannot interpret " + activityState.get() + " as an activity state");
+        throw new IllegalArgumentException("Cannot interpret " + activityState.get() + " as an activity state");
     }
     registrar.activity().getApplication().registerActivityLifecycleCallbacks(this);
     mapView.getMapAsync(this);
@@ -155,9 +141,11 @@ final class GoogleMapController
 
   @Override
   public void onMapReady(GoogleMap googleMap) {
+
     this.googleMap = googleMap;
     this.mClusterManager = new ClusterManager<ClusterItemController>(context, googleMap);
     googleMap.setOnInfoWindowClickListener(this);
+    CustomClusterRenderer customRenderer = new CustomClusterRenderer(context, googleMap, mClusterManager);
     if (mapReadyResult != null) {
       mapReadyResult.success(null);
       mapReadyResult = null;
@@ -178,6 +166,8 @@ final class GoogleMapController
     mClusterManager.setOnClusterClickListener(clusterController);
     mClusterManager.setOnClusterInfoWindowClickListener(clusterController);
     mClusterManager.setOnClusterItemInfoWindowClickListener(clusterController);
+    mClusterManager.setRenderer(customRenderer);
+
     updateInitialMarkers();
     updateInitialClusterItems();
   }
@@ -200,16 +190,14 @@ final class GoogleMapController
         }
       case "camera#move":
         {
-          final CameraUpdate cameraUpdate =
-              Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
+          final CameraUpdate cameraUpdate = Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
           moveCamera(cameraUpdate);
           result.success(null);
           break;
         }
       case "camera#animate":
         {
-          final CameraUpdate cameraUpdate =
-              Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
+          final CameraUpdate cameraUpdate = Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
           animateCamera(cameraUpdate);
           result.success(null);
           break;
@@ -225,15 +213,15 @@ final class GoogleMapController
           result.success(null);
           break;
         }
-        case "cluster#update":
+      case "cluster#update":
         {
           Object clusterItemsToAdd = call.argument("clusterItemsToAdd");
-          clusterController.addClusterItems((List<Object>) clusterItemsToAdd);   
+          clusterController.addClusterItems((List<Object>) clusterItemsToAdd);
           Object clusterItemsToChange = call.argument("clusterItemsToChange");
           clusterController.changeClusterItems((List<Object>) clusterItemsToChange);
           Object clusterItemsIdsToRemove = call.argument("clusterItemsIdsToRemove");
-          clusterController.removeClusterItems((List<Object>) clusterItemsIdsToRemove);       
-          //Log.d(TAG, "onMethodCall: !clusterItemsToAdd! " + clusterItemsToAdd);
+          clusterController.removeClusterItems((List<Object>) clusterItemsIdsToRemove);
+          // Log.d(TAG, "onMethodCall: !clusterItemsToAdd! " + clusterItemsToAdd);
           result.success(null);
           break;
         }
@@ -463,7 +451,6 @@ final class GoogleMapController
     }
   }
 
-
   private void updateInitialMarkers() {
     markersController.addMarkers(initialMarkers);
   }
@@ -475,11 +462,14 @@ final class GoogleMapController
   @SuppressLint("MissingPermission")
   private void updateMyLocationEnabled() {
     if (hasLocationPermission()) {
-      // The plugin doesn't add the location permission by default so that apps that don't need
+      // The plugin doesn't add the location permission by default so that apps that
+      // don't need
       // the feature won't require the permission.
-      // Gradle is doing a static check for missing permission and in some configurations will
-      // fail the build if the permission is missing. The following disables the Gradle lint.
-      //noinspection ResourceType
+      // Gradle is doing a static check for missing permission and in some
+      // configurations will
+      // fail the build if the permission is missing. The following disables the
+      // Gradle lint.
+      // noinspection ResourceType
       googleMap.setMyLocationEnabled(myLocationEnabled);
     } else {
       // TODO(amirh): Make the options update fail.
@@ -489,17 +479,14 @@ final class GoogleMapController
   }
 
   private boolean hasLocationPermission() {
-    return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED
-        || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED;
+    return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
   }
 
   private int checkSelfPermission(String permission) {
     if (permission == null) {
       throw new IllegalArgumentException("permission is null");
     }
-    return context.checkPermission(
-        permission, android.os.Process.myPid(), android.os.Process.myUid());
+    return context.checkPermission(permission, android.os.Process.myPid(), android.os.Process.myUid());
   }
 }
