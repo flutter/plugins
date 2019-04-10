@@ -71,7 +71,7 @@ void main() {
       final DocumentReference doc1 = messages.document();
       // Use document ID as a unique identifier to ensure that we don't
       // collide with other tests running against this database.
-      String testRun = doc1.documentID;
+      final String testRun = doc1.documentID;
       await doc1.setData(<String, dynamic>{
         'message': 'pagination testing1',
         'test_run': testRun,
@@ -90,27 +90,39 @@ void main() {
       List<DocumentSnapshot> results;
 
       // startAtDocument
-      snapshot = await messages.where('test_run', isEqualTo: testRun).startAtDocument(snapshot1).getDocuments();
+      snapshot = await messages
+          .where('test_run', isEqualTo: testRun)
+          .startAtDocument(snapshot1)
+          .getDocuments();
       results = snapshot.documents;
       expect(results.length, 2);
       expect(results[0].data['message'], 'pagination testing1');
       expect(results[1].data['message'], 'pagination testing2');
 
       // startAfterDocument
-      snapshot = await messages.where('test_run', isEqualTo: testRun).startAfterDocument(snapshot1).getDocuments();
+      snapshot = await messages
+          .where('test_run', isEqualTo: testRun)
+          .startAfterDocument(snapshot1)
+          .getDocuments();
       results = snapshot.documents;
       expect(results.length, 1);
       expect(results[0].data['message'], 'pagination testing2');
 
       // endAtDocument
-      snapshot = await messages.where('test_run', isEqualTo: testRun).endAtDocument(snapshot2).getDocuments();
+      snapshot = await messages
+          .where('test_run', isEqualTo: testRun)
+          .endAtDocument(snapshot2)
+          .getDocuments();
       results = snapshot.documents;
       expect(results.length, 2);
       expect(results[0].data['message'], 'pagination testing1');
       expect(results[1].data['message'], 'pagination testing2');
 
       // endAfterDocument
-      snapshot = await messages.where('test_run', isEqualTo: testRun).endBeforeDocument(snapshot1).getDocuments();
+      snapshot = await messages
+          .where('test_run', isEqualTo: testRun)
+          .endBeforeDocument(snapshot1)
+          .getDocuments();
       results = snapshot.documents;
       expect(results.length, 1);
       expect(results[0].data['message'], 'pagination testing1');
