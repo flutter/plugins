@@ -109,20 +109,6 @@ class ClusterController implements ClusterManager.OnClusterItemClickListener, Cl
             }
         }
     }
-    /*
-     * boolean onMarkerTap(String googleMarkerId) { String markerId =
-     * googleMapsMarkerIdToDartMarkerId.get(googleMarkerId); if (markerId == null) {
-     * return false; } methodChannel.invokeMethod("marker#onTap",
-     * Convert.toJson(markerId)); MarkerController markerController =
-     * markerIdToController.get(markerId); if (markerController != null) { return
-     * markerController.consumeTapEvents(); } return false; }
-     * 
-     * void onInfoWindowTap(String googleMarkerId) { String markerId =
-     * googleMapsMarkerIdToDartMarkerId.get(googleMarkerId); if (markerId == null) {
-     * return; } methodChannel.invokeMethod("infoWindow#onTap",
-     * Convert.toJson(markerId)); }
-     * 
-     */
 
     @SuppressWarnings("unchecked")
     private static String getClusterItemId(Object clusterItem) {
@@ -139,19 +125,21 @@ class ClusterController implements ClusterManager.OnClusterItemClickListener, Cl
         methodChannel.invokeMethod("clusterItem#onTap", Convert.toJson(clusterItemId));
         ClusterItemController clusterController = clusterItemIdToController.get(clusterItemId);
         if (clusterController != null) {
-            return clusterController.consumeTapEvents(); // TODO: fix it, for now this events is constant.
+            return clusterController.consumeTapEvents(); // TODO: check it, for now this events is constant.
         }
         return false;
     }
 
     @Override
     public boolean onClusterClick(Cluster cluster) {
+        // TODO: to be done
         Log.d("ClusterController", "onClusterClick: ");
         return false;
     }
 
     @Override
     public void onClusterInfoWindowClick(Cluster cluster) {
+        // TODO: to be done
         Log.d("ClusterController", "onClusterInfoWindowClick: ");
     }
 
@@ -162,6 +150,5 @@ class ClusterController implements ClusterManager.OnClusterItemClickListener, Cl
             return;
         }
         methodChannel.invokeMethod("custerItemInfoWindow#onTap", Convert.toJson(clusterItemId));
-
     }
 }

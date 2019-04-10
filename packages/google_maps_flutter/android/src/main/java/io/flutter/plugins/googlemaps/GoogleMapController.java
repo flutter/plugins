@@ -143,7 +143,6 @@ final class GoogleMapController implements Application.ActivityLifecycleCallback
 
   @Override
   public void onMapReady(GoogleMap googleMap) {
-
     this.googleMap = googleMap;
     this.mMarkerManager = new MarkerManager(googleMap);
     this.mClusterManager = new ClusterManager<ClusterItemController>(context, googleMap, mMarkerManager);
@@ -157,23 +156,18 @@ final class GoogleMapController implements Application.ActivityLifecycleCallback
     googleMap.setOnCameraMoveStartedListener(this);
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
-    // googleMap.setOnMarkerClickListener(this);
     googleMap.setOnMapClickListener(this);
     updateMyLocationEnabled();
-    markersController.setGoogleMap(googleMap);
     clusterController.setGoogleMap(googleMap);
     clusterController.setClusterManager(mClusterManager);
     googleMap.setOnCameraIdleListener(mClusterManager);
-    // googleMap.setOnMarkerClickListener(mClusterManager);
     googleMap.setOnMarkerClickListener(mMarkerManager);
-
     googleMap.setOnInfoWindowClickListener(mClusterManager);
     mClusterManager.setOnClusterItemClickListener(clusterController);
     mClusterManager.setOnClusterClickListener(clusterController);
     mClusterManager.setOnClusterInfoWindowClickListener(clusterController);
     mClusterManager.setOnClusterItemInfoWindowClickListener(clusterController);
     mClusterManager.setRenderer(customRenderer);
-
     updateInitialMarkers();
     updateInitialClusterItems();
   }

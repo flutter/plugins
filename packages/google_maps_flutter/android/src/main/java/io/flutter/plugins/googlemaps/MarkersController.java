@@ -20,8 +20,7 @@ class MarkersController {
   private final Map<String, MarkerController> markerIdToController;
   private final Map<String, String> googleMapsMarkerIdToDartMarkerId;
   private final MethodChannel methodChannel;
-  private GoogleMap googleMap;
-  MarkerManager markerManager;
+  private MarkerManager markerManager;
   private  GoogleMap.OnMarkerClickListener mOnMarkerClickListener;
 
   MarkersController(MethodChannel methodChannel) {
@@ -32,10 +31,6 @@ class MarkersController {
 
   void setMarkerManager(MarkerManager markerManager) {
     this.markerManager = markerManager;
-  }
-
-  void setGoogleMap(GoogleMap googleMap) {
-    this.googleMap = googleMap;
   }
 
   void setOnMarkerClickListener(GoogleMap.OnMarkerClickListener onMarkerClickListener) {
@@ -107,7 +102,6 @@ class MarkersController {
   }
 
   private void addMarker(String markerId, MarkerOptions markerOptions, boolean consumeTapEvents) {
-    // final Marker marker = googleMap.addMarker(markerOptions);
     MarkerManager.Collection collection = markerManager.newCollection();
     final Marker marker = collection.addMarker(markerOptions);
     collection.setOnMarkerClickListener(mOnMarkerClickListener);
