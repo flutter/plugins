@@ -183,7 +183,10 @@ class Query {
     assert(!_parameters.containsKey('startAfterDocument'));
     assert(!_parameters.containsKey('startAtDocument'));
     return _copyWithParameters(<String, dynamic>{
-      'startAfterDocument': <dynamic>[documentSnapshot.documentID, documentSnapshot.data]
+      'startAfterDocument': <dynamic>[
+        documentSnapshot.documentID,
+        documentSnapshot.data
+      ]
     });
   }
 
@@ -200,7 +203,10 @@ class Query {
     assert(!_parameters.containsKey('startAfterDocument'));
     assert(!_parameters.containsKey('startAtDocument'));
     return _copyWithParameters(<String, dynamic>{
-      'startAtDocument': <dynamic>[documentSnapshot.documentID, documentSnapshot.data]
+      'startAtDocument': <dynamic>[
+        documentSnapshot.documentID,
+        documentSnapshot.data
+      ]
     });
   }
 
@@ -247,7 +253,10 @@ class Query {
     assert(!_parameters.containsKey('endBeforeDocument'));
     assert(!_parameters.containsKey('endAtDocument'));
     return _copyWithParameters(<String, dynamic>{
-      'endAtDocument': <dynamic>[documentSnapshot.documentID, documentSnapshot.data]
+      'endAtDocument': <dynamic>[
+        documentSnapshot.documentID,
+        documentSnapshot.data
+      ]
     });
   }
 
@@ -279,7 +288,10 @@ class Query {
     assert(!_parameters.containsKey('endBeforeDocument'));
     assert(!_parameters.containsKey('endAtDocument'));
     return _copyWithParameters(<String, dynamic>{
-      'endBeforeDocument': <dynamic>[documentSnapshot.documentID, documentSnapshot.data]
+      'endBeforeDocument': <dynamic>[
+        documentSnapshot.documentID,
+        documentSnapshot.data
+      ]
     });
   }
 
