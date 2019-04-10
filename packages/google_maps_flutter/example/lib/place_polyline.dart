@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -194,6 +196,8 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
 
   @override
   Widget build(BuildContext context) {
+    final bool iOSorNotSelected = Platform.isIOS || (selectedPolyline == null);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -252,35 +256,28 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                               (selectedPolyline == null) ? null : _changeWidth,
                         ),
                         FlatButton(
-                          child: const Text('change start cap'),
-                          onPressed: (selectedPolyline == null)
-                              ? null
-                              : _changeStartCap,
-                        ),
-                        FlatButton(
-                          child: const Text('change end cap'),
-                          onPressed:
-                              (selectedPolyline == null) ? null : _changeEndCap,
-                        ),
-                        FlatButton(
-                          child: const Text('change joint type'),
-                          onPressed: (selectedPolyline == null)
-                              ? null
-                              : _changeJointType,
-                        ),
-                        FlatButton(
                           child: const Text('change color'),
                           onPressed:
                               (selectedPolyline == null) ? null : _changeColor,
                         ),
                         FlatButton(
-                          child: const Text('change pattern'),
-                          onPressed: (selectedPolyline == null)
-                              ? null
-                              : _changePattern,
+                          child: const Text('change start cap [Android only]'),
+                          onPressed: iOSorNotSelected ? null : _changeStartCap,
+                        ),
+                        FlatButton(
+                          child: const Text('change end cap [Android only]'),
+                          onPressed: iOSorNotSelected ? null : _changeEndCap,
+                        ),
+                        FlatButton(
+                          child: const Text('change joint type [Android only]'),
+                          onPressed: iOSorNotSelected ? null : _changeJointType,
+                        ),
+                        FlatButton(
+                          child: const Text('change pattern [Android only]'),
+                          onPressed: iOSorNotSelected ? null : _changePattern,
                         ),
                       ],
-                    ),
+                    )
                   ],
                 )
               ],
