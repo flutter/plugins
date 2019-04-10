@@ -1,3 +1,7 @@
+## 2.0.3
+
+* Provide a `toString` implementation for `DatabaseError`.
+
 ## 2.0.2+1
 
 * Added an integration test for transactions.
