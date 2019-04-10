@@ -88,6 +88,10 @@ static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:
 
 static CGPoint ToPoint(NSArray* data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
 
+static NSArray* PositionToJson(CLLocationCoordinate2D data) {
+  return [FLTGoogleMapJsonConversions positionToJson:data];
+}
+
 static void InterpretMarkerOptions(NSDictionary* data, id<FLTGoogleMapMarkerOptionsSink> sink,
                                    NSObject<FlutterPluginRegistrar>* registrar) {
   NSNumber* alpha = data[@"alpha"];

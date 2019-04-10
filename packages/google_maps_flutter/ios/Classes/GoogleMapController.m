@@ -54,6 +54,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   // https://github.com/flutter/flutter/issues/27550
   BOOL _cameraDidInitialSetup;
   FLTMarkersController* _markersController;
+  FLTPolylinesController* _polylinesController;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -84,9 +85,16 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _markersController = [[FLTMarkersController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar];
+    _polylinesController = [[FLTPolylinesController alloc] init:_channel
+                                                        mapView:_mapView
+                                                      registrar:registrar];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
+    }
+    id polylinesToAdd = args[@"polylinesToAdd"];
+    if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
+      [_polylinesController addPolylines:polylinesToAdd];
     }
   }
   return self;
@@ -137,6 +145,20 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     id markerIdsToRemove = call.arguments[@"markerIdsToRemove"];
     if ([markerIdsToRemove isKindOfClass:[NSArray class]]) {
       [_markersController removeMarkerIds:markerIdsToRemove];
+    }
+    result(nil);
+  } else if ([call.method isEqualToString:@"polylines#update"]) {
+    id polylinesToAdd = call.arguments[@"polylinesToAdd"];
+    if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
+      [_polylinesController addPolylines:polylinesToAdd];
+    }
+    id polylinesToChange = call.arguments[@"polylinesToChange"];
+    if ([polylinesToChange isKindOfClass:[NSArray class]]) {
+      [_polylinesController changePolylines:polylinesToChange];
+    }
+    id polylineIdsToRemove = call.arguments[@"polylineIdsToRemove"];
+    if ([polylineIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_polylinesController removePolylineIds:polylineIdsToRemove];
     }
     result(nil);
   } else if ([call.method isEqualToString:@"map#isCompassEnabled"]) {
@@ -269,6 +291,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 - (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
   [_markersController onInfoWindowTap:markerId];
+}
+- (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
+  NSString* polylineId = overlay.userData[0];
+  [_polylinesController onPolylineTap:polylineId];
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
