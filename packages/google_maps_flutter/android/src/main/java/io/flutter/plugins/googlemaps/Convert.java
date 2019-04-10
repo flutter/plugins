@@ -50,6 +50,14 @@ class Convert {
           return BitmapDescriptorFactory.fromAsset(
               FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
+      case "fromAssetImage":
+        if (data.size() == 3) {
+          return BitmapDescriptorFactory.fromAsset(
+              FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
+        } else {
+          throw new IllegalArgumentException(
+              "'fromAssetImage' Expected exactly 3 arguments, got: " + data.size());
+        }
       case "fromBytes":
         return getBitmapFromBytes(data);
       default:

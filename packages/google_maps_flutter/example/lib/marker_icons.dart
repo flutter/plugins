@@ -23,9 +23,11 @@ const LatLng _kMapCenter = LatLng(52.4478, -3.5402);
 
 class MarkerIconsBodyState extends State<MarkerIconsBody> {
   GoogleMapController controller;
+  BitmapDescriptor _markerIcon;
 
   @override
   Widget build(BuildContext context) {
+    _createMarkerImageFromAsset(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -56,13 +58,25 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
       Marker(
         markerId: MarkerId("marker_1"),
         position: _kMapCenter,
-        icon: _createMarkerImageFromAsset(),
+        icon: _markerIcon,
       ),
     ].toSet();
   }
 
-  BitmapDescriptor _createMarkerImageFromAsset() {
-    return BitmapDescriptor.fromAsset('assets/red_square.png');
+  Future<void> _createMarkerImageFromAsset(BuildContext context) async {
+    if (_markerIcon == null) {
+      final ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context);
+      BitmapDescriptor.fromAssetImage(
+              imageConfiguration, 'assets/red_square.png')
+          .then(_updateBitmap);
+    }
+  }
+
+  void _updateBitmap(BitmapDescriptor bitmap) {
+    setState(() {
+      _markerIcon = bitmap;
+    });
   }
 
   void _onMapCreated(GoogleMapController controllerParam) {
