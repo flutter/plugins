@@ -1,3 +1,7 @@
+## 0.6.3
+
+* Update minimum deploy iOS version to 8.0.
+
 ## 0.5.3
 
 * Fixed incorrect path being returned from Google Photos on Android.
