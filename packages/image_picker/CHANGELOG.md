@@ -1,3 +1,7 @@
+## 0.5.3+1
+
+* Remove unnecessary video_player dev dependency.
+
 ## 0.5.3
 
 * Fixed incorrect path being returned from Google Photos on Android.
