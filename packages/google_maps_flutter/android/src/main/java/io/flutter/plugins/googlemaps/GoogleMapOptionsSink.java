@@ -6,9 +6,7 @@ package io.flutter.plugins.googlemaps;
 
 import com.google.android.gms.maps.model.LatLngBounds;
 
-/**
- * Receiver of GoogleMap configuration options.
- */
+/** Receiver of GoogleMap configuration options. */
 interface GoogleMapOptionsSink {
 
   void setCameraTargetBounds(LatLngBounds bounds);
@@ -36,5 +34,4 @@ interface GoogleMapOptionsSink {
   void setInitialClusterItems(Object initialClusterItems);
 
   void setInitialPolylines(Object initialPolylines);
-
 }

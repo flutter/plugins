@@ -14,15 +14,15 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<ClusterItemCon
 
   private final Context context;
 
-  public CustomClusterRenderer(Context context, GoogleMap map,
-      ClusterManager<ClusterItemController> clusterManager) {
+  public CustomClusterRenderer(
+      Context context, GoogleMap map, ClusterManager<ClusterItemController> clusterManager) {
     super(context, map, clusterManager);
     this.context = context;
   }
 
   @Override
-  protected void onBeforeClusterItemRendered(ClusterItemController item,
-      MarkerOptions markerOptions) {
+  protected void onBeforeClusterItemRendered(
+      ClusterItemController item, MarkerOptions markerOptions) {
     markerOptions.icon(item.getIcon()).snippet(item.getTitle());
   }
 }

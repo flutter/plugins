@@ -17,7 +17,10 @@ public class ClusterItemController implements ClusterItem {
   private boolean consumeTapEvents;
   private final BitmapDescriptor bitmapDescriptor;
 
-  public ClusterItemController(double lat, double lng, String clusterItemId,
+  public ClusterItemController(
+      double lat,
+      double lng,
+      String clusterItemId,
       boolean consumeTapEvents,
       BitmapDescriptor bitmapDescriptor) {
     this.position = new LatLng(lat, lng);
@@ -28,9 +31,14 @@ public class ClusterItemController implements ClusterItem {
     this.bitmapDescriptor = bitmapDescriptor;
   }
 
-  public ClusterItemController(double lat, double lng, String title, String snippet,
+  public ClusterItemController(
+      double lat,
+      double lng,
+      String title,
+      String snippet,
       String clusterItemId,
-      boolean consumeTapEvents, BitmapDescriptor bitmapDescriptor) {
+      boolean consumeTapEvents,
+      BitmapDescriptor bitmapDescriptor) {
     this.position = new LatLng(lat, lng);
     this.title = title;
     this.snippet = snippet;
@@ -69,5 +77,4 @@ public class ClusterItemController implements ClusterItem {
   public BitmapDescriptor getIcon() {
     return this.bitmapDescriptor;
   }
-
 }

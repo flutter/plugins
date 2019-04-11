@@ -8,8 +8,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.MarkerManager;
-import com.google.maps.android.clustering.ClusterManager;
-
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
 import java.util.List;
