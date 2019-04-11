@@ -88,6 +88,10 @@ static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:
 
 static CGPoint ToPoint(NSArray* data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
 
+static NSArray* PositionToJson(CLLocationCoordinate2D data) {
+  return [FLTGoogleMapJsonConversions positionToJson:data];
+}
+
 static void InterpretMarkerOptions(NSDictionary* data, id<FLTGoogleMapMarkerOptionsSink> sink,
                                    NSObject<FlutterPluginRegistrar>* registrar) {
   NSNumber* alpha = data[@"alpha"];
@@ -164,7 +168,27 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
       image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]
                                                    fromPackage:iconData[2]]];
     }
+  } else if ([iconData[0] isEqualToString:@"fromBytes"]) {
+    if (iconData.count == 2) {
+      @try {
+        FlutterStandardTypedData* byteData = iconData[1];
+        image = [UIImage imageWithData:[byteData data]];
+      } @catch (NSException* exception) {
+        @throw [NSException exceptionWithName:@"InvalidByteDescriptor"
+                                       reason:@"Unable to interpret bytes as a valid image."
+                                     userInfo:nil];
+      }
+    } else {
+      NSString* error = [NSString
+          stringWithFormat:@"fromBytes should have exactly one argument, the bytes. Got: %lu",
+                           iconData.count];
+      NSException* exception = [NSException exceptionWithName:@"InvalidByteDescriptor"
+                                                       reason:error
+                                                     userInfo:nil];
+      @throw exception;
+    }
   }
+
   return image;
 }
 

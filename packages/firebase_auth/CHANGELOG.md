@@ -1,6 +1,26 @@
+## 0.8.4+2
+
+* Fixes an error in the documentation of createUserWithEmailAndPassword.
+
+## 0.8.4+1
+
+* Adds credential for email authentication with link.
+
+## 0.8.4
+
+* Adds support for email link authentication.
+
+## 0.8.3
+
+* Make providerId 'const String' to use in 'case' statement.
+
+## 0.8.2+1
+
+* Fixed bug where `PhoneCodeAutoRetrievalTimeout` callback was never called.
+
 ## 0.8.2
 
- * Fixed `linkWithCredential` on Android.
+* Fixed `linkWithCredential` on Android.
 
 ## 0.8.1+5
 

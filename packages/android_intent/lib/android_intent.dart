@@ -57,9 +57,6 @@ class AndroidIntent {
     if (package != null) {
       args['package'] = package;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('launch', args);
+    await _channel.invokeMethod<void>('launch', args);
   }
 }

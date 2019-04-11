@@ -7,5 +7,10 @@ dependencies:
   package_info:
     path: ../
 
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  test: any
+
 flutter:
   uses-material-design: true

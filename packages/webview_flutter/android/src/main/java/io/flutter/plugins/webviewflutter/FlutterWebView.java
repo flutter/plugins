@@ -7,9 +7,11 @@ package io.flutter.plugins.webviewflutter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -24,10 +26,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final WebView webView;
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
+  private final Handler platformThreadHandler;
 
   @SuppressWarnings("unchecked")
   FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
+    platformThreadHandler = new Handler(context.getMainLooper());
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
 
@@ -40,8 +44,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
       registerJavaScriptChannelNames((List<String>) params.get(JS_CHANNEL_NAMES_FIELD));
     }
-
-    webView.setWebViewClient(flutterWebViewClient);
 
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
@@ -186,7 +188,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           updateJsMode((Integer) settings.get(key));
           break;
         case "hasNavigationDelegate":
-          flutterWebViewClient.setHasNavigationDelegate((boolean) settings.get(key));
+          final boolean hasNavigationDelegate = (boolean) settings.get(key);
+
+          final WebViewClient webViewClient =
+              flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
+
+          webView.setWebViewClient(webViewClient);
           break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
@@ -210,7 +217,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private void registerJavaScriptChannelNames(List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.addJavascriptInterface(
-          new JavaScriptChannel(methodChannel, channelName), channelName);
+          new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
     }
   }
 

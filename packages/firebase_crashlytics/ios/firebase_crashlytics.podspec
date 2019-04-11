@@ -21,4 +21,3 @@ A new flutter plugin project.
   s.dependency 'Crashlytics'
   s.dependency 'Firebase/Core'
 end
-

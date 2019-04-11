@@ -11,7 +11,8 @@ import 'purchase_wrapper.dart';
 import 'sku_details_wrapper.dart';
 import 'enum_converters.dart';
 
-const String _kOnPurchasesUpdated =
+@visibleForTesting
+const String kOnPurchasesUpdated =
     'PurchasesUpdatedListener#onPurchasesUpdated(int, List<Purchase>)';
 const String _kOnBillingServiceDisconnected =
     'BillingClientStateListener#onBillingServiceDisconnected()';
@@ -49,8 +50,8 @@ typedef void PurchasesUpdatedListener(PurchasesResultWrapper purchasesResult);
 class BillingClient {
   BillingClient(PurchasesUpdatedListener onPurchasesUpdated) {
     assert(onPurchasesUpdated != null);
-    channel.setMethodCallHandler(_callHandler);
-    _callbacks[_kOnPurchasesUpdated] = [onPurchasesUpdated];
+    channel.setMethodCallHandler(callHandler);
+    _callbacks[kOnPurchasesUpdated] = [onPurchasesUpdated];
   }
 
   // Occasionally methods in the native layer require a Dart callback to be
@@ -146,10 +147,10 @@ class BillingClient {
   /// and [the given
   /// accountId](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder.html#setAccountId(java.lang.String)).
   Future<BillingResponse> launchBillingFlow(
-      {@required SkuDetailsWrapper skuDetails, String accountId}) async {
-    assert(skuDetails != null);
+      {@required String sku, String accountId}) async {
+    assert(sku != null);
     final Map<String, dynamic> arguments = <String, dynamic>{
-      'sku': skuDetails.sku,
+      'sku': sku,
       'accountId': accountId,
     };
     return BillingResponseConverter().fromJson(await channel.invokeMethod(
@@ -194,13 +195,28 @@ class BillingClient {
         <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
   }
 
-  Future<void> _callHandler(MethodCall call) async {
+  /// Consumes a given in-app product.
+  ///
+  /// Consuming can only be done on an item that's owned, and as a result of consumption, the user will no longer own it.
+  /// Consumption is done asynchronously. The method returns a Future containing a [BillingResponse].
+  ///
+  /// This wraps [`BillingClient#consumeAsync(String, ConsumeResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#consumeAsync(java.lang.String,%20com.android.billingclient.api.ConsumeResponseListener))
+  Future<BillingResponse> consumeAsync(String purchaseToken) async {
+    assert(purchaseToken != null);
+    return BillingResponseConverter().fromJson(await channel.invokeMethod(
+      'BillingClient#consumeAsync(String, ConsumeResponseListener)',
+      <String, String>{'purchaseToken': purchaseToken},
+    ));
+  }
+
+  @visibleForTesting
+  Future<void> callHandler(MethodCall call) async {
     switch (call.method) {
-      case _kOnPurchasesUpdated:
+      case kOnPurchasesUpdated:
         // The purchases updated listener is a singleton.
-        assert(_callbacks[_kOnPurchasesUpdated].length == 1);
+        assert(_callbacks[kOnPurchasesUpdated].length == 1);
         final PurchasesUpdatedListener listener =
-            _callbacks[_kOnPurchasesUpdated].first;
+            _callbacks[kOnPurchasesUpdated].first;
         listener(PurchasesResultWrapper.fromJson(call.arguments));
         break;
       case _kOnBillingServiceDisconnected:
