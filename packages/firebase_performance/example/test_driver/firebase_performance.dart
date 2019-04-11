@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:io';
+
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:firebase_performance/firebase_performance';
+import 'package:firebase_performance/firebase_performance.dart';
 
 void main() {
   final Completer<String> completer = Completer<String>();
@@ -10,8 +10,17 @@ void main() {
   tearDownAll(() => completer.complete(null));
 
   group('firebase_performance test driver', () {
-    test('test performance result', () async {
-      expect(false);
-    }
+    final FirebasePerformance performance = FirebasePerformance.instance;
+
+    test('setPerformanceCollectionEnabled', () async {
+      await performance.setPerformanceCollectionEnabled(true);
+
+      final bool enabled = await performance.isPerformanceCollectionEnabled();
+      expect(enabled, isTrue);
+
+      await performance.setPerformanceCollectionEnabled(false);
+      final bool disabled = await performance.isPerformanceCollectionEnabled();
+      expect(disabled, isFalse);
+    });
   });
 }
