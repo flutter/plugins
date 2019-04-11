@@ -7,7 +7,7 @@
 #import "Firebase/Firebase.h"
 
 static NSString *getFlutterErrorCode(NSError *error) {
-  NSString *code = [error userInfo][FIRAuthErrorNameKey];
+  NSString *code = [error userInfo][FIRAuthErrorUserInfoNameKey];
   if (code != nil) {
     return code;
   }
@@ -171,14 +171,14 @@ int nextHandle = 0;
   } else if ([@"reauthenticateWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
         reauthenticateWithCredential:[self getCredential:call.arguments]
-                          completion:^(NSError *_Nullable error) {
+                          completion:^(FIRAuthDataResult *r, NSError *_Nullable error) {
                             [self sendResult:result forObject:nil error:error];
                           }];
   } else if ([@"linkWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
         linkWithCredential:[self getCredential:call.arguments]
-                completion:^(FIRUser *user, NSError *error) {
-                  [self sendResult:result forUser:user error:error];
+                completion:^(FIRAuthDataResult *r, NSError *error) {
+                  [self sendResult:result forUser:r.user error:error];
                 }];
   } else if ([@"unlinkFromProvider" isEqualToString:call.method]) {
     NSString *provider = call.arguments[@"provider"];
@@ -283,8 +283,8 @@ int nextHandle = 0;
                                                      verificationCode:smsCode];
     [[self getAuth:call.arguments]
         signInWithCredential:credential
-                  completion:^(FIRUser *_Nullable user, NSError *_Nullable error) {
-                    [self sendResult:result forUser:user error:error];
+                  completion:^(FIRAuthDataResult *r, NSError *_Nullable error) {
+                    [self sendResult:result forUser:r.user error:error];
                   }];
   } else if ([@"setLanguageCode" isEqualToString:call.method]) {
     NSString *language = call.arguments[@"language"];
