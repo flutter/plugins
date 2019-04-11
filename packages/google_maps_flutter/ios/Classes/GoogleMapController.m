@@ -147,6 +147,21 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       [_markersController removeMarkerIds:markerIdsToRemove];
     }
     result(nil);
+  } else if ([call.method isEqualToString:@"cluster#update"]) {
+    id clusterItemsToAdd = call.arguments[@"clusterItemsToAdd"];
+    // TODO: to be done
+    // if ([clusterItemsToAdd isKindOfClass:[NSArray class]]) {
+    //   [_clusterItemsController addClusterItems:clusterItemsToAdd];
+    // }
+    id clusterItemsToChange = call.arguments[@"clusterItemsToChange"];
+    // if ([clusterItemsToChange isKindOfClass:[NSArray class]]) {
+    //   [_clusterItemsController changeClusterItems:clusterItemsToChange];
+    // }
+    id clusterItemIdsToRemove = call.arguments[@"clusterItemIdsToRemove"];
+    // if ([clusterItemIdsToRemove isKindOfClass:[NSArray class]]) {
+    //   [_clusterItemsController removeClusterItemIds:clusterItemIdsToRemove];
+    // }
+    result(nil);
   } else if ([call.method isEqualToString:@"polylines#update"]) {
     id polylinesToAdd = call.arguments[@"polylinesToAdd"];
     if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
