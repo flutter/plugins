@@ -142,7 +142,7 @@ class Convert {
     return ((Number) o).intValue();
   }
 
-  static Object latlngBoundsToJson(CameraPosition position) {
+  static Object cameraPositionToJson(CameraPosition position) {
     if (position == null) {
       return null;
     }
@@ -152,6 +152,13 @@ class Convert {
     data.put("tilt", position.tilt);
     data.put("zoom", position.zoom);
     return data;
+  }
+
+  static Object latlngBoundsToJson(LatLngBounds latLngBounds) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("southwest", latLngToJson(latLngBounds.southwest));
+    arguments.put("northeast", latLngToJson(latLngBounds.northeast));
+    return arguments;
   }
 
   static Object markerIdToJson(String markerId) {
@@ -174,13 +181,6 @@ class Convert {
 
   static Object latLngToJson(LatLng latLng) {
     return Arrays.asList(latLng.latitude, latLng.longitude);
-  }
-
-  public static Object latlngBoundsToJson(LatLngBounds latLngBounds) {
-    final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("southwest", latLngToJson(latLngBounds.southwest));
-    arguments.put("northeast", latLngToJson(latLngBounds.northeast));
-    return arguments;
   }
 
   private static LatLng toLatLng(Object o) {
