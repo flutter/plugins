@@ -153,6 +153,19 @@ static void InterpretInfoWindow(id<FLTGoogleMapMarkerOptionsSink> sink, NSDictio
   }
 }
 
+static UIImage* scaleImage(UIImage* image, NSNumber* scaleParam) {
+  double scale = 1.0;
+  if ([scaleParam isKindOfClass:[NSNumber class]]) {
+    scale = scaleParam.doubleValue;
+  }
+  if (fabs(scale - 1) > 1e-3) {
+    return [UIImage imageWithCGImage:[image CGImage]
+                               scale:(image.scale * scale)
+                         orientation:(image.imageOrientation)];
+  }
+  return image;
+}
+
 static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray* iconData) {
   UIImage* image;
   if ([iconData.firstObject isEqualToString:@"defaultMarker"]) {
@@ -167,6 +180,20 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
     } else {
       image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]
                                                    fromPackage:iconData[2]]];
+    }
+  } else if ([iconData.firstObject isEqualToString:@"fromAssetImage"]) {
+    if (iconData.count == 3) {
+      image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
+      NSNumber* scaleParam = iconData[2];
+      image = scaleImage(image, scaleParam);
+    } else {
+      NSString* error =
+          [NSString stringWithFormat:@"'fromAssetImage' should have exactly 3 arguments. Got: %lu",
+                                     iconData.count];
+      NSException* exception = [NSException exceptionWithName:@"InvalidBitmapDescriptor"
+                                                       reason:error
+                                                     userInfo:nil];
+      @throw exception;
     }
   } else if ([iconData[0] isEqualToString:@"fromBytes"]) {
     if (iconData.count == 2) {
