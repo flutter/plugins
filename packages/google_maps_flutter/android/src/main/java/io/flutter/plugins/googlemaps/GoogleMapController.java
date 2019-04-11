@@ -82,7 +82,6 @@ final class GoogleMapController
   private ClusterManager<ClusterItemController> clusterManager;
   private MarkerManager markerManager;
   private final PolylinesController polylinesController;
-  private List<Object> initialMarkers;
   private List<Object> initialPolylines;
 
   GoogleMapController(int id, Context context, AtomicInteger activityState, PluginRegistry.Registrar registrar,

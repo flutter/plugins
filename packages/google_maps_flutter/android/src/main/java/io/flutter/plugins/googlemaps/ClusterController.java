@@ -122,7 +122,7 @@ class ClusterController implements ClusterManager.OnClusterItemClickListener, Cl
         if (clusterItemId == null) {
             return false;
         }
-        methodChannel.invokeMethod("clusterItem#onTap", Convert.toJson(clusterItemId));
+        methodChannel.invokeMethod("clusterItem#onTap", Convert.markerIdToJson(clusterItemId));
         ClusterItemController clusterController = clusterItemIdToController.get(clusterItemId);
         if (clusterController != null) {
             return clusterController.consumeTapEvents(); // TODO: check it, for now this events is constant.
@@ -149,6 +149,6 @@ class ClusterController implements ClusterManager.OnClusterItemClickListener, Cl
         if (clusterItemId == null) {
             return;
         }
-        methodChannel.invokeMethod("custerItemInfoWindow#onTap", Convert.toJson(clusterItemId));
+        methodChannel.invokeMethod("custerItemInfoWindow#onTap", Convert.markerIdToJson(clusterItemId));
     }
 }
