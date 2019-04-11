@@ -233,7 +233,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
         Completer<BitmapDescriptor>();
     final ImageConfiguration config = createLocalImageConfiguration(context);
 
-    const AssetImage("assets/red_square.png")
+    const AssetImage('assets/red_square.png')
         .resolve(config)
         .addListener((ImageInfo image, bool sync) async {
       final ByteData bytes =
