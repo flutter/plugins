@@ -1,3 +1,7 @@
+## 4.0.0+2
+
+* Fix example app's floating action button that stopped working due to a breaking change.
+
 ## 4.0.0+1
 
 * Log messages about automatic configuration of the default app are now less confusing.

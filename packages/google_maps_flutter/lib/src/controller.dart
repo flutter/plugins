@@ -63,6 +63,9 @@ class GoogleMapController {
       case 'infoWindow#onTap':
         _googleMapState.onInfoWindowTap(call.arguments['markerId']);
         break;
+      case 'polyline#onTap':
+        _googleMapState.onPolylineTap(call.arguments['polylineId']);
+        break;
       case 'map#onTap':
         _googleMapState.onTap(LatLng._fromJson(call.arguments['position']));
         break;
@@ -124,6 +127,23 @@ class GoogleMapController {
       clusterUpdates._toMap(),
     );
   }
+  
+  /// Updates polyline configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updatePolylines(_PolylineUpdates polylineUpdates) async {
+    assert(polylineUpdates != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await channel.invokeMethod(
+      'polylines#update',
+      polylineUpdates._toMap(),
+    );
+  }
 
   /// Starts an animated change of the map camera position.
   ///
@@ -149,5 +169,18 @@ class GoogleMapController {
     await channel.invokeMethod('camera#move', <String, dynamic>{
       'cameraUpdate': cameraUpdate._toJson(),
     });
+  }
+
+  /// Return [LatLngBounds] defining the region that is visible in a map.
+  Future<LatLngBounds> getVisibleRegion() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    final Map<dynamic, dynamic> latLngBounds =
+        await channel.invokeMethod('map#getVisibleRegion');
+    final LatLng southwest = LatLng._fromJson(latLngBounds['southwest']);
+    final LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
+
+    return LatLngBounds(northeast: northeast, southwest: southwest);
   }
 }

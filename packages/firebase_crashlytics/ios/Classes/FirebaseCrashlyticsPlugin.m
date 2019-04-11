@@ -13,6 +13,8 @@
                                   binaryMessenger:[registrar messenger]];
   FirebaseCrashlyticsPlugin *instance = [[FirebaseCrashlyticsPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  [Fabric with:@[ [Crashlytics self] ]];
 }
 
 - (instancetype)init {

@@ -16,4 +16,14 @@ class EmailAuthProvider {
       'password': password,
     });
   }
+
+  static AuthCredential getCredentialWithLink({
+    String email,
+    String link,
+  }) {
+    return AuthCredential._(providerId, <String, String>{
+      'email': email,
+      'link': link,
+    });
+  }
 }

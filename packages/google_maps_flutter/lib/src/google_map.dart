@@ -31,6 +31,7 @@ class GoogleMap extends StatefulWidget {
     this.myLocationEnabled = false,
     this.markers,
     this.clusterItems,
+    this.polylines,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -75,6 +76,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Cluster Items to be placed on the map.
   final Set<ClusterItem> clusterItems;
+
+  /// Polylines to be placed on the map.
+  final Set<Polyline> polylines;
 
   /// Called when the camera starts moving.
   ///
@@ -146,6 +150,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
   Map<MarkerId, ClusterItem> _clusterItems = <MarkerId, ClusterItem>{};
+  Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   _GoogleMapOptions _googleMapOptions;
 
   @override
@@ -155,6 +160,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'options': _googleMapOptions.toMap(),
       'markersToAdd': _serializeMarkerSet(widget.markers),
       'clusterItemsToAdd': _serializeClusterSet(widget.clusterItems),
+      'polylinesToAdd': _serializePolylineSet(widget.polylines),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
@@ -184,6 +190,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
     _markers = _keyByMarkerId(widget.markers);
     _clusterItems = _keyByClusterItemId(widget.clusterItems);
+    _polylines = _keyByPolylineId(widget.polylines);
   }
 
   @override
@@ -192,6 +199,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _updateOptions();
     _updateMarkers();
     _updateCluster();
+    _updatePolylines();
   }
 
   void _updateOptions() async {
@@ -213,11 +221,19 @@ class _GoogleMapState extends State<GoogleMap> {
     _markers = _keyByMarkerId(widget.markers);
   }
 
+
   void _updateCluster() async {
     final GoogleMapController controller = await _controller.future;
     controller._updateCluster(
         _ClusterUpdates.from(_clusterItems.values.toSet(), widget.clusterItems));
     _clusterItems = _keyByClusterItemId(widget.clusterItems);
+  }
+
+  void _updatePolylines() async {
+    final GoogleMapController controller = await _controller.future;
+    controller._updatePolylines(
+        _PolylineUpdates.from(_polylines.values.toSet(), widget.polylines));
+    _polylines = _keyByPolylineId(widget.polylines);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
@@ -236,6 +252,12 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(markerIdParam != null);
     final MarkerId markerId = MarkerId(markerIdParam);
     _markers[markerId].onTap();
+  }
+
+  void onPolylineTap(String polylineIdParam) {
+    assert(polylineIdParam != null);
+    final PolylineId polylineId = PolylineId(polylineIdParam);
+    _polylines[polylineId].onTap();
   }
 
   void onInfoWindowTap(String markerIdParam) {
