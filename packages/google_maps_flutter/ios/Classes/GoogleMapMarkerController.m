@@ -155,7 +155,7 @@ static void InterpretInfoWindow(id<FLTGoogleMapMarkerOptionsSink> sink, NSDictio
 
 static UIImage* scaleImage(UIImage* image, NSNumber* scaleParam) {
   double scale = 1.0;
-  if (scaleParam != nil && ![scaleParam isKindOfClass:[NSNull class]]) {
+  if ([scaleParam isKindOfClass:[NSNumber class]]) {
     scale = scaleParam.doubleValue;
   }
   if (fabs(scale - 1) > 1e-3) {
