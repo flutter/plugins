@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class GoogleMapBuilder implements GoogleMapOptionsSink {
+
   private final GoogleMapOptions options = new GoogleMapOptions();
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
@@ -99,8 +100,8 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
-  public void setInitialClusterItems(Object initialClusterItems) { 
-    this.initialClusterItems = initialClusterItems; 
+  public void setInitialClusterItems(Object initialClusterItems) {
+    this.initialClusterItems = initialClusterItems;
   }
 
   @Override

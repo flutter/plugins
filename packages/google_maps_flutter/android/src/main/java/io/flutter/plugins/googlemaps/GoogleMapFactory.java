@@ -41,7 +41,7 @@ public class GoogleMapFactory extends PlatformViewFactory {
     if (params.containsKey("clusterItemsToAdd")) {
       builder.setInitialClusterItems(params.get("clusterItemsToAdd"));
     }
-    
+
     if (params.containsKey("polylinesToAdd")) {
       builder.setInitialPolylines(params.get("polylinesToAdd"));
     }

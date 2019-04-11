@@ -20,135 +20,144 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 
-class ClusterController implements ClusterManager.OnClusterItemClickListener, ClusterManager.OnClusterClickListener,
-        ClusterManager.OnClusterInfoWindowClickListener, ClusterManager.OnClusterItemInfoWindowClickListener {
+class ClusterController implements ClusterManager.OnClusterItemClickListener,
+    ClusterManager.OnClusterClickListener,
+    ClusterManager.OnClusterInfoWindowClickListener,
+    ClusterManager.OnClusterItemInfoWindowClickListener {
 
-    private final Map<String, ClusterItemController> clusterItemIdToController;
-    private final Map<String, String> googleMapsClusterItemIdToDartMarkerId;
-    private ClusterManager<ClusterItemController> mClusterManager;
+  private final Map<String, ClusterItemController> clusterItemIdToController;
+  private final Map<String, String> googleMapsClusterItemIdToDartMarkerId;
+  private ClusterManager<ClusterItemController> mClusterManager;
 
-    private final MethodChannel methodChannel;
-    private GoogleMap googleMap;
+  private final MethodChannel methodChannel;
+  private GoogleMap googleMap;
 
-    ClusterController(MethodChannel methodChannel) {
-        this.clusterItemIdToController = new HashMap<>();
-        this.googleMapsClusterItemIdToDartMarkerId = new HashMap<>();
-        this.methodChannel = methodChannel;
+  ClusterController(MethodChannel methodChannel) {
+    this.clusterItemIdToController = new HashMap<>();
+    this.googleMapsClusterItemIdToDartMarkerId = new HashMap<>();
+    this.methodChannel = methodChannel;
+  }
+
+  void setGoogleMap(GoogleMap googleMap) {
+    this.googleMap = googleMap;
+  }
+
+  void setClusterManager(ClusterManager<ClusterItemController> mClusterManager) {
+    this.mClusterManager = mClusterManager;
+  }
+
+  void addClusterItems(List<Object> itemsToAdd) {
+    if (itemsToAdd != null) {
+      for (Object itemToAdd : itemsToAdd) {
+        addClusterItem(itemToAdd);
+      }
+      this.mClusterManager.cluster();
     }
+  }
 
-    void setGoogleMap(GoogleMap googleMap) {
-        this.googleMap = googleMap;
+  private void addClusterItem(Object item) {
+    if (item == null) {
+      return;
     }
+    MarkerBuilder markerBuilder = new MarkerBuilder();
+    String markerId = Convert.interpretMarkerOptions(item, markerBuilder);
+    MarkerOptions options = markerBuilder.build();
+    addClusterItem(markerId, options, markerBuilder.consumeTapEvents());
+  }
 
-    void setClusterManager(ClusterManager<ClusterItemController> mClusterManager) {
-        this.mClusterManager = mClusterManager;
+  private void addClusterItem(String markerId, MarkerOptions markerOptions,
+      boolean consumeTapEvents) {
+    LatLng latLng = markerOptions.getPosition();
+    ClusterItemController clusterItem = new ClusterItemController(latLng.latitude, latLng.longitude,
+        markerOptions.getTitle(), markerOptions.getSnippet(), markerId, consumeTapEvents,
+        markerOptions.getIcon());
+    this.mClusterManager.addItem(clusterItem);
+
+    clusterItemIdToController.put(markerId, clusterItem);
+  }
+
+  void changeClusterItems(List<Object> ClusterItemToChange) {
+    if (ClusterItemToChange != null) {
+      for (Object clusterItemToChange : ClusterItemToChange) {
+        changeClusterItem(clusterItemToChange);
+      }
     }
+  }
 
-    void addClusterItems(List<Object> itemsToAdd) {
-        if (itemsToAdd != null) {
-            for (Object itemToAdd : itemsToAdd) {
-                addClusterItem(itemToAdd);
-            }
-            this.mClusterManager.cluster();
-        }
+  private void changeClusterItem(Object clusterItem) {
+    if (clusterItem == null) {
+      return;
     }
+    String markerId = getClusterItemId(clusterItem);
+    ClusterItemController clusterItemController = clusterItemIdToController.get(markerId);
+    // TODO: to be done
+    // if (clusterItemController != null) {
+    // Convert.interpretMarkerOptions(clusterItem, clusterItemController);
+    // }
+  }
 
-    private void addClusterItem(Object item) {
-        if (item == null) {
-            return;
-        }
-        MarkerBuilder markerBuilder = new MarkerBuilder();
-        String markerId = Convert.interpretMarkerOptions(item, markerBuilder);
-        MarkerOptions options = markerBuilder.build();
-        addClusterItem(markerId, options, markerBuilder.consumeTapEvents());
+  void removeClusterItems(List<Object> clusterItemIdsToRemove) {
+    if (clusterItemIdsToRemove == null) {
+      return;
     }
-
-    private void addClusterItem(String markerId, MarkerOptions markerOptions, boolean consumeTapEvents) {
-        LatLng latLng = markerOptions.getPosition();
-        ClusterItemController clusterItem = new ClusterItemController(latLng.latitude, latLng.longitude,
-                markerOptions.getTitle(), markerOptions.getSnippet(), markerId, consumeTapEvents, markerOptions.getIcon());
-        this.mClusterManager.addItem(clusterItem);
-
-        clusterItemIdToController.put(markerId, clusterItem);
+    for (Object rawClusterItemId : clusterItemIdsToRemove) {
+      if (rawClusterItemId == null) {
+        continue;
+      }
+      String clusterItemId = (String) rawClusterItemId;
+      final ClusterItemController clusterItemController = clusterItemIdToController
+          .remove(clusterItemId);
+      if (clusterItemController != null) {
+        googleMapsClusterItemIdToDartMarkerId
+            .remove(clusterItemController.getGoogleMapsClusterItemId());
+        mClusterManager.removeItem(clusterItemController);
+        mClusterManager.cluster();
+      }
     }
+  }
 
-    void changeClusterItems(List<Object> ClusterItemToChange) {
-        if (ClusterItemToChange != null) {
-            for (Object clusterItemToChange : ClusterItemToChange) {
-                changeClusterItem(clusterItemToChange);
-            }
-        }
-    }
+  @SuppressWarnings("unchecked")
+  private static String getClusterItemId(Object clusterItem) {
+    Map<String, Object> clusterItemMap = (Map<String, Object>) clusterItem;
+    return (String) clusterItemMap.get("markerId");
+  }
 
-    private void changeClusterItem(Object clusterItem) {
-        if (clusterItem == null) {
-            return;
-        }
-        String markerId = getClusterItemId(clusterItem);
-        ClusterItemController clusterItemController = clusterItemIdToController.get(markerId);
-        // TODO: to be done
-        // if (clusterItemController != null) {
-        // Convert.interpretMarkerOptions(clusterItem, clusterItemController);
-        // }
+  @Override
+  public boolean onClusterItemClick(ClusterItem clusterItem) {
+    String clusterItemId = ((ClusterItemController) clusterItem)
+        .getGoogleMapsClusterItemId(); // googleMapsClusterItemIdToDartMarkerId.get(googleMarkerId);
+    if (clusterItemId == null) {
+      return false;
     }
+    methodChannel.invokeMethod("clusterItem#onTap", Convert.markerIdToJson(clusterItemId));
+    ClusterItemController clusterController = clusterItemIdToController.get(clusterItemId);
+    if (clusterController != null) {
+      return clusterController
+          .consumeTapEvents(); // TODO: check it, for now this events is constant.
+    }
+    return false;
+  }
 
-    void removeClusterItems(List<Object> clusterItemIdsToRemove) {
-        if (clusterItemIdsToRemove == null) {
-            return;
-        }
-        for (Object rawClusterItemId : clusterItemIdsToRemove) {
-            if (rawClusterItemId == null) {
-                continue;
-            }
-            String clusterItemId = (String) rawClusterItemId;
-            final ClusterItemController clusterItemController = clusterItemIdToController.remove(clusterItemId);
-            if (clusterItemController != null) {
-                googleMapsClusterItemIdToDartMarkerId.remove(clusterItemController.getGoogleMapsClusterItemId());
-                mClusterManager.removeItem(clusterItemController);
-                mClusterManager.cluster();
-            }
-        }
-    }
+  @Override
+  public boolean onClusterClick(Cluster cluster) {
+    // TODO: to be done
+    Log.d("ClusterController", "onClusterClick: ");
+    return false;
+  }
 
-    @SuppressWarnings("unchecked")
-    private static String getClusterItemId(Object clusterItem) {
-        Map<String, Object> clusterItemMap = (Map<String, Object>) clusterItem;
-        return (String) clusterItemMap.get("markerId");
-    }
+  @Override
+  public void onClusterInfoWindowClick(Cluster cluster) {
+    // TODO: to be done
+    Log.d("ClusterController", "onClusterInfoWindowClick: ");
+  }
 
-    @Override
-    public boolean onClusterItemClick(ClusterItem clusterItem) {
-        String clusterItemId = ((ClusterItemController) clusterItem).getGoogleMapsClusterItemId(); // googleMapsClusterItemIdToDartMarkerId.get(googleMarkerId);
-        if (clusterItemId == null) {
-            return false;
-        }
-        methodChannel.invokeMethod("clusterItem#onTap", Convert.markerIdToJson(clusterItemId));
-        ClusterItemController clusterController = clusterItemIdToController.get(clusterItemId);
-        if (clusterController != null) {
-            return clusterController.consumeTapEvents(); // TODO: check it, for now this events is constant.
-        }
-        return false;
+  @Override
+  public void onClusterItemInfoWindowClick(ClusterItem clusterItem) {
+    String clusterItemId = ((ClusterItemController) clusterItem)
+        .getGoogleMapsClusterItemId();// googleMapsClusterItemIdToDartMarkerId.get(googleMarkerId);
+    if (clusterItemId == null) {
+      return;
     }
-
-    @Override
-    public boolean onClusterClick(Cluster cluster) {
-        // TODO: to be done
-        Log.d("ClusterController", "onClusterClick: ");
-        return false;
-    }
-
-    @Override
-    public void onClusterInfoWindowClick(Cluster cluster) {
-        // TODO: to be done
-        Log.d("ClusterController", "onClusterInfoWindowClick: ");
-    }
-
-    @Override
-    public void onClusterItemInfoWindowClick(ClusterItem clusterItem) {
-        String clusterItemId = ((ClusterItemController) clusterItem).getGoogleMapsClusterItemId();// googleMapsClusterItemIdToDartMarkerId.get(googleMarkerId);
-        if (clusterItemId == null) {
-            return;
-        }
-        methodChannel.invokeMethod("custerItemInfoWindow#onTap", Convert.markerIdToJson(clusterItemId));
-    }
+    methodChannel.invokeMethod("custerItemInfoWindow#onTap", Convert.markerIdToJson(clusterItemId));
+  }
 }
