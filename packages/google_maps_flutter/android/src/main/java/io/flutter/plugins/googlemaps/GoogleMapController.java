@@ -68,8 +68,8 @@ final class GoogleMapController implements Application.ActivityLifecycleCallback
   private final ClusterController clusterController;
   private List<Object> initialMarkers;
   private List<Object> initialClusterItems;
-  private ClusterManager<ClusterItemController> mClusterManager;
-  private MarkerManager mMarkerManager;
+  private ClusterManager<ClusterItemController> clusterManager;
+  private MarkerManager markerManager;
 
   GoogleMapController(int id, Context context, AtomicInteger activityState, PluginRegistry.Registrar registrar,
       GoogleMapOptions options) {
@@ -144,11 +144,11 @@ final class GoogleMapController implements Application.ActivityLifecycleCallback
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
-    this.mMarkerManager = new MarkerManager(googleMap);
-    this.mClusterManager = new ClusterManager<ClusterItemController>(context, googleMap, mMarkerManager);
-    this.markersController.setMarkerManager(this.mMarkerManager);
+    markerManager = new MarkerManager(googleMap);
+    clusterManager = new ClusterManager<ClusterItemController>(context, googleMap, markerManager);
+    markersController.setMarkerManager(markerManager);
     googleMap.setOnInfoWindowClickListener(this);
-    CustomClusterRenderer customRenderer = new CustomClusterRenderer(context, googleMap, mClusterManager);
+    CustomClusterRenderer customRenderer = new CustomClusterRenderer(context, googleMap, clusterManager);
     if (mapReadyResult != null) {
       mapReadyResult.success(null);
       mapReadyResult = null;
@@ -159,15 +159,15 @@ final class GoogleMapController implements Application.ActivityLifecycleCallback
     googleMap.setOnMapClickListener(this);
     updateMyLocationEnabled();
     clusterController.setGoogleMap(googleMap);
-    clusterController.setClusterManager(mClusterManager);
-    googleMap.setOnCameraIdleListener(mClusterManager);
-    googleMap.setOnMarkerClickListener(mMarkerManager);
-    googleMap.setOnInfoWindowClickListener(mClusterManager);
-    mClusterManager.setOnClusterItemClickListener(clusterController);
-    mClusterManager.setOnClusterClickListener(clusterController);
-    mClusterManager.setOnClusterInfoWindowClickListener(clusterController);
-    mClusterManager.setOnClusterItemInfoWindowClickListener(clusterController);
-    mClusterManager.setRenderer(customRenderer);
+    clusterController.setClusterManager(clusterManager);
+    googleMap.setOnCameraIdleListener(clusterManager);
+    googleMap.setOnMarkerClickListener(markerManager);
+    googleMap.setOnInfoWindowClickListener(clusterManager);
+    clusterManager.setOnClusterItemClickListener(clusterController);
+    clusterManager.setOnClusterClickListener(clusterController);
+    clusterManager.setOnClusterInfoWindowClickListener(clusterController);
+    clusterManager.setOnClusterItemInfoWindowClickListener(clusterController);
+    clusterManager.setRenderer(customRenderer);
     updateInitialMarkers();
     updateInitialClusterItems();
   }

@@ -6,16 +6,16 @@ part of google_maps_flutter;
 
 /// Marks a geographical location on the map.
 ///
-/// A marker icon is drawn oriented against the device's screen rather than
+/// A cluster marker icon is drawn oriented against the device's screen rather than
 /// the map's surface; that is, it will not necessarily change orientation
 /// due to map rotations, tilting, or zooming.
 @immutable
 class ClusterItem {
-  /// Creates a set of marker configuration options.
+  /// Creates a set of cluster marker configuration options.
   ///
-  /// Default marker options.
+  /// Default cluster marker options.
   ///
-  /// Specifies a marker that
+  /// Specifies a cluster marker that
   /// * is fully opaque; [alpha] is 1.0
   /// * uses icon bottom center to indicate map position; [anchor] is (0.5, 1.0)
   /// * has default tap handling; [consumeTapEvents] is false
