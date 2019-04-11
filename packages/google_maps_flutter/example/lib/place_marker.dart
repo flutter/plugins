@@ -70,7 +70,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     }
   }
 
-
   void _onClusterMarkerTapped(MarkerId markerId) {
     final ClusterItem tappedClusterItem = clusterItems[markerId];
     print("tappedClusterItem=$tappedClusterItem, markerId=$markerId");
@@ -129,7 +128,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     _markerIdCounter++;
     final MarkerId markerId = MarkerId(markerIdVal);
 
-
     final ClusterItem clusterItem = ClusterItem(
       icon: BitmapDescriptor.defaultMarkerWithHue(160),
       markerId: markerId,
@@ -141,13 +139,11 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
       onTap: () {
         _onClusterMarkerTapped(markerId);
       },
-      
     );
 
     setState(() {
       clusterItems[markerId] = clusterItem;
     });
-
   }
 
   void _remove() {
@@ -158,7 +154,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-void _removeCluster() {
+  void _removeCluster() {
     setState(() {
       if (clusterItems.containsKey(selectedMarker)) {
         clusterItems.remove(selectedMarker);

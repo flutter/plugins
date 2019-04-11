@@ -18,8 +18,10 @@ class _ClusterUpdates {
       current = Set<ClusterItem>.identity();
     }
 
-    final Map<MarkerId, ClusterItem> previousClusterItems = _keyByClusterItemId(previous);
-    final Map<MarkerId, ClusterItem> currentClusterItems = _keyByClusterItemId(current);
+    final Map<MarkerId, ClusterItem> previousClusterItems =
+        _keyByClusterItemId(previous);
+    final Map<MarkerId, ClusterItem> currentClusterItems =
+        _keyByClusterItemId(current);
 
     final Set<MarkerId> prevClusterIds = previousClusterItems.keys.toSet();
     final Set<MarkerId> currentClusterIds = currentClusterItems.keys.toSet();
@@ -58,10 +60,12 @@ class _ClusterUpdates {
         updateMap[fieldName] = value;
       }
     }
+
     addIfNonNull('clusterItemsToAdd', _serializeClusterSet(clusterItemsToAdd));
-    addIfNonNull('clusterItemsToChange', _serializeClusterSet(clusterItemsToChange));
+    addIfNonNull(
+        'clusterItemsToChange', _serializeClusterSet(clusterItemsToChange));
     addIfNonNull('clusterItemsIdsToRemove',
-      clusterItemsIdsToRemove.map<dynamic>((MarkerId m) => m.value).toList());
+        clusterItemsIdsToRemove.map<dynamic>((MarkerId m) => m.value).toList());
     return updateMap;
   }
 
@@ -76,8 +80,8 @@ class _ClusterUpdates {
   }
 
   @override
-  int get hashCode =>
-      hashValues(clusterItemsToAdd, clusterItemsIdsToRemove, clusterItemsToChange);
+  int get hashCode => hashValues(
+      clusterItemsToAdd, clusterItemsIdsToRemove, clusterItemsToChange);
 
   @override
   String toString() {

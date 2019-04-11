@@ -36,7 +36,6 @@ class GoogleMap extends StatefulWidget {
     this.onCameraMove,
     this.onCameraIdle,
     this.onTap,
-    
   })  : assert(initialCameraPosition != null),
         super(key: key);
 
@@ -221,11 +220,10 @@ class _GoogleMapState extends State<GoogleMap> {
     _markers = _keyByMarkerId(widget.markers);
   }
 
-
   void _updateCluster() async {
     final GoogleMapController controller = await _controller.future;
-    controller._updateCluster(
-        _ClusterUpdates.from(_clusterItems.values.toSet(), widget.clusterItems));
+    controller._updateCluster(_ClusterUpdates.from(
+        _clusterItems.values.toSet(), widget.clusterItems));
     _clusterItems = _keyByClusterItemId(widget.clusterItems);
   }
 
@@ -282,7 +280,6 @@ class _GoogleMapState extends State<GoogleMap> {
     final MarkerId markerId = MarkerId(clusterItemIdParam);
     _clusterItems[markerId].infoWindow.onTap();
   }
-
 }
 
 /// Configuration options for the GoogleMaps user interface.

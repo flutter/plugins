@@ -173,20 +173,22 @@ class ClusterItem {
         'icon: $icon, infoWindow: $infoWindow, position: $position, rotation: $rotation, '
         'visible: $visible, zIndex: $zIndex, onTap: $onTap}';
   }
-
 }
 
 Map<MarkerId, ClusterItem> _keyByClusterItemId(Iterable<ClusterItem> markers) {
-if (markers == null) {
-  return <MarkerId, ClusterItem>{};
-}
-return Map<MarkerId, ClusterItem>.fromEntries(markers.map(
-    (ClusterItem marker) => MapEntry<MarkerId, ClusterItem>(marker.markerId, marker)));
+  if (markers == null) {
+    return <MarkerId, ClusterItem>{};
+  }
+  return Map<MarkerId, ClusterItem>.fromEntries(markers.map(
+      (ClusterItem marker) =>
+          MapEntry<MarkerId, ClusterItem>(marker.markerId, marker)));
 }
 
 List<Map<String, dynamic>> _serializeClusterSet(Set<ClusterItem> items) {
   if (items == null) {
     return null;
   }
-  return items.map<Map<String, dynamic>>((ClusterItem m) => m._toJson()).toList();
+  return items
+      .map<Map<String, dynamic>>((ClusterItem m) => m._toJson())
+      .toList();
 }

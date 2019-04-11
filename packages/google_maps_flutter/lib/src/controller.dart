@@ -127,7 +127,7 @@ class GoogleMapController {
       clusterUpdates._toMap(),
     );
   }
-  
+
   /// Updates polyline configuration.
   ///
   /// Change listeners are notified once the update has been made on the
