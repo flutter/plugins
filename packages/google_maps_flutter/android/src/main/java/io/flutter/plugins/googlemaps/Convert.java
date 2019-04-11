@@ -30,9 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Conversions between JSON-like values and GoogleMaps data types.
- */
+/** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
 
   private static BitmapDescriptor toBitmapDescriptor(Object o) {
@@ -281,9 +279,7 @@ class Convert {
     }
   }
 
-  /**
-   * Returns the dartMarkerId of the interpreted marker.
-   */
+  /** Returns the dartMarkerId of the interpreted marker. */
   static String interpretMarkerOptions(Object o, MarkerOptionsSink sink) {
     final Map<?, ?> data = toMap(o);
     final Object alpha = data.get("alpha");
