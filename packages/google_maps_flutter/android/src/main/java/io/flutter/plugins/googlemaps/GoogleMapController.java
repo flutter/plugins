@@ -184,7 +184,7 @@ final class GoogleMapController
       case "map#update":
         {
           Convert.interpretGoogleMapOptions(call.argument("options"), this);
-          result.success(Convert.cameraBoundsToJson(getCameraPosition()));
+          result.success(Convert.cameraPositionToJson(getCameraPosition()));
           break;
         }
       case "map#getVisibleRegion":
@@ -302,7 +302,7 @@ final class GoogleMapController
       return;
     }
     final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("position", Convert.cameraBoundsToJson(googleMap.getCameraPosition()));
+    arguments.put("position", Convert.cameraPositionToJson(googleMap.getCameraPosition()));
     methodChannel.invokeMethod("camera#onMove", arguments);
   }
 

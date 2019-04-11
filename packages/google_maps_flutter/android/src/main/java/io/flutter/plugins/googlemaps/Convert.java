@@ -142,7 +142,7 @@ class Convert {
     return ((Number) o).intValue();
   }
 
-  static Object cameraBoundsToJson(CameraPosition position) {
+  static Object cameraPositionToJson(CameraPosition position) {
     if (position == null) {
       return null;
     }
