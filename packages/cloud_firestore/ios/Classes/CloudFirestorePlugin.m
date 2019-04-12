@@ -56,8 +56,7 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
   }
   NSArray *orderBy = parameters[@"orderBy"];
   if (orderBy) {
-    for (id item in orderBy) {
-      NSArray *orderByParameters = item;
+    for (NSArray *orderByParameters in orderBy) {
       NSString *fieldName = orderByParameters[0];
       NSNumber *descending = orderByParameters[1];
       query = [query queryOrderedByField:fieldName descending:[descending boolValue]];
@@ -524,7 +523,7 @@ const UInt8 TIMESTAMP = 136;
                            arguments:@{
                              @"handle" : handle,
                              @"path" : snapshot ? snapshot.reference.path : [NSNull null],
-                             @"data" : snapshot && snapshot.exists ? snapshot.data : [NSNull null],
+                             @"data" : snapshot.exists ? snapshot.data : [NSNull null],
                              @"metadata" : snapshot ? @{
                                @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
                                @"isFromCache" : @(snapshot.metadata.isFromCache),
