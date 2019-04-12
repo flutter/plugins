@@ -1,4 +1,4 @@
-## 0.6.3
+## 0.5.3+1
 
 * Update minimum deploy iOS version to 8.0.
 
