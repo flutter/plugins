@@ -1,3 +1,11 @@
+## 0.5.8
+
+* Remove some unused variables and rename method
+
+## 0.5.7
+
+* Add a BitmapDescriptor that is aware of scale.
+
 ## 0.5.6
 
 * Add support for Polylines on GoogleMap.

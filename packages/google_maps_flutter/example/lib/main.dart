@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'animate_camera.dart';
 import 'map_coordinates.dart';
 import 'map_ui.dart';
+import 'marker_icons.dart';
 import 'move_camera.dart';
 import 'page.dart';
 import 'place_marker.dart';
@@ -18,6 +19,7 @@ final List<Page> _allPages = <Page>[
   AnimateCameraPage(),
   MoveCameraPage(),
   PlaceMarkerPage(),
+  MarkerIconsPage(),
   ScrollingMapPage(),
   PlacePolylinePage(),
 ];

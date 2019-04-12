@@ -1,6 +1,10 @@
-## 0.10.1
+## 0.10.0+6
 
 * iOS: fixed some videos being rendered black
+
+## 0.10.0+5
+
+* Fixed iOS build warnings about implicit retains.
 
 ## 0.10.0+4
 

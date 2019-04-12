@@ -1,3 +1,7 @@
+## 2.1.1+1
+
+* Added hyperlinks to example app reference in README.md.
+
 ## 2.1.1
 
 * Added screen_view tracking of Navigator.pushReplacement
