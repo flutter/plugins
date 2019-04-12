@@ -1,3 +1,12 @@
+## 0.7.0
+
+* **Breaking Change** Unified and enhanced on-device and cloud image-labeling API.
+  `iOS` now requires minimum deployment target of 9.0. Add `platform :ios, '9.0'` in your `Podfile`.
+  Updated to latest version of `Firebase/MLVision` on `iOS`. Please run `pod update` in directory containing your `iOS` project `Podfile`.
+  `Label` renamed to `ImageLabel`.
+  `LabelDetector` renamed to `ImageLabeler`.
+  Removed `CloudLabelDetector` and replaced it with a cloud `ImageLabeler`.
+
 ## 0.6.0+2
 
 * Update README.md

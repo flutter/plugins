@@ -67,7 +67,7 @@ class MarkersController {
     if (markerId == null) {
       return false;
     }
-    methodChannel.invokeMethod("marker#onTap", Convert.toJson(markerId));
+    methodChannel.invokeMethod("marker#onTap", Convert.markerIdToJson(markerId));
     MarkerController markerController = markerIdToController.get(markerId);
     if (markerController != null) {
       return markerController.consumeTapEvents();
@@ -80,7 +80,7 @@ class MarkersController {
     if (markerId == null) {
       return;
     }
-    methodChannel.invokeMethod("infoWindow#onTap", Convert.toJson(markerId));
+    methodChannel.invokeMethod("infoWindow#onTap", Convert.markerIdToJson(markerId));
   }
 
   private void addMarker(Object marker) {

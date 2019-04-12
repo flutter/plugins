@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'sk_product_wrapper.dart';
-import 'sk_download_wrapper.dart';
 import 'sk_payment_queue_wrapper.dart';
+import 'enum_converters.dart';
 
 part 'sk_payment_transaction_wrappers.g.dart';
 
@@ -22,13 +22,10 @@ abstract class SKTransactionObserverWrapper {
   void removedTransactions({List<SKPaymentTransactionWrapper> transactions});
 
   /// Triggered when there is an error while restoring transactions.
-  void restoreCompletedTransactions({Error error});
+  void restoreCompletedTransactionsFailed({SKError error});
 
   /// Triggered when payment queue has finished sending restored transactions.
   void paymentQueueRestoreCompletedTransactionsFinished();
-
-  /// Triggered when any download objects are updated.
-  void updatedDownloads({List<SKDownloadWrapper> downloads});
 
   /// Triggered when a user initiated an in-app purchase from App Store.
   ///
@@ -85,7 +82,6 @@ class SKPaymentTransactionWrapper {
     @required this.originalTransaction,
     @required this.transactionTimeStamp,
     @required this.transactionIdentifier,
-    @required this.downloads,
     @required this.error,
   });
 
@@ -101,7 +97,26 @@ class SKPaymentTransactionWrapper {
     return _$SKPaymentTransactionWrapperFromJson(map);
   }
 
+  /// Generate a [PurchaseDetails] object based on the transaction.
+  ///
+  /// [PurchaseDetails] is Used to represent a purchase detail for unified iOS and Android API.
+  PurchaseDetails toPurchaseDetails(String base64EncodedReceipt) {
+    return PurchaseDetails(
+      purchaseID: transactionIdentifier,
+      productID: payment.productIdentifier,
+      verificationData: PurchaseVerificationData(
+          localVerificationData: base64EncodedReceipt,
+          serverVerificationData: base64EncodedReceipt,
+          source: PurchaseSource.AppStore),
+      transactionDate: transactionTimeStamp != null
+          ? (transactionTimeStamp * 1000).toInt().toString()
+          : null,
+      skPaymentTransaction: this,
+    );
+  }
+
   /// Current transaction state.
+  @SKTransactionStatusConverter()
   final SKPaymentTransactionStateWrapper transactionState;
 
   /// The payment that is created and added to the payment queue which generated this transaction.
@@ -115,7 +130,7 @@ class SKPaymentTransactionWrapper {
 
   /// The timestamp of the transaction.
   ///
-  /// Milliseconds since epoch.
+  /// Seconds since epoch.
   /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased] or [SKPaymentTransactionStateWrapper.restored].
   final double transactionTimeStamp;
 
@@ -125,14 +140,6 @@ class SKPaymentTransactionWrapper {
   /// You may wish to record this string as part of an audit trail for App Store purchases.
   /// The value of this string corresponds to the same property in the receipt.
   final String transactionIdentifier;
-
-  /// An array of the [SKDownloadWrapper] object of this transaction.
-  ///
-  /// Only available if the transaction contains downloadable contents.
-  ///
-  /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased].
-  /// Must be used to download the transaction's content before the transaction is finished.
-  final List<SKDownloadWrapper> downloads;
 
   /// The error object, only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
   final SKError error;
@@ -151,7 +158,6 @@ class SKPaymentTransactionWrapper {
         typedOther.originalTransaction == originalTransaction &&
         typedOther.transactionTimeStamp == transactionTimeStamp &&
         typedOther.transactionIdentifier == transactionIdentifier &&
-        DeepCollectionEquality().equals(typedOther.downloads, downloads) &&
         typedOther.error == error;
   }
 

@@ -25,7 +25,7 @@ public class FirebaseCorePlugin implements MethodCallHandler {
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_core");
-    channel.setMethodCallHandler(new FirebaseCorePlugin(registrar.activity()));
+    channel.setMethodCallHandler(new FirebaseCorePlugin(registrar.context()));
   }
 
   private FirebaseCorePlugin(Context context) {
