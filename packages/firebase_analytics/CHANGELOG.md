@@ -1,6 +1,6 @@
 ## 2.1.1+1
 
-* Add additional content and links in README.md.
+* Added hyperlinks to example app reference in README.md.
 
 ## 2.1.1
 
