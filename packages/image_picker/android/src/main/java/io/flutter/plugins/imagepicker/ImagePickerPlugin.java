@@ -4,6 +4,8 @@
 
 package io.flutter.plugins.imagepicker;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
 import androidx.annotation.VisibleForTesting;
 import io.flutter.plugin.common.MethodCall;
@@ -13,12 +15,15 @@ import java.io.File;
 
 public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
   private static final String CHANNEL = "plugins.flutter.io/image_picker";
+  private static final String SHARED_PREFERENCES_NAME = "flutter_image_picker_shared_preference";
 
   private static final int SOURCE_CAMERA = 0;
   private static final int SOURCE_GALLERY = 1;
 
   private final PluginRegistry.Registrar registrar;
-  private final ImagePickerDelegate delegate;
+  private ImagePickerDelegate delegate;
+
+  static SharedPreferences getFilePref;
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     if (registrar.activity() == null) {
@@ -26,21 +31,24 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
       // we stop the registering process immediately because the ImagePicker requires an activity.
       return;
     }
+    ImagePickerPlugin.getFilePref = registrar.activity().getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
 
     final File externalFilesDirectory =
-        registrar.activity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            registrar.activity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     final ExifDataCopier exifDataCopier = new ExifDataCopier();
     final ImageResizer imageResizer = new ImageResizer(externalFilesDirectory, exifDataCopier);
-
     final ImagePickerDelegate delegate =
-        new ImagePickerDelegate(registrar.activity(), externalFilesDirectory, imageResizer);
+              new ImagePickerDelegate(registrar.activity(), externalFilesDirectory, imageResizer);
+
     registrar.addActivityResultListener(delegate);
     registrar.addRequestPermissionsResultListener(delegate);
-
     final ImagePickerPlugin instance = new ImagePickerPlugin(registrar, delegate);
     channel.setMethodCallHandler(instance);
   }
+
+
 
   @VisibleForTesting
   ImagePickerPlugin(PluginRegistry.Registrar registrar, ImagePickerDelegate delegate) {
@@ -55,13 +63,16 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
       return;
     }
     if (call.method.equals("pickImage")) {
+      Double maxWidth = call.argument("maxWidth");
+      Double maxHeight = call.argument("maxHeight");
+      delegate.saveMaxDemension(maxWidth, maxHeight);
       int imageSource = call.argument("source");
       switch (imageSource) {
         case SOURCE_GALLERY:
-          delegate.chooseImageFromGallery(call, result);
+          delegate.chooseImageFromGallery(result);
           break;
         case SOURCE_CAMERA:
-          delegate.takeImageWithCamera(call, result);
+          delegate.takeImageWithCamera(result);
           break;
         default:
           throw new IllegalArgumentException("Invalid image source: " + imageSource);
@@ -70,16 +81,19 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
       int imageSource = call.argument("source");
       switch (imageSource) {
         case SOURCE_GALLERY:
-          delegate.chooseVideoFromGallery(call, result);
+          delegate.chooseVideoFromGallery(result);
           break;
         case SOURCE_CAMERA:
-          delegate.takeVideoWithCamera(call, result);
+          delegate.takeVideoWithCamera(result);
           break;
         default:
           throw new IllegalArgumentException("Invalid video source: " + imageSource);
       }
+    } else if (call.method.equals("retrieve")) {
+      delegate.retrieveLostImage(result);
     } else {
       throw new IllegalArgumentException("Unknown method " + call.method);
     }
   }
+
 }

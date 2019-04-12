@@ -107,5 +107,54 @@ void main() {
         expect(await ImagePicker.pickImage(source: ImageSource.camera), isNull);
       });
     });
+
+    group('#retrieveLostData', () {
+      test('retrieveLostData get success response', () async {
+        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+          return <String, String>{
+            'type': 'image',
+            'path': '/example/path',
+          };
+        });
+        final RetrieveLostDataResponse response =
+            await ImagePicker.retrieveLostData();
+        expect(response.type, RetrieveType.image);
+        expect(response.file.path, '/example/path');
+      });
+
+      test('retrieveLostData get error response', () async {
+        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+          return <String, String>{
+            'type': 'video',
+            'errorCode': 'test_error_code',
+            'errorMessage': 'test_error_message',
+          };
+        });
+        final RetrieveLostDataResponse response =
+            await ImagePicker.retrieveLostData();
+        expect(response.type, RetrieveType.video);
+        expect(response.exception.code, 'test_error_code');
+        expect(response.exception.message, 'test_error_message');
+      });
+
+      test('retrieveLostData get null response', () async {
+        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+          return null;
+        });
+        expect(await ImagePicker.retrieveLostData(), isNull);
+      });
+
+      test('retrieveLostData get both path and error should throw', () async {
+        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+          return <String, String>{
+            'type': 'video',
+            'errorCode': 'test_error_code',
+            'errorMessage': 'test_error_message',
+            'path': '/example/path',
+          };
+        });
+        expect(ImagePicker.retrieveLostData(), throwsAssertionError);
+      });
+    });
   });
 }

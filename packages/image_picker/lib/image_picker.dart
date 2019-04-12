@@ -29,6 +29,9 @@ class ImagePicker {
   /// If specified, the image will be at most [maxWidth] wide and
   /// [maxHeight] tall. Otherwise the image will be returned at it's
   /// original width and height.
+  ///
+  /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
+  /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   static Future<File> pickImage({
     @required ImageSource source,
     double maxWidth,
@@ -59,6 +62,13 @@ class ImagePicker {
     return path == null ? null : File(path);
   }
 
+  /// Returns a [File] object pointing to the video that was picked.
+  ///
+  /// The [source] argument controls where the video comes from. This can
+  /// be either [ImageSource.camera] or [ImageSource.gallery].
+  ///
+  /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
+  /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   static Future<File> pickVideo({
     @required ImageSource source,
   }) async {
@@ -75,4 +85,82 @@ class ImagePicker {
     );
     return path == null ? null : File(path);
   }
+
+  /// Retrieve the lost image file when [pickImage] or [pickVideo] failed because the  MainActivity is destroyed. (Android only)
+  ///
+  /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is always alive.
+  /// Call this method to retrieve the lost data and process the data according to your APP's business logic.
+  ///
+  /// Returns a [RetrieveLostDataResponse] if successfully retrieved the lost data. The [RetrieveLostDataResponse] can represent either a
+  /// successful image/video selection, or a failure.
+  ///
+  /// Returns null if there is no lost data.
+  ///
+  /// Calling this on a non-Android platform will throw [UnimplementedError] exception.
+  ///
+  /// See also:
+  /// * [RetrieveLostDataResponse], for what's included in the response.
+  /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
+  static Future<RetrieveLostDataResponse> retrieveLostData() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    final Map<dynamic, dynamic> result = await _channel.invokeMethod('retrieve');
+    if (result == null) {
+      return null;
+    }
+    assert(result.containsKey('path') ^ result.containsKey('errorCode'));
+
+    final String type = result['type'];
+    assert(type == 'image' || type == 'video');
+
+    RetrieveType retrieveType;
+    if (type == 'image') {
+      retrieveType = RetrieveType.image;
+    } else if (type == 'video') {
+      retrieveType = RetrieveType.video;
+    } 
+
+    PlatformException exception;
+    if (result.containsKey('errorCode')) {
+      exception =
+        PlatformException(code: result['errorCode'], message: result['errorMessage']);
+    }
+
+    final String path = result['path'];
+    
+    return RetrieveLostDataResponse(
+        file: path == null ? null : File(path),
+        exception: exception,
+        type: retrieveType);
+  }
 }
+
+/// The response object of [ImagePicker.retrieveLostData].
+///
+/// Only applies to Android.
+/// See also:
+/// * [ImagePicker.retrieveLostData] for more details on retrieving lost data.
+class RetrieveLostDataResponse {
+  RetrieveLostDataResponse({this.file, this.exception, this.type});
+
+  /// The file that was lost in [pickImage] or [pickVideo] call due to MainActivity destruction.
+  ///
+  /// Can be null if [exception] exists.
+  final File file;
+
+  /// The exception of the last [pickImage] or [pickVideo].
+  ///
+  /// If the last [pickImage] or [pickVideo] throw some exception before the MainActivity destruction, this variable keeps that
+  /// exception.
+  /// You should handle this exception as if the [pickImage] or [pickVideo] got an exception when the MainActivity was not destroyed.
+  ///
+  /// Note that it is not the exception caused the destruction of the MainActivity. 
+  final PlatformException exception;
+
+  /// Can either be [RetrieveType.image] or [RetrieveType.video];
+  final RetrieveType type;
+}
+
+/// The type of the retrieved data in a [RetrieveLostDataResponse].
+enum RetrieveType { image, video }

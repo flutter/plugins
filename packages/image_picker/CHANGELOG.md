@@ -1,3 +1,8 @@
+## 0.5.4
+
+* Android: Prevent crash when MainActivity is killed by system.
+* Add `retrieveLostData` to retrieve lost data after MainActivity is killed.
+
 ## 0.5.3+1
 
 * Update minimum deploy iOS version to 8.0.
