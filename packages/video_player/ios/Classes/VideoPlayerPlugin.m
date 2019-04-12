@@ -164,11 +164,9 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   NSLog(@"VIDEO__ %f, %f, %f, %f, %li", transform.tx, transform.ty, videoTrack.naturalSize.height,
         videoTrack.naturalSize.width, (long)rotationDegrees);
   if (rotationDegrees == 90) {
-    NSLog(@"Setting transform tx");
     transform.tx = videoTrack.naturalSize.height;
     transform.ty = 0;
   } else if (rotationDegrees == 270) {
-    NSLog(@"Setting transform ty");
     transform.tx = 0;
     transform.ty = videoTrack.naturalSize.width;
   }
