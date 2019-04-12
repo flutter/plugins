@@ -1,3 +1,7 @@
+## 4.0.0+2
+
+* Update iOS configuration documentation.
+
 ## 4.0.0+1
 
 * Log messages about automatic configuration of the default app are now less confusing.
