@@ -27,9 +27,13 @@ import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.upstream.BandwidthMeter
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
@@ -72,14 +76,19 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       this.eventChannel = eventChannel;
       this.textureEntry = textureEntry;
 
-      TrackSelector trackSelector = new DefaultTrackSelector();
+      BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+
+      TrackSelection.Factory videoTrackSelectionFactory =
+              new AdaptiveTrackSelection.Factory(bandwidthMeter);
+
+      TrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
       exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
 
       Uri uri = Uri.parse(dataSource);
 
       DataSource.Factory dataSourceFactory;
       if (uri.getScheme().equals("asset") || uri.getScheme().equals("file")) {
-        dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
+        dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer", bandwidthMeter);
       } else {
         dataSourceFactory =
             new DefaultHttpDataSourceFactory(
