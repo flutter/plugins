@@ -1,3 +1,7 @@
+## 0.8.4+3
+
+* Update deprecated API usage on iOS to use non-deprecated versions.
+
 ## 0.8.4+2
 
 * Fixes an error in the documentation of createUserWithEmailAndPassword.
