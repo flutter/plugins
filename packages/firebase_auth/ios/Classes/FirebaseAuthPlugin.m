@@ -32,13 +32,14 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
 
 @implementation FLTFirebaseAuthPlugin
 
-// Handles are ints used as indexes into the NSMutableDictionary of active observers
+// Handles are ints used as indexes into the NSMutableDictionary of active
+// observers
 int nextHandle = 0;
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_auth"
-                                  binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel *channel = [FlutterMethodChannel
+      methodChannelWithName:@"plugins.flutter.io/firebase_auth"
+            binaryMessenger:[registrar messenger]];
   FLTFirebaseAuthPlugin *instance = [[FLTFirebaseAuthPlugin alloc] init];
   instance.channel = channel;
   instance.authStateChangeListeners = [[NSMutableDictionary alloc] init];
@@ -51,7 +52,8 @@ int nextHandle = 0;
     if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
       NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
-      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
+      NSLog(@"Configured the default Firebase app %@.",
+            [FIRApp defaultApp].name);
     }
   }
   return self;
@@ -62,23 +64,29 @@ int nextHandle = 0;
   return [FIRAuth authWithApp:[FIRApp appNamed:appName]];
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call
+                  result:(FlutterResult)result {
   if ([@"currentUser" isEqualToString:call.method]) {
     id __block listener = [[self getAuth:call.arguments]
-        addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
+        addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth,
+                                        FIRUser *_Nullable user) {
           [self sendResult:result forUser:user error:nil];
           [auth removeAuthStateDidChangeListener:listener];
         }];
   } else if ([@"signInAnonymously" isEqualToString:call.method]) {
     [[self getAuth:call.arguments]
-        signInAnonymouslyWithCompletion:^(FIRAuthDataResult *authResult, NSError *error) {
+        signInAnonymouslyWithCompletion:^(FIRAuthDataResult *authResult,
+                                          NSError *error) {
           [self sendResult:result forUser:authResult.user error:error];
         }];
   } else if ([@"signInWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments]
         signInAndRetrieveDataWithCredential:[self getCredential:call.arguments]
-                                 completion:^(FIRAuthDataResult *authResult, NSError *error) {
-                                   [self sendResult:result forUser:authResult.user error:error];
+                                 completion:^(FIRAuthDataResult *authResult,
+                                              NSError *error) {
+                                   [self sendResult:result
+                                            forUser:authResult.user
+                                              error:error];
                                  }];
   } else if ([@"createUserWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
@@ -93,7 +101,8 @@ int nextHandle = 0;
     NSString *email = call.arguments[@"email"];
     [[self getAuth:call.arguments]
         fetchProvidersForEmail:email
-                    completion:^(NSArray<NSString *> *providers, NSError *error) {
+                    completion:^(NSArray<NSString *> *providers,
+                                 NSError *error) {
                       [self sendResult:result forObject:providers error:error];
                     }];
   } else if ([@"sendEmailVerification" isEqualToString:call.method]) {
@@ -102,46 +111,52 @@ int nextHandle = 0;
           [self sendResult:result forObject:nil error:error];
         }];
   } else if ([@"reload" isEqualToString:call.method]) {
-    [[self getAuth:call.arguments].currentUser reloadWithCompletion:^(NSError *_Nullable error) {
-      [self sendResult:result forObject:nil error:error];
-    }];
+    [[self getAuth:call.arguments].currentUser
+        reloadWithCompletion:^(NSError *_Nullable error) {
+          [self sendResult:result forObject:nil error:error];
+        }];
   } else if ([@"delete" isEqualToString:call.method]) {
-    [[self getAuth:call.arguments].currentUser deleteWithCompletion:^(NSError *_Nullable error) {
-      [self sendResult:result forObject:nil error:error];
-    }];
+    [[self getAuth:call.arguments].currentUser
+        deleteWithCompletion:^(NSError *_Nullable error) {
+          [self sendResult:result forObject:nil error:error];
+        }];
   } else if ([@"sendPasswordResetEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
-    [[self getAuth:call.arguments] sendPasswordResetWithEmail:email
-                                                   completion:^(NSError *error) {
-                                                     [self sendResult:result
-                                                            forObject:nil
-                                                                error:error];
-                                                   }];
+    [[self getAuth:call.arguments]
+        sendPasswordResetWithEmail:email
+                        completion:^(NSError *error) {
+                          [self sendResult:result forObject:nil error:error];
+                        }];
   } else if ([@"sendLinkToEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     FIRActionCodeSettings *actionCodeSettings = [FIRActionCodeSettings new];
     actionCodeSettings.URL = [NSURL URLWithString:call.arguments[@"url"]];
     actionCodeSettings.handleCodeInApp = call.arguments[@"handleCodeInApp"];
     [actionCodeSettings setIOSBundleID:call.arguments[@"iOSBundleID"]];
-    [actionCodeSettings setAndroidPackageName:call.arguments[@"androidPackageName"]
-                        installIfNotAvailable:call.arguments[@"androidInstallIfNotAvailable"]
-                               minimumVersion:call.arguments[@"androidMinimumVersion"]];
-    [[self getAuth:call.arguments] sendSignInLinkToEmail:email
-                                      actionCodeSettings:actionCodeSettings
-                                              completion:^(NSError *_Nullable error) {
-                                                [self sendResult:result forObject:nil error:error];
-                                              }];
+    [actionCodeSettings
+        setAndroidPackageName:call.arguments[@"androidPackageName"]
+        installIfNotAvailable:call.arguments[@"androidInstallIfNotAvailable"]
+               minimumVersion:call.arguments[@"androidMinimumVersion"]];
+    [[self getAuth:call.arguments]
+        sendSignInLinkToEmail:email
+           actionCodeSettings:actionCodeSettings
+                   completion:^(NSError *_Nullable error) {
+                     [self sendResult:result forObject:nil error:error];
+                   }];
   } else if ([@"isSignInWithEmailLink" isEqualToString:call.method]) {
     NSString *link = call.arguments[@"link"];
     BOOL status = [[self getAuth:call.arguments] isSignInWithEmailLink:link];
-    [self sendResult:result forObject:[NSNumber numberWithBool:status] error:nil];
+    [self sendResult:result
+           forObject:[NSNumber numberWithBool:status]
+               error:nil];
   } else if ([@"signInWithEmailAndLink" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *link = call.arguments[@"link"];
     [[self getAuth:call.arguments]
         signInWithEmail:email
                    link:link
-             completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
+             completion:^(FIRAuthDataResult *_Nullable authResult,
+                          NSError *_Nullable error) {
                [self sendResult:result forUser:authResult.user error:error];
              }];
   } else if ([@"signInWithEmailAndPassword" isEqualToString:call.method]) {
@@ -165,26 +180,36 @@ int nextHandle = 0;
   } else if ([@"getIdToken" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
         getIDTokenForcingRefresh:YES
-                      completion:^(NSString *_Nullable token, NSError *_Nullable error) {
+                      completion:^(NSString *_Nullable token,
+                                   NSError *_Nullable error) {
                         [self sendResult:result forObject:token error:error];
                       }];
   } else if ([@"reauthenticateWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
-        reauthenticateAndRetrieveDataWithCredential:[self getCredential:call.arguments]
-                          completion:^(FIRAuthDataResult *r, NSError *_Nullable error) {
-                            [self sendResult:result forObject:nil error:error];
-                          }];
+        reauthenticateAndRetrieveDataWithCredential:
+            [self getCredential:call.arguments]
+                                         completion:^(
+                                             FIRAuthDataResult *r,
+                                             NSError *_Nullable error) {
+                                           [self sendResult:result
+                                                  forObject:nil
+                                                      error:error];
+                                         }];
   } else if ([@"linkWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
         linkAndRetrieveDataWithCredential:[self getCredential:call.arguments]
-                completion:^(FIRAuthDataResult *r, NSError *error) {
-                  [self sendResult:result forUser:r.user error:error];
-                }];
+                               completion:^(FIRAuthDataResult *r,
+                                            NSError *error) {
+                                 [self sendResult:result
+                                          forUser:r.user
+                                            error:error];
+                               }];
   } else if ([@"unlinkFromProvider" isEqualToString:call.method]) {
     NSString *provider = call.arguments[@"provider"];
     [[self getAuth:call.arguments].currentUser
         unlinkFromProvider:provider
-                completion:^(FIRUser *_Nullable user, NSError *_Nullable error) {
+                completion:^(FIRUser *_Nullable user,
+                             NSError *_Nullable error) {
                   [self sendResult:result forUser:user error:error];
                 }];
   } else if ([@"updateEmail" isEqualToString:call.method]) {
@@ -197,12 +222,11 @@ int nextHandle = 0;
                                                 }];
   } else if ([@"updatePassword" isEqualToString:call.method]) {
     NSString *password = call.arguments[@"password"];
-    [[self getAuth:call.arguments].currentUser updatePassword:password
-                                                   completion:^(NSError *error) {
-                                                     [self sendResult:result
-                                                            forObject:nil
-                                                                error:error];
-                                                   }];
+    [[self getAuth:call.arguments].currentUser
+        updatePassword:password
+            completion:^(NSError *error) {
+              [self sendResult:result forObject:nil error:error];
+            }];
   } else if ([@"updateProfile" isEqualToString:call.method]) {
     FIRUserProfileChangeRequest *changeRequest =
         [[self getAuth:call.arguments].currentUser profileChangeRequest];
@@ -210,7 +234,8 @@ int nextHandle = 0;
       changeRequest.displayName = call.arguments[@"displayName"];
     }
     if (call.arguments[@"photoUrl"]) {
-      changeRequest.photoURL = [NSURL URLWithString:call.arguments[@"photoUrl"]];
+      changeRequest.photoURL =
+          [NSURL URLWithString:call.arguments[@"photoUrl"]];
     }
     [changeRequest commitChangesWithCompletion:^(NSError *error) {
       [self sendResult:result forObject:nil error:error];
@@ -220,14 +245,18 @@ int nextHandle = 0;
     [[self getAuth:call.arguments]
         signInWithCustomToken:token
                    completion:^(FIRAuthDataResult *authResult, NSError *error) {
-                     [self sendResult:result forUser:authResult.user error:error];
+                     [self sendResult:result
+                              forUser:authResult.user
+                                error:error];
                    }];
 
   } else if ([@"startListeningAuthState" isEqualToString:call.method]) {
     NSNumber *identifier = [NSNumber numberWithInteger:nextHandle++];
 
-    FIRAuthStateDidChangeListenerHandle listener = [[self getAuth:call.arguments]
-        addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
+    FIRAuthStateDidChangeListenerHandle listener = [[self
+        getAuth:call.arguments]
+        addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth,
+                                        FIRUser *_Nullable user) {
           NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
           response[@"id"] = identifier;
           if (user) {
@@ -238,10 +267,11 @@ int nextHandle = 0;
     [self.authStateChangeListeners setObject:listener forKey:identifier];
     result(identifier);
   } else if ([@"stopListeningAuthState" isEqualToString:call.method]) {
-    NSNumber *identifier =
-        [NSNumber numberWithInteger:[call.arguments[@"id"] unsignedIntegerValue]];
+    NSNumber *identifier = [NSNumber
+        numberWithInteger:[call.arguments[@"id"] unsignedIntegerValue]];
 
-    FIRAuthStateDidChangeListenerHandle listener = self.authStateChangeListeners[identifier];
+    FIRAuthStateDidChangeListenerHandle listener =
+        self.authStateChangeListeners[identifier];
     if (listener) {
       [[self getAuth:call.arguments]
           removeAuthStateDidChangeListener:self.authStateChangeListeners];
@@ -250,8 +280,10 @@ int nextHandle = 0;
     } else {
       result([FlutterError
           errorWithCode:@"ERROR_LISTENER_NOT_FOUND"
-                message:[NSString stringWithFormat:@"Listener with identifier '%d' not found.",
-                                                   identifier.intValue]
+                message:[NSString
+                            stringWithFormat:
+                                @"Listener with identifier '%d' not found.",
+                                identifier.intValue]
                 details:nil]);
     }
   } else if ([@"verifyPhoneNumber" isEqualToString:call.method]) {
@@ -262,15 +294,18 @@ int nextHandle = 0;
                UIDelegate:nil
                completion:^(NSString *verificationID, NSError *error) {
                  if (error) {
-                   [self.channel invokeMethod:@"phoneVerificationFailed"
+                   [self.channel
+                       invokeMethod:@"phoneVerificationFailed"
+                          arguments:@{
+                            @"exception" : [self mapVerifyPhoneError:error],
+                            @"handle" : handle
+                          }];
+                 } else {
+                   [self.channel invokeMethod:@"phoneCodeSent"
                                     arguments:@{
-                                      @"exception" : [self mapVerifyPhoneError:error],
+                                      @"verificationId" : verificationID,
                                       @"handle" : handle
                                     }];
-                 } else {
-                   [self.channel
-                       invokeMethod:@"phoneCodeSent"
-                          arguments:@{@"verificationId" : verificationID, @"handle" : handle}];
                  }
                }];
     result(nil);
@@ -278,14 +313,17 @@ int nextHandle = 0;
     NSString *verificationId = call.arguments[@"verificationId"];
     NSString *smsCode = call.arguments[@"smsCode"];
 
-    FIRPhoneAuthCredential *credential =
-        [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
-                                                     verificationCode:smsCode];
+    FIRPhoneAuthCredential *credential = [[FIRPhoneAuthProvider provider]
+        credentialWithVerificationID:verificationId
+                    verificationCode:smsCode];
     [[self getAuth:call.arguments]
         signInAndRetrieveDataWithCredential:credential
-                  completion:^(FIRAuthDataResult *r, NSError *_Nullable error) {
-                    [self sendResult:result forUser:r.user error:error];
-                  }];
+                                 completion:^(FIRAuthDataResult *r,
+                                              NSError *_Nullable error) {
+                                   [self sendResult:result
+                                            forUser:r.user
+                                              error:error];
+                                 }];
   } else if ([@"setLanguageCode" isEqualToString:call.method]) {
     NSString *language = call.arguments[@"language"];
     [[self getAuth:call.arguments] setLanguageCode:language];
@@ -314,13 +352,17 @@ int nextHandle = 0;
   return userData;
 }
 
-- (void)sendResult:(FlutterResult)result forUser:(FIRUser *)user error:(NSError *)error {
+- (void)sendResult:(FlutterResult)result
+           forUser:(FIRUser *)user
+             error:(NSError *)error {
   [self sendResult:result
          forObject:(user != nil ? [self dictionaryFromUser:user] : nil)
              error:error];
 }
 
-- (void)sendResult:(FlutterResult)result forObject:(NSObject *)object error:(NSError *)error {
+- (void)sendResult:(FlutterResult)result
+         forObject:(NSObject *)object
+             error:(NSError *)error {
   if (error != nil) {
     result([FlutterError errorWithCode:getFlutterErrorCode(error)
                                message:error.localizedDescription
@@ -355,7 +397,8 @@ int nextHandle = 0;
     NSString *email = data[@"email"];
     if ([data objectForKey:@"password"]) {
       NSString *password = data[@"password"];
-      credential = [FIREmailAuthProvider credentialWithEmail:email password:password];
+      credential = [FIREmailAuthProvider credentialWithEmail:email
+                                                    password:password];
     } else {
       NSString *link = data[@"link"];
       credential = [FIREmailAuthProvider credentialWithEmail:email link:link];
@@ -363,25 +406,31 @@ int nextHandle = 0;
   } else if ([FIRGoogleAuthProviderID isEqualToString:provider]) {
     NSString *idToken = data[@"idToken"];
     NSString *accessToken = data[@"accessToken"];
-    credential = [FIRGoogleAuthProvider credentialWithIDToken:idToken accessToken:accessToken];
+    credential = [FIRGoogleAuthProvider credentialWithIDToken:idToken
+                                                  accessToken:accessToken];
   } else if ([FIRFacebookAuthProviderID isEqualToString:provider]) {
     NSString *accessToken = data[@"accessToken"];
-    credential = [FIRFacebookAuthProvider credentialWithAccessToken:accessToken];
+    credential =
+        [FIRFacebookAuthProvider credentialWithAccessToken:accessToken];
   } else if ([FIRTwitterAuthProviderID isEqualToString:provider]) {
     NSString *authToken = data[@"authToken"];
     NSString *authTokenSecret = data[@"authTokenSecret"];
-    credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
+    credential = [FIRTwitterAuthProvider credentialWithToken:authToken
+                                                      secret:authTokenSecret];
   } else if ([FIRGitHubAuthProviderID isEqualToString:provider]) {
     NSString *token = data[@"token"];
     credential = [FIRGitHubAuthProvider credentialWithToken:token];
   } else if ([FIRPhoneAuthProviderID isEqualToString:provider]) {
     NSString *verificationId = data[@"verificationId"];
     NSString *smsCode = data[@"smsCode"];
-    credential = [[FIRPhoneAuthProvider providerWithAuth:[self getAuth:arguments]]
-        credentialWithVerificationID:verificationId
-                    verificationCode:smsCode];
+    credential =
+        [[FIRPhoneAuthProvider providerWithAuth:[self getAuth:arguments]]
+            credentialWithVerificationID:verificationId
+                        verificationCode:smsCode];
   } else {
-    NSLog(@"Support for an auth provider with identifier '%@' is not implemented.", provider);
+    NSLog(@"Support for an auth provider with identifier '%@' is not "
+          @"implemented.",
+          provider);
   }
   return credential;
 }
