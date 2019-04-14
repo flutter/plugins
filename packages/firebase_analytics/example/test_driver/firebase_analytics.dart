@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -24,14 +25,14 @@ void main() {
         expect(analytics.android, isNull);
       }
       if (Platform.isAndroid) {
-        await analytics.android.setAnalyticsCollectionEnabled(true);
         await analytics.android.setMinimumSessionDuration(9000);
       }
-    }
+    });
 
     test('logging', () async {
-      await analytics.setCurrentScreen('testing');
-      await analytics.logEvent('testing');
+      await analytics.setAnalyticsCollectionEnabled(true);
+      await analytics.setCurrentScreen(screenName: 'testing');
+      await analytics.logEvent(name: 'testing');
     });
   });
 }
