@@ -237,10 +237,12 @@ const UInt8 INCREMENT_INTEGER = 138;
       return [FIRFieldValue fieldValueForServerTimestamp];
     }
     case INCREMENT_DOUBLE: {
-      return [FIRFieldValue fieldValueForDoubleIncrement:[self readValue]];
+      NSNumber *value = [self readValue];
+      return [FIRFieldValue fieldValueForDoubleIncrement:value.doubleValue];
     }
     case INCREMENT_INTEGER: {
-      return [FIRFieldValue fieldValueForIntegerIncrement:[self readValue]];
+      NSNumber *value = [self readValue];
+      return [FIRFieldValue fieldValueForIntegerIncrement:value.intValue];
     }
     default:
       return [super readValueOfType:type];

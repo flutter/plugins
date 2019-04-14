@@ -48,7 +48,7 @@ class FieldValue {
     if (num is double) {
       FieldValue._(FieldValueType.incrementDouble, value);
     } else if (num is int) {
-      FieldValue._(FieldValueType.incrementDouble, value);
+      FieldValue._(FieldValueType.incrementInteger, value);
     }
   }
 }
