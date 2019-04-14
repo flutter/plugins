@@ -44,10 +44,10 @@ class FieldValue {
   /// Returns a special value for use with set() or update() that tells the
   /// server to increment the field’s current value by the given value.
   static FieldValue increment(num value) {
-    assert(num is int || num is double);
-    if (num is double) {
+    assert(value is int || value is double);
+    if (value is double) {
       FieldValue._(FieldValueType.incrementDouble, value);
-    } else if (num is int) {
+    } else if (value is int) {
       FieldValue._(FieldValueType.incrementInteger, value);
     }
   }
