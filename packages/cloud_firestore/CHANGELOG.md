@@ -1,3 +1,7 @@
+## 0.9.13+2
+
+* Support `FieldValue.incrementDouble` and `FieldValue.incrementInteger`.
+
 ## 0.9.13+1
 
 * Added an integration test for transactions.
