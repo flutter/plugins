@@ -83,7 +83,7 @@ class Connectivity {
   ///
   /// Please note that it DOESN'T WORK on emulators (returns null).
   ///
-  /// From android 8.0 onwards the GPS must be ON (high accuracy)
+  /// From Android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the BSSID.
   Future<String> getWifiBSSID() async {
     return await methodChannel.invokeMethod('wifiBSSID');
