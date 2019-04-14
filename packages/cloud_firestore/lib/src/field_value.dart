@@ -42,12 +42,13 @@ class FieldValue {
       FieldValue._(FieldValueType.serverTimestamp, null);
 
   /// Returns a special value for use with set() or update() that tells the
-  /// server to increment the field’s current value by the given double value.
-  static FieldValue incrementDouble(double value) =>
+  /// server to increment the field’s current value by the given value.
+  static FieldValue increment(num value) {
+    assert(num is int || num is double);
+    if (num is double) {
       FieldValue._(FieldValueType.incrementDouble, value);
-
-  /// Returns a special value for use with set() or update() that tells the
-  /// server to increment the field’s current value by the given integer value.
-  static FieldValue incrementInteger(int value) =>
-      FieldValue._(FieldValueType.incrementInteger, value);
+    } else if (num is int) {
+      FieldValue._(FieldValueType.incrementDouble, value);
+    }
+  }
 }
