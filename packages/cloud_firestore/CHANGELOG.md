@@ -1,6 +1,7 @@
-## 0.9.13+2
+## 0.10.0
 
 * Support for `FieldValue.increment`.
+* Remove `FieldValue.type` and `FieldValue.value` from public API.
 * Additional integration testing.
 
 ## 0.9.13+1

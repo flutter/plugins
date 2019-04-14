@@ -4,13 +4,14 @@
 
 part of cloud_firestore;
 
+@visibleForTesting
 enum FieldValueType {
   arrayUnion,
   arrayRemove,
   delete,
   serverTimestamp,
   incrementDouble,
-  incrementInteger
+  incrementInteger,
 }
 
 /// Sentinel values that can be used when writing document fields with set() or
@@ -18,7 +19,10 @@ enum FieldValueType {
 class FieldValue {
   FieldValue._(this.type, this.value);
 
+  @visibleForTesting
   final FieldValueType type;
+
+  @visibleForTesting
   final dynamic value;
 
   /// Returns a special value that tells the server to union the given elements
