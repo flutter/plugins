@@ -199,7 +199,8 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
     if (iconData.count == 2) {
       @try {
         FlutterStandardTypedData* byteData = iconData[1];
-        image = [UIImage imageWithData:[byteData data]];
+        CGFloat screenScale = [[UIScreen mainScreen] scale];
+        image = [UIImage imageWithData:[byteData data] scale:screenScale];
       } @catch (NSException* exception) {
         @throw [NSException exceptionWithName:@"InvalidByteDescriptor"
                                        reason:@"Unable to interpret bytes as a valid image."
