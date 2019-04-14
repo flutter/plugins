@@ -1,6 +1,7 @@
 ## 0.9.13+2
 
 * Support for `FieldValue.increment`.
+* Additional integration testing.
 
 ## 0.9.13+1
 

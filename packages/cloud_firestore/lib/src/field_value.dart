@@ -46,9 +46,9 @@ class FieldValue {
   static FieldValue increment(num value) {
     assert(value is int || value is double);
     if (value is double) {
-      FieldValue._(FieldValueType.incrementDouble, value);
+      return FieldValue._(FieldValueType.incrementDouble, value);
     } else if (value is int) {
-      FieldValue._(FieldValueType.incrementInteger, value);
+      return FieldValue._(FieldValueType.incrementInteger, value);
     }
   }
 }

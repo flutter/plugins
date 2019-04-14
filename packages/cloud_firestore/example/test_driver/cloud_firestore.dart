@@ -46,16 +46,17 @@ void main() {
         'message': 1,
         'created_at': FieldValue.serverTimestamp(),
       });
-      await ref.setData(<String, dynamic>{
-        'message': FieldValue.increment(1),
-        'created_at': FieldValue.serverTimestamp(),
-      });
       DocumentSnapshot snapshot = await ref.get();
-      expect(snapshot.data['message'], 2);
-      await ref.setData(<String, dynamic>{
-        'message': FieldValue.increment(40.0),
-        'created_at': FieldValue.serverTimestamp(),
+      expect(snapshot.data['message'], 1);
+      await ref.updateData(<String, dynamic>{
+        'message': FieldValue.increment(1),
       });
+      snapshot = await ref.get();
+      expect(snapshot.data['message'], 2);
+      await ref.updateData(<String, dynamic>{
+        'message': FieldValue.increment(40.0),
+      });
+      snapshot = await ref.get();
       expect(snapshot.data['message'], 42.0);
       await ref.delete();
     });

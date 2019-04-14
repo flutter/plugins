@@ -714,9 +714,11 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       case SERVER_TIMESTAMP:
         return FieldValue.serverTimestamp();
       case INCREMENT_INTEGER:
-        return FieldValue.increment(buffer.getLong());
+        final Number integerIncrementValue = (Number) readValue(buffer);
+        return FieldValue.increment(integerIncrementValue.intValue());
       case INCREMENT_DOUBLE:
-        return FieldValue.increment(buffer.getDouble());
+        final Number doubleIncrementValue = (Number) readValue(buffer);
+        return FieldValue.increment(doubleIncrementValue.doubleValue());
       default:
         return super.readValueOfType(type, buffer);
     }
