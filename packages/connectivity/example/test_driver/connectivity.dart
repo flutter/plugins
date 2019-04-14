@@ -22,7 +22,6 @@ void main() {
         case ConnectivityResult.wifi:
           expect((_connectivity.getWifiName()), completes);
           expect((await _connectivity.getWifiIP()), isNotNull);
-          expect((await _connectivity.getWifiBSSID()), isNotNull);
           break;
         default:
           break;
