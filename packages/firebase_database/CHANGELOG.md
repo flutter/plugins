@@ -1,3 +1,11 @@
+## 2.0.3
+
+* Provide a `toString` implementation for `DatabaseError`.
+
+## 2.0.2+1
+
+* Added an integration test for transactions.
+
 ## 2.0.2
 
 * Fix the issue that `getDictionaryFromError` always returns non nil result even when the parameter is nil.

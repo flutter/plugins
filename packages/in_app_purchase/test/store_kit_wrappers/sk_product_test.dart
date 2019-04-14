@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
@@ -79,6 +80,8 @@ void main() {
       expect(product.id, wrapper.productIdentifier);
       expect(product.price,
           wrapper.priceLocale.currencySymbol + wrapper.price.toString());
+      expect(product.skProduct, wrapper);
+      expect(product.skuDetail, null);
     });
 
     test('SKProductResponse wrapper should match', () {
@@ -118,12 +121,6 @@ void main() {
       expect(error, equals(dummyError));
     });
 
-    test('Should construct correct SKDownloadWrapper from json', () {
-      SKDownloadWrapper download =
-          SKDownloadWrapper.fromJson(buildDownloadMap(dummyDownload));
-      expect(download, equals(dummyDownload));
-    });
-
     test('Should construct correct SKTransactionWrapper from json', () {
       SKPaymentTransactionWrapper transaction =
           SKPaymentTransactionWrapper.fromJson(
@@ -131,6 +128,19 @@ void main() {
       expect(transaction, equals(dummyTransaction));
     });
 
+    test('toPurchaseDetails() should return correct PurchaseDetail object', () {
+      PurchaseDetails details =
+          dummyTransaction.toPurchaseDetails('receipt data');
+      expect(dummyTransaction.transactionIdentifier, details.purchaseID);
+      expect(dummyTransaction.payment.productIdentifier, details.productID);
+      expect((dummyTransaction.transactionTimeStamp * 1000).toInt().toString(),
+          details.transactionDate);
+      expect(details.verificationData.localVerificationData, 'receipt data');
+      expect(details.verificationData.serverVerificationData, 'receipt data');
+      expect(details.verificationData.source, PurchaseSource.AppStore);
+      expect(details.skPaymentTransaction, dummyTransaction);
+      expect(details.billingClientPurchase, null);
+    });
     test('Should generate correct map of the payment object', () {
       Map map = dummyPayment.toMap();
       expect(map['productIdentifier'], dummyPayment.productIdentifier);

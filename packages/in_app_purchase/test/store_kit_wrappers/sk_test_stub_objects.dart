@@ -12,18 +12,7 @@ final dummyPayment = SKPaymentWrapper(
     simulatesAskToBuyInSandbox: true);
 final SKError dummyError =
     SKError(code: 111, domain: 'dummy-domain', userInfo: {'key': 'value'});
-final SKDownloadWrapper dummyDownload = SKDownloadWrapper(
-  contentIdentifier: 'id',
-  state: SKDownloadState.failed,
-  contentLength: 32,
-  contentURL: 'https://download.com',
-  contentVersion: '0.0.1',
-  transactionID: 'tranID',
-  progress: 0.6,
-  timeRemaining: 1231231,
-  downloadTimeUnknown: false,
-  error: dummyError,
-);
+
 final SKPaymentTransactionWrapper dummyOriginalTransaction =
     SKPaymentTransactionWrapper(
   transactionState: SKPaymentTransactionStateWrapper.purchased,
@@ -31,7 +20,6 @@ final SKPaymentTransactionWrapper dummyOriginalTransaction =
   originalTransaction: null,
   transactionTimeStamp: 1231231231.00,
   transactionIdentifier: '123123',
-  downloads: [dummyDownload],
   error: dummyError,
 );
 final SKPaymentTransactionWrapper dummyTransaction =
@@ -41,7 +29,6 @@ final SKPaymentTransactionWrapper dummyTransaction =
   originalTransaction: dummyOriginalTransaction,
   transactionTimeStamp: 1231231231.00,
   transactionIdentifier: '123123',
-  downloads: [dummyDownload],
   error: dummyError,
 );
 
@@ -142,21 +129,6 @@ Map<String, dynamic> buildErrorMap(SKError error) {
   };
 }
 
-Map<String, dynamic> buildDownloadMap(SKDownloadWrapper download) {
-  return {
-    'contentIdentifier': download.contentIdentifier,
-    'state': SKDownloadState.values.indexOf(download.state),
-    'contentLength': download.contentLength,
-    'contentURL': download.contentURL,
-    'contentVersion': download.contentVersion,
-    'transactionID': download.transactionID,
-    'progress': download.progress,
-    'timeRemaining': download.timeRemaining,
-    'downloadTimeUnknown': download.downloadTimeUnknown,
-    'error': buildErrorMap(download.error)
-  };
-}
-
 Map<String, dynamic> buildTransactionMap(
     SKPaymentTransactionWrapper transaction) {
   if (transaction == null) {
@@ -171,9 +143,5 @@ Map<String, dynamic> buildTransactionMap(
     'transactionIdentifier': transaction.transactionIdentifier,
     'error': buildErrorMap(transaction.error),
   };
-  List downloadList = transaction.downloads.map((SKDownloadWrapper download) {
-    return buildDownloadMap(download);
-  }).toList();
-  map['downloads'] = downloadList;
   return map;
 }
