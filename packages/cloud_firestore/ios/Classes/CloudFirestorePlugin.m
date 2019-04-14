@@ -140,6 +140,8 @@ const UInt8 ARRAY_REMOVE = 133;
 const UInt8 DELETE = 134;
 const UInt8 SERVER_TIMESTAMP = 135;
 const UInt8 TIMESTAMP = 136;
+const UInt8 INCREMENT_DOUBLE = 137;
+const UInt8 INCREMENT_INTEGER = 138;
 
 @interface FirestoreWriter : FlutterStandardWriter
 - (void)writeValue:(id)value;
@@ -233,6 +235,12 @@ const UInt8 TIMESTAMP = 136;
     }
     case SERVER_TIMESTAMP: {
       return [FIRFieldValue fieldValueForServerTimestamp];
+    }
+    case INCREMENT_DOUBLE: {
+      return [FIRFieldValue fieldValueForDoubleIncrement:[self readValue]];
+    }
+    case INCREMENT_INTEGER: {
+      return [FIRFieldValue fieldValueForIntegerIncrement:[self readValue]];
     }
     default:
       return [super readValueOfType:type];

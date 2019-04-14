@@ -609,6 +609,8 @@ void main() {
         _checkEncodeDecode<dynamic>(codec, FieldValue.arrayRemove(<int>[123]));
         _checkEncodeDecode<dynamic>(codec, FieldValue.delete());
         _checkEncodeDecode<dynamic>(codec, FieldValue.serverTimestamp());
+        _checkEncodeDecode<dynamic>(codec, FieldValue.incrementDouble(1.0));
+        _checkEncodeDecode<dynamic>(codec, FieldValue.incrementInteger(1));
       });
     });
 
