@@ -4,7 +4,14 @@
 
 part of cloud_firestore;
 
-enum FieldValueType { arrayUnion, arrayRemove, delete, serverTimestamp, incrementDouble, incrementInteger }
+enum FieldValueType {
+  arrayUnion,
+  arrayRemove,
+  delete,
+  serverTimestamp,
+  incrementDouble,
+  incrementInteger
+}
 
 /// Sentinel values that can be used when writing document fields with set() or
 /// update().
