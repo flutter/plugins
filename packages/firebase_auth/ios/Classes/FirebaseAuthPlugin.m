@@ -170,13 +170,13 @@ int nextHandle = 0;
                       }];
   } else if ([@"reauthenticateWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
-        reauthenticateWithCredential:[self getCredential:call.arguments]
+        reauthenticateAndRetrieveDataWithCredential:[self getCredential:call.arguments]
                           completion:^(FIRAuthDataResult *r, NSError *_Nullable error) {
                             [self sendResult:result forObject:nil error:error];
                           }];
   } else if ([@"linkWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
-        linkWithCredential:[self getCredential:call.arguments]
+        linkAndRetrieveDataWithCredential:[self getCredential:call.arguments]
                 completion:^(FIRAuthDataResult *r, NSError *error) {
                   [self sendResult:result forUser:r.user error:error];
                 }];
@@ -282,7 +282,7 @@ int nextHandle = 0;
         [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
                                                      verificationCode:smsCode];
     [[self getAuth:call.arguments]
-        signInWithCredential:credential
+        signInAndRetrieveDataWithCredential:credential
                   completion:^(FIRAuthDataResult *r, NSError *_Nullable error) {
                     [self sendResult:result forUser:r.user error:error];
                   }];
