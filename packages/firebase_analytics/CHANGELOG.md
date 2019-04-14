@@ -1,3 +1,7 @@
+## 2.1.1+2
+
+* Fixed errors in code sample for `FirebaseAnalyticsObserver`.
+
 ## 2.1.1+1
 
 * Added hyperlinks to example app reference in README.md.
