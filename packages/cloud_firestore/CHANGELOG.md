@@ -1,6 +1,6 @@
 ## 0.9.13+2
 
-* Support `FieldValue.incrementDouble` and `FieldValue.incrementInteger`.
+* Support for `FieldValue.increment`.
 
 ## 0.9.13+1
 
