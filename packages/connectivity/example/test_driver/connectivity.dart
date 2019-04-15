@@ -20,10 +20,9 @@ void main() {
       expect(result, isNotNull);
       switch (result) {
         case ConnectivityResult.wifi:
-          expect((_connectivity.getWifiName()), completes);
+          expect(_connectivity.getWifiName(), completes);
+          expect(_connectivity.getWifiBSSID(), completes);
           expect((await _connectivity.getWifiIP()), isNotNull);
-          // Returns null on emulators so we just check that it doesn't throw
-          await _connectivity.getWifiBSSID();
           break;
         default:
           break;
