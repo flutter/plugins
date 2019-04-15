@@ -1,3 +1,8 @@
+## 0.8.4+3
+
+* Updated deprecated API usage on iOS to use non-deprecated versions.
+* Updated FirebaseAuth CocoaPod dependency to ensure a minimum version of 5.0.
+
 ## 0.8.4+2
 
 * Fixes an error in the documentation of createUserWithEmailAndPassword.
