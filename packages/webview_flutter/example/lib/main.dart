@@ -64,6 +64,7 @@ class WebViewExample extends StatelessWidget {
           onPageFinished: (String url) {
             print('Page finished loading: $url');
           },
+          debug: true,
         );
       }),
       floatingActionButton: favoriteButton(),
