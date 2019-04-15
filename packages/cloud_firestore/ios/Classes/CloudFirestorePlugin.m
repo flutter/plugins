@@ -352,11 +352,11 @@ const UInt8 TIMESTAMP = 136;
           dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
           [weakSelf.channel invokeMethod:@"DoTransaction"
-                           arguments:call.arguments
-                              result:^(id doTransactionResult) {
-                                self->transactionResults[transactionId] = doTransactionResult;
-                                dispatch_semaphore_signal(semaphore);
-                              }];
+                               arguments:call.arguments
+                                  result:^(id doTransactionResult) {
+                                    self->transactionResults[transactionId] = doTransactionResult;
+                                    dispatch_semaphore_signal(semaphore);
+                                  }];
 
           dispatch_semaphore_wait(
               semaphore,
@@ -484,16 +484,16 @@ const UInt8 TIMESTAMP = 136;
             return;
           }
           [weakSelf.channel invokeMethod:@"DocumentSnapshot"
-                           arguments:@{
-                             @"handle" : handle,
-                             @"path" : snapshot ? snapshot.reference.path : [NSNull null],
-                             @"data" : snapshot.exists ? snapshot.data : [NSNull null],
-                             @"metadata" : snapshot ? @{
-                               @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
-                               @"isFromCache" : @(snapshot.metadata.isFromCache),
-                             }
-                                                    : [NSNull null],
-                           }];
+                               arguments:@{
+                                 @"handle" : handle,
+                                 @"path" : snapshot ? snapshot.reference.path : [NSNull null],
+                                 @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+                                 @"metadata" : snapshot ? @{
+                                   @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
+                                   @"isFromCache" : @(snapshot.metadata.isFromCache),
+                                 }
+                                                        : [NSNull null],
+                               }];
         }];
     _listeners[handle] = listener;
     result(handle);
@@ -513,11 +513,11 @@ const UInt8 TIMESTAMP = 136;
         return;
       }
       [weakSelf.channel invokeMethod:@"DocumentSnapshot"
-                       arguments:@{
-                         @"handle" : handle,
-                         @"path" : snapshot ? snapshot.reference.path : [NSNull null],
-                         @"data" : snapshot && snapshot.exists ? snapshot.data : [NSNull null],
-                       }];
+                           arguments:@{
+                             @"handle" : handle,
+                             @"path" : snapshot ? snapshot.reference.path : [NSNull null],
+                             @"data" : snapshot && snapshot.exists ? snapshot.data : [NSNull null],
+                           }];
     }];
     _listeners[handle] = listener;
     result(handle);

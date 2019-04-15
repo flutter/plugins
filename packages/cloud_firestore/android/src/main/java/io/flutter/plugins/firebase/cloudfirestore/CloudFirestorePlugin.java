@@ -204,16 +204,19 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     @SuppressWarnings("unchecked")
     Map<String, Object> startAtDocument = (Map<String, Object>) parameters.get("startAtDocument");
     if (startAtDocument != null) {
-      query = query
-        .orderBy(FieldPath.documentId())
-        .startAt(getDocumentValues(startAtDocument, orderBy));
+      query =
+          query
+              .orderBy(FieldPath.documentId())
+              .startAt(getDocumentValues(startAtDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
-    Map<String, Object> startAfterDocument = (Map<String, Object>) parameters.get("startAfterDocument");
+    Map<String, Object> startAfterDocument =
+        (Map<String, Object>) parameters.get("startAfterDocument");
     if (startAfterDocument != null) {
-      query = query
-        .orderBy(FieldPath.documentId())
-        .startAfter(getDocumentValues(startAfterDocument, orderBy));
+      query =
+          query
+              .orderBy(FieldPath.documentId())
+              .startAfter(getDocumentValues(startAfterDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
     List<Object> startAt = (List<Object>) parameters.get("startAt");
@@ -224,16 +227,17 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     @SuppressWarnings("unchecked")
     Map<String, Object> endAtDocument = (Map<String, Object>) parameters.get("endAtDocument");
     if (endAtDocument != null) {
-        query = query
-                .orderBy(FieldPath.documentId())
-                .endAt(getDocumentValues(endAtDocument, orderBy));
+      query =
+          query.orderBy(FieldPath.documentId()).endAt(getDocumentValues(endAtDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
-    Map<String, Object> endBeforeDocument = (Map<String, Object>) parameters.get("endBeforeDocument");
+    Map<String, Object> endBeforeDocument =
+        (Map<String, Object>) parameters.get("endBeforeDocument");
     if (endBeforeDocument != null) {
-        query = query
-                .orderBy(FieldPath.documentId())
-                .endBefore(getDocumentValues(endBeforeDocument, orderBy));
+      query =
+          query
+              .orderBy(FieldPath.documentId())
+              .endBefore(getDocumentValues(endBeforeDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
     List<Object> endAt = (List<Object>) parameters.get("endAt");
