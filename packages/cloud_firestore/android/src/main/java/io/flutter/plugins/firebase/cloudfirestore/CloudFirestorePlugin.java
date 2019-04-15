@@ -93,6 +93,20 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     return getFirestore(arguments).document(path);
   }
 
+  private Object[] getDocumentValues(Map<String, Object> document, List<List<Object>> orderBy) {
+    String documentId = (String) document.get("id");
+    Map<String, Object> documentData = (Map<String, Object>) document.get("data");
+    List<Object> data = new ArrayList<>();
+    if (orderBy != null) {
+      for (List<Object> order : orderBy) {
+        String orderByFieldName = (String) order.get(0);
+        data.add(documentData.get(orderByFieldName));
+      }
+    }
+    data.add(documentId);
+    return data.toArray();
+  }
+
   private Map<String, Object> parseQuerySnapshot(QuerySnapshot querySnapshot) {
     if (querySnapshot == null) return new HashMap<>();
     Map<String, Object> data = new HashMap<>();
@@ -188,35 +202,18 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       query = query.orderBy(orderByFieldName, direction);
     }
     @SuppressWarnings("unchecked")
-    ArrayList startAtDocument = (ArrayList) parameters.get("startAtDocument");
+    Map<String, Object> startAtDocument = (Map<String, Object>) parameters.get("startAtDocument");
     if (startAtDocument != null) {
-      String documentId = (String) startAtDocument.get(0);
-      Map<String, Object> documentData = (Map<String, Object>) startAtDocument.get(1);
-      query = query.orderBy(FieldPath.documentId());
-      List<Object> data = new ArrayList<>();
-      if (orderBy == null) return query;
-      for (List<Object> order : orderBy) {
-        String orderByFieldName = (String) order.get(0);
-        data.add(documentData.get(orderByFieldName));
-      }
-      data.add(documentId);
-      query = query.startAt(data.toArray());
+      query = query
+        .orderBy(FieldPath.documentId())
+        .startAt(getDocumentValues(startAtDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
-    ArrayList startAfterDocument = (ArrayList) parameters.get("startAfterDocument");
+    Map<String, Object> startAfterDocument = (Map<String, Object>) parameters.get("startAfterDocument");
     if (startAfterDocument != null) {
-      String documentId = (String) startAfterDocument.get(0);
-      Map<String, Object> documentData = (Map<String, Object>) startAfterDocument.get(1);
-      query = query.orderBy(FieldPath.documentId());
-      List<Object> data = new ArrayList<>();
-      if (orderBy != null) {
-        for (List<Object> order : orderBy) {
-          String orderByFieldName = (String) order.get(0);
-          data.add(documentData.get(orderByFieldName));
-        }
-        data.add(documentId);
-        query = query.startAfter(data.toArray());
-      }
+      query = query
+        .orderBy(FieldPath.documentId())
+        .startAfter(getDocumentValues(startAfterDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
     List<Object> startAt = (List<Object>) parameters.get("startAt");
@@ -225,36 +222,18 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     List<Object> startAfter = (List<Object>) parameters.get("startAfter");
     if (startAfter != null) query = query.startAfter(startAfter.toArray());
     @SuppressWarnings("unchecked")
-    ArrayList endAtDocument = (ArrayList) parameters.get("endAtDocument");
+    Map<String, Object> endAtDocument = (Map<String, Object>) parameters.get("endAtDocument");
     if (endAtDocument != null) {
-      String documentId = (String) endAtDocument.get(0);
-      Map<String, Object> documentData = (Map<String, Object>) endAtDocument.get(1);
-      query = query.orderBy(FieldPath.documentId());
-      List<Object> data = new ArrayList<>();
-      if (orderBy != null) {
-        for (List<Object> order : orderBy) {
-          String orderByFieldName = (String) order.get(0);
-          data.add(documentData.get(orderByFieldName));
-        }
-        data.add(documentId);
-        query = query.endAt(data.toArray());
-      }
+        query = query
+                .orderBy(FieldPath.documentId())
+                .endAt(getDocumentValues(endAtDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
-    ArrayList endBeforeDocument = (ArrayList) parameters.get("endBeforeDocument");
+    Map<String, Object> endBeforeDocument = (Map<String, Object>) parameters.get("endBeforeDocument");
     if (endBeforeDocument != null) {
-      String documentId = (String) endBeforeDocument.get(0);
-      Map<String, Object> documentData = (Map<String, Object>) endBeforeDocument.get(1);
-      query = query.orderBy(FieldPath.documentId());
-      List<Object> data = new ArrayList<>();
-      if (orderBy != null) {
-        for (List<Object> order : orderBy) {
-          String orderByFieldName = (String) order.get(0);
-          data.add(documentData.get(orderByFieldName));
-        }
-        data.add(documentId);
-        query = query.endBefore(data.toArray());
-      }
+        query = query
+                .orderBy(FieldPath.documentId())
+                .endBefore(getDocumentValues(endBeforeDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
     List<Object> endAt = (List<Object>) parameters.get("endAt");
