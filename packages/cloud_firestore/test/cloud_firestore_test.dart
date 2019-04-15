@@ -615,10 +615,10 @@ void main() {
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
-                    'startAtDocument': <dynamic>[
-                      '0',
-                      kMockDocumentSnapshotData
-                    ],
+                    'startAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'data': kMockDocumentSnapshotData,
+                    },
                   },
                 },
               ),
@@ -630,10 +630,10 @@ void main() {
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
-                    'startAfterDocument': <dynamic>[
-                      '0',
-                      kMockDocumentSnapshotData
-                    ],
+                    'startAfterDocument': <String, dynamic>{
+                      'id': '0',
+                      'data': kMockDocumentSnapshotData,
+                    },
                   },
                 },
               ),
@@ -645,7 +645,10 @@ void main() {
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
-                    'endAtDocument': <dynamic>['0', kMockDocumentSnapshotData],
+                    'endAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'data': kMockDocumentSnapshotData,
+                    },
                   },
                 },
               ),
@@ -657,10 +660,10 @@ void main() {
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
-                    'endBeforeDocument': <dynamic>[
-                      '0',
-                      kMockDocumentSnapshotData
-                    ],
+                    'endBeforeDocument': <String, dynamic>{
+                      'id': '0',
+                      'data': kMockDocumentSnapshotData,
+                    },
                   },
                 },
               ),
