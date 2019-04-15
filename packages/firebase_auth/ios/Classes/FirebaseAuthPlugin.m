@@ -32,8 +32,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
 
 @implementation FLTFirebaseAuthPlugin
 
-// Handles are ints used as indexes into the NSMutableDictionary of active
-// observers
+// Handles are ints used as indexes into the NSMutableDictionary of active observers
 int nextHandle = 0;
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -63,6 +62,15 @@ int nextHandle = 0;
   return [FIRAuth authWithApp:[FIRApp appNamed:appName]];
 }
 
+// TODO(jackson): We should use the renamed versions of the following methods
+// when they are available in the Firebase SDK that this plugin is dependent on.
+// * fetchSignInMethodsForEmail:completion:
+// * reauthenticateAndRetrieveDataWithCredential:completion:
+// * linkAndRetrieveDataWithCredential:completion:
+// * signInAndRetrieveDataWithCredential:completion:
+// See discussion at https://github.com/flutter/plugins/pull/1487
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"currentUser" isEqualToString:call.method]) {
     id __block listener = [[self getAuth:call.arguments]
@@ -315,6 +323,7 @@ int nextHandle = 0;
   userData[@"providerData"] = providerData;
   return userData;
 }
+#pragma clang diagnostic pop
 
 - (void)sendResult:(FlutterResult)result forUser:(FIRUser *)user error:(NSError *)error {
   [self sendResult:result
@@ -383,9 +392,7 @@ int nextHandle = 0;
         credentialWithVerificationID:verificationId
                     verificationCode:smsCode];
   } else {
-    NSLog(@"Support for an auth provider with identifier '%@' is not "
-          @"implemented.",
-          provider);
+    NSLog(@"Support for an auth provider with identifier '%@' is not implemented.", provider);
   }
   return credential;
 }
