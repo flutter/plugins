@@ -117,6 +117,7 @@ class WebView extends StatefulWidget {
     this.navigationDelegate,
     this.gestureRecognizers,
     this.onPageFinished,
+    this.debug
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -204,6 +205,7 @@ class WebView extends StatefulWidget {
   /// directly in the HTML has been loaded and code injected with
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
+  final bool debug;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -294,7 +296,7 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 
 class _CreationParams {
   _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames});
+      {this.initialUrl, this.settings, this.javascriptChannelNames, this.debug});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
@@ -302,6 +304,7 @@ class _CreationParams {
       settings: _WebSettings.fromWidget(widget),
       javascriptChannelNames:
           _extractChannelNames(widget.javascriptChannels).toList(),
+      debug: widget.debug
     );
   }
 
@@ -310,12 +313,14 @@ class _CreationParams {
   final _WebSettings settings;
 
   final List<String> javascriptChannelNames;
+  final bool debug;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'initialUrl': initialUrl,
       'settings': settings.toMap(),
       'javascriptChannelNames': javascriptChannelNames,
+      'debug': debug
     };
   }
 }
