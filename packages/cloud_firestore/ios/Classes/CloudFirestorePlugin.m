@@ -14,17 +14,32 @@ static FlutterError *getFlutterError(NSError *error) {
                              details:error.localizedDescription];
 }
 
-FIRFirestore *getFirestore(NSDictionary *arguments) {
+static FIRFirestore *getFirestore(NSDictionary *arguments) {
   FIRApp *app = [FIRApp appNamed:arguments[@"app"]];
   return [FIRFirestore firestoreForApp:app];
 }
 
-FIRDocumentReference *getDocumentReference(NSDictionary *arguments) {
+static FIRDocumentReference *getDocumentReference(NSDictionary *arguments) {
   return [getFirestore(arguments) documentWithPath:arguments[@"path"]];
 }
 
+static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy) {
+  NSMutableArray *values = [[NSMutableArray alloc] init];
+  NSString *documentId = document[@"id"];
+  NSDictionary *documentData = document[@"data"];
+  if (orderBy) {
+    for (id item in orderBy) {
+      NSArray *orderByParameters = item;
+      NSString *fieldName = orderByParameters[0];
+      [values addObject:[documentData objectForKey:fieldName]];
+    }
+  }
+  [values addObject:documentId];
+  return values;
+}
+
 typedef void (^QueryCompletionBlock)(FIRQuery *query);
-void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
+static void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
   __block FIRQuery *query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
   NSDictionary *parameters = arguments[@"parameters"];
   NSArray *whereConditions = parameters[@"where"];
@@ -69,21 +84,8 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
   }
   id startAtDocument = parameters[@"startAtDocument"];
   if (startAtDocument) {
-    NSArray *startAtValues = startAtDocument;
-    NSMutableArray *startAtQueryValues = [[NSMutableArray alloc] init];
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
-    NSString *startAtDocId = startAtValues[0];
-    NSDictionary *startAtData = startAtValues[1];
-    if (orderBy) {
-      for (id item in orderBy) {
-        NSArray *orderByParameters = item;
-        NSString *fieldName = orderByParameters[0];
-        [startAtQueryValues addObject:[startAtData objectForKey:fieldName]];
-      }
-    }
-
-    [startAtQueryValues addObject:startAtDocId];
-    query = [query queryStartingAtValues:startAtQueryValues];
+    query = [query queryStartingAtValues:getDocumentValues(startAtDocument, orderBy)];
     return handler(query);
   }
   id startAfter = parameters[@"startAfter"];
@@ -93,21 +95,8 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
   }
   id startAfterDocument = parameters[@"startAfterDocument"];
   if (startAfterDocument) {
-    NSArray *startAfterValues = startAfterDocument;
-    NSMutableArray *startAfterQueryValues = [[NSMutableArray alloc] init];
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
-    NSString *startAfterDocId = startAfterValues[0];
-    NSDictionary *startAfterData = startAfterValues[1];
-    if (orderBy) {
-      for (id item in orderBy) {
-        NSArray *orderByParameters = item;
-        NSString *fieldName = orderByParameters[0];
-        [startAfterQueryValues addObject:[startAfterData objectForKey:fieldName]];
-      }
-    }
-
-    [startAfterQueryValues addObject:startAfterDocId];
-    query = [query queryStartingAfterValues:startAfterQueryValues];
+    query = [query queryStartingAfterValues:getDocumentValues(startAfterDocument, orderBy)];
     return handler(query);
   }
   id endAt = parameters[@"endAt"];
@@ -117,21 +106,8 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
   }
   id endAtDocument = parameters[@"endAtDocument"];
   if (endAtDocument) {
-    NSArray *endingAtValues = endAtDocument;
-    NSMutableArray *endingAtQueryValues = [[NSMutableArray alloc] init];
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
-    NSString *endAtDocId = endingAtValues[0];
-    NSDictionary *endAtData = endingAtValues[1];
-    if (orderBy) {
-      for (id item in orderBy) {
-        NSArray *orderByParameters = item;
-        NSString *fieldName = orderByParameters[0];
-        [endingAtQueryValues addObject:[endAtData objectForKey:fieldName]];
-      }
-    }
-
-    [endingAtQueryValues addObject:endAtDocId];
-    query = [query queryEndingAtValues:endingAtQueryValues];
+    query = [query queryEndingAtValues:getDocumentValues(endAtDocument, orderBy)];
     return handler(query);
   }
   id endBefore = parameters[@"endBefore"];
@@ -141,27 +117,14 @@ void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
   }
   id endBeforeDocument = parameters[@"endBeforeDocument"];
   if (endBeforeDocument) {
-    NSArray *endBeforeValues = endBeforeDocument;
-    NSMutableArray *endBeforeQueryValues = [[NSMutableArray alloc] init];
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
-    NSString *endBeforeDocId = endBeforeValues[0];
-    NSDictionary *endBeforeData = endBeforeValues[1];
-    if (orderBy) {
-      for (id item in orderBy) {
-        NSArray *orderByParameters = item;
-        NSString *fieldName = orderByParameters[0];
-        [endBeforeQueryValues addObject:[endBeforeData objectForKey:fieldName]];
-      }
-    }
-
-    [endBeforeQueryValues addObject:endBeforeDocId];
-    query = [query queryEndingBeforeValues:endBeforeQueryValues];
+    query = [query queryEndingBeforeValues:getDocumentValues(endBeforeDocument, orderBy)];
     return handler(query);
   }
   return handler(query);
 }
 
-NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
+static NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
   NSMutableArray *paths = [NSMutableArray array];
   NSMutableArray *documents = [NSMutableArray array];
   NSMutableArray *metadatas = [NSMutableArray array];
@@ -374,6 +337,7 @@ const UInt8 TIMESTAMP = 136;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  __weak __typeof__(self) weakSelf = self;
   void (^defaultCompletionBlock)(NSError *) = ^(NSError *error) {
     result(getFlutterError(error));
   };
@@ -387,7 +351,7 @@ const UInt8 TIMESTAMP = 136;
 
           dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-          [self.channel invokeMethod:@"DoTransaction"
+          [weakSelf.channel invokeMethod:@"DoTransaction"
                            arguments:call.arguments
                               result:^(id doTransactionResult) {
                                 self->transactionResults[transactionId] = doTransactionResult;
@@ -504,7 +468,7 @@ const UInt8 TIMESTAMP = 136;
             }
             NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
             [arguments setObject:handle forKey:@"handle"];
-            [self.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
+            [weakSelf.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
           }];
       self->_listeners[handle] = listener;
       result(handle);
@@ -519,7 +483,7 @@ const UInt8 TIMESTAMP = 136;
             result(getFlutterError(error));
             return;
           }
-          [self.channel invokeMethod:@"DocumentSnapshot"
+          [weakSelf.channel invokeMethod:@"DocumentSnapshot"
                            arguments:@{
                              @"handle" : handle,
                              @"path" : snapshot ? snapshot.reference.path : [NSNull null],
@@ -548,7 +512,7 @@ const UInt8 TIMESTAMP = 136;
         result(getFlutterError(error));
         return;
       }
-      [self.channel invokeMethod:@"DocumentSnapshot"
+      [weakSelf.channel invokeMethod:@"DocumentSnapshot"
                        arguments:@{
                          @"handle" : handle,
                          @"path" : snapshot ? snapshot.reference.path : [NSNull null],
