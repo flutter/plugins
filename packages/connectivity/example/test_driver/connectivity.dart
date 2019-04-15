@@ -20,7 +20,8 @@ void main() {
       expect(result, isNotNull);
       switch (result) {
         case ConnectivityResult.wifi:
-          expect((_connectivity.getWifiName()), completes);
+          expect(_connectivity.getWifiName(), completes);
+          expect(_connectivity.getWifiBSSID(), completes);
           expect((await _connectivity.getWifiIP()), isNotNull);
           break;
         default:
