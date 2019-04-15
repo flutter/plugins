@@ -95,7 +95,7 @@ class FileUtils {
 
       // Return the remote address
       if (isGooglePhotosUri(uri)) {
-        return uri.getLastPathSegment();
+        return null;
       }
 
       return getDataColumn(context, uri, null, null);

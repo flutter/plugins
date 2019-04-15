@@ -1,3 +1,16 @@
+## 0.9.13+1
+
+* Added an integration test for transactions.
+
+## 0.9.13
+
+* Remove Gradle BoM to avoid Gradle version issues.
+
+## 0.9.12
+
+* Move Android dependency to Gradle BoM to help maintain compatibility
+  with other FlutterFire plugins.
+
 ## 0.9.11
 
 * Bump Android dependencies to latest.
