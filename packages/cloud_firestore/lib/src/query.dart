@@ -207,7 +207,7 @@ class Query {
     assert(!_parameters.containsKey('startAfterDocument'));
     assert(!_parameters.containsKey('startAtDocument'));
     return _copyWithParameters(<String, dynamic>{
-      'startAtDocument': {
+      'startAtDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
         'data': documentSnapshot.data
       },
