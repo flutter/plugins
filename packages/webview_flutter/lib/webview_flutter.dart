@@ -108,16 +108,17 @@ class WebView extends StatefulWidget {
   /// `onWebViewCreated` callback once the web view is created.
   ///
   /// The `javascriptMode` parameter must not be null.
-  const WebView({
-    Key key,
-    this.onWebViewCreated,
-    this.initialUrl,
-    this.javascriptMode = JavascriptMode.disabled,
-    this.javascriptChannels,
-    this.navigationDelegate,
-    this.gestureRecognizers,
-    this.onPageFinished,
-  })  : assert(javascriptMode != null),
+  const WebView(
+      {Key key,
+      this.onWebViewCreated,
+      this.initialUrl,
+      this.javascriptMode = JavascriptMode.disabled,
+      this.javascriptChannels,
+      this.navigationDelegate,
+      this.gestureRecognizers,
+      this.onPageFinished,
+      this.debug})
+      : assert(javascriptMode != null),
         super(key: key);
 
   /// If not null invoked once the web view is created.
@@ -204,6 +205,7 @@ class WebView extends StatefulWidget {
   /// directly in the HTML has been loaded and code injected with
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
+  final bool debug;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -294,15 +296,18 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 
 class _CreationParams {
   _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames});
+      {this.initialUrl,
+      this.settings,
+      this.javascriptChannelNames,
+      this.debug});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
-      initialUrl: widget.initialUrl,
-      settings: _WebSettings.fromWidget(widget),
-      javascriptChannelNames:
-          _extractChannelNames(widget.javascriptChannels).toList(),
-    );
+        initialUrl: widget.initialUrl,
+        settings: _WebSettings.fromWidget(widget),
+        javascriptChannelNames:
+            _extractChannelNames(widget.javascriptChannels).toList(),
+        debug: widget.debug);
   }
 
   final String initialUrl;
@@ -310,12 +315,14 @@ class _CreationParams {
   final _WebSettings settings;
 
   final List<String> javascriptChannelNames;
+  final bool debug;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'initialUrl': initialUrl,
       'settings': settings.toMap(),
       'javascriptChannelNames': javascriptChannelNames,
+      'debug': debug
     };
   }
 }
