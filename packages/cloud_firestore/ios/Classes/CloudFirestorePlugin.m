@@ -38,9 +38,8 @@ static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy) {
   return values;
 }
 
-typedef void (^QueryCompletionBlock)(FIRQuery *query);
-static void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
-  __block FIRQuery *query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
+static FIRQuery *getQuery(NSDictionary *arguments) {
+  FIRQuery *query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
   NSDictionary *parameters = arguments[@"parameters"];
   NSArray *whereConditions = parameters[@"where"];
   for (id item in whereConditions) {
@@ -121,7 +120,7 @@ static void getQuery(NSDictionary *arguments, QueryCompletionBlock handler) {
     query = [query queryEndingBeforeValues:getDocumentValues(endBeforeDocument, orderBy)];
     return handler(query);
   }
-  return handler(query);
+  return query;
 }
 
 static NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
