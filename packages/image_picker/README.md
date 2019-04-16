@@ -64,3 +64,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 ```
+
+### Handling MainActivity Destruction on Android
+
+Android system -- although very rarely -- sometimes kills the MainActivity after the image_picker finishes. When this happens, we lost the data selected from the image_picker. You can use `retrieveLostData` to retrieve the lost data in this situation. For example: 
+
+```dart
+Future<void> retrieveLostData() async {
+  final RetrieveLostDataResponse response =
+      await ImagePicker.retrieveLostData();
+  if (response == null) {
+    return;
+  }
+  if (response.file != null) {
+    setState(() {
+      if (response.type == RetrieveType.video) {
+        _handleVideo(response.file);
+      } else {
+        _handleImage(response.file);
+      }
+    });
+  } else {
+    _handleError(response.exception);
+  }
+}
+```
