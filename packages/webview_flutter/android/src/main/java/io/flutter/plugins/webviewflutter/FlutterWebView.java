@@ -33,7 +33,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView = new WebView(context);
     platformThreadHandler = new Handler(context.getMainLooper());
     boolean debug = (boolean) params.get("debug") || false;
-
+    
+    // Allow debug
     WebView.setWebContentsDebuggingEnabled(debug);
 
     // Allow local storage.
