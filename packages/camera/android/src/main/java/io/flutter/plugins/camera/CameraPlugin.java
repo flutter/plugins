@@ -92,8 +92,7 @@ public class CameraPlugin implements MethodCallHandler {
 
     cameraManager = (CameraManager) registrar.activity().getSystemService(Context.CAMERA_SERVICE);
 
-    channel.setMethodCallHandler(
-        new CameraPlugin(registrar, registrar.view()));
+    channel.setMethodCallHandler(new CameraPlugin(registrar, registrar.view()));
   }
 
   @Override
@@ -302,10 +301,9 @@ public class CameraPlugin implements MethodCallHandler {
               throw new IllegalStateException("No activity available!");
             }
 
-            activity
-                .requestPermissions(
-                    new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
-                    CAMERA_REQUEST_ID);
+            activity.requestPermissions(
+                new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
+                CAMERA_REQUEST_ID);
           }
         }
       } catch (CameraAccessException e) {
