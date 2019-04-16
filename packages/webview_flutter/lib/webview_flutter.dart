@@ -108,17 +108,17 @@ class WebView extends StatefulWidget {
   /// `onWebViewCreated` callback once the web view is created.
   ///
   /// The `javascriptMode` parameter must not be null.
-  const WebView({
-    Key key,
-    this.onWebViewCreated,
-    this.initialUrl,
-    this.javascriptMode = JavascriptMode.disabled,
-    this.javascriptChannels,
-    this.navigationDelegate,
-    this.gestureRecognizers,
-    this.onPageFinished,
-    this.debug
-  })  : assert(javascriptMode != null),
+  const WebView(
+      {Key key,
+      this.onWebViewCreated,
+      this.initialUrl,
+      this.javascriptMode = JavascriptMode.disabled,
+      this.javascriptChannels,
+      this.navigationDelegate,
+      this.gestureRecognizers,
+      this.onPageFinished,
+      this.debug})
+      : assert(javascriptMode != null),
         super(key: key);
 
   /// If not null invoked once the web view is created.
@@ -296,16 +296,18 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 
 class _CreationParams {
   _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames, this.debug});
+      {this.initialUrl,
+      this.settings,
+      this.javascriptChannelNames,
+      this.debug});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
-      initialUrl: widget.initialUrl,
-      settings: _WebSettings.fromWidget(widget),
-      javascriptChannelNames:
-          _extractChannelNames(widget.javascriptChannels).toList(),
-      debug: widget.debug
-    );
+        initialUrl: widget.initialUrl,
+        settings: _WebSettings.fromWidget(widget),
+        javascriptChannelNames:
+            _extractChannelNames(widget.javascriptChannels).toList(),
+        debug: widget.debug);
   }
 
   final String initialUrl;
