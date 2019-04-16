@@ -65,9 +65,6 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
       return;
     }
     if (call.method.equals("pickImage")) {
-      Double maxWidth = call.argument("maxWidth");
-      Double maxHeight = call.argument("maxHeight");
-      delegate.saveMaxDemension(maxWidth, maxHeight);
       int imageSource = call.argument("source");
       switch (imageSource) {
         case SOURCE_GALLERY:

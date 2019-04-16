@@ -262,7 +262,7 @@ public class ImagePickerDelegate
       finishWithAlreadyActiveError(result);
       return;
     }
-    setType("image");
+    preparePresistentDataBeforeImageIntent(methodCall);
 
     if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
       permissionManager.askForPermission(
@@ -285,9 +285,16 @@ public class ImagePickerDelegate
       finishWithAlreadyActiveError(result);
       return;
     }
-    setType("image");
+    preparePresistentDataBeforeImageIntent(methodCall);
 
     launchTakeImageWithCameraIntent();
+  }
+
+  private void preparePresistentDataBeforeImageIntent(MethodCall methodCall) {
+    setType("image");
+    Double maxWidth = methodCall.argument("maxWidth");
+    Double maxHeight = methodCall.argument("maxHeight");
+    saveMaxDemension(maxWidth, maxHeight);
   }
 
   private void launchTakeImageWithCameraIntent() {
@@ -455,18 +462,15 @@ public class ImagePickerDelegate
   }
 
   private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
-    if (pendingResult == null) {
+    if (pendingResult == null || methodCall == null) {
       saveResult(path, null, null);
       return;
     }
-    String finalImagePath;
-    if (methodCall != null) {
-      Double maxWidth = methodCall.argument("maxWidth");
-      Double maxHeight = methodCall.argument("maxHeight");
-      finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
-    } else {
-      finalImagePath = getFinalImagePath(path);
-    }
+
+    Double maxWidth = methodCall.argument("maxWidth");
+    Double maxHeight = methodCall.argument("maxHeight");
+    String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+
     finishWithSuccess(finalImagePath);
 
     //delete original file if scaled
@@ -603,7 +607,7 @@ public class ImagePickerDelegate
         ImagePickerPlugin.getFilePref.getLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, 0));
   }
 
-  void saveMaxDemension(Double maxWidth, Double maxHeight) {
+  private void saveMaxDemension(Double maxWidth, Double maxHeight) {
     if (ImagePickerPlugin.getFilePref != null) {
       SharedPreferences.Editor editor = ImagePickerPlugin.getFilePref.edit();
       if (maxWidth != null) {
