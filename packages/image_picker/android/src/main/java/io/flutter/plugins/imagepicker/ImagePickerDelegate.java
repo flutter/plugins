@@ -262,7 +262,7 @@ public class ImagePickerDelegate
       finishWithAlreadyActiveError(result);
       return;
     }
-    preparePresistentDataBeforeImageIntent(methodCall);
+    preparePersistentDataBeforeImageIntent(methodCall);
 
     if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
       permissionManager.askForPermission(
@@ -285,12 +285,12 @@ public class ImagePickerDelegate
       finishWithAlreadyActiveError(result);
       return;
     }
-    preparePresistentDataBeforeImageIntent(methodCall);
+    preparePersistentDataBeforeImageIntent(methodCall);
 
     launchTakeImageWithCameraIntent();
   }
 
-  private void preparePresistentDataBeforeImageIntent(MethodCall methodCall) {
+  private void preparePersistentDataBeforeImageIntent(MethodCall methodCall) {
     setType("image");
     Double maxWidth = methodCall.argument("maxWidth");
     Double maxHeight = methodCall.argument("maxHeight");
