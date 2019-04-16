@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 ```
 
-### Handling MainActivity Destruction on Android
+### Handling MainActivity destruction on Android
 
 Android system -- although very rarely -- sometimes kills the MainActivity after the image_picker finishes. When this happens, we lost the data selected from the image_picker. You can use `retrieveLostData` to retrieve the lost data in this situation. For example: 
 
