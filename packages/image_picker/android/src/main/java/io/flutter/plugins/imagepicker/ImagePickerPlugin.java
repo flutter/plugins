@@ -71,10 +71,10 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
       int imageSource = call.argument("source");
       switch (imageSource) {
         case SOURCE_GALLERY:
-          delegate.chooseImageFromGallery(result);
+          delegate.chooseImageFromGallery(call, result);
           break;
         case SOURCE_CAMERA:
-          delegate.takeImageWithCamera(result);
+          delegate.takeImageWithCamera(call, result);
           break;
         default:
           throw new IllegalArgumentException("Invalid image source: " + imageSource);
@@ -83,10 +83,10 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
       int imageSource = call.argument("source");
       switch (imageSource) {
         case SOURCE_GALLERY:
-          delegate.chooseVideoFromGallery(result);
+          delegate.chooseVideoFromGallery(call, result);
           break;
         case SOURCE_CAMERA:
-          delegate.takeVideoWithCamera(result);
+          delegate.takeVideoWithCamera(call, result);
           break;
         default:
           throw new IllegalArgumentException("Invalid video source: " + imageSource);

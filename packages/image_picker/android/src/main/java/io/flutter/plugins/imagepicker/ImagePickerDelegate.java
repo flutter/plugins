@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import java.io.File;
@@ -113,7 +114,9 @@ public class ImagePickerDelegate
     void onPathReady(String path);
   }
 
+  private Uri pendingCameraMediaUri;
   private MethodChannel.Result pendingResult;
+  private MethodCall methodCall;
 
   public ImagePickerDelegate(
       final Activity activity, File externalFilesDirectory, ImageResizer imageResizer) {
@@ -121,6 +124,7 @@ public class ImagePickerDelegate
         activity,
         externalFilesDirectory,
         imageResizer,
+        null,
         null,
         new PermissionManager() {
           @Override
@@ -173,6 +177,7 @@ public class ImagePickerDelegate
       File externalFilesDirectory,
       ImageResizer imageResizer,
       MethodChannel.Result result,
+      MethodCall methodCall,
       PermissionManager permissionManager,
       IntentResolver intentResolver,
       FileUriResolver fileUriResolver,
@@ -182,6 +187,7 @@ public class ImagePickerDelegate
     this.imageResizer = imageResizer;
     this.fileProviderName = activity.getPackageName() + ".flutter.image_provider";
     this.pendingResult = result;
+    this.methodCall = methodCall;
     this.permissionManager = permissionManager;
     this.intentResolver = intentResolver;
     this.fileUriResolver = fileUriResolver;
@@ -198,8 +204,8 @@ public class ImagePickerDelegate
     cleanPendingResultPref();
   }
 
-  public void chooseVideoFromGallery(MethodChannel.Result result) {
-    if (!setPendingResult(result)) {
+  public void chooseVideoFromGallery(MethodCall methodCall, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
       finishWithAlreadyActiveError(result);
       return;
     }
@@ -221,8 +227,8 @@ public class ImagePickerDelegate
     activity.startActivityForResult(pickVideoIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY);
   }
 
-  public void takeVideoWithCamera(MethodChannel.Result result) {
-    if (!setPendingResult(result)) {
+  public void takeVideoWithCamera(MethodCall methodCall, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
       finishWithAlreadyActiveError(result);
       return;
     }
@@ -241,7 +247,8 @@ public class ImagePickerDelegate
     }
 
     File videoFile = createTemporaryWritableVideoFile();
-    setPendingCameraMediaUriPath("file:" + videoFile.getAbsolutePath());
+    pendingCameraMediaUri = Uri.parse("file:" + videoFile.getAbsolutePath());
+    persistsPendingCameraMediaUriPath("file:" + videoFile.getAbsolutePath());
 
     Uri videoUri = fileUriResolver.resolveFileProviderUriForFile(fileProviderName, videoFile);
     intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
@@ -250,8 +257,8 @@ public class ImagePickerDelegate
     activity.startActivityForResult(intent, REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA);
   }
 
-  public void chooseImageFromGallery(MethodChannel.Result result) {
-    if (!setPendingResult(result)) {
+  public void chooseImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
       finishWithAlreadyActiveError(result);
       return;
     }
@@ -273,8 +280,8 @@ public class ImagePickerDelegate
     activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
   }
 
-  public void takeImageWithCamera(MethodChannel.Result result) {
-    if (!setPendingResult(result)) {
+  public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
       finishWithAlreadyActiveError(result);
       return;
     }
@@ -293,7 +300,8 @@ public class ImagePickerDelegate
     }
 
     File imageFile = createTemporaryWritableImageFile();
-    setPendingCameraMediaUriPath("file:" + imageFile.getAbsolutePath());
+    pendingCameraMediaUri = Uri.parse("file:" + imageFile.getAbsolutePath());
+    persistsPendingCameraMediaUriPath("file:" + imageFile.getAbsolutePath());
 
     Uri imageUri = fileUriResolver.resolveFileProviderUriForFile(fileProviderName, imageFile);
     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -411,7 +419,9 @@ public class ImagePickerDelegate
   private void handleCaptureImageResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
-          Uri.parse(getPendingCameraMediaUriPath()),
+          pendingCameraMediaUri != null
+              ? pendingCameraMediaUri
+              : Uri.parse(getPersistedPendingCameraMediaUriPath()),
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
@@ -428,7 +438,9 @@ public class ImagePickerDelegate
   private void handleCaptureVideoResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
-          Uri.parse(getPendingCameraMediaUriPath()),
+          pendingCameraMediaUri != null
+              ? pendingCameraMediaUri
+              : Uri.parse(getPersistedPendingCameraMediaUriPath()),
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
@@ -447,7 +459,14 @@ public class ImagePickerDelegate
       saveResult(path, null, null);
       return;
     }
-    String finalImagePath = getFinalImagePath(path);
+    String finalImagePath;
+    if (methodCall != null) {
+      Double maxWidth = methodCall.argument("maxWidth");
+      Double maxHeight = methodCall.argument("maxHeight");
+      finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+    } else {
+      finalImagePath = getFinalImagePath(path);
+    }
     finishWithSuccess(finalImagePath);
 
     //delete original file if scaled
@@ -466,10 +485,13 @@ public class ImagePickerDelegate
     finishWithSuccess(path);
   }
 
-  private boolean setPendingResult(MethodChannel.Result result) {
+  private boolean setPendingMethodCallAndResult(
+      MethodCall methodCall, MethodChannel.Result result) {
     if (pendingResult != null) {
       return false;
     }
+
+    this.methodCall = methodCall;
     pendingResult = result;
 
     // Clean up old pending result preference if there is a new pending result.
@@ -501,10 +523,14 @@ public class ImagePickerDelegate
   }
 
   private void clearMethodCallAndResult() {
+    methodCall = null;
     pendingResult = null;
   }
 
   private void saveResult(String path, String errorCode, String errorMessage) {
+    if (ImagePickerPlugin.getFilePref == null) {
+      return;
+    }
     SharedPreferences.Editor editor = ImagePickerPlugin.getFilePref.edit();
     if (path != null) {
       editor.putString(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, path);
@@ -519,10 +545,16 @@ public class ImagePickerDelegate
   }
 
   private void cleanPendingResultPref() {
+    if (ImagePickerPlugin.getFilePref == null) {
+      return;
+    }
     ImagePickerPlugin.getFilePref.edit().clear().apply();
   }
 
   private Map<String, String> resultMapFromPendingResult() {
+    if (ImagePickerPlugin.getFilePref == null) {
+      return new HashMap<>();
+    }
     Map<String, String> resultMap = new HashMap<>();
     Boolean hasData = false;
     String filePath =
@@ -554,7 +586,8 @@ public class ImagePickerDelegate
   }
 
   private Double getMaxWidth() {
-    if (!ImagePickerPlugin.getFilePref.contains(SHARED_PREFERENCE_MAX_WIDTH_KEY)) {
+    if (ImagePickerPlugin.getFilePref == null
+        || !ImagePickerPlugin.getFilePref.contains(SHARED_PREFERENCE_MAX_WIDTH_KEY)) {
       return null;
     }
     return Double.longBitsToDouble(
@@ -562,7 +595,8 @@ public class ImagePickerDelegate
   }
 
   private Double getMaxHeight() {
-    if (!ImagePickerPlugin.getFilePref.contains(SHARED_PREFERENCE_MAX_HEIGHT_KEY)) {
+    if (ImagePickerPlugin.getFilePref == null
+        || !ImagePickerPlugin.getFilePref.contains(SHARED_PREFERENCE_MAX_HEIGHT_KEY)) {
       return null;
     }
     return Double.longBitsToDouble(
@@ -570,28 +604,38 @@ public class ImagePickerDelegate
   }
 
   void saveMaxDemension(Double maxWidth, Double maxHeight) {
-    SharedPreferences.Editor editor = ImagePickerPlugin.getFilePref.edit();
-    if (maxWidth != null) {
-      editor.putLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, Double.doubleToRawLongBits(maxWidth));
+    if (ImagePickerPlugin.getFilePref != null) {
+      SharedPreferences.Editor editor = ImagePickerPlugin.getFilePref.edit();
+      if (maxWidth != null) {
+        editor.putLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, Double.doubleToRawLongBits(maxWidth));
+      }
+      if (maxHeight != null) {
+        editor.putLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, Double.doubleToRawLongBits(maxHeight));
+      }
+      editor.apply();
     }
-    if (maxHeight != null) {
-      editor.putLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, Double.doubleToRawLongBits(maxHeight));
-    }
-    editor.apply();
   }
 
   private void setType(String type) {
+    if (ImagePickerPlugin.getFilePref == null) {
+      return;
+    }
     ImagePickerPlugin.getFilePref.edit().putString(SHARED_PREFERENCE_TYPE_KEY, type).apply();
   }
 
-  private void setPendingCameraMediaUriPath(String path) {
-    ImagePickerPlugin.getFilePref
-        .edit()
-        .putString(SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, path)
-        .apply();
+  private void persistsPendingCameraMediaUriPath(String path) {
+    if (ImagePickerPlugin.getFilePref != null) {
+      ImagePickerPlugin.getFilePref
+          .edit()
+          .putString(SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, path)
+          .apply();
+    }
   }
 
-  private String getPendingCameraMediaUriPath() {
+  private String getPersistedPendingCameraMediaUriPath() {
+    if (ImagePickerPlugin.getFilePref == null) {
+      return null;
+    }
     return ImagePickerPlugin.getFilePref.getString(
         SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, "");
   }
