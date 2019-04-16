@@ -504,7 +504,7 @@ public class ImagePickerDelegate
     pendingResult = null;
   }
 
-  void saveResult(String path, String errorCode, String errorMessage) {
+  private void saveResult(String path, String errorCode, String errorMessage) {
     SharedPreferences.Editor editor = ImagePickerPlugin.getFilePref.edit();
     if (path != null) {
       editor.putString(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, path);
@@ -518,11 +518,11 @@ public class ImagePickerDelegate
     editor.apply();
   }
 
-  void cleanPendingResultPref() {
+  private void cleanPendingResultPref() {
     ImagePickerPlugin.getFilePref.edit().clear().apply();
   }
 
-  Map<String, String> resultMapFromPendingResult() {
+  private Map<String, String> resultMapFromPendingResult() {
     Map<String, String> resultMap = new HashMap<>();
     Boolean hasData = false;
     String filePath =
@@ -553,7 +553,7 @@ public class ImagePickerDelegate
     return resultMap;
   }
 
-  Double getMaxWidth() {
+  private Double getMaxWidth() {
     if (!ImagePickerPlugin.getFilePref.contains(SHARED_PREFERENCE_MAX_WIDTH_KEY)) {
       return null;
     }
@@ -561,7 +561,7 @@ public class ImagePickerDelegate
         ImagePickerPlugin.getFilePref.getLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, 0));
   }
 
-  Double getMaxHeight() {
+  private Double getMaxHeight() {
     if (!ImagePickerPlugin.getFilePref.contains(SHARED_PREFERENCE_MAX_HEIGHT_KEY)) {
       return null;
     }
@@ -580,18 +580,18 @@ public class ImagePickerDelegate
     editor.apply();
   }
 
-  void setType(String type) {
+  private void setType(String type) {
     ImagePickerPlugin.getFilePref.edit().putString(SHARED_PREFERENCE_TYPE_KEY, type).apply();
   }
 
-  void setPendingCameraMediaUriPath(String path) {
+  private void setPendingCameraMediaUriPath(String path) {
     ImagePickerPlugin.getFilePref
         .edit()
         .putString(SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, path)
         .apply();
   }
 
-  String getPendingCameraMediaUriPath() {
+  private String getPendingCameraMediaUriPath() {
     return ImagePickerPlugin.getFilePref.getString(
         SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, "");
   }
