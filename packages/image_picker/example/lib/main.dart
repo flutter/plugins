@@ -60,8 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     } else {
       try {
-        _imageFile = await ImagePicker.pickImage(
-            source: source, maxHeight: 50, maxWidth: 50);
+        _imageFile = await ImagePicker.pickImage(source: source);
       } catch (e) {
         _pickImageError = e;
       }

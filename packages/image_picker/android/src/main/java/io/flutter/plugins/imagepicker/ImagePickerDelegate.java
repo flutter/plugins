@@ -294,7 +294,7 @@ public class ImagePickerDelegate
     setType("image");
     Double maxWidth = methodCall.argument("maxWidth");
     Double maxHeight = methodCall.argument("maxHeight");
-    saveMaxDemension(maxWidth, maxHeight);
+    saveMaxDimension(maxWidth, maxHeight);
   }
 
   private void launchTakeImageWithCameraIntent() {
@@ -462,20 +462,19 @@ public class ImagePickerDelegate
   }
 
   private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
-    if (pendingResult == null || methodCall == null) {
-      saveResult(path, null, null);
-      return;
-    }
+    if (pendingResult != null && methodCall != null) {
+      Double maxWidth = methodCall.argument("maxWidth");
+      Double maxHeight = methodCall.argument("maxHeight");
+      String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
 
-    Double maxWidth = methodCall.argument("maxWidth");
-    Double maxHeight = methodCall.argument("maxHeight");
-    String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+      finishWithSuccess(finalImagePath);
 
-    finishWithSuccess(finalImagePath);
-
-    //delete original file if scaled
-    if (!finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
-      new File(path).delete();
+      //delete original file if scaled
+      if (!finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
+        new File(path).delete();
+      }
+    } else {
+      finishWithSuccess(path);
     }
   }
 
@@ -607,14 +606,14 @@ public class ImagePickerDelegate
         ImagePickerPlugin.getFilePref.getLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, 0));
   }
 
-  private void saveMaxDemension(Double maxWidth, Double maxHeight) {
+  private void saveMaxDimension(Double maxWidth, Double maxHeight) {
     if (ImagePickerPlugin.getFilePref != null) {
       SharedPreferences.Editor editor = ImagePickerPlugin.getFilePref.edit();
       if (maxWidth != null) {
         editor.putLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, Double.doubleToRawLongBits(maxWidth));
       }
       if (maxHeight != null) {
-        editor.putLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, Double.doubleToRawLongBits(maxHeight));
+        editor.putLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, Double.doubleToRawLongBits(maxHeight));
       }
       editor.apply();
     }
