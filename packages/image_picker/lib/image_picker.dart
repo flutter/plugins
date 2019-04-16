@@ -105,7 +105,8 @@ class ImagePicker {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    final Map<dynamic, dynamic> result = await _channel.invokeMethod('retrieve');
+    final Map<dynamic, dynamic> result =
+        await _channel.invokeMethod('retrieve');
     if (result == null) {
       return null;
     }
@@ -119,16 +120,16 @@ class ImagePicker {
       retrieveType = RetrieveType.image;
     } else if (type == 'video') {
       retrieveType = RetrieveType.video;
-    } 
+    }
 
     PlatformException exception;
     if (result.containsKey('errorCode')) {
-      exception =
-        PlatformException(code: result['errorCode'], message: result['errorMessage']);
+      exception = PlatformException(
+          code: result['errorCode'], message: result['errorMessage']);
     }
 
     final String path = result['path'];
-    
+
     return RetrieveLostDataResponse(
         file: path == null ? null : File(path),
         exception: exception,
@@ -155,7 +156,7 @@ class RetrieveLostDataResponse {
   /// exception.
   /// You should handle this exception as if the [pickImage] or [pickVideo] got an exception when the MainActivity was not destroyed.
   ///
-  /// Note that it is not the exception caused the destruction of the MainActivity. 
+  /// Note that it is not the exception caused the destruction of the MainActivity.
   final PlatformException exception;
 
   /// Can either be [RetrieveType.image] or [RetrieveType.video];

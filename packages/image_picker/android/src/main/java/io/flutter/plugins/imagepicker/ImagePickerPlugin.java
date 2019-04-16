@@ -31,24 +31,26 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
       // we stop the registering process immediately because the ImagePicker requires an activity.
       return;
     }
-    ImagePickerPlugin.getFilePref = registrar.activity().getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    ImagePickerPlugin.getFilePref =
+        registrar
+            .activity()
+            .getApplicationContext()
+            .getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
 
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
 
     final File externalFilesDirectory =
-            registrar.activity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        registrar.activity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     final ExifDataCopier exifDataCopier = new ExifDataCopier();
     final ImageResizer imageResizer = new ImageResizer(externalFilesDirectory, exifDataCopier);
     final ImagePickerDelegate delegate =
-              new ImagePickerDelegate(registrar.activity(), externalFilesDirectory, imageResizer);
+        new ImagePickerDelegate(registrar.activity(), externalFilesDirectory, imageResizer);
 
     registrar.addActivityResultListener(delegate);
     registrar.addRequestPermissionsResultListener(delegate);
     final ImagePickerPlugin instance = new ImagePickerPlugin(registrar, delegate);
     channel.setMethodCallHandler(instance);
   }
-
-
 
   @VisibleForTesting
   ImagePickerPlugin(PluginRegistry.Registrar registrar, ImagePickerDelegate delegate) {
@@ -95,5 +97,4 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
       throw new IllegalArgumentException("Unknown method " + call.method);
     }
   }
-
 }

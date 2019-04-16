@@ -254,7 +254,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final Text result = Text(_retrieveDataError);
       _retrieveDataError = null;
       return result;
-    } 
+    }
     return null;
   }
 }

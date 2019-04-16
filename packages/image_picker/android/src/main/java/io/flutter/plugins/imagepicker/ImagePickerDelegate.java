@@ -82,7 +82,8 @@ public class ImagePickerDelegate
   static final String SHARED_PREFERENCE_MAX_WIDTH_KEY = "flutter_image_picker_max_width";
   static final String SHARED_PREFERENCE_MAX_HEIGHT_KEY = "flutter_image_picker_max_height";
   static final String SHARED_PREFERENCE_TYPE_KEY = "flutter_image_picker_type";
-  static final String SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY = "flutter_image_picker_pending_image_uri";
+  static final String SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY =
+      "flutter_image_picker_pending_image_uri";
 
   private final Activity activity;
   private final File externalFilesDirectory;
@@ -427,7 +428,7 @@ public class ImagePickerDelegate
   private void handleCaptureVideoResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
-              Uri.parse(getPendingCameraMediaUriPath()),
+          Uri.parse(getPendingCameraMediaUriPath()),
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
@@ -446,13 +447,13 @@ public class ImagePickerDelegate
       saveResult(path, null, null);
       return;
     }
-      String finalImagePath = getFinalImagePath(path);
-      finishWithSuccess(finalImagePath);
+    String finalImagePath = getFinalImagePath(path);
+    finishWithSuccess(finalImagePath);
 
-      //delete original file if scaled
-      if (!finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
-        new File(path).delete();
-      }
+    //delete original file if scaled
+    if (!finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
+      new File(path).delete();
+    }
   }
 
   private String getFinalImagePath(String originalPath) {
@@ -465,8 +466,7 @@ public class ImagePickerDelegate
     finishWithSuccess(path);
   }
 
-  private boolean setPendingResult(
-     MethodChannel.Result result) {
+  private boolean setPendingResult(MethodChannel.Result result) {
     if (pendingResult != null) {
       return false;
     }
@@ -504,8 +504,8 @@ public class ImagePickerDelegate
     pendingResult = null;
   }
 
-  void saveResult( String path, String errorCode, String errorMessage) {
-    SharedPreferences.Editor editor =  ImagePickerPlugin.getFilePref.edit();
+  void saveResult(String path, String errorCode, String errorMessage) {
+    SharedPreferences.Editor editor = ImagePickerPlugin.getFilePref.edit();
     if (path != null) {
       editor.putString(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, path);
     }
@@ -525,18 +525,21 @@ public class ImagePickerDelegate
   Map<String, String> resultMapFromPendingResult() {
     Map<String, String> resultMap = new HashMap<>();
     Boolean hasData = false;
-    String filePath = ImagePickerPlugin.getFilePref.getString(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, null);
-    if (filePath != null ) {
+    String filePath =
+        ImagePickerPlugin.getFilePref.getString(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, null);
+    if (filePath != null) {
       String finalPath = getFinalImagePath(filePath);
       resultMap.put("path", finalPath);
       hasData = true;
     }
-    String errorCode = ImagePickerPlugin.getFilePref.getString(SHARED_PREFERENCE_ERROR_CODE_KEY, null);
-    if (errorCode != null ) {
+    String errorCode =
+        ImagePickerPlugin.getFilePref.getString(SHARED_PREFERENCE_ERROR_CODE_KEY, null);
+    if (errorCode != null) {
       resultMap.put("errorCode", errorCode);
       hasData = true;
-      String errorMessage = ImagePickerPlugin.getFilePref.getString(SHARED_PREFERENCE_ERROR_MESSAGE_KEY, null);
-      if (errorMessage != null ) {
+      String errorMessage =
+          ImagePickerPlugin.getFilePref.getString(SHARED_PREFERENCE_ERROR_MESSAGE_KEY, null);
+      if (errorMessage != null) {
         resultMap.put("errorMessage", errorMessage);
       }
     }
@@ -554,18 +557,20 @@ public class ImagePickerDelegate
     if (!ImagePickerPlugin.getFilePref.contains(SHARED_PREFERENCE_MAX_WIDTH_KEY)) {
       return null;
     }
-    return Double.longBitsToDouble(ImagePickerPlugin.getFilePref.getLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, 0));
+    return Double.longBitsToDouble(
+        ImagePickerPlugin.getFilePref.getLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, 0));
   }
 
   Double getMaxHeight() {
     if (!ImagePickerPlugin.getFilePref.contains(SHARED_PREFERENCE_MAX_HEIGHT_KEY)) {
       return null;
     }
-    return Double.longBitsToDouble(ImagePickerPlugin.getFilePref.getLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, 0));
+    return Double.longBitsToDouble(
+        ImagePickerPlugin.getFilePref.getLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, 0));
   }
 
   void saveMaxDemension(Double maxWidth, Double maxHeight) {
-    SharedPreferences.Editor editor =  ImagePickerPlugin.getFilePref.edit();
+    SharedPreferences.Editor editor = ImagePickerPlugin.getFilePref.edit();
     if (maxWidth != null) {
       editor.putLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, Double.doubleToRawLongBits(maxWidth));
     }
@@ -580,12 +585,14 @@ public class ImagePickerDelegate
   }
 
   void setPendingCameraMediaUriPath(String path) {
-    ImagePickerPlugin.getFilePref.edit().putString(SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, path).apply();
+    ImagePickerPlugin.getFilePref
+        .edit()
+        .putString(SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, path)
+        .apply();
   }
 
   String getPendingCameraMediaUriPath() {
-    return ImagePickerPlugin.getFilePref.getString(SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, "");
+    return ImagePickerPlugin.getFilePref.getString(
+        SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, "");
   }
-
-
 }
