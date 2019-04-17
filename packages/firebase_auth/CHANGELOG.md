@@ -1,3 +1,7 @@
+## 0.8.4+4
+
+* Update FirebaseAuth CocoaPod dependency to ensure availability of `FIRAuthErrorUserInfoNameKey`.
+
 ## 0.8.4+3
 
 * Updated deprecated API usage on iOS to use non-deprecated versions.
