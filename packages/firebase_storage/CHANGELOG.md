@@ -1,3 +1,7 @@
+## 2.1.0+2
+
+* Return a proper error when failing to read a file
+
 ## 2.1.0+1
 
 * Reverting error.code casting/formatting to what it was until version 2.0.1.
