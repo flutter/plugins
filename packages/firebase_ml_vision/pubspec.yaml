@@ -16,6 +16,8 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   test: any
+  path: ^1.6.2
+  path_provider: ^0.5.0+1
 
 flutter:
   plugin:
