@@ -1,3 +1,7 @@
+## 0.6.0
+
+* Breaking change iOS: Returned `File` objects when picking videos now always holds the correct path. Before this change, the path returned could have `file://` prepended to it.
+
 ## 0.5.4+3
 
 * Fix the example app failing to load picked video.
@@ -16,7 +20,7 @@
 
 ## 0.5.3+2
 
-* Android: fix a crash when the MainActivity is destroyed after selecting the image/video. 
+* Android: fix a crash when the MainActivity is destroyed after selecting the image/video.
 
 ## 0.5.3+1
 
