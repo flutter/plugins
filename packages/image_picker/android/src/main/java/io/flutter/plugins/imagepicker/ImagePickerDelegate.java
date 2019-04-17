@@ -389,6 +389,9 @@ public class ImagePickerDelegate
   }
 
   private void handleCaptureImageResult(int resultCode) {
+    if (pendingCameraMediaUri == null) {
+      return;
+    }
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
           pendingCameraMediaUri,
@@ -406,6 +409,9 @@ public class ImagePickerDelegate
   }
 
   private void handleCaptureVideoResult(int resultCode) {
+    if (pendingCameraMediaUri == null) {
+      return;
+    }
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
           pendingCameraMediaUri,
@@ -434,17 +440,11 @@ public class ImagePickerDelegate
       if (!finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }
-    } else {
-      throw new IllegalStateException("Received image from picker that was not requested");
     }
   }
 
   private void handleVideoResult(String path) {
-    if (pendingResult != null) {
-      finishWithSuccess(path);
-    } else {
-      throw new IllegalStateException("Received video from picker that was not requested");
-    }
+    finishWithSuccess(path);
   }
 
   private boolean setPendingMethodCallAndResult(
@@ -459,6 +459,9 @@ public class ImagePickerDelegate
   }
 
   private void finishWithSuccess(String imagePath) {
+    if (pendingResult == null) {
+      return;
+    }
     pendingResult.success(imagePath);
     clearMethodCallAndResult();
   }
@@ -468,6 +471,9 @@ public class ImagePickerDelegate
   }
 
   private void finishWithError(String errorCode, String errorMessage) {
+    if (pendingResult == null) {
+      return;
+    }
     pendingResult.error(errorCode, errorMessage, null);
     clearMethodCallAndResult();
   }
