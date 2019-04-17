@@ -85,7 +85,6 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   if (startAtDocument) {
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     query = [query queryStartingAtValues:getDocumentValues(startAtDocument, orderBy)];
-    return handler(query);
   }
   id startAfter = parameters[@"startAfter"];
   if (startAfter) {
@@ -96,7 +95,6 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   if (startAfterDocument) {
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     query = [query queryStartingAfterValues:getDocumentValues(startAfterDocument, orderBy)];
-    return handler(query);
   }
   id endAt = parameters[@"endAt"];
   if (endAt) {
@@ -107,7 +105,6 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   if (endAtDocument) {
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     query = [query queryEndingAtValues:getDocumentValues(endAtDocument, orderBy)];
-    return handler(query);
   }
   id endBefore = parameters[@"endBefore"];
   if (endBefore) {
@@ -118,7 +115,6 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   if (endBeforeDocument) {
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     query = [query queryEndingBeforeValues:getDocumentValues(endBeforeDocument, orderBy)];
-    return handler(query);
   }
   return query;
 }
@@ -487,7 +483,7 @@ const UInt8 TIMESTAMP = 136;
             result(getFlutterError(error));
             return;
           }
-          [weakSelf.channel invokeMethod:@"DocumentSnapshot"
+          [self.channel invokeMethod:@"DocumentSnapshot"
                                arguments:@{
                                  @"handle" : handle,
                                  @"path" : snapshot ? snapshot.reference.path : [NSNull null],
@@ -516,26 +512,8 @@ const UInt8 TIMESTAMP = 136;
         result(getFlutterError(error));
         return;
       }
-      [weakSelf.channel invokeMethod:@"DocumentSnapshot"
-                           arguments:@{
-                             @"handle" : handle,
-                             @"path" : snapshot ? snapshot.reference.path : [NSNull null],
-                             @"data" : snapshot && snapshot.exists ? snapshot.data : [NSNull null],
-                           }];
+      result(parseQuerySnapshot(snapshot));
     }];
-    _listeners[handle] = listener;
-    result(handle);
-  } else if ([@"Query#getDocuments" isEqualToString:call.method]) {
-    getQuery(call.arguments, ^(FIRQuery *query) {
-      [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
-                                          NSError *_Nullable error) {
-        if (snapshot == nil) {
-          result(getFlutterError(error));
-          return;
-        }
-        result(parseQuerySnapshot(snapshot));
-      }];
-    });
   } else if ([@"Query#removeListener" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
     [[_listeners objectForKey:handle] remove];
