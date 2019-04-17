@@ -35,12 +35,39 @@ class BitmapDescriptor {
 
   /// Creates a BitmapDescriptor using the name of a bitmap image in the assets
   /// directory.
+  ///
+  /// Use [fromAssetImage]. This method does not respect the screen dpi when
+  /// picking an asset image.
+  @Deprecated("Use fromAssetImage instead")
   static BitmapDescriptor fromAsset(String assetName, {String package}) {
     if (package == null) {
       return BitmapDescriptor._(<dynamic>['fromAsset', assetName]);
     } else {
       return BitmapDescriptor._(<dynamic>['fromAsset', assetName, package]);
     }
+  }
+
+  /// Creates a [BitmapDescriptor] from an asset image.
+  ///
+  /// Asset images in flutter are stored per:
+  /// https://flutter.dev/docs/development/ui/assets-and-images#declaring-resolution-aware-image-assets
+  /// This method takes into consideration various asset resolutions
+  /// and scales the images to the right resolution depending on the dpi.
+  static Future<BitmapDescriptor> fromAssetImage(
+    ImageConfiguration configuration,
+    String assetName, {
+    AssetBundle bundle,
+    String package,
+  }) async {
+    final AssetImage assetImage =
+        AssetImage(assetName, package: package, bundle: bundle);
+    final AssetBundleImageKey assetBundleImageKey =
+        await assetImage.obtainKey(configuration);
+    return BitmapDescriptor._(<dynamic>[
+      'fromAssetImage',
+      assetBundleImageKey.name,
+      assetBundleImageKey.scale,
+    ]);
   }
 
   /// Creates a BitmapDescriptor using an array of bytes that must be encoded

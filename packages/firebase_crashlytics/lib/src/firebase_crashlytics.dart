@@ -34,7 +34,7 @@ class Crashlytics {
     }
 
     if (inDebugMode && !enableInDevMode) {
-      print(Trace.format(details.stack).trimRight().split('\n'));
+      print(Trace.format(details.stack));
     } else {
       // Report error
       final List<String> stackTraceLines =
