@@ -2,7 +2,7 @@
 
 * **Breaking Change** This plugin no longer handles closing and opening the camera on Android
   lifecycle changes. Please use `WidgetsBindingObserver` to control camera resources on lifecycle
-  changes.
+  changes. See example project for example using `WidgetsBindingObserver`.
 
 ## 0.4.3+2
 
