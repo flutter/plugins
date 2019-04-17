@@ -142,7 +142,7 @@ public class ImagePickerDelegate
           public void getFullImagePath(final Uri imageUri, final OnPathReadyListener listener) {
             MediaScannerConnection.scanFile(
                 activity,
-                new String[] {imageUri.getPath()},
+                new String[] {(imageUri != null) ? imageUri.getPath() : ""},
                 null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                   @Override
@@ -389,9 +389,6 @@ public class ImagePickerDelegate
   }
 
   private void handleCaptureImageResult(int resultCode) {
-    if (pendingCameraMediaUri == null) {
-      return;
-    }
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
           pendingCameraMediaUri,
@@ -409,9 +406,6 @@ public class ImagePickerDelegate
   }
 
   private void handleCaptureVideoResult(int resultCode) {
-    if (pendingCameraMediaUri == null) {
-      return;
-    }
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
           pendingCameraMediaUri,
