@@ -154,7 +154,7 @@ public class ImagePickerDelegate
           public void getFullImagePath(final Uri imageUri, final OnPathReadyListener listener) {
             MediaScannerConnection.scanFile(
                 activity,
-                new String[] {imageUri.getPath()},
+                new String[] {(imageUri != null) ? imageUri.getPath() : ""},
                 null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                   @Override
@@ -462,7 +462,7 @@ public class ImagePickerDelegate
   }
 
   private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
-    if (pendingResult != null && methodCall != null) {
+    if (methodCall != null) {
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
       String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
