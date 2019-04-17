@@ -1,3 +1,7 @@
+## 0.8.4+5
+
+* Increase Firebase/Auth CocoaPod dependency to '~> 5.19'.
+
 ## 0.8.4+4
 
 * Update FirebaseAuth CocoaPod dependency to ensure availability of `FIRAuthErrorUserInfoNameKey`.
