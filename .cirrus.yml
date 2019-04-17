@@ -60,10 +60,14 @@ task:
   env:
     PATH: $PATH:/usr/local/bin
     matrix:
-      PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
-      PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
-      PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
-      PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+      PLUGIN_SHARDING: "--shardIndex 0 --shardCount 8"
+      PLUGIN_SHARDING: "--shardIndex 1 --shardCount 8"
+      PLUGIN_SHARDING: "--shardIndex 2 --shardCount 8"
+      PLUGIN_SHARDING: "--shardIndex 3 --shardCount 8"
+      PLUGIN_SHARDING: "--shardIndex 4 --shardCount 8"
+      PLUGIN_SHARDING: "--shardIndex 5 --shardCount 8"
+      PLUGIN_SHARDING: "--shardIndex 6 --shardCount 8"
+      PLUGIN_SHARDING: "--shardIndex 7 --shardCount 8"
     SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
   setup_script:
     - brew update
