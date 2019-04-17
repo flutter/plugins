@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_driver/driver_extension.dart';
@@ -16,25 +17,85 @@ void main() {
   group('firebase_ml_vision test driver', () {
     final FirebaseVision vision = FirebaseVision.instance;
 
-    test('$FaceDetector', () async {
-      final FaceDetector detector = vision.faceDetector();
+    group('$BarcodeDetector', () {
+      test('detectInImage', () async {
+        final FirebaseVisionImage visionImage =
+            FirebaseVisionImage.fromFilePath(
+          await _loadImage('assets/test_barcode.jpg'),
+        );
 
-      final Directory d = await getApplicationDocumentsDirectory();
+        final BarcodeDetector detector = vision.barcodeDetector();
+        final List<Barcode> barcodes = await detector.detectInImage(
+          visionImage,
+        );
 
-      final Directory directory = Directory(d.path + '/flutter_assets');
+        expect(barcodes.length, 1);
+      });
+    });
 
-      List<FileSystemEntity> es = directory.listSync();
-      es.forEach((f) => print(f.path));
+    group('$FaceDetector', () {
+      test('processImage', () async {
+        final FirebaseVisionImage visionImage =
+            FirebaseVisionImage.fromFilePath(
+          await _loadImage('assets/test_face.jpg'),
+        );
 
-      final String imagePath =
-          path.join(directory.absolute.path, 'flutter_assets/2-faces.jpg');
+        final FaceDetector detector = vision.faceDetector();
+        final List<Face> faces = await detector.processImage(visionImage);
 
-      final FirebaseVisionImage visionImage =
-          FirebaseVisionImage.fromFilePath(imagePath);
+        expect(faces.length, 1);
+      });
+    });
 
-      final List<Face> faces = await detector.processImage(visionImage);
+    group('$ImageLabeler', () {
+      test('processImage', () async {
+        final FirebaseVisionImage visionImage =
+            FirebaseVisionImage.fromFilePath(
+          await _loadImage('assets/test_barcode.jpg'),
+        );
 
-      expect(faces.length, 2);
+        final ImageLabeler labeler = vision.imageLabeler();
+        final List<ImageLabel> labels = await labeler.processImage(visionImage);
+
+        expect(labels.length, greaterThan(0));
+      });
+    });
+
+    group('$TextRecognizer', () {
+      test('processImage', () async {
+        final FirebaseVisionImage visionImage =
+            FirebaseVisionImage.fromFilePath(
+          await _loadImage('assets/test_text.png'),
+        );
+
+        final TextRecognizer recognizer = vision.textRecognizer();
+        final VisionText text = await recognizer.processImage(visionImage);
+
+        expect(text.text, 'TEXT');
+      });
     });
   });
+}
+
+int nextHandle = 0;
+
+// Since there is no way to get the full asset filename, this method loads the
+// image into a temporary file.
+Future<String> _loadImage(String assetFilename) async {
+  final Directory directory = await getTemporaryDirectory();
+
+  final String tmpFilename = path.join(
+    directory.path,
+    "tmp${nextHandle++}.jpg",
+  );
+
+  final ByteData data = await rootBundle.load(assetFilename);
+  final Uint8List bytes = data.buffer.asUint8List(
+    data.offsetInBytes,
+    data.lengthInBytes,
+  );
+
+  await File(tmpFilename).writeAsBytes(bytes);
+
+  return tmpFilename;
 }
