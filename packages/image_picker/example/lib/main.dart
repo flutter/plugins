@@ -144,7 +144,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ..initialize()
             ..setLooping(true)
             ..play();
-          ;
         } else {
           isVideo = false;
           _imageFile = response.file;
@@ -165,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Platform.isAndroid
             ? FutureBuilder<void>(
                 future: retrieveLostData(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
                     case ConnectionState.waiting:
