@@ -152,7 +152,7 @@ class RetrieveLostDataResponse {
 
   /// The exception of the last [pickImage] or [pickVideo].
   ///
-  /// If the last [pickImage] or [pickVideo] throw some exception before the MainActivity destruction, this variable keeps that
+  /// If the last [pickImage] or [pickVideo] threw some exception before the MainActivity destruction, this variable keeps that
   /// exception.
   /// You should handle this exception as if the [pickImage] or [pickVideo] got an exception when the MainActivity was not destroyed.
   ///
