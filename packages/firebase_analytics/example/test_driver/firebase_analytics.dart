@@ -30,9 +30,9 @@ void main() {
     });
 
     test('logging', () async {
-      await analytics.setAnalyticsCollectionEnabled(true);
-      await analytics.setCurrentScreen(screenName: 'testing');
-      await analytics.logEvent(name: 'testing');
+      expect(analytics.setAnalyticsCollectionEnabled(true), completes);
+      expect(analytics.setCurrentScreen(screenName: 'testing'), completes);
+      expect(analytics.logEvent(name: 'testing'), completes);
     });
   });
 }
