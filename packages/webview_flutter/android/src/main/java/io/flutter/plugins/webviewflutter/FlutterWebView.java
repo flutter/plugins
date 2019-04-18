@@ -18,6 +18,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -45,10 +46,33 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       registerJavaScriptChannelNames((List<String>) params.get(JS_CHANNEL_NAMES_FIELD));
     }
 
-    if (params.containsKey("initialUrl")) {
-      String url = (String) params.get("initialUrl");
-      webView.loadUrl(url);
+    if (params.containsKey("initialRequest")) {
+      loadRequest((Map<String, Object>) params.get("initialRequest"));
     }
+  }
+
+  private void loadRequest(Map<String, Object> request) {
+    if (request != null && request.containsKey("url")) {
+      String url = (String) request.get("url");
+      Map<String, String> headers = extractHeaders(request);
+      if (url != null) {
+        webView.loadUrl(url, headers);
+      }
+    }
+  }
+
+  private static Map<String, String> extractHeaders(Map<String, Object> params) {
+    if (params.containsKey("headers")) {
+      try {
+        Map<String, String> headers = (Map<String, String>) params.get("headers");
+        if (headers != null) {
+          return headers;
+        }
+      } catch (Exception e) {
+        return Collections.emptyMap();
+      }
+    }
+    return Collections.emptyMap();
   }
 
   @Override

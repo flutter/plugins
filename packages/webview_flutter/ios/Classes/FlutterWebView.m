@@ -82,6 +82,10 @@
 }
 
 - (void)loadRequest:(NSDictionary<NSString*, id>*)request {
+  if (!request) {
+    return;
+  }
+
   NSString* url = request[@"url"];
 
   if ([url isKindOfClass:[NSString class]]) {
