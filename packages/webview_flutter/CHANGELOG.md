@@ -1,6 +1,6 @@
 ## 0.3.5+4
 
-* Fix bugs in the example app by updating it to use a StatefulWidget.
+* Fix bugs in the example app by updating it to use a `StatefulWidget`.
 
 ## 0.3.5+3
 
