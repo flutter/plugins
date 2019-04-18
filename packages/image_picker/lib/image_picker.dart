@@ -145,7 +145,7 @@ class ImagePicker {
 class RetrieveLostDataResponse {
   RetrieveLostDataResponse({this.file, this.exception, this.type});
 
-  /// The file that was lost in [pickImage] or [pickVideo] call due to MainActivity destruction.
+  /// The file that was lost in a previous [pickImage] or [pickVideo] call due to MainActivity being destroyed.
   ///
   /// Can be null if [exception] exists.
   final File file;
