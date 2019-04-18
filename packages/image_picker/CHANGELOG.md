@@ -1,3 +1,7 @@
+## 0.5.3+2
+
+* Android: fix a crash when the MainActivity is destroyed after selecting the image/video. 
+
 ## 0.5.3+1
 
 * Update minimum deploy iOS version to 8.0.
