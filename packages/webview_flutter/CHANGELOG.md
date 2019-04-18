@@ -1,3 +1,7 @@
+## 0.3.6
+
+* initialRequest added and deprecated initialUrl, also added support for headers.
+
 ## 0.3.5+3
 
 * Make sure to post javascript channel messages from the platform thread.
