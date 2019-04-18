@@ -156,7 +156,7 @@ class RetrieveLostDataResponse {
   /// exception.
   /// You should handle this exception as if the [pickImage] or [pickVideo] got an exception when the MainActivity was not destroyed.
   ///
-  /// Note that it is not the exception caused the destruction of the MainActivity.
+  /// Note that it is not the exception that caused the destruction of the MainActivity.
   final PlatformException exception;
 
   /// Can either be [RetrieveType.image] or [RetrieveType.video];
