@@ -10,7 +10,6 @@ void main() {
 
   group('$RemoteConfig', () {
     RemoteConfig remoteConfig;
-    // Enable developer mode to relax fetch throttling
 
     setUp(() async {
       remoteConfig = await RemoteConfig.instance;
