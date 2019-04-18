@@ -195,7 +195,7 @@ public class ImagePickerDelegate
   }
 
   void retrieveLostImage(MethodChannel.Result result) {
-    Map resultMap = resultMapFromPendingResult();
+    Map<String, String> resultMap = resultMapFromPendingResult();
     if (resultMap.isEmpty()) {
       result.success(null);
     } else {
