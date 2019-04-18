@@ -11,8 +11,7 @@ void main() {
   enableFlutterDriverExtension(handler: (_) => completer.future);
   tearDownAll(() => completer.complete(null));
 
-  group('$FirebaseStorage', ()
-  {
+  group('$FirebaseStorage', () {
     const String kTestString = 'hello world';
     FirebaseStorage firebaseStorage;
 
@@ -23,11 +22,11 @@ void main() {
     test('putFile, getDownloadURL, writeToFile', () async {
       final String uuid = Uuid().v1();
       final Directory systemTempDir = Directory.systemTemp;
-      final File file = await File('${systemTempDir.path}/foo$uuid.txt')
-          .create();
+      final File file =
+          await File('${systemTempDir.path}/foo$uuid.txt').create();
       await file.writeAsString(kTestString);
       final StorageReference ref =
-      firebaseStorage.ref().child('text').child('foo$uuid.txt');
+          firebaseStorage.ref().child('text').child('foo$uuid.txt');
       expect(await ref.getName(), 'foo$uuid.txt');
       expect(await ref.getPath(), 'text/foo$uuid.txt');
       final StorageUploadTask uploadTask = ref.putFile(
@@ -37,7 +36,7 @@ void main() {
           customMetadata: <String, String>{'activity': 'test'},
         ),
       );
-      StorageTaskSnapshot complete = await uploadTask.onComplete;
+      final StorageTaskSnapshot complete = await uploadTask.onComplete;
       expect(complete.storageMetadata.sizeBytes, kTestString.length);
       expect(complete.storageMetadata.contentLanguage, 'en');
       expect(complete.storageMetadata.customMetadata['activity'], 'test');
