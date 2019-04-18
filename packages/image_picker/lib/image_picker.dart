@@ -33,7 +33,7 @@ class ImagePicker {
   /// [maxHeight] tall. Otherwise the image will be returned at it's
   /// original width and height.
   ///
-  /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
+  /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   static Future<File> pickImage({
     @required ImageSource source,
@@ -148,18 +148,18 @@ class ImagePicker {
 class LostDataResponse {
   LostDataResponse({this.file, this.exception, this.type});
 
-  /// The file that was lost in [pickImage] or [pickVideo] call due to MainActivity destruction.
+  /// The file that was lost in a previous [pickImage] or [pickVideo] call due to MainActivity being destroyed.
   ///
   /// Can be null if [exception] exists.
   final File file;
 
   /// The exception of the last [pickImage] or [pickVideo].
   ///
-  /// If the last [pickImage] or [pickVideo] throw some exception before the MainActivity destruction, this variable keeps that
+  /// If the last [pickImage] or [pickVideo] threw some exception before the MainActivity destruction, this variable keeps that
   /// exception.
   /// You should handle this exception as if the [pickImage] or [pickVideo] got an exception when the MainActivity was not destroyed.
   ///
-  /// Note that it is not the exception caused the destruction of the MainActivity.
+  /// Note that it is not the exception that caused the destruction of the MainActivity.
   final PlatformException exception;
 
   /// Can either be [RetrieveType.image] or [RetrieveType.video];
