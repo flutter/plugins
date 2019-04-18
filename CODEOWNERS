@@ -20,7 +20,7 @@ packages/firebase_storage/* @collinjackson @kroikie
 packages/google_maps_flutter/* @amirh @iskakaushik
 packages/google_sign_in/* @cyanglaz @mehmetf
 packages/image_picker/* @cyanglaz
-packages/in_app_purchase/* @mklim
+packages/in_app_purchase/* @mklim @cyanglaz
 packages/package_info/* @cyanglaz
 packages/video_player/* @iskakaushik
 packages/webview_flutter/* @amirh
