@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -23,7 +22,7 @@ void main() {
     });
 
     test('fetch', () async {
-      DateTime lastFetchTime = remoteConfig.lastFetchTime;
+      final DateTime lastFetchTime = remoteConfig.lastFetchTime;
       expect(lastFetchTime.isBefore(DateTime.now()), true);
       await remoteConfig.fetch(expiration: const Duration(seconds: 0));
       expect(remoteConfig.lastFetchTime.isAfter(lastFetchTime), true);
