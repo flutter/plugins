@@ -13,6 +13,8 @@ import android.content.pm.ResolveInfo;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
+
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -262,7 +264,7 @@ public class ImagePickerDelegate
       finishWithAlreadyActiveError(result);
       return;
     }
-    preparePersistentDataBeforeImageIntent(methodCall);
+    cacheImageIntentCall(methodCall);
 
     if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
       permissionManager.askForPermission(
@@ -285,12 +287,12 @@ public class ImagePickerDelegate
       finishWithAlreadyActiveError(result);
       return;
     }
-    preparePersistentDataBeforeImageIntent(methodCall);
+    cacheImageIntentCall(methodCall);
 
     launchTakeImageWithCameraIntent();
   }
 
-  private void preparePersistentDataBeforeImageIntent(MethodCall methodCall) {
+  private void cacheImageIntentCall(MethodCall methodCall) {
     setType("image");
     Double maxWidth = methodCall.argument("maxWidth");
     Double maxHeight = methodCall.argument("maxHeight");
@@ -530,7 +532,7 @@ public class ImagePickerDelegate
     pendingResult = null;
   }
 
-  private void saveResult(String path, String errorCode, String errorMessage) {
+  private void saveResult(@Nullable String path, @Nullable String errorCode, @Nullable String errorMessage) {
     if (ImagePickerPlugin.getFilePref == null) {
       return;
     }
