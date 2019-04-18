@@ -82,4 +82,4 @@ task:
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - ./script/incremental_build.sh build-examples --ipa
     # TODO(jackson): Re-enable integration tests when the tests aren't timing out
-    - ./script/incremental_build.sh drive-examples
+    # - ./script/incremental_build.sh drive-examples
