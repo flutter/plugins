@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/request.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() => runApp(MaterialApp(home: WebViewExample()));
@@ -43,7 +44,9 @@ class WebViewExample extends StatelessWidget {
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
-          initialUrl: 'https://flutter.dev',
+          initialRequest: const Request(
+            url: 'https://flutter.dev/',
+          ),
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
