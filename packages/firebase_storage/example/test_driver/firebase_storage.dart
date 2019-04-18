@@ -39,6 +39,8 @@ void main() {
       );
       StorageTaskSnapshot complete = await uploadTask.onComplete;
       expect(complete.storageMetadata.sizeBytes, kTestString.length);
+      expect(complete.storageMetadata.contentLanguage, 'en');
+      expect(complete.storageMetadata.customMetadata['activity'], 'test');
 
       final String url = await ref.getDownloadURL();
       final http.Response downloadData = await http.get(url);
