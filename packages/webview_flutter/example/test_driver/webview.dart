@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:webview_flutter/request.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
@@ -22,7 +23,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           key: GlobalKey(),
-          initialUrl: 'https://flutter.dev/',
+          initialRequest: const Request(url: 'https://flutter.dev/'),
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
@@ -42,7 +43,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           key: GlobalKey(),
-          initialUrl: 'https://flutter.dev/',
+          initialRequest: const Request(url: 'https://flutter.dev/'),
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
