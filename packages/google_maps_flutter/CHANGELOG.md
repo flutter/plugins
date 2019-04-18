@@ -1,3 +1,7 @@
+## 0.5.9
+
+* BitmapDescriptor#fromBytes accounts for screen scale on ios.
+
 ## 0.5.8
 
 * Remove some unused variables and rename method

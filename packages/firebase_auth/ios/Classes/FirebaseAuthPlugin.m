@@ -7,7 +7,7 @@
 #import "Firebase/Firebase.h"
 
 static NSString *getFlutterErrorCode(NSError *error) {
-  NSString *code = [error userInfo][FIRAuthErrorNameKey];
+  NSString *code = [error userInfo][FIRAuthErrorUserInfoNameKey];
   if (code != nil) {
     return code;
   }
@@ -62,6 +62,15 @@ int nextHandle = 0;
   return [FIRAuth authWithApp:[FIRApp appNamed:appName]];
 }
 
+// TODO(jackson): We should use the renamed versions of the following methods
+// when they are available in the Firebase SDK that this plugin is dependent on.
+// * fetchSignInMethodsForEmail:completion:
+// * reauthenticateAndRetrieveDataWithCredential:completion:
+// * linkAndRetrieveDataWithCredential:completion:
+// * signInAndRetrieveDataWithCredential:completion:
+// See discussion at https://github.com/flutter/plugins/pull/1487
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"currentUser" isEqualToString:call.method]) {
     id __block listener = [[self getAuth:call.arguments]
@@ -170,16 +179,17 @@ int nextHandle = 0;
                       }];
   } else if ([@"reauthenticateWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
-        reauthenticateWithCredential:[self getCredential:call.arguments]
-                          completion:^(NSError *_Nullable error) {
-                            [self sendResult:result forObject:nil error:error];
-                          }];
+        reauthenticateAndRetrieveDataWithCredential:[self getCredential:call.arguments]
+                                         completion:^(FIRAuthDataResult *r,
+                                                      NSError *_Nullable error) {
+                                           [self sendResult:result forObject:nil error:error];
+                                         }];
   } else if ([@"linkWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
-        linkWithCredential:[self getCredential:call.arguments]
-                completion:^(FIRUser *user, NSError *error) {
-                  [self sendResult:result forUser:user error:error];
-                }];
+        linkAndRetrieveDataWithCredential:[self getCredential:call.arguments]
+                               completion:^(FIRAuthDataResult *r, NSError *error) {
+                                 [self sendResult:result forUser:r.user error:error];
+                               }];
   } else if ([@"unlinkFromProvider" isEqualToString:call.method]) {
     NSString *provider = call.arguments[@"provider"];
     [[self getAuth:call.arguments].currentUser
@@ -282,10 +292,10 @@ int nextHandle = 0;
         [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
                                                      verificationCode:smsCode];
     [[self getAuth:call.arguments]
-        signInWithCredential:credential
-                  completion:^(FIRUser *_Nullable user, NSError *_Nullable error) {
-                    [self sendResult:result forUser:user error:error];
-                  }];
+        signInAndRetrieveDataWithCredential:credential
+                                 completion:^(FIRAuthDataResult *r, NSError *_Nullable error) {
+                                   [self sendResult:result forUser:r.user error:error];
+                                 }];
   } else if ([@"setLanguageCode" isEqualToString:call.method]) {
     NSString *language = call.arguments[@"language"];
     [[self getAuth:call.arguments] setLanguageCode:language];
@@ -313,6 +323,7 @@ int nextHandle = 0;
   userData[@"providerData"] = providerData;
   return userData;
 }
+#pragma clang diagnostic pop
 
 - (void)sendResult:(FlutterResult)result forUser:(FIRUser *)user error:(NSError *)error {
   [self sendResult:result

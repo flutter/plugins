@@ -1,6 +1,10 @@
-## 0.10.0+6
+## 0.10.0+7
 
 * iOS: fixed some videos being rendered black
+
+## 0.10.0+6
+
+* Android: Fix missing call to `event.put("event", "completed");` which makes it possible to detect when the video is over.
 
 ## 0.10.0+5
 
