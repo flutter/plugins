@@ -75,12 +75,23 @@
     NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self applySettings:settings];
 
-    NSString* initialUrl = args[@"initialUrl"];
-    if ([initialUrl isKindOfClass:[NSString class]]) {
-      [self loadUrl:initialUrl];
-    }
+    NSDictionary<NSString*, id>* request = args[@"initialRequest"];
+    [self loadRequest:request];
   }
   return self;
+}
+
+- (void)loadRequest:(NSDictionary<NSString*, id>*)request {
+  NSString* url = request[@"url"];
+
+  if ([url isKindOfClass:[NSString class]]) {
+    id headers = request[@"headers"];
+    if ([headers isKindOfClass:[NSDictionary class]]) {
+      [self loadUrl:url withHeaders:headers];
+    } else {
+      [self loadUrl:url];
+    }
+  }
 }
 
 - (UIView*)view {
@@ -124,7 +135,7 @@
 
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSString* url = [call arguments];
-  if (![self loadUrl:url]) {
+  if (![self loadUrl:url withHeaders:nil]) {
     result([FlutterError errorWithCode:@"loadUrl_failed"
                                message:@"Failed parsing the URL"
                                details:[NSString stringWithFormat:@"URL was: '%@'", url]]);
@@ -257,12 +268,17 @@
 }
 
 - (bool)loadUrl:(NSString*)url {
+  return [self loadUrl:url withHeaders:[NSMutableDictionary dictionary]];
+}
+
+- (bool)loadUrl:(NSString*)url withHeaders:(NSDictionary<NSString*, NSString*>*)headers {
   NSURL* nsUrl = [NSURL URLWithString:url];
   if (!nsUrl) {
     return false;
   }
-  NSURLRequest* req = [NSURLRequest requestWithURL:nsUrl];
-  [_webView loadRequest:req];
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
+  [request setAllHTTPHeaderFields:headers];
+  [_webView loadRequest:request];
   return true;
 }
 

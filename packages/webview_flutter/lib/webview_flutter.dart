@@ -9,6 +9,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'request.dart';
+
 typedef void WebViewCreatedCallback(WebViewController controller);
 
 enum JavascriptMode {
@@ -108,10 +110,14 @@ class WebView extends StatefulWidget {
   /// `onWebViewCreated` callback once the web view is created.
   ///
   /// The `javascriptMode` parameter must not be null.
+  ///
+  /// initialUrl has been deprecated, use [initialRequest] instead.
   const WebView({
     Key key,
     this.onWebViewCreated,
-    this.initialUrl,
+    // ignore: deprecated_member_use_from_same_package
+    @deprecated this.initialUrl,
+    this.initialRequest,
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -134,8 +140,15 @@ class WebView extends StatefulWidget {
   /// were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
-  /// The initial URL to load.
+  /// Deprecated: The initial URL to load.
+  ///
+  /// Use [initialRequest] instead. Setting [initialUrl] is equivalent to
+  /// setting [initialRequest] with only the `url` parameter set.
+  @deprecated
   final String initialUrl;
+
+  /// The initial request to load.
+  final Request initialRequest;
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -294,18 +307,26 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 
 class _CreationParams {
   _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames});
+      {this.initialRequest, this.settings, this.javascriptChannelNames});
 
   static _CreationParams fromWidget(WebView widget) {
+    // ignore: deprecated_member_use_from_same_package
+    if (widget.initialUrl != null && widget.initialRequest != null) {
+      throw FlutterError("Use only initialRequest parameter in your WebView."
+          "Both initialRequest and initialUrl were set.");
+    }
+    final Request initialRequest =
+        // ignore: deprecated_member_use_from_same_package
+        widget.initialRequest ?? Request(url: widget.initialUrl);
     return _CreationParams(
-      initialUrl: widget.initialUrl,
+      initialRequest: initialRequest,
       settings: _WebSettings.fromWidget(widget),
       javascriptChannelNames:
           _extractChannelNames(widget.javascriptChannels).toList(),
     );
   }
 
-  final String initialUrl;
+  final Request initialRequest;
 
   final _WebSettings settings;
 
@@ -313,7 +334,7 @@ class _CreationParams {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'initialUrl': initialUrl,
+      'initialRequest': initialRequest.toMap(),
       'settings': settings.toMap(),
       'javascriptChannelNames': javascriptChannelNames,
     };
@@ -425,7 +446,7 @@ class WebViewController {
 
   /// Accessor to the current URL that the WebView is displaying.
   ///
-  /// If [WebView.initialUrl] was never specified, returns `null`.
+  /// If no `url` was specified in [WebView.initialRequest], returns `null`.
   /// Note that this operation is asynchronous, and it is possible that the
   /// current URL changes again by the time this function returns (in other
   /// words, by the time this future completes, the WebView may be displaying a

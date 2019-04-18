@@ -7,6 +7,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:webview_flutter/request.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 typedef void VoidCallback();
@@ -37,7 +38,22 @@ void main() {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
+        // ignore: deprecated_member_use_from_same_package
         initialUrl: 'https://youtube.com',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(await controller.currentUrl(), 'https://youtube.com');
+  });
+
+  testWidgets('Initial request', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialRequest: const Request(url: 'https://youtube.com'),
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -49,7 +65,7 @@ void main() {
 
   testWidgets('Javascript mode', (WidgetTester tester) async {
     await tester.pumpWidget(const WebView(
-      initialUrl: 'https://youtube.com',
+      initialRequest: Request(url: 'https://youtube.com'),
       javascriptMode: JavascriptMode.unrestricted,
     ));
 
@@ -59,7 +75,7 @@ void main() {
     expect(platformWebView.javascriptMode, JavascriptMode.unrestricted);
 
     await tester.pumpWidget(const WebView(
-      initialUrl: 'https://youtube.com',
+      initialRequest: Request(url: 'https://youtube.com'),
       javascriptMode: JavascriptMode.disabled,
     ));
 
@@ -146,7 +162,7 @@ void main() {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://flutter.io',
+        initialRequest: const Request(url: 'https://flutter.io'),
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -163,7 +179,7 @@ void main() {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://flutter.io',
+        initialRequest: const Request(url: 'https://flutter.io'),
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -200,7 +216,7 @@ void main() {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://flutter.io',
+        initialRequest: const Request(url: 'https://flutter.io'),
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -217,7 +233,7 @@ void main() {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://flutter.io',
+        initialRequest: const Request(url: 'https://flutter.io'),
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -237,7 +253,7 @@ void main() {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -261,7 +277,7 @@ void main() {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -314,7 +330,7 @@ void main() {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://flutter.io',
+        initialRequest: const Request(url: 'https://flutter.io'),
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -341,7 +357,7 @@ void main() {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://flutter.io',
+        initialRequest: const Request(url: 'https://flutter.io'),
         javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
@@ -362,7 +378,7 @@ void main() {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://flutter.io',
+        initialRequest: const Request(url: 'https://flutter.io'),
         javascriptMode: JavascriptMode.disabled,
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
@@ -382,7 +398,7 @@ void main() {
   testWidgets('Cookies can be cleared once', (WidgetTester tester) async {
     await tester.pumpWidget(
       const WebView(
-        initialUrl: 'https://flutter.io',
+        initialRequest: Request(url: 'https://flutter.io'),
       ),
     );
     final CookieManager cookieManager = CookieManager();
@@ -394,7 +410,7 @@ void main() {
       (WidgetTester tester) async {
     await tester.pumpWidget(
       const WebView(
-        initialUrl: 'https://flutter.io',
+        initialRequest: Request(url: 'https://flutter.io'),
       ),
     );
     final CookieManager cookieManager = CookieManager();
@@ -407,7 +423,7 @@ void main() {
   testWidgets('Initial JavaScript channels', (WidgetTester tester) async {
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         // TODO(iskakaushik): Remove this when collection literals makes it to stable.
         // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
@@ -446,7 +462,7 @@ void main() {
       (WidgetTester tester) async {
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         // TODO(iskakaushik): Remove this when collection literals makes it to stable.
         // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
@@ -463,7 +479,7 @@ void main() {
   testWidgets('JavaScript channels update', (WidgetTester tester) async {
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         // TODO(iskakaushik): Remove this when collection literals makes it to stable.
         // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
@@ -477,7 +493,7 @@ void main() {
 
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         // TODO(iskakaushik): Remove this when collection literals makes it to stable.
         // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
@@ -506,7 +522,7 @@ void main() {
     // null.
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         // TODO(iskakaushik): Remove this when collection literals makes it to stable.
         // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
@@ -518,13 +534,13 @@ void main() {
 
     await tester.pumpWidget(
       const WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: Request(url: 'https://youtube.com'),
       ),
     );
 
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         // TODO(iskakaushik): Remove this when collection literals makes it to stable.
         // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
@@ -546,7 +562,7 @@ void main() {
     final List<String> alarmMessagesReceived = <String>[];
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         // TODO(iskakaushik): Remove this when collection literals makes it to stable.
         // ignore: prefer_collection_literals
         javascriptChannels: <JavascriptChannel>[
@@ -581,7 +597,7 @@ void main() {
       String returnedUrl;
 
       await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         onPageFinished: (String url) {
           returnedUrl = url;
         },
@@ -597,7 +613,7 @@ void main() {
 
     testWidgets('onPageFinished is null', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: Request(url: 'https://youtube.com'),
         onPageFinished: null,
       ));
 
@@ -613,12 +629,12 @@ void main() {
       String returnedUrl;
 
       await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         onPageFinished: (String url) {},
       ));
 
       await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         onPageFinished: (String url) {
           returnedUrl = url;
         },
@@ -636,7 +652,7 @@ void main() {
   group('navigationDelegate', () {
     testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: Request(url: 'https://youtube.com'),
       ));
 
       final FakePlatformWebView platformWebView =
@@ -645,7 +661,7 @@ void main() {
       expect(platformWebView.hasNavigationDelegate, false);
 
       await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
+        initialRequest: const Request(url: 'https://youtube.com'),
         navigationDelegate: (NavigationRequest r) => null,
       ));
 
@@ -656,7 +672,7 @@ void main() {
       final List<NavigationRequest> navigationRequests = <NavigationRequest>[];
 
       await tester.pumpWidget(WebView(
-          initialUrl: 'https://youtube.com',
+          initialRequest: const Request(url: 'https://youtube.com'),
           navigationDelegate: (NavigationRequest request) {
             navigationRequests.add(request);
             // Only allow navigating to https://flutter.dev
@@ -687,12 +703,8 @@ void main() {
 
 class FakePlatformWebView {
   FakePlatformWebView(int id, Map<dynamic, dynamic> params) {
-    if (params.containsKey('initialUrl')) {
-      final String initialUrl = params['initialUrl'];
-      if (initialUrl != null) {
-        history.add(initialUrl);
-        currentPosition++;
-      }
+    if (params.containsKey('initialRequest')) {
+      _parseInitialRequest(params['initialRequest']);
     }
     if (params.containsKey('javascriptChannelNames')) {
       javascriptChannelNames =
@@ -704,6 +716,19 @@ class FakePlatformWebView {
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
+  }
+
+  void _parseInitialRequest(Map<dynamic, dynamic> initialRequest) {
+    if (initialRequest != null) {
+      _addUrlToHistory(initialRequest['url']);
+    }
+  }
+
+  void _addUrlToHistory(String initialUrl) {
+    if (initialUrl != null) {
+      history.add(initialUrl);
+      currentPosition++;
+    }
   }
 
   MethodChannel channel;
