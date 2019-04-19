@@ -1,3 +1,7 @@
+## 0.3.5+4
+
+* Fixed error in documentation of JavascriptMessage.
+
 ## 0.3.5+3
 
 * Make sure to post javascript channel messages from the platform thread.
