@@ -18,7 +18,7 @@ void main() {
   enableFlutterDriverExtension(handler: (_) => completer.future);
   tearDownAll(() => completer.complete(null));
 
-  group('firebase_ml_vision test driver', () {
+  group('$FirebaseVision', () {
     final FirebaseVision vision = FirebaseVision.instance;
 
     group('$BarcodeDetector', () {
