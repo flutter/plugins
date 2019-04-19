@@ -129,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> retrieveLostData() async {
-    final RetrieveLostDataResponse response =
+    final LostDataResponse response =
         await ImagePicker.retrieveLostData();
     if (response == null) {
       return;
