@@ -77,15 +77,14 @@ class ImagePicker {
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   static Future<File> pickVideo({
     @required ImageSource source,
-    double maxDuration
+    Duration maxDuration
   }) async {
     assert(source != null);
-
+    final double durationSeconds = (maxDuration==null) ? null : maxDuration.inSeconds.toDouble();
+    
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    double durationSeconds = (maxDuration==null) ? null : maxDuration.inSeconds.toDouble();
-
     final String path = await _channel.invokeMethod(
       'pickVideo',
       <String, dynamic>{
