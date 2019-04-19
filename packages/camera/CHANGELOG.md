@@ -1,3 +1,9 @@
+## 0.5.0
+
+* **Breaking Change** This plugin no longer handles closing and opening the camera on Android
+  lifecycle changes. Please use `WidgetsBindingObserver` to control camera resources on lifecycle
+  changes. See example project for example using `WidgetsBindingObserver`.
+
 ## 0.4.3+2
 
 * Bump the minimum Flutter version to 1.2.0.
