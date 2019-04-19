@@ -89,3 +89,5 @@ Future<void> retrieveLostData() async {
   }
 }
 ```
+
+There's no way to detect when this happens, so calling this method at the right place is essential. We recommend to wire this into some kind of start up check. Please refer to the example app to see how we used it.
