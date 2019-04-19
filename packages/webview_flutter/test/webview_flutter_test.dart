@@ -118,7 +118,9 @@ void main() {
 
     expect(controller, isNotNull);
 
-    Map<String, String> headers = <String, String>{'CACHE-CONTROL': 'ABC'};
+    final Map<String, String> headers = <String, String>{
+      'CACHE-CONTROL': 'ABC'
+    };
     await controller.loadUrl('https://flutter.io', headers: headers);
     expect(await controller.currentUrl(), equals('https://flutter.io'));
   });
