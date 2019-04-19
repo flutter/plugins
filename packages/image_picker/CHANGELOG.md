@@ -1,3 +1,7 @@
+## 0.5.4
+
+* Add `retrieveLostData` to retrieve lost data after MainActivity is killed.
+
 ## 0.5.3+2
 
 * Android: fix a crash when the MainActivity is destroyed after selecting the image/video. 
