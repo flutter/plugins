@@ -116,10 +116,10 @@ class ImagePicker {
     assert(result.containsKey('path') ^ result.containsKey('errorCode'));
 
     final String type = result['type'];
-    assert(type == kTypeImage|| type == kTypeVideo);
+    assert(type == kTypeImage || type == kTypeVideo);
 
     RetrieveType retrieveType;
-    if (type == kTypeImage {
+    if (type == kTypeImage) {
       retrieveType = RetrieveType.image;
     } else if (type == kTypeVideo) {
       retrieveType = RetrieveType.video;
