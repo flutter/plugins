@@ -1,4 +1,4 @@
-## 0.4.4
+## 0.4.3+1
 
 * Fixes lint error by using `getApplicationContext()` when accessing the Wifi Service.
 
