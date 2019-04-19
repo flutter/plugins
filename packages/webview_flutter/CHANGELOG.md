@@ -1,6 +1,6 @@
 ## 0.3.5+4
 
-* Fixed error in documentation of JavascriptMessage.
+* Fixed error in documentation of `javascriptChannels`.
 
 ## 0.3.5+3
 
