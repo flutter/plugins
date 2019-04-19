@@ -184,11 +184,12 @@ public class ImagePickerDelegate
   }
 
   void saveStateBeforeResult() {
-    assert (methodCall != null);
-    ImagePickerCache.saveTypeWithMehtodCallName(methodCall.method);
-    ImagePickerCache.saveDemensionWithMethodCall(methodCall);
-    if (pendingCameraMediaUri != null) {
-      ImagePickerCache.savePendingCameraMediaUriPath(pendingCameraMediaUri);
+    if (methodCall != null) {
+      ImagePickerCache.saveTypeWithMehtodCallName(methodCall.method);
+      ImagePickerCache.saveDemensionWithMethodCall(methodCall);
+      if (pendingCameraMediaUri != null) {
+        ImagePickerCache.savePendingCameraMediaUriPath(pendingCameraMediaUri);
+      }
     }
   }
 

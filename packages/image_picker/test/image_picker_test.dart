@@ -116,8 +116,7 @@ void main() {
             'path': '/example/path',
           };
         });
-        final RetrieveLostDataResponse response =
-            await ImagePicker.retrieveLostData();
+        final LostDataResponse response = await ImagePicker.retrieveLostData();
         expect(response.type, RetrieveType.image);
         expect(response.file.path, '/example/path');
       });
@@ -130,8 +129,7 @@ void main() {
             'errorMessage': 'test_error_message',
           };
         });
-        final RetrieveLostDataResponse response =
-            await ImagePicker.retrieveLostData();
+        final LostDataResponse response = await ImagePicker.retrieveLostData();
         expect(response.type, RetrieveType.video);
         expect(response.exception.code, 'test_error_code');
         expect(response.exception.message, 'test_error_message');
@@ -141,7 +139,7 @@ void main() {
         channel.setMockMethodCallHandler((MethodCall methodCall) async {
           return null;
         });
-        expect(await ImagePicker.retrieveLostData(), isNull);
+        expect((await ImagePicker.retrieveLostData()).isEmpty, true);
       });
 
       test('retrieveLostData get both path and error should throw', () async {

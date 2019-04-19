@@ -111,7 +111,7 @@ class ImagePicker {
     final Map<dynamic, dynamic> result =
         await _channel.invokeMethod('retrieve');
     if (result == null) {
-      return null;
+      return LostDataResponse.empty();
     }
     assert(result.containsKey('path') ^ result.containsKey('errorCode'));
 
@@ -148,6 +148,18 @@ class ImagePicker {
 class LostDataResponse {
   LostDataResponse({this.file, this.exception, this.type});
 
+  LostDataResponse.empty()
+      : file = null,
+        exception = null,
+        type = null {
+    _empty = true;
+  }
+
+  /// Whether it is an empty response.
+  ///
+  /// An empty response should have [file], [exception] and [type] to be null.
+  bool get isEmpty => _empty;
+
   /// The file that was lost in a previous [pickImage] or [pickVideo] call due to MainActivity being destroyed.
   ///
   /// Can be null if [exception] exists.
@@ -164,6 +176,8 @@ class LostDataResponse {
 
   /// Can either be [RetrieveType.image] or [RetrieveType.video];
   final RetrieveType type;
+
+  bool _empty = false;
 }
 
 /// The type of the retrieved data in a [LostDataResponse].
