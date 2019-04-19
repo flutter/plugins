@@ -106,6 +106,23 @@ void main() {
     expect(await controller.currentUrl(), isNull);
   });
 
+  testWidgets('Headers in loadUrl', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    Map<String, String> headers = <String, String>{'CACHE-CONTROL': 'ABC'};
+    await controller.loadUrl('https://flutter.io', headers: headers);
+    expect(await controller.currentUrl(), equals('https://flutter.io'));
+  });
+
   testWidgets("Can't go back before loading a page",
       (WidgetTester tester) async {
     WebViewController controller;
@@ -722,8 +739,8 @@ class FakePlatformWebView {
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'loadUrl':
-        final String url = call.arguments;
-        _loadUrl(url);
+        final Map<dynamic, dynamic> request = call.arguments;
+        _loadUrl(request['url']);
         return Future<void>.sync(() {});
       case 'updateSettings':
         if (call.arguments['jsMode'] != null) {
