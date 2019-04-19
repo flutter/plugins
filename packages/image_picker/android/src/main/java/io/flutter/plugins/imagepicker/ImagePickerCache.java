@@ -43,7 +43,7 @@ class ImagePickerCache {
             .getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
   }
 
-  static void saveTypeWithMehtodCallName(String methodCallName) {
+  static void saveTypeWithMethodCallName(String methodCallName) {
     if (methodCallName.equals(ImagePickerPlugin.METHOD_CALL_IMAGE)) {
       setType("image");
     } else if (methodCallName.equals(ImagePickerPlugin.METHOD_CALL_VIDEO)) {
@@ -65,25 +65,28 @@ class ImagePickerCache {
   }
 
   private static void setMaxDimension(Double maxWidth, Double maxHeight) {
-    if (getFilePref != null) {
-      SharedPreferences.Editor editor = getFilePref.edit();
-      if (maxWidth != null) {
-        editor.putLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, Double.doubleToRawLongBits(maxWidth));
-      }
-      if (maxHeight != null) {
-        editor.putLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, Double.doubleToRawLongBits(maxHeight));
-      }
-      editor.apply();
+    if (getFilePref == null) {
+      return;
     }
+
+    SharedPreferences.Editor editor = getFilePref.edit();
+    if (maxWidth != null) {
+      editor.putLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, Double.doubleToRawLongBits(maxWidth));
+    }
+    if (maxHeight != null) {
+      editor.putLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, Double.doubleToRawLongBits(maxHeight));
+    }
+    editor.apply();
   }
 
   static void savePendingCameraMediaUriPath(Uri uri) {
-    if (getFilePref != null) {
-      getFilePref
-          .edit()
-          .putString(SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, uri.getPath())
-          .apply();
+    if (getFilePref == null) {
+      return;
     }
+    getFilePref
+        .edit()
+        .putString(SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, uri.getPath())
+        .apply();
   }
 
   static String retrievePendingCameraMediaUriPath() {
