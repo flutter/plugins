@@ -1,3 +1,7 @@
+## 0.8.0+5
+
+* Fix firebase_admob crash when used with android alarm manager
+
 ## 0.8.0+4
 
 * Update documentation to add AdMob App ID in Info.plist
