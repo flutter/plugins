@@ -1,3 +1,7 @@
+## 2.1.1+3
+
+* Added an initial integration test.
+
 ## 2.1.1+2
 
 * Fixed errors in code sample for `FirebaseAnalyticsObserver`.
