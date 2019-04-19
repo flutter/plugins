@@ -1,3 +1,7 @@
+## 0.3.5+5
+
+* Fixed error in documentation of `javascriptChannels`.
+
 ## 0.3.5+4
 
 * Fix bugs in the example app by updating it to use a `StatefulWidget`.
