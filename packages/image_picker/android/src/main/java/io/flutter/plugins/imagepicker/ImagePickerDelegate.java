@@ -242,7 +242,8 @@ public class ImagePickerDelegate
       return;
     }
 
-    if (!permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
+    if (needRequestCameraPermission() &&
+            !permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
       permissionManager.askForPermission(
           Manifest.permission.CAMERA, REQUEST_CAMERA_VIDEO_PERMISSION);
       return;
@@ -298,13 +299,18 @@ public class ImagePickerDelegate
       return;
     }
 
-    if (!permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
+    if (needRequestCameraPermission() &&
+            !permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
       permissionManager.askForPermission(
           Manifest.permission.CAMERA, REQUEST_CAMERA_IMAGE_PERMISSION);
       return;
     }
 
     launchTakeImageWithCameraIntent();
+  }
+
+  private boolean needRequestCameraPermission() {
+    return ImagePickerUtils.needRequestCameraPermission(activity);
   }
 
   private void launchTakeImageWithCameraIntent() {
