@@ -150,8 +150,8 @@ public class ImagePickerDelegateTest {
     delegate.takeImageWithCamera(mockMethodCall, mockResult);
 
     verify(mockActivity)
-            .startActivityForResult(
-                    any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA));
+        .startActivityForResult(
+            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA));
   }
 
   @Test
