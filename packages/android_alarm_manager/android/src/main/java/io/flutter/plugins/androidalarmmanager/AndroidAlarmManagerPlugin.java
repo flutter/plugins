@@ -5,7 +5,6 @@
 package io.flutter.plugins.androidalarmmanager;
 
 import android.content.Context;
-
 import io.flutter.plugin.common.JSONMethodCodec;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
