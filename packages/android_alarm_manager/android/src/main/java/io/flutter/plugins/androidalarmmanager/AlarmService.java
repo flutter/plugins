@@ -43,9 +43,7 @@ public class AlarmService extends JobIntentService {
   // TODO(mattcarroll): make sAlarmQueue per-instance, not static.
   private static List<Intent> sAlarmQueue = Collections.synchronizedList(new LinkedList<Intent>());
 
-  /**
-   * Background Dart execution context.
-   */
+  /** Background Dart execution context. */
   private static FlutterNativeView sBackgroundFlutterView;
 
   /**
@@ -63,20 +61,22 @@ public class AlarmService extends JobIntentService {
 
   /**
    * Starts running a background Dart isolate within a new {@link FlutterNativeView}.
-   * <p>
-   * The isolate is configured as follows:
+   *
+   * <p>The isolate is configured as follows:
+   *
    * <ul>
-   *   <li>Bundle Path: {@code FlutterMain.findAppBundlePath(context)}.</li>
-   *   <li>Entrypoint: The Dart method represented by {@code callbackHandle}.</li>
-   *   <li>Run args: none.</li>
+   *   <li>Bundle Path: {@code FlutterMain.findAppBundlePath(context)}.
+   *   <li>Entrypoint: The Dart method represented by {@code callbackHandle}.
+   *   <li>Run args: none.
    * </ul>
-   * <p>
-   * Preconditions:
+   *
+   * <p>Preconditions:
+   *
    * <ul>
    *   <li>The given {@code callbackHandle} must correspond to a registered Dart callback.
-   *   If the handle does not resolve to a Dart callback then this method does nothing.</li>
+   *   If the handle does not resolve to a Dart callback then this method does nothing.
    *   <li>A static {@link #sPluginRegistrantCallback} must exist, otherwise a
-   *   {@link PluginRegistrantException} will be thrown.</li>
+   *   {@link PluginRegistrantException} will be thrown.
    * </ul>
    */
   public static void startBackgroundIsolate(Context context, long callbackHandle) {
@@ -112,9 +112,10 @@ public class AlarmService extends JobIntentService {
 
   /**
    * Called once the Dart isolate ({@code sBackgroundFlutterView}) has finished initializing.
-   * <p>
-   * Invoked by {@link AndroidAlarmManagerPlugin} when it receives the {@code "AlarmService.initialized"}
-   * message. Processes all alarm events that came in while the isolate was starting.
+   *
+   * <p>Invoked by {@link AndroidAlarmManagerPlugin} when it receives the {@code
+   * AlarmService.initialized} message. Processes all alarm events that came in while the isolate
+   * was starting.
    */
   // TODO(mattcarroll): consider making this method package private
   public static void onInitialized() {
@@ -132,8 +133,8 @@ public class AlarmService extends JobIntentService {
   }
 
   /**
-   * Sets the {@link MethodChannel} that is used to communicate with Dart callbacks that
-   * are invoked in the background by the android_alarm_manager plugin.
+   * Sets the {@link MethodChannel} that is used to communicate with Dart callbacks that are invoked
+   * in the background by the android_alarm_manager plugin.
    */
   public static void setBackgroundChannel(MethodChannel channel) {
     sBackgroundChannel = channel;
@@ -163,8 +164,8 @@ public class AlarmService extends JobIntentService {
 
   /**
    * Executes the desired Dart callback in a background Dart isolate.
-   * <p>
-   * The given {@code intent} should contain a {@code long} extra called "callbackHandle", which
+   *
+   * <p>The given {@code intent} should contain a {@code long} extra called "callbackHandle", which
    * corresponds to a callback registered with the Dart VM.
    */
   private static void executeDartCallbackInBackgroundIsolate(Intent intent) {
@@ -175,8 +176,7 @@ public class AlarmService extends JobIntentService {
     if (sBackgroundChannel == null) {
       Log.e(
           TAG,
-          "setBackgroundChannel was not called before alarms were scheduled." + " Bailing out."
-      );
+          "setBackgroundChannel was not called before alarms were scheduled." + " Bailing out.");
       return;
     }
     // Handle the alarm event in Dart. Note that for this plugin, we don't
@@ -249,11 +249,11 @@ public class AlarmService extends JobIntentService {
         request.startMillis,
         0,
         request.rescheduleOnReboot,
-        request.callbackHandle
-    );
+        request.callbackHandle);
   }
 
-  public static void setPeriodic(Context context, AndroidAlarmManagerPlugin.PeriodicRequest request) {
+  public static void setPeriodic(
+          Context context, AndroidAlarmManagerPlugin.PeriodicRequest request) {
     final boolean repeating = true;
     scheduleAlarm(
         context,
@@ -264,8 +264,7 @@ public class AlarmService extends JobIntentService {
         request.startMillis,
         request.intervalMillis,
         request.rescheduleOnReboot,
-        request.callbackHandle
-    );
+        request.callbackHandle);
   }
 
   public static void cancel(Context context, int requestCode) {
@@ -317,7 +316,8 @@ public class AlarmService extends JobIntentService {
         RebootBroadcastReceiver.enableRescheduleOnReboot(context);
       }
       persistentAlarms.add(Integer.toString(requestCode));
-      prefs.edit()
+      prefs
+          .edit()
           .putString(key, obj.toString())
           .putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms)
           .commit();
@@ -409,16 +409,16 @@ public class AlarmService extends JobIntentService {
 
   /**
    * Executes a Dart callback, as specified within the incoming {@code intent}.
-   * <p>
-   * Invoked by our {@link JobIntentService} superclass after a call to
-   * {@link JobIntentService#enqueueWork(Context, Class, int, Intent);}.
-   * <p>
-   * If there are no pre-existing callback execution requests, other than the
-   * incoming {@code intent}, then the desired Dart callback is invoked immediately.
-   * <p>
-   * If there are any pre-existing callback requests that have yet to be executed,
-   * the incoming {@code intent} is added to the {@link #sAlarmQueue} to invoked
-   * later, after all pre-existing callbacks have been executed.
+   *
+   * <p>Invoked by our {@link JobIntentService} superclass after a call to {@link
+   * JobIntentService#enqueueWork(Context, Class, int, Intent);}.
+   *
+   * <p>If there are no pre-existing callback execution requests, other than the incoming {@code
+   * intent}, then the desired Dart callback is invoked immediately.
+   *
+   * <p>If there are any pre-existing callback requests that have yet to be executed, the incoming
+   * {@code intent} is added to the {@link #sAlarmQueue} to invoked later, after all pre-existing
+   * callbacks have been executed.
    */
   @Override
   protected void onHandleWork(Intent intent) {

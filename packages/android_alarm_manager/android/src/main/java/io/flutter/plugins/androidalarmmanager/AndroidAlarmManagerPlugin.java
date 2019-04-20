@@ -19,32 +19,33 @@ import org.json.JSONException;
 
 /**
  * Flutter plugin for running one-shot and periodic tasks sometime in the future on Android.
- * <p>
- * Plugin initialization goes through these steps:
+ *
+ * <p>Plugin initialization goes through these steps:
+ *
  * <ol>
- *   <li>Flutter app instructs this plugin to initialize() on the Dart side.</li>
- *   <li>The Dart side of this plugin sends the Android side a "AlarmService.start" message,
- *   along with a Dart callback handle for a Dart callback that should be immediately invoked
- *   by a background Dart isolate.</li>
+ *   <li>Flutter app instructs this plugin to initialize() on the Dart side.
+ *   <li>The Dart side of this plugin sends the Android side a "AlarmService.start" message, along
+ *       with a Dart callback handle for a Dart callback that should be immediately invoked by a
+ *       background Dart isolate.
  *   <li>The Android side of this plugin spins up a background {@link FlutterNativeView}, which
- *   includes a background Dart isolate.</li>
- *   <li>The Android side of this plugin instructs the new background Dart isolate to execute
- *   the callback that was received in the "AlarmService.start" message.</li>
- *   <li>The Dart side of this plugin, running within the new background isolate, executes
- *   the designated callback. This callback prepares the background isolate to then execute
- *   any given Dart callback from that point forward. Thus, at this moment the plugin is
- *   fully initialized and ready to execute arbitrary Dart tasks in the background. The Dart
- *   side of this plugin sends the Android side a "AlarmService.initialized" message to
- *   signify that the Dart is ready to execute tasks.</li>
+ *       includes a background Dart isolate.
+ *   <li>The Android side of this plugin instructs the new background Dart isolate to execute the
+ *       callback that was received in the "AlarmService.start" message.
+ *   <li>The Dart side of this plugin, running within the new background isolate, executes the
+ *       designated callback. This callback prepares the background isolate to then execute any
+ *       given Dart callback from that point forward. Thus, at this moment the plugin is fully
+ *       initialized and ready to execute arbitrary Dart tasks in the background. The Dart side of
+ *       this plugin sends the Android side a "AlarmService.initialized" message to signify that the
+ *       Dart is ready to execute tasks.
  * </ol>
  */
 public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroyListener {
   /**
-   * Registers this plugin with an associated Flutter execution context, represented by
-   * the given {@link Registrar}.
-   * <p>
-   * Once this method is executed, an instance of {@code AndroidAlarmManagerPlugin}
-   * will be connected to, and running against, the associated Flutter execution context.
+   * Registers this plugin with an associated Flutter execution context, represented by the given
+   * {@link Registrar}.
+   *
+   * <p>Once this method is executed, an instance of {@code AndroidAlarmManagerPlugin} will be
+   * connected to, and running against, the associated Flutter execution context.
    */
   public static void registerWith(Registrar registrar) {
     // alarmManagerPluginChannel is the channel responsible for receiving the following messages
@@ -95,9 +96,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     this.mContext = context;
   }
 
-  /**
-   * Invoked when the Flutter side of this plugin sends a message to the Android side.
-   */
+  /** Invoked when the Flutter side of this plugin sends a message to the Android side. */
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     String method = call.method;
@@ -150,23 +149,21 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
   }
 
   /**
-   * Transitions the Flutter execution context that owns this plugin from foreground execution
-   * to background execution.
-   * <p>
-   * Invoked when the {@link FlutterView} connected to the given {@link FlutterNativeView} is
+   * Transitions the Flutter execution context that owns this plugin from foreground execution to
+   * background execution.
+   *
+   * <p>Invoked when the {@link FlutterView} connected to the given {@link FlutterNativeView} is
    * destroyed.
-   * <p>
-   * Returns true if the given {@code nativeView} was successfully stored by this plugin, or false
-   * if a different {@link FlutterNativeView} was already registered with this plugin.
+   *
+   * <p>Returns true if the given {@code nativeView} was successfully stored by this plugin, or
+   * false if a different {@link FlutterNativeView} was already registered with this plugin.
    */
   @Override
   public boolean onViewDestroy(FlutterNativeView nativeView) {
     return AlarmService.setBackgroundFlutterView(nativeView);
   }
 
-  /**
-   * A request to schedule a one-shot Dart task.
-   */
+  /** A request to schedule a one-shot Dart task. */
   final static class OneShotRequest {
     static OneShotRequest fromJson(JSONArray json) throws JSONException {
       int requestCode = json.getInt(0);
@@ -176,14 +173,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
       boolean rescheduleOnReboot = json.getBoolean(4);
       long callbackHandle = json.getLong(5);
 
-      return new OneShotRequest(
-          requestCode,
-          exact,
-          wakeup,
-          startMillis,
-          rescheduleOnReboot,
-          callbackHandle
-      );
+      return new OneShotRequest(requestCode, exact, wakeup, startMillis, rescheduleOnReboot, callbackHandle);
     }
 
     final int requestCode;
@@ -199,8 +189,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
         boolean wakeup,
         long startMillis,
         boolean rescheduleOnReboot,
-        long callbackHandle
-    ) {
+        long callbackHandle) {
       this.requestCode = requestCode;
       this.exact = exact;
       this.wakeup = wakeup;
@@ -210,9 +199,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     }
   }
 
-  /**
-   * A request to schedule a periodic Dart task.
-   */
+  /** A request to schedule a periodic Dart task. */
   final static class PeriodicRequest {
     static PeriodicRequest fromJson(JSONArray json) throws JSONException {
       int requestCode = json.getInt(0);
@@ -230,8 +217,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
           startMillis,
           intervalMillis,
           rescheduleOnReboot,
-          callbackHandle
-      );
+          callbackHandle);
     }
 
     final int requestCode;
@@ -249,8 +235,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
         long startMillis,
         long intervalMillis,
         boolean rescheduleOnReboot,
-        long callbackHandle
-    ) {
+        long callbackHandle) {
       this.requestCode = requestCode;
       this.exact = exact;
       this.wakeup = wakeup;
