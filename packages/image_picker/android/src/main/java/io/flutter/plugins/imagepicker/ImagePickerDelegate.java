@@ -89,6 +89,8 @@ public class ImagePickerDelegate
     boolean isPermissionGranted(String permissionName);
 
     void askForPermission(String permissionName, int requestCode);
+
+    boolean needRequestCameraPermission();
   }
 
   interface IntentResolver {
@@ -127,6 +129,11 @@ public class ImagePickerDelegate
           @Override
           public void askForPermission(String permissionName, int requestCode) {
             ActivityCompat.requestPermissions(activity, new String[] {permissionName}, requestCode);
+          }
+
+          @Override
+          public boolean needRequestCameraPermission() {
+            return ImagePickerUtils.needRequestCameraPermission(activity);
           }
         },
         new IntentResolver() {
@@ -310,7 +317,7 @@ public class ImagePickerDelegate
   }
 
   private boolean needRequestCameraPermission() {
-    return ImagePickerUtils.needRequestCameraPermission(activity);
+    return permissionManager.needRequestCameraPermission();
   }
 
   private void launchTakeImageWithCameraIntent() {
