@@ -73,10 +73,10 @@ public class AlarmService extends JobIntentService {
    * <p>Preconditions:
    *
    * <ul>
-   *   <li>The given {@code callbackHandle} must correspond to a registered Dart callback.
-   *   If the handle does not resolve to a Dart callback then this method does nothing.
-   *   <li>A static {@link #sPluginRegistrantCallback} must exist, otherwise a
-   *   {@link PluginRegistrantException} will be thrown.
+   *   <li>The given {@code callbackHandle} must correspond to a registered Dart callback. If the
+   *       handle does not resolve to a Dart callback then this method does nothing.
+   *   <li>A static {@link #sPluginRegistrantCallback} must exist, otherwise a {@link
+   *       PluginRegistrantException} will be thrown.
    * </ul>
    */
   public static void startBackgroundIsolate(Context context, long callbackHandle) {
@@ -253,7 +253,7 @@ public class AlarmService extends JobIntentService {
   }
 
   public static void setPeriodic(
-          Context context, AndroidAlarmManagerPlugin.PeriodicRequest request) {
+      Context context, AndroidAlarmManagerPlugin.PeriodicRequest request) {
     final boolean repeating = true;
     scheduleAlarm(
         context,

@@ -164,7 +164,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
   }
 
   /** A request to schedule a one-shot Dart task. */
-  final static class OneShotRequest {
+  static final class OneShotRequest {
     static OneShotRequest fromJson(JSONArray json) throws JSONException {
       int requestCode = json.getInt(0);
       boolean exact = json.getBoolean(1);
@@ -173,7 +173,8 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
       boolean rescheduleOnReboot = json.getBoolean(4);
       long callbackHandle = json.getLong(5);
 
-      return new OneShotRequest(requestCode, exact, wakeup, startMillis, rescheduleOnReboot, callbackHandle);
+      return new OneShotRequest(
+          requestCode, exact, wakeup, startMillis, rescheduleOnReboot, callbackHandle);
     }
 
     final int requestCode;
@@ -200,7 +201,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
   }
 
   /** A request to schedule a periodic Dart task. */
-  final static class PeriodicRequest {
+  static final class PeriodicRequest {
     static PeriodicRequest fromJson(JSONArray json) throws JSONException {
       int requestCode = json.getInt(0);
       boolean exact = json.getBoolean(1);
