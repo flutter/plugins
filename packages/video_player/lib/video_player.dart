@@ -151,7 +151,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// package and null otherwise.
   VideoPlayerController.asset(this.dataSource, {this.package})
       : dataSourceType = DataSourceType.asset,
-        requestHeaders = null,
         super(VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from obtained from
@@ -159,9 +158,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// The URI for the video is given by the [dataSource] argument and must not be
   /// null.
-  VideoPlayerController.network(this.dataSource, {this.requestHeaders})
+  VideoPlayerController.network(this.dataSource, {Map<String, String> requestHeaders})
       : dataSourceType = DataSourceType.network,
         package = null,
+        _requestHeaders = requestHeaders,
         super(VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from a file.
@@ -172,12 +172,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
-        requestHeaders = null,
         super(VideoPlayerValue(duration: null));
 
   int _textureId;
   final String dataSource;
-  final Map<String, String> requestHeaders;
+
+  Map<String, String> _requestHeaders;
 
   /// Describes the type of data source this [VideoPlayerController]
   /// is constructed with.
@@ -206,7 +206,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         };
         break;
       case DataSourceType.network:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource, 'requestHeaders': requestHeaders};
+        dataSourceDescription = <String, dynamic>{
+          'uri': dataSource,
+          'requestHeaders': _requestHeaders
+        };
         break;
       case DataSourceType.file:
         dataSourceDescription = <String, dynamic>{'uri': dataSource};

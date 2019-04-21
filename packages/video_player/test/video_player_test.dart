@@ -19,8 +19,6 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   @override
   String get dataSource => '';
   @override
-  Map<String, String> get requestHeaders => null;
-  @override
   DataSourceType get dataSourceType => DataSourceType.file;
   @override
   String get package => null;
