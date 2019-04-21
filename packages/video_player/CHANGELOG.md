@@ -1,3 +1,8 @@
+## 0.10.0+7
+
+* Android: Added Request Headers for ExoPlayer.
+* Flutter: Added Request Headers Parameter.
+
 ## 0.10.0+6
 
 * Android: Fix missing call to `event.put("event", "completed");` which makes it possible to detect when the video is over.
