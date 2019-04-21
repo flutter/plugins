@@ -82,10 +82,11 @@ void main() {
     expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
 
     // wait for the web page to load.
-    await Future<dynamic>.delayed(const Duration(seconds: 3));
+    await Future<dynamic>.delayed(const Duration(seconds: 5));
 
     final String content = await controller
         .evaluateJavascript('document.documentElement.innerText');
+    print(content);
     final Map<String, dynamic> response = jsonDecode(jsonDecode(content));
     expect(response['test_header'], equals('flutter_test_header'));
   });
