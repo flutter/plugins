@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_driver/driver_extension.dart';
@@ -53,6 +54,40 @@ void main() {
     await controller.loadUrl('https://www.google.com/');
     final String currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://www.google.com/');
+  });
+
+  test('loadUrl with headers', () async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          javascriptMode: JavascriptMode.unrestricted,
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    final Map<String, String> headers = <String, String>{
+      'test_header': 'flutter_test_header'
+    };
+    await controller.loadUrl('https://flutter-header-echo.herokuapp.com/',
+        headers: headers);
+    final String currentUrl = await controller.currentUrl();
+    expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
+
+    // wait for the web page to load.
+    await Future<dynamic>.delayed(Duration(seconds: 3));
+
+    final String content = await controller
+        .evaluateJavascript('document.documentElement.innerText');
+    final Map<String, dynamic> response = jsonDecode(jsonDecode(content));
+    expect(response['test_header'], equals('flutter_test_header'));
   });
 }
 
