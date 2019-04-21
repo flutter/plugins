@@ -16,10 +16,10 @@ class HttpsCallable {
   Future<HttpsCallableResult> call([dynamic parameters]) async {
     try {
       final MethodChannel channel = CloudFunctions.channel;
+      final dynamic response =
       // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
       // https://github.com/flutter/flutter/issues/26431
       // ignore: strong_mode_implicit_dynamic_method
-      final dynamic response =
           await channel.invokeMethod('CloudFunctions#call', <String, dynamic>{
         'app': _cloudFunctions._app.name,
         'region': _cloudFunctions._region,
@@ -47,7 +47,7 @@ class HttpsCallable {
   Duration _timeout;
 
   Duration get timeout => _timeout;
-  void set duration(Duration value) {
+  set duration(Duration value) {
     _timeout = value;
   }
 }
