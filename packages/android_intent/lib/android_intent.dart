@@ -64,8 +64,8 @@ class AndroidIntent {
     }
     await _channel.invokeMethod<void>('launch', args);
   }
-  
-  Future< Map<dynamic, dynamic> > launchForResult ( int iResultID ) async {
+
+  Future<Map<dynamic, dynamic>> launchForResult(int iResultID) async {
     assert(_platform.isAndroid);
     final Map<String, dynamic> args = <String, dynamic>{'action': action};
     if (category != null) {
@@ -84,7 +84,8 @@ class AndroidIntent {
       args['classname'] = classname;
     }
     args['ID'] = iResultID;
-    Map<dynamic, dynamic> map = await _channel.invokeMethod< Map<dynamic, dynamic> > ( 'launchForResult', args );
+    final Map<dynamic, dynamic> map = await _channel
+        .invokeMethod<Map<dynamic, dynamic>>('launchForResult', args);
     return map;
   }
 }
