@@ -1,3 +1,7 @@
+## 0.1.0+3
+
+* Initial integration tests.
+
 ## 0.1.0+2
 
 * Log messages about automatic configuration of the default app are now less confusing.

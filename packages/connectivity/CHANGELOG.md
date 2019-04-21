@@ -1,3 +1,7 @@
+## 0.4.3+1
+
+* Fixes lint error by using `getApplicationContext()` when accessing the Wifi Service.
+
 ## 0.4.3
 
 * Add getWifiBSSID to obtain current wifi network's BSSID.

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'sk_product_wrapper.dart';
 import 'sk_payment_queue_wrapper.dart';

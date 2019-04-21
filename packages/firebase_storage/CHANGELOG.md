@@ -1,6 +1,10 @@
-## 2.1.0+2
+## 2.1.1+1
 
-* Return a proper error when failing to read a file
+* On iOS, return a Dart exception instead of crashing when reading an invalid file
+
+## 2.1.1
+
+* Added integration tests.
 
 ## 2.1.0+1
 
