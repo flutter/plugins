@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
                   child: const Text('SEND REQUEST'),
                   onPressed: () async {
                     try {
-                      final dynamic resp = await CloudFunctions.instance
+                      final HttpsCallableResult result = await CloudFunctions.instance
                           .getHttpsCallable(
                         functionName: 'repeat',
                       )
@@ -43,10 +43,10 @@ class _MyAppState extends State<MyApp> {
                           'count': _responseCount,
                         },
                       );
-                      print(resp);
+                      print(result.data);
                       setState(() {
-                        _response = resp['repeat_message'];
-                        _responseCount = resp['repeat_count'];
+                        _response = result.data['repeat_message'];
+                        _responseCount = result.data['repeat_count'];
                       });
                     } on CloudFunctionsException catch (e) {
                       print('caught firebase functions exception');
