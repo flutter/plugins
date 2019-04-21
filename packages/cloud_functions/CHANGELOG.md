@@ -1,6 +1,6 @@
 ## 0.2.0
 
-* Update Dart API to more closely match native SDK.
+* **Breaking change**. Update Dart API to replace `call` with `getHttpsCallable`.
 
 ## 0.1.2+1
 
