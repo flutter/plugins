@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Added ability to start external intents and receive data through onActivityResult
+
 ## 0.3.0+2
 
 * Bump the minimum Flutter version to 1.2.0.
