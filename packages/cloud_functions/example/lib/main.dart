@@ -33,11 +33,12 @@ class _MyAppState extends State<MyApp> {
                   child: const Text('SEND REQUEST'),
                   onPressed: () async {
                     try {
-                      final HttpsCallableResult result = await CloudFunctions.instance
-                          .getHttpsCallable(
+                      final HttpsCallableResult result =
+                          await CloudFunctions.instance
+                              .getHttpsCallable(
                         functionName: 'repeat',
                       )
-                          .call(
+                              .call(
                         <String, dynamic>{
                           'message': 'hello world!',
                           'count': _responseCount,
