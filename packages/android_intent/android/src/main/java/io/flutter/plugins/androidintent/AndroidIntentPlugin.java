@@ -4,14 +4,13 @@
 
 package io.flutter.plugins.androidintent;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import java.util.HashMap;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -19,11 +18,13 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /** AndroidIntentPlugin */
 @SuppressWarnings("unchecked")
-public class AndroidIntentPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
+public class AndroidIntentPlugin
+    implements MethodCallHandler, PluginRegistry.ActivityResultListener {
   private static final String TAG = AndroidIntentPlugin.class.getCanonicalName();
   private final Registrar mRegistrar;
   private int mRequestID = 0;
@@ -31,11 +32,12 @@ public class AndroidIntentPlugin implements MethodCallHandler, PluginRegistry.Ac
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/android_intent");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/android_intent");
 
     AndroidIntentPlugin aip = new AndroidIntentPlugin(registrar);
-    channel.setMethodCallHandler ( aip );
-    registrar.addActivityResultListener ( aip );
+    channel.setMethodCallHandler(aip);
+    registrar.addActivityResultListener(aip);
   }
 
   private AndroidIntentPlugin(Registrar registrar) {
@@ -121,9 +123,9 @@ public class AndroidIntentPlugin implements MethodCallHandler, PluginRegistry.Ac
   }
 
   @Override
-  public void onMethodCall ( MethodCall call, Result result )  {
+  public void onMethodCall(MethodCall call, Result result) {
     Context context = getActiveContext();
-    String  action  = convertAction((String) call.argument("action"));
+    String action = convertAction((String) call.argument("action"));
     mResult = result;
 
     // Build intent
@@ -141,54 +143,48 @@ public class AndroidIntentPlugin implements MethodCallHandler, PluginRegistry.Ac
       intent.putExtras(convertArguments((Map) call.argument("arguments")));
     }
     if (call.argument("package") != null) {
-      if ( call.argument("classname") != null )  {
-         intent.setClassName ( (String)call.argument("package"), (String)call.argument("classname") );
-      }
-      else {
+      if (call.argument("classname") != null) {
+        intent.setClassName((String) call.argument("package"), (String) call.argument("classname"));
+      } else {
         intent.setPackage((String) call.argument("package"));
         if (intent.resolveActivity(context.getPackageManager()) == null) {
-          Log.i ( TAG, "Cannot resolve explicit intent - ignoring package");
+          Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
           intent.setPackage(null);
         }
       }
     }
 
     //Log.i ( TAG, "Sending intent " + intent );
-    switch ( call.method )  {
+    switch (call.method) {
       case "launch":
-        context.startActivity ( intent );
-        result.success ( null );
-      break;
+        context.startActivity(intent);
+        result.success(null);
+        break;
       case "launchForResult":
-        mRequestID = (int)call.argument("ID");
-        if ( mRegistrar.activity( ) == null )
-          result.notImplemented ( );
-        else
-          mRegistrar.activity ( ).startActivityForResult ( intent, mRequestID );
-      break;
+        mRequestID = (int) call.argument("ID");
+        if (mRegistrar.activity() == null) result.notImplemented();
+        else mRegistrar.activity().startActivityForResult(intent, mRequestID);
+        break;
       default:
-        result.notImplemented ( );
+        result.notImplemented();
     }
   }
 
-  public boolean onActivityResult ( int requestCode, int resultCode, Intent data )  {
-    if ( mRequestID == requestCode )  {
-      if ( resultCode == Activity.RESULT_OK )  {
-        Bundle extras = data.getExtras ( );
-        HashMap<String, String> map = new HashMap<String, String> ();
-        for ( String key : extras.keySet ( ) )  {
-          Object value = extras.get ( key );
-          map.put ( key, value.toString ( ) );
+  public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (mRequestID == requestCode) {
+      if (resultCode == Activity.RESULT_OK) {
+        Bundle extras = data.getExtras();
+        HashMap<String, String> map = new HashMap<String, String>();
+        for (String key : extras.keySet()) {
+          Object value = extras.get(key);
+          map.put(key, value.toString());
           // Log.i ( TAG, String.format("%s %s (%s)", key, value.toString(), value.getClass().getName()));
         }
-        if ( mResult != null )
-             mResult.success ( map );
+        if (mResult != null) mResult.success(map);
         return true;
       }
-      if ( mResult != null )
-           mResult.success ( null );
+      if (mResult != null) mResult.success(null);
     }
     return false;
   }
-
 }
