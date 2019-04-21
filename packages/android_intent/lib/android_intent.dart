@@ -25,6 +25,7 @@ class AndroidIntent {
     this.data,
     this.arguments,
     this.package,
+    this.classname,
     Platform platform,
   })  : assert(action != null),
         _channel = const MethodChannel(kChannelName),
@@ -35,6 +36,7 @@ class AndroidIntent {
   final String data;
   final Map<String, dynamic> arguments;
   final String package;
+  final String classname;
   final MethodChannel _channel;
   final Platform _platform;
 
@@ -57,6 +59,32 @@ class AndroidIntent {
     if (package != null) {
       args['package'] = package;
     }
+    if (classname != null) {
+      args['classname'] = classname;
+    }
     await _channel.invokeMethod<void>('launch', args);
+  }
+  
+  Future< Map<dynamic, dynamic> > launchForResult ( int iResultID ) async {
+    assert(_platform.isAndroid);
+    final Map<String, dynamic> args = <String, dynamic>{'action': action};
+    if (category != null) {
+      args['category'] = category;
+    }
+    if (data != null) {
+      args['data'] = data;
+    }
+    if (arguments != null) {
+      args['arguments'] = arguments;
+    }
+    if (package != null) {
+      args['package'] = package;
+    }
+    if (classname != null) {
+      args['classname'] = classname;
+    }
+    args['ID'] = iResultID;
+    Map<dynamic, dynamic> map = await _channel.invokeMethod< Map<dynamic, dynamic> > ( 'launchForResult', args );
+    return map;
   }
 }
