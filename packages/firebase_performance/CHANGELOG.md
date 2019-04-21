@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Deprecate `Trace.incrementCounter` and add `Trace.incrementMetric`.
+
 ## 0.1.0+4
 
 * Remove deprecated methods for iOS.
