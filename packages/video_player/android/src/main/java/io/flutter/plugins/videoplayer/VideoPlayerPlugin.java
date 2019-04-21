@@ -34,6 +34,7 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
@@ -73,7 +74,8 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         EventChannel eventChannel,
         TextureRegistry.SurfaceTextureEntry textureEntry,
         String dataSource,
-        Result result) {
+        Result result,
+        Map<String, String> requestHeaders) {
       this.eventChannel = eventChannel;
       this.textureEntry = textureEntry;
 
@@ -86,13 +88,23 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       if (uri.getScheme().equals("asset") || uri.getScheme().equals("file")) {
         dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
       } else {
-        dataSourceFactory =
+        DefaultHttpDataSourceFactory factory =
             new DefaultHttpDataSourceFactory(
                 "ExoPlayer",
                 null,
                 DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
                 DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
                 true);
+
+        if (requestHeaders != null) {
+          HttpDataSource.RequestProperties properties = factory.getDefaultRequestProperties();
+
+          for (Map.Entry<String, String> entry : requestHeaders.entrySet()) {
+            properties.set(entry.getKey(), entry.getValue());
+          }
+        }
+
+        dataSourceFactory = factory;
       }
 
       MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, context);
@@ -334,16 +346,24 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                     eventChannel,
                     handle,
                     "asset:///" + assetLookupKey,
-                    result);
+                    result,
+                    null);
             videoPlayers.put(handle.id(), player);
           } else {
+            Map<String, String> requestHeaders = null;
+
+            if (call.argument("requestHeaders") != null) {
+              requestHeaders = (Map<String, String>) call.argument("requestHeaders");
+            }
+
             player =
                 new VideoPlayer(
                     registrar.context(),
                     eventChannel,
                     handle,
                     (String) call.argument("uri"),
-                    result);
+                    result,
+                    requestHeaders);
             videoPlayers.put(handle.id(), player);
           }
           break;
