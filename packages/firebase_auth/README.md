@@ -91,6 +91,12 @@ final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
       password: 'a password',
     );
 ```
+For extra error checking, assert that the user was created successfully.
+
+```dart
+assert (user != null);
+assert(await user.getIdToken() != null);
+```
 
 ### Supported Firebase authentication methods
 
