@@ -28,9 +28,13 @@ void main() {
     });
 
     test('call', () async {
-      await CloudFunctions.instance.getHttpsCallable(functionName: 'baz').call();
-      await CloudFunctions(app: const FirebaseApp(name: '1337'), region: 'space')
-              .getHttpsCallable(functionName: 'qux').call(<String, dynamic>{
+      await CloudFunctions.instance
+          .getHttpsCallable(functionName: 'baz')
+          .call();
+      await CloudFunctions(
+              app: const FirebaseApp(name: '1337'), region: 'space')
+          .getHttpsCallable(functionName: 'qux')
+          .call(<String, dynamic>{
         'quux': 'quuz',
       });
       expect(
