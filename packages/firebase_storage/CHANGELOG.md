@@ -1,6 +1,6 @@
 ## 2.1.1+1
 
-* On iOS, return a Dart exception instead of crashing when reading an invalid file
+* On iOS, gracefully handle the case of uploading a nonexistent file without crashing.
 
 ## 2.1.1
 
