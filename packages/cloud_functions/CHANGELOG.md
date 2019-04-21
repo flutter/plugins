@@ -1,3 +1,7 @@
+## 0.2.0
+
+* Update Dart API to more closely match native SDK.
+
 ## 0.1.2+1
 
 * Added a driver test.
