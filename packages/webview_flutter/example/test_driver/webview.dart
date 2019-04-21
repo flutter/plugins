@@ -82,7 +82,7 @@ void main() {
     expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
 
     // wait for the web page to load.
-    await Future<dynamic>.delayed(Duration(seconds: 3));
+    await Future<dynamic>.delayed(const Duration(seconds: 3));
 
     final String content = await controller
         .evaluateJavascript('document.documentElement.innerText');
