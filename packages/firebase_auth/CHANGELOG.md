@@ -1,3 +1,7 @@
+## 0.8.4+6
+
+* Adds error checking in the documentation of Register a User
+
 ## 0.8.4+5
 
 * Increase Firebase/Auth CocoaPod dependency to '~> 5.19'.
