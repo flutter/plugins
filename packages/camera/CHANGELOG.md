@@ -1,3 +1,7 @@
+## 0.5.0+1
+
+* Changed from AVFileTypeQuickTimeMovie to AVFileTypeMPEG4 on iOS.
+
 ## 0.5.0
 
 * **Breaking Change** This plugin no longer handles closing and opening the camera on Android
