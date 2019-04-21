@@ -14,8 +14,10 @@ void main() {
 
   group('$CloudFunctions', () {
     test('call', () async {
-      final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(functionName: 'repeat');
-      final HttpsCallableResult response = await callable.call(<String, dynamic>{
+      final HttpsCallable callable =
+          CloudFunctions.instance.getHttpsCallable(functionName: 'repeat');
+      final HttpsCallableResult response =
+          await callable.call(<String, dynamic>{
         'message': 'foo',
         'count': 1,
       });

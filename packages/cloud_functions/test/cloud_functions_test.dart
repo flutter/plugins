@@ -28,10 +28,12 @@ void main() {
     });
 
     test('call', () async {
-      HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(functionName: 'baz');
+      HttpsCallable callable =
+          CloudFunctions.instance.getHttpsCallable(functionName: 'baz');
       await callable.call();
-      HttpsCallable callable2 = CloudFunctions(
-              app: const FirebaseApp(name: '1337'), region: 'space').getHttpsCallable(functionName: 'qux');
+      HttpsCallable callable2 =
+          CloudFunctions(app: const FirebaseApp(name: '1337'), region: 'space')
+              .getHttpsCallable(functionName: 'qux');
       await callable2.call(<String, dynamic>{
         'quux': 'quuz',
       });
