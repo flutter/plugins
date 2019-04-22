@@ -67,22 +67,22 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         updateSettings(methodCall, result);
         break;
       case "canGoBack":
-        canGoBack(methodCall, result);
+        canGoBack(result);
         break;
       case "canGoForward":
-        canGoForward(methodCall, result);
+        canGoForward(result);
         break;
       case "goBack":
-        goBack(methodCall, result);
+        goBack(result);
         break;
       case "goForward":
-        goForward(methodCall, result);
+        goForward(result);
         break;
       case "reload":
-        reload(methodCall, result);
+        reload(result);
         break;
       case "currentUrl":
-        currentUrl(methodCall, result);
+        currentUrl(result);
         break;
       case "evaluateJavascript":
         evaluateJavaScript(methodCall, result);
@@ -113,34 +113,34 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(null);
   }
 
-  private void canGoBack(MethodCall methodCall, Result result) {
+  private void canGoBack(Result result) {
     result.success(webView.canGoBack());
   }
 
-  private void canGoForward(MethodCall methodCall, Result result) {
+  private void canGoForward(Result result) {
     result.success(webView.canGoForward());
   }
 
-  private void goBack(MethodCall methodCall, Result result) {
+  private void goBack(Result result) {
     if (webView.canGoBack()) {
       webView.goBack();
     }
     result.success(null);
   }
 
-  private void goForward(MethodCall methodCall, Result result) {
+  private void goForward(Result result) {
     if (webView.canGoForward()) {
       webView.goForward();
     }
     result.success(null);
   }
 
-  private void reload(MethodCall methodCall, Result result) {
+  private void reload(Result result) {
     webView.reload();
     result.success(null);
   }
 
-  private void currentUrl(MethodCall methodCall, Result result) {
+  private void currentUrl(Result result) {
     result.success(webView.getUrl());
   }
 
