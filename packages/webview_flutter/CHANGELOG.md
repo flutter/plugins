@@ -1,3 +1,7 @@
+## 0.3.6+1
+
+* Remove un-used method params in webview\_flutter
+
 ## 0.3.6
 
 * Add an optional `headers` field to the controller.
