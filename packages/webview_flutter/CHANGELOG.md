@@ -1,3 +1,7 @@
+## 0.3.6
+
+* Add an optional `headers` field to the controller.
+
 ## 0.3.5+5
 
 * Fixed error in documentation of `javascriptChannels`.
