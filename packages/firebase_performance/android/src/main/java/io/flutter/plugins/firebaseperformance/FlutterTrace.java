@@ -6,11 +6,12 @@ package io.flutter.plugins.firebaseperformance;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
-import java.util.Map;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import java.util.Map;
 
+@SuppressWarnings("ConstantConditions")
 public class FlutterTrace implements MethodChannel.MethodCallHandler {
   private final Trace trace;
 

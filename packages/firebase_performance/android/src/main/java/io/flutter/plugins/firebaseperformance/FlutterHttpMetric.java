@@ -6,11 +6,12 @@ package io.flutter.plugins.firebaseperformance;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.HttpMetric;
-import java.util.Map;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import java.util.Map;
 
+@SuppressWarnings("ConstantConditions")
 public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
   private final HttpMetric httpMetric;
 
