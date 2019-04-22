@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_driver/driver_extension.dart';
@@ -86,9 +85,7 @@ void main() {
 
     final String content = await controller
         .evaluateJavascript('document.documentElement.innerText');
-    print(content);
-    final Map<String, dynamic> response = jsonDecode(jsonDecode(content));
-    expect(response['test_header'], equals('flutter_test_header'));
+    expect(content.contains('flutter_test_header'), isTrue);
   });
 }
 
