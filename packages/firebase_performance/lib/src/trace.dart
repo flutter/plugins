@@ -9,7 +9,7 @@ part of firebase_performance;
 /// A trace is a report of performance data associated with some of the
 /// code in your app. You can have multiple custom traces, and it is
 /// possible to have more than one custom trace running at a time. Each custom
-/// trace can have multiple counters and attributes added to help measure
+/// trace can have multiple metrics and attributes added to help measure
 /// performance related events. A trace also measures the time between calling
 /// start() and stop().
 ///
@@ -74,7 +74,7 @@ class Trace extends PerformanceAttributes {
     );
   }
 
-  /// Gets the value of the metric with the given name asynchronously.
+  /// Gets the value of the metric with the given name.
   ///
   /// If a metric with the given name doesn't exist, it is NOT created and a 0
   /// is returned.
