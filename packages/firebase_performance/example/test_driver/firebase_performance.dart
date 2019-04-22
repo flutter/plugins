@@ -26,7 +26,7 @@ void main() {
     });
 
     test('metric', () async {
-      final Trace trace = await performance.newTrace('test');
+      final Trace trace = performance.newTrace('test');
       trace.putAttribute('testAttribute', 'foo');
       trace.attributes['testAttribute2'] = 'bar';
       await trace.start();
@@ -37,6 +37,5 @@ void main() {
       expect(trace.getAttribute('testAttribute2'), null);
       expect(trace.getAttribute('testMetric'), null);
     });
-
   });
 }
