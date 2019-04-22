@@ -12,7 +12,7 @@ import com.google.firebase.messaging.RemoteMessage;
 public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
 
   public static final String ACTION_REMOTE_MESSAGE =
-      "io.flutter.plugins.firebasemessaging.NOTIFICATION";
+          "io.flutter.plugins.firebasemessaging.NOTIFICATION";
   public static final String EXTRA_REMOTE_MESSAGE = "notification";
 
   /**

@@ -31,7 +31,7 @@ import java.util.Map;
 
 /** FirebaseMessagingPlugin */
 public class FirebaseMessagingPlugin extends BroadcastReceiver
-    implements MethodCallHandler, NewIntentListener {
+        implements MethodCallHandler, NewIntentListener {
   private final Registrar registrar;
   private final MethodChannel channel;
 
@@ -40,7 +40,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_messaging");
+            new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_messaging");
     final FirebaseMessagingPlugin plugin = new FirebaseMessagingPlugin(registrar, channel);
     registrar.addNewIntentListener(plugin);
     channel.setMethodCallHandler(plugin);
@@ -72,7 +72,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
       channel.invokeMethod("onToken", token);
     } else if (action.equals(FlutterFirebaseMessagingService.ACTION_REMOTE_MESSAGE)) {
       RemoteMessage message =
-          intent.getParcelableExtra(FlutterFirebaseMessagingService.EXTRA_REMOTE_MESSAGE);
+              intent.getParcelableExtra(FlutterFirebaseMessagingService.EXTRA_REMOTE_MESSAGE);
       Map<String, Object> content = parseRemoteMessage(message);
       channel.invokeMethod("onMessage", content);
     }
@@ -115,20 +115,20 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
       result.success(null);
     } else if ("getToken".equals(call.method)) {
       FirebaseInstanceId.getInstance()
-          .getInstanceId()
-          .addOnCompleteListener(
-              new OnCompleteListener<InstanceIdResult>() {
-                @Override
-                public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                  if (!task.isSuccessful()) {
-                    Log.w(TAG, "getToken, error fetching instanceID: ", task.getException());
-                    result.success(null);
-                    return;
-                  }
+              .getInstanceId()
+              .addOnCompleteListener(
+                      new OnCompleteListener<InstanceIdResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                          if (!task.isSuccessful()) {
+                            Log.w(TAG, "getToken, error fetching instanceID: ", task.getException());
+                            result.success(null);
+                            return;
+                          }
 
-                  result.success(task.getResult().getToken());
-                }
-              });
+                          result.success(task.getResult().getToken());
+                        }
+                      });
     } else if ("deleteInstanceID".equals(call.method)) {
       new Thread(
               new Runnable() {
@@ -143,7 +143,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
                   }
                 }
               })
-          .start();
+              .start();
     } else if ("autoInitEnabled".equals(call.method)) {
       result.success(FirebaseMessaging.getInstance().isAutoInitEnabled());
     } else if ("setAutoInitEnabled".equals(call.method)) {
@@ -167,7 +167,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   /** @return true if intent contained a message to send. */
   private boolean sendMessageFromIntent(String method, Intent intent) {
     if (CLICK_ACTION_VALUE.equals(intent.getAction())
-        || CLICK_ACTION_VALUE.equals(intent.getStringExtra("click_action"))) {
+            || CLICK_ACTION_VALUE.equals(intent.getStringExtra("click_action"))) {
       Map<String, Object> message = new HashMap<>();
       Bundle extras = intent.getExtras();
 
