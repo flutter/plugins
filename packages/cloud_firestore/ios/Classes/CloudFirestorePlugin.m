@@ -484,16 +484,16 @@ const UInt8 TIMESTAMP = 136;
             return;
           }
           [weakSelf.channel invokeMethod:@"DocumentSnapshot"
-                           arguments:@{
-                             @"handle" : handle,
-                             @"path" : snapshot ? snapshot.reference.path : [NSNull null],
-                             @"data" : snapshot.exists ? snapshot.data : [NSNull null],
-                             @"metadata" : snapshot ? @{
-                               @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
-                               @"isFromCache" : @(snapshot.metadata.isFromCache),
-                             }
-                                                    : [NSNull null],
-                           }];
+                               arguments:@{
+                                 @"handle" : handle,
+                                 @"path" : snapshot ? snapshot.reference.path : [NSNull null],
+                                 @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+                                 @"metadata" : snapshot ? @{
+                                   @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
+                                   @"isFromCache" : @(snapshot.metadata.isFromCache),
+                                 }
+                                                        : [NSNull null],
+                               }];
         }];
     _listeners[handle] = listener;
     result(handle);
