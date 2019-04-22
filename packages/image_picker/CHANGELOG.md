@@ -1,3 +1,15 @@
+## 0.5.4
+
+* Add `retrieveLostData` to retrieve lost data after MainActivity is killed.
+
+## 0.5.3+2
+
+* Android: fix a crash when the MainActivity is destroyed after selecting the image/video. 
+
+## 0.5.3+1
+
+* Update minimum deploy iOS version to 8.0.
+
 ## 0.5.3
 
 * Fixed incorrect path being returned from Google Photos on Android.

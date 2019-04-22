@@ -1,3 +1,7 @@
+## 0.0.4+2
+
+* Keep debug log formatting.
+
 ## 0.0.4+1
 
 * Added an integration test.

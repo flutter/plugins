@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'sk_test_stub_objects.dart';
 
@@ -119,12 +119,6 @@ void main() {
     test('Should construct correct SKError from json', () {
       SKError error = SKError.fromJson(buildErrorMap(dummyError));
       expect(error, equals(dummyError));
-    });
-
-    test('Should construct correct SKDownloadWrapper from json', () {
-      SKDownloadWrapper download =
-          SKDownloadWrapper.fromJson(buildDownloadMap(dummyDownload));
-      expect(download, equals(dummyDownload));
     });
 
     test('Should construct correct SKTransactionWrapper from json', () {
