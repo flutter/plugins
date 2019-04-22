@@ -23,6 +23,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   firebase_core: ^0.3.0
+  flutter_driver:
+    sdk: flutter
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
