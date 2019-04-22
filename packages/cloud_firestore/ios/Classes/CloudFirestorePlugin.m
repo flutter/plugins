@@ -470,7 +470,7 @@ const UInt8 TIMESTAMP = 136;
           }
           NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
           [arguments setObject:handle forKey:@"handle"];
-          [self.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
+          [weakSelf.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
         }];
     _listeners[handle] = listener;
     result(handle);
@@ -483,7 +483,7 @@ const UInt8 TIMESTAMP = 136;
             result(getFlutterError(error));
             return;
           }
-          [self.channel invokeMethod:@"DocumentSnapshot"
+          [weakSelf.channel invokeMethod:@"DocumentSnapshot"
                            arguments:@{
                              @"handle" : handle,
                              @"path" : snapshot ? snapshot.reference.path : [NSNull null],
