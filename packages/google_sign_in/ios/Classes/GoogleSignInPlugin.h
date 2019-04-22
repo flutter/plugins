@@ -5,4 +5,5 @@
 #import <Flutter/Flutter.h>
 
 @interface FLTGoogleSignInPlugin : NSObject <FlutterPlugin>
++ (FlutterResult)_flutterResult;
 @end

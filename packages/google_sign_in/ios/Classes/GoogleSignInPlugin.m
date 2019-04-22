@@ -32,9 +32,14 @@ static FlutterError *getFlutterError(NSError *error) {
 @interface FLTGoogleSignInPlugin () <GIDSignInDelegate, GIDSignInUIDelegate>
 @end
 
-@implementation FLTGoogleSignInPlugin {
-  FlutterResult _accountRequest;
+@implementation FLTGoogleSignInPlugin
+
++ (FlutterResult)_flutterResult {
+  return _accountRequest;
 }
+
+static id _accountRequest;
+
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
