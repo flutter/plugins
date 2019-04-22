@@ -4,10 +4,7 @@
 
 part of firebase_performance;
 
-/// Abstract class that allows adding/removing attributes to any object.
-///
-/// Enforces constraints for adding attributes and values required by
-/// FirebasePerformance API. See [putAttribute].
+/// Abstract class that allows adding/removing attributes to an object.
 abstract class PerformanceAttributes {
   /// Maximum allowed length of a key passed to [putAttribute].
   static const int maxAttributeKeyLength = 40;
@@ -18,10 +15,7 @@ abstract class PerformanceAttributes {
   /// Maximum allowed number of attributes that can be added.
   static const int maxCustomAttributes = 5;
 
-  final Map<String, String> _attributes = <String, String>{};
-
-  /// Copy of all the attributes added.
-  Map<String, String> get attributes => Map<String, String>.from(_attributes);
+  MethodChannel get _methodChannel;
 
   /// Sets a String [value] for the specified [attribute].
   ///
@@ -32,22 +26,25 @@ abstract class PerformanceAttributes {
   /// Name of the attribute has max length of [maxAttributeKeyLength]
   /// characters. Value of the attribute has max length of
   /// [maxAttributeValueLength] characters.
-  void putAttribute(String attribute, String value) {
-    assert(attribute != null);
-    assert(!attribute.startsWith(RegExp(r'[_\s]')));
-    assert(!attribute.contains(RegExp(r'[_\s]$')));
-    assert(attribute.length <= maxAttributeKeyLength);
-    assert(value.length <= maxAttributeValueLength);
-    assert(_attributes.length < maxCustomAttributes);
-
-    _attributes[attribute] = value;
+  Future<void> putAttribute(String attribute, String value) {
+    return _methodChannel.invokeMethod<void>(
+      'PerformanceAttributes#putAttribute',
+      <String, String>{'attribute': attribute, 'value': value},
+    );
   }
 
   /// Removes an already added [attribute].
-  void removeAttribute(String attribute) {
-    _attributes.remove(attribute);
+  Future<void> removeAttribute(String attribute) {
+    return _methodChannel.invokeMethod<void>(
+      'PerformanceAttributes#putAttribute',
+      attribute,
+    );
   }
 
-  /// Returns the value of an [attribute].
-  String getAttribute(String attribute) => _attributes[attribute];
+  /// All [attribute]s added.
+  Future<Map<String, String>> getAttributes() {
+    return _methodChannel.invokeMapMethod<String, String>(
+      'PerformanceAttributes#getAttributes',
+    );
+  }
 }

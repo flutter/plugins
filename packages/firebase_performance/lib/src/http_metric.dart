@@ -16,14 +16,9 @@ part of firebase_performance;
 /// You can confirm that Performance Monitoring results appear in the Firebase
 /// console. Results should appear within 12 hours.
 class HttpMetric extends PerformanceAttributes {
-  HttpMetric._(this._handle, this._url, this._httpMethod);
+  HttpMetric._(this._channel);
 
-  final int _handle;
-  final String _url;
-  final HttpMethod _httpMethod;
-
-  bool _hasStarted = false;
-  bool _hasStopped = false;
+  final MethodChannel _channel;
 
   /// HttpResponse code of the request.
   int httpResponseCode;
@@ -37,75 +32,33 @@ class HttpMetric extends PerformanceAttributes {
   /// Size of the response payload.
   int responsePayloadSize;
 
-  /// Starts this httpmetric.
-  ///
-  /// Can only be called once, otherwise assertion error is thrown.
+  @override
+  MethodChannel get _methodChannel => null;
+
+  /// Starts this [HttpMetric] asynchronously.
   ///
   /// Using ```await``` with this method is only necessary when accurate timing
   /// is relevant.
   Future<void> start() {
-    assert(!_hasStarted);
-
-    _hasStarted = true;
-    return FirebasePerformance.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('HttpMetric#start', <String, dynamic>{
-      'handle': _handle,
-      'url': _url,
-      'httpMethod': _httpMethod.index,
-    });
+    return _channel.invokeMethod<void>('$Trace#start');
   }
 
   /// Stops this httpMetric.
   ///
-  /// Can only be called once and only after start(), otherwise assertion error
-  /// is thrown. Data collected is automatically sent to the associated
-  /// Firebase console after stop() is called.
+  /// Can only be called once and only after start(), Data collected is
+  /// automatically sent to the associate Firebase console after stop() is
+  /// called. You can confirm that Performance Monitoring results appear in the
+  /// Firebase console. Results should appear within 12 hours.
   ///
   /// Not necessary to use ```await``` with this method.
   Future<void> stop() {
-    assert(!_hasStopped);
-    assert(_hasStarted);
-
     final Map<String, dynamic> data = <String, dynamic>{
-      'handle': _handle,
       'httpResponseCode': httpResponseCode,
       'requestPayloadSize': requestPayloadSize,
       'responseContentType': responseContentType,
       'responsePayloadSize': responsePayloadSize,
-      'attributes': _attributes,
     };
 
-    _hasStopped = true;
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return FirebasePerformance.channel.invokeMethod('HttpMetric#stop', data);
-  }
-
-  /// Sets a String [value] for the specified [attribute].
-  ///
-  /// If the httpmetric has been stopped, this method throws an assertion
-  /// error.
-  ///
-  /// See [PerformanceAttributes.putAttribute].
-  @override
-  void putAttribute(String attribute, String value) {
-    assert(!_hasStopped);
-    super.putAttribute(attribute, value);
-  }
-
-  /// Removes an already added [attribute].
-  ///
-  /// If the httpmetric has been stopped, this method throws an assertion
-  /// error.
-  ///
-  /// See [PerformanceAttributes.removeAttribute].
-  @override
-  void removeAttribute(String attribute) {
-    assert(!_hasStopped);
-    super.removeAttribute(attribute);
+    return _channel.invokeMethod<void>('$Trace#stop', data);
   }
 }

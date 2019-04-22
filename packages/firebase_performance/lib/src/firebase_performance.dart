@@ -13,9 +13,6 @@ enum HttpMethod { Connect, Delete, Get, Head, Options, Patch, Post, Put, Trace }
 class FirebasePerformance {
   FirebasePerformance._();
 
-  static int _traceCount = 0;
-  static int _httpMetricCount = 0;
-
   @visibleForTesting
   static const MethodChannel channel =
       MethodChannel('plugins.flutter.io/firebase_performance');
@@ -23,30 +20,28 @@ class FirebasePerformance {
   /// Singleton of [FirebasePerformance].
   static final FirebasePerformance instance = FirebasePerformance._();
 
+  static int _channelCount = 0;
+
   /// Determines whether performance monitoring is enabled or disabled.
   ///
   /// True if performance monitoring is enabled and false if performance
   /// monitoring is disabled. This is for dynamic enable/disable state. This
   /// does not reflect whether instrumentation is enabled/disabled.
-  Future<bool> isPerformanceCollectionEnabled() async {
-    final bool isEnabled = await channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('FirebasePerformance#isPerformanceCollectionEnabled');
-    return isEnabled;
+  Future<bool> isPerformanceCollectionEnabled() {
+    return channel.invokeMethod<bool>(
+      'FirebasePerformance#isPerformanceCollectionEnabled',
+    );
   }
 
-  /// Enables or disables performance monitoring.
+  /// Enables or disables performance monitoring asynchronously.
   ///
   /// This setting is persisted and applied on future invocations of your
   /// application. By default, performance monitoring is enabled.
   Future<void> setPerformanceCollectionEnabled(bool enable) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod(
-        'FirebasePerformance#setPerformanceCollectionEnabled', enable);
+    return channel.invokeMethod<void>(
+      'FirebasePerformance#setPerformanceCollectionEnabled',
+      enable,
+    );
   }
 
   /// Creates a [Trace] object with given [name].
@@ -55,22 +50,33 @@ class FirebasePerformance {
   /// underscore _ character, max length of [Trace.maxTraceNameLength]
   /// characters.
   Trace newTrace(String name) {
-    return Trace._(_traceCount++, name);
+    final String channelName =
+        '${FirebasePerformance.channel.name}/$Trace/${_channelCount++}';
+
+    FirebasePerformance.channel.invokeMethod<void>(
+      '$FirebasePerformance#newTrace',
+      <String, dynamic>{'channelName': channelName, 'traceName': name},
+    );
+
+    final MethodChannel channel = MethodChannel(channelName);
+    return Trace._(channel);
   }
 
   /// Creates [HttpMetric] for collecting performance for one request/response.
   HttpMetric newHttpMetric(String url, HttpMethod httpMethod) {
-    return HttpMetric._(_httpMetricCount++, url, httpMethod);
-  }
+    final String channelName =
+        '${FirebasePerformance.channel.name}/$HttpMetric/${_channelCount++}';
 
-  /// Creates a [Trace] object with given [name] and start the trace.
-  ///
-  /// The [name] requires no leading or trailing whitespace, no leading
-  /// underscore _ character, max length of [Trace.maxTraceNameLength]
-  /// characters.
-  static Future<Trace> startTrace(String name) async {
-    final Trace trace = instance.newTrace(name);
-    await trace.start();
-    return trace;
+    FirebasePerformance.channel.invokeMethod<void>(
+      '$FirebasePerformance#newHttpMetric',
+      <String, dynamic>{
+        'channelName': channelName,
+        'url': url,
+        'httpMethod': httpMethod.toString(),
+      },
+    );
+
+    final MethodChannel channel = MethodChannel(channelName);
+    return HttpMetric._(channel);
   }
 }
