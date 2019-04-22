@@ -6,12 +6,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import 'package:test/test.dart';
 
 import 'package:in_app_purchase/src/channel.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/app_store_connection.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/app_store_connection.dart';
+import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import '../store_kit_wrappers/sk_test_stub_objects.dart';
 

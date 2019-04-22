@@ -170,7 +170,7 @@ void main() {
             arguments: <String, dynamic>{
               'handle': currentTraceHandle,
               'name': 'test',
-              'counters': <String, int>{},
+              'metrics': <String, int>{},
               'attributes': <String, String>{},
             },
           ),
@@ -179,14 +179,21 @@ void main() {
 
       test('incrementCounter', () async {
         final Trace trace = performance.newTrace('test');
+
+        // ignore: deprecated_member_use_from_same_package
         trace.incrementCounter('counter1');
 
+        // ignore: deprecated_member_use_from_same_package
         trace.incrementCounter('counter2');
+        // ignore: deprecated_member_use_from_same_package
         trace.incrementCounter('counter2');
 
+        // ignore: deprecated_member_use_from_same_package
         trace.incrementCounter('counter3', 5);
+        // ignore: deprecated_member_use_from_same_package
         trace.incrementCounter('counter3', 5);
 
+        // ignore: deprecated_member_use_from_same_package
         trace.incrementCounter('counter4', -5);
 
         await trace.start();
@@ -205,11 +212,51 @@ void main() {
             arguments: <String, dynamic>{
               'handle': currentTraceHandle,
               'name': 'test',
-              'counters': <String, int>{
+              'metrics': <String, int>{
                 'counter1': 1,
                 'counter2': 2,
                 'counter3': 10,
                 'counter4': -5,
+              },
+              'attributes': <String, String>{},
+            },
+          ),
+        ]);
+      });
+
+      test('incrementMetric', () async {
+        final Trace trace = performance.newTrace('test');
+        trace.incrementMetric('metric1', 1);
+
+        trace.incrementMetric('metric2', 1);
+        trace.incrementMetric('metric2', 1);
+
+        trace.incrementMetric('metric3', 5);
+        trace.incrementMetric('metric3', 5);
+
+        trace.incrementMetric('metric4', -5);
+
+        await trace.start();
+        await trace.stop();
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'Trace#start',
+            arguments: <String, Object>{
+              'handle': currentTraceHandle,
+              'name': 'test',
+            },
+          ),
+          isMethodCall(
+            'Trace#stop',
+            arguments: <String, dynamic>{
+              'handle': currentTraceHandle,
+              'name': 'test',
+              'metrics': <String, int>{
+                'metric1': 1,
+                'metric2': 2,
+                'metric3': 10,
+                'metric4': -5,
               },
               'attributes': <String, String>{},
             },
