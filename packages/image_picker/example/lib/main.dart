@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   dynamic _pickImageError;
   bool isVideo = false;
   VideoPlayerController _controller;
-  VoidCallback listener = () {};
+  VoidCallback listener;
   String _retrieveDataError;
 
   void _onImageButtonPressed(ImageSource source) async {
@@ -83,6 +83,14 @@ class _MyHomePageState extends State<MyHomePage> {
       _controller.dispose();
     }
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    listener = () {
+      setState(() {});
+    };
   }
 
   Widget _previewVideo(VideoPlayerController controller) {

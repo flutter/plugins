@@ -1,3 +1,7 @@
+## 0.5.4+1
+
+* Fix the example app failing to load picked video.
+
 ## 0.5.4
 
 * Add `retrieveLostData` to retrieve lost data after MainActivity is killed.
