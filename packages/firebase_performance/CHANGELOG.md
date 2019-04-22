@@ -1,6 +1,7 @@
 ## 0.1.1
 
 * Deprecate `Trace.incrementCounter` and add `Trace.incrementMetric`.
+* Additional integration testing.
 
 ## 0.1.0+4
 
