@@ -22,10 +22,18 @@ class HttpMetric extends PerformanceAttributes {
   final MethodChannel channel;
 
   @override
+  bool _hasStarted = false;
+
+  @override
+  bool _hasStopped = false;
+
+  @override
   MethodChannel get methodChannel => channel;
 
   /// HttpResponse code of the request.
   set httpResponseCode(int httpResponseCode) {
+    if (_hasStopped) return;
+
     channel.invokeMethod<void>(
       '$HttpMetric#httpResponseCode',
       httpResponseCode,
@@ -34,6 +42,8 @@ class HttpMetric extends PerformanceAttributes {
 
   /// Size of the request payload.
   set requestPayloadSize(int requestPayloadSize) {
+    if (_hasStopped) return;
+
     channel.invokeMethod<void>(
       '$HttpMetric#requestPayloadSize',
       requestPayloadSize,
@@ -42,6 +52,8 @@ class HttpMetric extends PerformanceAttributes {
 
   /// Content type of the response such as text/html, application/json, etc...
   set responseContentType(String responseContentType) {
+    if (_hasStopped) return;
+
     channel.invokeMethod<void>(
       '$HttpMetric#responseContentType',
       responseContentType,
@@ -50,6 +62,8 @@ class HttpMetric extends PerformanceAttributes {
 
   /// Size of the response payload.
   set responsePayloadSize(int responsePayloadSize) {
+    if (_hasStopped) return;
+
     channel.invokeMethod<void>(
       '$HttpMetric#responsePayloadSize',
       responsePayloadSize,
@@ -61,6 +75,9 @@ class HttpMetric extends PerformanceAttributes {
   /// Using ```await``` with this method is only necessary when accurate timing
   /// is relevant.
   Future<void> start() {
+    if (_hasStarted || _hasStopped) return Future<void>.value(null);
+
+    _hasStarted = true;
     return channel.invokeMethod<void>('$HttpMetric#start');
   }
 
@@ -73,6 +90,9 @@ class HttpMetric extends PerformanceAttributes {
   ///
   /// Not necessary to use ```await``` with this method.
   Future<void> stop() {
+    if (_hasStopped) return Future<void>.value(null);
+
+    _hasStopped = true;
     return channel.invokeMethod<void>('$HttpMetric#stop');
   }
 }

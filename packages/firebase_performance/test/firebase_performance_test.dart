@@ -157,16 +157,18 @@ void main() {
       test('incrementMetric', () {
         final String name = 'counter1';
         final int value = 45;
+        final int increment = 3;
 
-        testTrace.incrementMetric(name, value);
+        testTrace.start();
+        testTrace.putMetric(name, value);
+        traceLog.clear();
+
+        testTrace.incrementMetric(name, increment);
 
         expect(traceLog, <Matcher>[
           isMethodCall(
             'Trace#incrementMetric',
-            arguments: <String, dynamic>{
-              'name': name,
-              'value': value,
-            },
+            arguments: <String, dynamic>{'name': name, 'value': increment},
           ),
         ]);
       });
@@ -212,7 +214,7 @@ void main() {
     });
 
     group('$PerformanceAttributes', () {
-      final PerformanceAttributes attributes = MockPerformanceAttributes();
+      Trace attributeTrace;
       final List<MethodCall> attributeLog = <MethodCall>[];
       final Map<dynamic, dynamic> getAttributesResult = <dynamic, dynamic>{
         'a1': 'hello',
@@ -220,7 +222,8 @@ void main() {
       };
 
       setUp(() {
-        MockPerformanceAttributes._channel
+        attributeTrace = performance.newTrace('trace');
+        attributeTrace.channel
             .setMockMethodCallHandler((MethodCall methodCall) async {
           attributeLog.add(methodCall);
           if (methodCall.method == 'PerformanceAttributes#getAttributes') {
@@ -229,13 +232,16 @@ void main() {
 
           return null;
         });
+
+        attributeTrace.start();
         attributeLog.clear();
       });
 
       test('putAttribute', () {
         final String attribute = 'attr1';
         final String value = 'apple';
-        attributes.putAttribute(attribute, value);
+
+        attributeTrace.putAttribute(attribute, value);
 
         expect(attributeLog, <Matcher>[
           isMethodCall(
@@ -250,7 +256,7 @@ void main() {
 
       test('removeAttribute', () {
         final String attribute = 'attr1';
-        attributes.removeAttribute(attribute);
+        attributeTrace.removeAttribute(attribute);
 
         expect(attributeLog, <Matcher>[
           isMethodCall(
@@ -261,7 +267,7 @@ void main() {
       });
 
       test('getAttributes', () async {
-        final Map<String, String> result = await attributes.getAttributes();
+        final Map<String, String> result = await attributeTrace.getAttributes();
 
         expect(attributeLog, <Matcher>[
           isMethodCall(
@@ -274,11 +280,4 @@ void main() {
       });
     });
   });
-}
-
-class MockPerformanceAttributes extends PerformanceAttributes {
-  static MethodChannel _channel = const MethodChannel('testMethodChannel');
-
-  @override
-  MethodChannel get methodChannel => _channel;
 }

@@ -37,7 +37,7 @@ class FirebasePerformance {
   ///
   /// This setting is persisted and applied on future invocations of your
   /// application. By default, performance monitoring is enabled.
-  Future<void> setPerformanceCollectionEnabled(bool enable) async {
+  Future<void> setPerformanceCollectionEnabled(bool enable) {
     return channel.invokeMethod<void>(
       'FirebasePerformance#setPerformanceCollectionEnabled',
       enable,

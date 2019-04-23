@@ -27,6 +27,14 @@ class Trace extends PerformanceAttributes {
   @visibleForTesting
   final MethodChannel channel;
 
+  final Map<String, int> _metrics = <String, int>{};
+
+  @override
+  bool _hasStarted = false;
+
+  @override
+  bool _hasStopped = false;
+
   @override
   MethodChannel get methodChannel => channel;
 
@@ -37,6 +45,9 @@ class Trace extends PerformanceAttributes {
   /// Using ```await``` with this method is only necessary when accurate timing
   /// is relevant.
   Future<void> start() {
+    if (_hasStarted || _hasStopped) return Future<void>.value(null);
+
+    _hasStarted = true;
     return channel.invokeMethod<void>('$Trace#start');
   }
 
@@ -49,6 +60,9 @@ class Trace extends PerformanceAttributes {
   ///
   /// Not necessary to use ```await``` with this method.
   Future<void> stop() {
+    if (_hasStopped) return Future<void>.value(null);
+
+    _hasStopped = true;
     return channel.invokeMethod<void>('$Trace#stop');
   }
 
@@ -58,6 +72,11 @@ class Trace extends PerformanceAttributes {
   /// not been started or has already been stopped, returns immediately without
   /// taking action.
   Future<void> incrementMetric(String name, int value) {
+    if (!_hasStarted || _hasStopped || _metrics[name] == null) {
+      return Future<void>.value(null);
+    }
+
+    _metrics[name] += value;
     return channel.invokeMethod<void>(
       '$Trace#incrementMetric',
       <String, dynamic>{'name': name, 'value': value},
@@ -70,6 +89,9 @@ class Trace extends PerformanceAttributes {
   /// If the trace has not been started or has already been stopped, returns
   /// immediately without taking action.
   Future<void> putMetric(String name, int value) {
+    if (!_hasStarted || _hasStopped) return Future<void>.value(null);
+
+    _metrics[name] = value;
     return channel.invokeMethod<void>(
       '$Trace#putMetric',
       <String, dynamic>{'name': name, 'value': value},
@@ -81,6 +103,10 @@ class Trace extends PerformanceAttributes {
   /// If a metric with the given name doesn't exist, it is NOT created and a 0
   /// is returned.
   Future<int> getMetric(String name) {
+    if (_hasStopped) {
+      return Future<int>.value(_metrics[name] ?? 0);
+    }
+
     return channel.invokeMethod<int>(
       '$Trace#getMetric',
       <String, dynamic>{'name': name},
