@@ -158,7 +158,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// The URI for the video is given by the [dataSource] argument and must not be
   /// null.
-  VideoPlayerController.network(this.dataSource, {Map<String, String> requestHeaders})
+  VideoPlayerController.network(this.dataSource,
+      {Map<String, String> requestHeaders})
       : dataSourceType = DataSourceType.network,
         package = null,
         _requestHeaders = requestHeaders,
