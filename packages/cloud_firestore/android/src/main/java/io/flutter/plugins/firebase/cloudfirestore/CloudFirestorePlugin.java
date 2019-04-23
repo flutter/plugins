@@ -654,6 +654,8 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte DELETE = (byte) 134;
   private static final byte SERVER_TIMESTAMP = (byte) 135;
   private static final byte TIMESTAMP = (byte) 136;
+  private static final byte INCREMENT_INTEGER = (byte) 137;
+  private static final byte INCREMENT_DOUBLE = (byte) 138;
 
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
@@ -711,6 +713,12 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
         return FieldValue.delete();
       case SERVER_TIMESTAMP:
         return FieldValue.serverTimestamp();
+      case INCREMENT_INTEGER:
+        final Number integerIncrementValue = (Number) readValue(buffer);
+        return FieldValue.increment(integerIncrementValue.intValue());
+      case INCREMENT_DOUBLE:
+        final Number doubleIncrementValue = (Number) readValue(buffer);
+        return FieldValue.increment(doubleIncrementValue.doubleValue());
       default:
         return super.readValueOfType(type, buffer);
     }
