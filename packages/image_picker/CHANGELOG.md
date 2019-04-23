@@ -1,3 +1,7 @@
+## 0.5.4+1
+
+* Bugfix iOS: Cancel button not visible in gallery, if camera was accessed first.
+
 ## 0.5.4
 
 * Add `retrieveLostData` to retrieve lost data after MainActivity is killed.
