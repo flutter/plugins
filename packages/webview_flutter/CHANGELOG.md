@@ -1,3 +1,7 @@
+## 0.3.7
+
+* Fix loadUrlWithHeaders flaky test.
+
 ## 0.3.6+1
 
 * Remove un-used method params in webview\_flutter

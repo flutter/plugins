@@ -90,7 +90,7 @@ void main() {
     final String content = await controller
         .evaluateJavascript('document.documentElement.innerText');
     expect(content.contains('flutter_test_header'), isTrue);
-  }, skip: true);
+  });
 }
 
 Future<void> pumpWidget(Widget widget) {
