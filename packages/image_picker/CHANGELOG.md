@@ -1,4 +1,5 @@
 ## 0.5.4+2
+
 * Request Camera permission if it present in Manifest on Android >= M.
 
 ## 0.5.4+1
