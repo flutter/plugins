@@ -1,3 +1,7 @@
+## 0.5.4+3
+
+* Fix the example app failing to load picked video.
+
 ## 0.5.4+2
 
 * Request Camera permission if it present in Manifest on Android >= M.
