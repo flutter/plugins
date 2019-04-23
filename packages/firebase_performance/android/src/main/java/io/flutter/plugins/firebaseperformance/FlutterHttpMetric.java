@@ -127,7 +127,6 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
-
   private void putAttribute(MethodCall call, MethodChannel.Result result) {
     final String attribute = call.argument("attribute");
     final String value = call.argument("value");
