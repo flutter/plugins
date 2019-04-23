@@ -55,11 +55,10 @@ void main() {
     expect(currentUrl, 'https://www.google.com/');
   });
 
-  // enable this once https://github.com/flutter/flutter/issues/31510
-  // is resolved.
   test('loadUrl with headers', () async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
+    final Completer<String> headerEchoCompleter = Completer<String>();
     await pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -70,6 +69,11 @@ void main() {
             controllerCompleter.complete(controller);
           },
           javascriptMode: JavascriptMode.unrestricted,
+          onPageFinished: (String url) {
+            if (url.contains('flutter-header-echo')) {
+              headerEchoCompleter.complete(url);
+            }
+          },
         ),
       ),
     );
@@ -82,13 +86,11 @@ void main() {
     final String currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
 
-    // wait for the web page to load.
-    await Future<dynamic>.delayed(const Duration(seconds: 5));
-
+    await headerEchoCompleter.future;
     final String content = await controller
         .evaluateJavascript('document.documentElement.innerText');
     expect(content.contains('flutter_test_header'), isTrue);
-  }, skip: true);
+  });
 }
 
 Future<void> pumpWidget(Widget widget) {
