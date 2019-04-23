@@ -19,15 +19,16 @@ part of firebase_performance;
 /// You can confirm that Performance Monitoring results appear in the Firebase
 /// console. Results should appear within 12 hours.
 class Trace extends PerformanceAttributes {
-  Trace._(this._channel);
+  Trace._(this.channel);
 
   /// Maximum allowed length of the name of a [Trace].
   static const int maxTraceNameLength = 100;
 
-  final MethodChannel _channel;
+  @visibleForTesting
+  final MethodChannel channel;
 
   @override
-  MethodChannel get _methodChannel => _channel;
+  MethodChannel get methodChannel => channel;
 
   /// Starts this [Trace] asynchronously.
   ///
@@ -36,7 +37,7 @@ class Trace extends PerformanceAttributes {
   /// Using ```await``` with this method is only necessary when accurate timing
   /// is relevant.
   Future<void> start() {
-    return _channel.invokeMethod<void>('$Trace#start');
+    return channel.invokeMethod<void>('$Trace#start');
   }
 
   /// Stops this [Trace] asynchronously.
@@ -48,7 +49,7 @@ class Trace extends PerformanceAttributes {
   ///
   /// Not necessary to use ```await``` with this method.
   Future<void> stop() {
-    return _channel.invokeMethod<void>('$Trace#stop');
+    return channel.invokeMethod<void>('$Trace#stop');
   }
 
   /// Increments the metric with the given name asynchronously.
@@ -57,7 +58,7 @@ class Trace extends PerformanceAttributes {
   /// not been started or has already been stopped, returns immediately without
   /// taking action.
   Future<void> incrementMetric(String name, int value) {
-    return _channel.invokeMethod<void>(
+    return channel.invokeMethod<void>(
       '$Trace#incrementMetric',
       <String, dynamic>{'name': name, 'value': value},
     );
@@ -69,7 +70,7 @@ class Trace extends PerformanceAttributes {
   /// If the trace has not been started or has already been stopped, returns
   /// immediately without taking action.
   Future<void> putMetric(String name, int value) {
-    return _channel.invokeMethod<void>(
+    return channel.invokeMethod<void>(
       '$Trace#putMetric',
       <String, dynamic>{'name': name, 'value': value},
     );
@@ -80,7 +81,7 @@ class Trace extends PerformanceAttributes {
   /// If a metric with the given name doesn't exist, it is NOT created and a 0
   /// is returned.
   Future<int> getMetric(String name) {
-    return _channel.invokeMethod<int>(
+    return channel.invokeMethod<int>(
       '$Trace#getMetric',
       <String, dynamic>{'name': name},
     );

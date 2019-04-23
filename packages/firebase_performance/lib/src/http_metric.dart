@@ -16,16 +16,17 @@ part of firebase_performance;
 /// You can confirm that Performance Monitoring results appear in the Firebase
 /// console. Results should appear within 12 hours.
 class HttpMetric extends PerformanceAttributes {
-  HttpMetric._(this._channel);
+  HttpMetric._(this.channel);
 
-  final MethodChannel _channel;
+  @visibleForTesting
+  final MethodChannel channel;
 
   @override
-  MethodChannel get _methodChannel => _channel;
+  MethodChannel get methodChannel => channel;
 
   /// HttpResponse code of the request.
   set httpResponseCode(int httpResponseCode) {
-    _channel.invokeMethod<void>(
+    channel.invokeMethod<void>(
       '$HttpMetric#httpResponseCode',
       httpResponseCode,
     );
@@ -33,7 +34,7 @@ class HttpMetric extends PerformanceAttributes {
 
   /// Size of the request payload.
   set requestPayloadSize(int requestPayloadSize) {
-    _channel.invokeMethod<void>(
+    channel.invokeMethod<void>(
       '$HttpMetric#requestPayloadSize',
       requestPayloadSize,
     );
@@ -41,7 +42,7 @@ class HttpMetric extends PerformanceAttributes {
 
   /// Content type of the response such as text/html, application/json, etc...
   set responseContentType(String responseContentType) {
-    _channel.invokeMethod<void>(
+    channel.invokeMethod<void>(
       '$HttpMetric#responseContentType',
       responseContentType,
     );
@@ -49,7 +50,7 @@ class HttpMetric extends PerformanceAttributes {
 
   /// Size of the response payload.
   set responsePayloadSize(int responsePayloadSize) {
-    _channel.invokeMethod<void>(
+    channel.invokeMethod<void>(
       '$HttpMetric#responsePayloadSize',
       responsePayloadSize,
     );
@@ -60,7 +61,7 @@ class HttpMetric extends PerformanceAttributes {
   /// Using ```await``` with this method is only necessary when accurate timing
   /// is relevant.
   Future<void> start() {
-    return _channel.invokeMethod<void>('$HttpMetric#start');
+    return channel.invokeMethod<void>('$HttpMetric#start');
   }
 
   /// Stops this [HttpMetric].
@@ -72,6 +73,6 @@ class HttpMetric extends PerformanceAttributes {
   ///
   /// Not necessary to use ```await``` with this method.
   Future<void> stop() {
-    return _channel.invokeMethod<void>('$HttpMetric#stop');
+    return channel.invokeMethod<void>('$HttpMetric#stop');
   }
 }

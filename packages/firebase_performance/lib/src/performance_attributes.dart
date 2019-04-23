@@ -15,7 +15,8 @@ abstract class PerformanceAttributes {
   /// Maximum allowed number of attributes that can be added.
   static const int maxCustomAttributes = 5;
 
-  MethodChannel get _methodChannel;
+  @visibleForTesting
+  MethodChannel get methodChannel;
 
   /// Sets a String [value] for the specified [attribute].
   ///
@@ -27,7 +28,7 @@ abstract class PerformanceAttributes {
   /// characters. Value of the attribute has max length of
   /// [maxAttributeValueLength] characters.
   Future<void> putAttribute(String attribute, String value) {
-    return _methodChannel.invokeMethod<void>(
+    return methodChannel.invokeMethod<void>(
       '$PerformanceAttributes#putAttribute',
       <String, String>{'attribute': attribute, 'value': value},
     );
@@ -35,15 +36,15 @@ abstract class PerformanceAttributes {
 
   /// Removes an already added [attribute].
   Future<void> removeAttribute(String attribute) {
-    return _methodChannel.invokeMethod<void>(
-      '$PerformanceAttributes#putAttribute',
+    return methodChannel.invokeMethod<void>(
+      '$PerformanceAttributes#removeAttribute',
       attribute,
     );
   }
 
   /// All [attribute]s added.
   Future<Map<String, String>> getAttributes() {
-    return _methodChannel.invokeMapMethod<String, String>(
+    return methodChannel.invokeMapMethod<String, String>(
       '$PerformanceAttributes#getAttributes',
     );
   }
