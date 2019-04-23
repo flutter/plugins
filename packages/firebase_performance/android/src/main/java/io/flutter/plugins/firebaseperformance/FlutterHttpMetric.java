@@ -12,6 +12,31 @@ import io.flutter.plugin.common.MethodChannel;
 
 @SuppressWarnings("ConstantConditions")
 public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
+  private static String parseHttpMethod(String httpMethod) {
+    switch (httpMethod) {
+      case "HttpMethod.Connect":
+        return FirebasePerformance.HttpMethod.CONNECT;
+      case "HttpMethod.Delete":
+        return FirebasePerformance.HttpMethod.DELETE;
+      case "HttpMethod.Get":
+        return FirebasePerformance.HttpMethod.GET;
+      case "HttpMethod.Head":
+        return FirebasePerformance.HttpMethod.HEAD;
+      case "HttpMethod.Options":
+        return FirebasePerformance.HttpMethod.OPTIONS;
+      case "HttpMethod.Patch":
+        return FirebasePerformance.HttpMethod.PATCH;
+      case "HttpMethod.Post":
+        return FirebasePerformance.HttpMethod.POST;
+      case "HttpMethod.Put":
+        return FirebasePerformance.HttpMethod.PUT;
+      case "HttpMethod.Trace":
+        return FirebasePerformance.HttpMethod.TRACE;
+      default:
+        throw new IllegalArgumentException(String.format("No HttpMethod for: %s", httpMethod));
+    }
+  }
+
   private final HttpMetric httpMetric;
   private final MethodChannel channel;
 
@@ -24,7 +49,7 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
     final String url = call.argument("url");
     final String httpMethod = call.argument("httpMethod");
 
-    this.httpMetric = performance.newHttpMetric(url, httpMethod);
+    this.httpMetric = performance.newHttpMetric(url, parseHttpMethod(httpMethod));
 
     this.channel = new MethodChannel(messenger, channelName);
     channel.setMethodCallHandler(this);
