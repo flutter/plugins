@@ -38,7 +38,6 @@ final class ImagePickerUtils {
    */
   static boolean needRequestCameraPermission(Context context) {
     boolean greatOrEqualM = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
-    return greatOrEqualM
-        && isPermissionPresentInManifest(context, Manifest.permission.CAMERA);
+    return greatOrEqualM && isPermissionPresentInManifest(context, Manifest.permission.CAMERA);
   }
 }
