@@ -1,6 +1,31 @@
-## 0.5.0+10
+## 0.5.4+1
 
-* Bugfix iOS: Cancel button not visible in gallery, if camera was accessed first
+* Bugfix iOS: Cancel button not visible in gallery, if camera was accessed first.
+
+## 0.5.4
+
+* Add `retrieveLostData` to retrieve lost data after MainActivity is killed.
+
+## 0.5.3+2
+
+* Android: fix a crash when the MainActivity is destroyed after selecting the image/video. 
+
+## 0.5.3+1
+
+* Update minimum deploy iOS version to 8.0.
+
+## 0.5.3
+
+* Fixed incorrect path being returned from Google Photos on Android.
+
+## 0.5.2
+
+* Check iOS camera authorizationStatus and return an error, if the access was
+  denied.
+
+## 0.5.1
+
+* Android: Do not delete original image after scaling if the image is from gallery.
 
 ## 0.5.0+9
 
