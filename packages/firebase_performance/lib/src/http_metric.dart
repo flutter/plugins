@@ -56,7 +56,7 @@ class HttpMetric extends PerformanceAttributes {
     );
   }
 
-  /// Starts this [HttpMetric] asynchronously.
+  /// Starts this [HttpMetric].
   ///
   /// Using ```await``` with this method is only necessary when accurate timing
   /// is relevant.

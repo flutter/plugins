@@ -30,7 +30,7 @@ class Trace extends PerformanceAttributes {
   @override
   MethodChannel get methodChannel => channel;
 
-  /// Starts this [Trace] asynchronously.
+  /// Starts this [Trace].
   ///
   /// Can only be called once.
   ///
@@ -40,7 +40,7 @@ class Trace extends PerformanceAttributes {
     return channel.invokeMethod<void>('$Trace#start');
   }
 
-  /// Stops this [Trace] asynchronously.
+  /// Stops this [Trace].
   ///
   /// Can only be called once and only after start() Data collected is
   /// automatically sent to the associated Firebase console after stop() is
@@ -52,7 +52,7 @@ class Trace extends PerformanceAttributes {
     return channel.invokeMethod<void>('$Trace#stop');
   }
 
-  /// Increments the metric with the given name asynchronously.
+  /// Increments the metric with the given name.
   ///
   /// If the metric does not exist, a new one will be created. If the trace has
   /// not been started or has already been stopped, returns immediately without
@@ -64,7 +64,7 @@ class Trace extends PerformanceAttributes {
     );
   }
 
-  /// Sets the value of the metric with the given name asynchronously.
+  /// Sets the value of the metric with the given name.
   ///
   /// If a metric with the given name doesn't exist, a new one will be created.
   /// If the trace has not been started or has already been stopped, returns

@@ -33,7 +33,7 @@ class FirebasePerformance {
     );
   }
 
-  /// Enables or disables performance monitoring asynchronously.
+  /// Enables or disables performance monitoring.
   ///
   /// This setting is persisted and applied on future invocations of your
   /// application. By default, performance monitoring is enabled.
