@@ -55,6 +55,8 @@ void main() {
     expect(currentUrl, 'https://www.google.com/');
   });
 
+  // enable this once https://github.com/flutter/flutter/issues/31510
+  // is resolved.
   test('loadUrl with headers', () async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -86,7 +88,7 @@ void main() {
     final String content = await controller
         .evaluateJavascript('document.documentElement.innerText');
     expect(content.contains('flutter_test_header'), isTrue);
-  });
+  }, skip: true);
 }
 
 Future<void> pumpWidget(Widget widget) {
