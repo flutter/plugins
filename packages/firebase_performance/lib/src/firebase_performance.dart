@@ -47,7 +47,7 @@ class FirebasePerformance {
   /// Creates a [Trace] object with given [name].
   ///
   /// The [name] requires no leading or trailing whitespace, no leading
-  /// underscore _ character, max length of [Trace.maxTraceNameLength]
+  /// underscore _ character, and max length of [Trace.maxTraceNameLength]
   /// characters.
   Trace newTrace(String name) {
     final String channelName =

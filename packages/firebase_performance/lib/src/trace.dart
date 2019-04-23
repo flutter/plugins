@@ -4,7 +4,7 @@
 
 part of firebase_performance;
 
-/// Trace allows you to set the beginning and end of a custom trace in your app.
+/// [Trace] allows you to set the beginning and end of a custom trace in your app.
 ///
 /// A trace is a report of performance data associated with some of the
 /// code in your app. You can have multiple custom traces, and it is
@@ -43,7 +43,8 @@ class Trace extends PerformanceAttributes {
   ///
   /// Can only be called once and only after start() Data collected is
   /// automatically sent to the associated Firebase console after stop() is
-  /// called.
+  /// called. You can confirm that Performance Monitoring results appear in the
+  /// Firebase console. Results should appear within 12 hours.
   ///
   /// Not necessary to use ```await``` with this method.
   Future<void> stop() {

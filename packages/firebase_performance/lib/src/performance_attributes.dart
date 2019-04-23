@@ -28,7 +28,7 @@ abstract class PerformanceAttributes {
   /// [maxAttributeValueLength] characters.
   Future<void> putAttribute(String attribute, String value) {
     return _methodChannel.invokeMethod<void>(
-      'PerformanceAttributes#putAttribute',
+      '$PerformanceAttributes#putAttribute',
       <String, String>{'attribute': attribute, 'value': value},
     );
   }
@@ -36,7 +36,7 @@ abstract class PerformanceAttributes {
   /// Removes an already added [attribute].
   Future<void> removeAttribute(String attribute) {
     return _methodChannel.invokeMethod<void>(
-      'PerformanceAttributes#putAttribute',
+      '$PerformanceAttributes#putAttribute',
       attribute,
     );
   }
@@ -44,7 +44,7 @@ abstract class PerformanceAttributes {
   /// All [attribute]s added.
   Future<Map<String, String>> getAttributes() {
     return _methodChannel.invokeMapMethod<String, String>(
-      'PerformanceAttributes#getAttributes',
+      '$PerformanceAttributes#getAttributes',
     );
   }
 }

@@ -6,9 +6,9 @@ part of firebase_performance;
 
 /// Metric used to collect data for network requests/responses.
 ///
-/// It is possible to have more than one httpmetric running at a time.
+/// It is possible to have more than one [HttpMetric] running at a time.
 /// Attributes can also be added to help measure performance related events. A
-/// httpmetric also measures the time between calling start() and stop().
+/// [HttpMetric] also measures the time between calling start() and stop().
 ///
 /// Data collected is automatically sent to the associated Firebase console
 /// after stop() is called.
@@ -20,30 +20,50 @@ class HttpMetric extends PerformanceAttributes {
 
   final MethodChannel _channel;
 
+  @override
+  MethodChannel get _methodChannel => _channel;
+
   /// HttpResponse code of the request.
-  int httpResponseCode;
+  set httpResponseCode(int httpResponseCode) {
+    _channel.invokeMethod<void>(
+      '$HttpMetric#httpResponseCode',
+      httpResponseCode,
+    );
+  }
 
   /// Size of the request payload.
-  int requestPayloadSize;
+  set requestPayloadSize(int requestPayloadSize) {
+    _channel.invokeMethod<void>(
+      '$HttpMetric#requestPayloadSize',
+      requestPayloadSize,
+    );
+  }
 
   /// Content type of the response such as text/html, application/json, etc...
-  String responseContentType;
+  set responseContentType(String responseContentType) {
+    _channel.invokeMethod<void>(
+      '$HttpMetric#responseContentType',
+      responseContentType,
+    );
+  }
 
   /// Size of the response payload.
-  int responsePayloadSize;
-
-  @override
-  MethodChannel get _methodChannel => null;
+  set responsePayloadSize(int responsePayloadSize) {
+    _channel.invokeMethod<void>(
+      '$HttpMetric#responsePayloadSize',
+      responsePayloadSize,
+    );
+  }
 
   /// Starts this [HttpMetric] asynchronously.
   ///
   /// Using ```await``` with this method is only necessary when accurate timing
   /// is relevant.
   Future<void> start() {
-    return _channel.invokeMethod<void>('$Trace#start');
+    return _channel.invokeMethod<void>('$HttpMetric#start');
   }
 
-  /// Stops this httpMetric.
+  /// Stops this [HttpMetric].
   ///
   /// Can only be called once and only after start(), Data collected is
   /// automatically sent to the associate Firebase console after stop() is
@@ -52,13 +72,6 @@ class HttpMetric extends PerformanceAttributes {
   ///
   /// Not necessary to use ```await``` with this method.
   Future<void> stop() {
-    final Map<String, dynamic> data = <String, dynamic>{
-      'httpResponseCode': httpResponseCode,
-      'requestPayloadSize': requestPayloadSize,
-      'responseContentType': responseContentType,
-      'responsePayloadSize': responsePayloadSize,
-    };
-
-    return _channel.invokeMethod<void>('$Trace#stop', data);
+    return _channel.invokeMethod<void>('$HttpMetric#stop');
   }
 }
