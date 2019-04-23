@@ -60,7 +60,7 @@ void main() {
   test('loadUrl with headers', () async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
-    final Completer<String> headerEchoCompleter = Completer<String>();
+    final StreamController<String> pageLoads = StreamController<String>();
     await pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -72,9 +72,7 @@ void main() {
           },
           javascriptMode: JavascriptMode.unrestricted,
           onPageFinished: (String url) {
-            if (url.contains('flutter-header-echo')) {
-              headerEchoCompleter.complete(url);
-            }
+            pageLoads.add(url);
           },
         ),
       ),
@@ -88,7 +86,7 @@ void main() {
     final String currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
 
-    await headerEchoCompleter.future;
+    await pageLoads.stream.firstWhere((String url) => url == currentUrl);
     final String content = await controller
         .evaluateJavascript('document.documentElement.innerText');
     expect(content.contains('flutter_test_header'), isTrue);
