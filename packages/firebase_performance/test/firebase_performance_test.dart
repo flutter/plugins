@@ -11,6 +11,7 @@ void main() {
   group('$FirebasePerformance', () {
     final FirebasePerformance performance = FirebasePerformance.instance;
     final List<MethodCall> log = <MethodCall>[];
+    bool isPerformanceCollectionEnabledResult;
 
     setUp(() {
       FirebasePerformance.channel
@@ -18,7 +19,7 @@ void main() {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'FirebasePerformance#isPerformanceCollectionEnabled':
-            return true;
+            return isPerformanceCollectionEnabledResult;
           default:
             return null;
         }
@@ -27,10 +28,19 @@ void main() {
     });
 
     test('isPerformanceCollectionEnabled', () async {
+      isPerformanceCollectionEnabledResult = true;
       final bool enabled = await performance.isPerformanceCollectionEnabled();
-
       expect(enabled, isTrue);
+
+      isPerformanceCollectionEnabledResult = false;
+      final bool disabled = await performance.isPerformanceCollectionEnabled();
+      expect(disabled, isFalse);
+
       expect(log, <Matcher>[
+        isMethodCall(
+          'FirebasePerformance#isPerformanceCollectionEnabled',
+          arguments: null,
+        ),
         isMethodCall(
           'FirebasePerformance#isPerformanceCollectionEnabled',
           arguments: null,
@@ -38,9 +48,9 @@ void main() {
       ]);
     });
 
-    test('setPerformanceCollectionEnabled', () async {
-      await performance.setPerformanceCollectionEnabled(true);
-      await performance.setPerformanceCollectionEnabled(false);
+    test('setPerformanceCollectionEnabled', () {
+      performance.setPerformanceCollectionEnabled(true);
+      performance.setPerformanceCollectionEnabled(false);
 
       expect(log, <Matcher>[
         isMethodCall(
@@ -54,10 +64,8 @@ void main() {
       ]);
     });
 
-    test('newTrace', () async {
+    test('newTrace', () {
       final Trace trace = performance.newTrace('test-trace');
-
-      await pumpEventQueue();
 
       expect(log, <Matcher>[
         isMethodCall(
@@ -70,15 +78,13 @@ void main() {
       ]);
     });
 
-    test('newHttpMetric', () async {
+    test('newHttpMetric', () {
       final String url = 'https://google.com';
 
       final HttpMetric metric = performance.newHttpMetric(
         url,
         HttpMethod.Connect,
       );
-
-      await pumpEventQueue();
 
       expect(log, <Matcher>[
         isMethodCall(
@@ -92,30 +98,25 @@ void main() {
       ]);
     });
 
-    test('$HttpMethod', () async {
+    test('$HttpMethod', () {
       final String url = 'https://google.com';
+      final HttpMethod method = HttpMethod.Connect;
 
-      for (HttpMethod method in HttpMethod.values) {
-        final HttpMetric metric = performance.newHttpMetric(
-          'https://google.com',
-          method,
-        );
+      final HttpMetric metric = performance.newHttpMetric(
+        'https://google.com',
+        method,
+      );
 
-        await pumpEventQueue();
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'FirebasePerformance#newHttpMetric',
-            arguments: <String, dynamic>{
-              'channelName': metric.channel.name,
-              'url': url,
-              'httpMethod': method.toString(),
-            },
-          ),
-        ]);
-
-        log.clear();
-      }
+      expect(log, <Matcher>[
+        isMethodCall(
+          'FirebasePerformance#newHttpMetric',
+          arguments: <String, dynamic>{
+            'channelName': metric.channel.name,
+            'url': url,
+            'httpMethod': method.toString(),
+          },
+        ),
+      ]);
     });
 
     group('$Trace', () {
@@ -137,29 +138,23 @@ void main() {
         traceLog.clear();
       });
 
-      test('start', () async {
-        await pumpEventQueue();
-
-        await testTrace.start();
+      test('start', () {
+        testTrace.start();
 
         expect(traceLog, <Matcher>[
           isMethodCall('Trace#start', arguments: null),
         ]);
       });
 
-      test('stop', () async {
-        await pumpEventQueue();
-
-        await testTrace.stop();
+      test('stop', () {
+        testTrace.stop();
 
         expect(traceLog, <Matcher>[
           isMethodCall('Trace#stop', arguments: null),
         ]);
       });
 
-      test('incrementMetric', () async {
-        await pumpEventQueue();
-
+      test('incrementMetric', () {
         final String name = 'counter1';
         final int value = 45;
 
@@ -199,20 +194,16 @@ void main() {
         httpMetricLog.clear();
       });
 
-      test('start', () async {
-        await pumpEventQueue();
-
-        await testMetric.start();
+      test('start', () {
+        testMetric.start();
 
         expect(httpMetricLog, <Matcher>[
           isMethodCall('HttpMetric#start', arguments: null),
         ]);
       });
 
-      test('stop', () async {
-        await pumpEventQueue();
-
-        await testMetric.stop();
+      test('stop', () {
+        testMetric.stop();
 
         expect(httpMetricLog, <Matcher>[
           isMethodCall('HttpMetric#stop', arguments: null),
@@ -241,10 +232,10 @@ void main() {
         attributeLog.clear();
       });
 
-      test('putAttribute', () async {
+      test('putAttribute', () {
         final String attribute = 'attr1';
         final String value = 'apple';
-        await attributes.putAttribute(attribute, value);
+        attributes.putAttribute(attribute, value);
 
         expect(attributeLog, <Matcher>[
           isMethodCall(
@@ -257,9 +248,9 @@ void main() {
         ]);
       });
 
-      test('removeAttribute', () async {
+      test('removeAttribute', () {
         final String attribute = 'attr1';
-        await attributes.removeAttribute(attribute);
+        attributes.removeAttribute(attribute);
 
         expect(attributeLog, <Matcher>[
           isMethodCall(
