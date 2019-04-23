@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ import com.google.firebase.perf.metrics.Trace;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import java.util.Map;
 
 @SuppressWarnings("ConstantConditions")
 public class FlutterTrace implements MethodChannel.MethodCallHandler {
@@ -18,13 +17,10 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
   FlutterTrace(
       FirebasePerformance performance,
       BinaryMessenger messenger,
-      Object arguments,
+      MethodCall call,
       MethodChannel.Result result) {
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> args = (Map<String, Object>) arguments;
-
-    final String traceName = (String) args.get("traceName");
-    final String channelName = (String) args.get("channelName");
+    final String traceName = call.argument("traceName");
+    final String channelName = call.argument("channelName");
 
     this.trace = performance.newTrace(traceName);
 
@@ -44,19 +40,19 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
         stop(result);
         break;
       case "Trace#putMetric":
-        putMetric(call.arguments, result);
+        putMetric(call, result);
         break;
       case "Trace#incrementMetric":
-        incrementMetric(call.arguments, result);
+        incrementMetric(call, result);
         break;
       case "Trace#getMetric":
-        getMetric(call.arguments, result);
+        getMetric(call, result);
         break;
       case "PerformanceAttributes#putAttribute":
-        putAttribute(call.arguments, result);
+        putAttribute(call, result);
         break;
       case "PerformanceAttributes#removeAttribute":
-        removeAttribute(call.arguments, result);
+        removeAttribute(call, result);
         break;
       case "PerformanceAttributes#getAttributes":
         getAttributes(result);
@@ -76,54 +72,39 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
-  private void putMetric(Object arguments, MethodChannel.Result result) {
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> args = (Map<String, Object>) arguments;
-
-    final String name = (String) args.get("name");
-    final Number value = (Number) args.get("value");
+  private void putMetric(MethodCall call, MethodChannel.Result result) {
+    final String name = call.argument("name");
+    final Number value = call.argument("value");
     trace.putMetric(name, value.longValue());
 
     result.success(null);
   }
 
-  private void incrementMetric(Object arguments, MethodChannel.Result result) {
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> args = (Map<String, Object>) arguments;
-
-    final String name = (String) args.get("name");
-    final Number value = (Number) args.get("value");
+  private void incrementMetric(MethodCall call, MethodChannel.Result result) {
+    final String name = call.argument("name");
+    final Number value = call.argument("value");
     trace.incrementMetric(name, value.longValue());
 
     result.success(null);
   }
 
-  private void getMetric(Object arguments, MethodChannel.Result result) {
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> args = (Map<String, Object>) arguments;
-
-    final String name = (String) args.get("name");
+  private void getMetric(MethodCall call, MethodChannel.Result result) {
+    final String name = call.argument("name");
 
     result.success(trace.getLongMetric(name));
   }
 
-  private void putAttribute(Object arguments, MethodChannel.Result result) {
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> args = (Map<String, Object>) arguments;
-
-    final String attribute = (String) args.get("attribute");
-    final String value = (String) args.get("value");
+  private void putAttribute(MethodCall call, MethodChannel.Result result) {
+    final String attribute = call.argument("attribute");
+    final String value = call.argument("value");
 
     trace.putAttribute(attribute, value);
 
     result.success(null);
   }
 
-  private void removeAttribute(Object arguments, MethodChannel.Result result) {
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> args = (Map<String, Object>) arguments;
-
-    final String attribute = (String) args.get("attribute");
+  private void removeAttribute(MethodCall call, MethodChannel.Result result) {
+    final String attribute = call.argument("attribute");
     trace.removeAttribute(attribute);
 
     result.success(null);

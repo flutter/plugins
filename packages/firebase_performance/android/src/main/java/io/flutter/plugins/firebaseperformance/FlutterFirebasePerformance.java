@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,13 +29,13 @@ public class FlutterFirebasePerformance implements MethodChannel.MethodCallHandl
         isPerformanceCollectionEnabled(result);
         break;
       case "FirebasePerformance#setPerformanceCollectionEnabled":
-        setPerformanceCollectionEnabled(call.arguments, result);
+        setPerformanceCollectionEnabled(call, result);
         break;
       case "FirebasePerformance#newTrace":
-        newTrace(call.arguments, result);
+        newTrace(call, result);
         break;
       case "FirebasePerformance#newHttpMetric":
-        newHttpMetric(call.arguments, result);
+        newHttpMetric(call, result);
         break;
       default:
         result.notImplemented();
@@ -46,17 +46,17 @@ public class FlutterFirebasePerformance implements MethodChannel.MethodCallHandl
     result.success(performance.isPerformanceCollectionEnabled());
   }
 
-  private void setPerformanceCollectionEnabled(Object arguments, MethodChannel.Result result) {
-    final boolean enabled = (Boolean) arguments;
+  private void setPerformanceCollectionEnabled(MethodCall call, MethodChannel.Result result) {
+    final boolean enabled = (Boolean) call.arguments;
     performance.setPerformanceCollectionEnabled(enabled);
     result.success(null);
   }
 
-  private void newTrace(Object arguments, MethodChannel.Result result) {
-    new FlutterTrace(performance, binaryMessenger, arguments, result);
+  private void newTrace(MethodCall call, MethodChannel.Result result) {
+    new FlutterTrace(performance, binaryMessenger, call, result);
   }
 
-  private void newHttpMetric(Object arguments, MethodChannel.Result result) {
-    new FlutterHttpMetric(performance, binaryMessenger, arguments, result);
+  private void newHttpMetric(MethodCall call, MethodChannel.Result result) {
+    new FlutterHttpMetric(performance, binaryMessenger, call, result);
   }
 }

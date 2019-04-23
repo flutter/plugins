@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ import com.google.firebase.perf.metrics.HttpMetric;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import java.util.Map;
 
 @SuppressWarnings("ConstantConditions")
 public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
@@ -18,14 +17,11 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
   FlutterHttpMetric(
       FirebasePerformance performance,
       BinaryMessenger messenger,
-      Object arguments,
+      MethodCall call,
       MethodChannel.Result result) {
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> args = (Map<String, Object>) arguments;
-
-    final String channelName = (String) args.get("channelName");
-    final String url = (String) args.get("url");
-    final String httpMethod = (String) args.get("httpMethod");
+    final String channelName = call.argument("channelName");
+    final String url = call.argument("url");
+    final String httpMethod = call.argument("httpMethod");
 
     this.httpMetric = performance.newHttpMetric(url, httpMethod);
 
@@ -42,13 +38,25 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
         start(result);
         break;
       case "HttpMetric#stop":
-        stop(call.arguments, result);
+        stop(result);
+        break;
+      case "HttpMetric#httpResponseCode":
+        setHttpResponseCode(call, result);
+        break;
+      case "HttpMetric#requestPayloadSize":
+        setRequestPayloadSize(call, result);
+        break;
+      case "HttpMetric#responseContentType":
+        setResponseContentType(call, result);
+        break;
+      case "HttpMetric#responsePayloadSize":
+        setResponsePayloadSize(call, result);
         break;
       case "PerformanceAttributes#putAttribute":
-        putAttribute(call.arguments, result);
+        putAttribute(call, result);
         break;
       case "PerformanceAttributes#removeAttribute":
-        removeAttribute(call.arguments, result);
+        removeAttribute(call, result);
         break;
       case "PerformanceAttributes#getAttributes":
         getAttributes(result);
@@ -63,46 +71,47 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
-  private void stop(Object arguments, MethodChannel.Result result) {
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> args = (Map<String, Object>) arguments;
-
-    final Integer httpResponseCode = (Integer) args.get("httpResponseCode");
-    final Number requestPayloadSize = (Number) args.get("requestPayloadSize");
-    final String responseContentType = (String) args.get("responseContentType");
-    final Number responsePayloadSize = (Number) args.get("responsePayloadSize");
-
-    if (requestPayloadSize != null) {
-      httpMetric.setRequestPayloadSize(requestPayloadSize.longValue());
-    }
-    if (responsePayloadSize != null) {
-      httpMetric.setResponsePayloadSize(responsePayloadSize.longValue());
-    }
-
-    if (httpResponseCode != null) httpMetric.setHttpResponseCode(httpResponseCode);
-    if (responseContentType != null) httpMetric.setResponseContentType(responseContentType);
-
+  private void stop(MethodChannel.Result result) {
     httpMetric.stop();
     result.success(null);
   }
 
-  private void putAttribute(Object arguments, MethodChannel.Result result) {
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> args = (Map<String, Object>) arguments;
+  private void setHttpResponseCode(MethodCall call, MethodChannel.Result result) {
+    final Integer httpResponseCode = call.argument("httpResponseCode");
+    httpMetric.setHttpResponseCode(httpResponseCode);
+    result.success(null);
+  }
 
-    final String attribute = (String) args.get("attribute");
-    final String value = (String) args.get("value");
+  private void setRequestPayloadSize(MethodCall call, MethodChannel.Result result) {
+    final Number payloadSize = call.argument("requestPayloadSize");
+    httpMetric.setRequestPayloadSize(payloadSize.longValue());
+    result.success(null);
+  }
+
+  private void setResponseContentType(MethodCall call, MethodChannel.Result result) {
+    final String contentType = call.argument("responseContentType");
+    httpMetric.setResponseContentType(contentType);
+    result.success(null);
+  }
+
+  private void setResponsePayloadSize(MethodCall call, MethodChannel.Result result) {
+    final Number payloadSize = call.argument("responsePayloadSize");
+    httpMetric.setResponsePayloadSize(payloadSize.longValue());
+    result.success(null);
+  }
+
+
+  private void putAttribute(MethodCall call, MethodChannel.Result result) {
+    final String attribute = call.argument("attribute");
+    final String value = call.argument("value");
 
     httpMetric.putAttribute(attribute, value);
 
     result.success(null);
   }
 
-  private void removeAttribute(Object arguments, MethodChannel.Result result) {
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> args = (Map<String, Object>) arguments;
-
-    final String attribute = (String) args.get("attribute");
+  private void removeAttribute(MethodCall call, MethodChannel.Result result) {
+    final String attribute = call.argument("attribute");
     httpMetric.removeAttribute(attribute);
 
     result.success(null);
