@@ -93,7 +93,9 @@ class VideoPlayerValue {
   final double speed;
 
   bool get initialized => duration != null;
+
   bool get hasError => errorDescription != null;
+
   double get aspectRatio => size != null ? size.width / size.height : 1.0;
 
   VideoPlayerValue copyWith({
@@ -247,7 +249,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _applyLooping();
           _applyVolume();
           _applyPlayPause();
-          _applyPlayBackSpeed();
           break;
         case 'completed':
           value = value.copyWith(isPlaying: false, position: value.duration);
@@ -359,6 +360,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           value = value.copyWith(position: newPosition);
         },
       );
+
+      // Ensure the video is played at the correct speed
+      await _applyPlayBackSpeed();
     } else {
       _timer?.cancel();
       // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
@@ -430,6 +434,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   Future<void> _applyPlayBackSpeed() async {
     if (!value.initialized || _isDisposed) {
+      return;
+    }
+
+    // On iOS setting the speed will start playing the video automatically
+    // Do not change the video speed until after the video is played
+    if (!value.isPlaying) {
       return;
     }
 
