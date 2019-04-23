@@ -34,6 +34,8 @@ void main() {
     expect(currentUrl, 'https://flutter.dev/');
   });
 
+  // enable this once https://github.com/flutter/flutter/issues/31510
+  // is resolved.
   test('loadUrl', () async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -53,7 +55,7 @@ void main() {
     await controller.loadUrl('https://www.google.com/');
     final String currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://www.google.com/');
-  });
+  }, skip: true);
 }
 
 Future<void> pumpWidget(Widget widget) {
