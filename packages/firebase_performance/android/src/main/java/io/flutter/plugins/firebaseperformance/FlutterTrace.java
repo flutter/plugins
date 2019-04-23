@@ -13,6 +13,7 @@ import io.flutter.plugin.common.MethodChannel;
 @SuppressWarnings("ConstantConditions")
 public class FlutterTrace implements MethodChannel.MethodCallHandler {
   private final Trace trace;
+  private final MethodChannel channel;
 
   FlutterTrace(
       FirebasePerformance performance,
@@ -24,7 +25,7 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
 
     this.trace = performance.newTrace(traceName);
 
-    final MethodChannel channel = new MethodChannel(messenger, channelName);
+    this.channel = new MethodChannel(messenger, channelName);
     channel.setMethodCallHandler(this);
 
     result.success(null);
@@ -69,6 +70,7 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
 
   private void stop(MethodChannel.Result result) {
     trace.stop();
+    channel.setMethodCallHandler(null);
     result.success(null);
   }
 

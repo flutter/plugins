@@ -13,6 +13,7 @@ import io.flutter.plugin.common.MethodChannel;
 @SuppressWarnings("ConstantConditions")
 public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
   private final HttpMetric httpMetric;
+  private final MethodChannel channel;
 
   FlutterHttpMetric(
       FirebasePerformance performance,
@@ -25,7 +26,7 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
 
     this.httpMetric = performance.newHttpMetric(url, httpMethod);
 
-    final MethodChannel channel = new MethodChannel(messenger, channelName);
+    this.channel = new MethodChannel(messenger, channelName);
     channel.setMethodCallHandler(this);
 
     result.success(null);
@@ -73,6 +74,7 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
 
   private void stop(MethodChannel.Result result) {
     httpMetric.stop();
+    channel.setMethodCallHandler(null);
     result.success(null);
   }
 
