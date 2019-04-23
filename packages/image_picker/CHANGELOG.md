@@ -1,3 +1,7 @@
+## 0.5.4+2
+
+* Request Camera permission if it present in Manifest on Android >= M.
+
 ## 0.5.4+1
 
 * Bugfix iOS: Cancel button not visible in gallery, if camera was accessed first.
