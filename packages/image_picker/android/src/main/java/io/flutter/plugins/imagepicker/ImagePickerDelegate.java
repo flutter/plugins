@@ -317,6 +317,9 @@ public class ImagePickerDelegate
   }
 
   private boolean needRequestCameraPermission() {
+    if (permissionManager == null) {
+      return false;
+    }
     return permissionManager.needRequestCameraPermission();
   }
 
