@@ -28,7 +28,7 @@ build_runner watch` will watch the filesystem for changes.
 
 The API surface is stacked into 2 main layers.
 
-1. [in_app_purchase_connection.dart](lib/src/in_app_purchase_connection.dart),
+1. [in_app_purchase.dart](lib/src/in_app_purchase.dart),
    the generic idiommatic Flutter API. This exposes the most basic IAP-related
    functionality. The goal is that Flutter apps should be able to use this API
    surface on its own for the vast majority of cases.

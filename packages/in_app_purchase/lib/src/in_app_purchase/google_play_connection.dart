@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import '../../billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';

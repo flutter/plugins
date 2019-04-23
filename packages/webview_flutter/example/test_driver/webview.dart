@@ -54,6 +54,39 @@ void main() {
     final String currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://www.google.com/');
   });
+
+  test('loadUrl with headers', () async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          javascriptMode: JavascriptMode.unrestricted,
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    final Map<String, String> headers = <String, String>{
+      'test_header': 'flutter_test_header'
+    };
+    await controller.loadUrl('https://flutter-header-echo.herokuapp.com/',
+        headers: headers);
+    final String currentUrl = await controller.currentUrl();
+    expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
+
+    // wait for the web page to load.
+    await Future<dynamic>.delayed(const Duration(seconds: 5));
+
+    final String content = await controller
+        .evaluateJavascript('document.documentElement.innerText');
+    expect(content.contains('flutter_test_header'), isTrue);
+  });
 }
 
 Future<void> pumpWidget(Widget widget) {

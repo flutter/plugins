@@ -41,7 +41,11 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   private ConnectivityPlugin(Registrar registrar) {
     this.registrar = registrar;
     this.manager =
-        (ConnectivityManager) registrar.context().getSystemService(Context.CONNECTIVITY_SERVICE);
+        (ConnectivityManager)
+            registrar
+                .context()
+                .getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
   }
 
   @Override
@@ -104,7 +108,8 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
 
   private WifiInfo getWifiInfo() {
     WifiManager wifiManager =
-        (WifiManager) registrar.context().getSystemService(Context.WIFI_SERVICE);
+        (WifiManager)
+            registrar.context().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
     return wifiManager == null ? null : wifiManager.getConnectionInfo();
   }
 
@@ -125,7 +130,8 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
 
   private void handleWifiIPAddress(MethodCall call, final Result result) {
     WifiManager wifiManager =
-        (WifiManager) registrar.context().getSystemService(Context.WIFI_SERVICE);
+        (WifiManager)
+            registrar.context().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
     WifiInfo wifiInfo = null;
     if (wifiManager != null) wifiInfo = wifiManager.getConnectionInfo();
