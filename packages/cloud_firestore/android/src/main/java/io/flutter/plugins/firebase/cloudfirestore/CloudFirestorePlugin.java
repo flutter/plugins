@@ -30,6 +30,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Source;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 import io.flutter.plugin.common.MethodCall;
@@ -90,6 +91,22 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   private DocumentReference getDocumentReference(Map<String, Object> arguments) {
     String path = (String) arguments.get("path");
     return getFirestore(arguments).document(path);
+  }
+
+  private Source getOptions(String option){
+    Source source;
+    if (option != null) {
+      if ("server".equals(option)) {
+        source = Source.SERVER;
+      } else if ("cache".equals(option)) {
+        source = Source.CACHE;
+      } else {
+        source = Source.DEFAULT;
+      }
+    } else {
+      source = Source.DEFAULT;
+    }
+    return source;
   }
 
   private Map<String, Object> parseQuerySnapshot(QuerySnapshot querySnapshot) {
@@ -510,7 +527,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         {
           Map<String, Object> arguments = call.arguments();
           Query query = getQuery(arguments);
-          Task<QuerySnapshot> task = query.get();
+          String source = (String) arguments.get("source");
+          Task<QuerySnapshot> task = query.get(getOptions(source));
           task.addOnSuccessListener(
                   new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -558,7 +576,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         {
           Map<String, Object> arguments = call.arguments();
           DocumentReference documentReference = getDocumentReference(arguments);
-          Task<DocumentSnapshot> task = documentReference.get();
+          String source = (String) arguments.get("source");
+          Task<DocumentSnapshot> task = documentReference.get(getOptions(source));
           task.addOnSuccessListener(
                   new OnSuccessListener<DocumentSnapshot>() {
                     @Override
