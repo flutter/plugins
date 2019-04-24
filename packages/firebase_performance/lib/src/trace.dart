@@ -19,7 +19,7 @@ part of firebase_performance;
 /// You can confirm that Performance Monitoring results appear in the Firebase
 /// console. Results should appear within 12 hours.
 class Trace extends PerformanceAttributes {
-  Trace._(this.channel);
+  Trace._(this.channel, this.name);
 
   /// Maximum allowed length of the name of a [Trace].
   static const int maxTraceNameLength = 100;
@@ -35,6 +35,9 @@ class Trace extends PerformanceAttributes {
   @visibleForTesting
   @override
   final MethodChannel channel;
+
+  /// Name representing this [Trace] on the Firebase Console.
+  final String name;
 
   /// Starts this [Trace].
   ///
@@ -86,12 +89,12 @@ class Trace extends PerformanceAttributes {
   /// If a metric with the given name doesn't exist, a new one will be created.
   /// If the [Trace] has not been started or has already been stopped, returns
   /// immediately without taking action.
-  Future<void> putMetric(String name, int value) {
+  Future<void> setMetric(String name, int value) {
     if (!_hasStarted || _hasStopped) return Future<void>.value(null);
 
     _metrics[name] = value;
     return channel.invokeMethod<void>(
-      '$Trace#putMetric',
+      '$Trace#setMetric',
       <String, dynamic>{'name': name, 'value': value},
     );
   }

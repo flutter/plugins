@@ -59,7 +59,7 @@ class FirebasePerformance {
     );
 
     final MethodChannel channel = MethodChannel(channelName);
-    return Trace._(channel);
+    return Trace._(channel, name);
   }
 
   /// Creates [HttpMetric] for collecting performance for one request/response.

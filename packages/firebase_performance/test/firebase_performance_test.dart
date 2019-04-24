@@ -160,7 +160,7 @@ void main() {
         final int increment = 3;
 
         testTrace.start();
-        testTrace.putMetric(name, value);
+        testTrace.setMetric(name, value);
         traceLog.clear();
 
         testTrace.incrementMetric(name, increment);
