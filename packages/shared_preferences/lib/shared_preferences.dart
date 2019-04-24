@@ -80,13 +80,9 @@ class SharedPreferences {
   /// exception if it's not a string set.
   List<String> getStringList(String key) {
     List<Object> list = _preferenceCache[key];
-    if (list != null) {
-      list = List<String>.from(list);
-      if (list is! List<String>) {
-        _preferenceCache[key] = list;
-      }
-    }
-    return list;
+    List<String> newList;
+    if (list != null) newList = List<String>.from(list);
+    return newList;
   }
 
   /// Saves a boolean [value] to persistent storage in the background.
