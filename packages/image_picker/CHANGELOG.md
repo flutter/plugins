@@ -1,3 +1,19 @@
+## 0.5.4+3
+
+* Fix the example app failing to load picked video.
+
+## 0.5.4+2
+
+* Request Camera permission if it present in Manifest on Android >= M.
+
+## 0.5.4+1
+
+* Bugfix iOS: Cancel button not visible in gallery, if camera was accessed first.
+
+## 0.5.4
+
+* Add `retrieveLostData` to retrieve lost data after MainActivity is killed.
+
 ## 0.5.3+2
 
 * Android: fix a crash when the MainActivity is destroyed after selecting the image/video. 
