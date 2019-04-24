@@ -24,9 +24,6 @@ class Trace extends PerformanceAttributes {
   /// Maximum allowed length of the name of a [Trace].
   static const int maxTraceNameLength = 100;
 
-  @visibleForTesting
-  final MethodChannel channel;
-
   final Map<String, int> _metrics = <String, int>{};
 
   @override
@@ -35,17 +32,18 @@ class Trace extends PerformanceAttributes {
   @override
   bool _hasStopped = false;
 
+  @visibleForTesting
   @override
-  MethodChannel get methodChannel => channel;
+  final MethodChannel channel;
 
   /// Starts this [Trace].
   ///
   /// Can only be called once.
   ///
-  /// Using ```await``` with this method is only necessary when accurate timing
+  /// Using `await` with this method is only necessary when accurate timing
   /// is relevant.
   Future<void> start() {
-    if (_hasStarted || _hasStopped) return Future<void>.value(null);
+    if (_hasStopped) return Future<void>.value(null);
 
     _hasStarted = true;
     return channel.invokeMethod<void>('$Trace#start');
@@ -58,7 +56,7 @@ class Trace extends PerformanceAttributes {
   /// called. You can confirm that Performance Monitoring results appear in the
   /// Firebase console. Results should appear within 12 hours.
   ///
-  /// Not necessary to use ```await``` with this method.
+  /// Not necessary to use `await` with this method.
   Future<void> stop() {
     if (_hasStopped) return Future<void>.value(null);
 
@@ -66,9 +64,9 @@ class Trace extends PerformanceAttributes {
     return channel.invokeMethod<void>('$Trace#stop');
   }
 
-  /// Increments the metric with the given name.
+  /// Increments the metric with the given [name].
   ///
-  /// If the metric does not exist, a new one will be created. If the trace has
+  /// If the metric does not exist, a new one will be created. If the [Trace] has
   /// not been started or has already been stopped, returns immediately without
   /// taking action.
   Future<void> incrementMetric(String name, int value) {
@@ -83,10 +81,10 @@ class Trace extends PerformanceAttributes {
     );
   }
 
-  /// Sets the value of the metric with the given name.
+  /// Sets the [value] of the metric with the given [name].
   ///
   /// If a metric with the given name doesn't exist, a new one will be created.
-  /// If the trace has not been started or has already been stopped, returns
+  /// If the [Trace] has not been started or has already been stopped, returns
   /// immediately without taking action.
   Future<void> putMetric(String name, int value) {
     if (!_hasStarted || _hasStopped) return Future<void>.value(null);
@@ -98,14 +96,12 @@ class Trace extends PerformanceAttributes {
     );
   }
 
-  /// Gets the value of the metric with the given name.
+  /// Gets the value of the metric with the given [name].
   ///
   /// If a metric with the given name doesn't exist, it is NOT created and a 0
   /// is returned.
   Future<int> getMetric(String name) {
-    if (_hasStopped) {
-      return Future<int>.value(_metrics[name] ?? 0);
-    }
+    if (_hasStopped) return Future<int>.value(_metrics[name] ?? 0);
 
     return channel.invokeMethod<int>(
       '$Trace#getMetric',

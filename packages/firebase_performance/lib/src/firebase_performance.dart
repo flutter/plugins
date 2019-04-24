@@ -79,4 +79,15 @@ class FirebasePerformance {
     final MethodChannel channel = MethodChannel(channelName);
     return HttpMetric._(channel);
   }
+
+  /// Creates a [Trace] object with given [name] and starts the trace.
+  ///
+  /// The [name] requires no leading or trailing whitespace, no leading
+  /// underscore _ character, max length of [Trace.maxTraceNameLength]
+  /// characters.
+  static Future<Trace> startTrace(String name) async {
+    final Trace trace = instance.newTrace(name);
+    await trace.start();
+    return trace;
+  }
 }

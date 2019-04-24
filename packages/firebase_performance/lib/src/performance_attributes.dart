@@ -17,10 +17,11 @@ abstract class PerformanceAttributes {
 
   final Map<String, String> _attributes = <String, String>{};
 
-  @visibleForTesting
-  MethodChannel get methodChannel;
   bool get _hasStarted;
   bool get _hasStopped;
+
+  @visibleForTesting
+  MethodChannel get channel;
 
   /// Sets a String [value] for the specified [attribute].
   ///
@@ -41,7 +42,7 @@ abstract class PerformanceAttributes {
     }
 
     _attributes[attribute] = value;
-    return methodChannel.invokeMethod<void>(
+    return channel.invokeMethod<void>(
       '$PerformanceAttributes#putAttribute',
       <String, String>{'attribute': attribute, 'value': value},
     );
@@ -52,7 +53,7 @@ abstract class PerformanceAttributes {
     if (!_hasStarted || _hasStopped) return Future<void>.value(null);
 
     _attributes.remove(attribute);
-    return methodChannel.invokeMethod<void>(
+    return channel.invokeMethod<void>(
       '$PerformanceAttributes#removeAttribute',
       attribute,
     );
@@ -66,7 +67,7 @@ abstract class PerformanceAttributes {
       ));
     }
 
-    return methodChannel.invokeMapMethod<String, String>(
+    return channel.invokeMapMethod<String, String>(
       '$PerformanceAttributes#getAttributes',
     );
   }

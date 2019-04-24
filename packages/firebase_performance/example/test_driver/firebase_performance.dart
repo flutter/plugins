@@ -25,6 +25,8 @@ void main() {
       expect(disabled, isFalse);
     });
 
+    // TODO(bparrishMines): Rewrite integration test when iOS portion is written.
+    /*
     test('metric', () async {
       final Trace trace = performance.newTrace('test');
       trace.putAttribute('testAttribute', 'foo');
@@ -37,5 +39,6 @@ void main() {
       expect(trace.getAttribute('testAttribute2'), null);
       expect(trace.getAttribute('testMetric'), null);
     });
+    */
   });
 }

@@ -18,22 +18,41 @@ part of firebase_performance;
 class HttpMetric extends PerformanceAttributes {
   HttpMetric._(this.channel);
 
-  @visibleForTesting
-  final MethodChannel channel;
-
   @override
   bool _hasStarted = false;
 
   @override
   bool _hasStopped = false;
 
+  int _httpResponseCode;
+  int _requestPayloadSize;
+  String _responseContentType;
+  int _responsePayloadSize;
+
+  @visibleForTesting
   @override
-  MethodChannel get methodChannel => channel;
+  final MethodChannel channel;
 
   /// HttpResponse code of the request.
+  int get httpResponseCode => _httpResponseCode;
+
+  /// Size of the request payload.
+  int get requestPayloadSize => _requestPayloadSize;
+
+  /// Content type of the response such as text/html, application/json, etc...
+  String get responseContentType => _responseContentType;
+
+  /// Size of the response payload.
+  int get responsePayloadSize => _responsePayloadSize;
+
+  /// HttpResponse code of the request.
+  ///
+  /// If the [HttpMetric] has already been stopped, returns immediately without
+  /// taking action.
   set httpResponseCode(int httpResponseCode) {
     if (_hasStopped) return;
 
+    _httpResponseCode = httpResponseCode;
     channel.invokeMethod<void>(
       '$HttpMetric#httpResponseCode',
       httpResponseCode,
@@ -41,9 +60,13 @@ class HttpMetric extends PerformanceAttributes {
   }
 
   /// Size of the request payload.
+  ///
+  /// If the [HttpMetric] has already been stopped, returns immediately without
+  /// taking action.
   set requestPayloadSize(int requestPayloadSize) {
     if (_hasStopped) return;
 
+    _requestPayloadSize = requestPayloadSize;
     channel.invokeMethod<void>(
       '$HttpMetric#requestPayloadSize',
       requestPayloadSize,
@@ -51,9 +74,13 @@ class HttpMetric extends PerformanceAttributes {
   }
 
   /// Content type of the response such as text/html, application/json, etc...
+  ///
+  /// If the [HttpMetric] has already been stopped, returns immediately without
+  /// taking action.
   set responseContentType(String responseContentType) {
     if (_hasStopped) return;
 
+    _responseContentType = responseContentType;
     channel.invokeMethod<void>(
       '$HttpMetric#responseContentType',
       responseContentType,
@@ -61,9 +88,13 @@ class HttpMetric extends PerformanceAttributes {
   }
 
   /// Size of the response payload.
+  ///
+  /// If the [HttpMetric] has already been stopped, returns immediately without
+  /// taking action.
   set responsePayloadSize(int responsePayloadSize) {
     if (_hasStopped) return;
 
+    _responsePayloadSize = responsePayloadSize;
     channel.invokeMethod<void>(
       '$HttpMetric#responsePayloadSize',
       responsePayloadSize,
@@ -72,10 +103,12 @@ class HttpMetric extends PerformanceAttributes {
 
   /// Starts this [HttpMetric].
   ///
-  /// Using ```await``` with this method is only necessary when accurate timing
+  /// Can only be called once.
+  ///
+  /// Using `await` with this method is only necessary when accurate timing
   /// is relevant.
   Future<void> start() {
-    if (_hasStarted || _hasStopped) return Future<void>.value(null);
+    if (_hasStopped) return Future<void>.value(null);
 
     _hasStarted = true;
     return channel.invokeMethod<void>('$HttpMetric#start');
@@ -88,7 +121,7 @@ class HttpMetric extends PerformanceAttributes {
   /// called. You can confirm that Performance Monitoring results appear in the
   /// Firebase console. Results should appear within 12 hours.
   ///
-  /// Not necessary to use ```await``` with this method.
+  /// Not necessary to use `await` with this method.
   Future<void> stop() {
     if (_hasStopped) return Future<void>.value(null);
 
