@@ -188,16 +188,16 @@ class GooglePlayConnection
       );
       status = PurchaseStatus.error;
     }
-    List<PurchaseDetails> purchases = [];
-    for (PurchaseWrapper purchase in resultWrapper.purchasesList) {
-      purchases.add(await _autoConsumePurchase(purchase.toPurchaseDetails()
+    final List<Future<PurchaseDetails>> purchases =
+        resultWrapper.purchasesList.map((PurchaseWrapper purchase) {
+      return _maybeAutoConsumePurchase(purchase.toPurchaseDetails()
         ..status = status
-        ..error = error));
-    }
-    return purchases;
+        ..error = error);
+    }).toList();
+    return Future.wait(purchases);
   }
 
-  static Future<PurchaseDetails> _autoConsumePurchase(
+  static Future<PurchaseDetails> _maybeAutoConsumePurchase(
       PurchaseDetails purchaseDetails) async {
     if (!(purchaseDetails.status == PurchaseStatus.purchased &&
         _productIdsToConsume.contains(purchaseDetails.productID))) {
