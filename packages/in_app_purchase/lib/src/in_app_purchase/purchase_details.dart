@@ -126,8 +126,13 @@ class PurchaseDetails {
 
   /// The verification data of the purchase.
   ///
-  /// Use this to verify the purchase. See [PurchaseVerificationData] for details on how to verify purchase use this data.
-  /// You should never use any purchase data until verified.
+  /// Use this to verify the purchase. See [PurchaseVerificationData] for
+  /// details on how to verify purchase use this data. You should never use any
+  /// purchase data until verified.
+  ///
+  /// On iOS, this may be null. Call
+  /// [InAppPurchaseConnection.refreshPurchaseVerificationData] to get a new
+  /// [PurchaseVerificationData] object for further validation.
   final PurchaseVerificationData verificationData;
 
   /// The timestamp of the transaction.
