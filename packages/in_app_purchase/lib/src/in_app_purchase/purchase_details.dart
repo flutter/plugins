@@ -9,6 +9,7 @@ import './product_details.dart';
 
 final String kPurchaseErrorCode = 'purchase_error';
 final String kRestoredPurchaseErrorCode = 'restore_transactions_failed';
+final String kConsumptionFailedErrorCode = 'consume_purchase_failed';
 
 /// Represents the data that is used to verify purchases.
 ///
