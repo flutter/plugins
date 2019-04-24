@@ -186,7 +186,7 @@ class GooglePlayConnection
         code: kRestoredPurchaseErrorCode,
         message: {'message': resultWrapper.responseCode.toString()},
       );
-      status = PurchaseStatus.purchased;
+      status = PurchaseStatus.error;
     }
     List<PurchaseDetails> purchases = [];
     for (PurchaseWrapper purchase in resultWrapper.purchasesList) {
