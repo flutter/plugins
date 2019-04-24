@@ -1,3 +1,6 @@
+## 0.10.1
+* Support for Documents from Cache.
+
 ## 0.10.0
 
 * Support for `FieldValue.increment`.
