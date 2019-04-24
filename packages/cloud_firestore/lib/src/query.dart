@@ -79,6 +79,7 @@ class Query {
   }
 
   /// Fetch the documents for this query
+   /// Valid options for source are 'server', 'cache' or '' which is default;
   Future<QuerySnapshot> getDocuments({String source = ''}) async {
     final Map<String, dynamic> data =
         await Firestore.channel.invokeMapMethod<String, dynamic>(
