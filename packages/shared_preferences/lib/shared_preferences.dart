@@ -53,9 +53,9 @@ class SharedPreferences {
 
   /// Reads a value of any type from persistent storage.
   dynamic get(String key) {
-    dynamic value = _preferenceCache[key];
-    if (value != null && value is List<String>) {
-      value = List<String>.from(value);
+    var value = _preferenceCache[key];
+    if (value != null && value is List) {
+      value = List.from(value);
     }
     return value;
   }
@@ -79,10 +79,11 @@ class SharedPreferences {
   /// Reads a set of string values from persistent storage, throwing an
   /// exception if it's not a string set.
   List<String> getStringList(String key) {
-    List<Object> list = _preferenceCache[key];
-    List<String> newList;
-    if (list != null) newList = List<String>.from(list);
-    return newList;
+    var value = _preferenceCache[key];
+    if (value != null) {
+      value = List<String>.from(value);
+    }
+    return value;
   }
 
   /// Saves a boolean [value] to persistent storage in the background.
@@ -119,8 +120,8 @@ class SharedPreferences {
   Future<bool> remove(String key) => _setValue(null, key, null);
 
   Future<bool> _setValue(String valueType, String key, Object value) {
-    if (value is List<String>) {
-      value = List<String>.from(value);
+    if (value is List) {
+      value = List.from(value);
     }
     final Map<String, dynamic> params = <String, dynamic>{
       'key': '$_prefix$key',
