@@ -63,8 +63,13 @@ abstract class InAppPurchaseConnection {
 
   /// Query product details for the given set of IDs.
   ///
-  /// [identifiers] needs to exactly match whatever the product IDs have been
-  /// set to in the payment platform.
+  /// The [identifiers] need to exactly match existing configured product
+  /// identifiers in the underlying payment platform, whether that's [App Store
+  /// Connect](https://appstoreconnect.apple.com/) or [Google Play
+  /// Console](https://play.google.com/).
+  ///
+  /// See the [example readme](../../../../example/README.md) for steps on how
+  /// to initialize products on both payment platforms.
   Future<ProductDetailsResponse> queryProductDetails(Set<String> identifiers);
 
   /// Buy a non consumable product or subscription.
@@ -82,14 +87,14 @@ abstract class InAppPurchaseConnection {
   /// objects in different [PurchaseDetails.status] and update your UI
   /// accordingly. When the [PurchaseDetails.status] is
   /// [PurchaseStatus.purchased] or [PurchaseStatus.error], you should deliver
-  /// the content or handle the error, then call [completePurchase] to finish
-  /// the purchasing process.
+  /// the content or handle the error. On iOS, you also need to call
+  /// [completePurchase] to finish the purchasing process.
   ///
   /// Consumable items are defined differently by the different underlying
   /// payment platforms, and there's no way to query for whether or not the
-  /// [ProductDetail] is a consumable or not at runtime. On iOS, products are
-  /// defined as non consumable items in the [App Store
-  /// Connect](https://appstoreconnect.apple.com/login). [Google Play
+  /// [ProductDetail] is a consumable at runtime. On iOS, products are defined
+  /// as non consumable items in the [App Store
+  /// Connect](https://appstoreconnect.apple.com/). [Google Play
   /// Console](https://play.google.com/) products are considered consumable if
   /// and when they are actively consumed manually.
   ///
@@ -111,29 +116,29 @@ abstract class InAppPurchaseConnection {
   /// Consumable items can be "consumed" to mark that they've been used and then
   /// bought additional times. For example, a health potion.
   ///
-  /// To restore non consumable purchases across devices, you should keep track
-  /// of those purchase on your own server and restore the purchase for your
-  /// users. Consumed products are no longer considered to be "owned" by payment
+  /// To restore consumable purchases across devices, you should keep track of
+  /// those purchase on your own server and restore the purchase for your users.
+  /// Consumed products are no longer considered to be "owned" by payment
   /// platforms and will not be delivered by calling [queryPastPurchases].
   ///
   /// Consumable items are defined differently by the different underlying
   /// payment platforms, and there's no way to query for whether or not the
-  /// [ProductDetail] is a consumable or not at runtime. On iOS, products are
-  /// defined as non consumable items in the [App Store
-  /// Connect](https://appstoreconnect.apple.com/login). [Google Play
+  /// [ProductDetail] is a consumable at runtime. On iOS, products are defined
+  /// as consumable items in the [App Store
+  /// Connect](https://appstoreconnect.apple.com/). [Google Play
   /// Console](https://play.google.com/) products are considered consumable if
   /// and when they are actively consumed manually.
   ///
   /// `autoConsume` is provided as a utility for Android only. It's meaningless
-  /// on iOS because the App Store automatically considers all purchases
-  /// "consumed" once the initial transaction is complete. `autoConsume` is
-  /// `true` by default, and we will call [consumePurchase] after a successful
-  /// purchase for you so that Google Play considers a purchase consumed after
-  /// the initial transaction, like iOS. If you'd like to manually consume
-  /// purchases in Play, you should set it to `false` and manually call
-  /// [consumePurchase] instead. Failing to consume a purchase will cause user
-  /// never be able to buy the same item again. Failing to manually Setting this
-  /// to `false` on iOS will throw an `Exception`.
+  /// on iOS because the App Store automatically considers all potentially
+  /// consumable purchases "consumed" once the initial transaction is complete.
+  /// `autoConsume` is `true` by default, and we will call [consumePurchase]
+  /// after a successful purchase for you so that Google Play considers a
+  /// purchase consumed after the initial transaction, like iOS. If you'd like
+  /// to manually consume purchases in Play, you should set it to `false` and
+  /// manually call [consumePurchase] instead. Failing to consume a purchase
+  /// will cause user never be able to buy the same item again. Manually setting
+  /// this to `false` on iOS will throw an `Exception`.
   ///
   /// This method does not return anything. Instead, after triggering this
   /// method, purchase updates will be sent to [purchaseUpdatedStream]. You
@@ -184,6 +189,11 @@ abstract class InAppPurchaseConnection {
   /// This does not return consumed products. If you want to restore unused
   /// consumable products, you need to persist consumable product information
   /// for your user on your own server.
+  ///
+  /// See also:
+  ///
+  ///  * [refreshPurchaseVerificationData], for reloading failed
+  ///    [PurchaseDetails.verificationData].
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName});
 
