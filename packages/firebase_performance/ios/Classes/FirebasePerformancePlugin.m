@@ -4,8 +4,6 @@
 
 #import "FirebasePerformancePlugin.h"
 
-#import <Firebase/Firebase.h>
-
 @interface FLTFirebasePerformancePlugin ()
 @property(nonatomic, retain) NSMutableDictionary *traces;
 @property(nonatomic, retain) NSMutableDictionary *httpMetrics;
@@ -37,6 +35,7 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  /*
   if ([@"FirebasePerformance#isPerformanceCollectionEnabled" isEqualToString:call.method]) {
     result(@([[FIRPerformance sharedInstance] isDataCollectionEnabled]));
   } else if ([@"FirebasePerformance#setPerformanceCollectionEnabled" isEqualToString:call.method]) {
@@ -54,8 +53,9 @@
   } else {
     result(FlutterMethodNotImplemented);
   }
+   */
 }
-
+/*
 - (void)handleTraceStart:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *handle = call.arguments[@"handle"];
   NSString *name = call.arguments[@"name"];
@@ -156,5 +156,5 @@
   [_httpMetrics removeObjectForKey:handle];
   result(nil);
 }
-
+*/
 @end
