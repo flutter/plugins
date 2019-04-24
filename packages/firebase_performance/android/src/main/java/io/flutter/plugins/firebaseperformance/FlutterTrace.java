@@ -40,8 +40,8 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
       case "Trace#stop":
         stop(result);
         break;
-      case "Trace#putMetric":
-        putMetric(call, result);
+      case "Trace#setMetric":
+        setMetric(call, result);
         break;
       case "Trace#incrementMetric":
         incrementMetric(call, result);
@@ -74,7 +74,7 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
-  private void putMetric(MethodCall call, MethodChannel.Result result) {
+  private void setMetric(MethodCall call, MethodChannel.Result result) {
     final String name = call.argument("name");
     final Number value = call.argument("value");
     trace.putMetric(name, value.longValue());
