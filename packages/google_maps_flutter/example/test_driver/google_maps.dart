@@ -333,4 +333,46 @@ void main() {
     expect(firstVisibleRegion, isNot(secondVisibleRegion));
     expect(secondVisibleRegion.contains(newCenter), isTrue);
   });
+
+  test('testMyLocationButtonToggle', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+    Completer<GoogleMapInspector>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        myLocationButtonEnabled: true,
+        myLocationEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+          // ignore: invalid_use_of_visible_for_testing_member
+          GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    bool myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
+    expect(myLocationButtonEnabled, true);
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        myLocationButtonEnabled: false,
+        myLocationEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
+
+    myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
+    expect(myLocationButtonEnabled, false);
+  });
 }
