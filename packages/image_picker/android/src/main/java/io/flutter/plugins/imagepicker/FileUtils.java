@@ -167,9 +167,7 @@ class FileUtils {
     return success ? file.getPath() : null;
   }
 
-  /**
-   * @return extension of image with dot, or default .jpg if it none.
-   */
+  /** @return extension of image with dot, or default .jpg if it none. */
   private static String getImageExtension(Context context, Uri uriImage) {
     String extension = null;
     Cursor cursor = null;
