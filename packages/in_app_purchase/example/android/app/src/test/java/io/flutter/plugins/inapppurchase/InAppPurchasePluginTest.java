@@ -1,11 +1,17 @@
 package io.flutter.plugins.inapppurchase;
 
+import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.CONSUME_PURCHASE_ASYNC;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.END_CONNECTION;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.IS_READY;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.LAUNCH_BILLING_FLOW;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.ON_DISCONNECT;
+import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.ON_PURCHASES_UPDATED;
+import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.QUERY_PURCHASES;
+import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.QUERY_PURCHASE_HISTORY_ASYNC;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.QUERY_SKU_DETAILS;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.START_CONNECTION;
+import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesList;
+import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesResult;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -14,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -27,12 +34,17 @@ import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.android.billingclient.api.BillingClient.SkuType;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.ConsumeResponseListener;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.Purchase.PurchasesResult;
+import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugins.inapppurchase.InAppPurchasePlugin.PluginPurchaseListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,7 +135,8 @@ public class InAppPurchasePluginTest {
     MethodCall disconnectCall = new MethodCall(END_CONNECTION, null);
     plugin.onMethodCall(disconnectCall, result);
 
-    // Verify that the client is disconnected and that the OnDisconnect callback has been triggered
+    // Verify that the client is disconnected and that the OnDisconnect callback has
+    // been triggered
     verify(result, times(1)).success(any());
     verify(mockBillingClient, times(1)).endConnection();
     stateListener.onBillingServiceDisconnected();
@@ -135,7 +148,7 @@ public class InAppPurchasePluginTest {
   @Test
   public void querySkuDetailsAsync() {
     // Connect a billing client and set up the SKU query listeners
-    establishConnectedBillingClient(/*arguments=*/ null, /*result=*/ null);
+    establishConnectedBillingClient(/* arguments= */ null, /* result= */ null);
     String skuType = BillingClient.SkuType.INAPP;
     List<String> skusList = asList("id1", "id2");
     HashMap<String, Object> arguments = new HashMap<>();
@@ -279,6 +292,118 @@ public class InAppPurchasePluginTest {
     verify(result, never()).success(any());
   }
 
+  @Test
+  public void queryPurchases() {
+    establishConnectedBillingClient(null, null);
+    PurchasesResult purchasesResult = mock(PurchasesResult.class);
+    when(purchasesResult.getResponseCode()).thenReturn(BillingResponse.OK);
+    Purchase purchase = buildPurchase("foo");
+    when(purchasesResult.getPurchasesList()).thenReturn(asList(purchase));
+    when(mockBillingClient.queryPurchases(SkuType.INAPP)).thenReturn(purchasesResult);
+
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("skuType", SkuType.INAPP);
+    plugin.onMethodCall(new MethodCall(QUERY_PURCHASES, arguments), result);
+
+    // Verify we pass the response to result
+    ArgumentCaptor<HashMap<String, Object>> resultCaptor = ArgumentCaptor.forClass(HashMap.class);
+    verify(result, never()).error(any(), any(), any());
+    verify(result, times(1)).success(resultCaptor.capture());
+    assertEquals(fromPurchasesResult(purchasesResult), resultCaptor.getValue());
+  }
+
+  @Test
+  public void queryPurchases_clientDisconnected() {
+    // Prepare the launch call after disconnecting the client
+    plugin.onMethodCall(new MethodCall(END_CONNECTION, null), mock(Result.class));
+
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("skuType", SkuType.INAPP);
+    plugin.onMethodCall(new MethodCall(QUERY_PURCHASES, arguments), result);
+
+    // Assert that we sent an error back.
+    verify(result).error(contains("UNAVAILABLE"), contains("BillingClient"), any());
+    verify(result, never()).success(any());
+  }
+
+  @Test
+  public void queryPurchaseHistoryAsync() {
+    // Set up an established billing client and all our mocked responses
+    establishConnectedBillingClient(null, null);
+    ArgumentCaptor<HashMap<String, Object>> resultCaptor = ArgumentCaptor.forClass(HashMap.class);
+    int responseCode = BillingResponse.OK;
+    List<Purchase> purchasesList = asList(buildPurchase("foo"));
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("skuType", SkuType.INAPP);
+    ArgumentCaptor<PurchaseHistoryResponseListener> listenerCaptor =
+        ArgumentCaptor.forClass(PurchaseHistoryResponseListener.class);
+
+    plugin.onMethodCall(new MethodCall(QUERY_PURCHASE_HISTORY_ASYNC, arguments), result);
+
+    // Verify we pass the data to result
+    verify(mockBillingClient)
+        .queryPurchaseHistoryAsync(eq(SkuType.INAPP), listenerCaptor.capture());
+    listenerCaptor.getValue().onPurchaseHistoryResponse(responseCode, purchasesList);
+    verify(result).success(resultCaptor.capture());
+    HashMap<String, Object> resultData = resultCaptor.getValue();
+    assertEquals(responseCode, resultData.get("responseCode"));
+    assertEquals(fromPurchasesList(purchasesList), resultData.get("purchasesList"));
+  }
+
+  @Test
+  public void queryPurchaseHistoryAsync_clientDisconnected() {
+    // Prepare the launch call after disconnecting the client
+    plugin.onMethodCall(new MethodCall(END_CONNECTION, null), mock(Result.class));
+
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("skuType", SkuType.INAPP);
+    plugin.onMethodCall(new MethodCall(QUERY_PURCHASE_HISTORY_ASYNC, arguments), result);
+
+    // Assert that we sent an error back.
+    verify(result).error(contains("UNAVAILABLE"), contains("BillingClient"), any());
+    verify(result, never()).success(any());
+  }
+
+  @Test
+  public void onPurchasesUpdatedListener() {
+    PluginPurchaseListener listener = new PluginPurchaseListener(mockMethodChannel);
+
+    int responseCode = BillingResponse.OK;
+    List<Purchase> purchasesList = asList(buildPurchase("foo"));
+    ArgumentCaptor<HashMap<String, Object>> resultCaptor = ArgumentCaptor.forClass(HashMap.class);
+    doNothing()
+        .when(mockMethodChannel)
+        .invokeMethod(eq(ON_PURCHASES_UPDATED), resultCaptor.capture());
+    listener.onPurchasesUpdated(responseCode, purchasesList);
+
+    HashMap<String, Object> resultData = resultCaptor.getValue();
+    assertEquals(responseCode, resultData.get("responseCode"));
+    assertEquals(fromPurchasesList(purchasesList), resultData.get("purchasesList"));
+  }
+
+  @Test
+  public void consumeAsync() {
+    establishConnectedBillingClient(null, null);
+    ArgumentCaptor<BillingResponse> resultCaptor = ArgumentCaptor.forClass(BillingResponse.class);
+    int responseCode = BillingResponse.OK;
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("purchaseToken", "mockToken");
+    ArgumentCaptor<ConsumeResponseListener> listenerCaptor =
+        ArgumentCaptor.forClass(ConsumeResponseListener.class);
+
+    plugin.onMethodCall(new MethodCall(CONSUME_PURCHASE_ASYNC, arguments), result);
+
+    // Verify we pass the data to result
+    verify(mockBillingClient).consumeAsync(eq("mockToken"), listenerCaptor.capture());
+
+    listenerCaptor.getValue().onConsumeResponse(responseCode, "mockToken");
+    verify(result).success(resultCaptor.capture());
+
+    // Verify we pass the response code to result
+    verify(result, never()).error(any(), any(), any());
+    verify(result, times(1)).success(responseCode);
+  }
+
   private void establishConnectedBillingClient(
       @Nullable Map<String, Integer> arguments, @Nullable Result result) {
     if (arguments == null) {
@@ -295,7 +420,7 @@ public class InAppPurchasePluginTest {
 
   private void queryForSkus(List<String> skusList) {
     // Set up the query method call
-    establishConnectedBillingClient(/*arguments=*/ null, /*result=*/ null);
+    establishConnectedBillingClient(/* arguments= */ null, /* result= */ null);
     HashMap<String, Object> arguments = new HashMap<>();
     String skuType = SkuType.INAPP;
     arguments.put("skuType", skuType);
@@ -318,5 +443,11 @@ public class InAppPurchasePluginTest {
     SkuDetails details = mock(SkuDetails.class);
     when(details.getSku()).thenReturn(id);
     return details;
+  }
+
+  private Purchase buildPurchase(String orderId) {
+    Purchase purchase = mock(Purchase.class);
+    when(purchase.getOrderId()).thenReturn(orderId);
+    return purchase;
   }
 }

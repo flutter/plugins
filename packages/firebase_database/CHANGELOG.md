@@ -1,3 +1,19 @@
+## 2.0.3
+
+* Provide a `toString` implementation for `DatabaseError`.
+
+## 2.0.2+1
+
+* Added an integration test for transactions.
+
+## 2.0.2
+
+* Fix the issue that `getDictionaryFromError` always returns non nil result even when the parameter is nil.
+
+## 2.0.1+3
+
+* Fixing DatabaseReference.set unhandled exception which happened when a successful operation was performed.
+
 ## 2.0.1+2
 
 * Log messages about automatic configuration of the default app are now less confusing.

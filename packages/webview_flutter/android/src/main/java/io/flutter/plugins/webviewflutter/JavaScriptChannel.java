@@ -1,5 +1,11 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.webkit.JavascriptInterface;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
@@ -14,6 +20,7 @@ import java.util.HashMap;
 class JavaScriptChannel {
   private final MethodChannel methodChannel;
   private final String javaScriptChannelName;
+  private final Handler platformThreadHandler;
 
   /**
    * @param methodChannel the Flutter WebView method channel to which JS messages are sent
@@ -21,18 +28,31 @@ class JavaScriptChannel {
    *     channel with each message to let the Dart code know which JavaScript channel the message
    *     was sent through
    */
-  JavaScriptChannel(MethodChannel methodChannel, String javaScriptChannelName) {
+  JavaScriptChannel(
+      MethodChannel methodChannel, String javaScriptChannelName, Handler platformThreadHandler) {
     this.methodChannel = methodChannel;
     this.javaScriptChannelName = javaScriptChannelName;
+    this.platformThreadHandler = platformThreadHandler;
   }
 
   // Suppressing unused warning as this is invoked from JavaScript.
   @SuppressWarnings("unused")
   @JavascriptInterface
-  public void postMessage(String message) {
-    HashMap<String, String> arguments = new HashMap<>();
-    arguments.put("channel", javaScriptChannelName);
-    arguments.put("message", message);
-    methodChannel.invokeMethod("javascriptChannelMessage", arguments);
+  public void postMessage(final String message) {
+    Runnable postMessageRunnable =
+        new Runnable() {
+          @Override
+          public void run() {
+            HashMap<String, String> arguments = new HashMap<>();
+            arguments.put("channel", javaScriptChannelName);
+            arguments.put("message", message);
+            methodChannel.invokeMethod("javascriptChannelMessage", arguments);
+          }
+        };
+    if (platformThreadHandler.getLooper() == Looper.getMainLooper()) {
+      postMessageRunnable.run();
+    } else {
+      platformThreadHandler.post(postMessageRunnable);
+    }
   }
 }

@@ -7,7 +7,9 @@
 #import <Firebase/Firebase.h>
 
 static FlutterError *getFlutterError(NSError *error) {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+  if (error == nil) return nil;
+
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
                              message:error.domain
                              details:error.localizedDescription];
 }
@@ -86,9 +88,14 @@ FIRQuery *getQuery(NSDictionary *arguments) {
 NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
   NSMutableArray *paths = [NSMutableArray array];
   NSMutableArray *documents = [NSMutableArray array];
+  NSMutableArray *metadatas = [NSMutableArray array];
   for (FIRDocumentSnapshot *document in snapshot.documents) {
     [paths addObject:document.reference.path];
     [documents addObject:document.data];
+    [metadatas addObject:@{
+      @"hasPendingWrites" : @(document.metadata.hasPendingWrites),
+      @"isFromCache" : @(document.metadata.isFromCache),
+    }];
   }
   NSMutableArray *documentChanges = [NSMutableArray array];
   for (FIRDocumentChange *documentChange in snapshot.documentChanges) {
@@ -110,12 +117,17 @@ NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
       @"path" : documentChange.document.reference.path,
       @"oldIndex" : [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
       @"newIndex" : [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
+      @"metadata" : @{
+        @"hasPendingWrites" : @(documentChange.document.metadata.hasPendingWrites),
+        @"isFromCache" : @(documentChange.document.metadata.isFromCache),
+      },
     }];
   }
   return @{
     @"paths" : paths,
     @"documentChanges" : documentChanges,
     @"documents" : documents,
+    @"metadatas" : metadatas,
   };
 }
 
@@ -128,6 +140,8 @@ const UInt8 ARRAY_REMOVE = 133;
 const UInt8 DELETE = 134;
 const UInt8 SERVER_TIMESTAMP = 135;
 const UInt8 TIMESTAMP = 136;
+const UInt8 INCREMENT_DOUBLE = 137;
+const UInt8 INCREMENT_INTEGER = 138;
 
 @interface FirestoreWriter : FlutterStandardWriter
 - (void)writeValue:(id)value;
@@ -221,6 +235,14 @@ const UInt8 TIMESTAMP = 136;
     }
     case SERVER_TIMESTAMP: {
       return [FIRFieldValue fieldValueForServerTimestamp];
+    }
+    case INCREMENT_DOUBLE: {
+      NSNumber *value = [self readValue];
+      return [FIRFieldValue fieldValueForDoubleIncrement:value.doubleValue];
+    }
+    case INCREMENT_INTEGER: {
+      NSNumber *value = [self readValue];
+      return [FIRFieldValue fieldValueForIntegerIncrement:value.intValue];
     }
     default:
       return [super readValueOfType:type];
@@ -336,7 +358,11 @@ const UInt8 TIMESTAMP = 136;
       } else if (snapshot != nil) {
         result(@{
           @"path" : snapshot.reference.path,
-          @"data" : snapshot.exists ? snapshot.data : [NSNull null]
+          @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+          @"metadata" : @{
+            @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
+            @"isFromCache" : @(snapshot.metadata.isFromCache),
+          },
         });
       } else {
         result(nil);
@@ -388,12 +414,16 @@ const UInt8 TIMESTAMP = 136;
     FIRDocumentReference *document = getDocumentReference(call.arguments);
     [document getDocumentWithCompletion:^(FIRDocumentSnapshot *_Nullable snapshot,
                                           NSError *_Nullable error) {
-      if (error) {
+      if (snapshot == nil) {
         result(getFlutterError(error));
       } else {
         result(@{
           @"path" : snapshot.reference.path,
-          @"data" : snapshot.exists ? snapshot.data : [NSNull null]
+          @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+          @"metadata" : @{
+            @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
+            @"isFromCache" : @(snapshot.metadata.isFromCache),
+          },
         });
       }
     }];
@@ -409,7 +439,7 @@ const UInt8 TIMESTAMP = 136;
     }
     id<FIRListenerRegistration> listener = [query
         addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
-          if (error) {
+          if (snapshot == nil) {
             result(getFlutterError(error));
             return;
           }
@@ -424,7 +454,7 @@ const UInt8 TIMESTAMP = 136;
     FIRDocumentReference *document = getDocumentReference(call.arguments);
     id<FIRListenerRegistration> listener =
         [document addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
-          if (error) {
+          if (snapshot == nil) {
             result(getFlutterError(error));
             return;
           }
@@ -433,6 +463,11 @@ const UInt8 TIMESTAMP = 136;
                              @"handle" : handle,
                              @"path" : snapshot ? snapshot.reference.path : [NSNull null],
                              @"data" : snapshot && snapshot.exists ? snapshot.data : [NSNull null],
+                             @"metadata" : snapshot ? @{
+                               @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
+                               @"isFromCache" : @(snapshot.metadata.isFromCache),
+                             }
+                                                    : [NSNull null],
                            }];
         }];
     _listeners[handle] = listener;
@@ -448,7 +483,10 @@ const UInt8 TIMESTAMP = 136;
     }
     [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
                                         NSError *_Nullable error) {
-      if (error) result(getFlutterError(error));
+      if (snapshot == nil) {
+        result(getFlutterError(error));
+        return;
+      }
       result(parseQuerySnapshot(snapshot));
     }];
   } else if ([@"Query#removeListener" isEqualToString:call.method]) {

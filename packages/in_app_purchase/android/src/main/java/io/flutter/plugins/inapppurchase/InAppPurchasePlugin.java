@@ -4,6 +4,8 @@
 
 package io.flutter.plugins.inapppurchase;
 
+import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesList;
+import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesResult;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 
 import android.app.Activity;
@@ -13,7 +15,9 @@ import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
@@ -46,6 +50,13 @@ public class InAppPurchasePlugin implements MethodCallHandler {
         "BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)";
     static final String LAUNCH_BILLING_FLOW =
         "BillingClient#launchBillingFlow(Activity, BillingFlowParams)";
+    static final String ON_PURCHASES_UPDATED =
+        "PurchasesUpdatedListener#onPurchasesUpdated(int, List<Purchase>)";
+    static final String QUERY_PURCHASES = "BillingClient#queryPurchases(String)";
+    static final String QUERY_PURCHASE_HISTORY_ASYNC =
+        "BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)";
+    static final String CONSUME_PURCHASE_ASYNC =
+        "BillingClient#consumeAsync(String, ConsumeResponseListener)";
 
     private MethodNames() {};
   }
@@ -86,6 +97,15 @@ public class InAppPurchasePlugin implements MethodCallHandler {
         launchBillingFlow(
             (String) call.argument("sku"), (String) call.argument("accountId"), result);
         break;
+      case MethodNames.QUERY_PURCHASES:
+        queryPurchases((String) call.argument("skuType"), result);
+        break;
+      case MethodNames.QUERY_PURCHASE_HISTORY_ASYNC:
+        queryPurchaseHistoryAsync((String) call.argument("skuType"), result);
+        break;
+      case MethodNames.CONSUME_PURCHASE_ASYNC:
+        consumeAsync((String) call.argument("purchaseToken"), result);
+        break;
       default:
         result.notImplemented();
     }
@@ -101,7 +121,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
 
   private void startConnection(final int handle, final Result result) {
     if (billingClient == null) {
-      billingClient = buildBillingClient(context);
+      billingClient = buildBillingClient(context, channel);
     }
 
     billingClient.startConnection(
@@ -181,7 +201,54 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     result.success(billingClient.launchBillingFlow(activity, paramsBuilder.build()));
   }
 
-  private void updateCachedSkus(List<SkuDetails> skuDetailsList) {
+  private void consumeAsync(String purchaseToken, final Result result) {
+    if (billingClientError(result)) {
+      return;
+    }
+
+    ConsumeResponseListener listener =
+        new ConsumeResponseListener() {
+          @Override
+          public void onConsumeResponse(
+              @BillingClient.BillingResponse int responseCode, String outToken) {
+            result.success(responseCode);
+          }
+        };
+    billingClient.consumeAsync(purchaseToken, listener);
+  }
+
+  private void queryPurchases(String skuType, Result result) {
+    if (billingClientError(result)) {
+      return;
+    }
+
+    // Like in our connect call, consider the billing client responding a "success" here regardless of status code.
+    result.success(fromPurchasesResult(billingClient.queryPurchases(skuType)));
+  }
+
+  private void queryPurchaseHistoryAsync(String skuType, final Result result) {
+    if (billingClientError(result)) {
+      return;
+    }
+
+    billingClient.queryPurchaseHistoryAsync(
+        skuType,
+        new PurchaseHistoryResponseListener() {
+          @Override
+          public void onPurchaseHistoryResponse(int responseCode, List<Purchase> purchasesList) {
+            final Map<String, Object> serialized = new HashMap<>();
+            serialized.put("responseCode", responseCode);
+            serialized.put("purchasesList", fromPurchasesList(purchasesList));
+            result.success(serialized);
+          }
+        });
+  }
+
+  private void updateCachedSkus(@Nullable List<SkuDetails> skuDetailsList) {
+    if (skuDetailsList == null) {
+      return;
+    }
+
     for (SkuDetails skuDetails : skuDetailsList) {
       cachedSkus.put(skuDetails.getSku(), skuDetails);
     }
@@ -196,14 +263,26 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     return true;
   }
 
-  private static BillingClient buildBillingClient(Context context) {
+  private static BillingClient buildBillingClient(Context context, MethodChannel channel) {
     return BillingClient.newBuilder(context)
-        .setListener(
-            new PurchasesUpdatedListener() {
-              @Override
-              public void onPurchasesUpdated(
-                  int responseCode, @Nullable List<Purchase> purchases) {}
-            })
+        .setListener(new PluginPurchaseListener(channel))
         .build();
+  }
+
+  @VisibleForTesting
+  /*package*/ static class PluginPurchaseListener implements PurchasesUpdatedListener {
+    private final MethodChannel channel;
+
+    PluginPurchaseListener(MethodChannel channel) {
+      this.channel = channel;
+    }
+
+    @Override
+    public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> purchases) {
+      final Map<String, Object> callbackArgs = new HashMap<>();
+      callbackArgs.put("responseCode", responseCode);
+      callbackArgs.put("purchasesList", fromPurchasesList(purchases));
+      channel.invokeMethod(MethodNames.ON_PURCHASES_UPDATED, callbackArgs);
+    }
   }
 }

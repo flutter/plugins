@@ -86,7 +86,7 @@ class LabelDetectorPainter extends CustomPainter {
   LabelDetectorPainter(this.absoluteImageSize, this.labels);
 
   final Size absoluteImageSize;
-  final List<Label> labels;
+  final List<ImageLabel> labels;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -98,8 +98,8 @@ class LabelDetectorPainter extends CustomPainter {
     );
 
     builder.pushStyle(ui.TextStyle(color: Colors.green));
-    for (Label label in labels) {
-      builder.addText('Label: ${label.label}, '
+    for (ImageLabel label in labels) {
+      builder.addText('Label: ${label.text}, '
           'Confidence: ${label.confidence.toStringAsFixed(2)}\n');
     }
     builder.pop();
