@@ -40,11 +40,11 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
 
     final File externalFilesDirectory =
-            registrar.activity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        registrar.activity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     final ExifDataCopier exifDataCopier = new ExifDataCopier();
     final ImageResizer imageResizer = new ImageResizer(externalFilesDirectory, exifDataCopier);
     final ImagePickerDelegate delegate =
-            new ImagePickerDelegate(registrar.activity(), externalFilesDirectory, imageResizer);
+        new ImagePickerDelegate(registrar.activity(), externalFilesDirectory, imageResizer);
 
     registrar.addActivityResultListener(delegate);
     registrar.addRequestPermissionsResultListener(delegate);
@@ -57,40 +57,40 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
     this.registrar = registrar;
     this.delegate = delegate;
     this.activityLifecycleCallbacks =
-            new Application.ActivityLifecycleCallbacks() {
-              @Override
-              public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+        new Application.ActivityLifecycleCallbacks() {
+          @Override
+          public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
 
-              @Override
-              public void onActivityStarted(Activity activity) {}
+          @Override
+          public void onActivityStarted(Activity activity) {}
 
-              @Override
-              public void onActivityResumed(Activity activity) {}
+          @Override
+          public void onActivityResumed(Activity activity) {}
 
-              @Override
-              public void onActivityPaused(Activity activity) {}
+          @Override
+          public void onActivityPaused(Activity activity) {}
 
-              @Override
-              public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-                if (activity == registrar.activity()) {
-                  delegate.saveStateBeforeResult();
-                }
-              }
+          @Override
+          public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+            if (activity == registrar.activity()) {
+              delegate.saveStateBeforeResult();
+            }
+          }
 
-              @Override
-              public void onActivityDestroyed(Activity activity) {}
+          @Override
+          public void onActivityDestroyed(Activity activity) {}
 
-              @Override
-              public void onActivityStopped(Activity activity) {}
-            };
+          @Override
+          public void onActivityStopped(Activity activity) {}
+        };
 
     if (this.registrar != null
-            && this.registrar.activity() != null
-            && this.registrar.activity().getApplication() != null) {
+        && this.registrar.activity() != null
+        && this.registrar.activity().getApplication() != null) {
       this.registrar
-              .activity()
-              .getApplication()
-              .registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
+          .activity()
+          .getApplication()
+          .registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
     }
   }
 

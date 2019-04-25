@@ -22,7 +22,7 @@ enum ImageSource {
 
 class ImagePicker {
   static const MethodChannel _channel =
-  MethodChannel('plugins.flutter.io/image_picker');
+      MethodChannel('plugins.flutter.io/image_picker');
 
   /// Returns a [File] object pointing to the image that was picked.
   ///
@@ -107,7 +107,7 @@ class ImagePicker {
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     final Map<dynamic, dynamic> result =
-    await _channel.invokeMethod('retrieve');
+        await _channel.invokeMethod('retrieve');
     if (result == null) {
       return LostDataResponse.empty();
     }
