@@ -333,4 +333,47 @@ void main() {
     expect(firstVisibleRegion, isNot(secondVisibleRegion));
     expect(secondVisibleRegion.contains(newCenter), isTrue);
   });
+
+  test('testToggleMapStyle', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    const String _defaultMapStyle = "[]";
+    const String _mapStyle = '{"featureType": "all","elementType": "geometry","stylers":[{"color": "#242f3e"}]}';
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        mapStyle: _defaultMapStyle,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    String _style = await inspector.toggleMapStyle();
+    expect(_style, equals(_defaultMapStyle));
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        mapStyle: _mapStyle,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
+
+    _style = await inspector.toggleMapStyle();
+    expect(_style, equals(_mapStyle));
+  });
 }

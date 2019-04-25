@@ -41,4 +41,8 @@ class GoogleMapInspector {
   Future<bool> isScrollGesturesEnabled() async {
     return await _channel.invokeMethod<bool>('map#isScrollGesturesEnabled');
   }
+
+  Future<String> toggleMapStyle() async {
+    return await _channel.invokeMethod<String>('map#toggleMapStyle');
+  }
 }

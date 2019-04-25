@@ -273,6 +273,11 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isRotateGesturesEnabled());
           break;
         }
+      case "map#toggleMapStyle":
+      {
+        result.success(mapStyle);
+        break;
+      }
       default:
         result.notImplemented();
     }

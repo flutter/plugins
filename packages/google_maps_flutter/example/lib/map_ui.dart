@@ -75,10 +75,10 @@ class MapUiBodyState extends State<MapUiBody> {
 
   Widget _toggleMapStyle() {
     return FlatButton(
-      child: Text('change to ${!_defaultMapStyle ? 'night' : 'default'} style'),
+      child: Text('change to ${_defaultMapStyle ? 'night' : 'default'} style'),
       onPressed: () {
         setState(() {
-          if (!_defaultMapStyle) {
+          if (_defaultMapStyle) {
             _mapStyle = _mapStyleNight;
           } else {
             _mapStyle = '[]';
