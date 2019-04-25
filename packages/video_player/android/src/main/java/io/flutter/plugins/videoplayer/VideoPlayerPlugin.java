@@ -333,8 +333,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
             String assetLookupKey;
             if (call.argument("package") != null) {
               assetLookupKey =
-                  registrar.lookupKeyForAsset(
-                      call.argument("asset"), call.argument("package"));
+                  registrar.lookupKeyForAsset(call.argument("asset"), call.argument("package"));
             } else {
               assetLookupKey = registrar.lookupKeyForAsset(call.argument("asset"));
             }
@@ -349,11 +348,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           } else {
             player =
                 new VideoPlayer(
-                    registrar.context(),
-                    eventChannel,
-                    handle,
-                    call.argument("uri"),
-                    result);
+                    registrar.context(), eventChannel, handle, call.argument("uri"), result);
             videoPlayers.put(handle.id(), player);
           }
           break;
