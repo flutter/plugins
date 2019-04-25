@@ -17,6 +17,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean myLocationEnabled = false;
   private Object initialMarkers;
   private Object initialPolylines;
+  private String mapStyle;
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
@@ -27,6 +28,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.setTrackCameraPosition(trackCameraPosition);
     controller.setInitialMarkers(initialMarkers);
     controller.setInitialPolylines(initialPolylines);
+    controller.setMapStyle(mapStyle);
     return controller;
   }
 
@@ -47,6 +49,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setMapType(int mapType) {
     options.mapType(mapType);
+  }
+
+  @Override
+  public void setMapStyle(String mapStyle) {
+    this.mapStyle = mapStyle;
   }
 
   @Override

@@ -246,6 +246,10 @@ class Convert {
     if (mapType != null) {
       sink.setMapType(toInt(mapType));
     }
+    final Object mapStyle = data.get("mapStyle");
+    if (mapStyle != null) {
+      sink.setMapStyle(toString(mapStyle));
+    }
     final Object minMaxZoomPreference = data.get("minMaxZoomPreference");
     if (minMaxZoomPreference != null) {
       final List<?> zoomPreferenceData = toList(minMaxZoomPreference);

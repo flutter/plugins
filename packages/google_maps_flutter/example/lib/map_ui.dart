@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async' show Future;
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -48,15 +50,43 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _tiltGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
+  bool _defaultMapStyle = true;
+  String _mapStyle = "[]";
+  String _mapStyleNight;
+
+  Future<String> loadMapStyle() async {
+    return await rootBundle.loadString('assets/raw/style_json.json');
+  }
 
   @override
   void initState() {
     super.initState();
+    loadMapStyle().then((String style) {
+      setState(() {
+        _mapStyleNight = style;
+      });
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Widget _toggleMapStyle() {
+    return FlatButton(
+      child: Text('change to ${!_defaultMapStyle ? 'night' : 'default'} style'),
+      onPressed: () {
+        setState(() {
+          if (!_defaultMapStyle) {
+            _mapStyle = _mapStyleNight;
+          } else {
+            _mapStyle = '[]';
+          }
+          _defaultMapStyle = !_defaultMapStyle;
+        });
+      },
+    );
   }
 
   Widget _compassToggler() {
@@ -185,6 +215,7 @@ class MapUiBodyState extends State<MapUiBody> {
       zoomGesturesEnabled: _zoomGesturesEnabled,
       myLocationEnabled: _myLocationEnabled,
       onCameraMove: _updateCameraPosition,
+      mapStyle: _mapStyle,
     );
 
     final List<Widget> columnChildren = <Widget>[
@@ -212,6 +243,7 @@ class MapUiBodyState extends State<MapUiBody> {
               Text('camera zoom: ${_position.zoom}'),
               Text('camera tilt: ${_position.tilt}'),
               Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
+              _toggleMapStyle(),
               _compassToggler(),
               _latLngBoundsToggler(),
               _mapTypeCycler(),

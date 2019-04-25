@@ -35,6 +35,7 @@ class GoogleMap extends StatefulWidget {
     this.onCameraMove,
     this.onCameraIdle,
     this.onTap,
+    this.mapStyle,
   })  : assert(initialCameraPosition != null),
         super(key: key);
 
@@ -123,6 +124,42 @@ class GoogleMap extends StatefulWidget {
   /// `Info.plist` file. This will automatically prompt the user for permissions
   /// when the map tries to turn on the My Location layer.
   final bool myLocationEnabled;
+
+  /// The style to be used for the map.
+  ///
+  /// The JSON file can be created at https://mapstyle.withgoogle.com/
+  ///
+  /// With style options you can customize the presentation of the standard Google
+  /// map styles, changing the visual display of features like roads, parks, and
+  /// other points of interest. As well as changing the style of these features,
+  /// you can also hide features entirely. This means that you can emphasize
+  /// particular components of the map or make the map complement the content
+  /// of your app.
+  ///
+  /// Customize the styling of the base map using a JSON object defined by a string.
+  /// Add the json file to the assets folder and link it in pubspec.yaml.
+  ///
+  /// Then you can load the file as string like below:
+  ///
+  /// String _mapStyle;
+  ///
+  ///  Future<String> loadMapStyle() async {
+  ///    return await rootBundle.loadString('assets/raw/style_json.json');
+  ///  }
+  ///
+  ///  @override
+  ///  void initState() {
+  ///    super.initState();
+  ///    loadMapStyle().then((String style) {
+  ///      setState(() {
+  ///        _mapStyle = style;
+  ///      });
+  ///    });
+  ///  }
+  ///
+  ///
+  ///
+  final String mapStyle;
 
   /// Which gestures should be consumed by the map.
   ///
@@ -271,6 +308,7 @@ class _GoogleMapOptions {
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
+    this.mapStyle,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -285,6 +323,7 @@ class _GoogleMapOptions {
       trackCameraPosition: map.onCameraMove != null,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
+      mapStyle: map.mapStyle,
     );
   }
 
@@ -308,6 +347,8 @@ class _GoogleMapOptions {
 
   final bool myLocationEnabled;
 
+  final String mapStyle;
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -327,6 +368,7 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
+    addIfNonNull('mapStyle', mapStyle);
 
     return optionsMap;
   }

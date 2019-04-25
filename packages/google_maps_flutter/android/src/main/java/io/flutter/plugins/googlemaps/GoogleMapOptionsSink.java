@@ -14,6 +14,8 @@ interface GoogleMapOptionsSink {
 
   void setMapType(int mapType);
 
+  void setMapStyle(String mapStyle);
+
   void setMinMaxZoomPreference(Float min, Float max);
 
   void setRotateGesturesEnabled(boolean rotateGesturesEnabled);
