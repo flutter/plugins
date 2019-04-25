@@ -5,7 +5,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:collection/collection.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
 // below generated file. Run `flutter packages pub run build_runner watch` to
@@ -305,6 +305,7 @@ class SKProductWrapper {
       title: localizedTitle,
       description: localizedDescription,
       price: priceLocale.currencySymbol + price,
+      skProduct: this,
     );
   }
 }
@@ -325,7 +326,7 @@ class SKPriceLocaleWrapper {
   /// The `map` parameter must not be null.
   factory SKPriceLocaleWrapper.fromJson(Map map) {
     assert(map != null, 'Map must not be null.');
-    return _$PriceLocaleWrapperFromJson(map);
+    return _$SKPriceLocaleWrapperFromJson(map);
   }
 
   ///The currency symbol for the locale, e.g. $ for US locale.

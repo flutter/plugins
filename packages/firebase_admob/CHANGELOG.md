@@ -1,3 +1,8 @@
+## 0.8.0+4
+
+* Update documentation to add AdMob App ID in Info.plist
+* Add iOS AdMob App ID in Info.plist in example project
+
 ## 0.8.0+3
 
 * Log messages about automatic configuration of the default app are now less confusing.

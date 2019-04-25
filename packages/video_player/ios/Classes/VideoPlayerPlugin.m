@@ -86,12 +86,12 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                                     object:[_player currentItem]
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {
-                                                  if (_isLooping) {
+                                                  if (self->_isLooping) {
                                                     AVPlayerItem* p = [note object];
                                                     [p seekToTime:kCMTimeZero];
                                                   } else {
-                                                    if (_eventSink) {
-                                                      _eventSink(@{@"event" : @"completed"});
+                                                    if (self->_eventSink) {
+                                                      self->_eventSink(@{@"event" : @"completed"});
                                                     }
                                                   }
                                                 }];
@@ -185,17 +185,17 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       if ([tracks count] > 0) {
         AVAssetTrack* videoTrack = [tracks objectAtIndex:0];
         void (^trackCompletionHandler)(void) = ^{
-          if (_disposed) return;
+          if (self->_disposed) return;
           if ([videoTrack statusOfValueForKey:@"preferredTransform"
                                         error:nil] == AVKeyValueStatusLoaded) {
             // Rotate the video by using a videoComposition and the preferredTransform
-            _preferredTransform = [self fixTransform:videoTrack];
+            self->_preferredTransform = [self fixTransform:videoTrack];
             // Note:
             // https://developer.apple.com/documentation/avfoundation/avplayeritem/1388818-videocomposition
             // Video composition can only be used with file-based media and is not supported for
             // use with media served using HTTP Live Streaming.
             AVMutableVideoComposition* videoComposition =
-                [self getVideoCompositionWithTransform:_preferredTransform
+                [self getVideoCompositionWithTransform:self->_preferredTransform
                                              withAsset:asset
                                         withVideoTrack:videoTrack];
             item.videoComposition = videoComposition;

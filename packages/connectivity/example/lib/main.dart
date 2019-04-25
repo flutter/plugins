@@ -87,27 +87,33 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
     switch (result) {
       case ConnectivityResult.wifi:
-        String wifiName, wifiIP;
+        String wifiName, wifiBSSID, wifiIP;
 
         try {
-          wifiName = (await _connectivity.getWifiName()).toString();
+          wifiName = await _connectivity.getWifiName();
         } on PlatformException catch (e) {
           print(e.toString());
-
           wifiName = "Failed to get Wifi Name";
         }
 
         try {
-          wifiIP = (await _connectivity.getWifiIP()).toString();
+          wifiBSSID = await _connectivity.getWifiBSSID();
         } on PlatformException catch (e) {
           print(e.toString());
+          wifiBSSID = "Failed to get Wifi BSSID";
+        }
 
-          wifiName = "Failed to get Wifi IP";
+        try {
+          wifiIP = await _connectivity.getWifiIP();
+        } on PlatformException catch (e) {
+          print(e.toString());
+          wifiIP = "Failed to get Wifi IP";
         }
 
         setState(() {
           _connectionStatus = '$result\n'
               'Wifi Name: $wifiName\n'
+              'Wifi BSSID: $wifiBSSID\n'
               'Wifi IP: $wifiIP\n';
         });
         break;

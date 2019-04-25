@@ -28,9 +28,13 @@ String defaultNameExtractor(RouteSettings settings) => settings.name;
 /// ```dart
 /// Navigator.pushNamed(context, '/contact/123');
 ///
-/// Navigator.push(context, MaterialPageRoute(
-///   settings: RouteSettings(name: '/contact/123',
-///   builder: ContactDetail(123)))),
+/// Navigator.push<void>(context, MaterialPageRoute(
+///   settings: RouteSettings(name: '/contact/123'),
+///   builder: (_) => ContactDetail(123)));
+///
+/// Navigator.pushReplacement<void>(context, MaterialPageRoute(
+///   settings: RouteSettings(name: '/contact/123'),
+///   builder: (_) => ContactDetail(123)));
 ///
 /// Navigator.pop(context);
 /// ```
@@ -91,6 +95,14 @@ class FirebaseAnalyticsObserver extends RouteObserver<PageRoute<dynamic>> {
     super.didPush(route, previousRoute);
     if (route is PageRoute) {
       _sendScreenView(route);
+    }
+  }
+
+  @override
+  void didReplace({Route<dynamic> newRoute, Route<dynamic> oldRoute}) {
+    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+    if (newRoute is PageRoute) {
+      _sendScreenView(newRoute);
     }
   }
 

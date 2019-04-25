@@ -70,6 +70,9 @@ class SharedPreferences {
   /// String.
   String getString(String key) => _preferenceCache[key];
 
+  /// Returns true if persistent storage the contains the given [key].
+  bool containsKey(String key) => _preferenceCache.containsKey(key);
+
   /// Reads a set of string values from persistent storage, throwing an
   /// exception if it's not a string set.
   List<String> getStringList(String key) {
