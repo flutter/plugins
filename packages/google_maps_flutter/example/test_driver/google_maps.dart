@@ -340,7 +340,8 @@ void main() {
         Completer<GoogleMapInspector>();
 
     const String _defaultMapStyle = "[]";
-    const String _mapStyle = '{"featureType": "all","elementType": "geometry","stylers":[{"color": "#242f3e"}]}';
+    const String _mapStyle =
+        '{"featureType": "all","elementType": "geometry","stylers":[{"color": "#242f3e"}]}';
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,

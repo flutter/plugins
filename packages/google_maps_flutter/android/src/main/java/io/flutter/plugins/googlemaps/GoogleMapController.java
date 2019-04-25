@@ -274,10 +274,10 @@ final class GoogleMapController
           break;
         }
       case "map#toggleMapStyle":
-      {
-        result.success(mapStyle);
-        break;
-      }
+        {
+          result.success(mapStyle);
+          break;
+        }
       default:
         result.notImplemented();
     }
