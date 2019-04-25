@@ -141,7 +141,7 @@ class FileUtils {
     boolean success = false;
     try {
       inputStream = context.getContentResolver().openInputStream(uri);
-      file = File.createTempFile("image_picker", "jpg", context.getCacheDir());
+      file = File.createTempFile("image_picker", ".jpg", context.getCacheDir());
       outputStream = new FileOutputStream(file);
       if (inputStream != null) {
         copy(inputStream, outputStream);
