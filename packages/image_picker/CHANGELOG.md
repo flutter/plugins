@@ -1,6 +1,6 @@
 ## 0.6.0+1
 
-* Android: Using suffix syntax.
+* Android: Using correct suffix syntax when picking image from remote url.
 
 ## 0.6.0
 
