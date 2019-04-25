@@ -157,12 +157,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
             public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
               super.onPlayerStateChanged(playWhenReady, playbackState);
               if (playbackState == Player.STATE_BUFFERING) {
-                Map<String, Object> event = new HashMap<>();
-                event.put("event", "bufferingUpdate");
-                List<Integer> range = Arrays.asList(0, exoPlayer.getBufferedPercentage());
-                // iOS supports a list of buffered ranges, so here is a list with a single range.
-                event.put("values", Collections.singletonList(range));
-                eventSink.success(event);
+                sendBufferingUpdate();
               } else if (playbackState == Player.STATE_READY) {
                 if (!isInitialized) {
                   isInitialized = true;
@@ -187,6 +182,15 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       Map<String, Object> reply = new HashMap<>();
       reply.put("textureId", textureEntry.id());
       result.success(reply);
+    }
+
+    private void sendBufferingUpdate() {
+      Map<String, Object> event = new HashMap<>();
+      event.put("event", "bufferingUpdate");
+      List<? extends Number> range = Arrays.asList(0, exoPlayer.getBufferedPosition());
+      // iOS supports a list of buffered ranges, so here is a list with a single range.
+      event.put("values", Collections.singletonList(range));
+      eventSink.success(event);
     }
 
     @SuppressWarnings("deprecation")
@@ -390,6 +394,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         break;
       case "position":
         result.success(player.getPosition());
+        player.sendBufferingUpdate();
         break;
       case "dispose":
         player.dispose();
