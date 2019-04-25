@@ -191,7 +191,7 @@ static const int SOURCE_GALLERY = 1;
     return;
   }
   if (videoURL != nil) {
-    _result(videoURL.description);
+    _result(videoURL.path);
   } else {
     if (image == nil) {
       image = [info objectForKey:UIImagePickerControllerOriginalImage];
