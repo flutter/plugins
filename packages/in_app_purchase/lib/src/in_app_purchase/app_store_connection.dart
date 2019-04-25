@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
@@ -205,8 +205,6 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   void paymentQueueRestoreCompletedTransactionsFinished() {
     _restoreCompleter.complete(_restoredTransactions ?? []);
   }
-
-  void updatedDownloads({List<SKDownloadWrapper> downloads}) {}
 
   bool shouldAddStorePayment(
       {SKPaymentWrapper payment, SKProductWrapper product}) {

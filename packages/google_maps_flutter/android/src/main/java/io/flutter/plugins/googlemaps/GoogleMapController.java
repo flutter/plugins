@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -49,6 +50,7 @@ final class GoogleMapController
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnPolylineClickListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
@@ -70,7 +72,9 @@ final class GoogleMapController
   private final int registrarActivityHashCode;
   private final Context context;
   private final MarkersController markersController;
+  private final PolylinesController polylinesController;
   private List<Object> initialMarkers;
+  private List<Object> initialPolylines;
   private String mapStyle = "";
 
   GoogleMapController(
@@ -90,6 +94,7 @@ final class GoogleMapController
     methodChannel.setMethodCallHandler(this);
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
+    this.polylinesController = new PolylinesController(methodChannel);
   }
 
   @Override
@@ -159,10 +164,13 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
+    googleMap.setOnPolylineClickListener(this);
     googleMap.setOnMapClickListener(this);
     updateMyLocationEnabled();
     markersController.setGoogleMap(googleMap);
+    polylinesController.setGoogleMap(googleMap);
     updateInitialMarkers();
+    updateInitialPolylines();
   }
 
   @Override
@@ -178,14 +186,14 @@ final class GoogleMapController
       case "map#update":
         {
           Convert.interpretGoogleMapOptions(call.argument("options"), this);
-          result.success(Convert.toJson(getCameraPosition()));
+          result.success(Convert.cameraPositionToJson(getCameraPosition()));
           break;
         }
       case "map#getVisibleRegion":
         {
           if (googleMap != null) {
             LatLngBounds latLngBounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
-            result.success(Convert.toJson(latLngBounds));
+            result.success(Convert.latlngBoundsToJson(latLngBounds));
           } else {
             result.error(
                 "GoogleMap uninitialized",
@@ -218,6 +226,17 @@ final class GoogleMapController
           markersController.changeMarkers((List<Object>) markersToChange);
           Object markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers((List<Object>) markerIdsToRemove);
+          result.success(null);
+          break;
+        }
+      case "polylines#update":
+        {
+          Object polylinesToAdd = call.argument("polylinesToAdd");
+          polylinesController.addPolylines((List<Object>) polylinesToAdd);
+          Object polylinesToChange = call.argument("polylinesToChange");
+          polylinesController.changePolylines((List<Object>) polylinesToChange);
+          Object polylineIdsToRemove = call.argument("polylineIdsToRemove");
+          polylinesController.removePolylines((List<Object>) polylineIdsToRemove);
           result.success(null);
           break;
         }
@@ -262,7 +281,7 @@ final class GoogleMapController
   @Override
   public void onMapClick(LatLng latLng) {
     final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("position", Convert.toJson(latLng));
+    arguments.put("position", Convert.latLngToJson(latLng));
     methodChannel.invokeMethod("map#onTap", arguments);
   }
 
@@ -285,7 +304,7 @@ final class GoogleMapController
       return;
     }
     final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("position", Convert.toJson(googleMap.getCameraPosition()));
+    arguments.put("position", Convert.cameraPositionToJson(googleMap.getCameraPosition()));
     methodChannel.invokeMethod("camera#onMove", arguments);
   }
 
@@ -297,6 +316,11 @@ final class GoogleMapController
   @Override
   public boolean onMarkerClick(Marker marker) {
     return markersController.onMarkerTap(marker.getId());
+  }
+
+  @Override
+  public void onPolylineClick(Polyline polyline) {
+    polylinesController.onPolylineTap(polyline.getId());
   }
 
   @Override
@@ -451,6 +475,18 @@ final class GoogleMapController
 
   private void updateInitialMarkers() {
     markersController.addMarkers(initialMarkers);
+  }
+
+  @Override
+  public void setInitialPolylines(Object initialPolylines) {
+    this.initialPolylines = (List<Object>) initialPolylines;
+    if (googleMap != null) {
+      updateInitialPolylines();
+    }
+  }
+
+  private void updateInitialPolylines() {
+    polylinesController.addPolylines(initialPolylines);
   }
 
   @SuppressLint("MissingPermission")

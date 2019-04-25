@@ -79,6 +79,16 @@ class Connectivity {
     return wifiName;
   }
 
+  /// Obtains the wifi BSSID of the connected network.
+  ///
+  /// Please note that it DOESN'T WORK on emulators (returns null).
+  ///
+  /// From Android 8.0 onwards the GPS must be ON (high accuracy)
+  /// in order to be able to obtain the BSSID.
+  Future<String> getWifiBSSID() async {
+    return await methodChannel.invokeMethod('wifiBSSID');
+  }
+
   /// Obtains the IP address of the connected wifi network
   Future<String> getWifiIP() async {
     return await methodChannel.invokeMethod<String>('wifiIPAddress');
