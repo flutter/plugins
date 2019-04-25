@@ -249,6 +249,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _applyLooping();
           _applyVolume();
           _applyPlayPause();
+          _applyPlayBackSpeed();
           break;
         case 'completed':
           value = value.copyWith(isPlaying: false, position: value.duration);
