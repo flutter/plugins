@@ -106,6 +106,25 @@ void main() {
     expect(await controller.currentUrl(), isNull);
   });
 
+  testWidgets('Headers in loadUrl', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    final Map<String, String> headers = <String, String>{
+      'CACHE-CONTROL': 'ABC'
+    };
+    await controller.loadUrl('https://flutter.io', headers: headers);
+    expect(await controller.currentUrl(), equals('https://flutter.io'));
+  });
+
   testWidgets("Can't go back before loading a page",
       (WidgetTester tester) async {
     WebViewController controller;
@@ -576,6 +595,63 @@ void main() {
     expect(ttsMessagesReceived, <String>['Hello', 'World']);
   });
 
+  group('$PageFinishedCallback', () {
+    testWidgets('onPageFinished is not null', (WidgetTester tester) async {
+      String returnedUrl;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageFinished: (String url) {
+          returnedUrl = url;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      platformWebView.fakeOnPageFinishedCallback();
+
+      expect(platformWebView.currentUrl, returnedUrl);
+    });
+
+    testWidgets('onPageFinished is null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        initialUrl: 'https://youtube.com',
+        onPageFinished: null,
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      // The platform side will always invoke a call for onPageFinished. This is
+      // to test that it does not crash on a null callback.
+      platformWebView.fakeOnPageFinishedCallback();
+    });
+
+    testWidgets('onPageFinished changed', (WidgetTester tester) async {
+      String returnedUrl;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageFinished: (String url) {},
+      ));
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageFinished: (String url) {
+          returnedUrl = url;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      platformWebView.fakeOnPageFinishedCallback();
+
+      expect(platformWebView.currentUrl, returnedUrl);
+    });
+  });
+
   group('navigationDelegate', () {
     testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
@@ -665,8 +741,8 @@ class FakePlatformWebView {
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'loadUrl':
-        final String url = call.arguments;
-        _loadUrl(url);
+        final Map<dynamic, dynamic> request = call.arguments;
+        _loadUrl(request['url']);
         return Future<void>.sync(() {});
       case 'updateSettings':
         if (call.arguments['jsMode'] != null) {
@@ -748,6 +824,21 @@ class FakePlatformWebView {
         _loadUrl(url);
       }
     });
+  }
+
+  void fakeOnPageFinishedCallback() {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+
+    final ByteData data = codec.encodeMethodCall(MethodCall(
+      'onPageFinished',
+      <dynamic, dynamic>{'url': currentUrl},
+    ));
+
+    BinaryMessages.handlePlatformMessage(
+      channel.name,
+      data,
+      (ByteData data) {},
+    );
   }
 
   void _loadUrl(String url) {

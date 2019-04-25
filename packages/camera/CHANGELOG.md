@@ -1,3 +1,22 @@
+## 0.5.0
+
+* **Breaking Change** This plugin no longer handles closing and opening the camera on Android
+  lifecycle changes. Please use `WidgetsBindingObserver` to control camera resources on lifecycle
+  changes. See example project for example using `WidgetsBindingObserver`.
+
+## 0.4.3+2
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
+## 0.4.3+1
+
+* Catch additional `Exception`s from Android and throw as `CameraException`s.
+
+## 0.4.3
+
+* Add capability to prepare the capture session for video recording on iOS.
+
 ## 0.4.2
 
 * Add sensor orientation value to `CameraDescription`.

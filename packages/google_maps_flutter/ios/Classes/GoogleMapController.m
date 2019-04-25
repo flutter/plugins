@@ -8,9 +8,11 @@
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position);
+static NSArray* LocationToJson(CLLocationCoordinate2D position);
 static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json);
 static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
 static GMSCameraUpdate* ToCameraUpdate(NSArray* data);
+static NSDictionary* GMSCoordinateBoundsToJson(GMSCoordinateBounds* bounds);
 static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> sink);
 static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
 
@@ -52,6 +54,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   // https://github.com/flutter/flutter/issues/27550
   BOOL _cameraDidInitialSetup;
   FLTMarkersController* _markersController;
+  FLTPolylinesController* _polylinesController;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -63,6 +66,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
     GMSCameraPosition* camera = ToOptionalCameraPosition(args[@"initialCameraPosition"]);
     _mapView = [GMSMapView mapWithFrame:frame camera:camera];
+    _mapView.accessibilityElementsHidden = NO;
     _trackCameraPosition = NO;
     InterpretMapOptions(args[@"options"], self);
     NSString* channelName =
@@ -81,9 +85,16 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _markersController = [[FLTMarkersController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar];
+    _polylinesController = [[FLTPolylinesController alloc] init:_channel
+                                                        mapView:_mapView
+                                                      registrar:registrar];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
+    }
+    id polylinesToAdd = args[@"polylinesToAdd"];
+    if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
+      [_polylinesController addPolylines:polylinesToAdd];
     }
   }
   return self;
@@ -109,6 +120,17 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#update"]) {
     InterpretMapOptions(call.arguments[@"options"], self);
     result(PositionToJson([self cameraPosition]));
+  } else if ([call.method isEqualToString:@"map#getVisibleRegion"]) {
+    if (_mapView != nil) {
+      GMSVisibleRegion visibleRegion = _mapView.projection.visibleRegion;
+      GMSCoordinateBounds* bounds = [[GMSCoordinateBounds alloc] initWithRegion:visibleRegion];
+
+      result(GMSCoordinateBoundsToJson(bounds));
+    } else {
+      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                 message:@"getVisibleRegion called prior to map initialization"
+                                 details:nil]);
+    }
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
     result(nil);
   } else if ([call.method isEqualToString:@"markers#update"]) {
@@ -125,6 +147,38 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       [_markersController removeMarkerIds:markerIdsToRemove];
     }
     result(nil);
+  } else if ([call.method isEqualToString:@"polylines#update"]) {
+    id polylinesToAdd = call.arguments[@"polylinesToAdd"];
+    if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
+      [_polylinesController addPolylines:polylinesToAdd];
+    }
+    id polylinesToChange = call.arguments[@"polylinesToChange"];
+    if ([polylinesToChange isKindOfClass:[NSArray class]]) {
+      [_polylinesController changePolylines:polylinesToChange];
+    }
+    id polylineIdsToRemove = call.arguments[@"polylineIdsToRemove"];
+    if ([polylineIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_polylinesController removePolylineIds:polylineIdsToRemove];
+    }
+    result(nil);
+  } else if ([call.method isEqualToString:@"map#isCompassEnabled"]) {
+    NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
+    result(isCompassEnabled);
+  } else if ([call.method isEqualToString:@"map#getMinMaxZoomLevels"]) {
+    NSArray* zoomLevels = @[ @(_mapView.minZoom), @(_mapView.maxZoom) ];
+    result(zoomLevels);
+  } else if ([call.method isEqualToString:@"map#isZoomGesturesEnabled"]) {
+    NSNumber* isZoomGesturesEnabled = @(_mapView.settings.zoomGestures);
+    result(isZoomGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isTiltGesturesEnabled"]) {
+    NSNumber* isTiltGesturesEnabled = @(_mapView.settings.tiltGestures);
+    result(isTiltGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isRotateGesturesEnabled"]) {
+    NSNumber* isRotateGesturesEnabled = @(_mapView.settings.rotateGestures);
+    result(isRotateGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isScrollGesturesEnabled"]) {
+    NSNumber* isScrollGesturesEnabled = @(_mapView.settings.scrollGestures);
+    result(isScrollGesturesEnabled);
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -238,6 +292,14 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   NSString* markerId = marker.userData[0];
   [_markersController onInfoWindowTap:markerId];
 }
+- (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
+  NSString* polylineId = overlay.userData[0];
+  [_polylinesController onPolylineTap:polylineId];
+}
+
+- (void)mapView:(GMSMapView*)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
+  [_channel invokeMethod:@"map#onTap" arguments:@{@"position" : LocationToJson(coordinate)}];
+}
 
 @end
 
@@ -256,6 +318,16 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position) {
     @"zoom" : @([position zoom]),
     @"bearing" : @([position bearing]),
     @"tilt" : @([position viewingAngle]),
+  };
+}
+
+static NSDictionary* GMSCoordinateBoundsToJson(GMSCoordinateBounds* bounds) {
+  if (!bounds) {
+    return nil;
+  }
+  return @{
+    @"southwest" : LocationToJson([bounds southWest]),
+    @"northeast" : LocationToJson([bounds northEast]),
   };
 }
 

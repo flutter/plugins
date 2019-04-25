@@ -24,7 +24,12 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
-class WebViewExample extends StatelessWidget {
+class WebViewExample extends StatefulWidget {
+  @override
+  _WebViewExampleState createState() => _WebViewExampleState();
+}
+
+class _WebViewExampleState extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
 
@@ -43,7 +48,7 @@ class WebViewExample extends StatelessWidget {
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
-          initialUrl: 'https://flutter.io',
+          initialUrl: 'https://flutter.dev',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
@@ -60,6 +65,9 @@ class WebViewExample extends StatelessWidget {
             }
             print('allowing navigation to $request');
             return NavigationDecision.navigate;
+          },
+          onPageFinished: (String url) {
+            print('Page finished loading: $url');
           },
         );
       }),
