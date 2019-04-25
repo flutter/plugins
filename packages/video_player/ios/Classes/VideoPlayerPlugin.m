@@ -6,7 +6,10 @@
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
 
-int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timescale; }
+int64_t FLTCMTimeToMillis(CMTime time) {
+  if (time.timescale == 0) return 0;
+  return time.value * 1000 / time.timescale;
+}
 
 @interface FLTFrameUpdater : NSObject
 @property(nonatomic) int64_t textureId;
@@ -83,12 +86,12 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                                     object:[_player currentItem]
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {
-                                                  if (_isLooping) {
+                                                  if (self->_isLooping) {
                                                     AVPlayerItem* p = [note object];
                                                     [p seekToTime:kCMTimeZero];
                                                   } else {
-                                                    if (_eventSink) {
-                                                      _eventSink(@{@"event" : @"completed"});
+                                                    if (self->_eventSink) {
+                                                      self->_eventSink(@{@"event" : @"completed"});
                                                     }
                                                   }
                                                 }];
@@ -153,7 +156,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   // displays the video https://github.com/flutter/flutter/issues/17606#issuecomment-413473181
   if (transform.tx == 0 && transform.ty == 0) {
     NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
-    NSLog(@"TX and TY are 0. Rotation: %d. Natural width,height: %f, %f", rotationDegrees,
+    NSLog(@"TX and TY are 0. Rotation: %ld. Natural width,height: %f, %f", (long)rotationDegrees,
           videoTrack.naturalSize.width, videoTrack.naturalSize.height);
     if (rotationDegrees == 90) {
       NSLog(@"Setting transform tx");
@@ -182,19 +185,17 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       if ([tracks count] > 0) {
         AVAssetTrack* videoTrack = [tracks objectAtIndex:0];
         void (^trackCompletionHandler)(void) = ^{
-          if (_disposed) return;
+          if (self->_disposed) return;
           if ([videoTrack statusOfValueForKey:@"preferredTransform"
                                         error:nil] == AVKeyValueStatusLoaded) {
-            CGSize size = videoTrack.naturalSize;
-
             // Rotate the video by using a videoComposition and the preferredTransform
-            _preferredTransform = [self fixTransform:videoTrack];
+            self->_preferredTransform = [self fixTransform:videoTrack];
             // Note:
             // https://developer.apple.com/documentation/avfoundation/avplayeritem/1388818-videocomposition
             // Video composition can only be used with file-based media and is not supported for
             // use with media served using HTTP Live Streaming.
             AVMutableVideoComposition* videoComposition =
-                [self getVideoCompositionWithTransform:_preferredTransform
+                [self getVideoCompositionWithTransform:self->_preferredTransform
                                              withAsset:asset
                                         withVideoTrack:videoTrack];
             item.videoComposition = videoComposition;
@@ -208,8 +209,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 
   _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-
-  CGSize size = item.presentationSize;
 
   [self createVideoOutputAndDisplayLink:frameUpdater];
 

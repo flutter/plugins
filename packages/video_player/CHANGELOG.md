@@ -1,3 +1,28 @@
+## 0.10.0+6
+
+* Android: Fix missing call to `event.put("event", "completed");` which makes it possible to detect when the video is over.
+
+## 0.10.0+5
+
+* Fixed iOS build warnings about implicit retains.
+
+## 0.10.0+4
+
+* Android: Upgrade ExoPlayer to 2.9.6.
+
+## 0.10.0+3
+
+* Fix divide by zero bug on iOS.
+
+## 0.10.0+2
+
+* Added supported format documentation in README.
+
+## 0.10.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 0.10.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support

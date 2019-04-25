@@ -53,10 +53,7 @@ class Query {
     StreamController<QuerySnapshot> controller; // ignore: close_sinks
     controller = StreamController<QuerySnapshot>.broadcast(
       onListen: () {
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        _handle = Firestore.channel.invokeMethod(
+        _handle = Firestore.channel.invokeMethod<int>(
           'Query#addSnapshotListener',
           <String, dynamic>{
             'app': firestore.app.name,
@@ -70,10 +67,7 @@ class Query {
       },
       onCancel: () {
         _handle.then((int handle) async {
-          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-          // https://github.com/flutter/flutter/issues/26431
-          // ignore: strong_mode_implicit_dynamic_method
-          await Firestore.channel.invokeMethod(
+          await Firestore.channel.invokeMethod<void>(
             'Query#removeListener',
             <String, dynamic>{'handle': handle},
           );
@@ -86,10 +80,8 @@ class Query {
 
   /// Fetch the documents for this query
   Future<QuerySnapshot> getDocuments() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final Map<dynamic, dynamic> data = await Firestore.channel.invokeMethod(
+    final Map<String, dynamic> data =
+        await Firestore.channel.invokeMapMethod<String, dynamic>(
       'Query#getDocuments',
       <String, dynamic>{
         'app': firestore.app.name,

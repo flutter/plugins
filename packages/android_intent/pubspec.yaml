@@ -2,7 +2,7 @@ name: android_intent
 description: Flutter plugin for launching Android Intents. Not supported on iOS.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/android_intent
-version: 0.3.0
+version: 0.3.0+2
 
 flutter:
   plugin:
@@ -18,4 +18,4 @@ dependencies:
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
-  flutter: ">=0.1.4 <2.0.0"
+  flutter: ">=1.2.0 <2.0.0"

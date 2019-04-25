@@ -4,17 +4,11 @@
 #import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@end
-
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
+static FlutterError *getFlutterError(NSError *error) {
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
 }
-@end
 
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
@@ -73,7 +67,7 @@
                                    error:(NSError *)error {
   selfReference = nil;
   if (error) {
-    _result([error flutterError]);
+    _result(getFlutterError(error));
     return;
   }
   NSData *data = [AVCapturePhotoOutput
@@ -92,31 +86,30 @@
 }
 
 - (UIImageOrientation)getImageRotation {
-  // Get the true device orientation out of the accelerometer.
-  const CMQuaternion orientation = _motionManager.deviceMotion.attitude.quaternion;
-  const double roll =
-      atan2(2 * (orientation.w * orientation.x + orientation.y * orientation.z),
-            1 - (2 * (orientation.x * orientation.x + orientation.y * orientation.y)));
-  const double pitch = asin(2 * (orientation.w * orientation.y - orientation.z * orientation.x));
-  const bool vertical = fabs(pitch) <= M_PI_4;
-  const bool pointedRight = pitch >= 0;
-  const bool tiltedUp = roll >= 0;
-  // Pixel input defaults to horizontal pointed left, as if the phone was held
-  // with the home button on the right. Rotate the photo accordingly based on
-  // the orientation the photo should really be displayed as. To make this
-  // extra confusing, the landscape orientations also need to be mirrored
-  // based on whether they were taken with the front facing camera.
-  if (vertical && tiltedUp) {              // [^]
-    return UIImageOrientationRight;        // rotate existing image 90* cw
-  } else if (vertical && !tiltedUp) {      // [v]
-    return UIImageOrientationLeft;         // rotate existing image 90* ccw
-  } else if (!vertical && pointedRight) {  // [>]
-    return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationDown /*rotate 180* */
-                                                          : UIImageOrientationUp /*do not rotate*/;
-  } else if (!vertical && !pointedRight) {  // [<]
+  float const threshold = 45.0;
+  BOOL (^isNearValue)(float value1, float value2) = ^BOOL(float value1, float value2) {
+    return fabsf(value1 - value2) < threshold;
+  };
+  BOOL (^isNearValueABS)(float value1, float value2) = ^BOOL(float value1, float value2) {
+    return isNearValue(fabsf(value1), fabsf(value2));
+  };
+  float yxAtan = (atan2(_motionManager.accelerometerData.acceleration.y,
+                        _motionManager.accelerometerData.acceleration.x)) *
+                 180 / M_PI;
+  if (isNearValue(-90.0, yxAtan)) {
+    return UIImageOrientationRight;
+  } else if (isNearValueABS(180.0, yxAtan)) {
     return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationUp
                                                           : UIImageOrientationDown;
+  } else if (isNearValueABS(0.0, yxAtan)) {
+    return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationDown /*rotate 180* */
+                                                          : UIImageOrientationUp /*do not rotate*/;
+  } else if (isNearValue(90.0, yxAtan)) {
+    return UIImageOrientationLeft;
   }
+  // If none of the above, then the device is likely facing straight down or straight up -- just
+  // pick something arbitrary
+  // TODO: Maybe use the UIInterfaceOrientation if in these scenarios
   return UIImageOrientationUp;
 }
 @end
@@ -147,11 +140,10 @@
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
-@property(nonatomic) vImage_Buffer destinationBuffer;
-@property(nonatomic) vImage_Buffer conversionBuffer;
 @property(nonatomic) CMMotionManager *motionManager;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
+                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error;
 
 - (void)start;
@@ -163,31 +155,21 @@
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
 @end
 
-@implementation FLTCam
-// Yuv420 format used for iOS 10+, which is minimum requirement for this plugin.
-// Format is used to stream image byte data to dart.
-FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+@implementation FLTCam {
+  dispatch_queue_t _dispatchQueue;
+}
+// Format used for video and image streaming.
+FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
+                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
+  _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
-  AVCaptureSessionPreset preset;
-  if ([resolutionPreset isEqualToString:@"high"]) {
-    preset = AVCaptureSessionPreset1280x720;
-    _previewSize = CGSizeMake(1280, 720);
-  } else if ([resolutionPreset isEqualToString:@"medium"]) {
-    preset = AVCaptureSessionPreset640x480;
-    _previewSize = CGSizeMake(640, 480);
-  } else {
-    NSAssert([resolutionPreset isEqualToString:@"low"], @"Unknown resolution preset %@",
-             resolutionPreset);
-    preset = AVCaptureSessionPreset352x288;
-    _previewSize = CGSizeMake(352, 288);
-  }
-  _captureSession.sessionPreset = preset;
+
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
@@ -196,11 +178,6 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
     *error = localError;
     return nil;
   }
-
-  vImageBuffer_Init(&_destinationBuffer, _previewSize.width, _previewSize.height, 32,
-                    kvImageNoFlags);
-  vImageBuffer_Init(&_conversionBuffer, _previewSize.width, _previewSize.height, 32,
-                    kvImageNoFlags);
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
@@ -222,8 +199,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
   [_captureSession addOutput:_capturePhotoOutput];
   _motionManager = [[CMMotionManager alloc] init];
-  [_motionManager startDeviceMotionUpdatesUsingReferenceFrame:
-                      CMAttitudeReferenceFrameXArbitraryCorrectedZVertical];
+  [_motionManager startAccelerometerUpdates];
+
+  [self setCaptureSessionPreset:resolutionPreset];
+
   return self;
 }
 
@@ -244,6 +223,59 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
                                                                    result:result
                                                             motionManager:_motionManager
                                                            cameraPosition:_captureDevice.position]];
+}
+
+- (void)setCaptureSessionPreset:(NSString *)resolutionPreset {
+  int presetIndex;
+  if ([resolutionPreset isEqualToString:@"high"]) {
+    presetIndex = 0;
+  } else if ([resolutionPreset isEqualToString:@"medium"]) {
+    presetIndex = 2;
+  } else {
+    NSAssert([resolutionPreset isEqualToString:@"low"], @"Unknown resolution preset %@",
+             resolutionPreset);
+    presetIndex = 3;
+  }
+
+  switch (presetIndex) {
+    case 0:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
+        _previewSize = CGSizeMake(3840, 2160);
+        break;
+      }
+    case 1:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
+        _previewSize = CGSizeMake(1920, 1080);
+        break;
+      }
+    case 2:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
+        _previewSize = CGSizeMake(1280, 720);
+        break;
+      }
+    case 3:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset640x480;
+        _previewSize = CGSizeMake(640, 480);
+        break;
+      }
+    case 4:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset352x288;
+        _previewSize = CGSizeMake(352, 288);
+        break;
+      }
+    default: {
+      NSException *exception = [NSException
+          exceptionWithName:@"NoAvailableCaptureSessionException"
+                     reason:@"No capture session available for current capture session."
+                   userInfo:nil];
+      @throw exception;
+    }
+  }
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
@@ -280,12 +312,31 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
 
       NSMutableArray *planes = [NSMutableArray array];
 
-      size_t planeCount = CVPixelBufferGetPlaneCount(pixelBuffer);
+      const Boolean isPlanar = CVPixelBufferIsPlanar(pixelBuffer);
+      size_t planeCount;
+      if (isPlanar) {
+        planeCount = CVPixelBufferGetPlaneCount(pixelBuffer);
+      } else {
+        planeCount = 1;
+      }
+
       for (int i = 0; i < planeCount; i++) {
-        void *planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
-        size_t bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
-        size_t height = CVPixelBufferGetHeightOfPlane(pixelBuffer, i);
-        size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, i);
+        void *planeAddress;
+        size_t bytesPerRow;
+        size_t height;
+        size_t width;
+
+        if (isPlanar) {
+          planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
+          bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
+          height = CVPixelBufferGetHeightOfPlane(pixelBuffer, i);
+          width = CVPixelBufferGetWidthOfPlane(pixelBuffer, i);
+        } else {
+          planeAddress = CVPixelBufferGetBaseAddress(pixelBuffer);
+          bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
+          height = CVPixelBufferGetHeight(pixelBuffer);
+          width = CVPixelBufferGetWidth(pixelBuffer);
+        }
 
         NSNumber *length = @(bytesPerRow * height);
         NSData *bytes = [NSData dataWithBytes:planeAddress length:length.unsignedIntegerValue];
@@ -387,7 +438,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   if (_latestPixelBuffer) {
     CFRelease(_latestPixelBuffer);
   }
-  [_motionManager stopDeviceMotionUpdates];
+  [_motionManager stopAccelerometerUpdates];
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
@@ -396,57 +447,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
     pixelBuffer = _latestPixelBuffer;
   }
 
-  return [self convertYUVImageToBGRA:pixelBuffer];
-}
-
-// Since video format was changed to kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange we have to
-// convert image to a usable format for flutter textures. Which is kCVPixelFormatType_32BGRA.
-- (CVPixelBufferRef)convertYUVImageToBGRA:(CVPixelBufferRef)pixelBuffer {
-  CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
-
-  vImage_YpCbCrToARGB infoYpCbCrToARGB;
-  vImage_YpCbCrPixelRange pixelRange;
-  pixelRange.Yp_bias = 16;
-  pixelRange.CbCr_bias = 128;
-  pixelRange.YpRangeMax = 235;
-  pixelRange.CbCrRangeMax = 240;
-  pixelRange.YpMax = 235;
-  pixelRange.YpMin = 16;
-  pixelRange.CbCrMax = 240;
-  pixelRange.CbCrMin = 16;
-
-  vImageConvert_YpCbCrToARGB_GenerateConversion(kvImage_YpCbCrToARGBMatrix_ITU_R_601_4, &pixelRange,
-                                                &infoYpCbCrToARGB, kvImage420Yp8_CbCr8,
-                                                kvImageARGB8888, kvImageNoFlags);
-
-  vImage_Buffer sourceLumaBuffer;
-  sourceLumaBuffer.data = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
-  sourceLumaBuffer.height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
-  sourceLumaBuffer.width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
-  sourceLumaBuffer.rowBytes = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 0);
-
-  vImage_Buffer sourceChromaBuffer;
-  sourceChromaBuffer.data = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 1);
-  sourceChromaBuffer.height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 1);
-  sourceChromaBuffer.width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 1);
-  sourceChromaBuffer.rowBytes = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 1);
-
-  vImageConvert_420Yp8_CbCr8ToARGB8888(&sourceLumaBuffer, &sourceChromaBuffer, &_destinationBuffer,
-                                       &infoYpCbCrToARGB, NULL, 255,
-                                       kvImagePrintDiagnosticsToConsole);
-
-  CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
-  CVPixelBufferRelease(pixelBuffer);
-
-  const uint8_t map[4] = {3, 2, 1, 0};
-  vImagePermuteChannels_ARGB8888(&_destinationBuffer, &_conversionBuffer, map, kvImageNoFlags);
-
-  CVPixelBufferRef newPixelBuffer = NULL;
-  CVPixelBufferCreateWithBytes(NULL, _conversionBuffer.width, _conversionBuffer.height,
-                               kCVPixelFormatType_32BGRA, _conversionBuffer.data,
-                               _conversionBuffer.rowBytes, NULL, NULL, NULL, &newPixelBuffer);
-
-  return newPixelBuffer;
+  return pixelBuffer;
 }
 
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
@@ -466,9 +467,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
       _eventSink(@{@"event" : @"error", @"errorDescription" : @"Setup Writer Failed"});
       return;
     }
-    [_captureSession stopRunning];
     _isRecording = YES;
-    [_captureSession startRunning];
     result(nil);
   } else {
     _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
@@ -495,7 +494,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
         [NSError errorWithDomain:NSCocoaErrorDomain
                             code:NSURLErrorResourceUnavailable
                         userInfo:@{NSLocalizedDescriptionKey : @"Video is not recording!"}];
-    result([error flutterError]);
+    result(getFlutterError(error));
   }
 }
 
@@ -571,9 +570,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   _audioWriterInput.expectsMediaDataInRealTime = YES;
   [_videoWriter addInput:_videoWriterInput];
   [_videoWriter addInput:_audioWriterInput];
-  dispatch_queue_t queue = dispatch_queue_create("MyQueue", NULL);
-  [_captureVideoOutput setSampleBufferDelegate:self queue:queue];
-  [_audioOutput setSampleBufferDelegate:self queue:queue];
+  [_captureVideoOutput setSampleBufferDelegate:self queue:_dispatchQueue];
+  [_audioOutput setSampleBufferDelegate:self queue:_dispatchQueue];
 
   return YES;
 }
@@ -613,7 +611,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
 @property(readonly, nonatomic) FLTCam *camera;
 @end
 
-@implementation CameraPlugin
+@implementation CameraPlugin {
+  dispatch_queue_t _dispatchQueue;
+}
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/camera"
@@ -633,12 +633,18 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"init" isEqualToString:call.method]) {
-    if (_camera) {
-      [_camera close];
-    }
-    result(nil);
-  } else if ([@"availableCameras" isEqualToString:call.method]) {
+  if (_dispatchQueue == nil) {
+    _dispatchQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
+  }
+
+  // Invoke the plugin on another dispatch queue to avoid blocking the UI.
+  dispatch_async(_dispatchQueue, ^{
+    [self handleMethodCallAsync:call result:result];
+  });
+}
+
+- (void)handleMethodCallAsync:(FlutterMethodCall *)call result:(FlutterResult)result {
+  if ([@"availableCameras" isEqualToString:call.method]) {
     AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
         discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
                               mediaType:AVMediaTypeVideo
@@ -662,6 +668,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
       [reply addObject:@{
         @"name" : [device uniqueID],
         @"lensFacing" : lensFacing,
+        @"sensorOrientation" : @90,
       }];
     }
     result(reply);
@@ -671,9 +678,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
     NSError *error;
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
+                                       dispatchQueue:_dispatchQueue
                                                error:&error];
     if (error) {
-      result([error flutterError]);
+      result(getFlutterError(error));
     } else {
       if (_camera) {
         [_camera close];
@@ -714,6 +722,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_camera close];
+      _dispatchQueue = nil;
+      result(nil);
+    } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
+      [_camera setUpCaptureSessionForAudio];
       result(nil);
     } else if ([@"startVideoRecording" isEqualToString:call.method]) {
       [_camera startVideoRecordingAtPath:call.arguments[@"filePath"] result:result];

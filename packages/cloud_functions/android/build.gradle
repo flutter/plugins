@@ -1,3 +1,16 @@
+def PLUGIN = "cloud_functions";
+def ANDROIDX_WARNING = "flutterPluginsAndroidXWarning";
+gradle.buildFinished { buildResult ->
+    if (buildResult.failure && !rootProject.ext.has(ANDROIDX_WARNING)) {
+        println '         *********************************************************'
+        println 'WARNING: This version of ' + PLUGIN + ' will break your Android build if it or its dependencies aren\'t compatible with AndroidX.'
+        println '         See https://goo.gl/CP92wY for more information on the problem and how to fix it.'
+        println '         This warning prints for all Android build failures. The real root cause of the error may be unrelated.'
+        println '         *********************************************************'
+        rootProject.ext.set(ANDROIDX_WARNING, true);
+    }
+}
+
 group 'io.flutter.plugins.firebase.cloudfunctions.cloudfunctions'
 version '1.0-SNAPSHOT'
 
@@ -33,5 +46,6 @@ android {
     }
     dependencies {
         api 'com.google.firebase:firebase-functions:16.1.1'
+        implementation 'androidx.annotation:annotation:1.0.0'
     }
 }

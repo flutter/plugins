@@ -158,9 +158,15 @@ public class VideoPlayerPlugin implements MethodCallHandler {
               super.onPlayerStateChanged(playWhenReady, playbackState);
               if (playbackState == Player.STATE_BUFFERING) {
                 sendBufferingUpdate();
-              } else if (playbackState == Player.STATE_READY && !isInitialized) {
-                isInitialized = true;
-                sendInitialized();
+              } else if (playbackState == Player.STATE_READY) {
+                if (!isInitialized) {
+                  isInitialized = true;
+                  sendInitialized();
+                }
+              } else if (playbackState == Player.STATE_ENDED) {
+                Map<String, Object> event = new HashMap<>();
+                event.put("event", "completed");
+                eventSink.success(event);
               }
             }
 

@@ -1,7 +1,7 @@
-Contributing to Flutter
-=======================
+Contributing to Flutter Plugins
+===============================
 
-[![Build Status](https://travis-ci.org/flutter/plugins.svg)](https://travis-ci.org/flutter/plugins)
+[![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/master)
 
 _See also: [Flutter's code of conduct](https://flutter.io/design-principles/#code-of-conduct)_
 
@@ -40,6 +40,24 @@ USB and debugging enabled on that device.
  * `cd packages/battery/example`
  * `flutter run`
 
+Running the tests
+-----------------
+
+Flutter plugins have both unit tests of their Dart API and integration tests that run on a virtual or actual device.
+
+To run the unit tests:
+
+```
+flutter test test/<name_of_plugin>_test.dart
+```
+
+To run the integration tests:
+
+```
+cd example
+flutter drive test/<name_of_plugin>.dart
+```
+
 Contributing code
 -----------------
 
@@ -74,19 +92,16 @@ To send us a pull request:
 
 Please make sure all your checkins have detailed commit messages explaining the patch.
 
-Once you've gotten an LGTM from a project maintainer and once your PR has received
-the green light from all our automated testing (Travis, AppVeyor, etc), submit your
-changes to the `master` branch using one of the following methods:
+Plugins tests are run automatically on contributions using Cirrus CI. However, due to
+cost constraints, pull requests from non-committers may not run all the tests
+automatically.
 
-* Wait for one of the project maintainers to submit it for you.
-* Click the green "Merge pull request" button on the GitHub UI of your pull
-  request (requires commit access).
+Once you've gotten an LGTM from a project maintainer and once your PR has received
+the green light from all our automated testing, wait for one the package maintainers
+to merge the pull request and `pub submit` any affected packages.
 
 You must complete the
 [Contributor License Agreement](https://cla.developers.google.com/clas).
 You can do this online, and it only takes a minute.
 If you've never submitted code before, you must add your (or your
 organization's) name and contact info to the [AUTHORS](AUTHORS) file.
-
-We grant commit access to people who have gained our trust and demonstrated
-a commitment to Flutter.

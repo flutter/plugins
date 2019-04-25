@@ -21,12 +21,16 @@ try {
 }
 
 project.ext {
-    // TODO(YOU): Set this to match your package ID in the Play Developer Console (see example/README.md).
-    APP_ID = "io.flutter.plugins.inapppurchaseexample.DEFAULT_DO_NOT_USE"
+    // TODO(YOU): Create release keys and a `keystore.properties` file. See
+    // `example/README.md` for more info and `keystore.example.properties` for an
+    // example.
+    APP_ID = configured ? keystoreProperties['appId'] : "io.flutter.plugins.inapppurchaseexample.DEFAULT_DO_NOT_USE"
     KEYSTORE_STORE_FILE = configured ? rootProject.file(keystoreProperties['storeFile']) : null
     KEYSTORE_STORE_PASSWORD = keystoreProperties['storePassword']
     KEYSTORE_KEY_ALIAS = keystoreProperties['keyAlias']
     KEYSTORE_KEY_PASSWORD = keystoreProperties['keyPassword']
+    VERSION_CODE = configured ? keystoreProperties['versionCode'].toInteger() : 1
+    VERSION_NAME = configured ? keystoreProperties['versionName'] : "0.0.1"
 }
 
 if (project.APP_ID == "io.flutter.plugins.inapppurchaseexample.DEFAULT_DO_NOT_USE") {
@@ -44,16 +48,6 @@ if (!configured) {
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
     throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-}
-
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
 }
 
 apply plugin: 'com.android.application'
@@ -79,8 +73,8 @@ android {
         applicationId project.APP_ID
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        versionCode project.VERSION_CODE
+        versionName project.VERSION_NAME
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

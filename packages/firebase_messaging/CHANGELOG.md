@@ -1,4 +1,52 @@
+## 4.0.0+4
+
+* Remove obsolete `use_frameworks!` instruction.
+
+## 4.0.0+3
+
+* Update iOS configuration documentation.
+
+## 4.0.0+2
+
+* Fix example app's floating action button that stopped working due to a breaking change.
+
+## 4.0.0+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 4.0.0
+
+*  **Breaking Change** Update message structure for onMessage to match onLaunch and onResume
+
+## 3.0.1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 3.0.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+  This was originally incorrectly pushed in the `2.2.0` update.
+
+## 2.2.0+1
+
+* **Revert the breaking 2.2.0 update**. 2.2.0 was known to be breaking and
+  should have incremented the major version number instead of the minor. This
+  revert is in and of itself breaking for anyone that has already migrated
+  however. Anyone who has already migrated their app to AndroidX should
+  immediately update to `3.0.0` instead. That's the correctly versioned new push
+  of `2.2.0`.
+
 ## 2.2.0
+
+* **BAD**. This was a breaking change that was incorrectly published on a minor
+  version upgrade, should never have happened. Reverted by `2.2.0+1`.
+
 * **Breaking change**. Migrate from the deprecated original Android Support
   Library to AndroidX. This shouldn't result in any functional changes, but it
   requires any Android apps using this plugin to [also
@@ -39,7 +87,7 @@
 
 ## 1.0.2
 
-* Updated Gradle tooling to match Android Studio 3.1.2.
+* Updated Gradle tooling to match Android Studio 3.2.2.
 
 ## 1.0.1
 
@@ -81,7 +129,7 @@
 
 * Enabled use in Swift projects.
 
-## 0.1.2
+## 0.2.2
 
 * Fix for APNS not being correctly registered on iOS when reinstalling application.
 
@@ -149,7 +197,7 @@ In FirebaseMessagingPlugin.m:
 
 * Updated to latest plugin API
 
-## 0.0.1+2
+## 0.0.2.2
 
 * Downgraded gradle dependency for example app to make `flutter run` happy
 

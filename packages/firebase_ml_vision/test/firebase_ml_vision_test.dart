@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -23,13 +22,9 @@ void main() {
         switch (methodCall.method) {
           case 'BarcodeDetector#detectInImage':
             return returnValue;
-          case 'FaceDetector#detectInImage':
-            return returnValue;
-          case 'LabelDetector#detectInImage':
+          case 'FaceDetector#processImage':
             return returnValue;
           case 'TextRecognizer#processImage':
-            return returnValue;
-          case 'CloudLabelDetector#detectInImage':
             return returnValue;
           default:
             return null;
@@ -106,13 +101,13 @@ void main() {
             'rawValue': 'hello:raw',
             'displayValue': 'hello:display',
             'format': 0,
-            'left': 1,
-            'top': 2,
-            'width': 3,
-            'height': 4,
+            'left': 1.0,
+            'top': 2.0,
+            'width': 3.0,
+            'height': 4.0,
             'points': <dynamic>[
-              <dynamic>[5, 6],
-              <dynamic>[7, 8],
+              <dynamic>[5.0, 6.0],
+              <dynamic>[7.0, 8.0],
             ],
           },
         ];
@@ -141,12 +136,12 @@ void main() {
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.unknown);
-        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
+        expect(barcode.boundingBox, Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
         expect(barcode.rawValue, 'hello:raw');
         expect(barcode.displayValue, 'hello:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
+        expect(barcode.cornerPoints, const <Offset>[
+          Offset(5.0, 6.0),
+          Offset(7.0, 8.0),
         ]);
       });
 
@@ -415,8 +410,8 @@ void main() {
             'valueType': 0,
             'format': 0,
             'points': <dynamic>[
-              <dynamic>[17, 18],
-              <dynamic>[19, 20],
+              <dynamic>[17.0, 18.0],
+              <dynamic>[19.0, 20.0],
             ],
           },
         ];
@@ -427,9 +422,9 @@ void main() {
         expect(barcode.boundingBox, null);
         expect(barcode.rawValue, 'potato:raw');
         expect(barcode.displayValue, 'potato:display');
-        expect(barcode.cornerPoints, const <Point<int>>[
-          Point<int>(17, 18),
-          Point<int>(19, 20),
+        expect(barcode.cornerPoints, const <Offset>[
+          Offset(17.0, 18.0),
+          Offset(19.0, 20.0),
         ]);
       });
 
@@ -502,10 +497,10 @@ void main() {
       setUp(() {
         testFaces = <dynamic>[
           <dynamic, dynamic>{
-            'left': 0,
-            'top': 1,
-            'width': 2,
-            'height': 3,
+            'left': 0.0,
+            'top': 1.0,
+            'width': 2.0,
+            'height': 3.0,
             'headEulerAngleY': 4.0,
             'headEulerAngleZ': 5.0,
             'leftEyeOpenProbability': 0.4,
@@ -528,7 +523,7 @@ void main() {
         ];
       });
 
-      test('detectInImage', () async {
+      test('processImage', () async {
         returnValue = testFaces;
 
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
@@ -545,11 +540,11 @@ void main() {
           'empty',
         );
 
-        final List<Face> faces = await detector.detectInImage(image);
+        final List<Face> faces = await detector.processImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
-            'FaceDetector#detectInImage',
+            'FaceDetector#processImage',
             arguments: <String, dynamic>{
               'type': 'file',
               'path': 'empty',
@@ -567,7 +562,7 @@ void main() {
         ]);
 
         final Face face = faces[0];
-        expect(face.boundingBox, const Rectangle<int>(0, 1, 2, 3));
+        expect(face.boundingBox, Rect.fromLTWH(0.0, 1.0, 2.0, 3.0));
         expect(face.headEulerAngleY, 4.0);
         expect(face.headEulerAngleZ, 5.0);
         expect(face.leftEyeOpenProbability, 0.4);
@@ -579,23 +574,23 @@ void main() {
           expect(face.getLandmark(type).type, type);
         }
 
-        Point<double> p(FaceLandmarkType type) {
+        Offset p(FaceLandmarkType type) {
           return face.getLandmark(type).position;
         }
 
-        expect(p(FaceLandmarkType.bottomMouth), const Point<double>(0.1, 1.1));
-        expect(p(FaceLandmarkType.leftCheek), const Point<double>(2.1, 3.1));
-        expect(p(FaceLandmarkType.leftEar), const Point<double>(4.1, 5.1));
-        expect(p(FaceLandmarkType.leftEye), const Point<double>(6.1, 7.1));
-        expect(p(FaceLandmarkType.leftMouth), const Point<double>(8.1, 9.1));
-        expect(p(FaceLandmarkType.noseBase), const Point<double>(10.1, 11.1));
-        expect(p(FaceLandmarkType.rightCheek), const Point<double>(12.1, 13.1));
-        expect(p(FaceLandmarkType.rightEar), const Point<double>(14.1, 15.1));
-        expect(p(FaceLandmarkType.rightEye), const Point<double>(16.1, 17.1));
-        expect(p(FaceLandmarkType.rightMouth), const Point<double>(18.1, 19.1));
+        expect(p(FaceLandmarkType.bottomMouth), const Offset(0.1, 1.1));
+        expect(p(FaceLandmarkType.leftCheek), const Offset(2.1, 3.1));
+        expect(p(FaceLandmarkType.leftEar), const Offset(4.1, 5.1));
+        expect(p(FaceLandmarkType.leftEye), const Offset(6.1, 7.1));
+        expect(p(FaceLandmarkType.leftMouth), const Offset(8.1, 9.1));
+        expect(p(FaceLandmarkType.noseBase), const Offset(10.1, 11.1));
+        expect(p(FaceLandmarkType.rightCheek), const Offset(12.1, 13.1));
+        expect(p(FaceLandmarkType.rightEar), const Offset(14.1, 15.1));
+        expect(p(FaceLandmarkType.rightEye), const Offset(16.1, 17.1));
+        expect(p(FaceLandmarkType.rightMouth), const Offset(18.1, 19.1));
       });
 
-      test('detectInImage with null landmark', () async {
+      test('processImage with null landmark', () async {
         testFaces[0]['landmarks']['bottomMouth'] = null;
         returnValue = testFaces;
 
@@ -606,12 +601,12 @@ void main() {
           'empty',
         );
 
-        final List<Face> faces = await detector.detectInImage(image);
+        final List<Face> faces = await detector.processImage(image);
 
         expect(faces[0].getLandmark(FaceLandmarkType.bottomMouth), isNull);
       });
 
-      test('detectInImage no faces', () async {
+      test('processImage no faces', () async {
         returnValue = <dynamic>[];
 
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
@@ -621,177 +616,8 @@ void main() {
           'empty',
         );
 
-        final List<Face> faces = await detector.detectInImage(image);
+        final List<Face> faces = await detector.processImage(image);
         expect(faces, isEmpty);
-      });
-    });
-
-    group('$LabelDetector', () {
-      test('detectInImage', () async {
-        final List<dynamic> labelData = <dynamic>[
-          <dynamic, dynamic>{
-            'confidence': 0.6,
-            'entityId': 'hello',
-            'label': 'friend',
-          },
-          <dynamic, dynamic>{
-            'confidence': 0.8,
-            'entityId': 'hi',
-            'label': 'brother',
-          },
-        ];
-
-        returnValue = labelData;
-
-        final LabelDetector detector = FirebaseVision.instance.labelDetector(
-          const LabelDetectorOptions(confidenceThreshold: 0.2),
-        );
-
-        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
-          'empty',
-        );
-
-        final List<Label> labels = await detector.detectInImage(image);
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'LabelDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'type': 'file',
-              'path': 'empty',
-              'bytes': null,
-              'metadata': null,
-              'options': <String, dynamic>{
-                'confidenceThreshold': 0.2,
-              },
-            },
-          ),
-        ]);
-
-        expect(labels[0].confidence, 0.6);
-        expect(labels[0].entityId, 'hello');
-        expect(labels[0].label, 'friend');
-
-        expect(labels[1].confidence, 0.8);
-        expect(labels[1].entityId, 'hi');
-        expect(labels[1].label, 'brother');
-      });
-
-      test('detectInImage no blocks', () async {
-        returnValue = <dynamic>[];
-
-        final LabelDetector detector = FirebaseVision.instance.labelDetector(
-          const LabelDetectorOptions(),
-        );
-        final FirebaseVisionImage image =
-            FirebaseVisionImage.fromFilePath('empty');
-
-        final List<Label> labels = await detector.detectInImage(image);
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'LabelDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'type': 'file',
-              'path': 'empty',
-              'bytes': null,
-              'metadata': null,
-              'options': <String, dynamic>{
-                'confidenceThreshold': 0.5,
-              },
-            },
-          ),
-        ]);
-
-        expect(labels, isEmpty);
-      });
-    });
-
-    group('$CloudLabelDetector', () {
-      test('detectInImage', () async {
-        final List<dynamic> labelData = <dynamic>[
-          <dynamic, dynamic>{
-            'confidence': 0.6,
-            'entityId': '/m/0',
-            'label': 'banana',
-          },
-          <dynamic, dynamic>{
-            'confidence': 0.8,
-            'entityId': '/m/1',
-            'label': 'apple',
-          },
-        ];
-
-        returnValue = labelData;
-
-        final CloudLabelDetector detector =
-            FirebaseVision.instance.cloudLabelDetector(
-          const CloudDetectorOptions(
-            maxResults: 5,
-            modelType: CloudModelType.latest,
-          ),
-        );
-
-        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
-          'empty',
-        );
-
-        final List<Label> labels = await detector.detectInImage(image);
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'CloudLabelDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'type': 'file',
-              'path': 'empty',
-              'bytes': null,
-              'metadata': null,
-              'options': <String, dynamic>{
-                'maxResults': 5,
-                'modelType': 'latest',
-              },
-            },
-          ),
-        ]);
-
-        expect(labels[0].confidence, 0.6);
-        expect(labels[0].entityId, '/m/0');
-        expect(labels[0].label, 'banana');
-
-        expect(labels[1].confidence, 0.8);
-        expect(labels[1].entityId, '/m/1');
-        expect(labels[1].label, 'apple');
-      });
-
-      test('detectInImage no blocks', () async {
-        returnValue = <dynamic>[];
-
-        final CloudLabelDetector detector =
-            FirebaseVision.instance.cloudLabelDetector(
-          const CloudDetectorOptions(),
-        );
-        final FirebaseVisionImage image =
-            FirebaseVisionImage.fromFilePath('empty');
-
-        final List<Label> labels = await detector.detectInImage(image);
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'CloudLabelDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'type': 'file',
-              'path': 'empty',
-              'bytes': null,
-              'metadata': null,
-              'options': <String, dynamic>{
-                'maxResults': 10,
-                'modelType': 'stable',
-              },
-            },
-          ),
-        ]);
-
-        expect(labels, isEmpty);
       });
     });
 
@@ -806,13 +632,13 @@ void main() {
         final List<dynamic> elements = <dynamic>[
           <dynamic, dynamic>{
             'text': 'hello',
-            'left': 1,
-            'top': 2,
-            'width': 3,
-            'height': 4,
+            'left': 1.0,
+            'top': 2.0,
+            'width': 3.0,
+            'height': 4.0,
             'points': <dynamic>[
-              <dynamic>[5, 6],
-              <dynamic>[7, 8],
+              <dynamic>[5.0, 6.0],
+              <dynamic>[7.0, 8.0],
             ],
             'recognizedLanguages': <dynamic>[
               <dynamic, dynamic>{
@@ -826,13 +652,13 @@ void main() {
           },
           <dynamic, dynamic>{
             'text': 'my',
-            'left': 4,
-            'top': 3,
-            'width': 2,
-            'height': 1,
+            'left': 4.0,
+            'top': 3.0,
+            'width': 2.0,
+            'height': 1.0,
             'points': <dynamic>[
-              <dynamic>[6, 5],
-              <dynamic>[8, 7],
+              <dynamic>[6.0, 5.0],
+              <dynamic>[8.0, 7.0],
             ],
             'recognizedLanguages': <dynamic>[],
             'confidence': 0.2,
@@ -842,13 +668,13 @@ void main() {
         final List<dynamic> lines = <dynamic>[
           <dynamic, dynamic>{
             'text': 'friend',
-            'left': 5,
-            'top': 6,
-            'width': 7,
-            'height': 8,
+            'left': 5.0,
+            'top': 6.0,
+            'width': 7.0,
+            'height': 8.0,
             'points': <dynamic>[
-              <dynamic>[9, 10],
-              <dynamic>[11, 12],
+              <dynamic>[9.0, 10.0],
+              <dynamic>[11.0, 12.0],
             ],
             'recognizedLanguages': <dynamic>[
               <dynamic, dynamic>{
@@ -863,13 +689,13 @@ void main() {
           },
           <dynamic, dynamic>{
             'text': 'how',
-            'left': 8,
-            'top': 7,
-            'width': 4,
-            'height': 5,
+            'left': 8.0,
+            'top': 7.0,
+            'width': 4.0,
+            'height': 5.0,
             'points': <dynamic>[
-              <dynamic>[10, 9],
-              <dynamic>[12, 11],
+              <dynamic>[10.0, 9.0],
+              <dynamic>[12.0, 11.0],
             ],
             'recognizedLanguages': <dynamic>[],
             'elements': <dynamic>[],
@@ -880,13 +706,13 @@ void main() {
         final List<dynamic> blocks = <dynamic>[
           <dynamic, dynamic>{
             'text': 'friend',
-            'left': 13,
-            'top': 14,
-            'width': 15,
-            'height': 16,
+            'left': 13.0,
+            'top': 14.0,
+            'width': 15.0,
+            'height': 16.0,
             'points': <dynamic>[
-              <dynamic>[17, 18],
-              <dynamic>[19, 20],
+              <dynamic>[17.0, 18.0],
+              <dynamic>[19.0, 20.0],
             ],
             'recognizedLanguages': <dynamic>[
               <dynamic, dynamic>{
@@ -901,13 +727,13 @@ void main() {
           },
           <dynamic, dynamic>{
             'text': 'hello',
-            'left': 14,
-            'top': 13,
-            'width': 16,
-            'height': 15,
+            'left': 14.0,
+            'top': 13.0,
+            'width': 16.0,
+            'height': 15.0,
             'points': <dynamic>[
-              <dynamic>[18, 17],
-              <dynamic>[20, 19],
+              <dynamic>[18.0, 17.0],
+              <dynamic>[20.0, 19.0],
             ],
             'recognizedLanguages': <dynamic>[],
             'lines': <dynamic>[],
@@ -930,11 +756,11 @@ void main() {
           expect(text.blocks, hasLength(2));
 
           TextBlock block = text.blocks[0];
-          expect(block.boundingBox, const Rectangle<int>(13, 14, 15, 16));
+          expect(block.boundingBox, Rect.fromLTWH(13.0, 14.0, 15.0, 16.0));
           expect(block.text, 'friend');
-          expect(block.cornerPoints, const <Point<int>>[
-            Point<int>(17, 18),
-            Point<int>(19, 20),
+          expect(block.cornerPoints, const <Offset>[
+            Offset(17.0, 18.0),
+            Offset(19.0, 20.0),
           ]);
           expect(block.recognizedLanguages, hasLength(2));
           expect(block.recognizedLanguages[0].languageCode, 'ij');
@@ -942,11 +768,11 @@ void main() {
           expect(block.confidence, 0.5);
 
           block = text.blocks[1];
-          expect(block.boundingBox, const Rectangle<int>(14, 13, 16, 15));
+          expect(block.boundingBox, Rect.fromLTWH(14.0, 13.0, 16.0, 15.0));
           expect(block.text, 'hello');
-          expect(block.cornerPoints, const <Point<int>>[
-            Point<int>(18, 17),
-            Point<int>(20, 19),
+          expect(block.cornerPoints, const <Offset>[
+            Offset(18.0, 17.0),
+            Offset(20.0, 19.0),
           ]);
           expect(block.confidence, 0.6);
         });
@@ -957,11 +783,11 @@ void main() {
           final VisionText text = await recognizer.processImage(image);
 
           TextLine line = text.blocks[0].lines[0];
-          expect(line.boundingBox, const Rectangle<int>(5, 6, 7, 8));
+          expect(line.boundingBox, Rect.fromLTWH(5, 6, 7, 8));
           expect(line.text, 'friend');
-          expect(line.cornerPoints, const <Point<int>>[
-            Point<int>(9, 10),
-            Point<int>(11, 12),
+          expect(line.cornerPoints, const <Offset>[
+            Offset(9.0, 10.0),
+            Offset(11.0, 12.0),
           ]);
           expect(line.recognizedLanguages, hasLength(2));
           expect(line.recognizedLanguages[0].languageCode, 'ef');
@@ -969,11 +795,11 @@ void main() {
           expect(line.confidence, 0.3);
 
           line = text.blocks[0].lines[1];
-          expect(line.boundingBox, const Rectangle<int>(8, 7, 4, 5));
+          expect(line.boundingBox, Rect.fromLTWH(8.0, 7.0, 4.0, 5.0));
           expect(line.text, 'how');
-          expect(line.cornerPoints, const <Point<int>>[
-            Point<int>(10, 9),
-            Point<int>(12, 11),
+          expect(line.cornerPoints, const <Offset>[
+            Offset(10.0, 9.0),
+            Offset(12.0, 11.0),
           ]);
           expect(line.confidence, 0.4);
         });
@@ -984,11 +810,11 @@ void main() {
           final VisionText text = await recognizer.processImage(image);
 
           TextElement element = text.blocks[0].lines[0].elements[0];
-          expect(element.boundingBox, const Rectangle<int>(1, 2, 3, 4));
+          expect(element.boundingBox, Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
           expect(element.text, 'hello');
-          expect(element.cornerPoints, const <Point<int>>[
-            Point<int>(5, 6),
-            Point<int>(7, 8),
+          expect(element.cornerPoints, const <Offset>[
+            Offset(5.0, 6.0),
+            Offset(7.0, 8.0),
           ]);
           expect(element.recognizedLanguages, hasLength(2));
           expect(element.recognizedLanguages[0].languageCode, 'ab');
@@ -996,11 +822,11 @@ void main() {
           expect(element.confidence, 0.1);
 
           element = text.blocks[0].lines[0].elements[1];
-          expect(element.boundingBox, const Rectangle<int>(4, 3, 2, 1));
+          expect(element.boundingBox, Rect.fromLTWH(4.0, 3.0, 2.0, 1.0));
           expect(element.text, 'my');
-          expect(element.cornerPoints, const <Point<int>>[
-            Point<int>(6, 5),
-            Point<int>(8, 7),
+          expect(element.cornerPoints, const <Offset>[
+            Offset(6.0, 5.0),
+            Offset(8.0, 7.0),
           ]);
           expect(element.confidence, 0.2);
         });

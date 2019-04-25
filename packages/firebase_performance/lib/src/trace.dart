@@ -9,7 +9,7 @@ part of firebase_performance;
 /// A trace is a report of performance data associated with some of the
 /// code in your app. You can have multiple custom traces, and it is
 /// possible to have more than one custom trace running at a time. Each custom
-/// trace can have multiple counters and attributes added to help measure
+/// trace can have multiple metrics and attributes added to help measure
 /// performance related events. A trace also measures the time between calling
 /// start() and stop().
 ///
@@ -35,7 +35,7 @@ class Trace extends PerformanceAttributes {
   bool _hasStarted = false;
   bool _hasStopped = false;
 
-  final HashMap<String, int> _counters = HashMap<String, int>();
+  final HashMap<String, int> _metrics = HashMap<String, int>();
 
   /// Starts this trace.
   ///
@@ -71,7 +71,7 @@ class Trace extends PerformanceAttributes {
     final Map<String, dynamic> data = <String, dynamic>{
       'handle': _handle,
       'name': _name,
-      'counters': _counters,
+      'metrics': _metrics,
       'attributes': _attributes,
     };
 
@@ -92,15 +92,28 @@ class Trace extends PerformanceAttributes {
   /// The name of the counter requires no leading or
   /// trailing whitespace, no leading underscore _ character, and max length of
   /// 32 characters.
+  @Deprecated('Use `incrementMetric` instead.')
   void incrementCounter(String name, [int incrementBy = 1]) {
+    incrementMetric(name, incrementBy);
+  }
+
+  /// Increments the metric with the given [name] by [incrementBy].
+  ///
+  /// If a metric does not already exist, a new one will be created with the
+  /// initial value [incrementBy]. If the trace has not been started or has
+  /// already been stopped, an assertion error is thrown.
+  ///
+  /// The name of the metric requires no leading or trailing whitespace, no
+  /// leading underscore _ character, and max length of 32 characters.
+  void incrementMetric(String name, int incrementBy) {
     assert(!_hasStopped);
     assert(name != null);
     assert(!name.startsWith(RegExp(r'[_\s]')));
     assert(!name.contains(RegExp(r'[_\s]$')));
     assert(name.length <= 32);
 
-    _counters.putIfAbsent(name, () => 0);
-    _counters[name] += incrementBy;
+    _metrics.putIfAbsent(name, () => 0);
+    _metrics[name] += incrementBy;
   }
 
   /// Sets a String [value] for the specified [attribute].

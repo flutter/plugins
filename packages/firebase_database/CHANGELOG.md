@@ -1,9 +1,61 @@
-## 1.1.0
+## 2.0.3
+
+* Provide a `toString` implementation for `DatabaseError`.
+
+## 2.0.2+1
+
+* Added an integration test for transactions.
+
+## 2.0.2
+
+* Fix the issue that `getDictionaryFromError` always returns non nil result even when the parameter is nil.
+
+## 2.0.1+3
+
+* Fixing DatabaseReference.set unhandled exception which happened when a successful operation was performed.
+
+## 2.0.1+2
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 2.0.1+1
+
+* Remove categories.
+
+## 2.0.1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 2.0.0
+
 * **Breaking change**. Migrate from the deprecated original Android Support
   Library to AndroidX. This shouldn't result in any functional changes, but it
   requires any Android apps using this plugin to [also
   migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
   using the original support library.
+
+  This was originally incorrectly pushed in the `1.1.0` update.
+
+## 1.1.0+1
+
+* **Revert the breaking 1.1.0 update**. 1.1.0 was known to be breaking and
+  should have incremented the major version number instead of the minor. This
+  revert is in and of itself breaking for anyone that has already migrated
+  however. Anyone who has already migrated their app to AndroidX should
+  immediately update to `2.0.0` instead. That's the correctly versioned new push
+  of `1.1.0`.
+
+## 1.1.0
+
+* **BAD**. This was a breaking change that was incorrectly published on a minor
+  version upgrade, should never have happened. Reverted by 1.1.0+1.
+
+  "**Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library."
 
 ## 1.0.5
 
