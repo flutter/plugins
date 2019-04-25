@@ -140,11 +140,10 @@ class FileUtils {
     InputStream inputStream = null;
     OutputStream outputStream = null;
     boolean success = false;
-    String extension = getImageExtension(context, uri);
-    String extensionWithDot = TextUtils.isEmpty(extension) ? "" : "." + extension;
     try {
+      String extension = getImageExtension(context, uri);
       inputStream = context.getContentResolver().openInputStream(uri);
-      file = File.createTempFile("image_picker", extensionWithDot, context.getCacheDir());
+      file = File.createTempFile("image_picker", extension, context.getCacheDir());
       outputStream = new FileOutputStream(file);
       if (inputStream != null) {
         copy(inputStream, outputStream);
@@ -168,8 +167,11 @@ class FileUtils {
     return success ? file.getPath() : null;
   }
 
+  /**
+   * @return extension of image with dot, or default .jpg if it none.
+   */
   private static String getImageExtension(Context context, Uri uriImage) {
-    String extension = "";
+    String extension = null;
     Cursor cursor = null;
 
     try {
@@ -183,14 +185,17 @@ class FileUtils {
 
         extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
       }
-    } catch (Exception ignored) {
-
     } finally {
       if (cursor != null) {
         cursor.close();
       }
     }
-    return extension;
+
+    if (extension == null) {
+      //default extension for matches the previous behavior of the plugin
+      extension = "jpg";
+    }
+    return "." + extension;
   }
 
   private static void copy(InputStream in, OutputStream out) throws IOException {
