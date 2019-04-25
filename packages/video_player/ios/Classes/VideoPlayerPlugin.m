@@ -342,6 +342,19 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _player.volume = (volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume);
 }
 
+- (void)setPlayBackSpeed:(double)speed {
+  if (speed == 1.0 || speed == 0.0) {
+    _player.rate = speed;
+  } else if (speed < 0 || speed > 2.0) {
+    NSLog(@"Speed outside supported range %f", speed);
+  } else if ((speed > 1.0 && _player.currentItem.canPlayFastForward) ||
+             (speed < 1.0 && _player.currentItem.canPlaySlowForward)) {
+    _player.rate = speed;
+  } else {
+    NSLog(@"Unsupported speed. Cannot play fast/slow forward: %f", speed);
+  }
+}
+
 - (CVPixelBufferRef)copyPixelBuffer {
   CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
   if ([_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
@@ -493,6 +506,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       result(nil);
     } else if ([@"pause" isEqualToString:call.method]) {
       [player pause];
+      result(nil);
+    } else if ([@"setPlayBackSpeed" isEqualToString:call.method]) {
+      [player setPlayBackSpeed:[[argsMap objectForKey:@"speed"] doubleValue]];
       result(nil);
     } else {
       result(FlutterMethodNotImplemented);
