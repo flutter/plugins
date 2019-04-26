@@ -3,6 +3,12 @@
 
 * Implemented playback speed feature.
 
+## 0.10.0+7
+
+* Android: Fix issue where buffering status in percentage instead of milliseconds
+
+* Android: Update buffering status everytime we notify for position change
+
 ## 0.10.0+6
 
 * Android: Fix missing call to `event.put("event", "completed");` which makes it possible to detect when the video is over.
