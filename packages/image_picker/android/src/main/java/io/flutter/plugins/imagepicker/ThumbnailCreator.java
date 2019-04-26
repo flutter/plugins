@@ -8,29 +8,31 @@ import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
-import androidx.core.util.Consumer;
+
+import androidx.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class ThumbnailCreator {
+class ThumbnailCreator {
 
   private final ImageResizer imageResizer;
   private final File externalFilesDirectory;
 
-  public ThumbnailCreator(ImageResizer imageResizer, File externalFilesDirectory) {
+  ThumbnailCreator(ImageResizer imageResizer, File externalFilesDirectory) {
     this.imageResizer = imageResizer;
     this.externalFilesDirectory = externalFilesDirectory;
   }
 
   /** Returns the path for the thumbnail image. */
-  public String generateImageThumbnail(String originalImagePath, Double width, Double height) {
+  private String generateImageThumbnail(String originalImagePath, Double width, Double height) {
     return imageResizer.resizeImageIfNeeded(originalImagePath, width, height);
   }
 
-  /** returns the path for the thumbnail image. */
-  public void generateImageThumbnailAsync(
+  /** Returns the path for the thumbnail image. */
+  void generateImageThumbnailAsync(
       final String originalImagePath,
       final Double width,
       final Double height,
@@ -47,8 +49,8 @@ public class ThumbnailCreator {
     generator.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  /** returns the path for the thumbnail video. */
-  public void generateVideoThumbnailAsync(
+  /** Returns the path for the thumbnail video. */
+  void generateVideoThumbnailAsync(
       final String originalVideoPath,
       final Double width,
       final Double height,
@@ -65,7 +67,11 @@ public class ThumbnailCreator {
     generator.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  public String generateVideoThumbnail(String originalVideoPath, Double width, Double height) {
+    /*
+    Return thumbnail image path or null if generation failed
+     */
+  @Nullable
+  private String generateVideoThumbnail(String originalVideoPath, Double width, Double height) {
     try {
       Bitmap bitmap =
           ThumbnailUtils.createVideoThumbnail(
@@ -79,14 +85,16 @@ public class ThumbnailCreator {
       String[] pathParts = originalVideoPath.split("/");
       String imageName = pathParts[pathParts.length - 1];
 
-      File imageFile = new File(externalFilesDirectory, "/thumbnail" + imageName);
-      FileOutputStream fileOutput = new FileOutputStream(imageFile);
+      File videoThumbnailFile = new File(externalFilesDirectory, "/thumbnail" + imageName);
+      FileOutputStream fileOutput = new FileOutputStream(videoThumbnailFile);
       fileOutput.write(outputStream.toByteArray());
       fileOutput.close();
 
-      return imageResizer.resizeImageIfNeeded(originalVideoPath, width, height);
+      return imageResizer.resizeImageIfNeeded(videoThumbnailFile.getPath(), width, height);
+    } catch (FileNotFoundException e) {
+      return null;
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      return null;
     }
   }
 }

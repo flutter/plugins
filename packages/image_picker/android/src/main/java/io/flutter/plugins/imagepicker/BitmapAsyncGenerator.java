@@ -5,14 +5,13 @@
 package io.flutter.plugins.imagepicker;
 
 import android.os.AsyncTask;
-import androidx.core.util.Consumer;
 
-public class BitmapAsyncGenerator extends AsyncTask<Void, Void, String> {
+class BitmapAsyncGenerator extends AsyncTask<Void, Void, String> {
 
   private Consumer<String> callback;
   private Supplier<String> generateAction;
 
-  public BitmapAsyncGenerator(Consumer<String> callback, Supplier<String> generateAction) {
+  BitmapAsyncGenerator(Consumer<String> callback, Supplier<String> generateAction) {
     this.callback = callback;
     this.generateAction = generateAction;
   }

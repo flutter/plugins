@@ -15,7 +15,7 @@ import android.provider.MediaStore;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
-import androidx.core.util.Consumer;
+import io.flutter.plugins.imagepicker.Consumer;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -75,6 +75,11 @@ public class ImagePickerDelegate
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
   @VisibleForTesting static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION = 2354;
   @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
+
+  private static final String ARGUMENT_ORIGINAL_IMAGE_PATH = "originalImagePath";
+  private static final String ARGUMENT_ORIGINAL_VIDEO_PATH = "originalVideoPath";
+  private static final String ARGUMENT_ORIGINAL_WIDTH = "width";
+  private static final String ARGUMENT_ORIGINAL_HEIGHT = "height";
 
   @VisibleForTesting final String fileProviderName;
 
@@ -264,10 +269,10 @@ public class ImagePickerDelegate
     launchTakeVideoWithCameraIntent();
   }
 
-  public void generateImageThumbnail(MethodCall methodCall, final MethodChannel.Result result) {
-    String originalImagePath = methodCall.argument("originalImagePath");
-    Double width = methodCall.argument("width");
-    Double height = methodCall.argument("height");
+  void generateImageThumbnail(MethodCall methodCall, final MethodChannel.Result result) {
+    String originalImagePath = methodCall.argument(ARGUMENT_ORIGINAL_IMAGE_PATH);
+    Double width = methodCall.argument(ARGUMENT_ORIGINAL_WIDTH);
+    Double height = methodCall.argument(ARGUMENT_ORIGINAL_HEIGHT);
 
     thumbnailCreator.generateImageThumbnailAsync(
         originalImagePath,
@@ -281,10 +286,10 @@ public class ImagePickerDelegate
         });
   }
 
-  public void generateVideoThumbnail(MethodCall methodCall, final MethodChannel.Result result) {
-    String originalVideoPath = methodCall.argument("originalVideoPath");
-    Double width = methodCall.argument("width");
-    Double height = methodCall.argument("height");
+  void generateVideoThumbnail(MethodCall methodCall, final MethodChannel.Result result) {
+    String originalVideoPath = methodCall.argument(ARGUMENT_ORIGINAL_VIDEO_PATH);
+    Double width = methodCall.argument(ARGUMENT_ORIGINAL_WIDTH);
+    Double height = methodCall.argument(ARGUMENT_ORIGINAL_HEIGHT);
 
     thumbnailCreator.generateVideoThumbnailAsync(
         originalVideoPath,
