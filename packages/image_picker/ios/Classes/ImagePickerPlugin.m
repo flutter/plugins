@@ -109,7 +109,7 @@ static const int SOURCE_GALLERY = 1;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
 
-      [self generateThumbnail:image result:result width:width height:height];
+      [self resizeImage:image result:result width:width height:height];
     });
   } else if ([@"generateVideoThumbnail" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -123,37 +123,13 @@ static const int SOURCE_GALLERY = 1;
       UIImage *image = [player thumbnailImageAtTime:1.0
                                          timeOption:MPMovieTimeOptionNearestKeyFrame];
 
-      [self generateThumbnail:image result:result width:width height:height];
+      [self resizeImage:image result:result width:width height:height];
     });
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-- (void)generateThumbnail:(UIImage *)image
-                   result:(FlutterResult)result
-                    width:(NSNumber *)width
-                   height:(NSNumber *)height {
-  image = [self normalizedImage:image];
-
-  if (width != (id)[NSNull null] || height != (id)[NSNull null]) {
-    image = [self scaledImage:image maxWidth:width maxHeight:height];
-  }
-
-  NSData *data = UIImageJPEGRepresentation(image, 1);
-  NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
-  NSString *tmpFile = [NSString stringWithFormat:@"thumbnail_%@.jpg", guid];
-  NSString *tmpDirectory = NSTemporaryDirectory();
-  NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-
-  if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-    result(tmpPath);
-  } else {
-    result([FlutterError errorWithCode:@"create_error"
-                               message:@"Thumbnail file could not be created"
-                               details:nil]);
-  }
-}
 
 - (void)showCamera {
   @synchronized(self) {
@@ -245,35 +221,42 @@ static const int SOURCE_GALLERY = 1;
     if (image == nil) {
       image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
+      NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
+      NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+      
+      [self resizeImage:image result:_result width:maxWidth height:maxHeight];
+  }
+
+  _result = nil;
+  _arguments = nil;
+}
+
+- (void)resizeImage:(UIImage *)image
+                   result:(FlutterResult)result
+                    width:(NSNumber *)maxWidth
+                   height:(NSNumber *)maxHeight {
     image = [self normalizedImage:image];
-
-    NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
-    NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
-
+    
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-      image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+        image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
     }
-
+    
     BOOL saveAsPNG = [self hasAlpha:image];
     NSData *data =
-        saveAsPNG ? UIImagePNGRepresentation(image) : UIImageJPEGRepresentation(image, 1.0);
+    saveAsPNG ? UIImagePNGRepresentation(image) : UIImageJPEGRepresentation(image, 1.0);
     NSString *fileExtension = saveAsPNG ? @"image_picker_%@.png" : @"image_picker_%@.jpg";
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
     NSString *tmpFile = [NSString stringWithFormat:fileExtension, guid];
     NSString *tmpDirectory = NSTemporaryDirectory();
     NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-
+    
     if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-      _result(tmpPath);
+        result(tmpPath);
     } else {
-      _result([FlutterError errorWithCode:@"create_error"
-                                  message:@"Temporary file could not be created"
-                                  details:nil]);
+        result([FlutterError errorWithCode:@"create_error"
+                                    message:@"Temporary file could not be created"
+                                    details:nil]);
     }
-  }
-
-  _result = nil;
-  _arguments = nil;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
