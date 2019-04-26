@@ -183,16 +183,6 @@ class Convert {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 
-  static Object toJson(LatLngBounds latLngBounds) {
-    if (latLngBounds == null) {
-      return null;
-    }
-    final Map<String, Object> data = new HashMap<>();
-    data.put("southwest", toJson(latLngBounds.southwest));
-    data.put("northeast", toJson(latLngBounds.northeast));
-    return data;
-  }
-
   private static LatLng toLatLng(Object o) {
     final List<?> data = toList(o);
     return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
