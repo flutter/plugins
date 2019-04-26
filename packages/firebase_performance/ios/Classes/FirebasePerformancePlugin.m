@@ -70,8 +70,8 @@
   NSNumber *handle = call.arguments[@"handle"];
   FIRTrace *trace = [_traces objectForKey:handle];
 
-  NSDictionary *counters = call.arguments[@"counters"];
-  [counters enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSNumber *value, BOOL *stop) {
+  NSDictionary *metrics = call.arguments[@"metrics"];
+  [metrics enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSNumber *value, BOOL *stop) {
     [trace setIntValue:[value longLongValue] forMetric:key];
   }];
 

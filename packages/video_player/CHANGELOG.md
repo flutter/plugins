@@ -1,7 +1,12 @@
 ## 0.10.0+7
 
 * Android: Added Request Headers for ExoPlayer.
+
 * Flutter: Added Request Headers Parameter.
+
+* Android: Fix issue where buffering status in percentage instead of milliseconds
+
+* Android: Update buffering status everytime we notify for position change
 
 ## 0.10.0+6
 
