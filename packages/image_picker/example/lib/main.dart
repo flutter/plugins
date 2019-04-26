@@ -38,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isVideo = false;
   VideoPlayerController _controller;
   String _retrieveDataError;
+  bool thumbnail = false;
 
   void _onImageButtonPressed(ImageSource source) async {
     if (_controller != null) {
@@ -45,21 +46,38 @@ class _MyHomePageState extends State<MyHomePage> {
       _controller.removeListener(_onVideoControllerUpdate);
     }
     if (isVideo) {
-      ImagePicker.pickVideo(source: source).then((File file) {
+      ImagePicker.pickVideo(source: source).then((File file) async {
         if (file != null && mounted) {
-          setState(() {
-            _controller = VideoPlayerController.file(file)
-              ..addListener(_onVideoControllerUpdate)
-              ..setVolume(1.0)
-              ..initialize()
-              ..setLooping(true)
-              ..play();
-          });
+          if (thumbnail) {
+            try {
+              isVideo = false;
+              _imageFile = await ImagePicker.generateVideoThumbnail(video: file, width: 200, height: 200);
+              print(_imageFile);
+              print(_controller);
+            } catch (e) {
+              _pickImageError = e;
+            }
+            setState(() {});
+          } else {
+            setState(() {
+              _controller = VideoPlayerController.file(file)
+                ..addListener(_onVideoControllerUpdate)
+                ..setVolume(1.0)
+                ..initialize()
+                ..setLooping(true)
+                ..play();
+            });
+          }
         }
       });
     } else {
       try {
-        _imageFile = await ImagePicker.pickImage(source: source);
+        File imageFile = await ImagePicker.pickImage(source: source);
+        if (thumbnail) {
+          _imageFile = await ImagePicker.generateImageThumbnail(image: imageFile, width: 200, height: 200);
+        } else {
+          _imageFile = imageFile;
+        }
       } catch (e) {
         _pickImageError = e;
       }
@@ -161,6 +179,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: <Widget>[
+          buildAppBarPopupMenu(),
+        ],
       ),
       body: Center(
         child: Platform.isAndroid
@@ -248,6 +269,22 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+
+  PopupMenuButton<dynamic> buildAppBarPopupMenu() {
+    return PopupMenuButton<dynamic>(
+          onSelected: (dynamic value) {
+            setState(() {
+              thumbnail = !thumbnail;
+            });
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuItem<dynamic>>[
+            PopupMenuItem<dynamic>(
+              value: 'thumbnail',
+              child: Text('thumbnail: $thumbnail'),
+            ),
+          ],
+        );
   }
 
   Text _getRetrieveErrorWidget() {

@@ -137,85 +137,6 @@ class ImagePicker {
         type: retrieveType);
   }
 
-  static Future<PickingResult> pickImageWithThumbnail({
-    @required ImageSource source,
-    double maxWidth,
-    double maxHeight,
-    @required double thumbnailWidth,
-    @required double thumbnailHeight,
-  }) async {
-    assert(source != null);
-
-    if (maxWidth != null && maxWidth < 0) {
-      throw ArgumentError.value(maxWidth, 'maxWidth cannot be negative');
-    }
-
-    if (maxHeight != null && maxHeight < 0) {
-      throw ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
-    }
-
-    if (thumbnailWidth != null && thumbnailWidth < 0) {
-      throw ArgumentError.value(maxWidth, 'thumbnailWidth cannot be negative');
-    }
-
-    if (thumbnailHeight != null && thumbnailHeight < 0) {
-      throw ArgumentError.value(
-          thumbnailHeight, 'maxHeight cannot be negative');
-    }
-
-    final File image = await pickImage(
-        source: source, maxHeight: maxHeight, maxWidth: maxWidth);
-
-    //return null if cancel
-    if (image == null) {
-      return Future<PickingResult>.value(null);
-    }
-
-    final File thumbnail = await generateImageThumbnail(
-      image: image,
-      height: thumbnailHeight,
-      width: thumbnailWidth,
-    );
-
-    return Future<PickingResult>.value(
-        PickingResult(originalFile: image, thumbnail: thumbnail));
-  }
-
-  static Future<PickingResult> pickVideoWithThumbnail({
-    @required ImageSource source,
-    @required double thumbnailWidth,
-    @required double thumbnailHeight,
-  }) async {
-    assert(source != null);
-    if (thumbnailWidth != null && thumbnailWidth < 0) {
-      throw ArgumentError.value(
-          thumbnailWidth, 'thumbnailWidth cannot be negative');
-    }
-
-    if (thumbnailHeight != null && thumbnailHeight < 0) {
-      throw ArgumentError.value(
-          thumbnailHeight, 'maxHeight cannot be negative');
-    }
-
-    final File image = await pickVideo(
-      source: source,
-    );
-
-    //return null if cancel
-    if (image == null) {
-      return Future<PickingResult>.value(null);
-    }
-
-    final File thumbnail = await generateVideoThumbnail(
-      video: image,
-      height: thumbnailHeight,
-      width: thumbnailWidth,
-    );
-
-    return Future<PickingResult>.value(
-        PickingResult(originalFile: image, thumbnail: thumbnail));
-  }
-
   static Future<File> generateImageThumbnail({
     @required File image,
     double width,
@@ -267,16 +188,6 @@ class ImagePicker {
     );
     return path == null ? null : File(path);
   }
-}
-
-class PickingResult {
-  const PickingResult({@required this.originalFile, @required this.thumbnail});
-
-  ///
-  /// original file of video or image
-  ///
-  final File originalFile;
-  final File thumbnail;
 }
 
 /// The response object of [ImagePicker.retrieveLostData].
