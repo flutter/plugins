@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
-
 import androidx.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -67,9 +66,9 @@ class ThumbnailCreator {
     generator.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-    /*
-    Return thumbnail image path or null if generation failed
-     */
+  /*
+  Return thumbnail image path or null if generation failed
+   */
   @Nullable
   private String generateVideoThumbnail(String originalVideoPath, Double width, Double height) {
     try {

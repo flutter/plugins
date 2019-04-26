@@ -51,7 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
           if (thumbnail) {
             try {
               isVideo = false;
-              _imageFile = await ImagePicker.generateVideoThumbnail(video: file, width: 200, height: 200);
+              _imageFile = await ImagePicker.generateVideoThumbnail(
+                  video: file, width: 200, height: 200);
               print(_imageFile);
               print(_controller);
             } catch (e) {
@@ -74,7 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
       try {
         File imageFile = await ImagePicker.pickImage(source: source);
         if (thumbnail) {
-          _imageFile = await ImagePicker.generateImageThumbnail(image: imageFile, width: 200, height: 200);
+          _imageFile = await ImagePicker.generateImageThumbnail(
+              image: imageFile, width: 200, height: 200);
         } else {
           _imageFile = imageFile;
         }
@@ -273,18 +275,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   PopupMenuButton<dynamic> buildAppBarPopupMenu() {
     return PopupMenuButton<dynamic>(
-          onSelected: (dynamic value) {
-            setState(() {
-              thumbnail = !thumbnail;
-            });
-          },
-          itemBuilder: (BuildContext context) => <PopupMenuItem<dynamic>>[
+      onSelected: (dynamic value) {
+        setState(() {
+          thumbnail = !thumbnail;
+        });
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuItem<dynamic>>[
             PopupMenuItem<dynamic>(
               value: 'thumbnail',
               child: Text('thumbnail: $thumbnail'),
             ),
           ],
-        );
+    );
   }
 
   Text _getRetrieveErrorWidget() {

@@ -130,7 +130,6 @@ static const int SOURCE_GALLERY = 1;
   }
 }
 
-
 - (void)showCamera {
   @synchronized(self) {
     if (_imagePickerController.beingPresented) {
@@ -221,10 +220,10 @@ static const int SOURCE_GALLERY = 1;
     if (image == nil) {
       image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
-      NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
-      NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
-      
-      [self resizeImage:image result:_result width:maxWidth height:maxHeight];
+    NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
+    NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+
+    [self resizeImage:image result:_result width:maxWidth height:maxHeight];
   }
 
   _result = nil;
@@ -232,31 +231,31 @@ static const int SOURCE_GALLERY = 1;
 }
 
 - (void)resizeImage:(UIImage *)image
-                   result:(FlutterResult)result
-                    width:(NSNumber *)maxWidth
-                   height:(NSNumber *)maxHeight {
-    image = [self normalizedImage:image];
-    
-    if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-        image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
-    }
-    
-    BOOL saveAsPNG = [self hasAlpha:image];
-    NSData *data =
-    saveAsPNG ? UIImagePNGRepresentation(image) : UIImageJPEGRepresentation(image, 1.0);
-    NSString *fileExtension = saveAsPNG ? @"image_picker_%@.png" : @"image_picker_%@.jpg";
-    NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
-    NSString *tmpFile = [NSString stringWithFormat:fileExtension, guid];
-    NSString *tmpDirectory = NSTemporaryDirectory();
-    NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-    
-    if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-        result(tmpPath);
-    } else {
-        result([FlutterError errorWithCode:@"create_error"
-                                    message:@"Temporary file could not be created"
-                                    details:nil]);
-    }
+             result:(FlutterResult)result
+              width:(NSNumber *)maxWidth
+             height:(NSNumber *)maxHeight {
+  image = [self normalizedImage:image];
+
+  if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+    image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+  }
+
+  BOOL saveAsPNG = [self hasAlpha:image];
+  NSData *data =
+      saveAsPNG ? UIImagePNGRepresentation(image) : UIImageJPEGRepresentation(image, 1.0);
+  NSString *fileExtension = saveAsPNG ? @"image_picker_%@.png" : @"image_picker_%@.jpg";
+  NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
+  NSString *tmpFile = [NSString stringWithFormat:fileExtension, guid];
+  NSString *tmpDirectory = NSTemporaryDirectory();
+  NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
+
+  if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
+    result(tmpPath);
+  } else {
+    result([FlutterError errorWithCode:@"create_error"
+                               message:@"Temporary file could not be created"
+                               details:nil]);
+  }
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {

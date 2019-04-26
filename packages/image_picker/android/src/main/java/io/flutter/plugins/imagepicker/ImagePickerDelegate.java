@@ -15,7 +15,6 @@ import android.provider.MediaStore;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
-import io.flutter.plugins.imagepicker.Consumer;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
