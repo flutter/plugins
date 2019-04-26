@@ -24,7 +24,7 @@ public class ThumbnailCreator {
     this.externalFilesDirectory = externalFilesDirectory;
   }
 
-  /** returns the path for the thumbnail image. */
+  /** Returns the path for the thumbnail image. */
   public String generateImageThumbnail(String originalImagePath, Double width, Double height) {
     return imageResizer.resizeImageIfNeeded(originalImagePath, width, height);
   }
