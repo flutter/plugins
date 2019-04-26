@@ -274,8 +274,8 @@ final class GoogleMapController
         }
       case "map#isMyLocationButtonEnabled":
         {
-            result.success(googleMap.getUiSettings().isMyLocationButtonEnabled());
-            break;
+          result.success(googleMap.getUiSettings().isMyLocationButtonEnabled());
+          break;
         }
       default:
         result.notImplemented();

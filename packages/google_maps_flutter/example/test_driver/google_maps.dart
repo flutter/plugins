@@ -337,7 +337,7 @@ void main() {
   test('testMyLocationButtonToggle', () async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
-    Completer<GoogleMapInspector>();
+        Completer<GoogleMapInspector>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -348,8 +348,8 @@ void main() {
         myLocationEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           final GoogleMapInspector inspector =
-          // ignore: invalid_use_of_visible_for_testing_member
-          GoogleMapInspector(controller.channel);
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
           inspectorCompleter.complete(inspector);
         },
       ),
