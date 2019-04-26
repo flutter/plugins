@@ -8,7 +8,6 @@
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position);
-static NSDictionary* BoundsToJson(GMSCoordinateBounds* bounds);
 static NSArray* LocationToJson(CLLocationCoordinate2D position);
 static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json);
 static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
@@ -291,7 +290,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 - (void)mapView:(GMSMapView*)mapView idleAtCameraPosition:(GMSCameraPosition*)position {
   GMSVisibleRegion visibleRegion = [_mapView.projection visibleRegion];
   GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc]initWithRegion:visibleRegion];
-  [_channel invokeMethod:@"camera#onIdle" arguments:@{@"bounds" : BoundsToJson(bounds)}];
+  [_channel invokeMethod:@"camera#onIdle" arguments:@{@"bounds" : GMSCoordinateBoundsToJson(bounds)}];
 }
 
 - (BOOL)mapView:(GMSMapView*)mapView didTapMarker:(GMSMarker*)marker {
