@@ -1,5 +1,14 @@
-## 0.5.5
-* Added support for picking images or videos with thumbnails or only thumbnail.
+## 0.6.1
+
+* Added support for generate thumbnails of images or videos.
+
+## 0.6.0+1
+
+* Android: Using correct suffix syntax when picking image from remote url.
+
+## 0.6.0
+
+* Breaking change iOS: Returned `File` objects when picking videos now always holds the correct path. Before this change, the path returned could have `file://` prepended to it.
 
 ## 0.5.4+3
 
