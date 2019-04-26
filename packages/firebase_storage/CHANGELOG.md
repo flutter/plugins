@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Added integration tests.
+
 ## 2.1.0+1
 
 * Reverting error.code casting/formatting to what it was until version 2.0.1.

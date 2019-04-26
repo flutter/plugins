@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-import 'dart:io';
-import 'app_store_connection.dart';
-import 'google_play_connection.dart';
-import 'product_details.dart';
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/src/billing_client_wrappers/purchase_wrapper.dart';
+import 'package:in_app_purchase/src/store_kit_wrappers/sk_payment_transaction_wrappers.dart';
+import './product_details.dart';
+
+final String kPurchaseErrorCode = 'purchase_error';
+final String kRestoredPurchaseErrorCode = 'restore_transactions_failed';
+final String kConsumptionFailedErrorCode = 'consume_purchase_failed';
 
 /// Represents the data that is used to verify purchases.
 ///
@@ -53,6 +55,23 @@ class PurchaseVerificationData {
 /// Which platform the purchase is on.
 enum PurchaseSource { GooglePlay, AppStore }
 
+enum PurchaseStatus {
+  /// The purchase process is pending.
+  ///
+  /// You can update UI to let your users know the purchase is pending.
+  pending,
+
+  /// The purchase is finished and successful.
+  ///
+  /// Update your UI to indicate the purchase is finished and deliver the product.
+  /// On Android, the google play store is handling the purchase, so we set the status to
+  /// `purchased` as long as we can successfully launch play store purchase flow.
+  purchased,
+
+  /// Some error occurred in the purchase. The purchasing process if aborted.
+  error
+}
+
 /// Error of a purchase process.
 ///
 /// The error can happen during the purchase, or restoring a purchase.
@@ -71,18 +90,50 @@ class PurchaseError {
   final Map<String, dynamic> message;
 }
 
+/// The parameter object for generating a purchase.
+class PurchaseParam {
+  PurchaseParam(
+      {@required this.productDetails,
+      this.applicationUserName,
+      this.sandboxTesting});
+
+  /// The product to create payment for.
+  ///
+  /// It has to match one of the valid [ProductDetails] objects that you get from [ProductDetailsResponse] after calling [InAppPurchaseConnection.queryProductDetails].
+  final ProductDetails productDetails;
+
+  /// An opaque id for the user's account that's unique to your app. (Optional)
+  ///
+  /// Used to help the store detect irregular activity.
+  /// Do not pass in a clear text, your developer ID, the user’s Apple ID, or the
+  /// user's Google ID for this field.
+  /// For example, you can use a one-way hash of the user’s account name on your server.
+  final String applicationUserName;
+
+  /// The 'sandboxTesting' is only available on iOS, set it to `true` for testing in AppStore's sandbox environment. The default value is `false`.
+  final bool sandboxTesting;
+}
+
 /// Represents the transaction details of a purchase.
+///
+/// This class unifies the BillingClient's [PurchaseWrapper] and StoreKit's [SKPaymentTransactionWrapper]. You can use the common attributes in
+/// This class for simple operations. If you would like to see the detailed representation of the product, instead,  use [PurchaseWrapper] on Android and [SKPaymentTransactionWrapper] on iOS.
 class PurchaseDetails {
   /// A unique identifier of the purchase.
   final String purchaseID;
 
   /// The product identifier of the purchase.
-  final String productId;
+  final String productID;
 
   /// The verification data of the purchase.
   ///
-  /// Use this to verify the purchase. See [PurchaseVerificationData] for details on how to verify purchase use this data.
-  /// You should never use any purchase data until verified.
+  /// Use this to verify the purchase. See [PurchaseVerificationData] for
+  /// details on how to verify purchase use this data. You should never use any
+  /// purchase data until verified.
+  ///
+  /// On iOS, this may be null. Call
+  /// [InAppPurchaseConnection.refreshPurchaseVerificationData] to get a new
+  /// [PurchaseVerificationData] object for further validation.
   final PurchaseVerificationData verificationData;
 
   /// The timestamp of the transaction.
@@ -90,11 +141,29 @@ class PurchaseDetails {
   /// Milliseconds since epoch.
   final String transactionDate;
 
+  /// The status that this [PurchaseDetails] is currently on.
+  PurchaseStatus status;
+
+  /// The error is only available when [status] is [PurchaseStatus.error].
+  PurchaseError error;
+
+  /// Points back to the `StoreKits`'s [SKPaymentTransactionWrapper] object that generated this [PurchaseDetails] object.
+  ///
+  /// This is null on Android.
+  final SKPaymentTransactionWrapper skPaymentTransaction;
+
+  /// Points back to the `BillingClient`'s [PurchaseWrapper] object that generated this [PurchaseDetails] object.
+  ///
+  /// This is null on Android.
+  final PurchaseWrapper billingClientPurchase;
+
   PurchaseDetails({
     @required this.purchaseID,
-    @required this.productId,
+    @required this.productID,
     @required this.verificationData,
     @required this.transactionDate,
+    this.skPaymentTransaction = null,
+    this.billingClientPurchase = null,
   });
 }
 
@@ -115,51 +184,4 @@ class QueryPurchaseDetailsResponse {
   ///
   /// If the fetch is successful, the value is null.
   final PurchaseError error;
-}
-
-/// Basic generic API for making in app purchases across multiple platforms.
-abstract class InAppPurchaseConnection {
-  /// Returns true if the payment platform is ready and available.
-  Future<bool> isAvailable();
-
-  /// Query product details list that match the given set of identifiers.
-  Future<ProductDetailsResponse> queryProductDetails(Set<String> identifiers);
-
-  /// Query all the past purchases.
-  ///
-  /// The `applicationUserName` is required if you also passed this in when making a purchase.
-  /// If you did not use a `applicationUserName` when creating payments, you can ignore this parameter.
-  Future<QueryPurchaseDetailsResponse> queryPastPurchases(
-      {String applicationUserName});
-
-  /// A utility method in case there is an issue with getting the verification data originally.
-  ///
-  /// On Android, it is a non-op. We directly return the verification data in the `purchase` that is passed in.
-  /// See [PurchaseVerificationData] for more details on when to use this.
-  Future<PurchaseVerificationData> refreshPurchaseVerificationData(
-      PurchaseDetails purchase);
-
-  /// The [InAppPurchaseConnection] implemented for this platform.
-  ///
-  /// Throws an [UnsupportedError] when accessed on a platform other than
-  /// Android or iOS.
-  static InAppPurchaseConnection get instance => _getOrCreateInstance();
-  static InAppPurchaseConnection _instance;
-
-  static InAppPurchaseConnection _getOrCreateInstance() {
-    if (_instance != null) {
-      return _instance;
-    }
-
-    if (Platform.isAndroid) {
-      _instance = GooglePlayConnection.instance;
-    } else if (Platform.isIOS) {
-      _instance = AppStoreConnection.instance;
-    } else {
-      throw UnsupportedError(
-          'InAppPurchase plugin only works on Android and iOS.');
-    }
-
-    return _instance;
-  }
 }

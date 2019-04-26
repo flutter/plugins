@@ -1,3 +1,27 @@
+## 0.5.9
+
+* BitmapDescriptor#fromBytes accounts for screen scale on ios.
+
+## 0.5.8
+
+* Remove some unused variables and rename method
+
+## 0.5.7
+
+* Add a BitmapDescriptor that is aware of scale.
+
+## 0.5.6
+
+* Add support for Polylines on GoogleMap.
+
+## 0.5.5
+
+* Enable iOS accessibility.
+
+## 0.5.4
+
+* Add method getVisibleRegion for get the latlng bounds of the visible map area.
+
 ## 0.5.3
 
 * Added support setting marker icons from bytes.

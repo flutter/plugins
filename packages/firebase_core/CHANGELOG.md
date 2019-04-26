@@ -1,3 +1,7 @@
+## 0.3.4
+
+* Updates Android firebase-core dependency to a version that is compatible with other Flutterfire plugins.
+
 ## 0.3.3
 
 * Remove Gradle BoM to avoid Gradle version issues.

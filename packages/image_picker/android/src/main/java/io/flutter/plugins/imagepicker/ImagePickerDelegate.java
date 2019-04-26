@@ -21,6 +21,7 @@ import io.flutter.plugin.common.PluginRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -68,9 +69,11 @@ public class ImagePickerDelegate
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
   @VisibleForTesting static final int REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION = 2344;
+  @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
   @VisibleForTesting static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION = 2354;
+  @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
 
   @VisibleForTesting final String fileProviderName;
 
@@ -86,6 +89,8 @@ public class ImagePickerDelegate
     boolean isPermissionGranted(String permissionName);
 
     void askForPermission(String permissionName, int requestCode);
+
+    boolean needRequestCameraPermission();
   }
 
   interface IntentResolver {
@@ -125,6 +130,11 @@ public class ImagePickerDelegate
           public void askForPermission(String permissionName, int requestCode) {
             ActivityCompat.requestPermissions(activity, new String[] {permissionName}, requestCode);
           }
+
+          @Override
+          public boolean needRequestCameraPermission() {
+            return ImagePickerUtils.needRequestCameraPermission(activity);
+          }
         },
         new IntentResolver() {
           @Override
@@ -142,7 +152,7 @@ public class ImagePickerDelegate
           public void getFullImagePath(final Uri imageUri, final OnPathReadyListener listener) {
             MediaScannerConnection.scanFile(
                 activity,
-                new String[] {imageUri.getPath()},
+                new String[] {(imageUri != null) ? imageUri.getPath() : ""},
                 null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                   @Override
@@ -182,6 +192,35 @@ public class ImagePickerDelegate
     this.fileUtils = fileUtils;
   }
 
+  void saveStateBeforeResult() {
+    if (methodCall == null) {
+      return;
+    }
+
+    ImagePickerCache.saveTypeWithMethodCallName(methodCall.method);
+    ImagePickerCache.saveDemensionWithMethodCall(methodCall);
+    if (pendingCameraMediaUri != null) {
+      ImagePickerCache.savePendingCameraMediaUriPath(pendingCameraMediaUri);
+    }
+  }
+
+  void retrieveLostImage(MethodChannel.Result result) {
+    Map<String, Object> resultMap = ImagePickerCache.getCacheMap();
+    String path = (String) resultMap.get(ImagePickerCache.MAP_KEY_PATH);
+    if (path != null) {
+      Double maxWidth = (Double) resultMap.get(ImagePickerCache.MAP_KEY_MAX_WIDTH);
+      Double maxHeight = (Double) resultMap.get(ImagePickerCache.MAP_KEY_MAX_HEIGHT);
+      String newPath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+      resultMap.put(ImagePickerCache.MAP_KEY_PATH, newPath);
+    }
+    if (resultMap.isEmpty()) {
+      result.success(null);
+    } else {
+      result.success(resultMap);
+    }
+    ImagePickerCache.clear();
+  }
+
   public void chooseVideoFromGallery(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
       finishWithAlreadyActiveError(result);
@@ -207,6 +246,13 @@ public class ImagePickerDelegate
   public void takeVideoWithCamera(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
       finishWithAlreadyActiveError(result);
+      return;
+    }
+
+    if (needRequestCameraPermission()
+        && !permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
+      permissionManager.askForPermission(
+          Manifest.permission.CAMERA, REQUEST_CAMERA_VIDEO_PERMISSION);
       return;
     }
 
@@ -260,7 +306,21 @@ public class ImagePickerDelegate
       return;
     }
 
+    if (needRequestCameraPermission()
+        && !permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
+      permissionManager.askForPermission(
+          Manifest.permission.CAMERA, REQUEST_CAMERA_IMAGE_PERMISSION);
+      return;
+    }
+
     launchTakeImageWithCameraIntent();
+  }
+
+  private boolean needRequestCameraPermission() {
+    if (permissionManager == null) {
+      return false;
+    }
+    return permissionManager.needRequestCameraPermission();
   }
 
   private void launchTakeImageWithCameraIntent() {
@@ -333,6 +393,16 @@ public class ImagePickerDelegate
           launchPickVideoFromGalleryIntent();
         }
         break;
+      case REQUEST_CAMERA_IMAGE_PERMISSION:
+        if (permissionGranted) {
+          launchTakeImageWithCameraIntent();
+        }
+        break;
+      case REQUEST_CAMERA_VIDEO_PERMISSION:
+        if (permissionGranted) {
+          launchTakeVideoWithCameraIntent();
+        }
+        break;
       default:
         return false;
     }
@@ -391,7 +461,9 @@ public class ImagePickerDelegate
   private void handleCaptureImageResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
-          pendingCameraMediaUri,
+          pendingCameraMediaUri != null
+              ? pendingCameraMediaUri
+              : Uri.parse(ImagePickerCache.retrievePendingCameraMediaUriPath()),
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
@@ -408,7 +480,9 @@ public class ImagePickerDelegate
   private void handleCaptureVideoResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
-          pendingCameraMediaUri,
+          pendingCameraMediaUri != null
+              ? pendingCameraMediaUri
+              : Uri.parse(ImagePickerCache.retrievePendingCameraMediaUriPath()),
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
@@ -423,11 +497,11 @@ public class ImagePickerDelegate
   }
 
   private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
-    if (pendingResult != null) {
+    if (methodCall != null) {
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
-
       String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+
       finishWithSuccess(finalImagePath);
 
       //delete original file if scaled
@@ -435,16 +509,12 @@ public class ImagePickerDelegate
         new File(path).delete();
       }
     } else {
-      throw new IllegalStateException("Received image from picker that was not requested");
+      finishWithSuccess(path);
     }
   }
 
   private void handleVideoResult(String path) {
-    if (pendingResult != null) {
-      finishWithSuccess(path);
-    } else {
-      throw new IllegalStateException("Received video from picker that was not requested");
-    }
+    finishWithSuccess(path);
   }
 
   private boolean setPendingMethodCallAndResult(
@@ -455,10 +525,18 @@ public class ImagePickerDelegate
 
     this.methodCall = methodCall;
     pendingResult = result;
+
+    // Clean up cache if a new image picker is launched.
+    ImagePickerCache.clear();
+
     return true;
   }
 
   private void finishWithSuccess(String imagePath) {
+    if (pendingResult == null) {
+      ImagePickerCache.saveResult(imagePath, null, null);
+      return;
+    }
     pendingResult.success(imagePath);
     clearMethodCallAndResult();
   }
@@ -468,6 +546,10 @@ public class ImagePickerDelegate
   }
 
   private void finishWithError(String errorCode, String errorMessage) {
+    if (pendingResult == null) {
+      ImagePickerCache.saveResult(null, errorCode, errorMessage);
+      return;
+    }
     pendingResult.error(errorCode, errorMessage, null);
     clearMethodCallAndResult();
   }

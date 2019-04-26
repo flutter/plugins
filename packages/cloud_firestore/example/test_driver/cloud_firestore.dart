@@ -39,5 +39,51 @@ void main() {
       final DocumentSnapshot snapshot = await firstDoc.snapshots().first;
       expect(snapshot.data['message'], 'Hello world!');
     });
+
+    test('increment', () async {
+      final DocumentReference ref = firestore.collection('messages').document();
+      await ref.setData(<String, dynamic>{
+        'message': 1,
+        'created_at': FieldValue.serverTimestamp(),
+      });
+      DocumentSnapshot snapshot = await ref.get();
+      expect(snapshot.data['message'], 1);
+      await ref.updateData(<String, dynamic>{
+        'message': FieldValue.increment(1),
+      });
+      snapshot = await ref.get();
+      expect(snapshot.data['message'], 2);
+      await ref.updateData(<String, dynamic>{
+        'message': FieldValue.increment(40.0),
+      });
+      snapshot = await ref.get();
+      expect(snapshot.data['message'], 42.0);
+      await ref.delete();
+    });
+
+    test('runTransaction', () async {
+      final DocumentReference ref = firestore.collection('messages').document();
+      await ref.setData(<String, dynamic>{
+        'message': 'testing',
+        'created_at': FieldValue.serverTimestamp(),
+      });
+      final DocumentSnapshot initialSnapshot = await ref.get();
+      expect(initialSnapshot.data['message'], 'testing');
+      final dynamic result = await firestore.runTransaction(
+        (Transaction tx) async {
+          final DocumentSnapshot snapshot = await tx.get(ref);
+          final Map<String, dynamic> updatedData =
+              Map<String, dynamic>.from(snapshot.data);
+          updatedData['message'] = 'testing2';
+          await tx.update(ref, updatedData);
+          return updatedData;
+        },
+      );
+      expect(result['message'], 'testing2');
+      await ref.delete();
+      final DocumentSnapshot nonexistentSnapshot = await ref.get();
+      expect(nonexistentSnapshot.data, null);
+      expect(nonexistentSnapshot.exists, false);
+    });
   });
 }

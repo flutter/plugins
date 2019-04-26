@@ -31,4 +31,6 @@ interface GoogleMapOptionsSink {
   void setInitialMarkers(Object initialMarkers);
 
   void setMarkersAnimationDuration(float durationInMs);
+
+  void setInitialPolylines(Object initialPolylines);
 }

@@ -17,6 +17,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean myLocationEnabled = false;
   private Object initialMarkers;
   private float markersAnimationDuration = -1;
+  private Object initialPolylines;
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
@@ -26,6 +27,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
     controller.setInitialMarkers(initialMarkers);
+    controller.setInitialPolylines(initialPolylines);
     return controller;
   }
 
@@ -93,8 +95,12 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     this.initialMarkers = initialMarkers;
   }
 
-  @Override
   public void setMarkersAnimationDuration(float durationInMs) {
     this.markersAnimationDuration = durationInMs;
+  }
+
+  @Override
+  public void setInitialPolylines(Object initialPolylines) {
+    this.initialPolylines = initialPolylines;
   }
 }

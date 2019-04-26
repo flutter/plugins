@@ -12,8 +12,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'google_map_inspector.dart';
 import 'test_widgets.dart';
 
+const LatLng _kInitialMapCenter = LatLng(0, 0);
 const CameraPosition _kInitialCameraPosition =
-    CameraPosition(target: LatLng(0, 0));
+    CameraPosition(target: _kInitialMapCenter);
 
 void main() {
   final Completer<String> allTestsCompleter = Completer<String>();
@@ -262,5 +263,74 @@ void main() {
 
     scrollGesturesEnabled = await inspector.isScrollGesturesEnabled();
     expect(scrollGesturesEnabled, true);
+  });
+
+  test('testGetVisibleRegion', () async {
+    final Key key = GlobalKey();
+    final LatLngBounds zeroLatLngBounds = LatLngBounds(
+        southwest: const LatLng(0, 0), northeast: const LatLng(0, 0));
+
+    final Completer<GoogleMapController> mapControllerCompleter =
+        Completer<GoogleMapController>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          mapControllerCompleter.complete(controller);
+        },
+      ),
+    ));
+    final GoogleMapController mapController =
+        await mapControllerCompleter.future;
+
+    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
+    // initialization. https://github.com/flutter/flutter/issues/24806
+    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
+    // still being investigated.
+    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
+    // https://github.com/flutter/flutter/issues/27550
+    await Future<dynamic>.delayed(Duration(seconds: 3));
+
+    final LatLngBounds firstVisibleRegion =
+        await mapController.getVisibleRegion();
+
+    expect(firstVisibleRegion, isNotNull);
+    expect(firstVisibleRegion.southwest, isNotNull);
+    expect(firstVisibleRegion.northeast, isNotNull);
+    expect(firstVisibleRegion, isNot(zeroLatLngBounds));
+    expect(firstVisibleRegion.contains(_kInitialMapCenter), isTrue);
+
+    const LatLng southWest = LatLng(60, 75);
+    const LatLng northEast = LatLng(65, 80);
+    final LatLng newCenter = LatLng(
+      (northEast.latitude + southWest.latitude) / 2,
+      (northEast.longitude + southWest.longitude) / 2,
+    );
+
+    expect(firstVisibleRegion.contains(northEast), isFalse);
+    expect(firstVisibleRegion.contains(southWest), isFalse);
+
+    final LatLngBounds latLngBounds =
+        LatLngBounds(southwest: southWest, northeast: northEast);
+
+    // TODO(iskakaushik): non-zero padding is needed for some device configurations
+    // https://github.com/flutter/flutter/issues/30575
+    final double padding = 0;
+    await mapController
+        .moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, padding));
+
+    final LatLngBounds secondVisibleRegion =
+        await mapController.getVisibleRegion();
+
+    expect(secondVisibleRegion, isNotNull);
+    expect(secondVisibleRegion.southwest, isNotNull);
+    expect(secondVisibleRegion.northeast, isNotNull);
+    expect(secondVisibleRegion, isNot(zeroLatLngBounds));
+
+    expect(firstVisibleRegion, isNot(secondVisibleRegion));
+    expect(secondVisibleRegion.contains(newCenter), isTrue);
   });
 }
