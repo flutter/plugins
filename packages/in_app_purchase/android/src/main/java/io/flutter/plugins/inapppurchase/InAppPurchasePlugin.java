@@ -27,7 +27,6 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import java.lang.Override;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +127,8 @@ public class InAppPurchasePlugin implements MethodCallHandler {
         new BillingClientStateListener() {
           @Override
           public void onBillingSetupFinished(int responseCode) {
-            // Consider the fact that we've finished a success, leave it to the Dart side to validate the responseCode.
+            // Consider the fact that we've finished a success, leave it to the Dart side to
+            // validate the responseCode.
             result.success(responseCode);
           }
 
@@ -222,7 +222,8 @@ public class InAppPurchasePlugin implements MethodCallHandler {
       return;
     }
 
-    // Like in our connect call, consider the billing client responding a "success" here regardless of status code.
+    // Like in our connect call, consider the billing client responding a "success" here regardless
+    // of status code.
     result.success(fromPurchasesResult(billingClient.queryPurchases(skuType)));
   }
 

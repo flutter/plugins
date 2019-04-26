@@ -31,8 +31,9 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     if (registrar.activity() == null) {
-      // If a background flutter view tries to register the plugin, there will be no activity from the registrar,
-      // we stop the registering process immediately because the ImagePicker requires an activity.
+      // If a background flutter view tries to register the plugin, there will be no activity from
+      // the registrar, we stop the registering process immediately because the ImagePicker requires
+      // an activity.
       return;
     }
     ImagePickerCache.setUpWithActivity(registrar.activity());

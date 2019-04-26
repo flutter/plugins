@@ -326,8 +326,8 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
               new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
-                  // Tasks are used to allow native execution of doTransaction to wait while Snapshot is
-                  // processed by logic on the Dart side.
+                  // Tasks are used to allow native execution of doTransaction to wait while
+                  // Snapshot is processed by logic on the Dart side.
                   final TaskCompletionSource<Map<String, Object>> updateMutableDataTCS =
                       new TaskCompletionSource<>();
                   final Task<Map<String, Object>> updateMutableDataTCSTask =

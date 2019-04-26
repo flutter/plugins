@@ -104,8 +104,9 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
                   .putString(key, LIST_IDENTIFIER + encodeList(listValue))
                   .commit();
           if (!success) {
-            // If we are unable to migrate the existing preferences, it means we potentially lost them.
-            // In this case, an error from getAllPrefs() is appropriate since it will alert the app during plugin initialization.
+            // If we are unable to migrate the existing preferences, it means we potentially lost
+            // them. In this case, an error from getAllPrefs() is appropriate since it will alert
+            // the app during plugin initialization.
             throw new IOException("Could not migrate set to list");
           }
           value = listValue;

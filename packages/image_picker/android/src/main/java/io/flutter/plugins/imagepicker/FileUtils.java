@@ -118,7 +118,7 @@ class FileUtils {
       if (cursor != null && cursor.moveToFirst()) {
         final int column_index = cursor.getColumnIndex(column);
 
-        //yandex.disk and dropbox do not have _data column
+        // yandex.disk and dropbox do not have _data column
         if (column_index == -1) {
           return null;
         }

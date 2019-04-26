@@ -182,8 +182,8 @@ public class AlarmService extends JobIntentService {
     // Handle the alarm event in Dart. Note that for this plugin, we don't
     // care about the method name as we simply lookup and invoke the callback
     // provided.
-    // TODO(mattcarroll): consider giving a method name anyway for the purpose of developer discoverability
-    //                    when reading the source code. Especially on the Dart side.
+    // TODO(mattcarroll): consider giving a method name anyway for the purpose of developer
+    //                    discoverability when reading the source code. Especially on the Dart side.
     sBackgroundChannel.invokeMethod("", new Object[] {callbackHandle});
   }
 

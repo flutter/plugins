@@ -64,8 +64,8 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     // - "AlarmService.initialized"
     //
     // This channel is also responsible for sending requests from Android to Dart to execute Dart
-    // callbacks in the background isolate. Those messages are sent with an empty method name because
-    // they are the only messages that this channel sends to Dart.
+    // callbacks in the background isolate. Those messages are sent with an empty method name
+    // because they are the only messages that this channel sends to Dart.
     final MethodChannel backgroundCallbackChannel =
         new MethodChannel(
             registrar.messenger(),

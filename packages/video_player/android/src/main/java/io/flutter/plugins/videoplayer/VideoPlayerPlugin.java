@@ -303,9 +303,9 @@ public class VideoPlayerPlugin implements MethodCallHandler {
   }
 
   private void onDestroy() {
-    // The whole FlutterView is being destroyed. Here we release resources acquired for all instances
-    // of VideoPlayer. Once https://github.com/flutter/flutter/issues/19358 is resolved this may
-    // be replaced with just asserting that videoPlayers.isEmpty().
+    // The whole FlutterView is being destroyed. Here we release resources acquired for all
+    // instances of VideoPlayer. Once https://github.com/flutter/flutter/issues/19358 is resolved
+    // this may be replaced with just asserting that videoPlayers.isEmpty().
     // https://github.com/flutter/flutter/issues/20989 tracks this.
     disposeAllPlayers();
   }

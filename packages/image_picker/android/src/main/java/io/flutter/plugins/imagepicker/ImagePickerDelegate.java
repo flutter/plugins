@@ -504,7 +504,7 @@ public class ImagePickerDelegate
 
       finishWithSuccess(finalImagePath);
 
-      //delete original file if scaled
+      // delete original file if scaled
       if (!finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }

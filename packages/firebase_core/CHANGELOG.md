@@ -1,3 +1,7 @@
+## 0.3.4+1
+
+* Format Java code using google-java-format 1.7
+
 ## 0.3.4
 
 * Updates Android firebase-core dependency to a version that is compatible with other Flutterfire plugins.
