@@ -37,20 +37,19 @@ class _MyHomePageState extends State<MyHomePage> {
   dynamic _pickImageError;
   bool isVideo = false;
   VideoPlayerController _controller;
-  VoidCallback listener = () {};
   String _retrieveDataError;
 
   void _onImageButtonPressed(ImageSource source) async {
     if (_controller != null) {
       _controller.setVolume(0.0);
-      _controller.removeListener(listener);
+      _controller.removeListener(_onVideoControllerUpdate);
     }
     if (isVideo) {
       ImagePicker.pickVideo(source: source).then((File file) {
         if (file != null && mounted) {
           setState(() {
             _controller = VideoPlayerController.file(file)
-              ..addListener(listener)
+              ..addListener(_onVideoControllerUpdate)
               ..setVolume(1.0)
               ..initialize()
               ..setLooping(true)
@@ -68,11 +67,15 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _onVideoControllerUpdate() {
+    setState(() {});
+  }
+
   @override
   void deactivate() {
     if (_controller != null) {
       _controller.setVolume(0.0);
-      _controller.removeListener(listener);
+      _controller.removeListener(_onVideoControllerUpdate);
     }
     super.deactivate();
   }
@@ -138,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
         if (response.type == RetrieveType.video) {
           isVideo = true;
           _controller = VideoPlayerController.file(response.file)
-            ..addListener(listener)
+            ..addListener(_onVideoControllerUpdate)
             ..setVolume(1.0)
             ..initialize()
             ..setLooping(true)
@@ -270,21 +273,20 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   VideoPlayerController get controller => widget.controller;
   bool initialized = false;
 
-  VoidCallback listener;
+  void _onVideoControllerUpdate() {
+    if (!mounted) {
+      return;
+    }
+    if (initialized != controller.value.initialized) {
+      initialized = controller.value.initialized;
+      setState(() {});
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    listener = () {
-      if (!mounted) {
-        return;
-      }
-      if (initialized != controller.value.initialized) {
-        initialized = controller.value.initialized;
-        setState(() {});
-      }
-    };
-    controller.addListener(listener);
+    controller.addListener(_onVideoControllerUpdate);
   }
 
   @override

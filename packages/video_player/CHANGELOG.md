@@ -1,6 +1,12 @@
-## 0.10.0+7
+## 0.10.0+8
 
 * iOS: fixed some videos being rendered black
+
+## 0.10.0+7
+
+* Android: Fix issue where buffering status in percentage instead of milliseconds
+
+* Android: Update buffering status everytime we notify for position change
 
 ## 0.10.0+6
 

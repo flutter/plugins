@@ -1,3 +1,7 @@
+## 0.7.0+1
+
+* Update README to match latest version.
+
 ## 0.7.0
 
 * **Breaking Change** Unified and enhanced on-device and cloud image-labeling API.
