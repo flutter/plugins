@@ -10,6 +10,27 @@ part of cloud_firestore;
 /// The document at the referenced location may or may not exist.
 /// A [DocumentReference] can also be used to create a [CollectionReference]
 /// to a subcollection.
+enum FirestoreSource {Server, Cache, Default}
+
+String getSource(FirestoreSource source){
+  String newSource;
+  switch (source){
+    case FirestoreSource.Default:
+      newSource = '';
+      break;
+    case FirestoreSource.Server:
+      newSource = 'server';
+      break;
+    case FirestoreSource.Cache:
+      newSource = 'cache';
+      break;
+    default:
+      newSource = '';
+      break;
+  }
+  return newSource;
+}
+
 class DocumentReference {
   DocumentReference._(this.firestore, List<String> pathComponents)
       : _pathComponents = pathComponents,
@@ -72,11 +93,11 @@ class DocumentReference {
   ///
   /// If no document exists, the read will return null.
   /// Valid options for source are 'server', 'cache' or '' which is default
-  Future<DocumentSnapshot> get({String source = ''}) async {
+  Future<DocumentSnapshot> get({FirestoreSource source = FirestoreSource.Default}) async {
     final Map<String, dynamic> data =
         await Firestore.channel.invokeMapMethod<String, dynamic>(
       'DocumentReference#get',
-      <String, dynamic>{'app': firestore.app.name, 'path': path, 'source': source},
+      <String, dynamic>{'app': firestore.app.name, 'path': path, 'source': getSource(source)},
     );
     return DocumentSnapshot._(
       data['path'],
