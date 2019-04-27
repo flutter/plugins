@@ -43,7 +43,7 @@ void main() {
   test('sharing origin sets the right params', () async {
     await Share.share(
       'some text to share',
-      sharePositionOrigin: Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
+      sharePositionOrigin: const Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
     );
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431

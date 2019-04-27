@@ -136,7 +136,7 @@ void main() {
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.unknown);
-        expect(barcode.boundingBox, Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
+        expect(barcode.boundingBox, const Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
         expect(barcode.rawValue, 'hello:raw');
         expect(barcode.displayValue, 'hello:display');
         expect(barcode.cornerPoints, const <Offset>[
@@ -562,7 +562,7 @@ void main() {
         ]);
 
         final Face face = faces[0];
-        expect(face.boundingBox, Rect.fromLTWH(0.0, 1.0, 2.0, 3.0));
+        expect(face.boundingBox, const Rect.fromLTWH(0.0, 1.0, 2.0, 3.0));
         expect(face.headEulerAngleY, 4.0);
         expect(face.headEulerAngleZ, 5.0);
         expect(face.leftEyeOpenProbability, 0.4);
@@ -756,7 +756,7 @@ void main() {
           expect(text.blocks, hasLength(2));
 
           TextBlock block = text.blocks[0];
-          expect(block.boundingBox, Rect.fromLTWH(13.0, 14.0, 15.0, 16.0));
+          expect(block.boundingBox, const Rect.fromLTWH(13.0, 14.0, 15.0, 16.0));
           expect(block.text, 'friend');
           expect(block.cornerPoints, const <Offset>[
             Offset(17.0, 18.0),
@@ -768,7 +768,7 @@ void main() {
           expect(block.confidence, 0.5);
 
           block = text.blocks[1];
-          expect(block.boundingBox, Rect.fromLTWH(14.0, 13.0, 16.0, 15.0));
+          expect(block.boundingBox, const Rect.fromLTWH(14.0, 13.0, 16.0, 15.0));
           expect(block.text, 'hello');
           expect(block.cornerPoints, const <Offset>[
             Offset(18.0, 17.0),
@@ -783,7 +783,7 @@ void main() {
           final VisionText text = await recognizer.processImage(image);
 
           TextLine line = text.blocks[0].lines[0];
-          expect(line.boundingBox, Rect.fromLTWH(5, 6, 7, 8));
+          expect(line.boundingBox, const Rect.fromLTWH(5, 6, 7, 8));
           expect(line.text, 'friend');
           expect(line.cornerPoints, const <Offset>[
             Offset(9.0, 10.0),
@@ -795,7 +795,7 @@ void main() {
           expect(line.confidence, 0.3);
 
           line = text.blocks[0].lines[1];
-          expect(line.boundingBox, Rect.fromLTWH(8.0, 7.0, 4.0, 5.0));
+          expect(line.boundingBox, const Rect.fromLTWH(8.0, 7.0, 4.0, 5.0));
           expect(line.text, 'how');
           expect(line.cornerPoints, const <Offset>[
             Offset(10.0, 9.0),
@@ -810,7 +810,7 @@ void main() {
           final VisionText text = await recognizer.processImage(image);
 
           TextElement element = text.blocks[0].lines[0].elements[0];
-          expect(element.boundingBox, Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
+          expect(element.boundingBox, const Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
           expect(element.text, 'hello');
           expect(element.cornerPoints, const <Offset>[
             Offset(5.0, 6.0),
@@ -822,7 +822,7 @@ void main() {
           expect(element.confidence, 0.1);
 
           element = text.blocks[0].lines[0].elements[1];
-          expect(element.boundingBox, Rect.fromLTWH(4.0, 3.0, 2.0, 1.0));
+          expect(element.boundingBox, const Rect.fromLTWH(4.0, 3.0, 2.0, 1.0));
           expect(element.text, 'my');
           expect(element.cornerPoints, const <Offset>[
             Offset(6.0, 5.0),
