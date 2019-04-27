@@ -1,6 +1,6 @@
 ## 0.6.1+1
 
-* Fix analyzer warnings about const Rect in tests.
+* Fix analyzer warnings about `const Rect` in tests.
 
 ## 0.6.1
 

@@ -1,6 +1,6 @@
 ## 0.7.0+2
 
-* Fix analyzer warnings about const Rect in tests.
+* Fix analyzer warnings about `const Rect` in tests.
 
 ## 0.7.0+1
 
