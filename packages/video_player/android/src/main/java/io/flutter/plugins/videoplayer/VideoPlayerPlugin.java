@@ -367,7 +367,11 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
             player =
                 new VideoPlayer(
-                    registrar.context(), eventChannel, handle, call.argument("uri"), result,
+                    registrar.context(),
+                    eventChannel,
+                    handle,
+                    call.argument("uri"),
+                    result,
                     requestHeaders);
             videoPlayers.put(handle.id(), player);
           }
