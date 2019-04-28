@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -49,6 +50,7 @@ final class GoogleMapController
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnPolygonClickListener,
         GoogleMap.OnPolylineClickListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
@@ -71,8 +73,10 @@ final class GoogleMapController
   private final int registrarActivityHashCode;
   private final Context context;
   private final MarkersController markersController;
+  private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
   private List<Object> initialMarkers;
+  private List<Object> initialPolygons;
   private List<Object> initialPolylines;
 
   GoogleMapController(
@@ -92,6 +96,7 @@ final class GoogleMapController
     methodChannel.setMethodCallHandler(this);
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
+    this.polygonsController = new PolygonsController(methodChannel);
     this.polylinesController = new PolylinesController(methodChannel);
   }
 
@@ -162,12 +167,15 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
+    googleMap.setOnPolygonClickListener(this);
     googleMap.setOnPolylineClickListener(this);
     googleMap.setOnMapClickListener(this);
     updateMyLocationEnabled();
     markersController.setGoogleMap(googleMap);
+    polygonsController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     updateInitialMarkers();
+    updateInitialPolygons();
     updateInitialPolylines();
   }
 
@@ -224,6 +232,17 @@ final class GoogleMapController
           markersController.changeMarkers((List<Object>) markersToChange);
           Object markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers((List<Object>) markerIdsToRemove);
+          result.success(null);
+          break;
+        }
+      case "polygons#update":
+        {
+          Object polygonsToAdd = call.argument("polygonsToAdd");
+          polygonsController.addPolygons((List<Object>) polygonsToAdd);
+          Object polygonsToChange = call.argument("polygonsToChange");
+          polygonsController.changePolygons((List<Object>) polygonsToChange);
+          Object polygonIdsToRemove = call.argument("polygonIdsToRemove");
+          polygonsController.removePolygons((List<Object>) polygonIdsToRemove);
           result.success(null);
           break;
         }
@@ -314,6 +333,11 @@ final class GoogleMapController
   @Override
   public boolean onMarkerClick(Marker marker) {
     return markersController.onMarkerTap(marker.getId());
+  }
+
+  @Override
+  public void onPolygonClick(Polygon polygon) {
+    polygonsController.onPolygonTap(polygon.getId());
   }
 
   @Override
@@ -462,6 +486,18 @@ final class GoogleMapController
 
   private void updateInitialMarkers() {
     markersController.addMarkers(initialMarkers);
+  }
+
+  @Override
+  public void setInitialPolygons(Object initialPolygons) {
+    this.initialPolygons = (List<Object>) initialPolygons;
+    if (googleMap != null) {
+      updateInitialPolygons();
+    }
+  }
+
+  private void updateInitialPolygons() {
+    polygonsController.addPolygons(initialPolygons);
   }
 
   @Override

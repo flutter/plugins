@@ -54,6 +54,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   // https://github.com/flutter/flutter/issues/27550
   BOOL _cameraDidInitialSetup;
   FLTMarkersController* _markersController;
+  FLTPolygonsController* _polygonsController;
   FLTPolylinesController* _polylinesController;
 }
 
@@ -85,12 +86,19 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _markersController = [[FLTMarkersController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar];
+    _polygonsController = [[FLTPolygonsController alloc] init:_channel
+                                                      mapView:_mapView
+                                                    registrar:registrar];
     _polylinesController = [[FLTPolylinesController alloc] init:_channel
                                                         mapView:_mapView
                                                       registrar:registrar];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
+    }
+    id polygonsToAdd = args[@"polygonToAdd"];
+    if ([polygonsToAdd isKindOfClass:[NSArray class]]) {
+      [_polygonsController addPolygons:polygonsToAdd];
     }
     id polylinesToAdd = args[@"polylinesToAdd"];
     if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
@@ -145,6 +153,20 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     id markerIdsToRemove = call.arguments[@"markerIdsToRemove"];
     if ([markerIdsToRemove isKindOfClass:[NSArray class]]) {
       [_markersController removeMarkerIds:markerIdsToRemove];
+    }
+    result(nil);
+  } else if ([call.method isEqualToString:@"polygons#update"]) {
+    id polygonsToAdd = call.arguments[@"polygonsToAdd"];
+    if ([polygonsToAdd isKindOfClass:[NSArray class]]) {
+      [_polygonsController addPolygons:polygonsToAdd];
+    }
+    id polygonsToChange = call.arguments[@"polygonsToChange"];
+    if ([polygonsToChange isKindOfClass:[NSArray class]]) {
+      [_polygonsController changePolygons:polygonsToChange];
+    }
+    id polygonIdsToRemove = call.arguments[@"polygonIdsToRemove"];
+    if ([polygonIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_polygonsController removePolygonIds:polygonIdsToRemove];
     }
     result(nil);
   } else if ([call.method isEqualToString:@"polylines#update"]) {
@@ -293,8 +315,12 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   [_markersController onInfoWindowTap:markerId];
 }
 - (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
-  NSString* polylineId = overlay.userData[0];
-  [_polylinesController onPolylineTap:polylineId];
+  NSString* overlayId = overlay.userData[0];
+  if ([_polylinesController hasPolylineWithId:overlayId]) {
+    [_polylinesController onPolylineTap:overlayId];
+  } else if ([_polygonsController hasPolygonWithId:overlayId]) {
+    [_polygonsController onPolygonTap:overlayId];
+  }
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {

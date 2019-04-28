@@ -1,3 +1,7 @@
+## 0.5.10
+
+* Add support for Polygons.
+
 ## 0.5.9
 
 * BitmapDescriptor#fromBytes accounts for screen scale on ios.

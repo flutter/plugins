@@ -5,6 +5,7 @@
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
 #import "GoogleMapMarkerController.h"
+#import "GoogleMapPolygonController.h"
 #import "GoogleMapPolylineController.h"
 
 // Defines map UI options writable from Flutter.
