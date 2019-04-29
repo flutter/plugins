@@ -181,6 +181,12 @@ static FlutterError *getFlutterError(NSError *error) {
 
 - (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSData *data = [NSData dataWithContentsOfFile:call.arguments[@"filename"]];
+  if (data == nil) {
+    result([FlutterError errorWithCode:@"storage_error"
+                               message:@"Failed to read file"
+                               details:nil]);
+    return;
+  }
   [self put:data call:call result:result];
 }
 

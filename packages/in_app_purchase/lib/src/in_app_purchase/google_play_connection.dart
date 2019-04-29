@@ -78,8 +78,8 @@ class GooglePlayConnection
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
     final List<PurchasesResultWrapper> responses = await Future.wait([
-      billingClient.queryPurchaseHistory(SkuType.inapp),
-      billingClient.queryPurchaseHistory(SkuType.subs)
+      billingClient.queryPurchases(SkuType.inapp),
+      billingClient.queryPurchases(SkuType.subs)
     ]);
 
     Set errorCodeSet = responses
