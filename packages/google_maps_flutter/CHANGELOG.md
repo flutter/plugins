@@ -1,3 +1,7 @@
+## 0.5.11
+
+* Prevent calling null callbacks and callbacks on removed objects.
+
 ## 0.5.10
 
 * Support Color's alpha channel when converting to UIColor on iOS.
