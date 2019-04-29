@@ -30,8 +30,8 @@ class HttpsCallable {
   Future<HttpsCallableResult> call([dynamic parameters]) async {
     try {
       final MethodChannel channel = CloudFunctions.channel;
-      final dynamic response =
-          await channel.invokeMethod<dynamic>('CloudFunctions#call', <String, dynamic>{
+      final dynamic response = await channel
+          .invokeMethod<dynamic>('CloudFunctions#call', <String, dynamic>{
         'app': _cloudFunctions._app.name,
         'region': _cloudFunctions._region,
         'timeoutMicroseconds': _timeout?.inMicroseconds,

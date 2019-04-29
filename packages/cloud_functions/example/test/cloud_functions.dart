@@ -42,6 +42,7 @@ void main() {
           'count': 9001,
         });
       }
+
       expect(impossibleCall(), throwsA(CloudFunctionsException));
     });
   });

@@ -31,10 +31,10 @@ void main() {
       await CloudFunctions.instance
           .getHttpsCallable(functionName: 'baz')
           .call();
-      HttpsCallable callable = CloudFunctions(
-          app: const FirebaseApp(name: '1337'), region: 'space')
-          .getHttpsCallable(functionName: 'qux')
-          ..timeout = const Duration(days: 300);
+      HttpsCallable callable =
+          CloudFunctions(app: const FirebaseApp(name: '1337'), region: 'space')
+              .getHttpsCallable(functionName: 'qux')
+                ..timeout = const Duration(days: 300);
       await callable.call(<String, dynamic>{
         'quux': 'quuz',
       });
