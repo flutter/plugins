@@ -54,10 +54,10 @@ void main() {
       snapshot = await ref.get();
       expect(snapshot.data['message'], 2);
       await ref.updateData(<String, dynamic>{
-        'message': FieldValue.increment(40.0),
+        'message': FieldValue.increment(40.1),
       });
       snapshot = await ref.get();
-      expect(snapshot.data['message'], 42.0);
+      expect(snapshot.data['message'], 42.1);
       await ref.delete();
     });
 
