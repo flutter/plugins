@@ -17,12 +17,10 @@ class HttpsCallable {
     try {
       final MethodChannel channel = CloudFunctions.channel;
       final dynamic response =
-          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-          // https://github.com/flutter/flutter/issues/26431
-          // ignore: strong_mode_implicit_dynamic_method
-          await channel.invokeMethod('CloudFunctions#call', <String, dynamic>{
+          await channel.invokeMethod<dynamic>('CloudFunctions#call', <String, dynamic>{
         'app': _cloudFunctions._app.name,
         'region': _cloudFunctions._region,
+        'timeoutMicroseconds': _timeout?.inMicroseconds,
         'functionName': _functionName,
         'parameters': parameters,
       });
@@ -32,22 +30,20 @@ class HttpsCallable {
         final String code = e.details['code'];
         final String message = e.details['message'];
         final dynamic details = e.details['details'];
-        print('throwing firebase functions exception');
         throw CloudFunctionsException._(code, message, details);
       } else {
-        print('throwing generic exception');
         throw Exception('Unable to call function ' + _functionName);
       }
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
 
   Duration _timeout;
 
+  /// The timeout to use when calling the function. Defaults to 60 seconds.
   Duration get timeout => _timeout;
-  set duration(Duration value) {
+  set timeout(Duration value) {
     _timeout = value;
   }
 }

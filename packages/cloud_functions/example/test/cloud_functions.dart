@@ -14,6 +14,7 @@ void main() {
 
   group('$CloudFunctions', () {
     test('call', () async {
+      // default timeout
       final HttpsCallable callable =
           CloudFunctions.instance.getHttpsCallable(functionName: 'repeat');
       final HttpsCallableResult response =
@@ -22,6 +23,9 @@ void main() {
         'count': 1,
       });
       expect(response.data['repeat_message'], 'foo');
+
+      // long custom timeout
+      callable.timeout = const Duration(days: 300);
       expect(response.data['repeat_count'], 2);
       final dynamic response2 = await callable.call(<String, dynamic>{
         'message': 'bar',
@@ -29,6 +33,16 @@ void main() {
       });
       expect(response2.data['repeat_message'], 'bar');
       expect(response2.data['repeat_count'], 43);
+
+      // impossibly short timeout
+      callable.timeout = const Duration(milliseconds: 1);
+      Future<void> impossibleCall() async {
+        await callable.call(<String, dynamic>{
+          'message': 'impossible',
+          'count': 9001,
+        });
+      }
+      expect(impossibleCall(), throwsA(CloudFunctionsException));
     });
   });
 }
