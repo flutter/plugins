@@ -54,6 +54,43 @@ void main() {
     final String currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://www.google.com/');
   });
+
+  // enable this once https://github.com/flutter/flutter/issues/31510
+  // is resolved.
+  test('loadUrl with headers', () async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    final StreamController<String> pageLoads = StreamController<String>();
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          javascriptMode: JavascriptMode.unrestricted,
+          onPageFinished: (String url) {
+            pageLoads.add(url);
+          },
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    final Map<String, String> headers = <String, String>{
+      'test_header': 'flutter_test_header'
+    };
+    await controller.loadUrl('https://flutter-header-echo.herokuapp.com/',
+        headers: headers);
+    final String currentUrl = await controller.currentUrl();
+    expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
+
+    await pageLoads.stream.firstWhere((String url) => url == currentUrl);
+    final String content = await controller
+        .evaluateJavascript('document.documentElement.innerText');
+    expect(content.contains('flutter_test_header'), isTrue);
+  });
 }
 
 Future<void> pumpWidget(Widget widget) {

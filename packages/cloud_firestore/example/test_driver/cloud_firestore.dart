@@ -40,6 +40,27 @@ void main() {
       expect(snapshot.data['message'], 'Hello world!');
     });
 
+    test('increment', () async {
+      final DocumentReference ref = firestore.collection('messages').document();
+      await ref.setData(<String, dynamic>{
+        'message': 1,
+        'created_at': FieldValue.serverTimestamp(),
+      });
+      DocumentSnapshot snapshot = await ref.get();
+      expect(snapshot.data['message'], 1);
+      await ref.updateData(<String, dynamic>{
+        'message': FieldValue.increment(1),
+      });
+      snapshot = await ref.get();
+      expect(snapshot.data['message'], 2);
+      await ref.updateData(<String, dynamic>{
+        'message': FieldValue.increment(40.0),
+      });
+      snapshot = await ref.get();
+      expect(snapshot.data['message'], 42.0);
+      await ref.delete();
+    });
+
     test('runTransaction', () async {
       final DocumentReference ref = firestore.collection('messages').document();
       await ref.setData(<String, dynamic>{
