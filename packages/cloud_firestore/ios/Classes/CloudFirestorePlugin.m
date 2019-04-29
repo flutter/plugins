@@ -349,7 +349,7 @@ const UInt8 TIMESTAMP = 136;
           [weakSelf.channel invokeMethod:@"DoTransaction"
                                arguments:call.arguments
                                   result:^(id doTransactionResult) {
-                                    self->transactionResults[transactionId] = doTransactionResult;
+                                    weakSelf.transactionResults[transactionId] = doTransactionResult;
                                     dispatch_semaphore_signal(semaphore);
                                   }];
 
