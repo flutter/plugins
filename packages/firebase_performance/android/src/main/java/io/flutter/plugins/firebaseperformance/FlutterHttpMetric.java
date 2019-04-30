@@ -8,7 +8,6 @@ import com.google.firebase.perf.metrics.HttpMetric;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
-@SuppressWarnings("ConstantConditions")
 public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
   private final HttpMetric httpMetric;
 
@@ -56,6 +55,7 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void stop(MethodCall call, MethodChannel.Result result) {
     httpMetric.stop();
 
@@ -65,12 +65,14 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void setHttpResponseCode(MethodCall call, MethodChannel.Result result) {
     final Integer httpResponseCode = call.argument("httpResponseCode");
     httpMetric.setHttpResponseCode(httpResponseCode);
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void setRequestPayloadSize(MethodCall call, MethodChannel.Result result) {
     final Number payloadSize = call.argument("requestPayloadSize");
     httpMetric.setRequestPayloadSize(payloadSize.longValue());
@@ -83,12 +85,14 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void setResponsePayloadSize(MethodCall call, MethodChannel.Result result) {
     final Number payloadSize = call.argument("responsePayloadSize");
     httpMetric.setResponsePayloadSize(payloadSize.longValue());
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void putAttribute(MethodCall call, MethodChannel.Result result) {
     final String attribute = call.argument("attribute");
     final String value = call.argument("value");
@@ -98,6 +102,7 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void removeAttribute(MethodCall call, MethodChannel.Result result) {
     final String attribute = call.argument("attribute");
     httpMetric.removeAttribute(attribute);

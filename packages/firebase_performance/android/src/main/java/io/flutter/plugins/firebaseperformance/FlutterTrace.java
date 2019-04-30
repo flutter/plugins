@@ -8,7 +8,6 @@ import com.google.firebase.perf.metrics.Trace;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
-@SuppressWarnings("ConstantConditions")
 public class FlutterTrace implements MethodChannel.MethodCallHandler {
   private final Trace trace;
 
@@ -53,6 +52,7 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void stop(MethodCall call, MethodChannel.Result result) {
     trace.stop();
 
@@ -62,6 +62,7 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void setMetric(MethodCall call, MethodChannel.Result result) {
     final String name = call.argument("name");
     final Number value = call.argument("value");
@@ -70,6 +71,7 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void incrementMetric(MethodCall call, MethodChannel.Result result) {
     final String name = call.argument("name");
     final Number value = call.argument("value");
@@ -78,12 +80,14 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void getMetric(MethodCall call, MethodChannel.Result result) {
     final String name = call.argument("name");
 
     result.success(trace.getLongMetric(name));
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void putAttribute(MethodCall call, MethodChannel.Result result) {
     final String attribute = call.argument("attribute");
     final String value = call.argument("value");
@@ -93,6 +97,7 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void removeAttribute(MethodCall call, MethodChannel.Result result) {
     final String attribute = call.argument("attribute");
     trace.removeAttribute(attribute);

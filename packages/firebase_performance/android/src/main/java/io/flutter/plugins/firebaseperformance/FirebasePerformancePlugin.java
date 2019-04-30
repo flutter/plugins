@@ -22,26 +22,16 @@ public class FirebasePerformancePlugin implements MethodChannel.MethodCallHandle
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    switch (call.method) {
-      case "FirebasePerformance#instance":
-        FlutterFirebasePerformance.getInstance(call, result);
-        break;
-      case "FirebasePerformance#isPerformanceCollectionEnabled":
-      case "FirebasePerformance#setPerformanceCollectionEnabled":
-      case "FirebasePerformance#newTrace":
-      case "FirebasePerformance#newHttpMetric":
-      case "Trace#start":
-      case "Trace#stop":
-      case "Trace#setMetric":
-      case "Trace#incrementMetric":
-      case "Trace#getMetric":
-      case "PerformanceAttributes#putAttribute":
-      case "PerformanceAttributes#removeAttribute":
-      case "PerformanceAttributes#getAttributes":
-        getHandler(call).onMethodCall(call, result);
-        break;
-      default:
+    if (call.method.equals("FirebasePerformance#instance")) {
+      FlutterFirebasePerformance.getInstance(call, result);
+    } else {
+      final MethodChannel.MethodCallHandler handler = getHandler(call);
+
+      if (handler != null) {
+        handler.onMethodCall(call, result);
+      } else {
         result.notImplemented();
+      }
     }
   }
 
@@ -58,9 +48,10 @@ public class FirebasePerformancePlugin implements MethodChannel.MethodCallHandle
     handlers.remove(handle);
   }
 
-  @SuppressWarnings("ConstantConditions")
   private static MethodChannel.MethodCallHandler getHandler(final MethodCall call) {
     final Integer handle = call.argument("handle");
+
+    if (handle == null) return null;
     return handlers.get(handle);
   }
 }
