@@ -120,8 +120,7 @@ void main() {
   });
 
   group('queryPurchaseDetails', () {
-    final String queryMethodName =
-        'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)';
+    const String queryMethodName = 'BillingClient#queryPurchases(String)';
     test('handles error', () async {
       final BillingResponse responseCode = BillingResponse.developerError;
       stubPlatform.addResponse(name: queryMethodName, value: <dynamic, dynamic>{

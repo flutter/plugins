@@ -1,3 +1,7 @@
+## 0.5.10
+
+* Support Color's alpha channel when converting to UIColor on iOS.
+
 ## 0.5.9
 
 * BitmapDescriptor#fromBytes accounts for screen scale on ios.
