@@ -16,7 +16,10 @@ part of firebase_performance;
 /// You can confirm that Performance Monitoring results appear in the Firebase
 /// console. Results should appear within 12 hours.
 class HttpMetric extends PerformanceAttributes {
-  HttpMetric._(this.channel);
+  HttpMetric._(this._handle, this.url, this.httpMethod);
+
+  final String url;
+  final HttpMethod httpMethod;
 
   @override
   bool _hasStarted = false;
@@ -29,9 +32,8 @@ class HttpMetric extends PerformanceAttributes {
   String _responseContentType;
   int _responsePayloadSize;
 
-  @visibleForTesting
   @override
-  final MethodChannel channel;
+  final int _handle;
 
   /// HttpResponse code of the request.
   int get httpResponseCode => _httpResponseCode;
@@ -53,9 +55,12 @@ class HttpMetric extends PerformanceAttributes {
     if (_hasStopped) return;
 
     _httpResponseCode = httpResponseCode;
-    channel.invokeMethod<void>(
+    FirebasePerformance.channel.invokeMethod<void>(
       '$HttpMetric#httpResponseCode',
-      httpResponseCode,
+      <String, dynamic>{
+        'handle': _handle,
+        'httpResponseCode': httpResponseCode,
+      },
     );
   }
 
@@ -67,9 +72,12 @@ class HttpMetric extends PerformanceAttributes {
     if (_hasStopped) return;
 
     _requestPayloadSize = requestPayloadSize;
-    channel.invokeMethod<void>(
+    FirebasePerformance.channel.invokeMethod<void>(
       '$HttpMetric#requestPayloadSize',
-      requestPayloadSize,
+      <String, dynamic>{
+        'handle': _handle,
+        'requestPayloadSize': requestPayloadSize,
+      },
     );
   }
 
@@ -81,9 +89,12 @@ class HttpMetric extends PerformanceAttributes {
     if (_hasStopped) return;
 
     _responseContentType = responseContentType;
-    channel.invokeMethod<void>(
+    FirebasePerformance.channel.invokeMethod<void>(
       '$HttpMetric#responseContentType',
-      responseContentType,
+      <String, dynamic>{
+        'handle': _handle,
+        'responseContentType': responseContentType,
+      },
     );
   }
 
@@ -95,9 +106,12 @@ class HttpMetric extends PerformanceAttributes {
     if (_hasStopped) return;
 
     _responsePayloadSize = responsePayloadSize;
-    channel.invokeMethod<void>(
+    FirebasePerformance.channel.invokeMethod<void>(
       '$HttpMetric#responsePayloadSize',
-      responsePayloadSize,
+      <String, dynamic>{
+        'handle': _handle,
+        'responsePayloadSize': responsePayloadSize,
+      },
     );
   }
 
@@ -111,7 +125,10 @@ class HttpMetric extends PerformanceAttributes {
     if (_hasStopped) return Future<void>.value(null);
 
     _hasStarted = true;
-    return channel.invokeMethod<void>('$HttpMetric#start');
+    return FirebasePerformance.channel.invokeMethod<void>(
+      '$HttpMetric#start',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 
   /// Stops this [HttpMetric].
@@ -126,6 +143,9 @@ class HttpMetric extends PerformanceAttributes {
     if (_hasStopped) return Future<void>.value(null);
 
     _hasStopped = true;
-    return channel.invokeMethod<void>('$HttpMetric#stop');
+    return FirebasePerformance.channel.invokeMethod<void>(
+      '$HttpMetric#stop',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 }

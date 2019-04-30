@@ -19,7 +19,7 @@ part of firebase_performance;
 /// You can confirm that Performance Monitoring results appear in the Firebase
 /// console. Results should appear within 12 hours.
 class Trace extends PerformanceAttributes {
-  Trace._(this.channel, this.name);
+  Trace._(this._handle, this.name);
 
   /// Maximum allowed length of the name of a [Trace].
   static const int maxTraceNameLength = 100;
@@ -32,9 +32,8 @@ class Trace extends PerformanceAttributes {
   @override
   bool _hasStopped = false;
 
-  @visibleForTesting
   @override
-  final MethodChannel channel;
+  final int _handle;
 
   /// Name representing this [Trace] on the Firebase Console.
   final String name;
@@ -49,7 +48,10 @@ class Trace extends PerformanceAttributes {
     if (_hasStopped) return Future<void>.value(null);
 
     _hasStarted = true;
-    return channel.invokeMethod<void>('$Trace#start');
+    return FirebasePerformance.channel.invokeMethod<void>(
+      '$Trace#start',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 
   /// Stops this [Trace].
@@ -64,7 +66,10 @@ class Trace extends PerformanceAttributes {
     if (_hasStopped) return Future<void>.value(null);
 
     _hasStopped = true;
-    return channel.invokeMethod<void>('$Trace#stop');
+    return FirebasePerformance.channel.invokeMethod<void>(
+      '$Trace#stop',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 
   /// Increments the metric with the given [name].
@@ -78,9 +83,9 @@ class Trace extends PerformanceAttributes {
     }
 
     _metrics[name] += value;
-    return channel.invokeMethod<void>(
+    return FirebasePerformance.channel.invokeMethod<void>(
       '$Trace#incrementMetric',
-      <String, dynamic>{'name': name, 'value': value},
+      <String, dynamic>{'handle': _handle, 'name': name, 'value': value},
     );
   }
 
@@ -93,9 +98,9 @@ class Trace extends PerformanceAttributes {
     if (!_hasStarted || _hasStopped) return Future<void>.value(null);
 
     _metrics[name] = value;
-    return channel.invokeMethod<void>(
+    return FirebasePerformance.channel.invokeMethod<void>(
       '$Trace#setMetric',
-      <String, dynamic>{'name': name, 'value': value},
+      <String, dynamic>{'handle': _handle, 'name': name, 'value': value},
     );
   }
 
@@ -106,9 +111,9 @@ class Trace extends PerformanceAttributes {
   Future<int> getMetric(String name) {
     if (_hasStopped) return Future<int>.value(_metrics[name] ?? 0);
 
-    return channel.invokeMethod<int>(
+    return FirebasePerformance.channel.invokeMethod<int>(
       '$Trace#getMetric',
-      <String, dynamic>{'name': name},
+      <String, dynamic>{'handle': _handle, 'name': name},
     );
   }
 }
