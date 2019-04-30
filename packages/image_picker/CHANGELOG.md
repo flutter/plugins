@@ -1,3 +1,7 @@
+## 0.6.0+2
+
+* Android: images are saved with their real extension instead of always using `.jpg`.
+
 ## 0.6.0+1
 
 * Android: Using correct suffix syntax when picking image from remote url.
