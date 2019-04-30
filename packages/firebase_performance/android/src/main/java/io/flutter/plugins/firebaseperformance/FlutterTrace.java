@@ -4,31 +4,16 @@
 
 package io.flutter.plugins.firebaseperformance;
 
-import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
-import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
 @SuppressWarnings("ConstantConditions")
 public class FlutterTrace implements MethodChannel.MethodCallHandler {
   private final Trace trace;
-  private final MethodChannel channel;
 
-  FlutterTrace(
-      FirebasePerformance performance,
-      BinaryMessenger messenger,
-      MethodCall call,
-      MethodChannel.Result result) {
-    final String traceName = call.argument("traceName");
-    final String channelName = call.argument("channelName");
-
-    this.trace = performance.newTrace(traceName);
-
-    this.channel = new MethodChannel(messenger, channelName);
-    channel.setMethodCallHandler(this);
-
-    result.success(null);
+  FlutterTrace(final Trace trace) {
+    this.trace = trace;
   }
 
   @Override
@@ -38,7 +23,7 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
         start(result);
         break;
       case "Trace#stop":
-        stop(result);
+        stop(call, result);
         break;
       case "Trace#setMetric":
         setMetric(call, result);
@@ -68,9 +53,12 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
-  private void stop(MethodChannel.Result result) {
+  private void stop(MethodCall call, MethodChannel.Result result) {
     trace.stop();
-    channel.setMethodCallHandler(null);
+
+    final Integer handle = call.argument("handle");
+    FirebasePerformancePlugin.removeHandler(handle);
+
     result.success(null);
   }
 

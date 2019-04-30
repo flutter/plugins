@@ -4,57 +4,16 @@
 
 package io.flutter.plugins.firebaseperformance;
 
-import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.HttpMetric;
-import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
 @SuppressWarnings("ConstantConditions")
 public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
-  private static String parseHttpMethod(String httpMethod) {
-    switch (httpMethod) {
-      case "HttpMethod.Connect":
-        return FirebasePerformance.HttpMethod.CONNECT;
-      case "HttpMethod.Delete":
-        return FirebasePerformance.HttpMethod.DELETE;
-      case "HttpMethod.Get":
-        return FirebasePerformance.HttpMethod.GET;
-      case "HttpMethod.Head":
-        return FirebasePerformance.HttpMethod.HEAD;
-      case "HttpMethod.Options":
-        return FirebasePerformance.HttpMethod.OPTIONS;
-      case "HttpMethod.Patch":
-        return FirebasePerformance.HttpMethod.PATCH;
-      case "HttpMethod.Post":
-        return FirebasePerformance.HttpMethod.POST;
-      case "HttpMethod.Put":
-        return FirebasePerformance.HttpMethod.PUT;
-      case "HttpMethod.Trace":
-        return FirebasePerformance.HttpMethod.TRACE;
-      default:
-        throw new IllegalArgumentException(String.format("No HttpMethod for: %s", httpMethod));
-    }
-  }
-
   private final HttpMetric httpMetric;
-  private final MethodChannel channel;
 
-  FlutterHttpMetric(
-      FirebasePerformance performance,
-      BinaryMessenger messenger,
-      MethodCall call,
-      MethodChannel.Result result) {
-    final String channelName = call.argument("channelName");
-    final String url = call.argument("url");
-    final String httpMethod = call.argument("httpMethod");
-
-    this.httpMetric = performance.newHttpMetric(url, parseHttpMethod(httpMethod));
-
-    this.channel = new MethodChannel(messenger, channelName);
-    channel.setMethodCallHandler(this);
-
-    result.success(null);
+  FlutterHttpMetric(final HttpMetric metric) {
+    this.httpMetric = metric;
   }
 
   @Override
@@ -64,7 +23,7 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
         start(result);
         break;
       case "HttpMetric#stop":
-        stop(result);
+        stop(call, result);
         break;
       case "HttpMetric#httpResponseCode":
         setHttpResponseCode(call, result);
@@ -97,9 +56,12 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
-  private void stop(MethodChannel.Result result) {
+  private void stop(MethodCall call, MethodChannel.Result result) {
     httpMetric.stop();
-    channel.setMethodCallHandler(null);
+
+    final Integer handle = call.argument("handle");
+    FirebasePerformancePlugin.removeHandler(handle);
+
     result.success(null);
   }
 

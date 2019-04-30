@@ -5,20 +5,47 @@
 package io.flutter.plugins.firebaseperformance;
 
 import com.google.firebase.perf.FirebasePerformance;
-import io.flutter.plugin.common.BinaryMessenger;
+import com.google.firebase.perf.metrics.HttpMetric;
+import com.google.firebase.perf.metrics.Trace;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
 public class FlutterFirebasePerformance implements MethodChannel.MethodCallHandler {
-  private final BinaryMessenger binaryMessenger;
-  private final FirebasePerformance performance;
-
-  static FlutterFirebasePerformance getInstance(BinaryMessenger messenger) {
-    return new FlutterFirebasePerformance(messenger);
+  private static String parseHttpMethod(String httpMethod) {
+    switch (httpMethod) {
+      case "HttpMethod.Connect":
+        return FirebasePerformance.HttpMethod.CONNECT;
+      case "HttpMethod.Delete":
+        return FirebasePerformance.HttpMethod.DELETE;
+      case "HttpMethod.Get":
+        return FirebasePerformance.HttpMethod.GET;
+      case "HttpMethod.Head":
+        return FirebasePerformance.HttpMethod.HEAD;
+      case "HttpMethod.Options":
+        return FirebasePerformance.HttpMethod.OPTIONS;
+      case "HttpMethod.Patch":
+        return FirebasePerformance.HttpMethod.PATCH;
+      case "HttpMethod.Post":
+        return FirebasePerformance.HttpMethod.POST;
+      case "HttpMethod.Put":
+        return FirebasePerformance.HttpMethod.PUT;
+      case "HttpMethod.Trace":
+        return FirebasePerformance.HttpMethod.TRACE;
+      default:
+        throw new IllegalArgumentException(String.format("No HttpMethod for: %s", httpMethod));
+    }
   }
 
-  private FlutterFirebasePerformance(BinaryMessenger messenger) {
-    this.binaryMessenger = messenger;
+  private final FirebasePerformance performance;
+
+  @SuppressWarnings("ConstantConditions")
+  static void getInstance(MethodCall call, MethodChannel.Result result) {
+    final Integer handle = call.argument("handle");
+    FirebasePerformancePlugin.addHandler(handle, new FlutterFirebasePerformance());
+    result.success(null);
+  }
+
+  private FlutterFirebasePerformance() {
     this.performance = FirebasePerformance.getInstance();
   }
 
@@ -52,11 +79,27 @@ public class FlutterFirebasePerformance implements MethodChannel.MethodCallHandl
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void newTrace(MethodCall call, MethodChannel.Result result) {
-    new FlutterTrace(performance, binaryMessenger, call, result);
+    final String name = call.argument("name");
+    final Trace trace = performance.newTrace(name);
+
+    final Integer handle = call.argument("handle");
+    FirebasePerformancePlugin.addHandler(handle, new FlutterTrace(trace));
+
+    result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void newHttpMetric(MethodCall call, MethodChannel.Result result) {
-    new FlutterHttpMetric(performance, binaryMessenger, call, result);
+    final String url = call.argument("url");
+    final String httpMethod = call.argument("httpMethod");
+
+    final HttpMetric metric = performance.newHttpMetric(url, parseHttpMethod(httpMethod));
+
+    final Integer handle = call.argument("handle");
+    FirebasePerformancePlugin.addHandler(handle, new FlutterHttpMetric(metric));
+
+    result.success(null);
   }
 }
