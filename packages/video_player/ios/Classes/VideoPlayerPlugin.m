@@ -334,8 +334,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (int64_t)duration {
-  NSLog(@"[_player currentItem]           : %@", [_player currentItem]);
-  NSLog(@"[[_player currentItem] duration]: %llu", [[_player currentItem] duration].value);
   return FLTCMTimeToMillis([[_player currentItem] duration]);
 }
 
