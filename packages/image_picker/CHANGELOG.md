@@ -1,6 +1,6 @@
 ## 0.6.0+2
 
-* Android: images have real extension instead .jpg
+* Android: images are saved with their real extension instead of always using `.jpg`.
 
 ## 0.6.0+1
 
