@@ -93,11 +93,6 @@ final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
 ```
 For more details on registering a user, see the example directory.
 
-```dart
-assert (user != null);
-assert(await user.getIdToken() != null);
-```
-
 ### Supported Firebase authentication methods
 
 * Google
