@@ -12,7 +12,6 @@
 @property(strong, nonatomic) NSDictionary *discountMap;
 @property(strong, nonatomic) NSDictionary *productMap;
 @property(strong, nonatomic) NSDictionary *productResponseMap;
-@property(strong, nonatomic) NSDictionary *downloadMap;
 @property(strong, nonatomic) NSDictionary *paymentMap;
 @property(strong, nonatomic) NSDictionary *transactionMap;
 @property(strong, nonatomic) NSDictionary *errorMap;
@@ -37,29 +36,12 @@
     @"productIdentifier" : @"123",
     @"localizedTitle" : @"title",
     @"localizedDescription" : @"des",
-    @"downloadable" : @YES,
-    @"downloadContentLengths" : @1,
-    @"downloadContentVersion" : [NSNull null],  // not mockable
     @"subscriptionPeriod" : self.periodMap,
     @"introductoryPrice" : self.discountMap,
     @"subscriptionGroupIdentifier" : @"com.group"
   };
   self.productResponseMap =
       @{@"products" : @[ self.productMap ], @"invalidProductIdentifiers" : @[]};
-  self.downloadMap = @{
-    @"state" : @(0),
-    @"contentIdentifier" : [NSNull null],
-    @"contentLength" : @(2),
-    @"contentURL" : @"https://flutter.io",
-    @"contentVersion" : [NSNull null],
-    @"error" : [FIAObjectTranslator getMapFromNSError:[NSError errorWithDomain:@"test_stub"
-                                                                          code:123
-                                                                      userInfo:@{}]],
-    @"progress" : @(0.5),
-    @"timeRemaining" : @(100),
-    @"downloadTimeUnKnown" : @(NO),
-    @"transactionID" : [NSNull null],
-  };
   self.paymentMap = @{
     @"productIdentifier" : @"123",
     @"requestData" : @"abcdefghabcdefghabcdefghabcdefghabcdefghabcdefghabcdefghabcdefgh",
@@ -76,20 +58,6 @@
                                                                       userInfo:@{}]],
     @"transactionTimeStamp" : @([NSDate date].timeIntervalSince1970),
     @"originalTransaction" : [NSNull null],
-    @"downloads" : @[ @{
-      @"state" : @(0),
-      @"contentIdentifier" : [NSNull null],
-      @"contentLength" : @(2),
-      @"contentURL" : @"https://flutter.io",
-      @"contentVersion" : [NSNull null],
-      @"error" : [FIAObjectTranslator getMapFromNSError:[NSError errorWithDomain:@"test_stub"
-                                                                            code:123
-                                                                        userInfo:@{}]],
-      @"progress" : @(0.5),
-      @"timeRemaining" : @(100),
-      @"downloadTimeUnKnown" : @(NO),
-      @"transactionID" : @"567",
-    } ]
   };
   self.transactionMap = @{
     @"transactionIdentifier" : @"567",
@@ -100,20 +68,6 @@
                                                                       userInfo:@{}]],
     @"transactionTimeStamp" : @([NSDate date].timeIntervalSince1970),
     @"originalTransaction" : originalTransactionMap,
-    @"downloads" : @[ @{
-      @"state" : @(0),
-      @"contentIdentifier" : [NSNull null],
-      @"contentLength" : @(2),
-      @"contentURL" : @"https://flutter.io",
-      @"contentVersion" : [NSNull null],
-      @"error" : [FIAObjectTranslator getMapFromNSError:[NSError errorWithDomain:@"test_stub"
-                                                                            code:123
-                                                                        userInfo:@{}]],
-      @"progress" : @(0.5),
-      @"timeRemaining" : @(100),
-      @"downloadTimeUnKnown" : @(NO),
-      @"transactionID" : @"567",
-    } ]
   };
   self.errorMap = @{
     @"code" : @(123),
@@ -148,14 +102,6 @@
       [[SKProductsResponseStub alloc] initWithMap:self.productResponseMap];
   NSDictionary *map = [FIAObjectTranslator getMapFromSKProductsResponse:response];
   XCTAssertEqualObjects(map, self.productResponseMap);
-}
-
-- (void)testDownloadToMap {
-  // bug with state, downloadTimeUnKnown, transaction and contentIdentifer in KVC, cannot test these
-  // fields.
-  SKDownloadStub *download = [[SKDownloadStub alloc] initWithMap:self.downloadMap];
-  NSDictionary *map = [FIAObjectTranslator getMapFromSKDownload:download];
-  XCTAssertEqualObjects(map, self.downloadMap);
 }
 
 - (void)testPaymentToMap {
