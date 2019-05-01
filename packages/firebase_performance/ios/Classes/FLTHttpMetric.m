@@ -6,21 +6,15 @@
 
 @interface FLTHttpMetric ()
 @property FIRHTTPMetric *metric;
-@property id<FlutterPluginRegistrar> registrar;
-@property FlutterMethodChannel *channel;
 @end
 
 @implementation FLTHttpMetric
 + (void)registerWithRegistrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {}
 
-- (instancetype _Nonnull)initWithHTTPMetric:(FIRHTTPMetric *)metric
-                                  registrar:(NSObject<FlutterPluginRegistrar> *_Nonnull)registrar
-                                    channel:(FlutterMethodChannel *)channel {
+- (instancetype _Nonnull)initWithHTTPMetric:(FIRHTTPMetric *)metric {
   self = [self init];
   if (self) {
     _metric = metric;
-    _registrar = registrar;
-    _channel = channel;
   }
 
   return self;
@@ -30,7 +24,7 @@
   if ([@"HttpMetric#start" isEqualToString:call.method]) {
     [self start:result];
   } else if ([@"HttpMetric#stop" isEqualToString:call.method]) {
-    [self stop:result];
+    [self stop:call result:result];
   } else if ([@"HttpMetric#httpResponseCode" isEqualToString:call.method]) {
     [self setHttpResponseCode:call result:result];
   } else if ([@"HttpMetric#requestPayloadSize" isEqualToString:call.method]) {
@@ -55,9 +49,12 @@
   result(nil);
 }
 
-- (void)stop:(FlutterResult)result {
+- (void)stop:(FlutterMethodCall *)call result:(FlutterResult)result {
   [_metric stop];
-  [_registrar addMethodCallDelegate:nil channel:nil];
+
+  NSNumber *handle = call.arguments[@"handle"];
+  [FLTFirebasePerformancePlugin removeMethodHandler:handle];
+
   result(nil);
 }
 

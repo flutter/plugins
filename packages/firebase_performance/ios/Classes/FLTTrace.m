@@ -6,20 +6,14 @@
 
 @interface FLTTrace ()
 @property FIRTrace *trace;
-@property id<FlutterPluginRegistrar> registrar;
-@property FlutterMethodChannel *channel;
 @end
 
 @implementation FLTTrace
 + (void)registerWithRegistrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {}
 
-- (instancetype _Nonnull)initWithTrace:(FIRTrace *)trace
-                             registrar:(NSObject<FlutterPluginRegistrar> *_Nonnull)registrar
-                               channel:(FlutterMethodChannel *)channel {
+- (instancetype _Nonnull)initWithTrace:(FIRTrace *)trace {
   self = [self init];
   if (self) {
-    _registrar = registrar;
-    _channel = channel;
     _trace = trace;
   }
 
@@ -30,7 +24,7 @@
   if ([@"Trace#start" isEqualToString:call.method]) {
     [self start:result];
   } else if ([@"Trace#stop" isEqualToString:call.method]) {
-    [self stop:result];
+    [self stop:call result:result];
   } else if ([@"Trace#setMetric" isEqualToString:call.method]) {
     [self setMetric:call result:result];
   } else if ([@"Trace#incrementMetric" isEqualToString:call.method]) {
@@ -53,9 +47,12 @@
   result(nil);
 }
 
-- (void)stop:(FlutterResult)result {
+- (void)stop:(FlutterMethodCall *)call result:(FlutterResult)result {
   [_trace stop];
-  [_registrar addMethodCallDelegate:nil channel:_channel];
+
+  NSNumber *handle = call.arguments[@"handle"];
+  [FLTFirebasePerformancePlugin removeMethodHandler:handle];
+
   result(nil);
 }
 

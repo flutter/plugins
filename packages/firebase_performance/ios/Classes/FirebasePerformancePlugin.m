@@ -5,14 +5,57 @@
 #import "FirebasePerformancePlugin.h"
 
 @implementation FLTFirebasePerformancePlugin
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_performance"
-                                  binaryMessenger:[registrar messenger]];
+static NSMutableDictionary<NSNumber *, id<FlutterPlugin>> *methodHandlers;
 
-  FLTFirebasePerformance *instance = [[FLTFirebasePerformance alloc] initWithRegistrar:registrar];
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  methodHandlers = [NSMutableDictionary new];
+
+  FlutterMethodChannel *channel =
+  [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_performance"
+                              binaryMessenger:[registrar messenger]];
+
+  FLTFirebasePerformancePlugin *instance = [FLTFirebasePerformancePlugin new];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {}
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
+      [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
+    }
+  }
+
+  return self;
+}
+
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  if ([@"FirebasePerformance#instance" isEqualToString:call.method]) {
+    [FLTFirebasePerformance sharedInstanceWithCall:call result:result];
+    result(nil);
+  } else {
+    NSNumber *handle = call.arguments[@"handle"];
+
+    if (![handle isEqual:[NSNull null]]) {
+      [methodHandlers[handle] handleMethodCall:call result:result];
+    } else {
+      result(FlutterMethodNotImplemented);
+    }
+  }
+}
+
++ (void)addMethodHandler:(NSNumber *)handle methodHandler:(id<FlutterPlugin>)handler {
+  if (methodHandlers[handle]) {
+    NSString *reason = [[NSString alloc] initWithFormat:@"Object for handle already exists: %d", handle.intValue];
+    @throw [[NSException alloc] initWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+  }
+
+  methodHandlers[handle] = handler;
+}
+
++ (void)removeMethodHandler:(NSNumber *)handle {
+  [methodHandlers removeObjectForKey:handle];
+}
 @end

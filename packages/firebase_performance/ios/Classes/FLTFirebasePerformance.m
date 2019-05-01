@@ -5,31 +5,21 @@
 #import "FirebasePerformancePlugin.h"
 
 @interface FLTFirebasePerformance ()
-@property id<FlutterPluginRegistrar> registrar;
 @property FIRPerformance *performance;
 @end
 
 @implementation FLTFirebasePerformance
 + (void)registerWithRegistrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {}
 
-- (instancetype _Nonnull)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *_Nonnull)registrar {
-  self = [self init];
-  if (self) {
-    _performance = [FIRPerformance sharedInstance];
-    _registrar = registrar;
-  }
-
-  return self;
++ (void)sharedInstanceWithCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSNumber *handle = call.arguments[@"handle"];
+  [FLTFirebasePerformancePlugin addMethodHandler:handle methodHandler:[FLTFirebasePerformance new]];
 }
 
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
-      NSLog(@"Configuring the default Firebase app...");
-      [FIRApp configure];
-      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
-    }
+    _performance = [FIRPerformance sharedInstance];
   }
 
   return self;
@@ -54,43 +44,32 @@
 }
 
 - (void)setPerformanceCollectionEnabled:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSNumber *enable = call.arguments;
+  NSNumber *enable = call.arguments[@"enable"];
   [_performance setDataCollectionEnabled:[enable boolValue]];
   result(nil);
 }
 
 - (void)newTrace:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSString *traceName = call.arguments[@"traceName"];
-  FIRTrace *trace = [_performance traceWithName:traceName];
+  NSString *name = call.arguments[@"name"];
+  FIRTrace *trace = [_performance traceWithName:name];
+  FLTTrace *handler = [[FLTTrace alloc] initWithTrace:trace];
 
-  NSString *channelName = call.arguments[@"channelName"];
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-                                   methodChannelWithName:channelName
-                                   binaryMessenger:[_registrar messenger]];
+  NSNumber *handle = call.arguments[@"traceHandle"];
+  [FLTFirebasePerformancePlugin addMethodHandler:handle methodHandler:handler];
 
-  FLTTrace *delegate = [[FLTTrace alloc] initWithTrace:trace registrar:_registrar channel:channel];
-  [_registrar addMethodCallDelegate:delegate channel:channel];
   result(nil);
 }
 
 - (void)newHttpMetric:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSString *httpMethod = call.arguments[@"httpMethod"];
-  FIRHTTPMethod method = [FLTFirebasePerformance parseHttpMethod:httpMethod];
-
-  NSString *urlString = call.arguments[@"url"];
-  NSURL *url = [NSURL URLWithString:urlString];
+  FIRHTTPMethod method = [FLTFirebasePerformance parseHttpMethod:call.arguments[@"httpMethod"]];
+  NSURL *url = [NSURL URLWithString:call.arguments[@"url"]];
 
   FIRHTTPMetric *metric = [[FIRHTTPMetric alloc] initWithURL:url HTTPMethod:method];
+  FLTHttpMetric *handler = [[FLTHttpMetric alloc] initWithHTTPMetric:metric];
 
-  NSString *channelName = call.arguments[@"channelName"];
-  FlutterMethodChannel *channel = [FlutterMethodChannel
-                                   methodChannelWithName:channelName
-                                   binaryMessenger:[_registrar messenger]];
+  NSNumber *handle = call.arguments[@"httpMetricHandle"];
+  [FLTFirebasePerformancePlugin addMethodHandler:handle methodHandler:handler];
 
-  FLTHttpMetric *delegate = [[FLTHttpMetric alloc] initWithHTTPMetric:metric
-                                                            registrar:_registrar
-                                                              channel:channel];
-  [_registrar addMethodCallDelegate:delegate channel:channel];
   result(nil);
 }
 
