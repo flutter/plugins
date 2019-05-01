@@ -3,7 +3,7 @@
 
 @interface FLTFirebasePerformancePlugin : NSObject <FlutterPlugin>
 + (void)addMethodHandler:(NSNumber *_Nonnull)handle
-           methodHandler:(id<FlutterPlugin>_Nonnull)handler;
+           methodHandler:(id<FlutterPlugin> _Nonnull)handler;
 + (void)removeMethodHandler:(NSNumber *_Nonnull)handle;
 @end
 
