@@ -20,8 +20,7 @@ abstract class PerformanceAttributes {
   bool get _hasStarted;
   bool get _hasStopped;
 
-  @visibleForTesting
-  MethodChannel get channel;
+  int get _handle;
 
   /// Sets a String [value] for the specified [attribute].
   ///
@@ -42,9 +41,13 @@ abstract class PerformanceAttributes {
     }
 
     _attributes[attribute] = value;
-    return channel.invokeMethod<void>(
+    return FirebasePerformance.channel.invokeMethod<void>(
       '$PerformanceAttributes#putAttribute',
-      <String, String>{'attribute': attribute, 'value': value},
+      <String, dynamic>{
+        'handle': _handle,
+        'attribute': attribute,
+        'value': value,
+      },
     );
   }
 
@@ -53,9 +56,9 @@ abstract class PerformanceAttributes {
     if (!_hasStarted || _hasStopped) return Future<void>.value(null);
 
     _attributes.remove(attribute);
-    return channel.invokeMethod<void>(
+    return FirebasePerformance.channel.invokeMethod<void>(
       '$PerformanceAttributes#removeAttribute',
-      attribute,
+      <String, dynamic>{'handle': _handle, 'attribute': attribute},
     );
   }
 
@@ -67,8 +70,9 @@ abstract class PerformanceAttributes {
       ));
     }
 
-    return channel.invokeMapMethod<String, String>(
+    return FirebasePerformance.channel.invokeMapMethod<String, String>(
       '$PerformanceAttributes#getAttributes',
+      <String, dynamic>{'handle': _handle},
     );
   }
 }
