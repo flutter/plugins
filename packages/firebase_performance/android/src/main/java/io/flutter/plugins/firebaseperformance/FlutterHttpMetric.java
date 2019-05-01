@@ -94,18 +94,18 @@ public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
 
   @SuppressWarnings("ConstantConditions")
   private void putAttribute(MethodCall call, MethodChannel.Result result) {
-    final String attribute = call.argument("attribute");
+    final String name = call.argument("name");
     final String value = call.argument("value");
 
-    httpMetric.putAttribute(attribute, value);
+    httpMetric.putAttribute(name, value);
 
     result.success(null);
   }
 
   @SuppressWarnings("ConstantConditions")
   private void removeAttribute(MethodCall call, MethodChannel.Result result) {
-    final String attribute = call.argument("attribute");
-    httpMetric.removeAttribute(attribute);
+    final String name = call.argument("name");
+    httpMetric.removeAttribute(name);
 
     result.success(null);
   }

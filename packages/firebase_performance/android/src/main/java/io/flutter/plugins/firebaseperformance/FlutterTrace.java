@@ -89,18 +89,18 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
 
   @SuppressWarnings("ConstantConditions")
   private void putAttribute(MethodCall call, MethodChannel.Result result) {
-    final String attribute = call.argument("attribute");
+    final String name = call.argument("name");
     final String value = call.argument("value");
 
-    trace.putAttribute(attribute, value);
+    trace.putAttribute(name, value);
 
     result.success(null);
   }
 
   @SuppressWarnings("ConstantConditions")
   private void removeAttribute(MethodCall call, MethodChannel.Result result) {
-    final String attribute = call.argument("attribute");
-    trace.removeAttribute(attribute);
+    final String name = call.argument("name");
+    trace.removeAttribute(name);
 
     result.success(null);
   }
