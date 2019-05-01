@@ -165,7 +165,7 @@ final class GoogleMapController
     googleMap.setOnMarkerClickListener(this);
     googleMap.setOnPolylineClickListener(this);
     googleMap.setOnMapClickListener(this);
-    updateMyLocationEnabled();
+    updateMyLocationSettings();
     markersController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     updateInitialMarkers();
@@ -454,7 +454,7 @@ final class GoogleMapController
     }
     this.myLocationEnabled = myLocationEnabled;
     if (googleMap != null) {
-      updateMyLocationEnabled();
+      updateMyLocationSettings();
     }
   }
 
@@ -465,7 +465,7 @@ final class GoogleMapController
     }
     this.myLocationButtonEnabled = myLocationButtonEnabled;
     if (googleMap != null) {
-      googleMap.getUiSettings().setMyLocationButtonEnabled(myLocationButtonEnabled);
+      updateMyLocationSettings();
     }
   }
 
@@ -494,7 +494,7 @@ final class GoogleMapController
   }
 
   @SuppressLint("MissingPermission")
-  private void updateMyLocationEnabled() {
+  private void updateMyLocationSettings() {
     if (hasLocationPermission()) {
       // The plugin doesn't add the location permission by default so that apps that don't need
       // the feature won't require the permission.
@@ -502,6 +502,7 @@ final class GoogleMapController
       // fail the build if the permission is missing. The following disables the Gradle lint.
       //noinspection ResourceType
       googleMap.setMyLocationEnabled(myLocationEnabled);
+      googleMap.getUiSettings().setMyLocationButtonEnabled(myLocationButtonEnabled);
     } else {
       // TODO(amirh): Make the options update fail.
       // https://github.com/flutter/flutter/issues/24327
