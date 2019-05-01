@@ -9,9 +9,10 @@
 @end
 
 @implementation FLTFirebasePerformance
-+ (void)registerWithRegistrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {}
++ (void)registerWithRegistrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {
+}
 
-+ (void)sharedInstanceWithCall:(FlutterMethodCall*)call result:(FlutterResult)result {
++ (void)sharedInstanceWithCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *handle = call.arguments[@"handle"];
   [FLTFirebasePerformancePlugin addMethodHandler:handle methodHandler:[FLTFirebasePerformance new]];
 }

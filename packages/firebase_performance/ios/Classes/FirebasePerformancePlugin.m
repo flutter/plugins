@@ -11,8 +11,8 @@ static NSMutableDictionary<NSNumber *, id<FlutterPlugin>> *methodHandlers;
   methodHandlers = [NSMutableDictionary new];
 
   FlutterMethodChannel *channel =
-  [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_performance"
-                              binaryMessenger:[registrar messenger]];
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_performance"
+                                  binaryMessenger:[registrar messenger]];
 
   FLTFirebasePerformancePlugin *instance = [FLTFirebasePerformancePlugin new];
   [registrar addMethodCallDelegate:instance channel:channel];
@@ -48,7 +48,8 @@ static NSMutableDictionary<NSNumber *, id<FlutterPlugin>> *methodHandlers;
 
 + (void)addMethodHandler:(NSNumber *)handle methodHandler:(id<FlutterPlugin>)handler {
   if (methodHandlers[handle]) {
-    NSString *reason = [[NSString alloc] initWithFormat:@"Object for handle already exists: %d", handle.intValue];
+    NSString *reason =
+        [[NSString alloc] initWithFormat:@"Object for handle already exists: %d", handle.intValue];
     @throw [[NSException alloc] initWithName:NSInvalidArgumentException reason:reason userInfo:nil];
   }
 
