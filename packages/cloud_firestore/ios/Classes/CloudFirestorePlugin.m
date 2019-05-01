@@ -359,7 +359,8 @@ const UInt8 INCREMENT_INTEGER = 138;
           [weakSelf.channel invokeMethod:@"DoTransaction"
                                arguments:call.arguments
                                   result:^(id doTransactionResult) {
-                                    weakSelf.transactionResults[transactionId] =
+                                    FLTCloudFirestorePlugin *currentSelf = weakSelf;
+                                    currentSelf->transactionResults[transactionId] =
                                         doTransactionResult;
                                     dispatch_semaphore_signal(semaphore);
                                   }];
