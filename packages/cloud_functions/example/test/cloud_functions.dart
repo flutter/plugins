@@ -42,7 +42,7 @@ void main() {
           'message': 'impossible',
           'count': 9001,
         });
-      } on CloudFunctionsException catch (e) {
+      } on CloudFunctionsException {
         timedOut = true;
       }
       expect(timedOut, true);
