@@ -96,6 +96,6 @@
 }
 
 - (void)getAttributes:(FlutterResult)result {
-  result(_trace.attributes);
+  result([_trace attributes]);
 }
 @end
