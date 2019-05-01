@@ -78,10 +78,11 @@ class Trace extends PerformanceAttributes {
   /// not been started or has already been stopped, returns immediately without
   /// taking action.
   Future<void> incrementMetric(String name, int value) {
-    if (!_hasStarted || _hasStopped || _metrics[name] == null) {
+    if (!_hasStarted || _hasStopped) {
       return Future<void>.value(null);
     }
 
+    _metrics.putIfAbsent(name, () => 0);
     _metrics[name] += value;
     return FirebasePerformance.channel.invokeMethod<void>(
       '$Trace#incrementMetric',

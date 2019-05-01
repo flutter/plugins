@@ -22,7 +22,7 @@ abstract class PerformanceAttributes {
 
   int get _handle;
 
-  /// Sets a String [value] for the specified [attribute].
+  /// Sets a String [value] for the specified attribute with [name].
   ///
   /// Updates the value of the attribute if the attribute already exists.
   /// The maximum number of attributes that can be added are
@@ -31,34 +31,34 @@ abstract class PerformanceAttributes {
   /// Name of the attribute has max length of [maxAttributeKeyLength]
   /// characters. Value of the attribute has max length of
   /// [maxAttributeValueLength] characters.
-  Future<void> putAttribute(String attribute, String value) {
+  Future<void> putAttribute(String name, String value) {
     if (!_hasStarted ||
         _hasStopped ||
-        attribute.length > maxAttributeKeyLength ||
+        name.length > maxAttributeKeyLength ||
         value.length > maxAttributeValueLength ||
         _attributes.length == 5) {
       return Future<void>.value(null);
     }
 
-    _attributes[attribute] = value;
+    _attributes[name] = value;
     return FirebasePerformance.channel.invokeMethod<void>(
       '$PerformanceAttributes#putAttribute',
       <String, dynamic>{
         'handle': _handle,
-        'attribute': attribute,
+        'name': name,
         'value': value,
       },
     );
   }
 
-  /// Removes an already added [attribute].
-  Future<void> removeAttribute(String attribute) {
+  /// Removes an already added attribute with [name].
+  Future<void> removeAttribute(String name) {
     if (!_hasStarted || _hasStopped) return Future<void>.value(null);
 
-    _attributes.remove(attribute);
+    _attributes.remove(name);
     return FirebasePerformance.channel.invokeMethod<void>(
       '$PerformanceAttributes#removeAttribute',
-      <String, dynamic>{'handle': _handle, 'attribute': attribute},
+      <String, dynamic>{'handle': _handle, 'name': name},
     );
   }
 
