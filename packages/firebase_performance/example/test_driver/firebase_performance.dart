@@ -47,7 +47,7 @@ void main() {
 
     test('httpmetric', () async {
       final HttpMetric httpMetric = performance.newHttpMetric(
-        'www.google.com',
+        'https://www.google.com',
         HttpMethod.Connect,
       );
 
