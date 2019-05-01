@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:firebase_performance/firebase_performance.dart';
 
 void main() {
   final Completer<String> completer = Completer<String>();
@@ -10,6 +9,8 @@ void main() {
   tearDownAll(() => completer.complete(null));
 
   group('firebase_performance test driver', () {
+    // TODO(bparrishMines): Rewrite integration tests when iOS portion is written.
+    /*
     final FirebasePerformance performance = FirebasePerformance.instance;
 
     setUp(() async {
@@ -25,8 +26,6 @@ void main() {
       expect(disabled, isFalse);
     });
 
-    // TODO(bparrishMines): Rewrite integration test when iOS portion is written.
-    /*
     test('metric', () async {
       final Trace trace = performance.newTrace('test');
       trace.putAttribute('testAttribute', 'foo');
