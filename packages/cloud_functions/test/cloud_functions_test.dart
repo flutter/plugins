@@ -58,7 +58,7 @@ void main() {
               'region': 'space',
               'functionName': 'qux',
               'timeoutMicroseconds': (const Duration(days: 300)).inMicroseconds,
-              'parameters': <String, dynamic>{ 'quux': 'quuz' },
+              'parameters': <String, dynamic>{'quux': 'quuz'},
             },
           ),
         ],
