@@ -29,6 +29,7 @@ class GoogleMap extends StatefulWidget {
     this.zoomGesturesEnabled = true,
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
+    this.myLocationButtonEnabled = true,
     this.markers,
     this.polylines,
     this.onCameraMoveStarted,
@@ -123,6 +124,19 @@ class GoogleMap extends StatefulWidget {
   /// `Info.plist` file. This will automatically prompt the user for permissions
   /// when the map tries to turn on the My Location layer.
   final bool myLocationEnabled;
+
+  /// Enables or disables the my-location button.
+  ///
+  /// The my-location button causes the camera to move such that the user's
+  /// location is in the center of the map. If the button is enabled, it is
+  /// only shown when the my-location layer is enabled.
+  ///
+  /// By default, the my-location button is enabled (and hence shown when the
+  /// my-location layer is enabled).
+  ///
+  /// See also:
+  ///   * [myLocationEnabled] parameter.
+  final bool myLocationButtonEnabled;
 
   /// Which gestures should be consumed by the map.
   ///
@@ -271,6 +285,7 @@ class _GoogleMapOptions {
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
+    this.myLocationButtonEnabled,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -285,6 +300,7 @@ class _GoogleMapOptions {
       trackCameraPosition: map.onCameraMove != null,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
+      myLocationButtonEnabled: map.myLocationButtonEnabled,
     );
   }
 
@@ -308,6 +324,8 @@ class _GoogleMapOptions {
 
   final bool myLocationEnabled;
 
+  final bool myLocationButtonEnabled;
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -327,6 +345,7 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
+    addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
 
     return optionsMap;
   }
