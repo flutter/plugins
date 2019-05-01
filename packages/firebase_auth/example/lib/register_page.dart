@@ -84,13 +84,13 @@ class RegisterPageState extends State<RegisterPage> {
       email: _emailController.text,
       password: _passwordController.text,
     );
-    if (user != null) {
-      setState(() {
-        _success = true;
-        _userEmail = user.email;
-      });
-    } else {
-      _success = false;
+    try {
+	setState(() {
+		_success = true;
+		_userEmail = user.email;
+	});
+    } on Exception catch(e) {
+	print('Exception details:\n $e');
     }
   }
 }

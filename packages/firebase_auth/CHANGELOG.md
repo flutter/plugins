@@ -1,6 +1,6 @@
 ## 0.8.4+6
 
-* Adds error checking in the documentation of Register a User
+* Adds try/catch block in register_page.dart for error-checking
 
 ## 0.8.4+5
 
