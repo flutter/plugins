@@ -1,6 +1,10 @@
-## 0.5.10
+## 0.5.11
 
 * Add myLocationButtonEnabled option.
+
+## 0.5.10
+
+* Support Color's alpha channel when converting to UIColor on iOS.
 
 ## 0.5.9
 
