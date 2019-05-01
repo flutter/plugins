@@ -43,6 +43,8 @@ class FakePlatformGoogleMap {
 
   bool myLocationEnabled;
 
+  bool myLocationButtonEnabled;
+
   Set<MarkerId> markerIdsToRemove;
 
   Set<Marker> markersToAdd;
@@ -214,6 +216,9 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('myLocationEnabled')) {
       myLocationEnabled = options['myLocationEnabled'];
+    }
+    if (options.containsKey('myLocationButtonEnabled')) {
+      myLocationButtonEnabled = options['myLocationButtonEnabled'];
     }
   }
 }
