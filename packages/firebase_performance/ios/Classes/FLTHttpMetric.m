@@ -34,11 +34,11 @@
     [self responseContentType:call result:result];
   } else if ([@"HttpMetric#responsePayloadSize" isEqualToString:call.method]) {
     [self responsePayloadSize:call result:result];
-  } else if ([@"HttpMetric#putAttribute" isEqualToString:call.method]) {
+  } else if ([@"PerformanceAttributes#putAttribute" isEqualToString:call.method]) {
     [self putAttribute:call result:result];
-  } else if ([@"HttpMetric#removeAttribute" isEqualToString:call.method]) {
+  } else if ([@"PerformanceAttributes#removeAttribute" isEqualToString:call.method]) {
     [self removeAttribute:call result:result];
-  } else if ([@"HttpMetric#getAttributes" isEqualToString:call.method]) {
+  } else if ([@"PerformanceAttributes#getAttributes" isEqualToString:call.method]) {
     [self getAttributes:result];
   } else {
     result(FlutterMethodNotImplemented);
