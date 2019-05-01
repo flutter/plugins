@@ -4,7 +4,7 @@
 
 part of firebase_performance;
 
-/// Trace allows you to set the beginning and end of a custom trace in your app.
+/// [Trace] allows you to set the beginning and end of a custom trace in your app.
 ///
 /// A trace is a report of performance data associated with some of the
 /// code in your app. You can have multiple custom traces, and it is
@@ -19,124 +19,96 @@ part of firebase_performance;
 /// You can confirm that Performance Monitoring results appear in the Firebase
 /// console. Results should appear within 12 hours.
 class Trace extends PerformanceAttributes {
-  Trace._(this._handle, this._name) {
-    assert(_name != null);
-    assert(!_name.startsWith(RegExp(r'[_\s]')));
-    assert(!_name.contains(RegExp(r'[_\s]$')));
-    assert(_name.length <= maxTraceNameLength);
-  }
+  Trace._(this.channel, this.name);
 
   /// Maximum allowed length of the name of a [Trace].
   static const int maxTraceNameLength = 100;
 
-  final int _handle;
-  final String _name;
+  final Map<String, int> _metrics = <String, int>{};
 
+  @override
   bool _hasStarted = false;
+
+  @override
   bool _hasStopped = false;
 
-  final HashMap<String, int> _metrics = HashMap<String, int>();
+  @visibleForTesting
+  @override
+  final MethodChannel channel;
 
-  /// Starts this trace.
+  /// Name representing this [Trace] on the Firebase Console.
+  final String name;
+
+  /// Starts this [Trace].
   ///
-  /// Can only be called once, otherwise assertion error is thrown.
+  /// Can only be called once.
   ///
-  /// Using ```await``` with this method is only necessary when accurate timing
+  /// Using `await` with this method is only necessary when accurate timing
   /// is relevant.
   Future<void> start() {
-    assert(!_hasStarted);
+    if (_hasStopped) return Future<void>.value(null);
 
     _hasStarted = true;
-    return FirebasePerformance.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('Trace#start', <String, dynamic>{
-      'handle': _handle,
-      'name': _name,
-    });
+    return channel.invokeMethod<void>('$Trace#start');
   }
 
-  /// Stops this trace.
+  /// Stops this [Trace].
   ///
-  /// Can only be called once and only after start(), otherwise assertion error
-  /// is thrown. Data collected is automatically sent to the associated Firebase
-  /// console after stop() is called.
+  /// Can only be called once and only after start() Data collected is
+  /// automatically sent to the associated Firebase console after stop() is
+  /// called. You can confirm that Performance Monitoring results appear in the
+  /// Firebase console. Results should appear within 12 hours.
   ///
-  /// Not necessary to use ```await``` with this method.
+  /// Not necessary to use `await` with this method.
   Future<void> stop() {
-    assert(!_hasStopped);
-    assert(_hasStarted);
-
-    final Map<String, dynamic> data = <String, dynamic>{
-      'handle': _handle,
-      'name': _name,
-      'metrics': _metrics,
-      'attributes': _attributes,
-    };
+    if (_hasStopped) return Future<void>.value(null);
 
     _hasStopped = true;
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return FirebasePerformance.channel.invokeMethod('Trace#stop', data);
+    return channel.invokeMethod<void>('$Trace#stop');
   }
 
-  /// Increments the counter with the given [name] by [incrementBy].
+  /// Increments the metric with the given [name].
   ///
-  /// The counter is incremented by 1 if [incrementBy] was not passed. If a
-  /// counter does not already exist, a new one will be created. If the trace
-  /// has not been started or has already been stopped, an assertion error is
-  /// thrown.
-  ///
-  /// The name of the counter requires no leading or
-  /// trailing whitespace, no leading underscore _ character, and max length of
-  /// 32 characters.
-  @Deprecated('Use `incrementMetric` instead.')
-  void incrementCounter(String name, [int incrementBy = 1]) {
-    incrementMetric(name, incrementBy);
+  /// If the metric does not exist, a new one will be created. If the [Trace] has
+  /// not been started or has already been stopped, returns immediately without
+  /// taking action.
+  Future<void> incrementMetric(String name, int value) {
+    if (!_hasStarted || _hasStopped || _metrics[name] == null) {
+      return Future<void>.value(null);
+    }
+
+    _metrics[name] += value;
+    return channel.invokeMethod<void>(
+      '$Trace#incrementMetric',
+      <String, dynamic>{'name': name, 'value': value},
+    );
   }
 
-  /// Increments the metric with the given [name] by [incrementBy].
+  /// Sets the [value] of the metric with the given [name].
   ///
-  /// If a metric does not already exist, a new one will be created with the
-  /// initial value [incrementBy]. If the trace has not been started or has
-  /// already been stopped, an assertion error is thrown.
-  ///
-  /// The name of the metric requires no leading or trailing whitespace, no
-  /// leading underscore _ character, and max length of 32 characters.
-  void incrementMetric(String name, int incrementBy) {
-    assert(!_hasStopped);
-    assert(name != null);
-    assert(!name.startsWith(RegExp(r'[_\s]')));
-    assert(!name.contains(RegExp(r'[_\s]$')));
-    assert(name.length <= 32);
+  /// If a metric with the given name doesn't exist, a new one will be created.
+  /// If the [Trace] has not been started or has already been stopped, returns
+  /// immediately without taking action.
+  Future<void> setMetric(String name, int value) {
+    if (!_hasStarted || _hasStopped) return Future<void>.value(null);
 
-    _metrics.putIfAbsent(name, () => 0);
-    _metrics[name] += incrementBy;
+    _metrics[name] = value;
+    return channel.invokeMethod<void>(
+      '$Trace#setMetric',
+      <String, dynamic>{'name': name, 'value': value},
+    );
   }
 
-  /// Sets a String [value] for the specified [attribute].
+  /// Gets the value of the metric with the given [name].
   ///
-  /// If the trace has been stopped, this method throws an assertion
-  /// error.
-  ///
-  /// See [PerformanceAttributes.putAttribute].
-  @override
-  void putAttribute(String attribute, String value) {
-    assert(!_hasStopped);
-    super.putAttribute(attribute, value);
-  }
+  /// If a metric with the given name doesn't exist, it is NOT created and a 0
+  /// is returned.
+  Future<int> getMetric(String name) {
+    if (_hasStopped) return Future<int>.value(_metrics[name] ?? 0);
 
-  /// Removes an already added [attribute].
-  ///
-  /// If the trace has been stopped, this method throws an assertion
-  /// error.
-  ///
-  /// See [PerformanceAttributes.removeAttribute].
-  @override
-  void removeAttribute(String attribute) {
-    assert(!_hasStopped);
-    super.removeAttribute(attribute);
+    return channel.invokeMethod<int>(
+      '$Trace#getMetric',
+      <String, dynamic>{'name': name},
+    );
   }
 }
