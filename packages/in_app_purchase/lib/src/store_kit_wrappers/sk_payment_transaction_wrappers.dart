@@ -17,8 +17,7 @@ part 'sk_payment_transaction_wrappers.g.dart';
 /// [SKPaymentQueueWrapper] via [SKPaymentQueueWrapper.setTransactionObserver]
 /// at app launch.
 ///
-/// This class is a Dart wrapper around
-/// [SKTransactionObserver](https://developer.apple.com/documentation/storekit/skpaymenttransactionobserver?language=objc).
+/// This class is a Dart wrapper around [SKTransactionObserver](https://developer.apple.com/documentation/storekit/skpaymenttransactionobserver?language=objc).
 abstract class SKTransactionObserverWrapper {
   /// Triggered when any transactions are updated.
   void updatedTransactions({List<SKPaymentTransactionWrapper> transactions});

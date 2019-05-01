@@ -65,9 +65,9 @@ class SKPaymentQueueWrapper {
   ///   - At least one [SKTransactionObserverWrapper] should have been added to
   ///     the payment queue using [addTransactionObserver].
   ///   - The [payment.productIdentifier] needs to have been previously fetched
-  ///     using [SKRequestMaker.startProductRequest]. This normally shouldn't be
-  ///     an issue since that method is the only way to pull product
-  ///     information.
+  ///     using [SKRequestMaker.startProductRequest] so that a valid `SKProduct`
+  ///     has been cached in the platform side already. Because of this
+  ///     [payment.productIdentifier] cannot be hardcoded.
   ///
   /// This method calls StoreKit's [`-[SKPaymentQueue addPayment:]`]
   /// (https://developer.apple.com/documentation/storekit/skpaymentqueue/1506036-addpayment?preferredLanguage=occ).
@@ -119,8 +119,7 @@ class SKPaymentQueueWrapper {
   ///
   /// This method either triggers [`-[SKPayment
   /// restoreCompletedTransactions]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506123-restorecompletedtransactions?language=objc)
-  /// or [`-[SKPayment
-  /// restoreCompletedTransactionsWithApplicationUsername:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1505992-restorecompletedtransactionswith?language=objc)
+  /// or [`-[SKPayment restoreCompletedTransactionsWithApplicationUsername:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1505992-restorecompletedtransactionswith?language=objc)
   /// depending on whether the `applicationUserName` is set.
   Future<void> restoreTransactions({String applicationUserName}) async {
     await channel.invokeMethod(
@@ -209,8 +208,7 @@ class SKError {
     return _$SKErrorFromJson(map);
   }
 
-  /// Error
-  /// [code](https://developer.apple.com/documentation/foundation/1448136-nserror_codes)
+  /// Error [code](https://developer.apple.com/documentation/foundation/1448136-nserror_codes)
   /// as defined in the Cocoa Framework.
   final int code;
 
@@ -221,8 +219,7 @@ class SKError {
 
   /// A map that contains more detailed information about the error.
   ///
-  /// Any key of the map must be a valid
-  /// [NSErrorUserInfoKey](https://developer.apple.com/documentation/foundation/nserroruserinfokey?language=objc).
+  /// Any key of the map must be a valid [NSErrorUserInfoKey](https://developer.apple.com/documentation/foundation/nserroruserinfokey?language=objc).
   final Map<String, dynamic> userInfo;
 
   @override
