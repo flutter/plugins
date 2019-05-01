@@ -4,31 +4,15 @@
 
 package io.flutter.plugins.firebaseperformance;
 
-import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
-import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
-@SuppressWarnings("ConstantConditions")
 public class FlutterTrace implements MethodChannel.MethodCallHandler {
   private final Trace trace;
-  private final MethodChannel channel;
 
-  FlutterTrace(
-      FirebasePerformance performance,
-      BinaryMessenger messenger,
-      MethodCall call,
-      MethodChannel.Result result) {
-    final String traceName = call.argument("traceName");
-    final String channelName = call.argument("channelName");
-
-    this.trace = performance.newTrace(traceName);
-
-    this.channel = new MethodChannel(messenger, channelName);
-    channel.setMethodCallHandler(this);
-
-    result.success(null);
+  FlutterTrace(final Trace trace) {
+    this.trace = trace;
   }
 
   @Override
@@ -38,7 +22,7 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
         start(result);
         break;
       case "Trace#stop":
-        stop(result);
+        stop(call, result);
         break;
       case "Trace#setMetric":
         setMetric(call, result);
@@ -68,12 +52,17 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
-  private void stop(MethodChannel.Result result) {
+  @SuppressWarnings("ConstantConditions")
+  private void stop(MethodCall call, MethodChannel.Result result) {
     trace.stop();
-    channel.setMethodCallHandler(null);
+
+    final Integer handle = call.argument("handle");
+    FirebasePerformancePlugin.removeHandler(handle);
+
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void setMetric(MethodCall call, MethodChannel.Result result) {
     final String name = call.argument("name");
     final Number value = call.argument("value");
@@ -82,6 +71,7 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void incrementMetric(MethodCall call, MethodChannel.Result result) {
     final String name = call.argument("name");
     final Number value = call.argument("value");
@@ -90,12 +80,14 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void getMetric(MethodCall call, MethodChannel.Result result) {
     final String name = call.argument("name");
 
     result.success(trace.getLongMetric(name));
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void putAttribute(MethodCall call, MethodChannel.Result result) {
     final String attribute = call.argument("attribute");
     final String value = call.argument("value");
@@ -105,6 +97,7 @@ public class FlutterTrace implements MethodChannel.MethodCallHandler {
     result.success(null);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void removeAttribute(MethodCall call, MethodChannel.Result result) {
     final String attribute = call.argument("attribute");
     trace.removeAttribute(attribute);
