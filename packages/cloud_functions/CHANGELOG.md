@@ -1,7 +1,8 @@
 ## 0.2.0
 
 * **Breaking change**. Updated Dart API to replace `call` with `getHttpsCallable`.
-* Added integration testing for timeouts.
+* Added support for timeouts.
+* Additional integration testing.
 
 ## 0.1.2+1
 
