@@ -36,14 +36,16 @@ void main() {
 
       // impossibly short timeout
       callable.timeout = const Duration(milliseconds: 1);
-      Future<void> impossibleCall() async {
+      bool timedOut = false;
+      try {
         await callable.call(<String, dynamic>{
           'message': 'impossible',
           'count': 9001,
         });
+      } on CloudFunctionsException catch (e) {
+        timedOut = true;
       }
-
-      expect(impossibleCall(), throwsA(CloudFunctionsException));
+      expect(timedOut, true);
     });
   });
 }

@@ -1,6 +1,6 @@
 ## 0.2.0
 
-* **Breaking change**. Update Dart API to replace `call` with `getHttpsCallable`.
+* **Breaking change**. Updated Dart API to replace `call` with `getHttpsCallable`.
 * Added integration testing for timeouts.
 
 ## 0.1.2+1
