@@ -1,3 +1,8 @@
+## 0.10.1
+
+* Support for `startAtDocument`, `startAfterDocument`, `endAtDocument`, `endBeforeDocument`.
+* Added additional unit and integration tests.
+
 ## 0.10.0
 
 * Support for `FieldValue.increment`.
