@@ -109,6 +109,6 @@
 }
 
 - (void)getAttributes:(FlutterResult)result {
-  result(_metric.attributes);
+  result([_metric attributes]);
 }
 @end
