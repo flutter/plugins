@@ -1,3 +1,7 @@
+## 0.5.12
+
+* Prevent calling null callbacks and callbacks on removed objects.
+
 ## 0.5.11+1
 
 * Android: Fix an issue where myLocationButtonEnabled setting was not propagated when set to false onMapLoad.
