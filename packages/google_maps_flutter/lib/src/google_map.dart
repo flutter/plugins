@@ -248,24 +248,32 @@ class _GoogleMapState extends State<GoogleMap> {
   void onMarkerTap(String markerIdParam) {
     assert(markerIdParam != null);
     final MarkerId markerId = MarkerId(markerIdParam);
-    _markers[markerId].onTap();
+    if (_markers[markerId]?.onTap != null) {
+      _markers[markerId].onTap();
+    }
   }
 
   void onPolylineTap(String polylineIdParam) {
     assert(polylineIdParam != null);
     final PolylineId polylineId = PolylineId(polylineIdParam);
-    _polylines[polylineId].onTap();
+    if (_polylines[polylineId]?.onTap != null) {
+      _polylines[polylineId].onTap();
+    }
   }
 
   void onInfoWindowTap(String markerIdParam) {
     assert(markerIdParam != null);
     final MarkerId markerId = MarkerId(markerIdParam);
-    _markers[markerId].infoWindow.onTap();
+    if (_markers[markerId]?.infoWindow?.onTap != null) {
+      _markers[markerId].infoWindow.onTap();
+    }
   }
 
   void onTap(LatLng position) {
     assert(position != null);
-    widget.onTap(position);
+    if (widget.onTap != null) {
+      widget.onTap(position);
+    }
   }
 }
 
