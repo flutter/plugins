@@ -31,7 +31,7 @@
 
 @end
 
-const double GRAVITY = 9.8;
+const double GRAVITY = 9.80665;
 CMMotionManager* _motionManager;
 
 void _initMotionManager() {
