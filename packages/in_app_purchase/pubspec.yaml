@@ -6,6 +6,7 @@ version: 0.1.0
 
 dependencies:
   async: ^2.0.8
+  collection: ^1.14.11
   flutter:
     sdk: flutter
   json_annotation: ^2.0.0
