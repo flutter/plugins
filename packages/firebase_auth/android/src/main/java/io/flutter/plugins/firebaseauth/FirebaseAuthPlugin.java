@@ -560,16 +560,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     currentUser.updateEmail(email).addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
-  
-  private void handleUpdatePhoneNumber(
-      MethodCall call, Result result, FirebaseAuth firebaseAuth) {
-     Map<String, String> arguments = call.arguments();
+
+  private void handleUpdatePhoneNumber(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    Map<String, String> arguments = call.arguments();
     String verificationId = arguments.get("verificationId");
     String smsCode = arguments.get("smsCode");
 
     PhoneAuthCredential phoneAuthCredential =
         PhoneAuthProvider.getCredential(verificationId, smsCode);
-    
+
     firebaseAuth
         .getCurrentUser()
         .updatePhoneNumber(phoneAuthCredential)
