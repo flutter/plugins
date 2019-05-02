@@ -4,10 +4,8 @@ Demonstrates how to use the In App Purchase (IAP) Plugin.
 
 ## Getting Started
 
-WARNING: This plugin and example are not ready to be used. Right now the example
-app doesn't actually demonstrate any IAP functionality yet. Follow
-[flutter/flutter#9591](https://github.com/flutter/flutter/issues/9591) for more
-updates.
+This plugin is in beta. Please use with caution and file any potential issues
+you see on our [issue tracker](https://github.com/flutter/flutter/issues/new/choose).
 
 There's a significant amount of setup required for testing in app purchases
 successfully, including registering new app IDs and store entries to use for
