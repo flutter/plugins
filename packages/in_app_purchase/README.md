@@ -18,12 +18,16 @@ Add this to your Flutter app to:
 This plugin is in beta. Please use with caution and file any potential issues
 you see on our [issue tracker](https://github.com/flutter/flutter/issues/new/choose).
 
-There's a significant amount of setup required for developing in app purchases
-successfully, including registering new app IDs and store entries in both the
-Play Developer Console and App Store Connect. Both Google Play and the App Store
-require developers to configure an app with in-app items for purchase to call
-their in-app-purchase APIs. You can check out the [example
-app](example/README.md) for how to configure in app purchases in both stores.
+This plugin relies on the App Store and Google Play for making in app purchases.
+It exposes a unified surface, but you'll still need to understand and configure
+your app with each store to handle purchases using them. Both have extensive
+guides:
+
+* [In-App Purchase (App Store)](https://developer.apple.com/in-app-purchase/)
+* [Google Play Biling Overview](https://developer.android.com/google/play/billing/billing_overview)
+
+You can check out the [example app README](example/README.md) for steps on how
+to configure in app purchases in both stores.
 
 Once you've configured your in app purchases in their respective stores, you're
 able to start using the plugin. There's two basic options available to you to
@@ -33,9 +37,9 @@ use.
    the generic idiommatic Flutter API. This exposes the most basic IAP-related
    functionality. The goal is that Flutter apps should be able to use this API
    surface on its own for the vast majority of cases. If you use this you should
-   be able to handle the basic cases of loading and making purchases, but you
-   may not be able to access more subtle functionality specific to either
-   underlying platform.
+   be able to handle most use cases for loading and making purchases. If you would
+   like a more platform dependent approach, we also provide the second option as
+   below.
 
 2. Dart APIs exposing the underlying platform APIs as directly as possible:
    [store_kit_wrappers.dart](lib/src/store_kit_wrappers.dart) and
@@ -47,12 +51,10 @@ use.
 
 ### Initializing the plugin
 
-Using `InAppPurchaseConnection`:
-
 ```dart
 // Subscribe to any incoming purchases at app initialization. These can
 // propagate from either storefront so it's important to listen as soon as
-// possible.
+// possible to avoid losing events.
 class _MyAppState extends State<MyApp> {
   StreamSubscription<List<PurchaseDetails>> _subscription;
 
@@ -75,15 +77,14 @@ class _MyAppState extends State<MyApp> {
 
 ### Connecting to the Storefront
 
-Using `InAppPurchaseConnection`:
-
 ```dart
 final bool available = await InAppPurchaseConnection.instance.isAvailable();
+if (!available) {
+  // The store cannot be reached or accessed. Update the UI accordingly.
+}
 ```
 
 ### Loading products for sale
-
-Using `InAppPurchaseConnection`:
 
 ```dart
 const Set<String> _kIds = <String>['product1', 'product2'].toSet();
@@ -95,8 +96,6 @@ List<ProductDetails> products = response.productDetails;
 ```
 
 ### Loading previous purchases
-
-Using `InAppPurchaseConnection`:
 
 ```dart
 final QueryPurchaseDetailsResponse response = await InAppPurchaseConnection.instance.queryPastPurchases();
