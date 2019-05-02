@@ -1,3 +1,7 @@
+## 0.4.0+2
+* Change Android update frequency to SENSOR_DELAY_GAME instead of SENSOR_DELAY_NORMAL
+* Increase the accuracy of the Earth gravity constant
+
 ## 0.4.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
