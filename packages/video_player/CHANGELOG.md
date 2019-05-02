@@ -1,3 +1,8 @@
+## 0.10.0+9
+
+* Fix race condition while disposing the VideoController.
+
+
 ## 0.10.0+8
 
 * iOS: Fix an issue where the player sends initialization message incorrectly.
