@@ -1,3 +1,7 @@
+## 0.8.5
+
+* Support for `updatePhoneNumberCredential`.
+
 ## 0.8.4+5
 
 * Increase Firebase/Auth CocoaPod dependency to '~> 5.19'.
