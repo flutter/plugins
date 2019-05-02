@@ -1,3 +1,7 @@
+## 2.1.1+2
+
+* On iOS, use `putFile` instead of `putData` appropriately to detect `Content-Type`.
+
 ## 2.1.1+1
 
 * On iOS, gracefully handle the case of uploading a nonexistent file without crashing.
