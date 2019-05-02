@@ -21,14 +21,15 @@ This plugin uses
 [json_serializable](https://pub.dartlang.org/packages/json_serializable) for the
 many data structs passed between the underlying platform layers and Dart. After
 editing any of the serialized data structs, rebuild the serializers by running
-`flutter packages pub run build_runner build`. `flutter packages pub run
-build_runner watch` will watch the filesystem for changes.
+`flutter packages pub run build_runner build --delete-conflicting-outputs`.
+`flutter packages pub run build_runner watch --delete-conflicting-outputs` will
+watch the filesystem for changes.
 
 ### Design
 
 The API surface is stacked into 2 main layers.
 
-1. [in_app_purchase_connection.dart](lib/src/in_app_purchase_connection.dart),
+1. [in_app_purchase.dart](lib/src/in_app_purchase.dart),
    the generic idiommatic Flutter API. This exposes the most basic IAP-related
    functionality. The goal is that Flutter apps should be able to use this API
    surface on its own for the vast majority of cases.

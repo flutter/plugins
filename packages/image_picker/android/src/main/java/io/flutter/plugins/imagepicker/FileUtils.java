@@ -29,6 +29,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -95,7 +96,7 @@ class FileUtils {
 
       // Return the remote address
       if (isGooglePhotosUri(uri)) {
-        return uri.getLastPathSegment();
+        return null;
       }
 
       return getDataColumn(context, uri, null, null);
@@ -116,7 +117,13 @@ class FileUtils {
     try {
       cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
       if (cursor != null && cursor.moveToFirst()) {
-        final int column_index = cursor.getColumnIndexOrThrow(column);
+        final int column_index = cursor.getColumnIndex(column);
+
+        //yandex.disk and dropbox do not have _data column
+        if (column_index == -1) {
+          return null;
+        }
+
         return cursor.getString(column_index);
       }
     } finally {
@@ -134,8 +141,9 @@ class FileUtils {
     OutputStream outputStream = null;
     boolean success = false;
     try {
+      String extension = getImageExtension(context, uri);
       inputStream = context.getContentResolver().openInputStream(uri);
-      file = File.createTempFile("image_picker", "jpg", context.getCacheDir());
+      file = File.createTempFile("image_picker", extension, context.getCacheDir());
       outputStream = new FileOutputStream(file);
       if (inputStream != null) {
         copy(inputStream, outputStream);
@@ -157,6 +165,35 @@ class FileUtils {
       }
     }
     return success ? file.getPath() : null;
+  }
+
+  /** @return extension of image with dot, or default .jpg if it none. */
+  private static String getImageExtension(Context context, Uri uriImage) {
+    String extension = null;
+    Cursor cursor = null;
+
+    try {
+      cursor =
+          context
+              .getContentResolver()
+              .query(uriImage, new String[] {MediaStore.MediaColumns.MIME_TYPE}, null, null, null);
+
+      if (cursor != null && cursor.moveToNext()) {
+        String mimeType = cursor.getString(0);
+
+        extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+      }
+    } finally {
+      if (cursor != null) {
+        cursor.close();
+      }
+    }
+
+    if (extension == null) {
+      //default extension for matches the previous behavior of the plugin
+      extension = "jpg";
+    }
+    return "." + extension;
   }
 
   private static void copy(InputStream in, OutputStream out) throws IOException {
@@ -181,6 +218,6 @@ class FileUtils {
   }
 
   private static boolean isGooglePhotosUri(Uri uri) {
-    return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    return "com.google.android.apps.photos.contentprovider".equals(uri.getAuthority());
   }
 }

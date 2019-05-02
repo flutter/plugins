@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FlutterWebView.h"
+#import "FLTWKNavigationDelegate.h"
 #import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
@@ -40,6 +41,7 @@
   NSString* _currentUrl;
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
+  FLTWKNavigationDelegate* _navigationDelegate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -64,6 +66,8 @@
     configuration.userContentController = userContentController;
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
+    _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
@@ -106,6 +110,8 @@
     [self onAddJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"removeJavascriptChannels"]) {
     [self onRemoveJavaScriptChannels:call result:result];
+  } else if ([[call method] isEqualToString:@"clearCache"]) {
+    [self clearCache:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -117,11 +123,11 @@
 }
 
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSString* url = [call arguments];
-  if (![self loadUrl:url]) {
-    result([FlutterError errorWithCode:@"loadUrl_failed"
-                               message:@"Failed parsing the URL"
-                               details:[NSString stringWithFormat:@"URL was: '%@'", url]]);
+  if (![self loadRequest:[call arguments]]) {
+    result([FlutterError
+        errorWithCode:@"loadUrl_failed"
+              message:@"Failed parsing the URL"
+              details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
   } else {
     result(nil);
   }
@@ -206,11 +212,30 @@
   result(nil);
 }
 
+- (void)clearCache:(FlutterResult)result {
+  if (@available(iOS 9.0, *)) {
+    NSSet* cacheDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+    WKWebsiteDataStore* dataStore = [WKWebsiteDataStore defaultDataStore];
+    NSDate* dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+    [dataStore removeDataOfTypes:cacheDataTypes
+                   modifiedSince:dateFrom
+               completionHandler:^{
+                 result(nil);
+               }];
+  } else {
+    // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
+    NSLog(@"Clearing cache is not supported for Flutter WebViews prior to iOS 9.");
+  }
+}
+
 - (void)applySettings:(NSDictionary<NSString*, id>*)settings {
   for (NSString* key in settings) {
     if ([key isEqualToString:@"jsMode"]) {
       NSNumber* mode = settings[key];
       [self updateJsMode:mode];
+    } else if ([key isEqualToString:@"hasNavigationDelegate"]) {
+      NSNumber* hasDartNavigationDelegate = settings[key];
+      _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
     } else {
       NSLog(@"webview_flutter: unknown setting key: %@", key);
     }
@@ -231,13 +256,36 @@
   }
 }
 
+- (bool)loadRequest:(NSDictionary<NSString*, id>*)request {
+  if (!request) {
+    return false;
+  }
+
+  NSString* url = request[@"url"];
+  if ([url isKindOfClass:[NSString class]]) {
+    id headers = request[@"headers"];
+    if ([headers isKindOfClass:[NSDictionary class]]) {
+      return [self loadUrl:url withHeaders:headers];
+    } else {
+      return [self loadUrl:url];
+    }
+  }
+
+  return false;
+}
+
 - (bool)loadUrl:(NSString*)url {
+  return [self loadUrl:url withHeaders:[NSMutableDictionary dictionary]];
+}
+
+- (bool)loadUrl:(NSString*)url withHeaders:(NSDictionary<NSString*, NSString*>*)headers {
   NSURL* nsUrl = [NSURL URLWithString:url];
   if (!nsUrl) {
     return false;
   }
-  NSURLRequest* req = [NSURLRequest requestWithURL:nsUrl];
-  [_webView loadRequest:req];
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
+  [request setAllHTTPHeaderFields:headers];
+  [_webView loadRequest:request];
   return true;
 }
 

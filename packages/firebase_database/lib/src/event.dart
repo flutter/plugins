@@ -67,4 +67,7 @@ class DatabaseError {
 
   /// Human-readable details on the error and additional information.
   String get details => _data['details'];
+
+  @override
+  String toString() => "$runtimeType($code, $message, $details)";
 }

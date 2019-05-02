@@ -21,6 +21,7 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -92,17 +93,37 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     return getFirestore(arguments).document(path);
   }
 
+  private Object[] getDocumentValues(Map<String, Object> document, List<List<Object>> orderBy) {
+    String documentId = (String) document.get("id");
+    Map<String, Object> documentData = (Map<String, Object>) document.get("data");
+    List<Object> data = new ArrayList<>();
+    if (orderBy != null) {
+      for (List<Object> order : orderBy) {
+        String orderByFieldName = (String) order.get(0);
+        data.add(documentData.get(orderByFieldName));
+      }
+    }
+    data.add(documentId);
+    return data.toArray();
+  }
+
   private Map<String, Object> parseQuerySnapshot(QuerySnapshot querySnapshot) {
     if (querySnapshot == null) return new HashMap<>();
     Map<String, Object> data = new HashMap<>();
     List<String> paths = new ArrayList<>();
     List<Map<String, Object>> documents = new ArrayList<>();
+    List<Map<String, Object>> metadatas = new ArrayList<>();
     for (DocumentSnapshot document : querySnapshot.getDocuments()) {
       paths.add(document.getReference().getPath());
       documents.add(document.getData());
+      Map<String, Object> metadata = new HashMap<String, Object>();
+      metadata.put("hasPendingWrites", document.getMetadata().hasPendingWrites());
+      metadata.put("isFromCache", document.getMetadata().isFromCache());
+      metadatas.add(metadata);
     }
     data.put("paths", paths);
     data.put("documents", documents);
+    data.put("metadatas", metadatas);
 
     List<Map<String, Object>> documentChanges = new ArrayList<>();
     for (DocumentChange documentChange : querySnapshot.getDocumentChanges()) {
@@ -124,6 +145,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       change.put("newIndex", documentChange.getNewIndex());
       change.put("document", documentChange.getDocument().getData());
       change.put("path", documentChange.getDocument().getReference().getPath());
+      Map<String, Object> metadata = new HashMap();
+      metadata.put(
+          "hasPendingWrites", documentChange.getDocument().getMetadata().hasPendingWrites());
+      metadata.put("isFromCache", documentChange.getDocument().getMetadata().isFromCache());
+      change.put("metadata", metadata);
       documentChanges.add(change);
     }
     data.put("documentChanges", documentChanges);
@@ -176,11 +202,43 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       query = query.orderBy(orderByFieldName, direction);
     }
     @SuppressWarnings("unchecked")
+    Map<String, Object> startAtDocument = (Map<String, Object>) parameters.get("startAtDocument");
+    if (startAtDocument != null) {
+      query =
+          query
+              .orderBy(FieldPath.documentId())
+              .startAt(getDocumentValues(startAtDocument, orderBy));
+    }
+    @SuppressWarnings("unchecked")
+    Map<String, Object> startAfterDocument =
+        (Map<String, Object>) parameters.get("startAfterDocument");
+    if (startAfterDocument != null) {
+      query =
+          query
+              .orderBy(FieldPath.documentId())
+              .startAfter(getDocumentValues(startAfterDocument, orderBy));
+    }
+    @SuppressWarnings("unchecked")
     List<Object> startAt = (List<Object>) parameters.get("startAt");
     if (startAt != null) query = query.startAt(startAt.toArray());
     @SuppressWarnings("unchecked")
     List<Object> startAfter = (List<Object>) parameters.get("startAfter");
     if (startAfter != null) query = query.startAfter(startAfter.toArray());
+    @SuppressWarnings("unchecked")
+    Map<String, Object> endAtDocument = (Map<String, Object>) parameters.get("endAtDocument");
+    if (endAtDocument != null) {
+      query =
+          query.orderBy(FieldPath.documentId()).endAt(getDocumentValues(endAtDocument, orderBy));
+    }
+    @SuppressWarnings("unchecked")
+    Map<String, Object> endBeforeDocument =
+        (Map<String, Object>) parameters.get("endBeforeDocument");
+    if (endBeforeDocument != null) {
+      query =
+          query
+              .orderBy(FieldPath.documentId())
+              .endBefore(getDocumentValues(endBeforeDocument, orderBy));
+    }
     @SuppressWarnings("unchecked")
     List<Object> endAt = (List<Object>) parameters.get("endAt");
     if (endAt != null) query = query.endAt(endAt.toArray());
@@ -205,7 +263,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         return;
       }
       Map<String, Object> arguments = new HashMap<>();
+      Map<String, Object> metadata = new HashMap<>();
       arguments.put("handle", handle);
+      metadata.put("hasPendingWrites", documentSnapshot.getMetadata().hasPendingWrites());
+      metadata.put("isFromCache", documentSnapshot.getMetadata().isFromCache());
+      arguments.put("metadata", metadata);
       if (documentSnapshot.exists()) {
         arguments.put("data", documentSnapshot.getData());
         arguments.put("path", documentSnapshot.getReference().getPath());
@@ -286,14 +348,16 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                             @SuppressWarnings("unchecked")
                             @Override
                             public void success(Object doTransactionResult) {
-                              transactionTCS.setResult((Map<String, Object>) doTransactionResult);
+                              transactionTCS.trySetResult(
+                                  (Map<String, Object>) doTransactionResult);
                             }
 
                             @Override
                             public void error(
                                 String errorCode, String errorMessage, Object errorDetails) {
                               // result.error(errorCode, errorMessage, errorDetails);
-                              transactionTCS.setException(new Exception("Do transaction failed."));
+                              transactionTCS.trySetException(
+                                  new Exception("Do transaction failed."));
                             }
 
                             @Override
@@ -338,6 +402,10 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                 } else {
                   snapshotMap.put("data", null);
                 }
+                Map<String, Object> metadata = new HashMap();
+                metadata.put("hasPendingWrites", documentSnapshot.getMetadata().hasPendingWrites());
+                metadata.put("isFromCache", documentSnapshot.getMetadata().isFromCache());
+                snapshotMap.put("metadata", metadata);
                 result.success(snapshotMap);
               } catch (FirebaseFirestoreException e) {
                 result.error("Error performing Transaction#get", e.getMessage(), null);
@@ -543,6 +611,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                       Map<String, Object> snapshotMap = new HashMap<>();
+                      Map<String, Object> metadata = new HashMap<>();
+                      metadata.put(
+                          "hasPendingWrites", documentSnapshot.getMetadata().hasPendingWrites());
+                      metadata.put("isFromCache", documentSnapshot.getMetadata().isFromCache());
+                      snapshotMap.put("metadata", metadata);
                       snapshotMap.put("path", documentSnapshot.getReference().getPath());
                       if (documentSnapshot.exists()) {
                         snapshotMap.put("data", documentSnapshot.getData());
@@ -628,6 +701,8 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte DELETE = (byte) 134;
   private static final byte SERVER_TIMESTAMP = (byte) 135;
   private static final byte TIMESTAMP = (byte) 136;
+  private static final byte INCREMENT_DOUBLE = (byte) 137;
+  private static final byte INCREMENT_INTEGER = (byte) 138;
 
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
@@ -685,6 +760,12 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
         return FieldValue.delete();
       case SERVER_TIMESTAMP:
         return FieldValue.serverTimestamp();
+      case INCREMENT_INTEGER:
+        final Number integerIncrementValue = (Number) readValue(buffer);
+        return FieldValue.increment(integerIncrementValue.intValue());
+      case INCREMENT_DOUBLE:
+        final Number doubleIncrementValue = (Number) readValue(buffer);
+        return FieldValue.increment(doubleIncrementValue.doubleValue());
       default:
         return super.readValueOfType(type, buffer);
     }

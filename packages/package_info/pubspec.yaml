@@ -3,7 +3,7 @@ description: Flutter plugin for querying information about the application
   package, such as CFBundleVersion on iOS or versionCode on Android.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/package_info
-version: 0.4.0
+version: 0.4.0+3
 
 flutter:
   plugin:
@@ -14,6 +14,13 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  test: any
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"

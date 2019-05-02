@@ -60,16 +60,16 @@ class BarcodeDetector implements Detector {
 
                   Rect bounds = barcode.getBoundingBox();
                   if (bounds != null) {
-                    barcodeMap.put("left", bounds.left);
-                    barcodeMap.put("top", bounds.top);
-                    barcodeMap.put("width", bounds.width());
-                    barcodeMap.put("height", bounds.height());
+                    barcodeMap.put("left", (double) bounds.left);
+                    barcodeMap.put("top", (double) bounds.top);
+                    barcodeMap.put("width", (double) bounds.width());
+                    barcodeMap.put("height", (double) bounds.height());
                   }
 
-                  List<int[]> points = new ArrayList<>();
+                  List<double[]> points = new ArrayList<>();
                   if (barcode.getCornerPoints() != null) {
                     for (Point point : barcode.getCornerPoints()) {
-                      points.add(new int[] {point.x, point.y});
+                      points.add(new double[] {(double) point.x, (double) point.y});
                     }
                   }
                   barcodeMap.put("points", points);

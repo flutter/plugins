@@ -14,5 +14,6 @@ Flutter plugin that shows an image picker.
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
+  s.ios.deployment_target = '8.0'
   s.dependency 'Flutter'
 end

@@ -12,6 +12,7 @@ After importing this plugin to your project as usual, add the following to your
 
 ```xml
 <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+<uses-permission android:name="android.permission.WAKE_LOCK"/>
 ```
 
 Next, within the `<application></application>` tags, add:
@@ -87,6 +88,9 @@ Which must be reflected in the application's `AndroidManifest.xml`. E.g.:
         android:name=".Application"
         ...
 ```
+
+**Note:** Not calling `AlarmService.setPluginRegistrant` will result in an exception being
+thrown when an alarm eventually fires.
 
 For help getting started with Flutter, view our online
 [documentation](http://flutter.io/).
