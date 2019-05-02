@@ -1,4 +1,4 @@
-## 2.1.2
+## 2.1.1+2
 
 * On iOS, use `putFile` instead of `putData` appropriately to detect `Content-Type`.
 
