@@ -305,11 +305,8 @@ class _GoogleMapOptions {
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
-<<<<<<< HEAD
     this.markersAnimationDuration,
-=======
     this.myLocationButtonEnabled,
->>>>>>> 49c4ad9a079f2dbf79324f3957bc774a0e294970
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -324,11 +321,8 @@ class _GoogleMapOptions {
       trackCameraPosition: map.onCameraMove != null,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
-<<<<<<< HEAD
       markersAnimationDuration: map.markersAnimationDuration,
-=======
       myLocationButtonEnabled: map.myLocationButtonEnabled,
->>>>>>> 49c4ad9a079f2dbf79324f3957bc774a0e294970
     );
   }
 
@@ -375,11 +369,8 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
-<<<<<<< HEAD
     addIfNonNull('markersAnimationDuration', markersAnimationDuration);
-=======
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
->>>>>>> 49c4ad9a079f2dbf79324f3957bc774a0e294970
 
     return optionsMap;
   }
