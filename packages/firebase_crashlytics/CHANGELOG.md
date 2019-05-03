@@ -1,6 +1,6 @@
 ## 0.0.4+3
 
-* Migrate our handling of `FlutterErrorDetails` to work on both flutter stable
+* Migrate our handling of `FlutterErrorDetails` to work on both Flutter stable
   and master.
 
 ## 0.0.4+2

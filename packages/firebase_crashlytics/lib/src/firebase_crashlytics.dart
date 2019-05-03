@@ -50,7 +50,7 @@ class Crashlytics {
         // FlutterErrorDetails.context has been migrated from a String to a
         // DiagnosticsNode. Coerce it to a String here in a way that will work
         // on both Strings and the new DiagnosticsNode values. See https://groups.google.com/forum/#!topic/flutter-announce/hp1RNIgej38
-        'context': "${details.context}",
+        'context': '${details.context}',
         'stackTraceElements': stackTraceElements,
         'logs': _logs.toList(),
         'keys': _prepareKeys(),

@@ -1,4 +1,5 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -33,7 +34,7 @@ void main() {
         exception: 'foo exception',
         stack: StackTrace.current,
         library: 'foo library',
-        context: DiagnosticsNode.message('foo context'),
+        context: ErrorDescription('foo context'),
       );
       crashlytics.enableInDevMode = true;
       crashlytics.log('foo');
