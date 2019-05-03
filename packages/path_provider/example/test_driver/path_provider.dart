@@ -46,5 +46,4 @@ void main() {
       expect(result.path.length, isNonZero);
     }
   });
-
 }
