@@ -64,10 +64,8 @@ void main() {
       expect(wrapper.localizedTitle, null);
       expect(wrapper.localizedDescription, null);
       expect(wrapper.priceLocale, null);
-      expect(wrapper.downloadContentVersion, null);
       expect(wrapper.subscriptionGroupIdentifier, null);
       expect(wrapper.price, null);
-      expect(wrapper.downloadable, null);
       expect(wrapper.subscriptionPeriod, null);
     });
 

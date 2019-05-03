@@ -49,6 +49,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
   double _markersAnimationDuration = -1;
+  bool _myLocationButtonEnabled = true;
 
   @override
   void initState() {
@@ -171,6 +172,18 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Widget _myLocationButtonToggler() {
+    return FlatButton(
+      child: Text(
+          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
+      onPressed: () {
+        setState(() {
+          _myLocationButtonEnabled = !_myLocationButtonEnabled;
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final GoogleMap googleMap = GoogleMap(
@@ -186,6 +199,7 @@ class MapUiBodyState extends State<MapUiBody> {
       zoomGesturesEnabled: _zoomGesturesEnabled,
       myLocationEnabled: _myLocationEnabled,
       markersAnimationDuration: _markersAnimationDuration,
+      myLocationButtonEnabled: _myLocationButtonEnabled,
       onCameraMove: _updateCameraPosition,
     );
 
@@ -223,6 +237,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _tiltToggler(),
               _zoomToggler(),
               _myLocationToggler(),
+              _myLocationButtonToggler(),
             ],
           ),
         ),

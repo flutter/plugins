@@ -27,5 +27,5 @@ packages/image_picker/* @cyanglaz
 packages/in_app_purchase/* @mklim @cyanglaz
 packages/package_info/* @cyanglaz
 packages/shared_preferences/* @collinjackson
-packages/video_player/* @iskakaushik
+packages/video_player/* @iskakaushik @cyanglaz
 packages/webview_flutter/* @amirh @iskakaushik

@@ -65,6 +65,7 @@ final class GoogleMapController
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
+  private boolean myLocationButtonEnabled = false;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
@@ -168,7 +169,7 @@ final class GoogleMapController
     googleMap.setOnMarkerClickListener(this);
     googleMap.setOnPolylineClickListener(this);
     googleMap.setOnMapClickListener(this);
-    updateMyLocationEnabled();
+    updateMyLocationSettings();
     markersController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     updateInitialMarkers();
@@ -273,6 +274,11 @@ final class GoogleMapController
       case "map#isRotateGesturesEnabled":
         {
           result.success(googleMap.getUiSettings().isRotateGesturesEnabled());
+          break;
+        }
+      case "map#isMyLocationButtonEnabled":
+        {
+          result.success(googleMap.getUiSettings().isMyLocationButtonEnabled());
           break;
         }
       default:
@@ -452,7 +458,18 @@ final class GoogleMapController
     }
     this.myLocationEnabled = myLocationEnabled;
     if (googleMap != null) {
-      updateMyLocationEnabled();
+      updateMyLocationSettings();
+    }
+  }
+
+  @Override
+  public void setMyLocationButtonEnabled(boolean myLocationButtonEnabled) {
+    if (this.myLocationButtonEnabled == myLocationButtonEnabled) {
+      return;
+    }
+    this.myLocationButtonEnabled = myLocationButtonEnabled;
+    if (googleMap != null) {
+      updateMyLocationSettings();
     }
   }
 
@@ -485,7 +502,7 @@ final class GoogleMapController
   }
 
   @SuppressLint("MissingPermission")
-  private void updateMyLocationEnabled() {
+  private void updateMyLocationSettings() {
     if (hasLocationPermission()) {
       // The plugin doesn't add the location permission by default so that apps that don't need
       // the feature won't require the permission.
@@ -493,6 +510,7 @@ final class GoogleMapController
       // fail the build if the permission is missing. The following disables the Gradle lint.
       //noinspection ResourceType
       googleMap.setMyLocationEnabled(myLocationEnabled);
+      googleMap.getUiSettings().setMyLocationButtonEnabled(myLocationButtonEnabled);
     } else {
       // TODO(amirh): Make the options update fail.
       // https://github.com/flutter/flutter/issues/24327
