@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Added support for `getApplicationLibraryDirectory`.
+
 ## 1.0.0
 
 * Added integration tests.

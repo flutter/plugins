@@ -35,6 +35,16 @@ void main() {
     file.deleteSync();
   });
 
+  test('getApplicationLibraryDirectory', () async {
+    final Directory result = await getApplicationLibraryDirectory();
+    final String uuid = Uuid().v1();
+    final File file = File('${result.path}/$uuid.txt');
+    file.writeAsStringSync('Hello world!');
+    expect(file.readAsStringSync(), 'Hello world!');
+    expect(result.listSync(), isNotEmpty);
+    file.deleteSync();
+  });
+
   test('getExternalStorageDirectory', () async {
     if (Platform.isIOS) {
       final Future<Directory> result = getExternalStorageDirectory();

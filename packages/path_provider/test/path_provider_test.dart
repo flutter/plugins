@@ -45,6 +45,18 @@ void main() {
     expect(directory, isNull);
   });
 
+  test('getApplicationLibraryDirectory test', () async {
+    response = null;
+    final Directory directory = await getApplicationLibraryDirectory();
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('getApplicationLibraryDirectory', arguments: null)
+      ],
+    );
+    expect(directory, isNull);
+  });
+
   test('TemporaryDirectory path test', () async {
     final String fakePath = "/foo/bar/baz";
     response = fakePath;
