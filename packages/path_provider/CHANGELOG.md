@@ -1,6 +1,7 @@
 ## 1.0.1
 
 * Added support for `getApplicationLibraryDirectory`.
+* `getApplicationDocumentsDirectory` now uses external storage on Android.
 
 ## 1.0.0
 

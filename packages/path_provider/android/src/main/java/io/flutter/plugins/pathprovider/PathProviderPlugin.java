@@ -32,11 +32,11 @@ public class PathProviderPlugin implements MethodCallHandler {
       case "getTemporaryDirectory":
         result.success(getPathProviderTemporaryDirectory());
         break;
-      case "getApplicationLibraryDirectory":
-        result.success(getPathProviderApplicationLibraryDirectory());
-        break;
       case "getApplicationDocumentsDirectory":
         result.success(getPathProviderApplicationDocumentsDirectory());
+        break;
+      case "getApplicationSupportDirectory":
+        result.success(getPathProviderApplicationSupportDirectory());
         break;
       case "getStorageDirectory":
         result.success(getPathProviderStorageDirectory());
@@ -50,11 +50,11 @@ public class PathProviderPlugin implements MethodCallHandler {
     return mRegistrar.context().getCacheDir().getPath();
   }
 
-  private String getPathProviderApplicationLibraryDirectory() {
+  private String getPathProviderApplicationDocumentsDirectory() {
     return PathUtils.getDataDirectory(mRegistrar.context());
   }
 
-  private String getPathProviderApplicationDocumentsDirectory() {
+  private String getPathProviderApplicationSupportDirectory() {
     return PathUtils.getDataDirectory(mRegistrar.context());
   }
 

@@ -29,15 +29,18 @@ Future<Directory> getTemporaryDirectory() async {
   return Directory(path);
 }
 
-/// Path to a directory where the application may place non-user-generated files
-/// that can be downloaded again or regenerated.
+/// Path to a directory where the application may place application support
+/// files.
+///
+/// Use this for files you don’t want exposed to the user. Your app should not
+/// use this directory for user data files.
 ///
 /// On iOS, this uses the `NSApplicationSupportDirectory` API.
 ///
 /// On Android, this uses the `getDataDirectory` API on the context.
-Future<Directory> getApplicationLibraryDirectory() async {
+Future<Directory> getApplicationSupportDirectory() async {
   final String path =
-      await _channel.invokeMethod<String>('getApplicationLibraryDirectory');
+      await _channel.invokeMethod<String>('getApplicationSupportDirectory');
   if (path == null) {
     return null;
   }
