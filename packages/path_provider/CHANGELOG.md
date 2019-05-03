@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Added integration tests.
+
 ## 0.5.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
