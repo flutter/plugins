@@ -16,7 +16,7 @@ void main() {
   tearDownAll(() => allTestsCompleter.complete(null));
 
   test('getTemporaryDirectory', () async {
-    Directory result = await getTemporaryDirectory();
+    final Directory result = await getTemporaryDirectory();
     final String uuid = Uuid().v1();
     final File file = File('${result.path}/$uuid.txt');
     file.writeAsStringSync('Hello world!');
@@ -26,7 +26,7 @@ void main() {
   });
 
   test('getApplicationDocumentsDirectory', () async {
-    Directory result = await getApplicationDocumentsDirectory();
+    final Directory result = await getApplicationDocumentsDirectory();
     final String uuid = Uuid().v1();
     final File file = File('${result.path}/$uuid.txt');
     file.writeAsStringSync('Hello world!');
@@ -37,10 +37,10 @@ void main() {
 
   test('getExternalStorageDirectory', () async {
     if (Platform.isIOS) {
-      Future<Directory> result = getExternalStorageDirectory();
+      final Future<Directory> result = getExternalStorageDirectory();
       expect(result, throwsA(isInstanceOf<UnsupportedError>()));
     } else if (Platform.isAndroid) {
-      Directory result = await getExternalStorageDirectory();
+      final Directory result = await getExternalStorageDirectory();
       // This directory is not accessible in Android emulators.
       // However, it should at least have a fake path returned.
       expect(result.path.length, isNonZero);
