@@ -52,7 +52,9 @@ Future<Directory> getApplicationSupportDirectory() async {
 ///
 /// On iOS, this uses the `NSDocumentDirectory` API.
 ///
-/// On Android, this uses the `getDataDirectory` API on the context.
+/// On Android, this uses the `getDataDirectory` API on the context. Consider
+/// using getExternalStorageDirectory instead if data is intended to be visible
+/// to the user.
 Future<Directory> getApplicationDocumentsDirectory() async {
   final String path =
       await _channel.invokeMethod<String>('getApplicationDocumentsDirectory');

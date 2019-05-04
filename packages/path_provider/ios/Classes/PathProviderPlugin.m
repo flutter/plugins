@@ -20,8 +20,8 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
       result([self getTemporaryDirectory]);
     } else if ([@"getApplicationDocumentsDirectory" isEqualToString:call.method]) {
       result([self getApplicationDocumentsDirectory]);
-    } else if ([@"getApplicationLibraryDirectory" isEqualToString:call.method]) {
-      result([self getApplicationLibraryDirectory]);
+    } else if ([@"getApplicationSupportDirectory" isEqualToString:call.method]) {
+      result([self getApplicationSupportDirectory]);
     } else {
       result(FlutterMethodNotImplemented);
     }
@@ -36,7 +36,7 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
   return GetDirectoryOfType(NSDocumentDirectory);
 }
 
-+ (NSString*)getApplicationLibraryDirectory {
++ (NSString*)getApplicationSupportDirectory {
   return GetDirectoryOfType(NSApplicationSupportDirectory);
 }
 

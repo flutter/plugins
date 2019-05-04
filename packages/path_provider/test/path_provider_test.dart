@@ -45,13 +45,13 @@ void main() {
     expect(directory, isNull);
   });
 
-  test('getApplicationLibraryDirectory test', () async {
+  test('getApplicationSupportDirectory test', () async {
     response = null;
-    final Directory directory = await getApplicationLibraryDirectory();
+    final Directory directory = await getApplicationSupportDirectory();
     expect(
       log,
       <Matcher>[
-        isMethodCall('getApplicationLibraryDirectory', arguments: null)
+        isMethodCall('getApplicationSupportDirectory', arguments: null)
       ],
     );
     expect(directory, isNull);
