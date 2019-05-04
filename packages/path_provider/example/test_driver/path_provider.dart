@@ -15,7 +15,7 @@ void main() {
   enableFlutterDriverExtension(handler: (_) => allTestsCompleter.future);
   tearDownAll(() => allTestsCompleter.complete(null));
 
-  test('$getTemporaryDirectory', () async {
+  test('getTemporaryDirectory', () async {
     final Directory result = await getTemporaryDirectory();
     final String uuid = Uuid().v1();
     final File file = File('${result.path}/$uuid.txt');
@@ -25,7 +25,7 @@ void main() {
     file.deleteSync();
   });
 
-  test('$getApplicationDocumentsDirectory', () async {
+  test('getApplicationDocumentsDirectory', () async {
     final Directory result = await getApplicationDocumentsDirectory();
     final String uuid = Uuid().v1();
     final File file = File('${result.path}/$uuid.txt');
@@ -35,7 +35,7 @@ void main() {
     file.deleteSync();
   });
 
-  test('$getApplicationSupportDirectory', () async {
+  test('getApplicationSupportDirectory', () async {
     final Directory result = await getApplicationSupportDirectory();
     final String uuid = Uuid().v1();
     final File file = File('${result.path}/$uuid.txt');
@@ -45,7 +45,7 @@ void main() {
     file.deleteSync();
   });
 
-  test('$getExternalStorageDirectory', () async {
+  test('getExternalStorageDirectory', () async {
     if (Platform.isIOS) {
       final Future<Directory> result = getExternalStorageDirectory();
       expect(result, throwsA(isInstanceOf<UnsupportedError>()));
