@@ -1,4 +1,4 @@
-## 1.0.1
+## 1.1.0
 
 * Added `getApplicationSupportDirectory`.
 * Updated documentation for `getApplicationDocumentsDirectory` to suggest
