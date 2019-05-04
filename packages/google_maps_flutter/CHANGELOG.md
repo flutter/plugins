@@ -1,3 +1,7 @@
+## 0.5.11
+
+* Add support for Circle overlays.
+
 ## 0.5.10
 
 * Support Color's alpha channel when converting to UIColor on iOS.

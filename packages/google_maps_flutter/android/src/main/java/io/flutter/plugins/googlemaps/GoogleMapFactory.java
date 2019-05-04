@@ -38,6 +38,9 @@ public class GoogleMapFactory extends PlatformViewFactory {
     if (params.containsKey("polylinesToAdd")) {
       builder.setInitialPolylines(params.get("polylinesToAdd"));
     }
+    if (params.containsKey("circlesToAdd")) {
+      builder.setInitialCircles(params.get("circlesToAdd"));
+    }
     return builder.build(id, context, mActivityState, mPluginRegistrar);
   }
 }
