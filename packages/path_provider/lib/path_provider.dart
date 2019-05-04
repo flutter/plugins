@@ -10,7 +10,8 @@ import 'package:flutter/services.dart';
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/path_provider');
 
-/// Path to the temporary directory on the device.
+/// Path to the temporary directory on the device that is not backed up and is
+/// suitable for storing caches of downloaded files.
 ///
 /// Files in this directory may be cleared at any time. This does *not* return
 /// a new temporary directory. Instead, the caller is responsible for creating
