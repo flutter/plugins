@@ -68,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _requestAppSupportDirectory() {
     setState(() {
-      _appDocumentsDirectory = getApplicationSupportDirectory();
+      _appSupportDirectory = getApplicationSupportDirectory();
     });
   }
 
