@@ -2,7 +2,9 @@
 
 * Added `getApplicationSupportDirectory`.
 * Updated documentation for `getApplicationDocumentsDirectory` to suggest
-  using `getExternalStorageDirectory` on Android.
+  using `getApplicationSupportDirectory` on iOS and
+  `getExternalStorageDirectory` on Android.
+* Updated integration tests and example to reflect the above changes.
 
 ## 1.0.0
 
