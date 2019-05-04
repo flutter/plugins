@@ -187,11 +187,6 @@
             forKey:@"error"];
     [self setValue:[NSDate dateWithTimeIntervalSince1970:[map[@"transactionTimeStamp"] doubleValue]]
             forKey:@"transactionDate"];
-    NSMutableArray *downloads = [NSMutableArray new];
-    for (NSDictionary *downloadMap in map[@"downloads"]) {
-      [downloads addObject:[[SKDownloadStub alloc] initWithMap:downloadMap]];
-    }
-    [self setValue:downloads forKey:@"downloads"];
   }
   return self;
 }
@@ -201,28 +196,6 @@
   if (self) {
     [self setValue:@"fakeID" forKey:@"transactionIdentifier"];
     [self setValue:@(state) forKey:@"transactionState"];
-  }
-  return self;
-}
-
-@end
-
-@implementation SKDownloadStub
-
-- (instancetype)initWithMap:(NSDictionary *)map {
-  self = [super init];
-  if (self) {
-    [self setValue:map[@"state"] forKey:@"downloadState"];
-    [self setValue:map[@"contentIdentifier"] ?: [NSNull null] forKey:@"contentIdentifier"];
-    [self setValue:map[@"contentLength"] ?: [NSNull null] forKey:@"contentLength"];
-    [self setValue:[NSURL URLWithString:map[@"contentURL"]] ?: [NSNull null] forKey:@"contentURL"];
-    [self setValue:map[@"error"] ? [[NSErrorStub alloc] initWithMap:map[@"error"]] : [NSNull null]
-            forKey:@"error"];
-    [self setValue:map[@"progress"] ?: [NSNull null] forKey:@"progress"];
-    [self setValue:map[@"timeRemaining"] ?: [NSNull null] forKey:@"timeRemaining"];
-    [self setValue:[[SKPaymentTransactionStub alloc] initWithID:map[@"transactionID"]]
-                       ?: [NSNull null]
-            forKey:@"transaction"];
   }
   return self;
 }

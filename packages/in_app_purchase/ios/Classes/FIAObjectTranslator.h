@@ -27,8 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSDictionary *)getMapFromSKPaymentTransaction:(SKPaymentTransaction *)transaction;
 
-+ (NSDictionary *)getMapFromSKDownload:(SKDownload *)download;
-
 + (NSDictionary *)getMapFromNSError:(NSError *)error;
 
 @end

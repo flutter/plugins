@@ -201,6 +201,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isScrollGesturesEnabled"]) {
     NSNumber* isScrollGesturesEnabled = @(_mapView.settings.scrollGestures);
     result(isScrollGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isMyLocationButtonEnabled"]) {
+    NSNumber* isMyLocationButtonEnabled = @(_mapView.settings.myLocationButton);
+    result(isMyLocationButtonEnabled);
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -276,6 +279,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)setMyLocationEnabled:(BOOL)enabled {
   _mapView.myLocationEnabled = enabled;
+  _mapView.settings.myLocationButton = enabled;
+}
+
+- (void)setMyLocationButtonEnabled:(BOOL)enabled {
   _mapView.settings.myLocationButton = enabled;
 }
 
@@ -464,5 +471,9 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   NSNumber* myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
     [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
+  }
+  NSNumber* myLocationButtonEnabled = data[@"myLocationButtonEnabled"];
+  if (myLocationButtonEnabled) {
+    [sink setMyLocationButtonEnabled:ToBool(myLocationButtonEnabled)];
   }
 }
