@@ -17,7 +17,7 @@ class PhoneAuthProvider {
     });
   }
 
-  static AuthCredential _getCredentialFromObject({
+  static AuthCredential getCredentialFromObject({
     @required String jsonObject,
   }) {
     return AuthCredential._(providerId, <String, String>{
