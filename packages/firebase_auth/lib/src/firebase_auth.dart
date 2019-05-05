@@ -472,6 +472,8 @@ class FirebaseAuth {
         final int handle = call.arguments['handle'];
         final PhoneVerificationCompleted verificationCompleted =
             _phoneAuthCallbacks[handle]['PhoneVerificationCompleted'];
+        print(call.arguments);
+
         verificationCompleted(await currentUser());
         break;
       case 'phoneVerificationFailed':

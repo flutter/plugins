@@ -5,6 +5,8 @@
 package io.flutter.plugins.firebaseauth;
 
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.SparseArray;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -196,6 +198,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
                     public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
                         Map<String, Object> arguments = new HashMap<>();
                         arguments.put("handle", handle);
+                        arguments.put("phoneAuthCredential", phoneAuthCredential);
                         channel.invokeMethod("phoneVerificationCompleted", arguments);
                     }
 
