@@ -37,6 +37,7 @@ import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -198,7 +199,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
                     public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
                         Map<String, Object> arguments = new HashMap<>();
                         arguments.put("handle", handle);
-                        arguments.put("phoneAuthCredential", phoneAuthCredential);
+                        String parsedJson = new Gson().toJson(phoneAuthCredential);
+                        arguments.put("phoneAuthCredential", parsedJson);
                         channel.invokeMethod("phoneVerificationCompleted", arguments);
                     }
 

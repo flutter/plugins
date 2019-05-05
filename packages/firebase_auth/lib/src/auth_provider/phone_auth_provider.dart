@@ -16,4 +16,12 @@ class PhoneAuthProvider {
       'smsCode': smsCode,
     });
   }
+
+  static AuthCredential _getCredentialFromObject({
+    @required String jsonObject,
+  }) {
+    return AuthCredential._(providerId, <String, String>{
+      "jsonObject": jsonObject,
+    });
+  }
 }
