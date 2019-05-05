@@ -507,6 +507,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
     });
     final PhoneVerificationCompleted verificationCompleted =
         (AuthCredential phoneAuthCredential) {
+      _auth.signInWithCredential(phoneAuthCredential);
       setState(() {
         _message = 'Received phone auth credential: $phoneAuthCredential';
       });
