@@ -506,9 +506,9 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
       _message = '';
     });
     final PhoneVerificationCompleted verificationCompleted =
-        (FirebaseUser user) {
+        (AuthCredential phoneAuthCredential) {
       setState(() {
-        _message = 'signInWithPhoneNumber auto succeeded: $user';
+        _message = 'Received phone auth credential: $phoneAuthCredential';
       });
     };
 

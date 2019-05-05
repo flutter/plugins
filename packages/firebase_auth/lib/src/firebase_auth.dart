@@ -4,7 +4,7 @@
 
 part of firebase_auth;
 
-typedef void PhoneVerificationCompleted(FirebaseUser firebaseUser);
+typedef void PhoneVerificationCompleted(AuthCredential phoneAuthCredential);
 typedef void PhoneVerificationFailed(AuthException error);
 typedef void PhoneCodeSent(String verificationId, [int forceResendingToken]);
 typedef void PhoneCodeAutoRetrievalTimeout(String verificationId);
@@ -474,7 +474,9 @@ class FirebaseAuth {
             _phoneAuthCallbacks[handle]['PhoneVerificationCompleted'];
         print(call.arguments);
 
-        verificationCompleted(await currentUser());
+        verificationCompleted(PhoneAuthProvider._getCredentialFromObject(
+          jsonObject: call.arguments["phoneAuthCredential"].toString(),
+        ));
         break;
       case 'phoneVerificationFailed':
         final int handle = call.arguments['handle'];
