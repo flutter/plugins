@@ -5,8 +5,6 @@
 package io.flutter.plugins.firebaseauth;
 
 import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.SparseArray;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -447,9 +445,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
                 break;
             }
             case PhoneAuthProvider.PROVIDER_ID: {
-                String accessToken = data.get("verificationId");
-                String smsCode = data.get("smsCode");
-                credential = PhoneAuthProvider.getCredential(accessToken, smsCode);
+                if (data.containsKey("verificationId")) {
+                    String accessToken = data.get("verificationId");
+                    String smsCode = data.get("smsCode");
+                    credential = PhoneAuthProvider.getCredential(accessToken, smsCode);
+                } else {
+                    credential = new Gson().fromJson(data.get("jsonObject"), PhoneAuthCredential.class);
+                }
                 break;
             }
             default: {
