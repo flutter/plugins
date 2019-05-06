@@ -155,7 +155,7 @@ static FlutterError *getFlutterError(NSError *error) {
 
 - (FIRDynamicLinkComponents *)setupParameters:(NSDictionary *)arguments {
   NSURL *link = [NSURL URLWithString:arguments[@"link"]];
-  NSString *uriPrefix = arguments[@"uriPrefix"]
+  NSString *uriPrefix = arguments[@"uriPrefix"];
 
   FIRDynamicLinkComponents *components = [FIRDynamicLinkComponents componentsWithLink:link
                                                                       domainURIPrefix:uriPrefix];
