@@ -155,10 +155,10 @@ static FlutterError *getFlutterError(NSError *error) {
 
 - (FIRDynamicLinkComponents *)setupParameters:(NSDictionary *)arguments {
   NSURL *link = [NSURL URLWithString:arguments[@"link"]];
-  NSString *domain = arguments[@"domain"];
+  NSString *uriPrefix = arguments[@"uriPrefix"];
 
   FIRDynamicLinkComponents *components = [FIRDynamicLinkComponents componentsWithLink:link
-                                                                               domain:domain];
+                                                                      domainURIPrefix:uriPrefix];
 
   if (![arguments[@"androidParameters"] isEqual:[NSNull null]]) {
     NSDictionary *params = arguments[@"androidParameters"];
