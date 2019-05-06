@@ -317,7 +317,8 @@ class FirebaseAuth {
   ///
   /// [verificationCompleted] This callback must be implemented.
   ///   It will trigger when an SMS is auto-retrieved or the phone number has
-  ///   been instantly verified. The callback will provide a [AuthCredential].
+  ///   been instantly verified. The callback will receive an [AuthCredential]
+  ///   that can be passed to [signInWithCredential] or [linkWithCredential].
   ///
   /// [verificationFailed] This callback must be implemented.
   ///   Triggered when an error occurred during phone number verification.
