@@ -34,7 +34,7 @@ static NSMutableDictionary<NSNumber *, id<FlutterPlugin>> *methodHandlers;
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"FirebasePerformance#instance" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
-    FLTFirebasePerformance performance = [FLTFirebasePerformance sharedInstance];
+    FLTFirebasePerformance *performance = [FLTFirebasePerformance sharedInstance];
 
     [FLTFirebasePerformancePlugin addMethodHandler:handle methodHandler:performance];
     result(nil);
