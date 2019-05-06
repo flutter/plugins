@@ -37,6 +37,7 @@ class GoogleMap extends StatefulWidget {
     this.onCameraMove,
     this.onCameraIdle,
     this.onTap,
+    this.onLongPress,
   })  : assert(initialCameraPosition != null),
         super(key: key);
 
@@ -103,6 +104,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Called every time a [GoogleMap] is tapped.
   final ArgumentCallback<LatLng> onTap;
+
+  /// Called every time a [GoogleMap] is long pressed.
+  final ArgumentCallback<LatLng> onLongPress;
 
   /// True if a "My Location" layer should be shown on the map.
   ///
@@ -294,6 +298,13 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(position != null);
     if (widget.onTap != null) {
       widget.onTap(position);
+    }
+  }
+
+  void onLongPress(LatLng position) {
+    assert(position != null);
+    if (widget.onLongPress != null) {
+      widget.onLongPress(position);
     }
   }
 }
