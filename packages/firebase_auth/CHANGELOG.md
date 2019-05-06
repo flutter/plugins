@@ -1,7 +1,6 @@
-## 0.9.0
 
 * **Breaking change**: `PhoneVerificationCompleted` now provides an `AuthCredential` that can
-  be used with `signInWithCredential` or `linkWithCredential`.
+  be used with `signInWithCredential` or `linkWithCredential` instead of signing in automatically.
 
 ## 0.8.4+5
 
