@@ -45,7 +45,7 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-dynamic-links:16.1.2'
+        api 'com.google.firebase:firebase-dynamic-links:16.1.8'
         implementation 'androidx.annotation:annotation:1.0.0'
     }
 }

@@ -18,6 +18,7 @@ class FakePlatformGoogleMap {
     updateMarkers(params);
     updatePolygons(params);
     updatePolylines(params);
+    updateCircles(params);
   }
 
   MethodChannel channel;
@@ -44,6 +45,8 @@ class FakePlatformGoogleMap {
 
   bool myLocationEnabled;
 
+  bool myLocationButtonEnabled;
+
   Set<MarkerId> markerIdsToRemove;
 
   Set<Marker> markersToAdd;
@@ -62,6 +65,12 @@ class FakePlatformGoogleMap {
 
   Set<Polyline> polylinesToChange;
 
+  Set<CircleId> circleIdsToRemove;
+
+  Set<Circle> circlesToAdd;
+
+  Set<Circle> circlesToChange;
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'map#update':
@@ -75,6 +84,9 @@ class FakePlatformGoogleMap {
         return Future<void>.sync(() {});
       case 'polylines#update':
         updatePolylines(call.arguments);
+        return Future<void>.sync(() {});
+      case 'circles#update':
+        updateCircles(call.arguments);
         return Future<void>.sync(() {});
       default:
         return Future<void>.sync(() {});
@@ -236,6 +248,53 @@ class FakePlatformGoogleMap {
     return result;
   }
 
+  void updateCircles(Map<dynamic, dynamic> circleUpdates) {
+    if (circleUpdates == null) {
+      return;
+    }
+    circlesToAdd = _deserializeCircles(circleUpdates['circlesToAdd']);
+    circleIdsToRemove =
+        _deserializeCircleIds(circleUpdates['circleIdsToRemove']);
+    circlesToChange = _deserializeCircles(circleUpdates['circlesToChange']);
+  }
+
+  Set<CircleId> _deserializeCircleIds(List<dynamic> circleIds) {
+    if (circleIds == null) {
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
+      // ignore: prefer_collection_literals
+      return Set<CircleId>();
+    }
+    return circleIds.map((dynamic circleId) => CircleId(circleId)).toSet();
+  }
+
+  Set<Circle> _deserializeCircles(dynamic circles) {
+    if (circles == null) {
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
+      // ignore: prefer_collection_literals
+      return Set<Circle>();
+    }
+    final List<dynamic> circlesData = circles;
+    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+    // https://github.com/flutter/flutter/issues/28312
+    // ignore: prefer_collection_literals
+    final Set<Circle> result = Set<Circle>();
+    for (Map<dynamic, dynamic> circleData in circlesData) {
+      final String circleId = circleData['circleId'];
+      final bool visible = circleData['visible'];
+      final double radius = circleData['radius'];
+
+      result.add(Circle(
+        circleId: CircleId(circleId),
+        visible: visible,
+        radius: radius,
+      ));
+    }
+
+    return result;
+  }
+
   void updateOptions(Map<dynamic, dynamic> options) {
     if (options.containsKey('compassEnabled')) {
       compassEnabled = options['compassEnabled'];
@@ -271,6 +330,9 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('myLocationEnabled')) {
       myLocationEnabled = options['myLocationEnabled'];
+    }
+    if (options.containsKey('myLocationButtonEnabled')) {
+      myLocationButtonEnabled = options['myLocationButtonEnabled'];
     }
   }
 }

@@ -1,6 +1,26 @@
-## 0.5.10
+## 0.5.14
 
 * Add support for Polygons.
+
+## 0.5.13
+
+* Add support for Circle overlays.
+
+## 0.5.12
+
+* Prevent calling null callbacks and callbacks on removed objects.
+
+## 0.5.11+1
+
+* Android: Fix an issue where myLocationButtonEnabled setting was not propagated when set to false onMapLoad.
+
+## 0.5.11
+
+* Add myLocationButtonEnabled option.
+
+## 0.5.10
+
+* Support Color's alpha channel when converting to UIColor on iOS.
 
 ## 0.5.9
 

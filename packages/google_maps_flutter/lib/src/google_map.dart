@@ -29,9 +29,11 @@ class GoogleMap extends StatefulWidget {
     this.zoomGesturesEnabled = true,
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
+    this.myLocationButtonEnabled = true,
     this.markers,
     this.polygons,
     this.polylines,
+    this.circles,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -78,6 +80,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Polylines to be placed on the map.
   final Set<Polyline> polylines;
+
+  /// Circles to be placed on the map.
+  final Set<Circle> circles;
 
   /// Called when the camera starts moving.
   ///
@@ -128,6 +133,19 @@ class GoogleMap extends StatefulWidget {
   /// when the map tries to turn on the My Location layer.
   final bool myLocationEnabled;
 
+  /// Enables or disables the my-location button.
+  ///
+  /// The my-location button causes the camera to move such that the user's
+  /// location is in the center of the map. If the button is enabled, it is
+  /// only shown when the my-location layer is enabled.
+  ///
+  /// By default, the my-location button is enabled (and hence shown when the
+  /// my-location layer is enabled).
+  ///
+  /// See also:
+  ///   * [myLocationEnabled] parameter.
+  final bool myLocationButtonEnabled;
+
   /// Which gestures should be consumed by the map.
   ///
   /// It is possible for other gesture recognizers to be competing with the map on pointer
@@ -150,6 +168,7 @@ class _GoogleMapState extends State<GoogleMap> {
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
+  Map<CircleId, Circle> _circles = <CircleId, Circle>{};
   _GoogleMapOptions _googleMapOptions;
 
   @override
@@ -160,6 +179,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'markersToAdd': _serializeMarkerSet(widget.markers),
       'polygonsToAdd': _serializePolygonSet(widget.polygons),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
+      'circlesToAdd': _serializeCircleSet(widget.circles),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
@@ -190,6 +210,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _markers = _keyByMarkerId(widget.markers);
     _polygons = _keyByPolygonId(widget.polygons);
     _polylines = _keyByPolylineId(widget.polylines);
+    _circles = _keyByCircleId(widget.circles);
   }
 
   @override
@@ -199,6 +220,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _updateMarkers();
     _updatePolygons();
     _updatePolylines();
+    _updateCircles();
   }
 
   void _updateOptions() async {
@@ -234,6 +256,13 @@ class _GoogleMapState extends State<GoogleMap> {
     _polylines = _keyByPolylineId(widget.polylines);
   }
 
+  void _updateCircles() async {
+    final GoogleMapController controller = await _controller.future;
+    controller._updateCircles(
+        _CircleUpdates.from(_circles.values.toSet(), widget.circles));
+    _circles = _keyByCircleId(widget.circles);
+  }
+
   Future<void> onPlatformViewCreated(int id) async {
     final GoogleMapController controller = await GoogleMapController.init(
       id,
@@ -249,7 +278,9 @@ class _GoogleMapState extends State<GoogleMap> {
   void onMarkerTap(String markerIdParam) {
     assert(markerIdParam != null);
     final MarkerId markerId = MarkerId(markerIdParam);
-    _markers[markerId].onTap();
+    if (_markers[markerId]?.onTap != null) {
+      _markers[markerId].onTap();
+    }
   }
 
   void onPolygonTap(String polygonIdParam) {
@@ -261,18 +292,30 @@ class _GoogleMapState extends State<GoogleMap> {
   void onPolylineTap(String polylineIdParam) {
     assert(polylineIdParam != null);
     final PolylineId polylineId = PolylineId(polylineIdParam);
-    _polylines[polylineId].onTap();
+    if (_polylines[polylineId]?.onTap != null) {
+      _polylines[polylineId].onTap();
+    }
+  }
+
+  void onCircleTap(String circleIdParam) {
+    assert(circleIdParam != null);
+    final CircleId circleId = CircleId(circleIdParam);
+    _circles[circleId].onTap();
   }
 
   void onInfoWindowTap(String markerIdParam) {
     assert(markerIdParam != null);
     final MarkerId markerId = MarkerId(markerIdParam);
-    _markers[markerId].infoWindow.onTap();
+    if (_markers[markerId]?.infoWindow?.onTap != null) {
+      _markers[markerId].infoWindow.onTap();
+    }
   }
 
   void onTap(LatLng position) {
     assert(position != null);
-    widget.onTap(position);
+    if (widget.onTap != null) {
+      widget.onTap(position);
+    }
   }
 }
 
@@ -292,6 +335,7 @@ class _GoogleMapOptions {
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
+    this.myLocationButtonEnabled,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -306,6 +350,7 @@ class _GoogleMapOptions {
       trackCameraPosition: map.onCameraMove != null,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
+      myLocationButtonEnabled: map.myLocationButtonEnabled,
     );
   }
 
@@ -329,6 +374,8 @@ class _GoogleMapOptions {
 
   final bool myLocationEnabled;
 
+  final bool myLocationButtonEnabled;
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -348,6 +395,7 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
+    addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
 
     return optionsMap;
   }

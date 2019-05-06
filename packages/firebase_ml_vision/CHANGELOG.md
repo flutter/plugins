@@ -1,3 +1,7 @@
+## 0.7.0+2
+
+* Fix analyzer warnings about `const Rect` in tests.
+
 ## 0.7.0+1
 
 * Update README to match latest version.
