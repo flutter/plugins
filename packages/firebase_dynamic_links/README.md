@@ -30,7 +30,7 @@ You can create a Dynamic Link programmatically by setting the following paramete
 
 ```dart
 final DynamicLinkParameters parameters = DynamicLinkParameters(
-  domain: 'abc123.app.goo.gl',
+  uriPrefix: 'https://abc123.app.goo.gl',
   link: Uri.parse('https://example.com/'),
   androidParameters: AndroidParameters(
       packageName: 'com.example.android',
