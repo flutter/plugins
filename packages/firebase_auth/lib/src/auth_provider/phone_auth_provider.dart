@@ -17,7 +17,9 @@ class PhoneAuthProvider {
     });
   }
 
-  static AuthCredential getCredentialFromObject({
+  // PhoneAuthProvider uses JSON serialization on Android when the SMS code was
+  // detected automatically.
+  static AuthCredential _getCredentialFromObject({
     @required String jsonObject,
   }) {
     return AuthCredential._(providerId, <String, String>{

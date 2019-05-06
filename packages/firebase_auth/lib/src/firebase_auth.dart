@@ -32,7 +32,7 @@ class FirebaseAuth {
   final Map<int, StreamController<FirebaseUser>> _authStateChangedControllers =
       <int, StreamController<FirebaseUser>>{};
 
-  static int nextHandle = 0;
+  static int _nextHandle = 0;
   final Map<int, Map<String, dynamic>> _phoneAuthCallbacks =
       <int, Map<String, dynamic>>{};
 
@@ -344,11 +344,11 @@ class FirebaseAuth {
       'PhoneCodeSent': codeSent,
       'PhoneCodeAuthRetrievalTimeout': codeAutoRetrievalTimeout,
     };
-    nextHandle += 1;
-    _phoneAuthCallbacks[nextHandle] = callbacks;
+    _nextHandle += 1;
+    _phoneAuthCallbacks[_nextHandle] = callbacks;
 
     final Map<String, dynamic> params = <String, dynamic>{
-      'handle': nextHandle,
+      'handle': _nextHandle,
       'phoneNumber': phoneNumber,
       'timeout': timeout.inMilliseconds,
       'forceResendingToken': forceResendingToken,
@@ -472,7 +472,7 @@ class FirebaseAuth {
         final int handle = call.arguments['handle'];
         final PhoneVerificationCompleted verificationCompleted =
             _phoneAuthCallbacks[handle]['PhoneVerificationCompleted'];
-        verificationCompleted(PhoneAuthProvider.getCredentialFromObject(
+        verificationCompleted(PhoneAuthProvider._getCredentialFromObject(
             jsonObject: call.arguments["phoneAuthCredential"].toString()));
         break;
       case 'phoneVerificationFailed':
