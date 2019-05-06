@@ -39,15 +39,31 @@ Future<Directory> getTemporaryDirectory() async {
 ///
 /// On Android, this returns the AppData directory.
 Future<Directory> getApplicationDocumentsDirectory() async {
-  final String path =
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      await _channel.invokeMethod('getApplicationDocumentsDirectory');
+  String path;
+  if (Platform.isMacOS || Platform.isLinux) {
+    return Directory('${Platform.environment['HOME']}/.config');
+  } else if (Platform.isWindows) {
+    return Directory('${Platform.environment['UserProfile']}\\.config');
+  } else {
+    path =
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
+        await _channel.invokeMethod('getApplicationDocumentsDirectory');
+  }
   if (path == null) {
     return null;
   }
   return Directory(path);
+}
+
+Future<Directory> _getDocumentDir() async {
+  if (Platform.isMacOS || Platform.isLinux) {
+    return Directory('${Platform.environment['HOME']}/.config');
+  } else if (Platform.isWindows) {
+    return Directory('${Platform.environment['UserProfile']}\\.config');
+  }
+  return await getApplicationDocumentsDirectory();
 }
 
 /// Path to a directory where the application may access top level storage.
