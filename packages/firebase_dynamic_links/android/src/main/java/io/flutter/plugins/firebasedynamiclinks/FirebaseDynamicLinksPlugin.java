@@ -161,7 +161,6 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     String uriPrefix = call.argument("uriPrefix");
     String link = call.argument("link");
 
-    dynamicLinkBuilder.setDynamicLinkDomain(domain);
     dynamicLinkBuilder.setDomainUriPrefix(uriPrefix);
     dynamicLinkBuilder.setLink(Uri.parse(link));
 
