@@ -57,15 +57,6 @@ Future<Directory> getApplicationDocumentsDirectory() async {
   return Directory(path);
 }
 
-Future<Directory> _getDocumentDir() async {
-  if (Platform.isMacOS || Platform.isLinux) {
-    return Directory('${Platform.environment['HOME']}/.config');
-  } else if (Platform.isWindows) {
-    return Directory('${Platform.environment['UserProfile']}\\.config');
-  }
-  return await getApplicationDocumentsDirectory();
-}
-
 /// Path to a directory where the application may access top level storage.
 /// The current operating system should be determined before issuing this
 /// function call, as this functionality is only available on Android.
