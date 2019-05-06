@@ -40,6 +40,6 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
   public void onNewToken(String token) {
     Intent intent = new Intent(ACTION_TOKEN);
     intent.putExtra(EXTRA_TOKEN, token);
-    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
   }
 }
