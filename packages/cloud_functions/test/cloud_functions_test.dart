@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -27,9 +28,14 @@ void main() {
     });
 
     test('call', () async {
-      await CloudFunctions.instance.call(functionName: 'baz');
       await CloudFunctions.instance
-          .call(functionName: 'qux', parameters: <String, dynamic>{
+          .getHttpsCallable(functionName: 'baz')
+          .call();
+      final HttpsCallable callable =
+          CloudFunctions(app: const FirebaseApp(name: '1337'), region: 'space')
+              .getHttpsCallable(functionName: 'qux')
+                ..timeout = const Duration(days: 300);
+      await callable.call(<String, dynamic>{
         'quux': 'quuz',
       });
       expect(
@@ -38,17 +44,21 @@ void main() {
           isMethodCall(
             'CloudFunctions#call',
             arguments: <String, dynamic>{
+              'app': '[DEFAULT]',
+              'region': null,
               'functionName': 'baz',
+              'timeoutMicroseconds': null,
               'parameters': null,
             },
           ),
           isMethodCall(
             'CloudFunctions#call',
             arguments: <String, dynamic>{
+              'app': '1337',
+              'region': 'space',
               'functionName': 'qux',
-              'parameters': <String, dynamic>{
-                'quux': 'quuz',
-              },
+              'timeoutMicroseconds': (const Duration(days: 300)).inMicroseconds,
+              'parameters': <String, dynamic>{'quux': 'quuz'},
             },
           ),
         ],

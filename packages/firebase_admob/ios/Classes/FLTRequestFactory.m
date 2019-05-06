@@ -121,8 +121,8 @@ NSDictionary *_targetingInfo;
     request.requestAgent = requestAgent;
   }
 
-  NSNumber *nonPersonalizedAds =
-      [self targetingInfoBoolForKey:@"nonPersonalizedAds" info:_targetingInfo];
+  NSNumber *nonPersonalizedAds = [self targetingInfoBoolForKey:@"nonPersonalizedAds"
+                                                          info:_targetingInfo];
   if (nonPersonalizedAds != nil && [nonPersonalizedAds boolValue]) {
     GADExtras *extras = [[GADExtras alloc] init];
     extras.additionalParameters = @{@"npa" : @"1"};

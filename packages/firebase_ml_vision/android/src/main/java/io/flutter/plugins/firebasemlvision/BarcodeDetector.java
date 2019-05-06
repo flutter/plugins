@@ -2,7 +2,7 @@ package io.flutter.plugins.firebasemlvision;
 
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -11,22 +11,41 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodChannel;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 class BarcodeDetector implements Detector {
-  public static final BarcodeDetector instance = new BarcodeDetector();
+  static final BarcodeDetector instance = new BarcodeDetector();
 
   private BarcodeDetector() {}
+
+  private FirebaseVisionBarcodeDetector detector;
+  private Map<String, Object> lastOptions;
 
   @Override
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
 
-    FirebaseVisionBarcodeDetector detector =
-        FirebaseVision.getInstance().getVisionBarcodeDetector(parseOptions(options));
+    // Use instantiated detector if the options are the same. Otherwise, close and instantiate new
+    // options.
+
+    if (detector == null) {
+      lastOptions = options;
+      detector = FirebaseVision.getInstance().getVisionBarcodeDetector(parseOptions(lastOptions));
+    } else if (!options.equals(lastOptions)) {
+      try {
+        detector.close();
+      } catch (IOException e) {
+        result.error("barcodeDetectorIOError", e.getLocalizedMessage(), null);
+        return;
+      }
+
+      lastOptions = options;
+      detector = FirebaseVision.getInstance().getVisionBarcodeDetector(parseOptions(lastOptions));
+    }
 
     detector
         .detectInImage(image)
@@ -41,16 +60,16 @@ class BarcodeDetector implements Detector {
 
                   Rect bounds = barcode.getBoundingBox();
                   if (bounds != null) {
-                    barcodeMap.put("left", bounds.left);
-                    barcodeMap.put("top", bounds.top);
-                    barcodeMap.put("width", bounds.width());
-                    barcodeMap.put("height", bounds.height());
+                    barcodeMap.put("left", (double) bounds.left);
+                    barcodeMap.put("top", (double) bounds.top);
+                    barcodeMap.put("width", (double) bounds.width());
+                    barcodeMap.put("height", (double) bounds.height());
                   }
 
-                  List<int[]> points = new ArrayList<>();
+                  List<double[]> points = new ArrayList<>();
                   if (barcode.getCornerPoints() != null) {
                     for (Point point : barcode.getCornerPoints()) {
-                      points.add(new int[] {point.x, point.y});
+                      points.add(new double[] {(double) point.x, (double) point.y});
                     }
                   }
                   barcodeMap.put("points", points);

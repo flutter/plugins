@@ -125,6 +125,15 @@ void main() {
           ));
     });
 
+    test('containsKey', () async {
+      const String key = 'testKey';
+
+      expect(false, preferences.containsKey(key));
+
+      preferences.setString(key, 'test');
+      expect(true, preferences.containsKey(key));
+    });
+
     test('clearing', () async {
       await preferences.clear();
       expect(preferences.getString('String'), null);
@@ -136,8 +145,14 @@ void main() {
     });
 
     test('mocking', () async {
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       expect(await channel.invokeMethod('getAll'), kTestValues);
       SharedPreferences.setMockInitialValues(kTestValues2);
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       expect(await channel.invokeMethod('getAll'), kTestValues2);
     });
   });

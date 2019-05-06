@@ -29,10 +29,10 @@ static FIRVisionFaceDetector *faceDetector;
                 face.hasRightEyeOpenProbability ? @(face.rightEyeOpenProbability) : [NSNull null];
 
             NSDictionary *data = @{
-              @"left" : @((int)face.frame.origin.x),
-              @"top" : @((int)face.frame.origin.y),
-              @"width" : @((int)face.frame.size.width),
-              @"height" : @((int)face.frame.size.height),
+              @"left" : @(face.frame.origin.x),
+              @"top" : @(face.frame.origin.y),
+              @"width" : @(face.frame.size.width),
+              @"height" : @(face.frame.size.height),
               @"headEulerAngleY" : face.hasHeadEulerAngleY ? @(face.headEulerAngleY)
                                                            : [NSNull null],
               @"headEulerAngleZ" : face.hasHeadEulerAngleZ ? @(face.headEulerAngleZ)
@@ -42,26 +42,26 @@ static FIRVisionFaceDetector *faceDetector;
               @"rightEyeOpenProbability" : rightProb,
               @"trackingId" : face.hasTrackingID ? @(face.trackingID) : [NSNull null],
               @"landmarks" : @{
-                @"bottomMouth" :
-                    [FaceDetector getLandmarkPosition:face landmark:FIRFaceLandmarkTypeMouthBottom],
-                @"leftCheek" :
-                    [FaceDetector getLandmarkPosition:face landmark:FIRFaceLandmarkTypeLeftCheek],
-                @"leftEar" :
-                    [FaceDetector getLandmarkPosition:face landmark:FIRFaceLandmarkTypeLeftEar],
-                @"leftEye" :
-                    [FaceDetector getLandmarkPosition:face landmark:FIRFaceLandmarkTypeLeftEye],
-                @"leftMouth" :
-                    [FaceDetector getLandmarkPosition:face landmark:FIRFaceLandmarkTypeMouthLeft],
-                @"noseBase" :
-                    [FaceDetector getLandmarkPosition:face landmark:FIRFaceLandmarkTypeNoseBase],
-                @"rightCheek" :
-                    [FaceDetector getLandmarkPosition:face landmark:FIRFaceLandmarkTypeRightCheek],
-                @"rightEar" :
-                    [FaceDetector getLandmarkPosition:face landmark:FIRFaceLandmarkTypeRightEar],
-                @"rightEye" :
-                    [FaceDetector getLandmarkPosition:face landmark:FIRFaceLandmarkTypeRightEye],
-                @"rightMouth" :
-                    [FaceDetector getLandmarkPosition:face landmark:FIRFaceLandmarkTypeMouthRight],
+                @"bottomMouth" : [FaceDetector getLandmarkPosition:face
+                                                          landmark:FIRFaceLandmarkTypeMouthBottom],
+                @"leftCheek" : [FaceDetector getLandmarkPosition:face
+                                                        landmark:FIRFaceLandmarkTypeLeftCheek],
+                @"leftEar" : [FaceDetector getLandmarkPosition:face
+                                                      landmark:FIRFaceLandmarkTypeLeftEar],
+                @"leftEye" : [FaceDetector getLandmarkPosition:face
+                                                      landmark:FIRFaceLandmarkTypeLeftEye],
+                @"leftMouth" : [FaceDetector getLandmarkPosition:face
+                                                        landmark:FIRFaceLandmarkTypeMouthLeft],
+                @"noseBase" : [FaceDetector getLandmarkPosition:face
+                                                       landmark:FIRFaceLandmarkTypeNoseBase],
+                @"rightCheek" : [FaceDetector getLandmarkPosition:face
+                                                         landmark:FIRFaceLandmarkTypeRightCheek],
+                @"rightEar" : [FaceDetector getLandmarkPosition:face
+                                                       landmark:FIRFaceLandmarkTypeRightEar],
+                @"rightEye" : [FaceDetector getLandmarkPosition:face
+                                                       landmark:FIRFaceLandmarkTypeRightEye],
+                @"rightMouth" : [FaceDetector getLandmarkPosition:face
+                                                         landmark:FIRFaceLandmarkTypeMouthRight],
               },
             };
 

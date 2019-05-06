@@ -2,7 +2,7 @@ package io.flutter.plugins.firebasemlvision;
 
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -11,21 +11,42 @@ import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.google.firebase.ml.vision.text.RecognizedLanguage;
 import io.flutter.plugin.common.MethodChannel;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TextRecognizer implements Detector {
-  public static final TextRecognizer instance = new TextRecognizer();
+  static final TextRecognizer instance = new TextRecognizer();
 
   private TextRecognizer() {}
+
+  private FirebaseVisionTextRecognizer textRecognizer;
+  private Map<String, Object> lastOptions;
 
   @Override
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-    FirebaseVisionTextRecognizer textRecognizer =
-        FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+
+    // Use instantiated detector if the options are the same. Otherwise, close and instantiate new
+    // options.
+
+    if (textRecognizer == null) {
+      lastOptions = options;
+      textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+    } else if (!options.equals(lastOptions)) {
+      try {
+        textRecognizer.close();
+      } catch (IOException e) {
+        result.error("textRecognizerIOError", e.getLocalizedMessage(), null);
+        return;
+      }
+
+      lastOptions = options;
+      textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+    }
+
     textRecognizer
         .processImage(image)
         .addOnSuccessListener(
@@ -99,18 +120,18 @@ public class TextRecognizer implements Detector {
       String text) {
 
     if (boundingBox != null) {
-      addTo.put("left", boundingBox.left);
-      addTo.put("top", boundingBox.top);
-      addTo.put("width", boundingBox.width());
-      addTo.put("height", boundingBox.height());
+      addTo.put("left", (double) boundingBox.left);
+      addTo.put("top", (double) boundingBox.top);
+      addTo.put("width", (double) boundingBox.width());
+      addTo.put("height", (double) boundingBox.height());
     }
 
     addTo.put("confidence", confidence == null ? null : (double) confidence);
 
-    List<int[]> points = new ArrayList<>();
+    List<double[]> points = new ArrayList<>();
     if (cornerPoints != null) {
       for (Point point : cornerPoints) {
-        points.add(new int[] {point.x, point.y});
+        points.add(new double[] {(double) point.x, (double) point.y});
       }
     }
     addTo.put("points", points);
