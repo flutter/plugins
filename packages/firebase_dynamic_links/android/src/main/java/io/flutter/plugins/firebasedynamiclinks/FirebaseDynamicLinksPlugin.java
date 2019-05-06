@@ -1,5 +1,6 @@
 package io.flutter.plugins.firebasedynamiclinks;
 
+import android.content.Intent;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -13,6 +14,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,9 +24,22 @@ import java.util.Map;
 /** FirebaseDynamicLinksPlugin */
 public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   private Registrar registrar;
+  private Map<String, Object> dynamicLinkData;
+  private Task extractIntentLinkTask;
 
   private FirebaseDynamicLinksPlugin(Registrar registrar) {
     this.registrar = registrar;
+
+    registrar.addNewIntentListener(
+        new PluginRegistry.NewIntentListener() {
+          @Override
+          public boolean onNewIntent(Intent intent) {
+            checkLinkOnIntent(intent);
+            return false;
+          }
+        });
+
+    checkLinkOnIntent(registrar.activity().getIntent());
   }
 
   public static void registerWith(Registrar registrar) {
@@ -61,29 +76,14 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   }
 
   private void handleRetrieveDynamicLink(final Result result) {
-    FirebaseDynamicLinks.getInstance()
-        .getDynamicLink(registrar.activity().getIntent())
+    extractIntentLinkTask
         .addOnCompleteListener(
             registrar.activity(),
             new OnCompleteListener<PendingDynamicLinkData>() {
               @Override
               public void onComplete(@NonNull Task<PendingDynamicLinkData> task) {
-                if (task.isSuccessful()) {
-                  PendingDynamicLinkData data = task.getResult();
-                  if (data != null) {
-                    Map<String, Object> dynamicLink = new HashMap<>();
-                    dynamicLink.put("link", data.getLink().toString());
-
-                    Map<String, Object> androidData = new HashMap<>();
-                    androidData.put("clickTimestamp", data.getClickTimestamp());
-                    androidData.put("minimumVersion", data.getMinimumAppVersion());
-
-                    dynamicLink.put("android", androidData);
-                    result.success(dynamicLink);
-                    return;
-                  }
-                }
-                result.success(null);
+                result.success(dynamicLinkData);
+                dynamicLinkData = null;
               }
             })
         .addOnFailureListener(
@@ -273,5 +273,32 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     @SuppressWarnings("unchecked")
     T result = (T) map.get(key);
     return result;
+  }
+
+  private void checkLinkOnIntent(Intent intent) {
+    extractIntentLinkTask =
+        FirebaseDynamicLinks.getInstance()
+            .getDynamicLink(intent)
+            .addOnCompleteListener(
+                registrar.activity(),
+                new OnCompleteListener<PendingDynamicLinkData>() {
+                  @Override
+                  public void onComplete(@NonNull Task<PendingDynamicLinkData> task) {
+                    if (task.isSuccessful()) {
+                      PendingDynamicLinkData data = task.getResult();
+                      if (data != null) {
+                        Map<String, Object> linkData = new HashMap<>();
+                        linkData.put("link", data.getLink().toString());
+
+                        Map<String, Object> androidData = new HashMap<>();
+                        androidData.put("clickTimestamp", data.getClickTimestamp());
+                        androidData.put("minimumVersion", data.getMinimumAppVersion());
+
+                        linkData.put("android", androidData);
+                        dynamicLinkData = linkData;
+                      }
+                    }
+                  }
+                });
   }
 }
