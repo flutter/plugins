@@ -1,3 +1,8 @@
+## 0.9.0
+
+* **Breaking change**: `PhoneVerificationCompleted` now provides an `AuthCredential` that can
+  be used with `signInWithCredential` or `linkWithCredential`.
+
 ## 0.8.4+5
 
 * Increase Firebase/Auth CocoaPod dependency to '~> 5.19'.
