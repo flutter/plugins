@@ -1,6 +1,7 @@
 ## 0.3.0.
 
 * Update Android dependencies to 16.1.7.
+* **Breaking change**. Dynamic link parameter `domain` replaced with `uriPrefix`.
 
 ## 0.2.1
 
