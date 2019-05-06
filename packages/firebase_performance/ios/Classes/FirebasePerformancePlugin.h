@@ -8,8 +8,7 @@
 @end
 
 @interface FLTFirebasePerformance : NSObject <FlutterPlugin>
-+ (void)sharedInstanceWithCall:(FlutterMethodCall *_Nonnull)call
-                        result:(FlutterResult _Nonnull)result;
++ (instancetype _Nonnull)sharedInstance;
 @end
 
 @interface FLTTrace : NSObject <FlutterPlugin>
