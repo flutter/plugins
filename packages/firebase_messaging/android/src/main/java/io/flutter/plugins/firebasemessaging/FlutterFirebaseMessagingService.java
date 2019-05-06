@@ -34,7 +34,7 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
    * Called when a new token for the default Firebase project is generated.
    *
    * @param token The token used for sending messages to this application instance. This token is
-   *              the same as the one retrieved by getInstanceId().
+   *     the same as the one retrieved by getInstanceId().
    */
   @Override
   public void onNewToken(String token) {
