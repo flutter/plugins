@@ -39,13 +39,18 @@ Future<Directory> getTemporaryDirectory() async {
 /// On iOS, this uses the `NSApplicationSupportDirectory` API.
 ///
 /// On Android, this uses the `getDataDirectory` API on the context.
+///
+/// If the directory does not exist, it will be created.
 Future<Directory> getApplicationSupportDirectory() async {
   final String path =
       await _channel.invokeMethod<String>('getApplicationSupportDirectory');
   if (path == null) {
     return null;
   }
-  return Directory(path);
+  Directory result = Directory(path);
+  if (!result.existsSync())
+    result.createSync();
+  return result;
 }
 
 /// Path to a directory where the application may place data that is
