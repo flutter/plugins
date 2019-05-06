@@ -47,8 +47,7 @@ Future<Directory> getApplicationSupportDirectory() async {
   if (path == null) {
     return null;
   }
-  Directory result = Directory(path);
-  return result;
+  return Directory(path);
 }
 
 /// Path to a directory where the application may place data that is
