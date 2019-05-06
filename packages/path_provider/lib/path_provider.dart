@@ -37,10 +37,10 @@ Future<Directory> getTemporaryDirectory() async {
 /// use this directory for user data files.
 ///
 /// On iOS, this uses the `NSApplicationSupportDirectory` API.
+/// This directory is not guaranteed to exist and you can call `createSync` to
+/// create it if it doesn't exist.
 ///
 /// On Android, this uses the `getDataDirectory` API on the context.
-///
-/// If the directory does not exist, it will be created.
 Future<Directory> getApplicationSupportDirectory() async {
   final String path =
       await _channel.invokeMethod<String>('getApplicationSupportDirectory');
@@ -48,8 +48,6 @@ Future<Directory> getApplicationSupportDirectory() async {
     return null;
   }
   Directory result = Directory(path);
-  if (!result.existsSync())
-    result.createSync();
   return result;
 }
 

@@ -37,6 +37,8 @@ void main() {
 
   test('getApplicationSupportDirectory', () async {
     final Directory result = await getApplicationSupportDirectory();
+    if (!result.existsSync())
+      result.createSync();
     final String uuid = Uuid().v1();
     final File file = File('${result.path}/$uuid.txt');
     file.writeAsStringSync('Hello world!');
