@@ -1,3 +1,7 @@
+## 0.3.0.
+
+* Update Android dependencies to 16.1.7.
+
 ## 0.2.1
 
 * Throw `PlatformException` if there is an error retrieving dynamic link.
