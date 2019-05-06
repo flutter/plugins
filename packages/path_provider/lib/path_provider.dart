@@ -41,9 +41,9 @@ Future<Directory> getTemporaryDirectory() async {
 Future<Directory> getApplicationDocumentsDirectory() async {
   String path;
   if (Platform.isMacOS || Platform.isLinux) {
-    return Directory('${Platform.environment['HOME']}/.config');
+    path = '${Platform.environment['HOME']}/.config';
   } else if (Platform.isWindows) {
-    return Directory('${Platform.environment['UserProfile']}\\.config');
+    path = '${Platform.environment['UserProfile']}\\.config';
   } else {
     path =
         // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
