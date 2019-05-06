@@ -4,7 +4,7 @@
 
 part of firebase_auth;
 
-typedef void PhoneVerificationCompleted(FirebaseUser firebaseUser);
+typedef void PhoneVerificationCompleted(AuthCredential phoneAuthCredential);
 typedef void PhoneVerificationFailed(AuthException error);
 typedef void PhoneCodeSent(String verificationId, [int forceResendingToken]);
 typedef void PhoneCodeAutoRetrievalTimeout(String verificationId);
@@ -32,7 +32,7 @@ class FirebaseAuth {
   final Map<int, StreamController<FirebaseUser>> _authStateChangedControllers =
       <int, StreamController<FirebaseUser>>{};
 
-  static int nextHandle = 0;
+  static int _nextHandle = 0;
   final Map<int, Map<String, dynamic>> _phoneAuthCallbacks =
       <int, Map<String, dynamic>>{};
 
@@ -317,7 +317,8 @@ class FirebaseAuth {
   ///
   /// [verificationCompleted] This callback must be implemented.
   ///   It will trigger when an SMS is auto-retrieved or the phone number has
-  ///   been instantly verified. The callback will provide a [FirebaseUser].
+  ///   been instantly verified. The callback will receive an [AuthCredential]
+  ///   that can be passed to [signInWithCredential] or [linkWithCredential].
   ///
   /// [verificationFailed] This callback must be implemented.
   ///   Triggered when an error occurred during phone number verification.
@@ -344,11 +345,11 @@ class FirebaseAuth {
       'PhoneCodeSent': codeSent,
       'PhoneCodeAuthRetrievalTimeout': codeAutoRetrievalTimeout,
     };
-    nextHandle += 1;
-    _phoneAuthCallbacks[nextHandle] = callbacks;
+    _nextHandle += 1;
+    _phoneAuthCallbacks[_nextHandle] = callbacks;
 
     final Map<String, dynamic> params = <String, dynamic>{
-      'handle': nextHandle,
+      'handle': _nextHandle,
       'phoneNumber': phoneNumber,
       'timeout': timeout.inMilliseconds,
       'forceResendingToken': forceResendingToken,
@@ -472,7 +473,8 @@ class FirebaseAuth {
         final int handle = call.arguments['handle'];
         final PhoneVerificationCompleted verificationCompleted =
             _phoneAuthCallbacks[handle]['PhoneVerificationCompleted'];
-        verificationCompleted(await currentUser());
+        verificationCompleted(PhoneAuthProvider._getCredentialFromObject(
+            jsonObject: call.arguments["phoneAuthCredential"].toString()));
         break;
       case 'phoneVerificationFailed':
         final int handle = call.arguments['handle'];
