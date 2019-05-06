@@ -1,3 +1,7 @@
+## 0.10.0
+
+* Update Android dependencies to latest.
+
 ## 0.9.0
 
 * **Breaking change**: `PhoneVerificationCompleted` now provides an `AuthCredential` that can

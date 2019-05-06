@@ -1,3 +1,7 @@
+## 3.0.0
+
+* Update Android dependencies to latest.
+
 ## 2.1.1+3
 
 * Added an initial integration test.

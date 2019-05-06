@@ -1,3 +1,7 @@
+## 0.11.0
+
+* Update Android dependencies to latest.
+
 ## 0.10.1
 
 * Support for `startAtDocument`, `startAfterDocument`, `endAtDocument`, `endBeforeDocument`.

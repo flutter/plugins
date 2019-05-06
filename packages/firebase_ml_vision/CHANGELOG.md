@@ -1,3 +1,7 @@
+## 0.8.0
+
+* Update Android dependencies to latest.
+
 ## 0.7.0+2
 
 * Fix analyzer warnings about `const Rect` in tests.

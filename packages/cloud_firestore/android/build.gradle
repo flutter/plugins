@@ -47,7 +47,7 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-firestore:18.2.0'
+        api 'com.google.firebase:firebase-firestore:19.0.0'
         implementation 'androidx.annotation:annotation:1.0.0'
     }
 }
