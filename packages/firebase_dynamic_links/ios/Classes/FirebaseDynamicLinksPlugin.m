@@ -81,6 +81,7 @@ static FlutterError *getFlutterError(NSError *error) {
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+  NSLog(@"DynamicLinks! options");
   return [self checkForDynamicLink:url];
 }
 
@@ -88,6 +89,7 @@ static FlutterError *getFlutterError(NSError *error) {
               openURL:(NSURL *)url
     sourceApplication:(NSString *)sourceApplication
            annotation:(id)annotation {
+  NSLog(@"DynamicLinks! annotation");
   return [self checkForDynamicLink:url];
 }
 
@@ -103,6 +105,7 @@ static FlutterError *getFlutterError(NSError *error) {
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(NSUserActivity *)userActivity
       restorationHandler:(void (^)(NSArray *))restorationHandler {
+  NSLog(@"DynamicLinks! restorationHandler");
   usleep(50000);
   BOOL handled = [[FIRDynamicLinks dynamicLinks]
       handleUniversalLink:userActivity.webpageURL
