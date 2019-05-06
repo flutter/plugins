@@ -12,18 +12,14 @@
 + (void)registerWithRegistrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {
 }
 
-+ (void)sharedInstanceWithCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSNumber *handle = call.arguments[@"handle"];
-  [FLTFirebasePerformancePlugin addMethodHandler:handle methodHandler:[FLTFirebasePerformance new]];
-}
-
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _performance = [FIRPerformance sharedInstance];
-  }
-
-  return self;
++ (instancetype _Nonnull)sharedInstance {
+  static FLTFirebasePerformance *sharedInstance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[FLTFirebasePerformance alloc] init];
+    sharedInstance.performance = [FIRPerformance sharedInstance];
+  });
+  return sharedInstance;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
