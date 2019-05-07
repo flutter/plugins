@@ -1,3 +1,7 @@
+## 0.5.13
+
+* Add support for Circle overlays.
+
 ## 0.5.12
 
 * Prevent calling null callbacks and callbacks on removed objects.
