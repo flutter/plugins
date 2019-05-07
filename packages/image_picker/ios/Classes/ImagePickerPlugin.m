@@ -9,14 +9,19 @@
 #import <Photos/Photos.h>
 #import <UIKit/UIKit.h>
 
+#import "ImagePickerMetaDataUtil.h"
+#import "ImagePickerPhotoAssetUtil.h"
+
 @interface FLTImagePickerPlugin () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+
+@property(copy, nonatomic) FlutterResult result;
+
 @end
 
 static const int SOURCE_CAMERA = 0;
 static const int SOURCE_GALLERY = 1;
 
 @implementation FLTImagePickerPlugin {
-  FlutterResult _result;
   NSDictionary *_arguments;
   UIImagePickerController *_imagePickerController;
   UIViewController *_viewController;
@@ -42,11 +47,11 @@ static const int SOURCE_GALLERY = 1;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if (_result) {
-    _result([FlutterError errorWithCode:@"multiple_request"
-                                message:@"Cancelled by a second request"
-                                details:nil]);
-    _result = nil;
+  if (self.result) {
+    self.result([FlutterError errorWithCode:@"multiple_request"
+                                    message:@"Cancelled by a second request"
+                                    details:nil]);
+    self.result = nil;
   }
 
   if ([@"pickImage" isEqualToString:call.method]) {
@@ -55,17 +60,17 @@ static const int SOURCE_GALLERY = 1;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
-    _result = result;
+    self.result = result;
     _arguments = call.arguments;
 
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
 
     switch (imageSource) {
       case SOURCE_CAMERA:
-        [self checkAuthorization];
+        [self checkCameraAuthorization];
         break;
       case SOURCE_GALLERY:
-        [self showPhotoLibrary];
+        [self checkPhotoAuthorization];
         break;
       default:
         result([FlutterError errorWithCode:@"invalid_source"
@@ -83,17 +88,17 @@ static const int SOURCE_GALLERY = 1;
     ];
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
 
-    _result = result;
+    self.result = result;
     _arguments = call.arguments;
 
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
 
     switch (imageSource) {
       case SOURCE_CAMERA:
-        [self checkAuthorization];
+        [self checkCameraAuthorization];
         break;
       case SOURCE_GALLERY:
-        [self showPhotoLibrary];
+        [self checkPhotoAuthorization];
         break;
       default:
         result([FlutterError errorWithCode:@"invalid_source"
@@ -125,7 +130,7 @@ static const int SOURCE_GALLERY = 1;
   }
 }
 
-- (void)checkAuthorization {
+- (void)checkCameraAuthorization {
   AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
 
   switch (status) {
@@ -143,7 +148,7 @@ static const int SOURCE_GALLERY = 1;
                                    });
                                  } else {
                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                     [self errorNoAccess:AVAuthorizationStatusDenied];
+                                     [self errorNoCameraAccess:AVAuthorizationStatusDenied];
                                    });
                                  }
                                }];
@@ -151,23 +156,65 @@ static const int SOURCE_GALLERY = 1;
     case AVAuthorizationStatusDenied:
     case AVAuthorizationStatusRestricted:
     default:
-      [self errorNoAccess:status];
+      [self errorNoCameraAccess:status];
       break;
   }
 }
 
-- (void)errorNoAccess:(AVAuthorizationStatus)status {
+- (void)checkPhotoAuthorization {
+  PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+  switch (status) {
+    case PHAuthorizationStatusNotDetermined: {
+      [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        if (status == PHAuthorizationStatusAuthorized) {
+          dispatch_async(dispatch_get_main_queue(), ^{
+            [self showPhotoLibrary];
+          });
+        } else {
+          [self errorNoPhotoAccess:status];
+        }
+      }];
+      break;
+    }
+    case PHAuthorizationStatusAuthorized:
+      [self showPhotoLibrary];
+      break;
+    case PHAuthorizationStatusDenied:
+    case PHAuthorizationStatusRestricted:
+    default:
+      [self errorNoPhotoAccess:status];
+      break;
+  }
+}
+
+- (void)errorNoCameraAccess:(AVAuthorizationStatus)status {
   switch (status) {
     case AVAuthorizationStatusRestricted:
-      _result([FlutterError errorWithCode:@"camera_access_restricted"
-                                  message:@"The user is not allowed to use the camera."
-                                  details:nil]);
+      self.result([FlutterError errorWithCode:@"camera_access_restricted"
+                                      message:@"The user is not allowed to use the camera."
+                                      details:nil]);
       break;
     case AVAuthorizationStatusDenied:
     default:
-      _result([FlutterError errorWithCode:@"camera_access_denied"
-                                  message:@"The user did not allow camera access."
-                                  details:nil]);
+      self.result([FlutterError errorWithCode:@"camera_access_denied"
+                                      message:@"The user did not allow camera access."
+                                      details:nil]);
+      break;
+  }
+}
+
+- (void)errorNoPhotoAccess:(PHAuthorizationStatus)status {
+  switch (status) {
+    case PHAuthorizationStatusRestricted:
+      self.result([FlutterError errorWithCode:@"photo_access_restricted"
+                                      message:@"The user is not allowed to use the photo."
+                                      details:nil]);
+      break;
+    case PHAuthorizationStatusDenied:
+    default:
+      self.result([FlutterError errorWithCode:@"photo_access_denied"
+                                      message:@"The user did not allow photo access."
+                                      details:nil]);
       break;
   }
 }
@@ -181,22 +228,22 @@ static const int SOURCE_GALLERY = 1;
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
   NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
-  UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
   // The method dismissViewControllerAnimated does not immediately prevent
   // further didFinishPickingMediaWithInfo invocations. A nil check is necessary
   // to prevent below code to be unwantly executed multiple times and cause a
   // crash.
-  if (!_result) {
+  if (!self.result) {
     return;
   }
   if (videoURL != nil) {
-    _result(videoURL.path);
+    self.result(videoURL.path);
+    self.result = nil;
   } else {
+    UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
     if (image == nil) {
       image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
-    image = [self normalizedImage:image];
 
     NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
@@ -205,49 +252,30 @@ static const int SOURCE_GALLERY = 1;
       image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
     }
 
-    BOOL saveAsPNG = [self hasAlpha:image];
-    NSData *data =
-        saveAsPNG ? UIImagePNGRepresentation(image) : UIImageJPEGRepresentation(image, 1.0);
-    NSString *fileExtension = saveAsPNG ? @"image_picker_%@.png" : @"image_picker_%@.jpg";
-    NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
-    NSString *tmpFile = [NSString stringWithFormat:fileExtension, guid];
-    NSString *tmpDirectory = NSTemporaryDirectory();
-    NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-
-    if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-      _result(tmpPath);
+    PHAsset *originalAsset = [ImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+    if (!originalAsset) {
+      // Image picked without an original asset (e.g. User took a photo directly)
+      [self saveImageWithPickerInfo:info image:image];
     } else {
-      _result([FlutterError errorWithCode:@"create_error"
-                                  message:@"Temporary file could not be created"
-                                  details:nil]);
+      __weak typeof(self) weakSelf = self;
+      [[PHImageManager defaultManager]
+          requestImageDataForAsset:originalAsset
+                           options:nil
+                     resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                     UIImageOrientation orientation, NSDictionary *_Nullable info) {
+                       [weakSelf saveImageWithOriginalImageData:imageData image:image];
+                     }];
     }
   }
-
-  _result = nil;
   _arguments = nil;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
-  _result(nil);
+  self.result(nil);
 
-  _result = nil;
+  self.result = nil;
   _arguments = nil;
-}
-
-// The way we save images to the tmp dir currently throws away all EXIF data
-// (including the orientation of the image). That means, pics taken in portrait
-// will not be orientated correctly as is. To avoid that, we rotate the actual
-// image data.
-// TODO(goderbauer): investigate how to preserve EXIF data.
-- (UIImage *)normalizedImage:(UIImage *)image {
-  if (image.imageOrientation == UIImageOrientationUp) return image;
-
-  UIGraphicsBeginImageContextWithOptions(image.size, NO, image.scale);
-  [image drawInRect:(CGRect){0, 0, image.size}];
-  UIImage *normalizedImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return normalizedImage;
 }
 
 - (UIImage *)scaledImage:(UIImage *)image
@@ -300,11 +328,26 @@ static const int SOURCE_GALLERY = 1;
   return scaledImage;
 }
 
-// Returns true if the image has an alpha layer
-- (BOOL)hasAlpha:(UIImage *)image {
-  CGImageAlphaInfo alpha = CGImageGetAlphaInfo(image.CGImage);
-  return (alpha == kCGImageAlphaFirst || alpha == kCGImageAlphaLast ||
-          alpha == kCGImageAlphaPremultipliedFirst || alpha == kCGImageAlphaPremultipliedLast);
+- (void)saveImageWithOriginalImageData:(NSData *)originalImageData image:(UIImage *)image {
+  NSString *savedPath = [ImagePickerPhotoAssetUtil saveImageWithOriginalImageData:originalImageData
+                                                                            image:image];
+  [self handleSavedPath:savedPath];
+}
+
+- (void)saveImageWithPickerInfo:(NSDictionary *)info image:(UIImage *)image {
+  NSString *savedPath = [ImagePickerPhotoAssetUtil saveImageWithPickerInfo:info image:image];
+  [self handleSavedPath:savedPath];
+}
+
+- (void)handleSavedPath:(NSString *)path {
+  if (path) {
+    self.result(path);
+  } else {
+    self.result([FlutterError errorWithCode:@"create_error"
+                                    message:@"Temporary file could not be created"
+                                    details:nil]);
+  }
+  self.result = nil;
 }
 
 @end
