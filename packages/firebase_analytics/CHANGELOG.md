@@ -1,7 +1,7 @@
 ## 3.0.1
 
-* Switch to using renamed method `setAnalyticsCollectionEnabled` for compatibility
-  with Firebase Analytics iOS CocoaPod version 6.0.
+* Switch to using the `FIRAnalytics` version of `setAnalyticsCollectionEnabled` for
+  compatibility with Firebase Analytics iOS CocoaPod version 6.0.
 * Update podspec to ensure availability of `setAnalyticsCollectionEnabled`.
 
 ## 3.0.0
