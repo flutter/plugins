@@ -1,4 +1,4 @@
-## 0.11.1
+## 0.11.0+1
 
 * Update iOS CocoaPod dependencies to '~> 6.0' to ensure support for `FieldValue.increment`.
 
