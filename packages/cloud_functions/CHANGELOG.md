@@ -2,6 +2,10 @@
 
 * Update Android dependencies to latest.
 
+## 0.2.0+1
+
+* Removed flaky timeout test.
+
 ## 0.2.0
 
 * **Breaking change**. Updated Dart API to replace `call` with `getHttpsCallable`.
