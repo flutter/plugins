@@ -1,3 +1,8 @@
+## 3.0.1
+
+* Update usage of renamed method `setAnalyticsCollectionEnabled` for compatibility
+  with Firebase Analytics iOS CocoaPod version 6.0.
+
 ## 3.0.0
 
 * Update Android dependencies to latest.
