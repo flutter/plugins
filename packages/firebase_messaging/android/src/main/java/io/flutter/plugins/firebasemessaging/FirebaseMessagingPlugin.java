@@ -100,6 +100,20 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
     if ("configure".equals(call.method)) {
+      FirebaseInstanceId.getInstance()
+              .getInstanceId()
+              .addOnCompleteListener(
+                      new OnCompleteListener<InstanceIdResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                          if (!task.isSuccessful()) {
+                            Log.w(TAG, "getToken, error fetching instanceID: ", task.getException());
+                            result.success(null);
+                            return;
+                          }
+                          channel.invokeMethod("onToken", task.getResult().getToken());
+                        }
+                      });
       if (registrar.activity() != null) {
         sendMessageFromIntent("onLaunch", registrar.activity().getIntent());
       }
