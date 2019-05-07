@@ -1,3 +1,7 @@
+## 5.0.0
+
+* Update Android dependencies to latest.
+
 ## 4.0.0+4
 
 * Remove obsolete `use_frameworks!` instruction.
