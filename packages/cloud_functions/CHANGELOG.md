@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Update Android dependencies to latest.
+
 ## 0.2.0+1
 
 * Removed flaky timeout test.

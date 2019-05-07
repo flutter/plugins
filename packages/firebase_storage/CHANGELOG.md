@@ -1,3 +1,7 @@
+## 3.0.0
+
+* Update Android dependencies to latest.
+
 ## 2.1.1+2
 
 * On iOS, use `putFile` instead of `putData` appropriately to detect `Content-Type`.

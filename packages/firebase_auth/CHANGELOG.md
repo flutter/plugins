@@ -1,3 +1,8 @@
+## 0.10.0
+
+* Update firebase_dynamic_links dependency.
+* Update Android dependencies to latest.
+
 ## 0.9.0
 
 * **Breaking change**: `PhoneVerificationCompleted` now provides an `AuthCredential` that can
