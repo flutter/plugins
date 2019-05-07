@@ -1,3 +1,7 @@
+## 5.0.1
+
+* Fix error in the logs on startup if unable to retrieve token on startup on Android.
+
 ## 5.0.0
 
 * Update Android dependencies to latest.
