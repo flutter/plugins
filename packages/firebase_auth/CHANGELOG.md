@@ -1,3 +1,7 @@
+## 0.10.0+1
+
+* Increase Firebase/Auth CocoaPod dependency to '~> 6.0'.
+
 ## 0.10.0
 
 * Update firebase_dynamic_links dependency.
