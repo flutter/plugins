@@ -47,7 +47,7 @@ void main() {
       expect(result.listSync(), isNotEmpty);
       file.deleteSync();
     } else if (Platform.isAndroid) {
-      final Future<Directory> result = getExternalStorageDirectory();
+      final Future<Directory> result = getApplicationSupportDirectory();
       expect(result, throwsA(isInstanceOf<UnsupportedError>()));
     }
   });
