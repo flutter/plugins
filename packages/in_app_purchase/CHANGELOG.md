@@ -1,3 +1,7 @@
+## 0.1.0+1
+
+Add more consumable handling to the example app.
+
 ## 0.1.0
 
 Beta relase.
