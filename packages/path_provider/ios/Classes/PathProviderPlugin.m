@@ -32,10 +32,11 @@ static FlutterError* getFlutterError(NSError* error) {
 
       // Create the path if it doesn't exist
       NSError* error;
-      BOOL success = [self createDirectoryAtPath:path
-                     withIntermediateDirectories:YES
-                                      attributes:nil
-                                           error:&error];
+      NSFileManager* fileManager = [NSFileManager defaultManager];
+      BOOL success = [fileManager createDirectoryAtPath:path
+                            withIntermediateDirectories:YES
+                                             attributes:nil
+                                                  error:&error];
       if (!success) {
         result(getFlutterError(error));
       } else {
