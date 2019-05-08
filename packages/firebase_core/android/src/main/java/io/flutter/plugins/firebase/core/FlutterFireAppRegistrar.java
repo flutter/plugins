@@ -12,7 +12,7 @@ public class FlutterFireAppRegistrar implements ComponentRegistrar {
     public List<Component<?>> getComponents() {
         return Collections.<Component<?>>singletonList(
                 LibraryVersionComponent.create(
-                        "flutter-fire-core",
+                        "flutter-firebase_core",
                         "0.4.1"
                 )
         );
