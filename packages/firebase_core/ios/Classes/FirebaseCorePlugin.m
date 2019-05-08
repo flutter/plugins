@@ -6,7 +6,7 @@
 
 #import <Firebase/Firebase.h>
 
-#define LIBRARY_NAME flutter-firebase_core
+#define LIBRARY_NAME flutter - firebase_core
 #define LIBRARY_VERSION 0.4.1
 
 static NSDictionary *getDictionaryFromFIROptions(FIROptions *options) {
