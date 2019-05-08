@@ -21,7 +21,7 @@ function check_hard_coded_version() {
     ANDROID_VERSION="$(cd "$dir" && grep -r LIBRARY_VERSION android/src/main/java/* | awk '{print $8}')"
     if [[ "$IOS_VERSION" == 0 && "$ANDROID_VERSION" == 0 ]]; then
       echo "No hard coded version found"
-    elif [[ "$PACKAGE_VERSION" == "$IOS_VERSION" && "$ANDROID_VERSION" == "\"$PACKAGE_VERSION\";" ]]; then
+    elif [[ "$IOS_VERSION" == "@\"$PACKAGE_VERSION\"" && "$ANDROID_VERSION" == "\"$PACKAGE_VERSION\";" ]]; then
       error "Hard coded version matched: $PACKAGE_VERSION"
     else
       echo "Hard coded version check failed for $package_name"
