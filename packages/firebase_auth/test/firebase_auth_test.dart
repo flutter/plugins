@@ -225,6 +225,12 @@ void main() {
         log,
         <Matcher>[
           isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
+          isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
               'app': auth.app.name,
@@ -302,6 +308,12 @@ void main() {
         log,
         <Matcher>[
           isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
+          isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
               'app': auth.app.name,
@@ -352,6 +364,12 @@ void main() {
         log,
         <Matcher>[
           isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
+          isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
               'app': auth.app.name,
@@ -399,6 +417,12 @@ void main() {
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
@@ -613,6 +637,12 @@ void main() {
         log,
         <Matcher>[
           isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
+          isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
               'app': auth.app.name,
@@ -637,6 +667,12 @@ void main() {
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
@@ -685,6 +721,12 @@ void main() {
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
@@ -736,6 +778,12 @@ void main() {
         log,
         <Matcher>[
           isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
+          isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
               'app': auth.app.name,
@@ -783,6 +831,12 @@ void main() {
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
