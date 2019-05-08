@@ -1,3 +1,9 @@
+## 0.11.0
+
+* **Breaking change**: `linkWithCredential` is now a function of `FirebaseUser`instead of
+  `FirebaseAuth` or `linkWithCredential`.
+* Test fix for newer `linkWithCredential` has been added.
+
 ## 0.10.0+1
 
 * Increase Firebase/Auth CocoaPod dependency to '~> 6.0'.
