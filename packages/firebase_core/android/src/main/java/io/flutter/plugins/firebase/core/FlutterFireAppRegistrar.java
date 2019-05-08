@@ -7,9 +7,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class FlutterFireAppRegistrar implements ComponentRegistrar {
+  private static final String LIBRARY_NAME = "flutter-firebase_core";
+  private static final String LIBRARY_VERSION = "0.4.1";
+
   @Override
   public List<Component<?>> getComponents() {
     return Collections.<Component<?>>singletonList(
-        LibraryVersionComponent.create("flutter-firebase_core", "0.4.1"));
+        LibraryVersionComponent.create(LIBRARY_NAME, LIBRARY_VERSION));
   }
 }
