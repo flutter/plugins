@@ -1,8 +1,8 @@
 ## 0.11.0
 
 * **Breaking change**: `linkWithCredential` is now a function of `FirebaseUser`instead of
-  `FirebaseAuth` or `linkWithCredential`.
-* Test fix for newer `linkWithCredential` has been added.
+  `FirebaseAuth`.
+* Added test for newer `linkWithCredential` function.
 
 ## 0.10.0+1
 
