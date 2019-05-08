@@ -35,9 +35,6 @@ public class PathProviderPlugin implements MethodCallHandler {
       case "getApplicationDocumentsDirectory":
         result.success(getPathProviderApplicationDocumentsDirectory());
         break;
-      case "getApplicationSupportDirectory":
-        result.success(getPathProviderApplicationSupportDirectory());
-        break;
       case "getStorageDirectory":
         result.success(getPathProviderStorageDirectory());
         break;
@@ -51,10 +48,6 @@ public class PathProviderPlugin implements MethodCallHandler {
   }
 
   private String getPathProviderApplicationDocumentsDirectory() {
-    return PathUtils.getDataDirectory(mRegistrar.context());
-  }
-
-  private String getPathProviderApplicationSupportDirectory() {
     return PathUtils.getDataDirectory(mRegistrar.context());
   }
 

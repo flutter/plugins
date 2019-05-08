@@ -36,15 +36,20 @@ void main() {
   });
 
   test('getApplicationSupportDirectory', () async {
-    final Directory result = await getApplicationSupportDirectory();
-    if (!result.existsSync())
-      result.createSync();
-    final String uuid = Uuid().v1();
-    final File file = File('${result.path}/$uuid.txt');
-    file.writeAsStringSync('Hello world!');
-    expect(file.readAsStringSync(), 'Hello world!');
-    expect(result.listSync(), isNotEmpty);
-    file.deleteSync();
+    if (Platform.isIOS) {
+      final Directory result = await getApplicationSupportDirectory();
+      if (!result.existsSync())
+        result.createSync();
+      final String uuid = Uuid().v1();
+      final File file = File('${result.path}/$uuid.txt');
+      file.writeAsStringSync('Hello world!');
+      expect(file.readAsStringSync(), 'Hello world!');
+      expect(result.listSync(), isNotEmpty);
+      file.deleteSync();
+    } else if (Platform.isAndroid) {
+      final Future<Directory> result = getExternalStorageDirectory();
+      expect(result, throwsA(isInstanceOf<UnsupportedError>()));
+    }
   });
 
   test('getExternalStorageDirectory', () async {
