@@ -44,7 +44,7 @@ Future<Directory> getApplicationSupportDirectory() async {
   if (!Platform.isIOS)
     throw UnsupportedError("getApplicationSupportDirectory requires iOS");
   final String path =
-  await _channel.invokeMethod<String>('getApplicationSupportDirectory');
+      await _channel.invokeMethod<String>('getApplicationSupportDirectory');
   if (path == null) {
     return null;
   }

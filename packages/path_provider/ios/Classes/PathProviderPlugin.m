@@ -9,6 +9,13 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
   return paths.firstObject;
 }
 
+static FlutterError *getFlutterError(NSError *error) {
+  if (error == nil) return nil;
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
+}
+
 @implementation FLTPathProviderPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -21,7 +28,20 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
     } else if ([@"getApplicationDocumentsDirectory" isEqualToString:call.method]) {
       result([self getApplicationDocumentsDirectory]);
     } else if ([@"getApplicationSupportDirectory" isEqualToString:call.method]) {
-      result([self getApplicationSupportDirectory]);
+      NSString *path = [self getApplicationSupportDirectory];
+      
+      // Create the path if it doesn't exist
+      NSError *error;
+      BOOL success = [self
+                      createDirectoryAtPath:path
+                      withIntermediateDirectories:YES
+                      attributes:nil
+                      error:&error];
+      if (!success) {
+        result(getFlutterError(error));
+      } else {
+        result(path);
+      }
     } else {
       result(FlutterMethodNotImplemented);
     }
