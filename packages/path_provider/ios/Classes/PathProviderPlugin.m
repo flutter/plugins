@@ -9,7 +9,7 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
   return paths.firstObject;
 }
 
-static FlutterError *getFlutterError(NSError *error) {
+static FlutterError* getFlutterError(NSError* error) {
   if (error == nil) return nil;
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
                              message:error.domain
@@ -28,15 +28,14 @@ static FlutterError *getFlutterError(NSError *error) {
     } else if ([@"getApplicationDocumentsDirectory" isEqualToString:call.method]) {
       result([self getApplicationDocumentsDirectory]);
     } else if ([@"getApplicationSupportDirectory" isEqualToString:call.method]) {
-      NSString *path = [self getApplicationSupportDirectory];
-      
+      NSString* path = [self getApplicationSupportDirectory];
+
       // Create the path if it doesn't exist
-      NSError *error;
-      BOOL success = [self
-                      createDirectoryAtPath:path
-                      withIntermediateDirectories:YES
-                      attributes:nil
-                      error:&error];
+      NSError* error;
+      BOOL success = [self createDirectoryAtPath:path
+                     withIntermediateDirectories:YES
+                                      attributes:nil
+                                           error:&error];
       if (!success) {
         result(getFlutterError(error));
       } else {
