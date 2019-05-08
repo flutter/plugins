@@ -37,8 +37,6 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
     sharedPreferences = registrar.context().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
   }
 
-  private FirebaseRemoteConfigPlugin() {}
-
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
     switch (call.method) {

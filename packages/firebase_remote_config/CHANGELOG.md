@@ -1,3 +1,7 @@
+## 0.0.6+2
+
+* Minor internal code cleanup in Java implementation.
+
 ## 0.0.6+1
 
 * Bump Android dependencies to latest.
