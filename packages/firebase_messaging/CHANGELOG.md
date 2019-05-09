@@ -1,6 +1,6 @@
 ## 5.0.1+1
 
-* Add support for `onMessage` on iOS by enabling direct data messages.
+* Enable support for `onMessage` on iOS using `shouldEstablishDirectChannel`.
 
 ## 5.0.1
 
