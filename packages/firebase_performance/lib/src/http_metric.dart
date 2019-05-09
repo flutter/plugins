@@ -8,13 +8,16 @@ part of firebase_performance;
 ///
 /// It is possible to have more than one [HttpMetric] running at a time.
 /// Attributes can also be added to help measure performance related events. A
-/// [HttpMetric] also measures the time between calling start() and stop().
+/// [HttpMetric] also measures the time between calling `start()` and `stop()`.
 ///
 /// Data collected is automatically sent to the associated Firebase console
 /// after stop() is called.
 ///
 /// You can confirm that Performance Monitoring results appear in the Firebase
 /// console. Results should appear within 12 hours.
+///
+/// It is highly recommended that one always calls `start()` and `stop()` on
+/// each created [HttpMetric] to avoid leaking on the platform side.
 class HttpMetric extends PerformanceAttributes {
   HttpMetric._(this._handle, this.url, this.httpMethod);
 
