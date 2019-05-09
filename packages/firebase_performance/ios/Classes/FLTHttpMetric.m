@@ -9,9 +9,6 @@
 @end
 
 @implementation FLTHttpMetric
-+ (void)registerWithRegistrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {
-}
-
 - (instancetype _Nonnull)initWithHTTPMetric:(FIRHTTPMetric *)metric {
   self = [self init];
   if (self) {

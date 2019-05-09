@@ -5,7 +5,7 @@
 #import "FirebasePerformancePlugin+Internal.h"
 
 @implementation FLTFirebasePerformancePlugin
-static NSMutableDictionary<NSNumber *, id<FlutterPlugin>> *methodHandlers;
+static NSMutableDictionary<NSNumber *, id<MethodCallHandler>> *methodHandlers;
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   methodHandlers = [NSMutableDictionary new];
@@ -49,7 +49,7 @@ static NSMutableDictionary<NSNumber *, id<FlutterPlugin>> *methodHandlers;
   }
 }
 
-+ (void)addMethodHandler:(NSNumber *)handle methodHandler:(id<FlutterPlugin>)handler {
++ (void)addMethodHandler:(NSNumber *)handle methodHandler:(id<MethodCallHandler>)handler {
   if (methodHandlers[handle]) {
     NSString *reason =
         [[NSString alloc] initWithFormat:@"Object for handle already exists: %d", handle.intValue];
