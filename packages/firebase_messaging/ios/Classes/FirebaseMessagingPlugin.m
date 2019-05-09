@@ -39,7 +39,6 @@
       NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
     [FIRMessaging messaging].delegate = self;
-    [FIRMessaging messaging].shouldEstablishDirectChannel = true;
   }
   return self;
 }
@@ -64,6 +63,7 @@
 
     result(nil);
   } else if ([@"configure" isEqualToString:method]) {
+    [FIRMessaging messaging].shouldEstablishDirectChannel = true;
     [[UIApplication sharedApplication] registerForRemoteNotifications];
     if (_launchNotification != nil) {
       [_channel invokeMethod:@"onLaunch" arguments:_launchNotification];
