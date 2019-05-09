@@ -26,26 +26,30 @@ enum FaceLandmarkType {
 
 /// Detector for detecting faces in an input image.
 ///
-/// A face detector is created via faceDetector(FaceDetectorOptions options)
-/// in [FirebaseVision]:
+/// A face detector is created via
+/// `faceDetector([FaceDetectorOptions options])` in [FirebaseVision]:
 ///
 /// ```dart
-/// FaceDetector faceDetector = FirebaseVision.instance.faceDetector(options);
+/// final FirebaseVisionImage image =
+///     FirebaseVisionImage.fromFilePath('path/to/file');
+///
+/// final FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
+///
+/// final List<Faces> faces = await faceDetector.processImage(image);
 /// ```
-class FaceDetector extends FirebaseVisionDetector {
+class FaceDetector {
   FaceDetector._(this.options) : assert(options != null);
 
   /// The options for the face detector.
   final FaceDetectorOptions options;
 
   /// Detects faces in the input image.
-  @override
-  Future<List<Face>> detectInImage(FirebaseVisionImage visionImage) async {
+  Future<List<Face>> processImage(FirebaseVisionImage visionImage) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
-      'FaceDetector#detectInImage',
+      'FaceDetector#processImage',
       <String, dynamic>{
         'options': <String, dynamic>{
           'enableClassification': options.enableClassification,
@@ -111,7 +115,7 @@ class FaceDetectorOptions {
 /// Represents a face detected by [FaceDetector].
 class Face {
   Face._(dynamic data)
-      : boundingBox = Rectangle<int>(
+      : boundingBox = Rect.fromLTWH(
           data['left'],
           data['top'],
           data['width'],
@@ -131,7 +135,7 @@ class Face {
               ? null
               : FaceLandmark._(
                   type,
-                  Point<double>(pos[0], pos[1]),
+                  Offset(pos[0], pos[1]),
                 );
         }));
 
@@ -140,7 +144,7 @@ class Face {
   /// The axis-aligned bounding rectangle of the detected face.
   ///
   /// The point (0, 0) is defined as the upper-left corner of the image.
-  final Rectangle<int> boundingBox;
+  final Rect boundingBox;
 
   /// The rotation of the face about the vertical axis of the image.
   ///
@@ -205,5 +209,5 @@ class FaceLandmark {
   /// Gets a 2D point for landmark position.
   ///
   /// The point (0, 0) is defined as the upper-left corner of the image.
-  final Point<double> position;
+  final Offset position;
 }

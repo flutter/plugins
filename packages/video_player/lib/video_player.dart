@@ -90,7 +90,7 @@ class VideoPlayerValue {
 
   bool get initialized => duration != null;
   bool get hasError => errorDescription != null;
-  double get aspectRatio => size.width / size.height;
+  double get aspectRatio => size != null ? size.width / size.height : 1.0;
 
   VideoPlayerValue copyWith({
     Duration duration,
@@ -242,7 +242,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _applyPlayPause();
           break;
         case 'completed':
-          value = value.copyWith(isPlaying: false);
+          value = value.copyWith(isPlaying: false, position: value.duration);
           _timer?.cancel();
           break;
         case 'bufferingUpdate':
@@ -616,6 +616,7 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
   VoidCallback listener;
 
   VideoPlayerController get controller => widget.controller;
+
   VideoProgressColors get colors => widget.colors;
 
   @override

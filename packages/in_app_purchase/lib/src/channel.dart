@@ -1,16 +1,11 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
 
 const MethodChannel channel =
     MethodChannel('plugins.flutter.io/in_app_purchase');
 
-class Channel {
-  static MethodChannel _channel =
-      const MethodChannel('plugins.flutter.io/in_app_purchase');
-  static MethodChannel _override;
-
-  static MethodChannel get instance => _override ?? _channel;
-
-  @visibleForTesting
-  static set override(MethodChannel override) => _override = override;
-}
+const MethodChannel callbackChannel =
+    MethodChannel('plugins.flutter.io/in_app_purchase_callback');

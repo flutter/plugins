@@ -483,6 +483,7 @@ void main() {
         final DatabaseError error1 = await errors.remove();
         final DatabaseError error2 = await errors.remove();
         subscription.cancel();
+        expect(error1.toString(), 'DatabaseError(12, Bad foo, Some details)');
         expect(error1.code, errorCode);
         expect(error1.message, 'Bad foo');
         expect(error1.details, errorDetails);

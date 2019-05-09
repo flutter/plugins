@@ -25,13 +25,26 @@ initialize the plugin in your Dart code.
 See https://goo.gl/fQ2neu for more information about configuring `AndroidManifest.xml`
 and setting up your App ID.
 
+## Info.plist changes
+
+Admob 7.42.0 requires the App ID to be included in `Info.plist`. Failure to do so will result in a crash on launch of your app. The lines should look like:
+
+```xml
+<key>GADApplicationIdentifier</key>
+<string>[ADMOB_APP_ID]</string>
+```
+
+where `[ADMOB_APP_ID]` is your App ID.  You must pass the same value when you initialize the plugin in your Dart code.
+
+See https://developers.google.com/admob/ios/quick-start#update_your_infoplist for more information about configuring `Info.plist` and setting up your App ID.
+
 ## Initializing the plugin
 The AdMob plugin must be initialized with an AdMob App ID.
 
 ```dart
 FirebaseAdMob.instance.initialize(appId: appId);
 ```
-*Note Android*:
+### Android
 Starting in version 17.0.0, if you are an AdMob publisher you are now required to add your AdMob app ID in your **AndroidManifest.xml** file. Once you find your AdMob app ID in the AdMob UI, add it to your manifest adding the following tag:
 
 ```xml
@@ -49,6 +62,18 @@ Failure to add this tag will result in the app crashing at app launch with a mes
 
 On Android, this value must be the same as the App ID value set in your 
 `AndroidManifest.xml`.
+
+### iOS
+Starting in version 7.42.0, you are required to add your AdMob app ID in your **Info.plist** file under the Runner directory. You can add it using Xcode or edit the file manually:
+
+```xml
+<dict>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-################~##########</string>
+</dict>
+```
+
+Failure to add this tag will result in the app crashing at app launch with a message including *"GADVerifyApplicationID."*
 
 ## Using banners and interstitials
 Banner and interstitial ads can be configured with target information.
@@ -143,7 +168,7 @@ When the AdMob SDK decides it's time to grant an in-app reward, it does so via
 the `RewardedVideoAdEvent.rewarded` event:
 ```dart
 RewardedVideoAd.instance.listener =
-    (RewardedVideoAdEvent event, [String rewardType, int rewardAmount]) {
+    (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
   if (event == RewardedVideoAdEvent.rewarded) {
     setState(() {
       // Here, apps should update state to reflect the reward.
