@@ -9,9 +9,6 @@
 @end
 
 @implementation FLTFirebasePerformance
-+ (void)registerWithRegistrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {
-}
-
 + (instancetype _Nonnull)sharedInstance {
   static FLTFirebasePerformance *sharedInstance = nil;
   static dispatch_once_t onceToken;

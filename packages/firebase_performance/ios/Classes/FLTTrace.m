@@ -9,9 +9,6 @@
 @end
 
 @implementation FLTTrace
-+ (void)registerWithRegistrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {
-}
-
 - (instancetype _Nonnull)initWithTrace:(FIRTrace *)trace {
   self = [self init];
   if (self) {

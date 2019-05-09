@@ -4,20 +4,25 @@
 
 #import "FirebasePerformancePlugin.h"
 
+@protocol MethodCallHandler
+@required
+- (void)handleMethodCall:(FlutterMethodCall *_Nonnull)call result:(FlutterResult _Nonnull)result;
+@end
+
 @interface FLTFirebasePerformancePlugin (Internal)
 + (void)addMethodHandler:(NSNumber *_Nonnull)handle
-           methodHandler:(id<FlutterPlugin> _Nonnull)handler;
+           methodHandler:(id<MethodCallHandler> _Nonnull)handler;
 + (void)removeMethodHandler:(NSNumber *_Nonnull)handle;
 @end
 
-@interface FLTFirebasePerformance : NSObject <FlutterPlugin>
+@interface FLTFirebasePerformance : NSObject <MethodCallHandler>
 + (instancetype _Nonnull)sharedInstance;
 @end
 
-@interface FLTTrace : NSObject <FlutterPlugin>
+@interface FLTTrace : NSObject <MethodCallHandler>
 - (instancetype _Nonnull)initWithTrace:(FIRTrace *_Nonnull)trace;
 @end
 
-@interface FLTHttpMetric : NSObject <FlutterPlugin>
+@interface FLTHttpMetric : NSObject <MethodCallHandler>
 - (instancetype _Nonnull)initWithHTTPMetric:(FIRHTTPMetric *_Nonnull)metric;
 @end
