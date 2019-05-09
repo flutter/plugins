@@ -1,6 +1,12 @@
+## 0.1.0+2
+
+* If the device is not connected to the internet, `queryPastPurchases()` on iOS now have the error stored in the response instead of throwing.
+* Clean up minor iOS warning.
+* Example app shows how to catch exception when calling `queryProductDetails()`.
+
 ## 0.1.0+1
 
-Add more consumable handling to the example app.
+* Add more consumable handling to the example app.
 
 ## 0.1.0
 

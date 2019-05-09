@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'consumable_store.dart';
 
@@ -36,6 +37,7 @@ class _MyAppState extends State<MyApp> {
   bool _isAvailable = false;
   bool _purchasePending = false;
   bool _loading = true;
+  String _queryProductError = null;
 
   @override
   void initState() {
@@ -67,14 +69,30 @@ class _MyAppState extends State<MyApp> {
       return;
     }
 
-    ProductDetailsResponse productDetails =
-        await _connection.queryProductDetails(_kProductIds.toSet());
-    if (productDetails.productDetails.isEmpty) {
+    ProductDetailsResponse productDetailResponse;
+    try {
+      productDetailResponse =
+          await _connection.queryProductDetails(_kProductIds.toSet());
+    } on PlatformException catch (_) {
       setState(() {
+        _queryProductError = 'Error querying product details.';
         _isAvailable = isAvailable;
-        _products = productDetails.productDetails;
+        _products = [];
         _purchases = [];
-        _notFoundIds = productDetails.notFoundIDs;
+        _notFoundIds = [];
+        _consumables = [];
+        _purchasePending = false;
+        _loading = false;
+      });
+      return;
+    }
+    if (productDetailResponse.productDetails.isEmpty) {
+      setState(() {
+        _queryProductError = null;
+        _isAvailable = isAvailable;
+        _products = productDetailResponse.productDetails;
+        _purchases = [];
+        _notFoundIds = productDetailResponse.notFoundIDs;
         _consumables = [];
         _purchasePending = false;
         _loading = false;
@@ -93,9 +111,9 @@ class _MyAppState extends State<MyApp> {
     List<String> consumables = await ConsumableStore.load();
     setState(() {
       _isAvailable = isAvailable;
-      _products = productDetails.productDetails;
+      _products = productDetailResponse.productDetails;
       _purchases = verifiedPurchases;
-      _notFoundIds = productDetails.notFoundIDs;
+      _notFoundIds = productDetailResponse.notFoundIDs;
       _consumables = consumables;
       _purchasePending = false;
       _loading = false;
@@ -111,15 +129,21 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     List<Widget> stack = [];
-    stack.add(
-      ListView(
-        children: [
-          _buildConnectionCheckTile(),
-          _buildProductList(),
-          _buildConsumableBox(),
-        ],
-      ),
-    );
+    if (_queryProductError == null) {
+      stack.add(
+        ListView(
+          children: [
+            _buildConnectionCheckTile(),
+            _buildProductList(),
+            _buildConsumableBox(),
+          ],
+        ),
+      );
+    } else {
+      stack.add(Center(
+        child: Text(_queryProductError),
+      ));
+    }
     if (_purchasePending) {
       stack.add(
         Stack(

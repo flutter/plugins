@@ -217,7 +217,13 @@
               details:call.arguments]);
     return;
   }
-  [self.paymentQueueHandler restoreTransactions:call.arguments];
+  @try {
+    [self.paymentQueueHandler restoreTransactions:call.arguments];
+  } @catch (NSException *e) {
+    result([FlutterError errorWithCode:@"storekit_restore_transaction_exception"
+                               message:e.description
+                               details:e.userInfo]);
+  }
 }
 
 - (void)retrieveReceiptData:(FlutterMethodCall *)call result:(FlutterResult)result {
