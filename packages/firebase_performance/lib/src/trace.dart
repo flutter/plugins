@@ -11,13 +11,16 @@ part of firebase_performance;
 /// possible to have more than one custom trace running at a time. Each custom
 /// trace can have multiple metrics and attributes added to help measure
 /// performance related events. A trace also measures the time between calling
-/// start() and stop().
+/// `start()` and `stop()`.
 ///
 /// Data collected is automatically sent to the associated Firebase console
 /// after stop() is called.
 ///
 /// You can confirm that Performance Monitoring results appear in the Firebase
 /// console. Results should appear within 12 hours.
+///
+/// It is highly recommended that one always calls `start()` and `stop()` on
+/// each created [Trace] to not avoid leaking on the platform side.
 class Trace extends PerformanceAttributes {
   Trace._(this._handle, this.name);
 
