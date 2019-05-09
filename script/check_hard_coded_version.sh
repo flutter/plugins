@@ -22,12 +22,12 @@ function check_hard_coded_version() {
     if [[ "$IOS_VERSION" == 0 && "$ANDROID_VERSION" == 0 ]]; then
       echo "No hard coded version found"
     elif [[ "$IOS_VERSION" == "@\"$PACKAGE_VERSION\"" && "$ANDROID_VERSION" == "\"$PACKAGE_VERSION\";" ]]; then
-      error "Hard coded version matched: $PACKAGE_VERSION"
+      echo "Hard coded version matched: $PACKAGE_VERSION"
     else
-      echo "Hard coded version check failed for $package_name"
-      echo "pubspec.yaml version: $PACKAGE_VERSION"
-      echo "Android version: $ANDROID_VERSION"
-      echo "iOS version: $IOS_VERSION"
+      error "Hard coded version check failed for $package_name"
+      error "pubspec.yaml version: $PACKAGE_VERSION"
+      error "Android version: $ANDROID_VERSION"
+      error "iOS version: $IOS_VERSION"
       failures=("${failures[@]}" "$package_name")
     fi
   done
