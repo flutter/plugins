@@ -1,6 +1,6 @@
 ## 5.0.1+1
 
-*  Update iOS to support direct data messages
+* Add support for `onMessage` on iOS by enabling direct data messages.
 
 ## 5.0.1
 
