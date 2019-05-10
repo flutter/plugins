@@ -19,6 +19,9 @@ class AndroidIntent {
   /// intent.
   /// [arguments] is the map that will be converted into an extras bundle and
   /// passed to the intent.
+  /// [package] refers to the package parameter of the intent, can be null.
+  /// [componentName] refers to the component name of the intent, can be null.
+  /// If not null, then [package] but also be provided.
   const AndroidIntent({
     @required this.action,
     this.category,
@@ -58,9 +61,9 @@ class AndroidIntent {
     }
     if (package != null) {
       args['package'] = package;
-    }
-    if (componentName != null) {
-      args['componentName'] = componentName;
+      if (componentName != null) {
+        args['componentName'] = componentName;
+      }
     }
     await _channel.invokeMethod<void>('launch', args);
   }
