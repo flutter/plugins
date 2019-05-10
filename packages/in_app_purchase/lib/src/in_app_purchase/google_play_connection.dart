@@ -183,7 +183,7 @@ class GooglePlayConnection
     } else {
       error = PurchaseError(
         source: PurchaseSource.GooglePlay,
-        code: kRestoredPurchaseErrorCode,
+        code: kPurchaseErrorCode,
         message: {'message': resultWrapper.responseCode.toString()},
       );
       status = PurchaseStatus.error;
@@ -194,7 +194,19 @@ class GooglePlayConnection
         ..status = status
         ..error = error);
     }).toList();
-    return Future.wait(purchases);
+    if (!purchases.isEmpty) {
+      return Future.wait(purchases);
+    } else {
+      return [
+        PurchaseDetails(
+            purchaseID: null,
+            productID: null,
+            transactionDate: null,
+            verificationData: null)
+          ..status = PurchaseStatus.error
+          ..error = error
+      ];
+    }
   }
 
   static Future<PurchaseDetails> _maybeAutoConsumePurchase(
