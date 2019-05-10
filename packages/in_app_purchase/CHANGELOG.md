@@ -1,3 +1,7 @@
+## 0.1.0+3
+
+* Guard against multiple onSetupFinished() calls.
+
 ## 0.1.0+2
 
 * Fix bug where error only purchases updates weren't propagated correctly in
