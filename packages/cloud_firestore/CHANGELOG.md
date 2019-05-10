@@ -1,5 +1,9 @@
 ## 0.11.0+1
 
+* Fixes startAtDocument, startAfterDocument, endAtDocument & endBeforeDocument.
+
+## 0.11.0+1
+
 * Update iOS CocoaPod dependencies to '~> 6.0' to ensure support for `FieldValue.increment`.
 
 ## 0.11.0
