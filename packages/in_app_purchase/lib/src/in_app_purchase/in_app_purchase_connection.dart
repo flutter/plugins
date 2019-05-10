@@ -239,7 +239,10 @@ enum IAPSource { GooglePlay, AppStore }
 /// * [PurchaseDetails] for error happened in purchase.
 class IAPError {
   IAPError(
-      {@required this.source, @required this.code, @required this.message});
+      {@required this.source,
+      @required this.code,
+      @required this.message,
+      this.details = null});
 
   /// Which source is the error on.
   final IAPSource source;
@@ -247,6 +250,9 @@ class IAPError {
   /// The error code.
   final String code;
 
-  /// A map containing the detailed error message.
-  final Map<String, dynamic> message;
+  /// A human-readable error message, possibly null.
+  final String message;
+
+  /// Error details, possibly null.
+  final dynamic details;
 }

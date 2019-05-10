@@ -30,7 +30,8 @@ void main() {
     });
 
     test('toPurchaseDetails() should return correct PurchaseDetail object', () {
-      final PurchaseDetails details = PurchaseDetails.fromPurchase(dummyPurchase);
+      final PurchaseDetails details =
+          PurchaseDetails.fromPurchase(dummyPurchase);
       expect(details.purchaseID, dummyPurchase.orderId);
       expect(details.productID, dummyPurchase.sku);
       expect(details.transactionDate, dummyPurchase.purchaseTime.toString());

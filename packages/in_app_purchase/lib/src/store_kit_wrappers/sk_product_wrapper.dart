@@ -20,7 +20,9 @@ part 'sk_product_wrapper.g.dart';
 @JsonSerializable()
 class SkProductResponseWrapper {
   SkProductResponseWrapper(
-      {@required this.products, @required this.invalidProductIdentifiers, this.platformException = null});
+      {@required this.products,
+      @required this.invalidProductIdentifiers,
+      this.platformException = null});
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///

@@ -146,7 +146,10 @@ class SkuDetailsWrapper {
 @BillingResponseConverter()
 class SkuDetailsResponseWrapper {
   @visibleForTesting
-  SkuDetailsResponseWrapper({@required this.responseCode, this.skuDetailsList, this.platformException = null});
+  SkuDetailsResponseWrapper(
+      {@required this.responseCode,
+      this.skuDetailsList,
+      this.platformException = null});
 
   /// Constructs an instance of this from a key value map of data.
   ///

@@ -131,8 +131,7 @@ void main() {
       final QueryPurchaseDetailsResponse response =
           await connection.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
-      expect(response.error.message['message'],
-          BillingResponse.developerError.toString());
+      expect(response.error.message, BillingResponse.developerError.toString());
       expect(response.error.source, IAPSource.GooglePlay);
     });
 

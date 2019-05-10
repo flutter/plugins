@@ -114,16 +114,19 @@ class BillingClient {
   Future<SkuDetailsResponseWrapper> querySkuDetails(
       {@required SkuType skuType, @required List<String> skusList}) async {
     try {
-    final Map<String, dynamic> arguments = <String, dynamic>{
-      'skuType': SkuTypeConverter().toJson(skuType),
-      'skusList': skusList
-    };
-    return SkuDetailsResponseWrapper.fromJson(await channel.invokeMapMethod<
-            String, dynamic>(
-        'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)',
-        arguments));
+      final Map<String, dynamic> arguments = <String, dynamic>{
+        'skuType': SkuTypeConverter().toJson(skuType),
+        'skusList': skusList
+      };
+      return SkuDetailsResponseWrapper.fromJson(await channel.invokeMapMethod<
+              String, dynamic>(
+          'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)',
+          arguments));
     } on PlatformException catch (e) {
-      return SkuDetailsResponseWrapper(responseCode: BillingResponse.error, skuDetailsList: null, platformException: e);
+      return SkuDetailsResponseWrapper(
+          responseCode: BillingResponse.error,
+          skuDetailsList: null,
+          platformException: e);
     }
   }
 

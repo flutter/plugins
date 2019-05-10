@@ -5,8 +5,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
-
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
@@ -95,13 +95,23 @@ class AppStoreConnection implements InAppPurchaseConnection {
               ? IAPError(
                   source: IAPSource.AppStore,
                   code: kPurchaseErrorCode,
-                  message: transaction.error.userInfo,
+                  message: transaction.error.domain,
+                  details: transaction.error.userInfo,
                 )
               : null;
       }).toList();
-    } catch (e) {
+    } on PlatformException catch (e) {
       error = IAPError(
-          source: IAPSource.AppStore, code: e.domain, message: e.userInfo);
+          source: IAPSource.AppStore,
+          code: e.code,
+          message: e.message,
+          details: e.details);
+    } on SKError catch (e) {
+      error = IAPError(
+          source: IAPSource.AppStore,
+          code: kRestoredPurchaseErrorCode,
+          message: e.domain,
+          details: e.userInfo);
     }
     return QueryPurchaseDetailsResponse(
         pastPurchases: pastPurchases, error: error);
@@ -179,16 +189,18 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     String receiptData = await getReceiptData();
     purchaseUpdatedController
         .add(transactions.map((SKPaymentTransactionWrapper transaction) {
-      PurchaseDetails purchaseDetails = PurchaseDetails.fromSKTransaction(transaction, receiptData)
-        ..status = SKTransactionStatusConverter()
-            .toPurchaseStatus(transaction.transactionState)
-        ..error = transaction.error != null
-            ? IAPError(
-                source: IAPSource.AppStore,
-                code: kPurchaseErrorCode,
-                message: transaction.error.userInfo,
-              )
-            : null;
+      PurchaseDetails purchaseDetails =
+          PurchaseDetails.fromSKTransaction(transaction, receiptData)
+            ..status = SKTransactionStatusConverter()
+                .toPurchaseStatus(transaction.transactionState)
+            ..error = transaction.error != null
+                ? IAPError(
+                    source: IAPSource.AppStore,
+                    code: kPurchaseErrorCode,
+                    message: transaction.error.domain,
+                    details: transaction.error.userInfo,
+                  )
+                : null;
       return purchaseDetails;
     }).toList());
   }
@@ -213,6 +225,8 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   Future<String> getReceiptData() async {
     try {
       _receiptData = await SKReceiptManager.retrieveReceiptData();
+    } on PlatformException catch (e) {
+      throw e;
     } catch (e) {
       _receiptData = null;
     }

@@ -105,7 +105,7 @@ class GooglePlayConnection
           ? IAPError(
               source: IAPSource.GooglePlay,
               code: kRestoredPurchaseErrorCode,
-              message: {'message': errorMessage})
+              message: errorMessage)
           : null,
     );
   }
@@ -184,7 +184,7 @@ class GooglePlayConnection
       error = IAPError(
         source: IAPSource.GooglePlay,
         code: kRestoredPurchaseErrorCode,
-        message: {'message': resultWrapper.responseCode.toString()},
+        message: resultWrapper.responseCode.toString(),
       );
       status = PurchaseStatus.error;
     }
@@ -211,7 +211,7 @@ class GooglePlayConnection
       purchaseDetails.error = IAPError(
         source: IAPSource.GooglePlay,
         code: kConsumptionFailedErrorCode,
-        message: {'message': consumedResponse.toString()},
+        message: consumedResponse.toString(),
       );
     }
     _productIdsToConsume.remove(purchaseDetails.productID);

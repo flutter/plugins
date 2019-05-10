@@ -95,7 +95,8 @@ void main() {
           await AppStoreConnection.instance.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
       expect(response.error.source, IAPSource.AppStore);
-      expect(response.error.message['message'], 'errorMessage');
+      expect(response.error.message, 'error_test');
+      expect(response.error.details, {'message': 'errorMessage'});
     });
 
     test('receipt error should populate null to verificationData.data',
@@ -215,7 +216,8 @@ void main() {
       IAPError completerError = await completer.future;
       expect(completerError.code, kPurchaseErrorCode);
       expect(completerError.source, IAPSource.AppStore);
-      expect(completerError.message, {'message': 'an error message'});
+      expect(completerError.message, 'ios_domain');
+      expect(completerError.details, {'message': 'an error message'});
     });
   });
 
