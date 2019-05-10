@@ -51,6 +51,7 @@ void main() {
           case "sendLinkToEmail":
           case "sendPasswordResetEmail":
           case "updateEmail":
+          case "updatePhoneNumberCredential"
           case "updatePassword":
           case "updateProfile":
             return null;
@@ -948,7 +949,9 @@ void main() {
     test('updatePhoneNumberCredential', () async {
       final FirebaseUser user = await auth.currentUser();
       final AuthCredential credentials = PhoneAuthProvider.getCredential(
-        verificationId: kMockVerificationId, smsCode: kMockSmsCode,);
+        verificationId: kMockVerificationId, 
+        smsCode: kMockSmsCode,
+      );
       await user.updatePhoneNumberCredential(credentials);
       expect(log, <Matcher>[
         isMethodCall(
