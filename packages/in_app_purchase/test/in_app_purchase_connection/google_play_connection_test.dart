@@ -245,7 +245,7 @@ void main() {
       PurchaseDetails result = await completer.future;
 
       expect(result.error, isNotNull);
-      expect(result.error.source, PurchaseSource.GooglePlay);
+      expect(result.error.source, IAPSource.GooglePlay);
       expect(result.status, PurchaseStatus.error);
       expect(result.purchaseID, isNull);
     });

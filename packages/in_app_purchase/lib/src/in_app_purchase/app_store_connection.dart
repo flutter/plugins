@@ -225,8 +225,6 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   Future<String> getReceiptData() async {
     try {
       _receiptData = await SKReceiptManager.retrieveReceiptData();
-    } on PlatformException catch (e) {
-      throw e;
     } catch (e) {
       _receiptData = null;
     }
