@@ -265,7 +265,7 @@ void main() {
         });
       });
       final PurchaseParam purchaseParam = PurchaseParam(
-          productDetails:ProductDetails.fromSKProduct(dummyProductWrapper),
+          productDetails: ProductDetails.fromSKProduct(dummyProductWrapper),
           applicationUserName: 'appName');
       await AppStoreConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);

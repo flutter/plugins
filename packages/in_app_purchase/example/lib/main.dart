@@ -69,23 +69,22 @@ class _MyAppState extends State<MyApp> {
       return;
     }
 
-    ProductDetailsResponse productDetailResponse;
-    try {
-      productDetailResponse =
-          await _connection.queryProductDetails(_kProductIds.toSet());
-    } on PlatformException catch (_) {
+    ProductDetailsResponse productDetailResponse =
+        await _connection.queryProductDetails(_kProductIds.toSet());
+    if (productDetailResponse.error != null) {
       setState(() {
-        _queryProductError = 'Error querying product details.';
+        _queryProductError = productDetailResponse.error.message;
         _isAvailable = isAvailable;
-        _products = [];
+        _products = productDetailResponse.productDetails;
         _purchases = [];
-        _notFoundIds = [];
+        _notFoundIds = productDetailResponse.notFoundIDs;
         _consumables = [];
         _purchasePending = false;
         _loading = false;
       });
       return;
     }
+
     if (productDetailResponse.productDetails.isEmpty) {
       setState(() {
         _queryProductError = null;

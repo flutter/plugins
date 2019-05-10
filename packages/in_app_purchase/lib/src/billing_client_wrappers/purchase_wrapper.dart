@@ -103,7 +103,8 @@ class PurchaseWrapper {
 class PurchasesResultWrapper {
   PurchasesResultWrapper(
       {@required BillingResponse this.responseCode,
-      @required List<PurchaseWrapper> this.purchasesList, this.platformException = null});
+      @required List<PurchaseWrapper> this.purchasesList,
+      this.platformException = null});
 
   factory PurchasesResultWrapper.fromJson(Map map) =>
       _$PurchasesResultWrapperFromJson(map);

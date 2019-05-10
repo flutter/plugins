@@ -179,11 +179,14 @@ class BillingClient {
   Future<PurchasesResultWrapper> queryPurchases(SkuType skuType) async {
     assert(skuType != null);
     try {
-       return PurchasesResultWrapper.fromJson(await channel.invokeMapMethod(
-        'BillingClient#queryPurchases(String)',
-        <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
-    } on PlatformException catch(e) {
-      return PurchasesResultWrapper(responseCode: BillingResponse.error, purchasesList: [], platformException: e);
+      return PurchasesResultWrapper.fromJson(await channel.invokeMapMethod(
+          'BillingClient#queryPurchases(String)',
+          <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
+    } on PlatformException catch (e) {
+      return PurchasesResultWrapper(
+          responseCode: BillingResponse.error,
+          purchasesList: [],
+          platformException: e);
     }
   }
 
