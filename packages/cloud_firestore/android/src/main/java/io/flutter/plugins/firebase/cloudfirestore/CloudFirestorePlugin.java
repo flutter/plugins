@@ -206,7 +206,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     if (startAtDocument != null) {
       query =
           query
-              .orderBy(FieldPath.documentId())
+              .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
               .startAt(getDocumentValues(startAtDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
@@ -215,7 +215,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     if (startAfterDocument != null) {
       query =
           query
-              .orderBy(FieldPath.documentId())
+              .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
               .startAfter(getDocumentValues(startAfterDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
@@ -228,7 +228,9 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     Map<String, Object> endAtDocument = (Map<String, Object>) parameters.get("endAtDocument");
     if (endAtDocument != null) {
       query =
-          query.orderBy(FieldPath.documentId()).endAt(getDocumentValues(endAtDocument, orderBy));
+          query
+              .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
+              .endAt(getDocumentValues(endAtDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
     Map<String, Object> endBeforeDocument =
@@ -236,7 +238,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     if (endBeforeDocument != null) {
       query =
           query
-              .orderBy(FieldPath.documentId())
+              .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
               .endBefore(getDocumentValues(endBeforeDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
