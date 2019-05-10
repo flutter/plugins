@@ -1,3 +1,8 @@
+## 0.1.0+2
+
+* Fix bug where error only purchases updates weren't propagated correctly in
+  `google_play_connection.dart`.
+
 ## 0.1.0+1
 
 Add more consumable handling to the example app.
