@@ -181,17 +181,10 @@ class GooglePlayConnection
       error = null;
       status = PurchaseStatus.purchased;
     } else {
-<<<<<<< HEAD
       error = IAPError(
         source: IAPSource.GooglePlay,
-        code: kRestoredPurchaseErrorCode,
-        message: resultWrapper.responseCode.toString(),
-=======
-      error = PurchaseError(
-        source: PurchaseSource.GooglePlay,
         code: kPurchaseErrorCode,
-        message: {'message': resultWrapper.responseCode.toString()},
->>>>>>> master
+        message: resultWrapper.responseCode.toString(),
       );
       status = PurchaseStatus.error;
     }
