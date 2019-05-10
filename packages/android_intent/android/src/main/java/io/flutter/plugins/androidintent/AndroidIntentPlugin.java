@@ -137,7 +137,8 @@ public class AndroidIntentPlugin implements MethodCallHandler {
       String packageName = (String) call.argument("package");
       intent.setPackage(packageName);
       if (call.argument("componentName") != null) {
-        intent.setComponent(new ComponentName(packageName, (String) call.argument("componentName")));
+        intent.setComponent(
+            new ComponentName(packageName, (String) call.argument("componentName")));
       }
       if (intent.resolveActivity(context.getPackageManager()) == null) {
         Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
