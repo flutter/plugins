@@ -12,6 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/in_app_purchase/google_play_connection.dart';
+import 'package:in_app_purchase/src/in_app_purchase/in_app_purchase_connection.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import '../stub_in_app_purchase_platform.dart';
 import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
@@ -132,7 +133,7 @@ void main() {
       expect(response.pastPurchases, isEmpty);
       expect(response.error.message['message'],
           BillingResponse.developerError.toString());
-      expect(response.error.source, PurchaseSource.GooglePlay);
+      expect(response.error.source, IAPSource.GooglePlay);
     });
 
     test('returns SkuDetailsResponseWrapper', () async {
@@ -401,7 +402,7 @@ void main() {
           value: BillingResponseConverter().toJson(expectedCode));
 
       final BillingResponse responseCode = await GooglePlayConnection.instance
-          .consumePurchase(dummyPurchase.toPurchaseDetails());
+          .consumePurchase(PurchaseDetails.fromPurchase(dummyPurchase));
 
       expect(responseCode, equals(expectedCode));
     });

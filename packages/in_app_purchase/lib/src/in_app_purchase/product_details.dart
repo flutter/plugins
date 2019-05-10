@@ -5,6 +5,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
+import 'in_app_purchase_connection.dart';
 
 /// The class represents the information of a product.
 ///
@@ -48,7 +49,7 @@ class ProductDetails {
 /// A list of [ProductDetails] can be obtained from the this response.
 class ProductDetailsResponse {
   ProductDetailsResponse(
-      {@required this.productDetails, @required this.notFoundIDs});
+      {@required this.productDetails, @required this.notFoundIDs, this.error = null});
 
   /// Each [ProductDetails] uniquely matches one valid identifier in [identifiers] of [InAppPurchaseConnection.queryProductDetails].
   final List<ProductDetails> productDetails;
@@ -58,4 +59,12 @@ class ProductDetailsResponse {
   /// There's multiple platform specific reasons that product information could fail to be fetched,
   /// ranging from products not being correctly configured in the storefront to the queried IDs not existing.
   final List<String> notFoundIDs;
+
+  /// The error occurred during the request.
+  final IAPError error;
+}
+
+
+class ProductDetailsError {
+
 }

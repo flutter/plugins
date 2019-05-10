@@ -11,6 +11,7 @@ import 'package:test/test.dart';
 
 import 'package:in_app_purchase/src/channel.dart';
 import 'package:in_app_purchase/src/in_app_purchase/app_store_connection.dart';
+import 'package:in_app_purchase/src/in_app_purchase/in_app_purchase_connection.dart';
 import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import '../store_kit_wrappers/sk_test_stub_objects.dart';
@@ -93,7 +94,7 @@ void main() {
       QueryPurchaseDetailsResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
-      expect(response.error.source, PurchaseSource.AppStore);
+      expect(response.error.source, IAPSource.AppStore);
       expect(response.error.message['message'], 'errorMessage');
     });
 
@@ -115,7 +116,7 @@ void main() {
     test('should refresh receipt data', () async {
       PurchaseVerificationData receiptData =
           await AppStoreConnection.instance.refreshPurchaseVerificationData();
-      expect(receiptData.source, PurchaseSource.AppStore);
+      expect(receiptData.source, IAPSource.AppStore);
       expect(receiptData.localVerificationData, 'refreshed receipt data');
       expect(receiptData.serverVerificationData, 'refreshed receipt data');
     });
@@ -190,7 +191,7 @@ void main() {
       fakeIOSPlatform.testTransactionFail = true;
       List<PurchaseDetails> details = [];
       Completer completer = Completer();
-      PurchaseError error;
+      IAPError error;
 
       Stream<List<PurchaseDetails>> stream =
           AppStoreConnection.instance.purchaseUpdatedStream;
@@ -211,9 +212,9 @@ void main() {
       await AppStoreConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
 
-      PurchaseError completerError = await completer.future;
+      IAPError completerError = await completer.future;
       expect(completerError.code, kPurchaseErrorCode);
-      expect(completerError.source, PurchaseSource.AppStore);
+      expect(completerError.source, IAPSource.AppStore);
       expect(completerError.message, {'message': 'an error message'});
     });
   });

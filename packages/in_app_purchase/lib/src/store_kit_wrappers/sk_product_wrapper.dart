@@ -4,6 +4,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/services.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
 
@@ -19,7 +20,7 @@ part 'sk_product_wrapper.g.dart';
 @JsonSerializable()
 class SkProductResponseWrapper {
   SkProductResponseWrapper(
-      {@required this.products, @required this.invalidProductIdentifiers});
+      {@required this.products, @required this.invalidProductIdentifiers, this.platformException = null});
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
@@ -42,6 +43,10 @@ class SkProductResponseWrapper {
   /// found here https://developer.apple.com/documentation/storekit/skproductsresponse/1505985-invalidproductidentifiers?language=objc.
   /// Will be empty if all the product identifiers are valid.
   final List<String> invalidProductIdentifiers;
+
+  /// Any platformException happened during the request.
+  @JsonKey(ignore: true, nullable:true)
+  final PlatformException platformException;
 
   @override
   bool operator ==(Object other) {

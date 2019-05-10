@@ -74,7 +74,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
   @override
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
-    PurchaseError error;
+    IAPError error;
     List<PurchaseDetails> pastPurchases = [];
 
     try {
@@ -88,20 +88,20 @@ class AppStoreConnection implements InAppPurchaseConnection {
           restoredTransactions.map((SKPaymentTransactionWrapper transaction) {
         assert(transaction.transactionState ==
             SKPaymentTransactionStateWrapper.restored);
-        return transaction.toPurchaseDetails(receiptData)
+        return PurchaseDetails.fromSKTransaction(transaction, receiptData)
           ..status = SKTransactionStatusConverter()
               .toPurchaseStatus(transaction.transactionState)
           ..error = transaction.error != null
-              ? PurchaseError(
-                  source: PurchaseSource.AppStore,
+              ? IAPError(
+                  source: IAPSource.AppStore,
                   code: kPurchaseErrorCode,
                   message: transaction.error.userInfo,
                 )
               : null;
       }).toList();
     } catch (e) {
-      error = PurchaseError(
-          source: PurchaseSource.AppStore, code: e.domain, message: e.userInfo);
+      error = IAPError(
+          source: IAPSource.AppStore, code: e.domain, message: e.userInfo);
     }
     return QueryPurchaseDetailsResponse(
         pastPurchases: pastPurchases, error: error);
@@ -114,7 +114,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
     return PurchaseVerificationData(
         localVerificationData: receipt,
         serverVerificationData: receipt,
-        source: PurchaseSource.AppStore);
+        source: IAPSource.AppStore);
   }
 
   /// Query the product detail list.
@@ -179,14 +179,12 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     String receiptData = await getReceiptData();
     purchaseUpdatedController
         .add(transactions.map((SKPaymentTransactionWrapper transaction) {
-      PurchaseDetails purchaseDetails = transaction.toPurchaseDetails(
-        receiptData,
-      )
+      PurchaseDetails purchaseDetails = PurchaseDetails.fromSKTransaction(transaction, receiptData)
         ..status = SKTransactionStatusConverter()
             .toPurchaseStatus(transaction.transactionState)
         ..error = transaction.error != null
-            ? PurchaseError(
-                source: PurchaseSource.AppStore,
+            ? IAPError(
+                source: IAPSource.AppStore,
                 code: kPurchaseErrorCode,
                 message: transaction.error.userInfo,
               )

@@ -47,9 +47,10 @@ void main() {
 
     test('get products method channel should throw exception', () async {
       fakeIOSPlatform.getProductRequestFailTest = true;
+      SkProductResponseWrapper response = await SKRequestMaker().startProductRequest(['xxx']);
       expect(
-        SKRequestMaker().startProductRequest(['xxx']),
-        throwsException,
+        response.platformException,
+        isNotNull,
       );
       fakeIOSPlatform.getProductRequestFailTest = false;
     });
