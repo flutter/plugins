@@ -1,8 +1,13 @@
-## 0.1.0+2
+## 0.1.0+3
 
 * If the device is not connected to the internet, `queryPastPurchases()` on iOS now have the error stored in the response instead of throwing.
 * Clean up minor iOS warning.
 * Example app shows how to catch exception when calling `queryProductDetails()`.
+
+## 0.1.0+2
+
+* Fix bug where error only purchases updates weren't propagated correctly in
+  `google_play_connection.dart`.
 
 ## 0.1.0+1
 

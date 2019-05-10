@@ -212,6 +212,44 @@ void main() {
       expect(result.productID, dummySkuDetails.sku);
     });
 
+    test('handles an error with an empty purchases list', () async {
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+      final BillingResponse sentCode = BillingResponse.error;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode),
+          additionalStepBeforeReturn: (_) {
+            // Mock java update purchase callback.
+            MethodCall call = MethodCall(kOnPurchasesUpdated, {
+              'responseCode': BillingResponseConverter().toJson(sentCode),
+              'purchasesList': []
+            });
+            connection.billingClient.callHandler(call);
+          });
+      Completer completer = Completer();
+      PurchaseDetails purchaseDetails;
+      Stream purchaseStream =
+          GooglePlayConnection.instance.purchaseUpdatedStream;
+      StreamSubscription subscription;
+      subscription = purchaseStream.listen((_) {
+        purchaseDetails = _.first;
+        completer.complete(purchaseDetails);
+        subscription.cancel();
+      }, onDone: () {});
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: skuDetails.toProductDetails(),
+          applicationUserName: accountId);
+      await GooglePlayConnection.instance
+          .buyNonConsumable(purchaseParam: purchaseParam);
+      PurchaseDetails result = await completer.future;
+
+      expect(result.error, isNotNull);
+      expect(result.error.source, PurchaseSource.GooglePlay);
+      expect(result.status, PurchaseStatus.error);
+      expect(result.purchaseID, isNull);
+    });
+
     test('buy consumable with auto consume, serializes and deserializes data',
         () async {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;

@@ -181,10 +181,17 @@ class GooglePlayConnection
       error = null;
       status = PurchaseStatus.purchased;
     } else {
+<<<<<<< HEAD
       error = IAPError(
         source: IAPSource.GooglePlay,
         code: kRestoredPurchaseErrorCode,
         message: resultWrapper.responseCode.toString(),
+=======
+      error = PurchaseError(
+        source: PurchaseSource.GooglePlay,
+        code: kPurchaseErrorCode,
+        message: {'message': resultWrapper.responseCode.toString()},
+>>>>>>> master
       );
       status = PurchaseStatus.error;
     }
@@ -194,7 +201,19 @@ class GooglePlayConnection
         ..status = status
         ..error = error);
     }).toList();
-    return Future.wait(purchases);
+    if (!purchases.isEmpty) {
+      return Future.wait(purchases);
+    } else {
+      return [
+        PurchaseDetails(
+            purchaseID: null,
+            productID: null,
+            transactionDate: null,
+            verificationData: null)
+          ..status = PurchaseStatus.error
+          ..error = error
+      ];
+    }
   }
 
   static Future<PurchaseDetails> _maybeAutoConsumePurchase(
