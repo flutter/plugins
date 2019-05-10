@@ -160,6 +160,12 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
   }
   [_methodChannel invokeMethod:@"polyline#onTap" arguments:@{@"polylineId" : polylineId}];
 }
+- (bool)hasPolylineWithId:(NSString*)polylineId {
+  if (!polylineId) {
+    return false;
+  }
+  return _polylineIdToController[polylineId] != nil;
+}
 + (GMSMutablePath*)getPath:(NSDictionary*)polyline {
   NSArray* pointArray = polyline[@"points"];
   NSArray<CLLocation*>* points = ToPoints(pointArray);

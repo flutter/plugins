@@ -44,6 +44,39 @@ class FirebaseUser extends UserInfo {
     });
   }
 
+  /// Associates a user account from a third-party identity provider with this
+  /// user and returns additional identity provider data.
+  ///
+  /// This allows the user to sign in to this account in the future with
+  /// the given account.
+  ///
+  /// Errors:
+  ///   • `ERROR_WEAK_PASSWORD` - If the password is not strong enough.
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the credential is malformed or has expired.
+  ///   • `ERROR_CREDENTIAL_ALREADY_IN_USE` - If the account is already in use by a different account.
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
+  ///   • `ERROR_PROVIDER_ALREADY_LINKED` - If the current user already has an account of this type linked.
+  ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that this type of account is not enabled.
+  ///   • `ERROR_INVALID_ACTION_CODE` - If the action code in the link is malformed, expired, or has already been used.
+  ///       This can only occur when using [EmailAuthProvider.getCredentialWithLink] to obtain the credential.
+  Future<FirebaseUser> linkWithCredential(AuthCredential credential) async {
+    assert(credential != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    final Map<dynamic, dynamic> data = await FirebaseAuth.channel.invokeMethod(
+      'linkWithCredential',
+      <String, dynamic>{
+        'app': _app.name,
+        'provider': credential._provider,
+        'data': credential._data,
+      },
+    );
+    final FirebaseUser currentUser = FirebaseUser._(data, _app);
+    return currentUser;
+  }
+
   /// Initiates email verification for the user.
   Future<void> sendEmailVerification() async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.

@@ -19,6 +19,6 @@ Firestore plugin for Flutter.
   s.dependency 'Firebase/Database'
   s.dependency 'Firebase/Core'
   s.dependency 'Firebase/Auth'
-  s.dependency 'Firebase/Firestore'
+  s.dependency 'Firebase/Firestore', '~> 6.0'
   s.static_framework = true
 end

@@ -36,6 +36,7 @@ import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.gson.Gson;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -189,19 +190,11 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
           @Override
           public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            firebaseAuth
-                .signInWithCredential(phoneAuthCredential)
-                .addOnCompleteListener(
-                    new OnCompleteListener<AuthResult>() {
-                      @Override
-                      public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                          Map<String, Object> arguments = new HashMap<>();
-                          arguments.put("handle", handle);
-                          channel.invokeMethod("phoneVerificationCompleted", arguments);
-                        }
-                      }
-                    });
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("handle", handle);
+            String parsedJson = new Gson().toJson(phoneAuthCredential);
+            arguments.put("phoneAuthCredential", parsedJson);
+            channel.invokeMethod("phoneVerificationCompleted", arguments);
           }
 
           @Override
@@ -453,9 +446,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         }
       case PhoneAuthProvider.PROVIDER_ID:
         {
-          String accessToken = data.get("verificationId");
-          String smsCode = data.get("smsCode");
-          credential = PhoneAuthProvider.getCredential(accessToken, smsCode);
+          if (data.containsKey("verificationId")) {
+            String accessToken = data.get("verificationId");
+            String smsCode = data.get("smsCode");
+            credential = PhoneAuthProvider.getCredential(accessToken, smsCode);
+          } else {
+            credential = new Gson().fromJson(data.get("jsonObject"), PhoneAuthCredential.class);
+          }
           break;
         }
       default:

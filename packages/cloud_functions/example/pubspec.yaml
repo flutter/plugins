@@ -9,7 +9,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   cloud_functions:
     path: ..
-  firebase_core: ^0.3.1
+  firebase_core: ^0.4.0
 
 dev_dependencies:
   flutter_test:

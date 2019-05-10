@@ -12,7 +12,7 @@ part of firebase_dynamic_links;
 class DynamicLinkParameters {
   DynamicLinkParameters({
     this.androidParameters,
-    @required this.domain,
+    @required this.uriPrefix,
     this.dynamicLinkParametersOptions,
     this.googleAnalyticsParameters,
     this.iosParameters,
@@ -20,17 +20,18 @@ class DynamicLinkParameters {
     @required this.link,
     this.navigationInfoParameters,
     this.socialMetaTagParameters,
-  })  : assert(domain != null),
+  })  : assert(uriPrefix != null),
         assert(link != null);
 
   /// Android parameters for a generated Dynamic Link URL.
   final AndroidParameters androidParameters;
 
-  /// The Firebase project’s Dynamic Links domain.
-  ///
-  /// You can find this value in the Dynamic Links section of the Firebase
-  /// console. https://console.firebase.google.com/
-  final String domain;
+  /// Domain URI Prefix of your App.
+  // This value must be your assigned domain from the Firebase console.
+  // (e.g. https://xyz.page.link)
+  //
+  // The domain URI prefix must start with a valid HTTPS scheme (https://).
+  final String uriPrefix;
 
   /// Defines behavior for generating Dynamic Link URLs.
   final DynamicLinkParametersOptions dynamicLinkParametersOptions;
@@ -78,7 +79,7 @@ class DynamicLinkParameters {
 
   Map<String, dynamic> get _data => <String, dynamic>{
         'androidParameters': androidParameters?._data,
-        'domain': domain,
+        'uriPrefix': uriPrefix,
         'dynamicLinkParametersOptions': dynamicLinkParametersOptions?._data,
         'googleAnalyticsParameters': googleAnalyticsParameters?._data,
         'iosParameters': iosParameters?._data,
