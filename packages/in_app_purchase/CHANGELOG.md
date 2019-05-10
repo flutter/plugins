@@ -1,3 +1,8 @@
+## 0.1.0+4
+
+* Change the `buy` methods to return `Future<bool>` instead of `void` in order
+  to propagate `launchBillingFlow` failures up through `google_play_connection`.
+
 ## 0.1.0+3
 
 * Guard against multiple onSetupFinished() calls.
