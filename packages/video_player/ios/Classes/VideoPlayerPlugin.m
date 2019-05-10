@@ -39,7 +39,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(nonatomic) CGAffineTransform preferredTransform;
 @property(nonatomic, readonly) bool disposed;
 @property(nonatomic, readonly) bool isPlaying;
-@property(nonatomic, readonly) bool isLooping;
+@property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
 - (void)play;
@@ -97,6 +97,17 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                                 }];
 }
 
+static inline CGFloat radiansToDegrees(CGFloat radians) {
+  // Input range [-pi, pi] or [-180, 180]
+  CGFloat degrees = GLKMathRadiansToDegrees((float)radians);
+  if (degrees < 0) {
+    // Convert -90 to 270 and -180 to 180
+    return degrees + 360;
+  }
+  // Output degrees in between [0, 360[
+  return degrees;
+};
+
 - (AVMutableVideoComposition*)getVideoCompositionWithTransform:(CGAffineTransform)transform
                                                      withAsset:(AVAsset*)asset
                                                 withVideoTrack:(AVAssetTrack*)videoTrack {
@@ -113,8 +124,8 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   videoComposition.instructions = @[ instruction ];
 
   // If in portrait mode, switch the width and height of the video
-  float width = videoTrack.naturalSize.width;
-  float height = videoTrack.naturalSize.height;
+  CGFloat width = videoTrack.naturalSize.width;
+  CGFloat height = videoTrack.naturalSize.height;
   NSInteger rotationDegrees =
       (NSInteger)round(radiansToDegrees(atan2(_preferredTransform.b, _preferredTransform.a)));
   if (rotationDegrees == 90 || rotationDegrees == 270) {
@@ -183,7 +194,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
     if ([asset statusOfValueForKey:@"tracks" error:nil] == AVKeyValueStatusLoaded) {
       NSArray* tracks = [asset tracksWithMediaType:AVMediaTypeVideo];
       if ([tracks count] > 0) {
-        AVAssetTrack* videoTrack = [tracks objectAtIndex:0];
+        AVAssetTrack* videoTrack = tracks[0];
         void (^trackCompletionHandler)(void) = ^{
           if (self->_disposed) return;
           if ([videoTrack statusOfValueForKey:@"preferredTransform"
@@ -236,7 +247,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   } else if (context == statusContext) {
     AVPlayerItem* item = (AVPlayerItem*)object;
     switch (item.status) {
-      case AVPlayerStatusFailed:
+      case AVPlayerItemStatusFailed:
         if (_eventSink != nil) {
           _eventSink([FlutterError
               errorWithCode:@"VideoError"
@@ -248,7 +259,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       case AVPlayerItemStatusUnknown:
         break;
       case AVPlayerItemStatusReadyToPlay:
-        _isInitialized = true;
         [item addOutput:_videoOutput];
         [self sendInitialized];
         [self updatePlayingState];
@@ -284,23 +294,18 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   _displayLink.paused = !_isPlaying;
 }
 
-static inline CGFloat radiansToDegrees(CGFloat radians) {
-  // Input range [-pi, pi] or [-180, 180]
-  CGFloat degrees = GLKMathRadiansToDegrees(radians);
-  if (degrees < 0) {
-    // Convert -90 to 270 and -180 to 180
-    return degrees + 360;
-  }
-  // Output degrees in between [0, 360[
-  return degrees;
-};
-
 - (void)sendInitialized {
-  if (_eventSink && _isInitialized) {
+  if (_eventSink && !_isInitialized) {
     CGSize size = [self.player currentItem].presentationSize;
     CGFloat width = size.width;
     CGFloat height = size.height;
 
+    // The player has not yet initialized.
+    if (height == CGSizeZero.height && width == CGSizeZero.width) {
+      return;
+    }
+
+    _isInitialized = true;
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
@@ -339,7 +344,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)setVolume:(double)volume {
-  _player.volume = (volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume);
+  _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
@@ -440,7 +445,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
     for (NSNumber* textureId in _players) {
       [_registry unregisterTexture:[textureId unsignedIntegerValue]];
-      [[_players objectForKey:textureId] dispose];
+      [_players[textureId] dispose];
     }
     [_players removeAllObjects];
     result(nil);
@@ -478,10 +483,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       [player dispose];
       result(nil);
     } else if ([@"setLooping" isEqualToString:call.method]) {
-      [player setIsLooping:[[argsMap objectForKey:@"looping"] boolValue]];
+      [player setIsLooping:[argsMap[@"looping"] boolValue]];
       result(nil);
     } else if ([@"setVolume" isEqualToString:call.method]) {
-      [player setVolume:[[argsMap objectForKey:@"volume"] doubleValue]];
+      [player setVolume:[argsMap[@"volume"] doubleValue]];
       result(nil);
     } else if ([@"play" isEqualToString:call.method]) {
       [player play];
@@ -489,7 +494,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     } else if ([@"position" isEqualToString:call.method]) {
       result(@([player position]));
     } else if ([@"seekTo" isEqualToString:call.method]) {
-      [player seekTo:[[argsMap objectForKey:@"location"] intValue]];
+      [player seekTo:[argsMap[@"location"] intValue]];
       result(nil);
     } else if ([@"pause" isEqualToString:call.method]) {
       [player pause];

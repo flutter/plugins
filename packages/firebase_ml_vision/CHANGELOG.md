@@ -1,3 +1,15 @@
+## 0.8.0
+
+* Update Android dependencies to latest.
+
+## 0.7.0+2
+
+* Fix analyzer warnings about `const Rect` in tests.
+
+## 0.7.0+1
+
+* Update README to match latest version.
+
 ## 0.7.0
 
 * **Breaking Change** Unified and enhanced on-device and cloud image-labeling API.

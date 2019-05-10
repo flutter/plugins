@@ -1,3 +1,19 @@
+## 3.0.0
+
+* Update Android dependencies to latest.
+
+## 2.1.1+2
+
+* On iOS, use `putFile` instead of `putData` appropriately to detect `Content-Type`.
+
+## 2.1.1+1
+
+* On iOS, gracefully handle the case of uploading a nonexistent file without crashing.
+
+## 2.1.1
+
+* Added integration tests.
+
 ## 2.1.0+1
 
 * Reverting error.code casting/formatting to what it was until version 2.0.1.

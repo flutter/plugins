@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import '../../billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
@@ -18,9 +18,10 @@ class GooglePlayConnection
     with WidgetsBindingObserver
     implements InAppPurchaseConnection {
   GooglePlayConnection._()
-      : billingClient = BillingClient((PurchasesResultWrapper resultWrapper) {
+      : billingClient =
+            BillingClient((PurchasesResultWrapper resultWrapper) async {
           _purchaseUpdatedController
-              .add(_getPurchaseDetailsFromResult(resultWrapper));
+              .add(await _getPurchaseDetailsFromResult(resultWrapper));
         }) {
     _readyFuture = _connect();
     WidgetsBinding.instance.addObserver(this);
@@ -38,7 +39,7 @@ class GooglePlayConnection
   final BillingClient billingClient;
 
   Future<void> _readyFuture;
-  static Set<String> _productIDsToConsume;
+  static Set<String> _productIdsToConsume = Set<String>();
 
   @override
   Future<bool> isAvailable() async {
@@ -56,11 +57,8 @@ class GooglePlayConnection
   @override
   void buyConsumable(
       {@required PurchaseParam purchaseParam, bool autoConsume = true}) {
-    if (autoConsume == true) {
-      if (_productIDsToConsume == null) {
-        _productIDsToConsume = Set<String>();
-        _productIDsToConsume.add(purchaseParam.productDetails.id);
-      }
+    if (autoConsume) {
+      _productIdsToConsume.add(purchaseParam.productDetails.id);
     }
     buyNonConsumable(purchaseParam: purchaseParam);
   }
@@ -80,8 +78,8 @@ class GooglePlayConnection
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
     final List<PurchasesResultWrapper> responses = await Future.wait([
-      billingClient.queryPurchaseHistory(SkuType.inapp),
-      billingClient.queryPurchaseHistory(SkuType.subs)
+      billingClient.queryPurchases(SkuType.inapp),
+      billingClient.queryPurchases(SkuType.subs)
     ]);
 
     Set errorCodeSet = responses
@@ -143,10 +141,6 @@ class GooglePlayConnection
     return _instance;
   }
 
-  static _consume(PurchaseDetails purchase) {
-    instance.consumePurchase(purchase);
-  }
-
   Future<void> _connect() =>
       billingClient.startConnection(onBillingServiceDisconnected: () {});
 
@@ -179,34 +173,49 @@ class GooglePlayConnection
         productDetails: productDetails, notFoundIDs: notFoundIDS);
   }
 
-  static List<PurchaseDetails> _getPurchaseDetailsFromResult(
-      PurchasesResultWrapper resultWrapper) {
-    return resultWrapper.purchasesList.map(
-      (PurchaseWrapper purchase) {
-        PurchaseError error = null;
-        if (resultWrapper.responseCode != BillingResponse.ok) {
-          error = PurchaseError(
-            source: PurchaseSource.GooglePlay,
-            code: kRestoredPurchaseErrorCode,
-            message: {'message': resultWrapper.responseCode.toString()},
-          );
-        }
-        PurchaseDetails purchaseDetails = purchase.toPurchaseDetails()
-          ..status = resultWrapper.responseCode == BillingResponse.ok
-              ? PurchaseStatus.purchased
-              : PurchaseStatus.error
-          ..error = error;
-        // auto consume logic for buyConsumable.
-        if (_productIDsToConsume != null &&
-            _productIDsToConsume.contains(purchaseDetails.productID)) {
-          _consume(purchaseDetails);
-          _productIDsToConsume.remove(purchaseDetails.productID);
-          if (_productIDsToConsume.isEmpty) {
-            _productIDsToConsume = null;
-          }
-        }
-        return purchaseDetails;
-      },
-    ).toList();
+  static Future<List<PurchaseDetails>> _getPurchaseDetailsFromResult(
+      PurchasesResultWrapper resultWrapper) async {
+    PurchaseError error;
+    PurchaseStatus status;
+    if (resultWrapper.responseCode == BillingResponse.ok) {
+      error = null;
+      status = PurchaseStatus.purchased;
+    } else {
+      error = PurchaseError(
+        source: PurchaseSource.GooglePlay,
+        code: kRestoredPurchaseErrorCode,
+        message: {'message': resultWrapper.responseCode.toString()},
+      );
+      status = PurchaseStatus.error;
+    }
+    final List<Future<PurchaseDetails>> purchases =
+        resultWrapper.purchasesList.map((PurchaseWrapper purchase) {
+      return _maybeAutoConsumePurchase(purchase.toPurchaseDetails()
+        ..status = status
+        ..error = error);
+    }).toList();
+    return Future.wait(purchases);
+  }
+
+  static Future<PurchaseDetails> _maybeAutoConsumePurchase(
+      PurchaseDetails purchaseDetails) async {
+    if (!(purchaseDetails.status == PurchaseStatus.purchased &&
+        _productIdsToConsume.contains(purchaseDetails.productID))) {
+      return purchaseDetails;
+    }
+
+    final BillingResponse consumedResponse =
+        await instance.consumePurchase(purchaseDetails);
+    if (consumedResponse != BillingResponse.ok) {
+      purchaseDetails.status = PurchaseStatus.error;
+      purchaseDetails.error = PurchaseError(
+        source: PurchaseSource.GooglePlay,
+        code: kConsumptionFailedErrorCode,
+        message: {'message': consumedResponse.toString()},
+      );
+    }
+    _productIdsToConsume.remove(purchaseDetails.productID);
+
+    return purchaseDetails;
   }
 }

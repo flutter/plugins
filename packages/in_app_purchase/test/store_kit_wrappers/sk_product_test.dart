@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'sk_test_stub_objects.dart';
 
@@ -64,10 +64,8 @@ void main() {
       expect(wrapper.localizedTitle, null);
       expect(wrapper.localizedDescription, null);
       expect(wrapper.priceLocale, null);
-      expect(wrapper.downloadContentVersion, null);
       expect(wrapper.subscriptionGroupIdentifier, null);
       expect(wrapper.price, null);
-      expect(wrapper.downloadable, null);
       expect(wrapper.subscriptionPeriod, null);
     });
 

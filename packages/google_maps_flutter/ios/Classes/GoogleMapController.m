@@ -55,6 +55,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   BOOL _cameraDidInitialSetup;
   FLTMarkersController* _markersController;
   FLTPolylinesController* _polylinesController;
+  FLTCirclesController* _circlesController;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -88,6 +89,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _polylinesController = [[FLTPolylinesController alloc] init:_channel
                                                         mapView:_mapView
                                                       registrar:registrar];
+    _circlesController = [[FLTCirclesController alloc] init:_channel
+                                                    mapView:_mapView
+                                                  registrar:registrar];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
@@ -95,6 +99,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     id polylinesToAdd = args[@"polylinesToAdd"];
     if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
       [_polylinesController addPolylines:polylinesToAdd];
+    }
+    id circlesToAdd = args[@"circlesToAdd"];
+    if ([circlesToAdd isKindOfClass:[NSArray class]]) {
+      [_circlesController addCircles:circlesToAdd];
     }
   }
   return self;
@@ -161,6 +169,20 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       [_polylinesController removePolylineIds:polylineIdsToRemove];
     }
     result(nil);
+  } else if ([call.method isEqualToString:@"circles#update"]) {
+    id circlesToAdd = call.arguments[@"circlesToAdd"];
+    if ([circlesToAdd isKindOfClass:[NSArray class]]) {
+      [_circlesController addCircles:circlesToAdd];
+    }
+    id circlesToChange = call.arguments[@"circlesToChange"];
+    if ([circlesToChange isKindOfClass:[NSArray class]]) {
+      [_circlesController changeCircles:circlesToChange];
+    }
+    id circleIdsToRemove = call.arguments[@"circleIdsToRemove"];
+    if ([circleIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_circlesController removeCircleIds:circleIdsToRemove];
+    }
+    result(nil);
   } else if ([call.method isEqualToString:@"map#isCompassEnabled"]) {
     NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
     result(isCompassEnabled);
@@ -179,6 +201,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isScrollGesturesEnabled"]) {
     NSNumber* isScrollGesturesEnabled = @(_mapView.settings.scrollGestures);
     result(isScrollGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isMyLocationButtonEnabled"]) {
+    NSNumber* isMyLocationButtonEnabled = @(_mapView.settings.myLocationButton);
+    result(isMyLocationButtonEnabled);
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -257,6 +282,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   _mapView.settings.myLocationButton = enabled;
 }
 
+- (void)setMyLocationButtonEnabled:(BOOL)enabled {
+  _mapView.settings.myLocationButton = enabled;
+}
+
 #pragma mark - GMSMapViewDelegate methods
 
 - (void)mapView:(GMSMapView*)mapView willMove:(BOOL)gesture {
@@ -293,8 +322,12 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   [_markersController onInfoWindowTap:markerId];
 }
 - (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
-  NSString* polylineId = overlay.userData[0];
-  [_polylinesController onPolylineTap:polylineId];
+  NSString* overlayId = overlay.userData[0];
+  if ([_polylinesController hasPolylineWithId:overlayId]) {
+    [_polylinesController onPolylineTap:overlayId];
+  } else if ([_circlesController hasCircleWithId:overlayId]) {
+    [_circlesController onCircleTap:overlayId];
+  }
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
@@ -438,5 +471,9 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   NSNumber* myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
     [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
+  }
+  NSNumber* myLocationButtonEnabled = data[@"myLocationButtonEnabled"];
+  if (myLocationButtonEnabled) {
+    [sink setMyLocationButtonEnabled:ToBool(myLocationButtonEnabled)];
   }
 }

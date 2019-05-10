@@ -9,6 +9,7 @@ import './product_details.dart';
 
 final String kPurchaseErrorCode = 'purchase_error';
 final String kRestoredPurchaseErrorCode = 'restore_transactions_failed';
+final String kConsumptionFailedErrorCode = 'consume_purchase_failed';
 
 /// Represents the data that is used to verify purchases.
 ///
@@ -126,8 +127,13 @@ class PurchaseDetails {
 
   /// The verification data of the purchase.
   ///
-  /// Use this to verify the purchase. See [PurchaseVerificationData] for details on how to verify purchase use this data.
-  /// You should never use any purchase data until verified.
+  /// Use this to verify the purchase. See [PurchaseVerificationData] for
+  /// details on how to verify purchase use this data. You should never use any
+  /// purchase data until verified.
+  ///
+  /// On iOS, this may be null. Call
+  /// [InAppPurchaseConnection.refreshPurchaseVerificationData] to get a new
+  /// [PurchaseVerificationData] object for further validation.
   final PurchaseVerificationData verificationData;
 
   /// The timestamp of the transaction.

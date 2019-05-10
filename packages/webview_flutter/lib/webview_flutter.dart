@@ -414,13 +414,19 @@ class WebViewController {
   /// `url` must not be null.
   ///
   /// Throws an ArgumentError if `url` is not a valid URL string.
-  Future<void> loadUrl(String url) async {
+  Future<void> loadUrl(
+    String url, {
+    Map<String, String> headers,
+  }) async {
     assert(url != null);
     _validateUrlString(url);
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod('loadUrl', url);
+    return _channel.invokeMethod('loadUrl', <String, dynamic>{
+      'url': url,
+      'headers': headers,
+    });
   }
 
   /// Accessor to the current URL that the WebView is displaying.

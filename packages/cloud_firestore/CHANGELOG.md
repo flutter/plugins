@@ -1,3 +1,22 @@
+## 0.11.0+1
+
+* Update iOS CocoaPod dependencies to '~> 6.0' to ensure support for `FieldValue.increment`.
+
+## 0.11.0
+
+* Update Android dependencies to latest.
+
+## 0.10.1
+
+* Support for `startAtDocument`, `startAfterDocument`, `endAtDocument`, `endBeforeDocument`.
+* Added additional unit and integration tests.
+
+## 0.10.0
+
+* Support for `FieldValue.increment`.
+* Remove `FieldValue.type` and `FieldValue.value` from public API.
+* Additional integration testing.
+
 ## 0.9.13+1
 
 * Added an integration test for transactions.

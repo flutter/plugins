@@ -37,7 +37,6 @@ static const int SOURCE_GALLERY = 1;
   self = [super init];
   if (self) {
     _viewController = viewController;
-    _imagePickerController = [[UIImagePickerController alloc] init];
   }
   return self;
 }
@@ -51,6 +50,7 @@ static const int SOURCE_GALLERY = 1;
   }
 
   if ([@"pickImage" isEqualToString:call.method]) {
+    _imagePickerController = [[UIImagePickerController alloc] init];
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
@@ -74,6 +74,7 @@ static const int SOURCE_GALLERY = 1;
         break;
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
+    _imagePickerController = [[UIImagePickerController alloc] init];
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[
@@ -190,7 +191,7 @@ static const int SOURCE_GALLERY = 1;
     return;
   }
   if (videoURL != nil) {
-    _result(videoURL.description);
+    _result(videoURL.path);
   } else {
     if (image == nil) {
       image = [info objectForKey:UIImagePickerControllerOriginalImage];

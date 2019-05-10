@@ -5,7 +5,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:collection/collection.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
 // below generated file. Run `flutter packages pub run build_runner watch` to
@@ -201,11 +201,8 @@ class SKProductWrapper {
     @required this.localizedTitle,
     @required this.localizedDescription,
     @required this.priceLocale,
-    @required this.downloadContentVersion,
     @required this.subscriptionGroupIdentifier,
     @required this.price,
-    @required this.downloadable,
-    @required this.downloadContentLengths,
     @required this.subscriptionPeriod,
     @required this.introductoryPrice,
   });
@@ -235,12 +232,6 @@ class SKProductWrapper {
   /// Includes locale information about the price, e.g. `$` as the currency symbol for US locale.
   final SKPriceLocaleWrapper priceLocale;
 
-  /// The version of the downloadable content.
-  ///
-  /// This is only available when [downloadable] is true.
-  /// It is formatted as a series of integers separated by periods.
-  final String downloadContentVersion;
-
   /// The subscription group identifier.
   ///
   /// A subscription group is a collection of subscription products.
@@ -249,17 +240,6 @@ class SKProductWrapper {
 
   /// The price of the product, in the currency that is defined in [priceLocale].
   final String price;
-
-  /// Whether the AppStore has downloadable content for this product.
-  ///
-  /// [downloadContentVersion] and [downloadContentLengths] become available if this is true.
-  final bool downloadable;
-
-  /// The length of the downloadable content.
-  ///
-  /// This is only available when [downloadable] is true.
-  /// Each element is the size of one of the downloadable files (in bytes).
-  final List<int> downloadContentLengths;
 
   /// The object represents the subscription period of the product.
   ///
@@ -288,12 +268,8 @@ class SKProductWrapper {
         typedOther.localizedTitle == localizedTitle &&
         typedOther.localizedDescription == localizedDescription &&
         typedOther.priceLocale == priceLocale &&
-        typedOther.downloadContentVersion == downloadContentVersion &&
         typedOther.subscriptionGroupIdentifier == subscriptionGroupIdentifier &&
         typedOther.price == price &&
-        typedOther.downloadable == downloadable &&
-        DeepCollectionEquality.unordered().equals(
-            typedOther.downloadContentLengths, downloadContentLengths) &&
         typedOther.subscriptionPeriod == subscriptionPeriod &&
         typedOther.introductoryPrice == introductoryPrice;
   }

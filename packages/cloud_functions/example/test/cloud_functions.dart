@@ -14,24 +14,25 @@ void main() {
 
   group('$CloudFunctions', () {
     test('call', () async {
-      final dynamic response = await CloudFunctions.instance.call(
-        functionName: 'repeat',
-        parameters: <String, dynamic>{
-          'message': 'foo',
-          'count': 1,
-        },
-      );
-      expect(response['repeat_message'], 'foo');
-      expect(response['repeat_count'], 2);
-      final dynamic response2 = await CloudFunctions.instance.call(
-        functionName: 'repeat',
-        parameters: <String, dynamic>{
-          'message': 'bar',
-          'count': 42,
-        },
-      );
-      expect(response2['repeat_message'], 'bar');
-      expect(response2['repeat_count'], 43);
+      // default timeout
+      final HttpsCallable callable =
+          CloudFunctions.instance.getHttpsCallable(functionName: 'repeat');
+      final HttpsCallableResult response =
+          await callable.call(<String, dynamic>{
+        'message': 'foo',
+        'count': 1,
+      });
+      expect(response.data['repeat_message'], 'foo');
+
+      // long custom timeout
+      callable.timeout = const Duration(days: 300);
+      expect(response.data['repeat_count'], 2);
+      final dynamic response2 = await callable.call(<String, dynamic>{
+        'message': 'bar',
+        'count': 42,
+      });
+      expect(response2.data['repeat_message'], 'bar');
+      expect(response2.data['repeat_count'], 43);
     });
   });
 }

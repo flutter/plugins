@@ -5,7 +5,7 @@
 import 'package:test/test.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
 
 final SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
   description: 'description',

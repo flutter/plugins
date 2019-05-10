@@ -4,7 +4,6 @@ import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
@@ -23,7 +22,6 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.Size;
 import android.view.Display;
 import android.view.OrientationEventListener;
@@ -58,22 +56,18 @@ public class CameraPlugin implements MethodCallHandler {
   private static CameraManager cameraManager;
   private final FlutterView view;
   private Camera camera;
-  private Activity activity;
   private Registrar registrar;
-  private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks;
   // The code to run after requesting camera permissions.
   private Runnable cameraPermissionContinuation;
-  private boolean requestingPermission;
   private final OrientationEventListener orientationEventListener;
   private int currentOrientation = ORIENTATION_UNKNOWN;
 
-  private CameraPlugin(Registrar registrar, FlutterView view, Activity activity) {
+  private CameraPlugin(Registrar registrar, FlutterView view) {
     this.registrar = registrar;
     this.view = view;
-    this.activity = activity;
 
     orientationEventListener =
-        new OrientationEventListener(activity.getApplicationContext()) {
+        new OrientationEventListener(registrar.activity().getApplicationContext()) {
           @Override
           public void onOrientationChanged(int i) {
             if (i == ORIENTATION_UNKNOWN) {
@@ -85,55 +79,6 @@ public class CameraPlugin implements MethodCallHandler {
         };
 
     registrar.addRequestPermissionsResultListener(new CameraRequestPermissionsListener());
-
-    this.activityLifecycleCallbacks =
-        new Application.ActivityLifecycleCallbacks() {
-          @Override
-          public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
-
-          @Override
-          public void onActivityStarted(Activity activity) {}
-
-          @Override
-          public void onActivityResumed(Activity activity) {
-            boolean wasRequestingPermission = requestingPermission;
-            if (requestingPermission) {
-              requestingPermission = false;
-            }
-            if (activity != CameraPlugin.this.activity) {
-              return;
-            }
-            orientationEventListener.enable();
-            if (camera != null && !wasRequestingPermission) {
-              camera.open(null);
-            }
-          }
-
-          @Override
-          public void onActivityPaused(Activity activity) {
-            if (activity == CameraPlugin.this.activity) {
-              orientationEventListener.disable();
-              if (camera != null) {
-                camera.close();
-              }
-            }
-          }
-
-          @Override
-          public void onActivityStopped(Activity activity) {
-            if (activity == CameraPlugin.this.activity) {
-              if (camera != null) {
-                camera.close();
-              }
-            }
-          }
-
-          @Override
-          public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
-
-          @Override
-          public void onActivityDestroyed(Activity activity) {}
-        };
   }
 
   public static void registerWith(Registrar registrar) {
@@ -147,8 +92,7 @@ public class CameraPlugin implements MethodCallHandler {
 
     cameraManager = (CameraManager) registrar.activity().getSystemService(Context.CAMERA_SERVICE);
 
-    channel.setMethodCallHandler(
-        new CameraPlugin(registrar, registrar.view(), registrar.activity()));
+    channel.setMethodCallHandler(new CameraPlugin(registrar, registrar.view()));
   }
 
   @Override
@@ -194,9 +138,6 @@ public class CameraPlugin implements MethodCallHandler {
             camera.close();
           }
           camera = new Camera(cameraName, resolutionPreset, result);
-          this.activity
-              .getApplication()
-              .registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
           orientationEventListener.enable();
           break;
         }
@@ -247,11 +188,7 @@ public class CameraPlugin implements MethodCallHandler {
           if (camera != null) {
             camera.dispose();
           }
-          if (this.activity != null && this.activityLifecycleCallbacks != null) {
-            this.activity
-                .getApplication()
-                .unregisterActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
-          }
+          orientationEventListener.disable();
           result.success(null);
           break;
         }
@@ -355,17 +292,18 @@ public class CameraPlugin implements MethodCallHandler {
                 open(result);
               }
             };
-        requestingPermission = false;
         if (hasCameraPermission() && hasAudioPermission()) {
           cameraPermissionContinuation.run();
         } else {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestingPermission = true;
-            registrar
-                .activity()
-                .requestPermissions(
-                    new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
-                    CAMERA_REQUEST_ID);
+            final Activity activity = registrar.activity();
+            if (activity == null) {
+              throw new IllegalStateException("No activity available!");
+            }
+
+            activity.requestPermissions(
+                new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
+                CAMERA_REQUEST_ID);
           }
         }
       } catch (CameraAccessException e) {
@@ -393,14 +331,24 @@ public class CameraPlugin implements MethodCallHandler {
     }
 
     private boolean hasCameraPermission() {
+      final Activity activity = registrar.activity();
+      if (activity == null) {
+        throw new IllegalStateException("No activity available!");
+      }
+
       return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
           || activity.checkSelfPermission(Manifest.permission.CAMERA)
               == PackageManager.PERMISSION_GRANTED;
     }
 
     private boolean hasAudioPermission() {
+      final Activity activity = registrar.activity();
+      if (activity == null) {
+        throw new IllegalStateException("No activity available!");
+      }
+
       return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
-          || registrar.activity().checkSelfPermission(Manifest.permission.RECORD_AUDIO)
+          || activity.checkSelfPermission(Manifest.permission.RECORD_AUDIO)
               == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -410,6 +358,12 @@ public class CameraPlugin implements MethodCallHandler {
 
       // Preview size and video size should not be greater than screen resolution or 1080.
       Point screenResolution = new Point();
+
+      final Activity activity = registrar.activity();
+      if (activity == null) {
+        throw new IllegalStateException("No activity available!");
+      }
+
       Display display = activity.getWindowManager().getDefaultDisplay();
       display.getRealSize(screenResolution);
 

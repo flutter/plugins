@@ -160,11 +160,11 @@ class BillingClient {
 
   /// Fetches recent purchases for the given [SkuType].
   ///
-  /// This only fetches whatever purchase history Play happens to have cached
-  /// in memory.
+  /// Unlike [queryPurchaseHistory], This does not make a network request and
+  /// does not return items that are no longer owned.
   ///
-  /// All purchase information should also be verified manually, with your server
-  /// if at all possible. See ["Verify a
+  /// All purchase information should also be verified manually, with your
+  /// server if at all possible. See ["Verify a
   /// purchase"](https://developer.android.com/google/play/billing/billing_library_overview#Verify).
   ///
   /// This wraps [`BillingClient#queryPurchases(String
@@ -178,8 +178,9 @@ class BillingClient {
 
   /// Fetches purchase history for the given [SkuType].
   ///
-  /// This makes a network request via Play and returns the most recent purchase
-  /// for each [SkuDetailsWrapper] of the given [SkuType].
+  /// Unlike [queryPurchases], this makes a network request via Play and returns
+  /// the most recent purchase for each [SkuDetailsWrapper] of the given
+  /// [SkuType] even if the item is no longer owned.
   ///
   /// All purchase information should also be verified manually, with your
   /// server if at all possible. See ["Verify a

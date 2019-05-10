@@ -1,3 +1,24 @@
+## 0.11.0
+
+* **Breaking change**: `linkWithCredential` is now a function of `FirebaseUser`instead of
+  `FirebaseAuth`.
+* Added test for newer `linkWithCredential` function.
+
+## 0.10.0+1
+
+* Increase Firebase/Auth CocoaPod dependency to '~> 6.0'.
+
+## 0.10.0
+
+* Update firebase_dynamic_links dependency.
+* Update Android dependencies to latest.
+
+## 0.9.0
+
+* **Breaking change**: `PhoneVerificationCompleted` now provides an `AuthCredential` that can
+  be used with `signInWithCredential` or `linkWithCredential` instead of signing in automatically.
+* **Breaking change**: Remove internal counter `nextHandle` from public API.
+
 ## 0.8.4+5
 
 * Increase Firebase/Auth CocoaPod dependency to '~> 5.19'.

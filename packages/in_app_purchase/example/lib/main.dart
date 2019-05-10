@@ -5,17 +5,18 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase/in_app_purchase_connection.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
+import 'consumable_store.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-// Switch this to true if you want to try out auto consume when buying a consumable.
-const bool kAutoConsume = false;
+const bool kAutoConsume = true;
 
+const String _kConsumableId = 'consumable';
 const List<String> _kProductIds = <String>[
-  'consumable',
+  _kConsumableId,
   'upgrade',
   'subscription'
 ];
@@ -26,9 +27,16 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final InAppPurchaseConnection _connection = InAppPurchaseConnection.instance;
   StreamSubscription<List<PurchaseDetails>> _subscription;
-
+  List<String> _notFoundIds = [];
+  List<ProductDetails> _products = [];
+  List<PurchaseDetails> _purchases = [];
+  List<String> _consumables = [];
+  bool _isAvailable = false;
   bool _purchasePending = false;
+  bool _loading = true;
+
   @override
   void initState() {
     Stream purchaseUpdated =
@@ -40,7 +48,58 @@ class _MyAppState extends State<MyApp> {
     }, onError: (error) {
       // handle error here.
     });
+    initStoreInfo();
     super.initState();
+  }
+
+  Future<void> initStoreInfo() async {
+    final bool isAvailable = await _connection.isAvailable();
+    if (!isAvailable) {
+      setState(() {
+        _isAvailable = isAvailable;
+        _products = [];
+        _purchases = [];
+        _notFoundIds = [];
+        _consumables = [];
+        _purchasePending = false;
+        _loading = false;
+      });
+      return;
+    }
+
+    ProductDetailsResponse productDetails =
+        await _connection.queryProductDetails(_kProductIds.toSet());
+    if (productDetails.productDetails.isEmpty) {
+      setState(() {
+        _isAvailable = isAvailable;
+        _products = productDetails.productDetails;
+        _purchases = [];
+        _notFoundIds = productDetails.notFoundIDs;
+        _consumables = [];
+        _purchasePending = false;
+        _loading = false;
+      });
+      return;
+    }
+
+    final QueryPurchaseDetailsResponse purchaseResponse =
+        await _connection.queryPastPurchases();
+    final List<PurchaseDetails> verifiedPurchases = [];
+    for (PurchaseDetails purchase in purchaseResponse.pastPurchases) {
+      if (await _verifyPurchase(purchase)) {
+        verifiedPurchases.add(purchase);
+      }
+    }
+    List<String> consumables = await ConsumableStore.load();
+    setState(() {
+      _isAvailable = isAvailable;
+      _products = productDetails.productDetails;
+      _purchases = verifiedPurchases;
+      _notFoundIds = productDetails.notFoundIDs;
+      _consumables = consumables;
+      _purchasePending = false;
+      _loading = false;
+    });
   }
 
   @override
@@ -55,38 +114,9 @@ class _MyAppState extends State<MyApp> {
     stack.add(
       ListView(
         children: [
-          FutureBuilder(
-            future: _buildConnectionCheckTile(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.error != null) {
-                return buildListCard(ListTile(
-                    title: Text(
-                        'Error connecting: ' + snapshot.error.toString())));
-              } else if (!snapshot.hasData) {
-                return Card(
-                    child: ListTile(title: const Text('Trying to connect...')));
-              }
-              return snapshot.data;
-            },
-          ),
-          FutureBuilder(
-            future: _buildProductList(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.error != null) {
-                return Center(
-                  child: buildListCard(ListTile(
-                      title:
-                          Text('Error fetching products ${snapshot.error}'))),
-                );
-              } else if (!snapshot.hasData) {
-                return Card(
-                    child: (ListTile(
-                        leading: CircularProgressIndicator(),
-                        title: Text('Fetching products...'))));
-              }
-              return snapshot.data;
-            },
-          ),
+          _buildConnectionCheckTile(),
+          _buildProductList(),
+          _buildConsumableBox(),
         ],
       ),
     );
@@ -118,17 +148,19 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Future<Card> _buildConnectionCheckTile() async {
-    final bool available = await InAppPurchaseConnection.instance.isAvailable();
+  Card _buildConnectionCheckTile() {
+    if (_loading) {
+      return Card(child: ListTile(title: const Text('Trying to connect...')));
+    }
     final Widget storeHeader = ListTile(
-      leading: Icon(available ? Icons.check : Icons.block,
-          color: available ? Colors.green : ThemeData.light().errorColor),
+      leading: Icon(_isAvailable ? Icons.check : Icons.block,
+          color: _isAvailable ? Colors.green : ThemeData.light().errorColor),
       title: Text(
-          'The store is ' + (available ? 'available' : 'unavailable') + '.'),
+          'The store is ' + (_isAvailable ? 'available' : 'unavailable') + '.'),
     );
     final List<Widget> children = <Widget>[storeHeader];
 
-    if (!available) {
+    if (!_isAvailable) {
       children.addAll([
         Divider(),
         ListTile(
@@ -142,21 +174,23 @@ class _MyAppState extends State<MyApp> {
     return Card(child: Column(children: children));
   }
 
-  Future<Card> _buildProductList() async {
-    InAppPurchaseConnection connection = InAppPurchaseConnection.instance;
-    final bool available = await connection.isAvailable();
-    if (!available) {
+  Card _buildProductList() {
+    if (_loading) {
+      return Card(
+          child: (ListTile(
+              leading: CircularProgressIndicator(),
+              title: Text('Fetching products...'))));
+    }
+    if (!_isAvailable) {
       return Card();
     }
     final ListTile productHeader = ListTile(
         title: Text('Products for Sale',
             style: Theme.of(context).textTheme.headline));
-    ProductDetailsResponse response =
-        await connection.queryProductDetails(_kProductIds.toSet());
     List<ListTile> productList = <ListTile>[];
-    if (!response.notFoundIDs.isEmpty) {
+    if (!_notFoundIds.isEmpty) {
       productList.add(ListTile(
-          title: Text('[${response.notFoundIDs.join(", ")}] not found',
+          title: Text('[${_notFoundIds.join(", ")}] not found',
               style: TextStyle(color: ThemeData.light().errorColor)),
           subtitle: Text(
               'This app needs special configuration to run. Please see example/README.md for instructions.')));
@@ -165,18 +199,14 @@ class _MyAppState extends State<MyApp> {
     // This loading previous purchases code is just a demo. Please do not use this as it is.
     // In your app you should always verify the purchase data using the `verificationData` inside the [PurchaseDetails] object before trusting it.
     // We recommend that you use your own server to verity the purchase data.
-    Map<String, PurchaseDetails> purchases = Map.fromEntries(
-        ((await connection.queryPastPurchases()).pastPurchases)
-            .map((PurchaseDetails purchase) {
+    Map<String, PurchaseDetails> purchases =
+        Map.fromEntries(_purchases.map((PurchaseDetails purchase) {
       if (Platform.isIOS) {
         InAppPurchaseConnection.instance.completePurchase(purchase);
       }
-      if (Platform.isAndroid && purchase.productID == 'consumable') {
-        InAppPurchaseConnection.instance.consumePurchase(purchase);
-      }
       return MapEntry<String, PurchaseDetails>(purchase.productID, purchase);
     }));
-    productList.addAll(response.productDetails.map(
+    productList.addAll(_products.map(
       (ProductDetails productDetails) {
         PurchaseDetails previousPurchase = purchases[productDetails.id];
         return ListTile(
@@ -197,12 +227,12 @@ class _MyAppState extends State<MyApp> {
                           productDetails: productDetails,
                           applicationUserName: null,
                           sandboxTesting: true);
-                      if (productDetails.id == 'consumable') {
-                        connection.buyConsumable(
+                      if (productDetails.id == _kConsumableId) {
+                        _connection.buyConsumable(
                             purchaseParam: purchaseParam,
                             autoConsume: kAutoConsume || Platform.isIOS);
                       } else {
-                        connection.buyNonConsumable(
+                        _connection.buyNonConsumable(
                             purchaseParam: purchaseParam);
                       }
                     },
@@ -215,17 +245,74 @@ class _MyAppState extends State<MyApp> {
             Column(children: <Widget>[productHeader, Divider()] + productList));
   }
 
+  Card _buildConsumableBox() {
+    if (_loading) {
+      return Card(
+          child: (ListTile(
+              leading: CircularProgressIndicator(),
+              title: Text('Fetching consumables...'))));
+    }
+    if (!_isAvailable || _notFoundIds.contains(_kConsumableId)) {
+      return Card();
+    }
+    final ListTile consumableHeader = ListTile(
+        title: Text('Purchased consumables',
+            style: Theme.of(context).textTheme.headline));
+    final List<Widget> tokens = _consumables.map((String id) {
+      return GridTile(
+        child: IconButton(
+          icon: Icon(
+            Icons.stars,
+            size: 42.0,
+            color: Colors.orange,
+          ),
+          splashColor: Colors.yellowAccent,
+          onPressed: () => consume(id),
+        ),
+      );
+    }).toList();
+    return Card(
+        child: Column(children: <Widget>[
+      consumableHeader,
+      Divider(),
+      GridView.count(
+        crossAxisCount: 5,
+        children: tokens,
+        shrinkWrap: true,
+        padding: EdgeInsets.all(16.0),
+      )
+    ]));
+  }
+
+  Future<void> consume(String id) async {
+    await ConsumableStore.consume(id);
+    final List<String> consumables = await ConsumableStore.load();
+    setState(() {
+      _consumables = consumables;
+    });
+  }
+
   void showPendingUI() {
     setState(() {
       _purchasePending = true;
     });
   }
 
-  void deliverProduct(PurchaseDetails purchaseDetails) {
-    // IMPORTANT!! Always verify a purchase purchase details before deliver the product.
-    setState(() {
-      _purchasePending = false;
-    });
+  void deliverProduct(PurchaseDetails purchaseDetails) async {
+    // IMPORTANT!! Always verify a purchase purchase details before delivering the product.
+    if (purchaseDetails.productID == _kConsumableId) {
+      await ConsumableStore.save(purchaseDetails.purchaseID);
+      List<String> consumables = await ConsumableStore.load();
+      setState(() {
+        _purchasePending = false;
+        _consumables = consumables;
+      });
+    } else {
+      setState(() {
+        _purchases.add(purchaseDetails);
+        _purchasePending = false;
+      });
+    }
   }
 
   void handleError(PurchaseError error) {
@@ -265,7 +352,7 @@ class _MyAppState extends State<MyApp> {
         if (Platform.isIOS) {
           InAppPurchaseConnection.instance.completePurchase(purchaseDetails);
         } else if (Platform.isAndroid) {
-          if (!kAutoConsume && purchaseDetails.productID == 'consumable') {
+          if (!kAutoConsume && purchaseDetails.productID == _kConsumableId) {
             InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
           }
         }
