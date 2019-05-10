@@ -280,17 +280,6 @@ class SKProductWrapper {
         typedOther.subscriptionPeriod == subscriptionPeriod &&
         typedOther.introductoryPrice == introductoryPrice;
   }
-
-  /// Method to convert to the wrapper to the consolidated [ProductDetails] class.
-  ProductDetails toProductDetails() {
-    return ProductDetails(
-      id: productIdentifier,
-      title: localizedTitle,
-      description: localizedDescription,
-      price: priceLocale.currencySymbol + price,
-      skProduct: this,
-    );
-  }
 }
 
 /// Object that indicates the locale of the price

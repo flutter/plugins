@@ -125,7 +125,7 @@ class BillingClient {
     } on PlatformException catch (e) {
       return SkuDetailsResponseWrapper(
           responseCode: BillingResponse.error,
-          skuDetailsList: null,
+          skuDetailsList: [],
           platformException: e);
     }
   }
@@ -178,9 +178,13 @@ class BillingClient {
   /// skutype)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#querypurchases).
   Future<PurchasesResultWrapper> queryPurchases(SkuType skuType) async {
     assert(skuType != null);
-    return PurchasesResultWrapper.fromJson(await channel.invokeMapMethod(
+    try {
+       return PurchasesResultWrapper.fromJson(await channel.invokeMapMethod(
         'BillingClient#queryPurchases(String)',
         <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
+    } on PlatformException catch(e) {
+      return PurchasesResultWrapper(responseCode: BillingResponse.error, purchasesList: [], platformException: e);
+    }
   }
 
   /// Fetches purchase history for the given [SkuType].

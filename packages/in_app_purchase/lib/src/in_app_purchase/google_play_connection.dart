@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import '../../billing_client_wrappers.dart';
@@ -82,6 +83,14 @@ class GooglePlayConnection
       billingClient.queryPurchases(SkuType.subs)
     ]);
 
+    //It is hard and ugly to merge 2 exceptions into 1. We only return 1 exception at a time.
+    List<PlatformException> exceptions = responses
+        .map((PurchasesResultWrapper response) => response.platformException)
+        .where((PlatformException exception) => exception != null)
+        .toList();
+    PlatformException exception =
+        exceptions.length > 0 ? exceptions.first : null;
+
     Set errorCodeSet = responses
         .where((PurchasesResultWrapper response) =>
             response.responseCode != BillingResponse.ok)
@@ -99,15 +108,22 @@ class GooglePlayConnection
       return PurchaseDetails.fromPurchase(purchaseWrapper);
     }).toList();
 
+    IAPError error;
+    if (exception != null) {
+      error = IAPError(
+          source: IAPSource.GooglePlay,
+          code: exception.code,
+          message: exception.message,
+          details: exception.details);
+    } else if (errorMessage != null) {
+      error = IAPError(
+          source: IAPSource.GooglePlay,
+          code: kRestoredPurchaseErrorCode,
+          message: errorMessage);
+    }
+
     return QueryPurchaseDetailsResponse(
-      pastPurchases: pastPurchases,
-      error: errorMessage != null
-          ? IAPError(
-              source: IAPSource.GooglePlay,
-              code: kRestoredPurchaseErrorCode,
-              message: errorMessage)
-          : null,
-    );
+        pastPurchases: pastPurchases, error: error);
   }
 
   @override
@@ -159,18 +175,36 @@ class GooglePlayConnection
       billingClient.querySkuDetails(
           skuType: SkuType.subs, skusList: identifiers.toList())
     ]);
-    List<ProductDetails> productDetails =
+
+    //It is hard and ugly to merge 2 exceptions into 1. We only return 1 exception at a time.
+    List<PlatformException> exceptions = responses
+        .map((SkuDetailsResponseWrapper response) => response.platformException)
+        .where((PlatformException exception) => exception != null)
+        .toList();
+    PlatformException exception =
+        exceptions.length > 0 ? exceptions.first : null;
+
+    List<ProductDetails> productDetailsList =
         responses.expand((SkuDetailsResponseWrapper response) {
       return response.skuDetailsList;
     }).map((SkuDetailsWrapper skuDetailWrapper) {
-      return skuDetailWrapper.toProductDetails();
+      return ProductDetails.fromSkuDetails(skuDetailWrapper);
     }).toList();
-    Set<String> successIDS = productDetails
+
+    Set<String> successIDS = productDetailsList
         .map((ProductDetails productDetails) => productDetails.id)
         .toSet();
     List<String> notFoundIDS = identifiers.difference(successIDS).toList();
     return ProductDetailsResponse(
-        productDetails: productDetails, notFoundIDs: notFoundIDS);
+        productDetails: productDetailsList,
+        notFoundIDs: notFoundIDS,
+        error: exception == null
+            ? null
+            : IAPError(
+                source: IAPSource.GooglePlay,
+                code: exception.code,
+                message: exception.message,
+                details: exception.details));
   }
 
   static Future<List<PurchaseDetails>> _getPurchaseDetailsFromResult(

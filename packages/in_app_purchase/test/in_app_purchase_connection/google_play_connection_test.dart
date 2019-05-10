@@ -118,6 +118,37 @@ void main() {
           await connection.queryProductDetails(<String>['invalid'].toSet());
       expect(response.notFoundIDs.first, 'invalid');
     });
+
+    test(
+        'should have error stored in the response when platform exception is thrown',
+        () async {
+      final BillingResponse responseCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: queryMethodName,
+          value: <String, dynamic>{
+            'responseCode': BillingResponseConverter().toJson(responseCode),
+            'skuDetailsList': <Map<String, dynamic>>[
+              buildSkuMap(dummySkuDetails)
+            ]
+          },
+          additionalStepBeforeReturn: (_) {
+            throw PlatformException(
+              code: 'error_code',
+              message: 'error_message',
+              details: {'info': 'error_info'},
+            );
+          });
+      // Since queryProductDetails makes 2 platform method calls (one for each SkuType), the result will contain 2 dummyWrapper instead
+      // of 1.
+      final ProductDetailsResponse response =
+          await connection.queryProductDetails(<String>['invalid'].toSet());
+      expect(response.notFoundIDs, ['invalid']);
+      expect(response.productDetails, isEmpty);
+      expect(response.error.source, IAPSource.GooglePlay);
+      expect(response.error.code, 'error_code');
+      expect(response.error.message, 'error_message');
+      expect(response.error.details, {'info': 'error_info'});
+    });
   });
 
   group('queryPurchaseDetails', () {
@@ -150,6 +181,29 @@ void main() {
           await connection.queryPastPurchases();
       expect(response.error, isNull);
       expect(response.pastPurchases.first.purchaseID, dummyPurchase.orderId);
+    });
+
+    test('should store platform exception in the response', () async {
+      final BillingResponse responseCode = BillingResponse.developerError;
+      stubPlatform.addResponse(
+          name: queryMethodName,
+          value: <dynamic, dynamic>{
+            'responseCode': BillingResponseConverter().toJson(responseCode),
+            'purchasesList': <Map<String, dynamic>>[]
+          },
+          additionalStepBeforeReturn: (_) {
+            throw PlatformException(
+              code: 'error_code',
+              message: 'error_message',
+              details: {'info': 'error_info'},
+            );
+          });
+      final QueryPurchaseDetailsResponse response =
+          await connection.queryPastPurchases();
+      expect(response.pastPurchases, isEmpty);
+      expect(response.error.code, 'error_code');
+      expect(response.error.message, 'error_message');
+      expect(response.error.details, {'info': 'error_info'});
     });
   });
 
@@ -202,7 +256,7 @@ void main() {
         subscription.cancel();
       }, onDone: () {});
       final PurchaseParam purchaseParam = PurchaseParam(
-          productDetails: skuDetails.toProductDetails(),
+          productDetails: ProductDetails.fromSkuDetails(skuDetails),
           applicationUserName: accountId);
       await GooglePlayConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
@@ -238,7 +292,7 @@ void main() {
         subscription.cancel();
       }, onDone: () {});
       final PurchaseParam purchaseParam = PurchaseParam(
-          productDetails: skuDetails.toProductDetails(),
+          productDetails: ProductDetails.fromSkuDetails(skuDetails),
           applicationUserName: accountId);
       await GooglePlayConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
@@ -299,7 +353,7 @@ void main() {
         subscription.cancel();
       }, onDone: () {});
       final PurchaseParam purchaseParam = PurchaseParam(
-          productDetails: skuDetails.toProductDetails(),
+          productDetails: ProductDetails.fromSkuDetails(skuDetails),
           applicationUserName: accountId);
       await GooglePlayConnection.instance
           .buyConsumable(purchaseParam: purchaseParam);
@@ -360,7 +414,7 @@ void main() {
         subscription.cancel();
       }, onDone: () {});
       final PurchaseParam purchaseParam = PurchaseParam(
-          productDetails: skuDetails.toProductDetails(),
+          productDetails: ProductDetails.fromSkuDetails(skuDetails),
           applicationUserName: accountId);
       await GooglePlayConnection.instance
           .buyConsumable(purchaseParam: purchaseParam);
@@ -421,7 +475,7 @@ void main() {
         subscription.cancel();
       }, onDone: () {});
       final PurchaseParam purchaseParam = PurchaseParam(
-          productDetails: skuDetails.toProductDetails(),
+          productDetails: ProductDetails.fromSkuDetails(skuDetails),
           applicationUserName: accountId);
       await GooglePlayConnection.instance
           .buyConsumable(purchaseParam: purchaseParam, autoConsume: false);

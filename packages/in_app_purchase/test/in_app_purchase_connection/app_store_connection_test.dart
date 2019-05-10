@@ -40,18 +40,28 @@ void main() {
       final ProductDetailsResponse response = await connection
           .queryProductDetails(<String>['123', '456', '789'].toSet());
       List<ProductDetails> products = response.productDetails;
-      expect(
-        products.first.id,
-        '123',
-      );
-      expect(
-        products[1].id,
-        '456',
-      );
-      expect(
-        response.notFoundIDs,
-        ['789'],
-      );
+      expect(products.first.id, '123');
+      expect(products[1].id, '456');
+      expect(response.notFoundIDs, ['789']);
+      expect(response.error, isNull);
+    });
+
+    test(
+        'if query products throws error, should get error object in the response',
+        () async {
+      fakeIOSPlatform.queryProductException = PlatformException(
+          code: 'error_code',
+          message: 'error_message',
+          details: {'info': 'error_info'});
+      final AppStoreConnection connection = AppStoreConnection();
+      final ProductDetailsResponse response = await connection
+          .queryProductDetails(<String>['123', '456', '789'].toSet());
+      expect(response.productDetails, []);
+      expect(response.notFoundIDs, ['123', '456', '789']);
+      expect(response.error.source, IAPSource.AppStore);
+      expect(response.error.code, 'error_code');
+      expect(response.error.message, 'error_message');
+      expect(response.error.details, {'info': 'error_info'});
     });
   });
 
@@ -83,6 +93,7 @@ void main() {
       QueryPurchaseDetailsResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
+      expect(response.error, isNull);
       fakeIOSPlatform.testRestoredTransactionsNull = false;
     });
 
@@ -97,6 +108,21 @@ void main() {
       expect(response.error.source, IAPSource.AppStore);
       expect(response.error.message, 'error_test');
       expect(response.error.details, {'message': 'errorMessage'});
+    });
+
+    test('test restore platform exception', () async {
+      fakeIOSPlatform.restoreException = PlatformException(
+        code: 'error_code',
+        message: 'error_message',
+        details: {'info': 'error_info'},
+      );
+      QueryPurchaseDetailsResponse response =
+          await AppStoreConnection.instance.queryPastPurchases();
+      expect(response.pastPurchases, isEmpty);
+      expect(response.error.source, IAPSource.AppStore);
+      expect(response.error.code, 'error_code');
+      expect(response.error.message, 'error_message');
+      expect(response.error.details, {'info': 'error_info'});
     });
 
     test('receipt error should populate null to verificationData.data',
@@ -141,7 +167,7 @@ void main() {
         }
       });
       final PurchaseParam purchaseParam = PurchaseParam(
-          productDetails: dummyProductWrapper.toProductDetails(),
+          productDetails: ProductDetails.fromSKProduct(dummyProductWrapper),
           applicationUserName: 'appName');
       await AppStoreConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
@@ -168,7 +194,7 @@ void main() {
         }
       });
       final PurchaseParam purchaseParam = PurchaseParam(
-          productDetails: dummyProductWrapper.toProductDetails(),
+          productDetails: ProductDetails.fromSKProduct(dummyProductWrapper),
           applicationUserName: 'appName');
       await AppStoreConnection.instance
           .buyConsumable(purchaseParam: purchaseParam);
@@ -180,7 +206,7 @@ void main() {
 
     test('buying consumable, should throw when autoConsume is false', () async {
       final PurchaseParam purchaseParam = PurchaseParam(
-          productDetails: dummyProductWrapper.toProductDetails(),
+          productDetails: ProductDetails.fromSKProduct(dummyProductWrapper),
           applicationUserName: 'appName');
       expect(
           () => AppStoreConnection.instance
@@ -208,7 +234,7 @@ void main() {
         });
       });
       final PurchaseParam purchaseParam = PurchaseParam(
-          productDetails: dummyProductWrapper.toProductDetails(),
+          productDetails: ProductDetails.fromSKProduct(dummyProductWrapper),
           applicationUserName: 'appName');
       await AppStoreConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
@@ -239,7 +265,7 @@ void main() {
         });
       });
       final PurchaseParam purchaseParam = PurchaseParam(
-          productDetails: dummyProductWrapper.toProductDetails(),
+          productDetails:ProductDetails.fromSKProduct(dummyProductWrapper),
           applicationUserName: 'appName');
       await AppStoreConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
@@ -271,6 +297,8 @@ class FakeIOSPlatform {
   List<SKPaymentTransactionWrapper> finishedTransactions;
   bool testRestoredTransactionsNull;
   bool testTransactionFail;
+  PlatformException queryProductException;
+  PlatformException restoreException;
   SKError testRestoredError;
 
   void reset() {
@@ -305,6 +333,8 @@ class FakeIOSPlatform {
     finishedTransactions = [];
     testRestoredTransactionsNull = false;
     testTransactionFail = false;
+    queryProductException = null;
+    restoreException = null;
     testRestoredError = null;
   }
 
@@ -347,6 +377,9 @@ class FakeIOSPlatform {
       case '-[SKPaymentQueue canMakePayments:]':
         return Future<bool>.value(true);
       case '-[InAppPurchasePlugin startProductRequest:result:]':
+        if (queryProductException != null) {
+          throw queryProductException;
+        }
         List<String> productIDS =
             List.castFrom<dynamic, String>(call.arguments);
         assert(productIDS is List<String>, 'invalid argument type');
@@ -364,6 +397,9 @@ class FakeIOSPlatform {
         return Future<Map<String, dynamic>>.value(
             buildProductResponseMap(response));
       case '-[InAppPurchasePlugin restoreTransactions:result:]':
+        if (restoreException != null) {
+          throw restoreException;
+        }
         if (testRestoredError != null) {
           AppStoreConnection.observer
               .restoreCompletedTransactionsFailed(error: testRestoredError);

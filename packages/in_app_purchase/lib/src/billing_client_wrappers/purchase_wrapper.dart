@@ -5,6 +5,7 @@
 import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/services.dart';
 import 'enum_converters.dart';
 import 'billing_client_wrapper.dart';
 
@@ -102,7 +103,7 @@ class PurchaseWrapper {
 class PurchasesResultWrapper {
   PurchasesResultWrapper(
       {@required BillingResponse this.responseCode,
-      @required List<PurchaseWrapper> this.purchasesList});
+      @required List<PurchaseWrapper> this.purchasesList, this.platformException = null});
 
   factory PurchasesResultWrapper.fromJson(Map map) =>
       _$PurchasesResultWrapperFromJson(map);
@@ -129,4 +130,8 @@ class PurchasesResultWrapper {
   ///
   /// May be empty, especially if [responseCode] is not [BillingResponse.ok].
   final List<PurchaseWrapper> purchasesList;
+
+  /// Any platformException happened during the request.
+  @JsonKey(ignore: true)
+  final PlatformException platformException;
 }

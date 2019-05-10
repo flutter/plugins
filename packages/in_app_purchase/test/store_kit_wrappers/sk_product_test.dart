@@ -73,7 +73,7 @@ void main() {
     test('toProductDetails() should return correct Product object', () {
       final SKProductWrapper wrapper =
           SKProductWrapper.fromJson(buildProductMap(dummyProductWrapper));
-      final ProductDetails product = wrapper.toProductDetails();
+      final ProductDetails product = ProductDetails.fromSKProduct(wrapper);
       expect(product.title, wrapper.localizedTitle);
       expect(product.description, wrapper.localizedDescription);
       expect(product.id, wrapper.productIdentifier);

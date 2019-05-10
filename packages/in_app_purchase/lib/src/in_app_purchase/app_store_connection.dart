@@ -138,13 +138,28 @@ class AppStoreConnection implements InAppPurchaseConnection {
     final SKRequestMaker requestMaker = SKRequestMaker();
     SkProductResponseWrapper response =
         await requestMaker.startProductRequest(identifiers.toList());
-    List<ProductDetails> productDetails = response.products
-        .map((SKProductWrapper productWrapper) =>
-            productWrapper.toProductDetails())
-        .toList();
+    PlatformException exception = response.platformException;
+    List<ProductDetails> productDetails = [];
+    if (response.products != null) {
+      productDetails = response.products
+          .map((SKProductWrapper productWrapper) =>
+              ProductDetails.fromSKProduct(productWrapper))
+          .toList();
+    }
+    List<String> invalidIdentifiers = response.invalidProductIdentifiers ?? [];
+    if (productDetails.length == 0) {
+      invalidIdentifiers = identifiers.toList();
+    }
     ProductDetailsResponse productDetailsResponse = ProductDetailsResponse(
       productDetails: productDetails,
-      notFoundIDs: response.invalidProductIdentifiers,
+      notFoundIDs: invalidIdentifiers,
+      error: exception == null
+          ? null
+          : IAPError(
+              source: IAPSource.AppStore,
+              code: exception.code,
+              message: exception.message,
+              details: exception.details),
     );
     return productDetailsResponse;
   }
@@ -163,7 +178,11 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
       {@required SKPaymentQueueWrapper queue, String applicationUserName}) {
     assert(queue != null);
     _restoreCompleter = Completer();
-    queue.restoreTransactions(applicationUserName: applicationUserName);
+    queue
+        .restoreTransactions(applicationUserName: applicationUserName)
+        .catchError((e) {
+      _restoreCompleter.completeError(e);
+    });
     return _restoreCompleter.future;
   }
 

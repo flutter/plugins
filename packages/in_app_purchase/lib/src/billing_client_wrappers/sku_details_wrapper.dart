@@ -126,17 +126,6 @@ class SkuDetailsWrapper {
         type.hashCode,
         isRewarded.hashCode);
   }
-
-  /// Method to convert to the wrapper to the consolidated [ProductDetails] class.
-  ProductDetails toProductDetails() {
-    return ProductDetails(
-      id: sku,
-      title: title,
-      description: description,
-      price: price,
-      skuDetail: this,
-    );
-  }
 }
 
 /// Translation of [`com.android.billingclient.api.SkuDetailsResponseListener`](https://developer.android.com/reference/com/android/billingclient/api/SkuDetailsResponseListener.html).

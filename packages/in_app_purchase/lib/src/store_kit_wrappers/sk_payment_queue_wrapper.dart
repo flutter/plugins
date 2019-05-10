@@ -123,8 +123,8 @@ class SKPaymentQueueWrapper {
   /// depending on whether the `applicationUserName` is set.
   Future<void> restoreTransactions({String applicationUserName}) async {
     await channel.invokeMethod(
-        '-[InAppPurchasePlugin restoreTransactions:result:]',
-        applicationUserName);
+          '-[InAppPurchasePlugin restoreTransactions:result:]',
+          applicationUserName);
   }
 
   // Triage a method channel call from the platform and triggers the correct observer method.

@@ -42,6 +42,24 @@ class ProductDetails {
   ///
   /// This is null on iOS.
   final SkuDetailsWrapper skuDetail;
+
+  /// Generate a [ProductDetails] object based on an iOS [SKProductWrapper] object.
+  ProductDetails.fromSKProduct(SKProductWrapper product)
+      : this.id = product.productIdentifier,
+        this.title = product.localizedTitle,
+        this.description = product.localizedDescription,
+        this.price = product.priceLocale.currencySymbol + product.price,
+        this.skProduct = product,
+        this.skuDetail = null;
+
+  /// Generate a [ProductDetails] object based on an Android [SkuDetailsWrapper] object.
+  ProductDetails.fromSkuDetails(SkuDetailsWrapper skuDetails)
+      : this.id = skuDetails.sku,
+        this.title = skuDetails.title,
+        this.description = skuDetails.description,
+        this.price = skuDetails.price,
+        this.skProduct = null,
+        this.skuDetail = skuDetails;
 }
 
 /// The response returned by [InAppPurchaseConnection.queryProductDetails].
