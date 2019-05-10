@@ -1,4 +1,4 @@
-## 0.11.0+1
+## 0.11.0+2
 
 * Fixes startAtDocument, startAfterDocument, endAtDocument & endBeforeDocument.
 
