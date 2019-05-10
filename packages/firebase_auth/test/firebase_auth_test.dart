@@ -197,7 +197,7 @@ void main() {
 
     test('fetchSignInMethodsForEmail', () async {
       final List<String> providers =
-      await auth.fetchSignInMethodsForEmail(email: kMockEmail);
+          await auth.fetchSignInMethodsForEmail(email: kMockEmail);
       expect(providers, isNotNull);
       expect(providers.length, 0);
       expect(
@@ -949,7 +949,7 @@ void main() {
     test('updatePhoneNumberCredential', () async {
       final FirebaseUser user = await auth.currentUser();
       final AuthCredential credentials = PhoneAuthProvider.getCredential(
-        verificationId: kMockVerificationId, 
+        verificationId: kMockVerificationId,
         smsCode: kMockSmsCode,
       );
       await user.updatePhoneNumberCredential(credentials);
@@ -1123,7 +1123,7 @@ void main() {
 
     test('signInWithCustomToken', () async {
       final FirebaseUser user =
-      await auth.signInWithCustomToken(token: kMockCustomToken);
+          await auth.signInWithCustomToken(token: kMockCustomToken);
       verifyUser(user);
       expect(
         log,
@@ -1148,7 +1148,7 @@ void main() {
               <String, dynamic>{'id': 42, 'user': user, 'app': auth.app.name},
             ),
           ),
-              (_) {},
+          (_) {},
         );
       }
 
@@ -1156,7 +1156,7 @@ void main() {
 
       // Subscribe and allow subscription to complete.
       final StreamSubscription<FirebaseUser> subscription =
-      auth.onAuthStateChanged.listen(events.add);
+          auth.onAuthStateChanged.listen(events.add);
       await Future<void>.delayed(const Duration(seconds: 0));
 
       await simulateEvent(null);
@@ -1208,11 +1208,12 @@ void main() {
   });
 }
 
-Map<String, dynamic> mockFirebaseUser({String providerId = kMockProviderId,
-  String uid = kMockUid,
-  String displayName = kMockDisplayName,
-  String photoUrl = kMockPhotoUrl,
-  String email = kMockEmail}) =>
+Map<String, dynamic> mockFirebaseUser(
+        {String providerId = kMockProviderId,
+        String uid = kMockUid,
+        String displayName = kMockDisplayName,
+        String photoUrl = kMockPhotoUrl,
+        String email = kMockEmail}) =>
     <String, dynamic>{
       'isAnonymous': true,
       'isEmailVerified': false,
