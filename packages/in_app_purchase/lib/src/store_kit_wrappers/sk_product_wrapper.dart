@@ -45,7 +45,7 @@ class SkProductResponseWrapper {
   final List<String> invalidProductIdentifiers;
 
   /// Any platformException happened during the request.
-  @JsonKey(ignore: true, nullable:true)
+  @JsonKey(ignore: true)
   final PlatformException platformException;
 
   @override

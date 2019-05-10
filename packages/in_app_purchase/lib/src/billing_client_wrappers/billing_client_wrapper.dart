@@ -113,6 +113,7 @@ class BillingClient {
   /// and passed in as a class.
   Future<SkuDetailsResponseWrapper> querySkuDetails(
       {@required SkuType skuType, @required List<String> skusList}) async {
+    try {
     final Map<String, dynamic> arguments = <String, dynamic>{
       'skuType': SkuTypeConverter().toJson(skuType),
       'skusList': skusList
@@ -121,6 +122,9 @@ class BillingClient {
             String, dynamic>(
         'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)',
         arguments));
+    } on PlatformException catch (e) {
+      return SkuDetailsResponseWrapper(responseCode: BillingResponse.error, skuDetailsList: null, platformException: e);
+    }
   }
 
   /// Attempt to launch the Play Billing Flow for a given [skuDetails].

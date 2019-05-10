@@ -4,6 +4,7 @@
 
 import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'billing_client_wrapper.dart';
 import 'enum_converters.dart';
@@ -145,7 +146,7 @@ class SkuDetailsWrapper {
 @BillingResponseConverter()
 class SkuDetailsResponseWrapper {
   @visibleForTesting
-  SkuDetailsResponseWrapper({@required this.responseCode, this.skuDetailsList});
+  SkuDetailsResponseWrapper({@required this.responseCode, this.skuDetailsList, this.platformException = null});
 
   /// Constructs an instance of this from a key value map of data.
   ///
@@ -159,6 +160,10 @@ class SkuDetailsResponseWrapper {
 
   /// A list of [SkuDetailsWrapper] matching the query to [BillingClient.querySkuDetails].
   final List<SkuDetailsWrapper> skuDetailsList;
+
+  /// Any platformException happened during the request.
+  @JsonKey(ignore: true)
+  final PlatformException platformException;
 
   @override
   bool operator ==(dynamic other) {
