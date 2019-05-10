@@ -51,7 +51,7 @@ void main() {
           case "sendLinkToEmail":
           case "sendPasswordResetEmail":
           case "updateEmail":
-          case "updatePhoneNumberCredential"
+          case "updatePhoneNumberCredential":
           case "updatePassword":
           case "updateProfile":
             return null;
