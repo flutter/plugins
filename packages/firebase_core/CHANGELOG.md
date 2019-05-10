@@ -1,4 +1,4 @@
-## 0.4.1
+## 0.4.0+1
 
 * Send user agent to Firebase.
 
