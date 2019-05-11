@@ -16,9 +16,7 @@ Firestore plugin for Flutter.
   s.public_header_files = 'Classes/**/*.h'
   s.ios.deployment_target = '8.0'
   s.dependency 'Flutter'
-  s.dependency 'Firebase/Database'
   s.dependency 'Firebase/Core'
-  s.dependency 'Firebase/Auth'
   s.dependency 'Firebase/Firestore', '~> 6.0'
   s.static_framework = true
 end
