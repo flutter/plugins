@@ -1,6 +1,10 @@
-## 0.2.0+1
+## 0.2.0+2
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.2.0+1
+
+* Minor internal code cleanup in Java implementation.
 
 ## 0.2.0
 

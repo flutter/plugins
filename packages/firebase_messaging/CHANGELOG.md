@@ -1,6 +1,10 @@
-## 5.0.1+1
+## 5.0.1+2
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 5.0.1+1
+
+* Enable support for `onMessage` on iOS using `shouldEstablishDirectChannel`.
 
 ## 5.0.1
 

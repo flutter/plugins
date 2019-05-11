@@ -1,6 +1,10 @@
-## 0.6.0+3
+## 0.6.0+4
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.6.0+3
+
+* Android: fixed assertion failures due to reply messages that were sent on the wrong thread.
 
 ## 0.6.0+2
 
