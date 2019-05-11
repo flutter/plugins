@@ -1,3 +1,7 @@
+## 0.3.7+1
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.3.7
 
 * Fix loadUrlWithHeaders flaky test.

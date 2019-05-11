@@ -1,3 +1,7 @@
+## 0.11.0+1
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.11.0
 
 * **Breaking change**: `linkWithCredential` is now a function of `FirebaseUser`instead of

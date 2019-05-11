@@ -1,3 +1,7 @@
+## 0.4.3+2
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.4.3+1
 
 * Fixes lint error by using `getApplicationContext()` when accessing the Wifi Service.

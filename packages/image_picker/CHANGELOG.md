@@ -1,3 +1,7 @@
+## 0.6.0+3
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.6.0+2
 
 * Android: images are saved with their real extension instead of always using `.jpg`.

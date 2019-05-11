@@ -1,3 +1,7 @@
+## 0.11.0+2
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.11.0+1
 
 * Update iOS CocoaPod dependencies to '~> 6.0' to ensure support for `FieldValue.increment`.

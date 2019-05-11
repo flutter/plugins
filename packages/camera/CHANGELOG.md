@@ -1,3 +1,7 @@
+## 0.5.0+1
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.5.0
 
 * **Breaking Change** This plugin no longer handles closing and opening the camera on Android

@@ -1,3 +1,7 @@
+## 5.0.1+1
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 5.0.1
 
 * Fix error in the logs on startup if unable to retrieve token on startup on Android.

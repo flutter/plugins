@@ -1,3 +1,7 @@
+## 0.0.4+4
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.0.4+3
 
 * Migrate our handling of `FlutterErrorDetails` to work on both Flutter stable

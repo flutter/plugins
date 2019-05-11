@@ -1,3 +1,7 @@
+## 4.0.1+4
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 4.0.1+3
 
 * Update example to gracefully handle null user information.

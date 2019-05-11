@@ -1,3 +1,7 @@
+## 0.4.0+1
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.4.0
 
 * Log a more detailed warning at build time about the previous AndroidX

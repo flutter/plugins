@@ -1,3 +1,7 @@
+## 0.10.0+9
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.10.0+8
 
 * iOS: Fix an issue where the player sends initialization message incorrectly.

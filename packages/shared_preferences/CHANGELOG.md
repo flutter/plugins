@@ -1,3 +1,7 @@
+## 0.5.2+1
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.5.2
 
 * Add containsKey method.

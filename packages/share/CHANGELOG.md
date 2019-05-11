@@ -1,3 +1,7 @@
+## 0.6.1+2
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.6.1+1
 
 * Fix analyzer warnings about `const Rect` in tests.

@@ -1,3 +1,7 @@
+## 3.0.1+1
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 3.0.1
 
 * Switch to using the `FIRAnalytics` version of `setAnalyticsCollectionEnabled` for

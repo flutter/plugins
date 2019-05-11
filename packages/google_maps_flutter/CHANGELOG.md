@@ -1,3 +1,7 @@
+## 0.5.13+1
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.5.13
 
 * Add support for Circle overlays.

@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.1.0+1
 
 Add more consumable handling to the example app.

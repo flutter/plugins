@@ -1,3 +1,7 @@
+## 0.3.0+3
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 0.3.0+2
 
 * Bump the minimum Flutter version to 1.2.0.

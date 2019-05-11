@@ -1,3 +1,7 @@
+## 1.1.0+1
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
 ## 1.1.0
 
 * Added `getApplicationSupportDirectory`.
