@@ -18,7 +18,7 @@ class LatLng {
         assert(longitude != null),
         latitude =
             (latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude)),
-        longitude = (longitude + 180.0) % 360.0 - 180.0;
+        longitude = longitude > 180 ? (longitude + 180.0) % 360.0 - 180.0 : longitude;
 
   /// The latitude in degrees between -90.0 and 90.0, both inclusive.
   final double latitude;
