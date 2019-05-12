@@ -53,7 +53,8 @@ class FirebaseUser extends UserInfo {
   /// Errors:
   ///   • `ERROR_WEAK_PASSWORD` - If the password is not strong enough.
   ///   • `ERROR_INVALID_CREDENTIAL` - If the credential is malformed or has expired.
-  ///   • `ERROR_CREDENTIAL_ALREADY_IN_USE` - If the account is already in use by a different account.
+  ///   • `ERROR_EMAIL_ALREADY_IN_USE` - If the email is already in use by a different account.
+  ///   • `ERROR_CREDENTIAL_ALREADY_IN_USE` - If the account is already in use by a different account, e.g. with phone auth.
   ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
   ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
   ///   • `ERROR_PROVIDER_ALREADY_LINKED` - If the current user already has an account of this type linked.
