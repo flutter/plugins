@@ -377,23 +377,6 @@ void main() {
           ),
           body: TabBarView(
             children: <Widget>[
-              Column(
-                children: <Widget>[
-                  NetworkPlayerLifeCycle(
-                    'http://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4',
-                    (BuildContext context, VideoPlayerController controller) =>
-                        AspectRatioVideo(controller),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(top: 20.0),
-                  ),
-                  NetworkPlayerLifeCycle(
-                    'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
-                    (BuildContext context, VideoPlayerController controller) =>
-                        AspectRatioVideo(controller),
-                  ),
-                ],
-              ),
               NetworkPlayerLifeCycle(
                 'http://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4',
                 (BuildContext context, VideoPlayerController controller) =>
