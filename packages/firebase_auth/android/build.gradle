@@ -48,5 +48,6 @@ android {
     dependencies {
         api 'com.google.firebase:firebase-auth:17.0.0'
         api 'com.google.code.gson:gson:2.8.5'
+        implementation 'androidx.annotation:annotation:1.0.0'
     }
 }
