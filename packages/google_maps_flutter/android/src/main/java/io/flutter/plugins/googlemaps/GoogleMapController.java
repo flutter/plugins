@@ -68,6 +68,7 @@ final class GoogleMapController
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
+  private boolean zoomControlsEnabled = false;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
@@ -495,9 +496,15 @@ final class GoogleMapController
 
   @Override
   public void setZoomControlsEnabled(boolean zoomControlsEnabled) {
-    googleMap.getUiSettings().setZoomControlsEnabled(zoomControlsEnabled);
+    if (this.zoomControlsEnabled == zoomControlsEnabled) {
+      return;
+    }
+    this.zoomControlsEnabled = zoomControlsEnabled;
+    if (googleMap != null) {
+      googleMap.getUiSettings().setZoomControlsEnabled(zoomControlsEnabled);
+    }
   }
-  
+
   @Override
   public void setInitialMarkers(Object initialMarkers) {
     this.initialMarkers = (List<Object>) initialMarkers;
