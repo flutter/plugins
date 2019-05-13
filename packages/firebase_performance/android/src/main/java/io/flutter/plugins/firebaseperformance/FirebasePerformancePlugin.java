@@ -76,9 +76,9 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
     Integer handle = call.argument("handle");
     Trace trace = traces.get(handle);
 
-    Map<String, Integer> counters = call.argument("counters");
-    for (Map.Entry<String, Integer> entry : counters.entrySet()) {
-      trace.incrementCounter(entry.getKey(), entry.getValue());
+    Map<String, Integer> metrics = call.argument("metrics");
+    for (Map.Entry<String, Integer> entry : metrics.entrySet()) {
+      trace.incrementMetric(entry.getKey(), entry.getValue());
     }
 
     Map<String, String> attributes = call.argument("attributes");

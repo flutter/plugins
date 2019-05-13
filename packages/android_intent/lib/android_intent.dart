@@ -57,6 +57,6 @@ class AndroidIntent {
     if (package != null) {
       args['package'] = package;
     }
-    await _channel.invokeMethod('launch', args);
+    await _channel.invokeMethod<void>('launch', args);
   }
 }

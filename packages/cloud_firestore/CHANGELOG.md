@@ -1,3 +1,117 @@
+## 0.11.0+1
+
+* Update iOS CocoaPod dependencies to '~> 6.0' to ensure support for `FieldValue.increment`.
+
+## 0.11.0
+
+* Update Android dependencies to latest.
+
+## 0.10.1
+
+* Support for `startAtDocument`, `startAfterDocument`, `endAtDocument`, `endBeforeDocument`.
+* Added additional unit and integration tests.
+
+## 0.10.0
+
+* Support for `FieldValue.increment`.
+* Remove `FieldValue.type` and `FieldValue.value` from public API.
+* Additional integration testing.
+
+## 0.9.13+1
+
+* Added an integration test for transactions.
+
+## 0.9.13
+
+* Remove Gradle BoM to avoid Gradle version issues.
+
+## 0.9.12
+
+* Move Android dependency to Gradle BoM to help maintain compatibility
+  with other FlutterFire plugins.
+
+## 0.9.11
+
+* Bump Android dependencies to latest.
+
+# 0.9.10
+
+* Support for cloud_firestore running in the background on Android.
+* Fixed a bug in cleanup for DocumentReference.snapshots().
+* Additional integration testing.
+
+## 0.9.9
+
+* Remove `invokeMapMethod` calls to prevent crash.
+
+## 0.9.8
+
+* Add metadata field to DocumentSnapshot.
+
+## 0.9.7+2
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
+## 0.9.7+1
+
+* Update README with example of getting a document.
+
+## 0.9.7
+
+* Fixes a NoSuchMethodError when using getDocuments on iOS (introduced in 0.9.6).
+* Adds a driver test for getDocuments.
+
+## 0.9.6
+
+* On iOS, update null checking to match the recommended pattern usage in the Firebase documentation.
+* Fixes a case where snapshot errors might result in plugin crash.
+
+## 0.9.5+2
+
+* Fixing PlatformException(Error 0, null, null) which happened when a successful operation was performed.
+
+## 0.9.5+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.9.5
+
+* Fix an issue on some iOS devices that results in reading incorrect dates.
+
+## 0.9.4
+
+* No longer sends empty snapshot events on iOS when encountering errors.
+
+## 0.9.3
+
+* Fix transactions on iOS when getting snapshot that doesn't exist.
+
+## 0.9.2
+
+* Fix IllegalStateException errors when using transactions on Android.
+
+## 0.9.1
+
+* Fixed Firebase multiple app support in transactions and document snapshots.
+
+## 0.9.0+2
+
+* Remove categories.
+
+## 0.9.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.9.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
 ## 0.8.2+3
 
 * Resolved "explicit self reference" and "loses accuracy" compiler warnings.

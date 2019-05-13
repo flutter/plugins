@@ -4,13 +4,10 @@
 
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 /** Receiver of GoogleMap configuration options. */
 interface GoogleMapOptionsSink {
-  void setCameraPosition(CameraPosition position);
-
   void setCameraTargetBounds(LatLngBounds bounds);
 
   void setCompassEnabled(boolean compassEnabled);
@@ -32,4 +29,12 @@ interface GoogleMapOptionsSink {
   void setMyLocationEnabled(boolean myLocationEnabled);
 
   void setZoomControlsEnabled(boolean zoomControlsEnabled);
+
+  void setMyLocationButtonEnabled(boolean myLocationButtonEnabled);
+
+  void setInitialMarkers(Object initialMarkers);
+
+  void setInitialPolylines(Object initialPolylines);
+
+  void setInitialCircles(Object initialCircles);
 }

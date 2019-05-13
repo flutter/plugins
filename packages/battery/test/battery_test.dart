@@ -22,7 +22,7 @@ void main() {
   });
 
   test('batteryLevel', () async {
-    when(methodChannel.invokeMethod('getBatteryLevel'))
+    when(methodChannel.invokeMethod<int>('getBatteryLevel'))
         .thenAnswer((Invocation invoke) => Future<int>.value(42));
     expect(await battery.batteryLevel, 42);
   });
