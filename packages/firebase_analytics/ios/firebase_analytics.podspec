@@ -17,5 +17,6 @@ Firebase Analytics plugin for Flutter.
   s.ios.deployment_target = '8.0'
   s.dependency 'Flutter'
   s.dependency 'Firebase/Core'
+  s.dependency 'Firebase/Analytics', '~> 6.0'
   s.static_framework = true
 end

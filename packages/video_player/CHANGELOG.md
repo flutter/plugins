@@ -1,6 +1,12 @@
-## 0.10.0+8
+## 0.10.0+9
 
 * iOS: fixed some videos being rendered black
+
+## 0.10.0+8
+
+* iOS: Fix an issue where the player sends initialization message incorrectly.
+
+* Fix a few other IDE warnings.
 
 ## 0.10.0+7
 

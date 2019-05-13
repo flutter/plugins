@@ -1,3 +1,7 @@
+## 0.4.0
+
+* Update Android dependencies to latest.
+
 ## 0.3.4
 
 * Updates Android firebase-core dependency to a version that is compatible with other Flutterfire plugins.

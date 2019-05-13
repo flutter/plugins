@@ -14,16 +14,31 @@ static FlutterError *getFlutterError(NSError *error) {
                              details:error.localizedDescription];
 }
 
-FIRFirestore *getFirestore(NSDictionary *arguments) {
+static FIRFirestore *getFirestore(NSDictionary *arguments) {
   FIRApp *app = [FIRApp appNamed:arguments[@"app"]];
   return [FIRFirestore firestoreForApp:app];
 }
 
-FIRDocumentReference *getDocumentReference(NSDictionary *arguments) {
+static FIRDocumentReference *getDocumentReference(NSDictionary *arguments) {
   return [getFirestore(arguments) documentWithPath:arguments[@"path"]];
 }
 
-FIRQuery *getQuery(NSDictionary *arguments) {
+static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy) {
+  NSMutableArray *values = [[NSMutableArray alloc] init];
+  NSString *documentId = document[@"id"];
+  NSDictionary *documentData = document[@"data"];
+  if (orderBy) {
+    for (id item in orderBy) {
+      NSArray *orderByParameters = item;
+      NSString *fieldName = orderByParameters[0];
+      [values addObject:[documentData objectForKey:fieldName]];
+    }
+  }
+  [values addObject:documentId];
+  return values;
+}
+
+static FIRQuery *getQuery(NSDictionary *arguments) {
   FIRQuery *query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
   NSDictionary *parameters = arguments[@"parameters"];
   NSArray *whereConditions = parameters[@"where"];
@@ -55,8 +70,7 @@ FIRQuery *getQuery(NSDictionary *arguments) {
   }
   NSArray *orderBy = parameters[@"orderBy"];
   if (orderBy) {
-    for (id item in orderBy) {
-      NSArray *orderByParameters = item;
+    for (NSArray *orderByParameters in orderBy) {
       NSString *fieldName = orderByParameters[0];
       NSNumber *descending = orderByParameters[1];
       query = [query queryOrderedByField:fieldName descending:[descending boolValue]];
@@ -67,25 +81,45 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     NSArray *startAtValues = startAt;
     query = [query queryStartingAtValues:startAtValues];
   }
+  id startAtDocument = parameters[@"startAtDocument"];
+  if (startAtDocument) {
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
+    query = [query queryStartingAtValues:getDocumentValues(startAtDocument, orderBy)];
+  }
   id startAfter = parameters[@"startAfter"];
   if (startAfter) {
     NSArray *startAfterValues = startAfter;
     query = [query queryStartingAfterValues:startAfterValues];
+  }
+  id startAfterDocument = parameters[@"startAfterDocument"];
+  if (startAfterDocument) {
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
+    query = [query queryStartingAfterValues:getDocumentValues(startAfterDocument, orderBy)];
   }
   id endAt = parameters[@"endAt"];
   if (endAt) {
     NSArray *endAtValues = endAt;
     query = [query queryEndingAtValues:endAtValues];
   }
+  id endAtDocument = parameters[@"endAtDocument"];
+  if (endAtDocument) {
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
+    query = [query queryEndingAtValues:getDocumentValues(endAtDocument, orderBy)];
+  }
   id endBefore = parameters[@"endBefore"];
   if (endBefore) {
     NSArray *endBeforeValues = endBefore;
     query = [query queryEndingBeforeValues:endBeforeValues];
   }
+  id endBeforeDocument = parameters[@"endBeforeDocument"];
+  if (endBeforeDocument) {
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
+    query = [query queryEndingBeforeValues:getDocumentValues(endBeforeDocument, orderBy)];
+  }
   return query;
 }
 
-NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
+static NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
   NSMutableArray *paths = [NSMutableArray array];
   NSMutableArray *documents = [NSMutableArray array];
   NSMutableArray *metadatas = [NSMutableArray array];
@@ -308,6 +342,7 @@ const UInt8 INCREMENT_INTEGER = 138;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  __weak __typeof__(self) weakSelf = self;
   void (^defaultCompletionBlock)(NSError *) = ^(NSError *error) {
     result(getFlutterError(error));
   };
@@ -321,12 +356,14 @@ const UInt8 INCREMENT_INTEGER = 138;
 
           dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-          [self.channel invokeMethod:@"DoTransaction"
-                           arguments:call.arguments
-                              result:^(id doTransactionResult) {
-                                self->transactionResults[transactionId] = doTransactionResult;
-                                dispatch_semaphore_signal(semaphore);
-                              }];
+          [weakSelf.channel invokeMethod:@"DoTransaction"
+                               arguments:call.arguments
+                                  result:^(id doTransactionResult) {
+                                    FLTCloudFirestorePlugin *currentSelf = weakSelf;
+                                    currentSelf->transactionResults[transactionId] =
+                                        doTransactionResult;
+                                    dispatch_semaphore_signal(semaphore);
+                                  }];
 
           dispatch_semaphore_wait(
               semaphore,
@@ -445,7 +482,7 @@ const UInt8 INCREMENT_INTEGER = 138;
           }
           NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
           [arguments setObject:handle forKey:@"handle"];
-          [self.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
+          [weakSelf.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
         }];
     _listeners[handle] = listener;
     result(handle);
@@ -458,17 +495,17 @@ const UInt8 INCREMENT_INTEGER = 138;
             result(getFlutterError(error));
             return;
           }
-          [self.channel invokeMethod:@"DocumentSnapshot"
-                           arguments:@{
-                             @"handle" : handle,
-                             @"path" : snapshot ? snapshot.reference.path : [NSNull null],
-                             @"data" : snapshot && snapshot.exists ? snapshot.data : [NSNull null],
-                             @"metadata" : snapshot ? @{
-                               @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
-                               @"isFromCache" : @(snapshot.metadata.isFromCache),
-                             }
-                                                    : [NSNull null],
-                           }];
+          [weakSelf.channel invokeMethod:@"DocumentSnapshot"
+                               arguments:@{
+                                 @"handle" : handle,
+                                 @"path" : snapshot ? snapshot.reference.path : [NSNull null],
+                                 @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+                                 @"metadata" : snapshot ? @{
+                                   @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
+                                   @"isFromCache" : @(snapshot.metadata.isFromCache),
+                                 }
+                                                        : [NSNull null],
+                               }];
         }];
     _listeners[handle] = listener;
     result(handle);

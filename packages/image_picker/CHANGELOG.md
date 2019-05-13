@@ -1,3 +1,11 @@
+## 0.6.0+3
+
+* Android: fixed assertion failures due to reply messages that were sent on the wrong thread.
+
+## 0.6.0+2
+
+* Android: images are saved with their real extension instead of always using `.jpg`.
+
 ## 0.6.0+1
 
 * Android: Using correct suffix syntax when picking image from remote url.

@@ -1,3 +1,7 @@
+## 0.6.1+1
+
+* Fix analyzer warnings about `const Rect` in tests.
+
 ## 0.6.1
 
 * Updated Android compileSdkVersion to 28 to match other plugins.
