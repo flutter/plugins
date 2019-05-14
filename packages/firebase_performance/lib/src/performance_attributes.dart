@@ -65,9 +65,9 @@ abstract class PerformanceAttributes {
   /// All attributes added.
   Future<Map<String, String>> getAttributes() {
     if (_hasStopped) {
-      return Future<Map<String, String>>.value(Map<String, String>.unmodifiable(
-        _attributes,
-      ));
+      return Future<Map<String, String>>.value(
+        Map<String, String>.unmodifiable(_attributes),
+      );
     }
 
     return FirebasePerformance.channel.invokeMapMethod<String, String>(
