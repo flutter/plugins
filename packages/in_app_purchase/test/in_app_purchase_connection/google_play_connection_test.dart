@@ -378,7 +378,7 @@ void main() {
 
       final bool result = await GooglePlayConnection.instance.buyNonConsumable(
           purchaseParam: PurchaseParam(
-              productDetails: dummySkuDetails.toProductDetails()));
+              productDetails: ProductDetails.fromSkuDetails(dummySkuDetails)));
 
       // Verify that the failure has been converted and returned
       expect(result, isFalse);
@@ -393,7 +393,7 @@ void main() {
 
       final bool result = await GooglePlayConnection.instance.buyConsumable(
           purchaseParam: PurchaseParam(
-              productDetails: dummySkuDetails.toProductDetails()));
+              productDetails: ProductDetails.fromSkuDetails(dummySkuDetails)));
 
       // Verify that the failure has been converted and returned
       expect(result, isFalse);
