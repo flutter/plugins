@@ -31,6 +31,9 @@ abstract class PerformanceAttributes {
   /// Name of the attribute has max length of [maxAttributeKeyLength]
   /// characters. Value of the attribute has max length of
   /// [maxAttributeValueLength] characters.
+  ///
+  /// If the trace has been stopped, this method returns without adding the
+  /// attribute.
   Future<void> putAttribute(String name, String value) {
     if (!_hasStarted ||
         _hasStopped ||

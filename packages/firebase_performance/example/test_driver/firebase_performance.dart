@@ -90,11 +90,11 @@ void main() {
         testTrace.start();
 
         testTrace.putAttribute('sponge', 'bob');
-        testTrace.putAttribute('patrick', 'start');
+        testTrace.putAttribute('patrick', 'star');
         testTrace.removeAttribute('sponge');
 
         final Map<String, String> attributes = await testTrace.getAttributes();
-        expect(attributes, <String, String>{'patrick': 'start'});
+        expect(attributes, <String, String>{'patrick': 'star'});
 
         testTrace.stop();
       });
@@ -103,15 +103,15 @@ void main() {
         final Trace testTrace = performance.newTrace('test-trace');
         testTrace.start();
 
-        testTrace.putAttribute('yu-gi', '-oh');
+        testTrace.putAttribute('yugi', 'oh');
 
         final Map<String, String> attributes = await testTrace.getAttributes();
-        expect(attributes, <String, String>{'yu-gi': '-oh'});
+        expect(attributes, <String, String>{'yugi': 'oh'});
 
         testTrace.stop();
 
         final Map<String, String> attributes2 = await testTrace.getAttributes();
-        expect(attributes2, <String, String>{'yu-gi': '-oh'});
+        expect(attributes2, <String, String>{'yugi': 'oh'});
       });
 
       test('make sure all methods won\'t cause a crash', () {
@@ -152,11 +152,11 @@ void main() {
         testMetric.start();
 
         testMetric.putAttribute('sponge', 'bob');
-        testMetric.putAttribute('patrick', 'start');
+        testMetric.putAttribute('patrick', 'star');
         testMetric.removeAttribute('sponge');
 
         final Map<String, String> attributes = await testMetric.getAttributes();
-        expect(attributes, <String, String>{'patrick': 'start'});
+        expect(attributes, <String, String>{'patrick': 'star'});
 
         testMetric.stop();
       });
@@ -168,16 +168,16 @@ void main() {
         );
         testMetric.start();
 
-        testMetric.putAttribute('yu-gi', '-oh');
+        testMetric.putAttribute('yugi', 'oh');
 
         final Map<String, String> attributes = await testMetric.getAttributes();
-        expect(attributes, <String, String>{'yu-gi': '-oh'});
+        expect(attributes, <String, String>{'yugi': 'oh'});
 
         testMetric.stop();
 
         final Map<String, String> attributes2 =
             await testMetric.getAttributes();
-        expect(attributes2, <String, String>{'yu-gi': '-oh'});
+        expect(attributes2, <String, String>{'yugi': 'oh'});
       });
 
       test('make sure all methods won\'t cause a crash', () {
