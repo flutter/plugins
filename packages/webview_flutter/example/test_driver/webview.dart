@@ -95,13 +95,16 @@ void main() {
   test('JavaScriptChannel', () async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
+    final Completer<void> pageLoaded = Completer<void>();
     final List<String> messagesReceived = <String>[];
     await pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
         child: WebView(
           key: GlobalKey(),
-          initialUrl: 'https://flutter.dev/',
+          // This is the data URL for: '<!DOCTYPE html>'
+          initialUrl:
+              'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
@@ -116,10 +119,14 @@ void main() {
               },
             ),
           ].toSet(),
+          onPageFinished: (String url) {
+            pageLoaded.complete(null);
+          },
         ),
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
+    await pageLoaded.future;
 
     expect(messagesReceived, isEmpty);
     await controller.evaluateJavascript('Echo.postMessage("hello");');
