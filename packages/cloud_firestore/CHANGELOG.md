@@ -1,6 +1,6 @@
 ## 0.11.0+2
 
-* remove iOS dependency on Firebase/Database and Firebase/Auth
+* Remove iOS dependency on Firebase/Database and Firebase/Auth
 
 ## 0.11.0+1
 
