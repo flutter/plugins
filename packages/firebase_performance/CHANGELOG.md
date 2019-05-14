@@ -1,3 +1,12 @@
+## 0.3.0
+
+* **Breaking Change** Assertion errors are no longer thrown for incorrect input for `Trace`s and
+`HttpMetric`s.
+* **Breaking Change** Removed `getAttribute()` method from `Trace` and `HttpMetric` in favor of
+`getAttributes()`.
+* **Breaking Change** Removed `Trace.incrementCounter`. Please use `Trace.incrementMetric`.
+* Added access to instance variables for `Trace` and `HttpMetric`.
+
 ## 0.2.0
 
 * Update Android dependencies to latest.

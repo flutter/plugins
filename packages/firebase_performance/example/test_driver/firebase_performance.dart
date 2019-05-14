@@ -13,15 +13,12 @@ void main() {
   enableFlutterDriverExtension(handler: (_) => completer.future);
   tearDownAll(() => completer.complete(null));
 
-  final FirebasePerformance performance = FirebasePerformance.instance;
-
   group('firebase_performance', () {
-    group('$FirebasePerformance', () {
-      setUpAll(() {
-        performance.setPerformanceCollectionEnabled(true);
-      });
+    final FirebasePerformance performance = FirebasePerformance.instance;
 
+    group('$FirebasePerformance', () {
       test('setPerformanceCollectionEnabled', () async {
+        await performance.setPerformanceCollectionEnabled(true);
         final bool enabled = await performance.isPerformanceCollectionEnabled();
         expect(enabled, isTrue);
 
