@@ -36,7 +36,7 @@ abstract class PerformanceAttributes {
         _hasStopped ||
         name.length > maxAttributeKeyLength ||
         value.length > maxAttributeValueLength ||
-        _attributes.length == 5) {
+        _attributes.length == maxCustomAttributes) {
       return Future<void>.value(null);
     }
 
