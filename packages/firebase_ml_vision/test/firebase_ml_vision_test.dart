@@ -555,6 +555,7 @@ void main() {
               'options': <String, dynamic>{
                 'enableClassification': true,
                 'enableLandmarks': true,
+                'enableContours': false,
                 'enableTracking': false,
                 'minFaceSize': 0.5,
                 'mode': 'accurate',
