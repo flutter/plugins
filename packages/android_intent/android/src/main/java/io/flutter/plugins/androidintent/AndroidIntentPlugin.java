@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.androidintent;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -133,7 +134,12 @@ public class AndroidIntentPlugin implements MethodCallHandler {
       intent.putExtras(convertArguments((Map) call.argument("arguments")));
     }
     if (call.argument("package") != null) {
-      intent.setPackage((String) call.argument("package"));
+      String packageName = (String) call.argument("package");
+      intent.setPackage(packageName);
+      if (call.argument("componentName") != null) {
+        intent.setComponent(
+            new ComponentName(packageName, (String) call.argument("componentName")));
+      }
       if (intent.resolveActivity(context.getPackageManager()) == null) {
         Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
         intent.setPackage(null);
