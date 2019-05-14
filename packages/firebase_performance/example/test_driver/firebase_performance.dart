@@ -25,17 +25,44 @@ void main() {
       expect(disabled, isFalse);
     });
 
-    test('metric', () async {
+    test('trace', () async {
       final Trace trace = performance.newTrace('test');
-      trace.putAttribute('testAttribute', 'foo');
-      trace.attributes['testAttribute2'] = 'bar';
+
       await trace.start();
-      trace.incrementMetric('testMetric', 1);
+
+      trace.putAttribute('testAttribute', 'foo');
+      final Map<String, String> attributes = await trace.getAttributes();
+      expect(attributes, <String, String>{'testAttribute': 'foo'});
+
+      trace.incrementMetric('testMetric', 22);
+      final int metric = await trace.getMetric('testMetric');
+      expect(metric, 22);
+
+      trace.setMetric('testMetric2', 33);
+      final int metric2 = await trace.getMetric('testMetric2');
+      expect(metric2, 33);
+
       await trace.stop();
-      expect(trace.getAttribute('testAttribute'), 'foo');
-      expect(trace.attributes['testAttribute'], 'foo');
-      expect(trace.getAttribute('testAttribute2'), null);
-      expect(trace.getAttribute('testMetric'), null);
+    });
+
+    test('httpmetric', () async {
+      final HttpMetric httpMetric = performance.newHttpMetric(
+        'https://www.google.com',
+        HttpMethod.Connect,
+      );
+
+      await httpMetric.start();
+
+      httpMetric.putAttribute('testAttribute', 'foo');
+      final Map<String, String> attributes = await httpMetric.getAttributes();
+      expect(attributes, <String, String>{'testAttribute': 'foo'});
+
+      httpMetric.httpResponseCode = 45;
+      httpMetric.requestPayloadSize = 45;
+      httpMetric.responseContentType = 'testString';
+      httpMetric.responsePayloadSize = 45;
+
+      await httpMetric.stop();
     });
   });
 }
