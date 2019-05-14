@@ -123,12 +123,12 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
     try {
       switch (call.method) {
         case "setBool":
-          status = preferences.edit().putBoolean(key, (boolean) call.argument("value")).commit();
+          preferences.edit().putBoolean(key, (boolean) call.argument("value")).apply();
           break;
         case "setDouble":
           double doubleValue = ((Number) call.argument("value")).doubleValue();
           String doubleValueStr = Double.toString(doubleValue);
-          status = preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr).commit();
+          preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr).apply();
           break;
         case "setInt":
           Number number = call.argument("value");
@@ -139,7 +139,7 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           } else {
             editor.putLong(key, number.longValue());
           }
-          status = editor.commit();
+          editor.apply();
           break;
         case "setString":
           String value = (String) call.argument("value");
@@ -150,11 +150,11 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
                 null);
             return;
           }
-          status = preferences.edit().putString(key, value).commit();
+          preferences.edit().putString(key, value).apply();
           break;
         case "setStringList":
           List<String> list = call.argument("value");
-          status = preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list)).commit();
+          preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list)).apply();
           break;
         case "commit":
           // We've been committing the whole time.
@@ -164,7 +164,7 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           result.success(getAllPrefs());
           return;
         case "remove":
-          status = preferences.edit().remove(key).commit();
+          preferences.edit().remove(key).apply();
           break;
         case "clear":
           Set<String> keySet = getAllPrefs().keySet();
@@ -172,13 +172,13 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           for (String keyToDelete : keySet) {
             clearEditor.remove(keyToDelete);
           }
-          status = clearEditor.commit();
+          clearEditor.apply();
           break;
         default:
           result.notImplemented();
           break;
       }
-      result.success(status);
+      result.success(true);
     } catch (IOException e) {
       result.error("IOException encountered", call.method, e);
     }
