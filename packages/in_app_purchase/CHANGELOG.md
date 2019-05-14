@@ -27,7 +27,7 @@
 
 ## 0.1.0
 
-Beta relase.
+Beta release.
 
 * Ability to list products, load previous purchases, and make purchases.
 * Simplified Dart API that's been unified for ease of use.
