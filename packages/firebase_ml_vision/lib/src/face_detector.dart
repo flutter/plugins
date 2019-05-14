@@ -24,6 +24,24 @@ enum FaceLandmarkType {
   rightMouth,
 }
 
+/// Available face contour types detected by [FaceDetector].
+enum FaceContourType {
+  allPoints,
+  face,
+  leftEye,
+  leftEyebrowBottom,
+  leftEyebrowTop,
+  lowerLipBottom,
+  lowerLipTop,
+  noseBottom,
+  noseBridge,
+  rightEye,
+  rightEyebrowBottom,
+  rightEyebrowTop,
+  upperLipBottom,
+  upperLipTop
+}
+
 /// Detector for detecting faces in an input image.
 ///
 /// A face detector is created via
@@ -54,6 +72,7 @@ class FaceDetector {
         'options': <String, dynamic>{
           'enableClassification': options.enableClassification,
           'enableLandmarks': options.enableLandmarks,
+          'enableContours': options.enableContours,
           'enableTracking': options.enableTracking,
           'minFaceSize': options.minFaceSize,
           'mode': _enumToString(options.mode),
@@ -81,6 +100,7 @@ class FaceDetectorOptions {
   const FaceDetectorOptions({
     this.enableClassification = false,
     this.enableLandmarks = false,
+    this.enableContours = false,
     this.enableTracking = false,
     this.minFaceSize = 0.1,
     this.mode = FaceDetectorMode.fast,
@@ -94,6 +114,9 @@ class FaceDetectorOptions {
 
   /// Whether to detect [FaceLandmark]s.
   final bool enableLandmarks;
+
+  /// Whether to detect [FaceContour]s.
+  final bool enableContours;
 
   /// Whether to enable face tracking.
   ///
@@ -137,9 +160,23 @@ class Face {
                   type,
                   Offset(pos[0], pos[1]),
                 );
+        })),
+        _contours = Map<FaceContourType, FaceContour>.fromIterables(
+            FaceContourType.values,
+            FaceContourType.values.map((FaceContourType type) {
+          final List<dynamic> arr = data['contours'][_enumToString(type)];
+          return (arr == null)
+              ? null
+              : FaceContour._(
+                  type,
+                  arr
+                      .map<Offset>((dynamic pos) => Offset(pos.first, pos.last))
+                      .toList(),
+                );
         }));
 
   final Map<FaceLandmarkType, FaceLandmark> _landmarks;
+  final Map<FaceContourType, FaceContour> _contours;
 
   /// The axis-aligned bounding rectangle of the detected face.
   ///
@@ -195,6 +232,11 @@ class Face {
   ///
   /// Null if landmark was not detected.
   FaceLandmark getLandmark(FaceLandmarkType landmark) => _landmarks[landmark];
+
+  /// Gets the contour based on the provided [FaceContourType].
+  ///
+  /// Null if contour was not detected.
+  FaceContour getContour(FaceContourType contour) => _contours[contour];
 }
 
 /// Represent a face landmark.
@@ -210,4 +252,19 @@ class FaceLandmark {
   ///
   /// The point (0, 0) is defined as the upper-left corner of the image.
   final Offset position;
+}
+
+/// Represent a face contour.
+///
+/// Contours of facial features.
+class FaceContour {
+  FaceContour._(this.type, this.positionsList);
+
+  /// The [FaceContourType] of this contour.
+  final FaceContourType type;
+
+  /// Gets a 2D point [List] for contour positions.
+  ///
+  /// The point (0, 0) is defined as the upper-left corner of the image.
+  final List<Offset> positionsList;
 }

@@ -63,6 +63,36 @@ static FIRVisionFaceDetector *faceDetector;
                 @"rightMouth" : [FaceDetector getLandmarkPosition:face
                                                          landmark:FIRFaceLandmarkTypeMouthRight],
               },
+              @"contours" : @{
+                @"allPoints" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeAll],
+                @"face" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeFace],
+                @"leftEye" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeLeftEye],
+                @"leftEyebrowBottom" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeLeftEyebrowBottom],
+                @"leftEyebrowTop" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeLeftEyebrowTop],
+                @"lowerLipBottom" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeLowerLipBottom],
+                @"lowerLipTop" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeLowerLipTop],
+                @"noseBottom" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeNoseBottom],
+                @"noseBridge" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeNoseBridge],
+                @"rightEye" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeRightEye],
+                @"rightEyebrowBottom" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeRightEyebrowBottom],
+                @"rightEyebrowTop" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeRightEyebrowTop],
+                @"upperLipBottom" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeUpperLipBottom],
+                @"upperLipTop" : [FaceDetector getContourPoints:face
+                                                          contour:FIRFaceContourTypeUpperLipTop],
+              }
             };
 
             [faceData addObject:data];
@@ -76,6 +106,21 @@ static FIRVisionFaceDetector *faceDetector;
   FIRVisionFaceLandmark *landmark = [face landmarkOfType:landmarkType];
   if (landmark) {
     return @[ landmark.position.x, landmark.position.y ];
+  }
+
+  return [NSNull null];
+}
+
++ (id)getContourPoints:(FIRVisionFace *)face contour:(FIRFaceContourType)contourType {
+  FIRVisionFaceContour *contour = [face contourOfType:contourType];
+  if (contour) {
+    NSArray<FIRVisionPoint *> *contourPoints = contour.points;
+    NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity: [contourPoints count]];
+    for (int i = 0; i < [contourPoints count]; i++) {
+      FIRVisionPoint *point = [contourPoints objectAtIndex:i];
+      [result insertObject:@[ point.x, point.y ] atIndex:i];
+    }
+    return [result copy];
   }
 
   return [NSNull null];
@@ -96,6 +141,13 @@ static FIRVisionFaceDetector *faceDetector;
     options.landmarkMode = FIRVisionFaceDetectorLandmarkModeAll;
   } else {
     options.landmarkMode = FIRVisionFaceDetectorLandmarkModeNone;
+  }
+
+  NSNumber *enableContours = optionsData[@"enableContours"];
+  if (enableContours.boolValue) {
+    options.contourMode = FIRVisionFaceDetectorContourModeAll;
+  } else {
+    options.contourMode = FIRVisionFaceDetectorContourModeNone;
   }
 
   NSNumber *enableTracking = optionsData[@"enableTracking"];
