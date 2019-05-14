@@ -1,3 +1,7 @@
+## 0.4.0+1
+
+* Send user agent to Firebase.
+
 ## 0.4.0
 
 * Update Android dependencies to latest.
