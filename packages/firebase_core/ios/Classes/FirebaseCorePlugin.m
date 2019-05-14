@@ -6,6 +6,9 @@
 
 #import <Firebase/Firebase.h>
 
+#define LIBRARY_NAME @"flutter-firebase_core"
+#define LIBRARY_VERSION @"0.4.0+1"
+
 static NSDictionary *getDictionaryFromFIROptions(FIROptions *options) {
   if (!options) {
     return nil;
@@ -39,6 +42,11 @@ static NSDictionary *getDictionaryFromFIRApp(FIRApp *app) {
                                   binaryMessenger:[registrar messenger]];
   FLTFirebaseCorePlugin *instance = [[FLTFirebaseCorePlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {

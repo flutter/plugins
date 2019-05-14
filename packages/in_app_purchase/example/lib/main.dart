@@ -101,6 +101,9 @@ class _MyAppState extends State<MyApp> {
 
     final QueryPurchaseDetailsResponse purchaseResponse =
         await _connection.queryPastPurchases();
+    if (purchaseResponse.error != null) {
+      // handle query past purchase error..
+    }
     final List<PurchaseDetails> verifiedPurchases = [];
     for (PurchaseDetails purchase in purchaseResponse.pastPurchases) {
       if (await _verifyPurchase(purchase)) {
