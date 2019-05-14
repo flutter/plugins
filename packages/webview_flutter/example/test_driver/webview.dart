@@ -91,6 +91,40 @@ void main() {
         .evaluateJavascript('document.documentElement.innerText');
     expect(content.contains('flutter_test_header'), isTrue);
   });
+
+  test('JavaScriptChannel', () async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    final List<String> messagesReceived = <String>[];
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          javascriptMode: JavascriptMode.unrestricted,
+          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+          // ignore: prefer_collection_literals
+          javascriptChannels: <JavascriptChannel>[
+            JavascriptChannel(
+              name: 'Echo',
+              onMessageReceived: (JavascriptMessage message) {
+                messagesReceived.add(message.message);
+              },
+            ),
+          ].toSet(),
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+
+    expect(messagesReceived, isEmpty);
+    await controller.evaluateJavascript('Echo.postMessage("hello");');
+    expect(messagesReceived, equals(<String>['hello']));
+  });
 }
 
 Future<void> pumpWidget(Widget widget) {
