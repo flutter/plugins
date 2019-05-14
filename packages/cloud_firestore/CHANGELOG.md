@@ -1,6 +1,6 @@
 ## 0.11.0+2
 
-* Fixes startAtDocument, startAfterDocument, endAtDocument & endBeforeDocument.
+* Fixes `startAtDocument`, `startAfterDocument`, `endAtDocument` and `endBeforeDocument`.
 
 ## 0.11.0+1
 
