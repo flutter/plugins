@@ -164,9 +164,9 @@ class Face {
         _contours = Map<FaceContourType, FaceContour>.fromIterables(
             FaceContourType.values,
             FaceContourType.values.map((FaceContourType type) {
-          /// added {} to pass the tests
-          final List<dynamic> arr = (data['contours'] ??
-              <Map<String, dynamic>>{})[_enumToString(type)];
+          /// added empty map to pass the tests
+          final List<dynamic> arr =
+              (data['contours'] ?? Map<String, dynamic>())[_enumToString(type)];
           return (arr == null)
               ? null
               : FaceContour._(
