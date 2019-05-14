@@ -68,26 +68,20 @@ void main() {
 
         final int value = await testTrace.getMetric('metric2');
         expect(value, 37);
-
-        testTrace.stop();
       });
 
       test('putAttribute', () async {
         final Trace testTrace = performance.newTrace('test-trace');
-        testTrace.start();
 
         testTrace.putAttribute('apple', 'sauce');
         testTrace.putAttribute('banana', 'pie');
 
         final Map<String, String> attributes = await testTrace.getAttributes();
         expect(attributes, <String, String>{'apple': 'sauce', 'banana': 'pie'});
-
-        testTrace.stop();
       });
 
       test('removeAttribute', () async {
         final Trace testTrace = performance.newTrace('test-trace');
-        testTrace.start();
 
         testTrace.putAttribute('sponge', 'bob');
         testTrace.putAttribute('patrick', 'star');
@@ -95,20 +89,15 @@ void main() {
 
         final Map<String, String> attributes = await testTrace.getAttributes();
         expect(attributes, <String, String>{'patrick': 'star'});
-
-        testTrace.stop();
       });
 
       test('getAttributes', () async {
         final Trace testTrace = performance.newTrace('test-trace');
-        testTrace.start();
 
         testTrace.putAttribute('yugi', 'oh');
 
         final Map<String, String> attributes = await testTrace.getAttributes();
         expect(attributes, <String, String>{'yugi': 'oh'});
-
-        testTrace.stop();
 
         final Map<String, String> attributes2 = await testTrace.getAttributes();
         expect(attributes2, <String, String>{'yugi': 'oh'});
@@ -133,15 +122,12 @@ void main() {
           'https://www.google.com/',
           HttpMethod.Delete,
         );
-        testMetric.start();
 
         testMetric.putAttribute('apple', 'sauce');
         testMetric.putAttribute('banana', 'pie');
 
         final Map<String, String> attributes = await testMetric.getAttributes();
         expect(attributes, <String, String>{'apple': 'sauce', 'banana': 'pie'});
-
-        testMetric.stop();
       });
 
       test('removeAttribute', () async {
@@ -149,7 +135,6 @@ void main() {
           'https://www.insidejob.org/',
           HttpMethod.Connect,
         );
-        testMetric.start();
 
         testMetric.putAttribute('sponge', 'bob');
         testMetric.putAttribute('patrick', 'star');
@@ -157,8 +142,6 @@ void main() {
 
         final Map<String, String> attributes = await testMetric.getAttributes();
         expect(attributes, <String, String>{'patrick': 'star'});
-
-        testMetric.stop();
       });
 
       test('getAttributes', () async {
@@ -166,14 +149,11 @@ void main() {
           'https://www.flutter.dev/',
           HttpMethod.Trace,
         );
-        testMetric.start();
 
         testMetric.putAttribute('yugi', 'oh');
 
         final Map<String, String> attributes = await testMetric.getAttributes();
         expect(attributes, <String, String>{'yugi': 'oh'});
-
-        testMetric.stop();
 
         final Map<String, String> attributes2 =
             await testMetric.getAttributes();

@@ -35,8 +35,7 @@ abstract class PerformanceAttributes {
   /// If the trace has been stopped, this method returns without adding the
   /// attribute.
   Future<void> putAttribute(String name, String value) {
-    if (!_hasStarted ||
-        _hasStopped ||
+    if (_hasStopped ||
         name.length > maxAttributeKeyLength ||
         value.length > maxAttributeValueLength ||
         _attributes.length == maxCustomAttributes) {
@@ -56,7 +55,7 @@ abstract class PerformanceAttributes {
 
   /// Removes an already added attribute with [name].
   Future<void> removeAttribute(String name) {
-    if (!_hasStarted || _hasStopped) return Future<void>.value(null);
+    if (_hasStopped) return Future<void>.value(null);
 
     _attributes.remove(name);
     return FirebasePerformance.channel.invokeMethod<void>(

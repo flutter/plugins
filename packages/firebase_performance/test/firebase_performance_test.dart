@@ -486,13 +486,6 @@ void main() {
         expect(result, <dynamic, dynamic>{'a1': 'hello', 'a2': 'friend'});
       });
 
-      test('invokeMethod not called if trace hasn\'t started', () {
-        attributeTrace.putAttribute('tonto', 'orale');
-        attributeTrace.removeAttribute('ewfo');
-
-        expect(attributeLog, isEmpty);
-      });
-
       test('invokeMethod not called if trace has stopped', () {
         attributeTrace.start();
         attributeTrace.stop();
