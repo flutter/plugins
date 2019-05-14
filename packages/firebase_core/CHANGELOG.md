@@ -1,3 +1,8 @@
+## 0.4.0+2
+
+* Update user agent name. Set to `flutter-fire-core` for consistency with other
+  libraries.
+
 ## 0.4.0+1
 
 * Send user agent to Firebase.
