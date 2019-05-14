@@ -164,13 +164,15 @@ class Face {
         _contours = Map<FaceContourType, FaceContour>.fromIterables(
             FaceContourType.values,
             FaceContourType.values.map((FaceContourType type) {
-          final List<dynamic> arr = data['contours'][_enumToString(type)];
+          /// added {} to pass the tests
+          final List<dynamic> arr = (data['contours'] ??
+              <Map<String, dynamic>>{})[_enumToString(type)];
           return (arr == null)
               ? null
               : FaceContour._(
                   type,
                   arr
-                      .map<Offset>((dynamic pos) => Offset(pos.first, pos.last))
+                      .map<Offset>((dynamic pos) => Offset(pos[0], pos[1]))
                       .toList(),
                 );
         }));
