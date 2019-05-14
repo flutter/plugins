@@ -119,6 +119,25 @@ public class InAppPurchasePluginTest {
   }
 
   @Test
+  public void startConnection_multipleCalls() {
+    Map<String, Integer> arguments = new HashMap<>();
+    arguments.put("handle", 1);
+    MethodCall call = new MethodCall(START_CONNECTION, arguments);
+    ArgumentCaptor<BillingClientStateListener> captor =
+        ArgumentCaptor.forClass(BillingClientStateListener.class);
+    doNothing().when(mockBillingClient).startConnection(captor.capture());
+
+    plugin.onMethodCall(call, result);
+    verify(result, never()).success(any());
+    captor.getValue().onBillingSetupFinished(100);
+    captor.getValue().onBillingSetupFinished(200);
+    captor.getValue().onBillingSetupFinished(300);
+
+    verify(result, times(1)).success(100);
+    verify(result, times(1)).success(any());
+  }
+
+  @Test
   public void endConnection() {
     // Set up a connected BillingClient instance
     final int disconnectCallbackHandle = 22;
