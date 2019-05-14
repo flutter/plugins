@@ -1,3 +1,7 @@
+## 0.11.1
+
+* Support for `updatePhoneNumberCredential`.
+
 ## 0.11.0
 
 * **Breaking change**: `linkWithCredential` is now a function of `FirebaseUser`instead of
