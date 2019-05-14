@@ -26,11 +26,15 @@ abstract class PerformanceAttributes {
   ///
   /// Updates the value of the attribute if the attribute already exists.
   /// The maximum number of attributes that can be added are
-  /// [maxCustomAttributes].
+  /// [maxCustomAttributes]. An attempt to add more than [maxCustomAttributes]
+  /// to this object, will return without adding the attribute.
   ///
   /// Name of the attribute has max length of [maxAttributeKeyLength]
   /// characters. Value of the attribute has max length of
-  /// [maxAttributeValueLength] characters.
+  /// [maxAttributeValueLength] characters. If the name has a length greater
+  /// than [maxAttributeKeyLength] or the value has a length greater than
+  /// [maxAttributeValueLength], this method will return without adding
+  /// anything.
   ///
   /// If the trace has been stopped, this method returns without adding the
   /// attribute.

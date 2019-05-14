@@ -436,9 +436,6 @@ void main() {
       });
 
       test('putAttribute', () {
-        attributeTrace.start();
-        attributeLog.clear();
-
         attributeTrace.putAttribute('attr1', 'apple');
 
         expect(attributeLog, <Matcher>[
@@ -454,9 +451,6 @@ void main() {
       });
 
       test('removeAttribute', () {
-        attributeTrace.start();
-        attributeLog.clear();
-
         attributeTrace.removeAttribute('attr14');
 
         expect(attributeLog, <Matcher>[
@@ -471,9 +465,6 @@ void main() {
       });
 
       test('getAttributes', () async {
-        attributeTrace.start();
-        attributeLog.clear();
-
         final Map<String, String> result = await attributeTrace.getAttributes();
 
         expect(attributeLog, <Matcher>[
