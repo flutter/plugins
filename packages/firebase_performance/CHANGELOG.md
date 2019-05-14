@@ -1,3 +1,21 @@
+## 0.2.0
+
+* Update Android dependencies to latest.
+
+## 0.1.1
+
+* Deprecate `Trace.incrementCounter` and add `Trace.incrementMetric`.
+* Additional integration testing.
+
+## 0.1.0+4
+
+* Remove deprecated methods for iOS.
+* Fix bug where `Trace` attributes were not set correctly.
+
+## 0.1.0+3
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
 ## 0.1.0+2
 
 * Fixed bug where `Traces` and `HttpMetrics` weren't being passed to Firebase on iOS.

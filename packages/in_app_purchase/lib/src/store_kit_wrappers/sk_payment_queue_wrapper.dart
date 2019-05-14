@@ -3,218 +3,197 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/services.dart';
+import 'sk_payment_transaction_wrappers.dart';
+import 'sk_product_wrapper.dart';
 
 part 'sk_payment_queue_wrapper.g.dart';
 
-/// A wrapper around [`SKPaymentQueue`](https://developer.apple.com/documentation/storekit/skpaymentqueue?language=objc).
+/// A wrapper around
+/// [`SKPaymentQueue`](https://developer.apple.com/documentation/storekit/skpaymentqueue?language=objc).
 ///
-/// The payment queue contains payment related operations. It communicates with App Store and presents
-/// a user interface for the user to process and authorize the payment.
+/// The payment queue contains payment related operations. It communicates with
+/// the App Store and presents a user interface for the user to process and
+/// authorize payments.
+///
+/// Full information on using `SKPaymentQueue` and processing purchases is
+/// available at the [In-App Purchase Programming
+/// Guide](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Introduction.html#//apple_ref/doc/uid/TP40008267).
 class SKPaymentQueueWrapper {
+  SKTransactionObserverWrapper _observer;
+
+  /// Returns the default payment queue.
+  ///
+  /// We do not support instantiating a custom payment queue, hence the
+  /// singleton. However, you can override the observer.
+  factory SKPaymentQueueWrapper() {
+    return _singleton;
+  }
+
+  static final SKPaymentQueueWrapper _singleton = new SKPaymentQueueWrapper._();
+
+  SKPaymentQueueWrapper._() {
+    callbackChannel.setMethodCallHandler(_handleObserverCallbacks);
+  }
+
   /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
   static Future<bool> canMakePayments() async =>
       await channel.invokeMethod('-[SKPaymentQueue canMakePayments:]');
+
+  /// Sets an observer to listen to all incoming transaction events.
+  ///
+  /// This should be called and set as soon as the app launches in order to
+  /// avoid missing any purchase updates from the App Store. See the
+  /// documentation on StoreKit's [`-[SKPaymentQueue
+  /// addTransactionObserver:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506042-addtransactionobserver?language=objc).
+  void setTransactionObserver(SKTransactionObserverWrapper observer) {
+    _observer = observer;
+  }
+
+  /// Posts a payment to the queue.
+  ///
+  /// This sends a purchase request to the App Store for confirmation.
+  /// Transaction updates will be delivered to the set
+  /// [SkTransactionObserverWrapper].
+  ///
+  /// A couple preconditions need to be met before calling this method.
+  ///
+  ///   - At least one [SKTransactionObserverWrapper] should have been added to
+  ///     the payment queue using [addTransactionObserver].
+  ///   - The [payment.productIdentifier] needs to have been previously fetched
+  ///     using [SKRequestMaker.startProductRequest] so that a valid `SKProduct`
+  ///     has been cached in the platform side already. Because of this
+  ///     [payment.productIdentifier] cannot be hardcoded.
+  ///
+  /// This method calls StoreKit's [`-[SKPaymentQueue addPayment:]`]
+  /// (https://developer.apple.com/documentation/storekit/skpaymentqueue/1506036-addpayment?preferredLanguage=occ).
+  ///
+  /// Also see [sandbox
+  /// testing](https://developer.apple.com/apple-pay/sandbox-testing/).
+  Future<void> addPayment(SKPaymentWrapper payment) async {
+    assert(_observer != null,
+        '[in_app_purchase]: Trying to add a payment without an observer. One must be set using `SkPaymentQueueWrapper.setTransactionObserver` before the app launches.');
+    Map requestMap = payment.toMap();
+    await channel.invokeMethod(
+      '-[InAppPurchasePlugin addPayment:result:]',
+      requestMap,
+    );
+  }
+
+  /// Finishes a transaction and removes it from the queue.
+  ///
+  /// This method should be called after the given [transaction] has been
+  /// succesfully processed and its content has been delivered to the user.
+  /// Transaction status updates are propagated to [SkTransactionObserver].
+  ///
+  /// This will throw a Platform exception if [transaction.transactionState] is
+  /// [SKPaymentTransactionStateWrapper.purchasing].
+  ///
+  /// This method calls StoreKit's [`-[SKPaymentQueue
+  /// finishTransaction:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506003-finishtransaction?language=objc).
+  Future<void> finishTransaction(
+      SKPaymentTransactionWrapper transaction) async {
+    await channel.invokeMethod(
+        '-[InAppPurchasePlugin finishTransaction:result:]',
+        transaction.transactionIdentifier);
+  }
+
+  /// Restore previously purchased transactions.
+  ///
+  /// Use this to load previously purchased content on a new device.
+  ///
+  /// This call triggers purchase updates on the set
+  /// [SKTransactionObserverWrapper] for previously made transactions. This will
+  /// invoke [SKTransactionObserverWrapper.restoreCompletedTransactions],
+  /// [SKTransactionObserverWrapper.paymentQueueRestoreCompletedTransactionsFinished],
+  /// and [SKTransactionObserverWrapper.updatedTransaction]. These restored
+  /// transactions need to be marked complete with [finishTransaction] once the
+  /// content is delivered, like any other transaction.
+  ///
+  /// The `applicationUserName` should match the original
+  /// [SKPaymentWrapper.applicationUsername] used in [addPayment].
+  ///
+  /// This method either triggers [`-[SKPayment
+  /// restoreCompletedTransactions]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506123-restorecompletedtransactions?language=objc)
+  /// or [`-[SKPayment restoreCompletedTransactionsWithApplicationUsername:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1505992-restorecompletedtransactionswith?language=objc)
+  /// depending on whether the `applicationUserName` is set.
+  Future<void> restoreTransactions({String applicationUserName}) async {
+    await channel.invokeMethod(
+        '-[InAppPurchasePlugin restoreTransactions:result:]',
+        applicationUserName);
+  }
+
+  // Triage a method channel call from the platform and triggers the correct observer method.
+  Future<dynamic> _handleObserverCallbacks(MethodCall call) {
+    assert(_observer != null,
+        '[in_app_purchase]: (Fatal)The observer has not been set but we received a purchase transaction notification. Please ensure the observer has been set using `setTransactionObserver`. Make sure the observer is added right at the App Launch.');
+    switch (call.method) {
+      case 'updatedTransactions':
+        {
+          final List<SKPaymentTransactionWrapper> transactions =
+              _getTransactionList(call.arguments);
+          return Future<void>(() {
+            _observer.updatedTransactions(transactions: transactions);
+          });
+        }
+      case 'removedTransactions':
+        {
+          final List<SKPaymentTransactionWrapper> transactions =
+              _getTransactionList(call.arguments);
+          return Future<void>(() {
+            _observer.removedTransactions(transactions: transactions);
+          });
+        }
+      case 'restoreCompletedTransactionsFailed':
+        {
+          SKError error = SKError.fromJson(call.arguments);
+          return Future<void>(() {
+            _observer.restoreCompletedTransactionsFailed(error: error);
+          });
+        }
+      case 'paymentQueueRestoreCompletedTransactionsFinished':
+        {
+          return Future<void>(() {
+            _observer.paymentQueueRestoreCompletedTransactionsFinished();
+          });
+        }
+      case 'shouldAddStorePayment':
+        {
+          SKPaymentWrapper payment =
+              SKPaymentWrapper.fromJson(call.arguments['payment']);
+          SKProductWrapper product =
+              SKProductWrapper.fromJson(call.arguments['product']);
+          return Future<void>(() {
+            if (_observer.shouldAddStorePayment(
+                    payment: payment, product: product) ==
+                true) {
+              SKPaymentQueueWrapper().addPayment(payment);
+            }
+          });
+        }
+      default:
+        break;
+    }
+    return null;
+  }
+
+  // Get transaction wrapper object list from arguments.
+  List<SKPaymentTransactionWrapper> _getTransactionList(dynamic arguments) {
+    final List<SKPaymentTransactionWrapper> transactions = arguments
+        .map<SKPaymentTransactionWrapper>(
+            (dynamic map) => SKPaymentTransactionWrapper.fromJson(map))
+        .toList();
+    return transactions;
+  }
 }
 
 /// Dart wrapper around StoreKit's
-/// [SKPaymentTransactionState](https://developer.apple.com/documentation/storekit/skpaymenttransactionstate?language=objc).
-///
-/// Presents the state of a transaction. Used for handling a transaction based on different state.
-enum SKPaymentTransactionStateWrapper {
-  /// Indicates the transaction is being processed in App Store.
-  @JsonValue(0)
-  purchasing,
-
-  /// The payment is processed. You should provide the user the content they purchased.
-  @JsonValue(1)
-  purchased,
-
-  /// The transaction failed. Check the [SKPaymentTransactionWrapper.error] property from [SKPaymentTransactionWrapper] for details.
-  @JsonValue(2)
-  failed,
-
-  /// This transaction restores the content previously purchased by the user. The previous transaction information can be
-  /// obtained in [SKPaymentTransactionWrapper.originalTransaction] from [SKPaymentTransactionWrapper].
-  @JsonValue(3)
-  restored,
-
-  /// The transaction is in the queue but pending external action. Wait for another callback to get the final state.
-  @JsonValue(4)
-  deferred,
-}
-
-/// Dart wrapper around StoreKit's [SKPaymentTransaction](https://developer.apple.com/documentation/storekit/skpaymenttransaction?language=objc).
-///
-/// Created when a payment is added to the [SKPaymentQueueWrapper]. Transactions are delivered to your app when a payment is finished processing.
-/// Completed transactions provide a receipt and a transaction identifier that the app can use to save a permanent record of the processed payment.
-@JsonSerializable()
-class SKPaymentTransactionWrapper {
-  SKPaymentTransactionWrapper({
-    @required this.payment,
-    @required this.transactionState,
-    @required this.originalTransaction,
-    @required this.transactionTimeStamp,
-    @required this.transactionIdentifier,
-    @required this.downloads,
-    @required this.error,
-  });
-
-  /// Constructs an instance of this from a key value map of data.
-  ///
-  /// The map needs to have named string keys with values matching the names and
-  /// types of all of the members on this class.
-  /// The `map` parameter must not be null.
-  @visibleForTesting
-  factory SKPaymentTransactionWrapper.fromJson(Map map) {
-    if (map == null) {
-      return null;
-    }
-    return _$SKPaymentTransactionWrapperFromJson(map);
-  }
-
-  /// Current transaction state.
-  final SKPaymentTransactionStateWrapper transactionState;
-
-  /// The payment that is created and added to the payment queue which generated this transaction.
-  final SKPaymentWrapper payment;
-
-  /// The original Transaction, only available if the [transactionState] is [SKPaymentTransactionStateWrapper.restored].
-  ///
-  /// When the [transactionState] is [SKPaymentTransactionStateWrapper.restored], the current transaction object holds a new
-  /// [transactionIdentifier].
-  final SKPaymentTransactionWrapper originalTransaction;
-
-  /// The timestamp of the transaction.
-  ///
-  /// Milliseconds since epoch.
-  /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased] or [SKPaymentTransactionStateWrapper.restored].
-  final double transactionTimeStamp;
-
-  /// The unique string identifer of the transaction.
-  ///
-  /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased] or [SKPaymentTransactionStateWrapper.restored].
-  /// You may wish to record this string as part of an audit trail for App Store purchases.
-  /// The value of this string corresponds to the same property in the receipt.
-  final String transactionIdentifier;
-
-  /// An array of the [SKDownloadWrapper] object of this transaction.
-  ///
-  /// Only available if the transaction contains downloadable contents.
-  ///
-  /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased].
-  /// Must be used to download the transaction's content before the transaction is finished.
-  final List<SKDownloadWrapper> downloads;
-
-  /// The error object, only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
-  final SKError error;
-}
-
-/// Dart wrapper around StoreKit's [SKDownloadState](https://developer.apple.com/documentation/storekit/skdownloadstate?language=objc).
-///
-/// The state a download operation that can be in.
-enum SKDownloadState {
-  /// Indicates that downloadable content is waiting to start.
-  @JsonValue(0)
-  waiting,
-
-  /// The downloadable content is currently being downloaded
-  @JsonValue(1)
-  active,
-
-  /// The app paused the download.
-  @JsonValue(2)
-  pause,
-
-  /// The content is successfully downloaded.
-  @JsonValue(3)
-  finished,
-
-  /// Indicates that some error occurred while the content was being downloaded.
-  @JsonValue(4)
-  failed,
-
-  /// The app canceled the download.
-  @JsonValue(5)
-  cancelled,
-}
-
-/// Dart wrapper around StoreKit's [SKDownload](https://developer.apple.com/documentation/storekit/skdownload?language=objc).
-///
-/// When a product is created in the App Store Connect, one or more download contents can be associated with it.
-/// When the product is purchased, a List of [SKDownloadWrapper] object will be present in an [SKPaymentTransactionWrapper] object.
-/// To download the content, add the [SKDownloadWrapper] objects to the payment queue and wait for the content to be downloaded.
-/// You can also read the [contentURL] to get the URL of the downloaded content after the download completes.
-/// Note that all downloaded files must be processed before the completion of the [SKPaymentTransactionWrapper].
-/// After the transaction is complete, any [SKDownloadWrapper] object in the transaction will not be able to be added to the payment queue
-/// and the [contentURL ]of the [SKDownloadWrapper] object will be invalid.
-@JsonSerializable()
-class SKDownloadWrapper {
-  SKDownloadWrapper({
-    @required this.contentIdentifier,
-    @required this.state,
-    @required this.contentLength,
-    @required this.contentURL,
-    @required this.contentVersion,
-    @required this.transactionID,
-    @required this.progress,
-    @required this.timeRemaining,
-    @required this.downloadTimeUnknown,
-    @required this.error,
-  });
-
-  /// Constructs an instance of this from a key value map of data.
-  ///
-  /// The map needs to have named string keys with values matching the names and
-  /// types of all of the members on this class.
-  /// The `map` parameter must not be null.
-  @visibleForTesting
-  factory SKDownloadWrapper.fromJson(Map map) {
-    assert(map != null);
-    return _$SKDownloadWrapperFromJson(map);
-  }
-
-  /// Identifies the downloadable content.
-  ///
-  /// It is specified in the App Store Connect when the downloadable content is created.
-  final String contentIdentifier;
-
-  /// The current download state.
-  ///
-  /// When the state changes, one of the [SKTransactionObserverWrapper] subclasses' observing methods should be triggered.
-  /// The developer should properly handle the downloadable content based on the state.
-  final SKDownloadState state;
-
-  /// Length of the content in bytes.
-  final int contentLength;
-
-  /// The URL string of the content.
-  final String contentURL;
-
-  /// Version of the content formatted as a series of dot-separated integers.
-  final String contentVersion;
-
-  /// The transaction ID of the transaction that is associated with the downloadable content.
-  final String transactionID;
-
-  /// The download progress, between 0.0 to 1.0.
-  final double progress;
-
-  /// The estimated time remaining for the download; if no good estimate is able to be made,
-  /// [downloadTimeUnknown] will be set to true.
-  final double timeRemaining;
-
-  /// true if [timeRemaining] cannot be estimated.
-  final bool downloadTimeUnknown;
-
-  /// The error that prevented the downloading; only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
-  final SKError error;
-}
-
-/// Dart wrapper around StoreKit's [NSError](https://developer.apple.com/documentation/foundation/nserror?language=objc).
-@JsonSerializable()
+/// [NSError](https://developer.apple.com/documentation/foundation/nserror?language=objc).
+@JsonSerializable(nullable: true)
 class SKError {
   SKError(
       {@required this.code, @required this.domain, @required this.userInfo});
@@ -222,34 +201,55 @@ class SKError {
   /// Constructs an instance of this from a key-value map of data.
   ///
   /// The map needs to have named string keys with values matching the names and
-  /// types of all of the members on this class.
-  /// The `map` parameter must not be null.
-  @visibleForTesting
+  /// types of all of the members on this class. The `map` parameter must not be
+  /// null.
   factory SKError.fromJson(Map map) {
     assert(map != null);
     return _$SKErrorFromJson(map);
   }
 
-  /// Error [code](https://developer.apple.com/documentation/foundation/1448136-nserror_codes) defined in the Cocoa Framework.
+  /// Error [code](https://developer.apple.com/documentation/foundation/1448136-nserror_codes)
+  /// as defined in the Cocoa Framework.
   final int code;
 
-  /// Error [domain](https://developer.apple.com/documentation/foundation/nscocoaerrordomain?language=objc) defined in the Cocoa Framework.
+  /// Error
+  /// [domain](https://developer.apple.com/documentation/foundation/nscocoaerrordomain?language=objc)
+  /// as defined in the Cocoa Framework.
   final String domain;
 
-  /// A map that contains more detailed information about the error. Any key of the map must be one of the [NSErrorUserInfoKey](https://developer.apple.com/documentation/foundation/nserroruserinfokey?language=objc).
+  /// A map that contains more detailed information about the error.
+  ///
+  /// Any key of the map must be a valid [NSErrorUserInfoKey](https://developer.apple.com/documentation/foundation/nserroruserinfokey?language=objc).
   final Map<String, dynamic> userInfo;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKError typedOther = other;
+    return typedOther.code == code &&
+        typedOther.domain == domain &&
+        DeepCollectionEquality.unordered()
+            .equals(typedOther.userInfo, userInfo);
+  }
 }
 
-/// Dart wrapper around StoreKit's [SKPayment](https://developer.apple.com/documentation/storekit/skpayment?language=objc).
+/// Dart wrapper around StoreKit's
+/// [SKPayment](https://developer.apple.com/documentation/storekit/skpayment?language=objc).
 ///
-/// Used as the parameter to initiate a payment.
-/// In general, a developer should not need to create the payment object explicitly; instead, use
-/// [SKPaymentQueueWrapper.addPayment] directly with a product identifier to initiate a payment.
-@JsonSerializable()
+/// Used as the parameter to initiate a payment. In general, a developer should
+/// not need to create the payment object explicitly; instead, use
+/// [SKPaymentQueueWrapper.addPayment] directly with a product identifier to
+/// initiate a payment.
+@JsonSerializable(nullable: true)
 class SKPaymentWrapper {
   SKPaymentWrapper(
       {@required this.productIdentifier,
-      @required this.applicationUsername,
+      this.applicationUsername,
       this.requestData,
       this.quantity = 1,
       this.simulatesAskToBuyInSandbox = false});
@@ -257,12 +257,22 @@ class SKPaymentWrapper {
   /// Constructs an instance of this from a key value map of data.
   ///
   /// The map needs to have named string keys with values matching the names and
-  /// types of all of the members on this class.
-  /// The `map` parameter must not be null.
-  @visibleForTesting
+  /// types of all of the members on this class. The `map` parameter must not be
+  /// null.
   factory SKPaymentWrapper.fromJson(Map map) {
     assert(map != null);
     return _$SKPaymentWrapperFromJson(map);
+  }
+
+  /// Creates a Map object describes the payment object.
+  Map<String, dynamic> toMap() {
+    return {
+      'productIdentifier': productIdentifier,
+      'applicationUsername': applicationUsername,
+      'requestData': requestData,
+      'quantity': quantity,
+      'simulatesAskToBuyInSandbox': simulatesAskToBuyInSandbox
+    };
   }
 
   /// The id for the product that the payment is for.
@@ -270,23 +280,53 @@ class SKPaymentWrapper {
 
   /// An opaque id for the user's account.
   ///
-  /// Used to help the store detect irregular activity. See https://developer.apple.com/documentation/storekit/skpayment/1506116-applicationusername?language=objc for more details.
+  /// Used to help the store detect irregular activity. See
+  /// [applicationUsername](https://developer.apple.com/documentation/storekit/skpayment/1506116-applicationusername?language=objc)
+  /// for more details. For example, you can use a one-way hash of the user’s
+  /// account name on your server. Don’t use the Apple ID for your developer
+  /// account, the user’s Apple ID, or the user’s plaintext account name on
+  /// your server.
   final String applicationUsername;
 
   /// Reserved for future use.
   ///
-  /// The value must be null before sending the payment. If the value is not null, the payment will be rejected.
-  /// Converted to String from NSData from ios platform using UTF8Encoding. The default is null.
-  // The iOS Platform provided this property but it is reserved for future use. We also provide this
-  // property to match the iOS platform; in case any future update for this property occurs, we do not need to
-  // add this property later.
+  /// The value must be null before sending the payment. If the value is not
+  /// null, the payment will be rejected.
+  ///
+  // The iOS Platform provided this property but it is reserved for future use.
+  // We also provide this property to match the iOS platform. Converted to
+  // String from NSData from ios platform using UTF8Encoding. The / default is
+  // null.
   final String requestData;
 
-  /// The amount of the product this payment is for. The default is 1. The minimum is 1. The maximum is 10.
+  /// The amount of the product this payment is for.
+  ///
+  /// The default is 1. The minimum is 1. The maximum is 10.
   final int quantity;
 
-  /// Produces an "ask to buy" flow in the sandbox if set to true. Default is false. I doesn't do it.
+  /// Produces an "ask to buy" flow in the sandbox if set to true. Default is
+  /// false.
   ///
-  /// For how to test in App Store sand box, see https://developer.apple.com/in-app-purchase/.
+  /// See https://developer.apple.com/in-app-purchase/ for a guide on Sandbox
+  /// testing.
   final bool simulatesAskToBuyInSandbox;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKPaymentWrapper typedOther = other;
+    return typedOther.productIdentifier == productIdentifier &&
+        typedOther.applicationUsername == applicationUsername &&
+        typedOther.quantity == quantity &&
+        typedOther.simulatesAskToBuyInSandbox == simulatesAskToBuyInSandbox &&
+        typedOther.requestData == requestData;
+  }
+
+  @override
+  String toString() => _$SKPaymentWrapperToJson(this).toString();
 }

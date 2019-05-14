@@ -9,11 +9,15 @@ dependencies:
   cupertino_icons: ^0.1.2
   cloud_functions:
     path: ..
-  firebase_core: 0.3.0
+  firebase_core: ^0.4.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  test: any
+
 
 flutter:
   uses-material-design: true

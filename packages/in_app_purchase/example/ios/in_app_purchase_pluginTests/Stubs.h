@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
+#import "FIAPReceiptManager.h"
 #import "FIAPRequestHandler.h"
 #import "InAppPurchasePlugin.h"
 
@@ -41,16 +42,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithState:(SKPaymentTransactionState)state;
 @end
 
-@interface SKDownloadStub : SKDownload
-- (instancetype)initWithMap:(NSDictionary *)map;
-@end
-
 @interface SKMutablePaymentStub : SKMutablePayment
 - (instancetype)initWithMap:(NSDictionary *)map;
 @end
 
 @interface NSErrorStub : NSError
 - (instancetype)initWithMap:(NSDictionary *)map;
+@end
+
+@interface FIAPReceiptManagerStub : FIAPReceiptManager
+@end
+
+@interface SKReceiptRefreshRequestStub : SKReceiptRefreshRequest
+- (instancetype)initWithFailureError:(NSError *)error;
 @end
 
 NS_ASSUME_NONNULL_END

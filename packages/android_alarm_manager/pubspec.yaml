@@ -1,16 +1,13 @@
 name: android_alarm_manager
 description: Flutter plugin for accessing the Android AlarmManager service, and
   running Dart code in the background when alarms fire.
-version: 0.4.1+2
+version: 0.4.1+6
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/android_alarm_manager
 
 dependencies:
   flutter:
     sdk: flutter
-
-dev_dependencies:
-  firebase_auth: "^0.8.0+1"
 
 flutter:
   plugin:
@@ -20,4 +17,4 @@ flutter:
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
-  flutter: ">=0.1.4 <2.0.0"
+  flutter: ">=1.2.0 <2.0.0"

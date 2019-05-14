@@ -8,16 +8,16 @@ import static com.google.android.exoplayer2.Player.REPEAT_MODE_ALL;
 import static com.google.android.exoplayer2.Player.REPEAT_MODE_OFF;
 
 import android.content.Context;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
+import android.util.LongSparseArray;
 import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.Player.DefaultEventListener;
+import com.google.android.exoplayer2.Player.EventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -52,8 +52,6 @@ import java.util.Map;
 
 public class VideoPlayerPlugin implements MethodCallHandler {
 
-  private static final String TAG = "VideoPlayerPlugin";
-
   private static class VideoPlayer {
 
     private SimpleExoPlayer exoPlayer;
@@ -83,7 +81,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       Uri uri = Uri.parse(dataSource);
 
       DataSource.Factory dataSourceFactory;
-      if (uri.getScheme().equals("asset") || uri.getScheme().equals("file")) {
+      if (isFileOrAsset(uri)) {
         dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
       } else {
         dataSourceFactory =
@@ -99,6 +97,14 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       exoPlayer.prepare(mediaSource);
 
       setupVideoPlayer(eventChannel, textureEntry, result);
+    }
+
+    private static boolean isFileOrAsset(Uri uri) {
+      if (uri == null || uri.getScheme() == null) {
+        return false;
+      }
+      String scheme = uri.getScheme();
+      return scheme.equals("file") || scheme.equals("asset");
     }
 
     private MediaSource buildMediaSource(
@@ -151,27 +157,26 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       setAudioAttributes(exoPlayer);
 
       exoPlayer.addListener(
-          new DefaultEventListener() {
+          new EventListener() {
 
             @Override
             public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
-              super.onPlayerStateChanged(playWhenReady, playbackState);
               if (playbackState == Player.STATE_BUFFERING) {
+                sendBufferingUpdate();
+              } else if (playbackState == Player.STATE_READY) {
+                if (!isInitialized) {
+                  isInitialized = true;
+                  sendInitialized();
+                }
+              } else if (playbackState == Player.STATE_ENDED) {
                 Map<String, Object> event = new HashMap<>();
-                event.put("event", "bufferingUpdate");
-                List<Integer> range = Arrays.asList(0, exoPlayer.getBufferedPercentage());
-                // iOS supports a list of buffered ranges, so here is a list with a single range.
-                event.put("values", Collections.singletonList(range));
+                event.put("event", "completed");
                 eventSink.success(event);
-              } else if (playbackState == Player.STATE_READY && !isInitialized) {
-                isInitialized = true;
-                sendInitialized();
               }
             }
 
             @Override
             public void onPlayerError(final ExoPlaybackException error) {
-              super.onPlayerError(error);
               if (eventSink != null) {
                 eventSink.error("VideoError", "Video player had error " + error, null);
               }
@@ -183,13 +188,22 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       result.success(reply);
     }
 
+    private void sendBufferingUpdate() {
+      Map<String, Object> event = new HashMap<>();
+      event.put("event", "bufferingUpdate");
+      List<? extends Number> range = Arrays.asList(0, exoPlayer.getBufferedPosition());
+      // iOS supports a list of buffered ranges, so here is a list with a single range.
+      event.put("values", Collections.singletonList(range));
+      eventSink.success(event);
+    }
+
     @SuppressWarnings("deprecation")
     private static void setAudioAttributes(SimpleExoPlayer exoPlayer) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         exoPlayer.setAudioAttributes(
             new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build());
       } else {
-        exoPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        exoPlayer.setAudioStreamType(C.STREAM_TYPE_MUSIC);
       }
     }
 
@@ -218,6 +232,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       return exoPlayer.getCurrentPosition();
     }
 
+    @SuppressWarnings("SuspiciousNameCombination")
     private void sendInitialized() {
       if (isInitialized) {
         Map<String, Object> event = new HashMap<>();
@@ -273,22 +288,26 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
   private VideoPlayerPlugin(Registrar registrar) {
     this.registrar = registrar;
-    this.videoPlayers = new HashMap<>();
+    this.videoPlayers = new LongSparseArray<>();
   }
 
-  private final Map<Long, VideoPlayer> videoPlayers;
+  private final LongSparseArray<VideoPlayer> videoPlayers;
 
   private final Registrar registrar;
 
-  void onDestroy() {
+  private void disposeAllPlayers() {
+    for (int i = 0; i < videoPlayers.size(); i++) {
+      videoPlayers.valueAt(i).dispose();
+    }
+    videoPlayers.clear();
+  }
+
+  private void onDestroy() {
     // The whole FlutterView is being destroyed. Here we release resources acquired for all instances
     // of VideoPlayer. Once https://github.com/flutter/flutter/issues/19358 is resolved this may
     // be replaced with just asserting that videoPlayers.isEmpty().
     // https://github.com/flutter/flutter/issues/20989 tracks this.
-    for (VideoPlayer player : videoPlayers.values()) {
-      player.dispose();
-    }
-    videoPlayers.clear();
+    disposeAllPlayers();
   }
 
   @Override
@@ -300,10 +319,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
     switch (call.method) {
       case "init":
-        for (VideoPlayer player : videoPlayers.values()) {
-          player.dispose();
-        }
-        videoPlayers.clear();
+        disposeAllPlayers();
         break;
       case "create":
         {
@@ -317,10 +333,9 @@ public class VideoPlayerPlugin implements MethodCallHandler {
             String assetLookupKey;
             if (call.argument("package") != null) {
               assetLookupKey =
-                  registrar.lookupKeyForAsset(
-                      (String) call.argument("asset"), (String) call.argument("package"));
+                  registrar.lookupKeyForAsset(call.argument("asset"), call.argument("package"));
             } else {
-              assetLookupKey = registrar.lookupKeyForAsset((String) call.argument("asset"));
+              assetLookupKey = registrar.lookupKeyForAsset(call.argument("asset"));
             }
             player =
                 new VideoPlayer(
@@ -333,11 +348,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           } else {
             player =
                 new VideoPlayer(
-                    registrar.context(),
-                    eventChannel,
-                    handle,
-                    (String) call.argument("uri"),
-                    result);
+                    registrar.context(), eventChannel, handle, call.argument("uri"), result);
             videoPlayers.put(handle.id(), player);
           }
           break;
@@ -362,11 +373,11 @@ public class VideoPlayerPlugin implements MethodCallHandler {
   private void onMethodCall(MethodCall call, Result result, long textureId, VideoPlayer player) {
     switch (call.method) {
       case "setLooping":
-        player.setLooping((Boolean) call.argument("looping"));
+        player.setLooping(call.argument("looping"));
         result.success(null);
         break;
       case "setVolume":
-        player.setVolume((Double) call.argument("volume"));
+        player.setVolume(call.argument("volume"));
         result.success(null);
         break;
       case "play":
@@ -384,6 +395,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         break;
       case "position":
         result.success(player.getPosition());
+        player.sendBufferingUpdate();
         break;
       case "dispose":
         player.dispose();

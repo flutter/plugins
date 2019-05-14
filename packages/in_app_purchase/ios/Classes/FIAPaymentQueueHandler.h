@@ -26,9 +26,10 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
         (nullable RestoreCompletedTransactionsFinished)restoreCompletedTransactionsFinished
                    shouldAddStorePayment:(nullable ShouldAddStorePayment)shouldAddStorePayment
                         updatedDownloads:(nullable UpdatedDownloads)updatedDownloads;
-- (void)addPayment:(SKPayment *)payment;
+- (void)addPayment:(nonnull SKPayment *)payment;
 // Can throw exceptions if the transaction type is purchasing, should always used in a @try block.
-- (void)finishTransaction:(SKPaymentTransaction *)transaction;
+- (void)finishTransaction:(nonnull SKPaymentTransaction *)transaction;
+- (void)restoreTransactions:(nullable NSString *)applicationName;
 
 @end
 

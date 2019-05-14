@@ -82,13 +82,13 @@ class _MyHomePageState extends State<_MyHomePage> {
         results = await detector.processImage(visionImage);
         break;
       case Detector.label:
-        final LabelDetector detector = FirebaseVision.instance.labelDetector();
-        results = await detector.detectInImage(visionImage);
+        final ImageLabeler labeler = FirebaseVision.instance.imageLabeler();
+        results = await labeler.processImage(visionImage);
         break;
       case Detector.cloudLabel:
-        final CloudLabelDetector detector =
-            FirebaseVision.instance.cloudLabelDetector();
-        results = await detector.detectInImage(visionImage);
+        final ImageLabeler labeler =
+            FirebaseVision.instance.cloudImageLabeler();
+        results = await labeler.processImage(visionImage);
         break;
       case Detector.text:
         final TextRecognizer recognizer =

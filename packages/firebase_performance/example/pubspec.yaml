@@ -8,11 +8,14 @@ dependencies:
     sdk: flutter
   firebase_performance:
     path: ../
-  firebase_core: ^0.3.0
+  firebase_core: ^0.4.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  test: any
 
 
 

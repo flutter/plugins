@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FlutterWebView.h"
+#import "FLTWKNavigationDelegate.h"
 #import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
@@ -29,7 +30,7 @@
   FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
                                                                          viewIdentifier:viewId
                                                                               arguments:args
-                                                                               registar:_registrar];
+                                                                              registrar:_registrar];
   return webviewController;
 }
 
@@ -42,13 +43,14 @@
   NSString* _currentUrl;
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
+  FLTWKNavigationDelegate* _navigationDelegate;
   NSObject<FlutterPluginRegistrar>* _registrar;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
-                     registar:(NSObject<FlutterPluginRegistrar>*)registrar {
+                    registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   if ([super init]) {
     _viewId = viewId;
     _registrar = registrar;
@@ -69,6 +71,8 @@
     configuration.userContentController = userContentController;
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
+    _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
@@ -78,10 +82,11 @@
 
     NSString* initialUrl = args[@"initialUrl"];
     if ([initialUrl isKindOfClass:[NSString class]]) {
-      if ([initialUrl rangeOfString:@"://"].location == NSNotFound)
+      if ([initialUrl rangeOfString:@"://"].location == NSNotFound) {
         [self loadAssetFile:initialUrl];
-      else
+      } else {
         [self loadUrl:initialUrl];
+      }
     }
   }
   return self;
@@ -97,7 +102,7 @@
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
   } else if ([[call method] isEqualToString:@"loadAssetFile"]) {
-    [self onloadAssetFile:call result:result];
+    [self onLoadAssetFile:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -129,17 +134,17 @@
 }
 
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSString* url = [call arguments];
-  if (![self loadUrl:url]) {
-    result([FlutterError errorWithCode:@"loadUrl_failed"
-                               message:@"Failed parsing the URL"
-                               details:[NSString stringWithFormat:@"URL was: '%@'", url]]);
+  if (![self loadRequest:[call arguments]]) {
+    result([FlutterError
+        errorWithCode:@"loadUrl_failed"
+              message:@"Failed parsing the URL"
+              details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
   } else {
     result(nil);
   }
 }
 
-- (void)onloadAssetFile:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onLoadAssetFile:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSString* url = [call arguments];
   if (![self loadAssetFile:url]) {
     result([FlutterError errorWithCode:@"loadAssetFile_failed"
@@ -250,6 +255,9 @@
     if ([key isEqualToString:@"jsMode"]) {
       NSNumber* mode = settings[key];
       [self updateJsMode:mode];
+    } else if ([key isEqualToString:@"hasNavigationDelegate"]) {
+      NSNumber* hasDartNavigationDelegate = settings[key];
+      _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
     } else {
       NSLog(@"webview_flutter: unknown setting key: %@", key);
     }
@@ -270,13 +278,36 @@
   }
 }
 
+- (bool)loadRequest:(NSDictionary<NSString*, id>*)request {
+  if (!request) {
+    return false;
+  }
+
+  NSString* url = request[@"url"];
+  if ([url isKindOfClass:[NSString class]]) {
+    id headers = request[@"headers"];
+    if ([headers isKindOfClass:[NSDictionary class]]) {
+      return [self loadUrl:url withHeaders:headers];
+    } else {
+      return [self loadUrl:url];
+    }
+  }
+
+  return false;
+}
+
 - (bool)loadUrl:(NSString*)url {
+  return [self loadUrl:url withHeaders:[NSMutableDictionary dictionary]];
+}
+
+- (bool)loadUrl:(NSString*)url withHeaders:(NSDictionary<NSString*, NSString*>*)headers {
   NSURL* nsUrl = [NSURL URLWithString:url];
   if (!nsUrl) {
     return false;
   }
-  NSURLRequest* req = [NSURLRequest requestWithURL:nsUrl];
-  [_webView loadRequest:req];
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
+  [request setAllHTTPHeaderFields:headers];
+  [_webView loadRequest:request];
   return true;
 }
 

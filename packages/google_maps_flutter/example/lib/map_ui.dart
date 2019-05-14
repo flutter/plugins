@@ -36,8 +36,8 @@ class MapUiBodyState extends State<MapUiBody> {
     zoom: 11.0,
   );
 
-  GoogleMapController mapController;
   CameraPosition _position = _kInitialPosition;
+  bool _isMapCreated = false;
   bool _isMoving = false;
   bool _compassEnabled = true;
   CameraTargetBounds _cameraTargetBounds = CameraTargetBounds.unbounded;
@@ -48,26 +48,15 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _tiltGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
+  bool _myLocationButtonEnabled = true;
 
   @override
   void initState() {
     super.initState();
   }
 
-  void _onMapChanged() {
-    setState(() {
-      _extractMapInfo();
-    });
-  }
-
-  void _extractMapInfo() {
-    _position = mapController.cameraPosition;
-    _isMoving = mapController.isCameraMoving;
-  }
-
   @override
   void dispose() {
-    mapController.removeListener(_onMapChanged);
     super.dispose();
   }
 
@@ -182,12 +171,23 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Widget _myLocationButtonToggler() {
+    return FlatButton(
+      child: Text(
+          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
+      onPressed: () {
+        setState(() {
+          _myLocationButtonEnabled = !_myLocationButtonEnabled;
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final GoogleMap googleMap = GoogleMap(
       onMapCreated: onMapCreated,
       initialCameraPosition: _kInitialPosition,
-      trackCameraPosition: true,
       compassEnabled: _compassEnabled,
       cameraTargetBounds: _cameraTargetBounds,
       minMaxZoomPreference: _minMaxZoomPreference,
@@ -197,6 +197,8 @@ class MapUiBodyState extends State<MapUiBody> {
       tiltGesturesEnabled: _tiltGesturesEnabled,
       zoomGesturesEnabled: _zoomGesturesEnabled,
       myLocationEnabled: _myLocationEnabled,
+      myLocationButtonEnabled: _myLocationButtonEnabled,
+      onCameraMove: _updateCameraPosition,
     );
 
     final List<Widget> columnChildren = <Widget>[
@@ -212,7 +214,7 @@ class MapUiBodyState extends State<MapUiBody> {
       ),
     ];
 
-    if (mapController != null) {
+    if (_isMapCreated) {
       columnChildren.add(
         Expanded(
           child: ListView(
@@ -233,6 +235,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _tiltToggler(),
               _zoomToggler(),
               _myLocationToggler(),
+              _myLocationButtonToggler(),
             ],
           ),
         ),
@@ -245,10 +248,15 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  void _updateCameraPosition(CameraPosition position) {
+    setState(() {
+      _position = position;
+    });
+  }
+
   void onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-    mapController.addListener(_onMapChanged);
-    _extractMapInfo();
-    setState(() {});
+    setState(() {
+      _isMapCreated = true;
+    });
   }
 }

@@ -1,3 +1,28 @@
+## 0.4.0
+
+* Update Android dependencies to latest.
+
+## 0.3.4
+
+* Updates Android firebase-core dependency to a version that is compatible with other Flutterfire plugins.
+
+## 0.3.3
+
+* Remove Gradle BoM to avoid Gradle version issues.
+
+## 0.3.2
+
+* Move Android dependency to Gradle BoM to help maintain compatability
+  with other FlutterFire plugins.
+
+## 0.3.1+1
+
+* Add nil check on static functions to prevent crashes or unwanted behaviors.
+
+## 0.3.1
+
+* Remove an assertion that can interfere with hot-restart.
+
 ## 0.3.0+2
 
 * Remove categories.

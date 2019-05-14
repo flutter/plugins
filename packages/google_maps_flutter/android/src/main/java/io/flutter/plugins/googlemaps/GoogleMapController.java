@@ -12,6 +12,7 @@ import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STARTED;
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STOPPED;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -25,15 +26,19 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,26 +50,35 @@ final class GoogleMapController
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnPolylineClickListener,
+        GoogleMap.OnCircleClickListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
-        OnMarkerTappedListener,
+        GoogleMap.OnMapClickListener,
         PlatformView {
+
   private static final String TAG = "GoogleMapController";
   private final int id;
   private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
   private final PluginRegistry.Registrar registrar;
   private final MapView mapView;
-  private final Map<String, MarkerController> markers;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
+  private boolean myLocationButtonEnabled = false;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
   private final int registrarActivityHashCode;
   private final Context context;
+  private final MarkersController markersController;
+  private final PolylinesController polylinesController;
+  private final CirclesController circlesController;
+  private List<Object> initialMarkers;
+  private List<Object> initialPolylines;
+  private List<Object> initialCircles;
 
   GoogleMapController(
       int id,
@@ -77,12 +91,14 @@ final class GoogleMapController
     this.activityState = activityState;
     this.registrar = registrar;
     this.mapView = new MapView(context, options);
-    this.markers = new HashMap<>();
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_maps_" + id);
     methodChannel.setMethodCallHandler(this);
     this.registrarActivityHashCode = registrar.activity().hashCode();
+    this.markersController = new MarkersController(methodChannel);
+    this.polylinesController = new PolylinesController(methodChannel);
+    this.circlesController = new CirclesController(methodChannel);
   }
 
   @Override
@@ -140,31 +156,6 @@ final class GoogleMapController
     return trackCameraPosition ? googleMap.getCameraPosition() : null;
   }
 
-  private MarkerBuilder newMarkerBuilder() {
-    return new MarkerBuilder(this);
-  }
-
-  Marker addMarker(MarkerOptions markerOptions, boolean consumesTapEvents) {
-    final Marker marker = googleMap.addMarker(markerOptions);
-    markers.put(marker.getId(), new MarkerController(marker, consumesTapEvents, this));
-    return marker;
-  }
-
-  private void removeMarker(String markerId) {
-    final MarkerController markerController = markers.remove(markerId);
-    if (markerController != null) {
-      markerController.remove();
-    }
-  }
-
-  private MarkerController marker(String markerId) {
-    final MarkerController marker = markers.get(markerId);
-    if (marker == null) {
-      throw new IllegalArgumentException("Unknown marker: " + markerId);
-    }
-    return marker;
-  }
-
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
@@ -177,7 +168,16 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
-    updateMyLocationEnabled();
+    googleMap.setOnPolylineClickListener(this);
+    googleMap.setOnCircleClickListener(this);
+    googleMap.setOnMapClickListener(this);
+    updateMyLocationSettings();
+    markersController.setGoogleMap(googleMap);
+    polylinesController.setGoogleMap(googleMap);
+    circlesController.setGoogleMap(googleMap);
+    updateInitialMarkers();
+    updateInitialPolylines();
+    updateInitialCircles();
   }
 
   @Override
@@ -193,7 +193,20 @@ final class GoogleMapController
       case "map#update":
         {
           Convert.interpretGoogleMapOptions(call.argument("options"), this);
-          result.success(Convert.toJson(getCameraPosition()));
+          result.success(Convert.cameraPositionToJson(getCameraPosition()));
+          break;
+        }
+      case "map#getVisibleRegion":
+        {
+          if (googleMap != null) {
+            LatLngBounds latLngBounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
+            result.success(Convert.latlngBoundsToJson(latLngBounds));
+          } else {
+            result.error(
+                "GoogleMap uninitialized",
+                "getVisibleRegion called prior to map initialization",
+                null);
+          }
           break;
         }
       case "camera#move":
@@ -212,32 +225,87 @@ final class GoogleMapController
           result.success(null);
           break;
         }
-      case "marker#add":
+      case "markers#update":
         {
-          final MarkerBuilder markerBuilder = newMarkerBuilder();
-          Convert.interpretMarkerOptions(call.argument("options"), markerBuilder);
-          final String markerId = markerBuilder.build();
-          result.success(markerId);
-          break;
-        }
-      case "marker#remove":
-        {
-          final String markerId = call.argument("marker");
-          removeMarker(markerId);
+          Object markersToAdd = call.argument("markersToAdd");
+          markersController.addMarkers((List<Object>) markersToAdd);
+          Object markersToChange = call.argument("markersToChange");
+          markersController.changeMarkers((List<Object>) markersToChange);
+          Object markerIdsToRemove = call.argument("markerIdsToRemove");
+          markersController.removeMarkers((List<Object>) markerIdsToRemove);
           result.success(null);
           break;
         }
-      case "marker#update":
+      case "polylines#update":
         {
-          final String markerId = call.argument("marker");
-          final MarkerController marker = marker(markerId);
-          Convert.interpretMarkerOptions(call.argument("options"), marker);
+          Object polylinesToAdd = call.argument("polylinesToAdd");
+          polylinesController.addPolylines((List<Object>) polylinesToAdd);
+          Object polylinesToChange = call.argument("polylinesToChange");
+          polylinesController.changePolylines((List<Object>) polylinesToChange);
+          Object polylineIdsToRemove = call.argument("polylineIdsToRemove");
+          polylinesController.removePolylines((List<Object>) polylineIdsToRemove);
           result.success(null);
+          break;
+        }
+      case "circles#update":
+        {
+          Object circlesToAdd = call.argument("circlesToAdd");
+          circlesController.addCircles((List<Object>) circlesToAdd);
+          Object circlesToChange = call.argument("circlesToChange");
+          circlesController.changeCircles((List<Object>) circlesToChange);
+          Object circleIdsToRemove = call.argument("circleIdsToRemove");
+          circlesController.removeCircles((List<Object>) circleIdsToRemove);
+          result.success(null);
+          break;
+        }
+      case "map#isCompassEnabled":
+        {
+          result.success(googleMap.getUiSettings().isCompassEnabled());
+          break;
+        }
+      case "map#getMinMaxZoomLevels":
+        {
+          List<Float> zoomLevels = new ArrayList<>(2);
+          zoomLevels.add(googleMap.getMinZoomLevel());
+          zoomLevels.add(googleMap.getMaxZoomLevel());
+          result.success(zoomLevels);
+          break;
+        }
+      case "map#isZoomGesturesEnabled":
+        {
+          result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
+          break;
+        }
+      case "map#isScrollGesturesEnabled":
+        {
+          result.success(googleMap.getUiSettings().isScrollGesturesEnabled());
+          break;
+        }
+      case "map#isTiltGesturesEnabled":
+        {
+          result.success(googleMap.getUiSettings().isTiltGesturesEnabled());
+          break;
+        }
+      case "map#isRotateGesturesEnabled":
+        {
+          result.success(googleMap.getUiSettings().isRotateGesturesEnabled());
+          break;
+        }
+      case "map#isMyLocationButtonEnabled":
+        {
+          result.success(googleMap.getUiSettings().isMyLocationButtonEnabled());
           break;
         }
       default:
         result.notImplemented();
     }
+  }
+
+  @Override
+  public void onMapClick(LatLng latLng) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("position", Convert.latLngToJson(latLng));
+    methodChannel.invokeMethod("map#onTap", arguments);
   }
 
   @Override
@@ -250,9 +318,7 @@ final class GoogleMapController
 
   @Override
   public void onInfoWindowClick(Marker marker) {
-    final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("marker", marker.getId());
-    methodChannel.invokeMethod("infoWindow#onTap", arguments);
+    markersController.onInfoWindowTap(marker.getId());
   }
 
   @Override
@@ -261,7 +327,7 @@ final class GoogleMapController
       return;
     }
     final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("position", Convert.toJson(googleMap.getCameraPosition()));
+    arguments.put("position", Convert.cameraPositionToJson(googleMap.getCameraPosition()));
     methodChannel.invokeMethod("camera#onMove", arguments);
   }
 
@@ -271,16 +337,18 @@ final class GoogleMapController
   }
 
   @Override
-  public void onMarkerTapped(Marker marker) {
-    final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("marker", marker.getId());
-    methodChannel.invokeMethod("marker#onTap", arguments);
+  public boolean onMarkerClick(Marker marker) {
+    return markersController.onMarkerTap(marker.getId());
   }
 
   @Override
-  public boolean onMarkerClick(Marker marker) {
-    final MarkerController markerController = markers.get(marker.getId());
-    return (markerController != null && markerController.onTap());
+  public void onPolylineClick(Polyline polyline) {
+    polylinesController.onPolylineTap(polyline.getId());
+  }
+
+  @Override
+  public void onCircleClick(Circle circle) {
+    circlesController.onCircleTap(circle.getId());
   }
 
   @Override
@@ -410,13 +478,67 @@ final class GoogleMapController
     }
     this.myLocationEnabled = myLocationEnabled;
     if (googleMap != null) {
-      updateMyLocationEnabled();
+      updateMyLocationSettings();
     }
   }
 
-  private void updateMyLocationEnabled() {
+  @Override
+  public void setMyLocationButtonEnabled(boolean myLocationButtonEnabled) {
+    if (this.myLocationButtonEnabled == myLocationButtonEnabled) {
+      return;
+    }
+    this.myLocationButtonEnabled = myLocationButtonEnabled;
+    if (googleMap != null) {
+      updateMyLocationSettings();
+    }
+  }
+
+  @Override
+  public void setInitialMarkers(Object initialMarkers) {
+    this.initialMarkers = (List<Object>) initialMarkers;
+    if (googleMap != null) {
+      updateInitialMarkers();
+    }
+  }
+
+  private void updateInitialMarkers() {
+    markersController.addMarkers(initialMarkers);
+  }
+
+  @Override
+  public void setInitialPolylines(Object initialPolylines) {
+    this.initialPolylines = (List<Object>) initialPolylines;
+    if (googleMap != null) {
+      updateInitialPolylines();
+    }
+  }
+
+  private void updateInitialPolylines() {
+    polylinesController.addPolylines(initialPolylines);
+  }
+
+  @Override
+  public void setInitialCircles(Object initialCircles) {
+    this.initialCircles = (List<Object>) initialCircles;
+    if (googleMap != null) {
+      updateInitialCircles();
+    }
+  }
+
+  private void updateInitialCircles() {
+    circlesController.addCircles(initialCircles);
+  }
+
+  @SuppressLint("MissingPermission")
+  private void updateMyLocationSettings() {
     if (hasLocationPermission()) {
+      // The plugin doesn't add the location permission by default so that apps that don't need
+      // the feature won't require the permission.
+      // Gradle is doing a static check for missing permission and in some configurations will
+      // fail the build if the permission is missing. The following disables the Gradle lint.
+      //noinspection ResourceType
       googleMap.setMyLocationEnabled(myLocationEnabled);
+      googleMap.getUiSettings().setMyLocationButtonEnabled(myLocationButtonEnabled);
     } else {
       // TODO(amirh): Make the options update fail.
       // https://github.com/flutter/flutter/issues/24327

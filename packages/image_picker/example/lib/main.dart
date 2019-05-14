@@ -33,41 +33,49 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<File> _imageFile;
+  File _imageFile;
+  dynamic _pickImageError;
   bool isVideo = false;
   VideoPlayerController _controller;
-  VoidCallback listener;
+  String _retrieveDataError;
 
-  void _onImageButtonPressed(ImageSource source) {
-    setState(() {
-      if (_controller != null) {
-        _controller.setVolume(0.0);
-        _controller.removeListener(listener);
+  void _onImageButtonPressed(ImageSource source) async {
+    if (_controller != null) {
+      _controller.setVolume(0.0);
+      _controller.removeListener(_onVideoControllerUpdate);
+    }
+    if (isVideo) {
+      ImagePicker.pickVideo(source: source).then((File file) {
+        if (file != null && mounted) {
+          setState(() {
+            _controller = VideoPlayerController.file(file)
+              ..addListener(_onVideoControllerUpdate)
+              ..setVolume(1.0)
+              ..initialize()
+              ..setLooping(true)
+              ..play();
+          });
+        }
+      });
+    } else {
+      try {
+        _imageFile = await ImagePicker.pickImage(source: source);
+      } catch (e) {
+        _pickImageError = e;
       }
-      if (isVideo) {
-        ImagePicker.pickVideo(source: source).then((File file) {
-          if (file != null && mounted) {
-            setState(() {
-              _controller = VideoPlayerController.file(file)
-                ..addListener(listener)
-                ..setVolume(1.0)
-                ..initialize()
-                ..setLooping(true)
-                ..play();
-            });
-          }
-        });
-      } else {
-        _imageFile = ImagePicker.pickImage(source: source);
-      }
-    });
+      setState(() {});
+    }
+  }
+
+  void _onVideoControllerUpdate() {
+    setState(() {});
   }
 
   @override
   void deactivate() {
     if (_controller != null) {
       _controller.setVolume(0.0);
-      _controller.removeListener(listener);
+      _controller.removeListener(_onVideoControllerUpdate);
     }
     super.deactivate();
   }
@@ -80,15 +88,11 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    listener = () {
-      setState(() {});
-    };
-  }
-
   Widget _previewVideo(VideoPlayerController controller) {
+    final Text retrieveError = _getRetrieveErrorWidget();
+    if (retrieveError != null) {
+      return retrieveError;
+    }
     if (controller == null) {
       return const Text(
         'You have not yet picked a video',
@@ -108,24 +112,48 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _previewImage() {
-    return FutureBuilder<File>(
-        future: _imageFile,
-        builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.data != null) {
-            return Image.file(snapshot.data);
-          } else if (snapshot.error != null) {
-            return const Text(
-              'Error picking image.',
-              textAlign: TextAlign.center,
-            );
-          } else {
-            return const Text(
-              'You have not yet picked an image.',
-              textAlign: TextAlign.center,
-            );
-          }
-        });
+    final Text retrieveError = _getRetrieveErrorWidget();
+    if (retrieveError != null) {
+      return retrieveError;
+    }
+    if (_imageFile != null) {
+      return Image.file(_imageFile);
+    } else if (_pickImageError != null) {
+      return Text(
+        'Pick image error: $_pickImageError',
+        textAlign: TextAlign.center,
+      );
+    } else {
+      return const Text(
+        'You have not yet picked an image.',
+        textAlign: TextAlign.center,
+      );
+    }
+  }
+
+  Future<void> retrieveLostData() async {
+    final LostDataResponse response = await ImagePicker.retrieveLostData();
+    if (response.isEmpty) {
+      return;
+    }
+    if (response.file != null) {
+      setState(() {
+        if (response.type == RetrieveType.video) {
+          isVideo = true;
+          _controller = VideoPlayerController.file(response.file)
+            ..addListener(_onVideoControllerUpdate)
+            ..setVolume(1.0)
+            ..initialize()
+            ..setLooping(true)
+            ..play();
+        } else {
+          isVideo = false;
+          _imageFile = response.file;
+        }
+      });
+    } else {
+      _retrieveDataError = response.exception.code;
+    }
   }
 
   @override
@@ -135,7 +163,37 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: isVideo ? _previewVideo(_controller) : _previewImage(),
+        child: Platform.isAndroid
+            ? FutureBuilder<void>(
+                future: retrieveLostData(),
+                builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                    case ConnectionState.waiting:
+                      return const Text(
+                        'You have not yet picked an image.',
+                        textAlign: TextAlign.center,
+                      );
+                    case ConnectionState.done:
+                      return isVideo
+                          ? _previewVideo(_controller)
+                          : _previewImage();
+                    default:
+                      if (snapshot.hasError) {
+                        return Text(
+                          'Pick image/video error: ${snapshot.error}}',
+                          textAlign: TextAlign.center,
+                        );
+                      } else {
+                        const Text(
+                          'You have not yet picked an image.',
+                          textAlign: TextAlign.center,
+                        );
+                      }
+                  }
+                },
+              )
+            : (isVideo ? _previewVideo(_controller) : _previewImage()),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -191,6 +249,15 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  Text _getRetrieveErrorWidget() {
+    if (_retrieveDataError != null) {
+      final Text result = Text(_retrieveDataError);
+      _retrieveDataError = null;
+      return result;
+    }
+    return null;
+  }
 }
 
 class AspectRatioVideo extends StatefulWidget {
@@ -206,21 +273,20 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   VideoPlayerController get controller => widget.controller;
   bool initialized = false;
 
-  VoidCallback listener;
+  void _onVideoControllerUpdate() {
+    if (!mounted) {
+      return;
+    }
+    if (initialized != controller.value.initialized) {
+      initialized = controller.value.initialized;
+      setState(() {});
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    listener = () {
-      if (!mounted) {
-        return;
-      }
-      if (initialized != controller.value.initialized) {
-        initialized = controller.value.initialized;
-        setState(() {});
-      }
-    };
-    controller.addListener(listener);
+    controller.addListener(_onVideoControllerUpdate);
   }
 
   @override

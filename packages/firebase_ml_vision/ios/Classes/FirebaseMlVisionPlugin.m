@@ -22,8 +22,10 @@ static FlutterError *getFlutterError(NSError *error) {
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
   }
   return self;
@@ -36,10 +38,8 @@ static FlutterError *getFlutterError(NSError *error) {
     [BarcodeDetector handleDetection:image options:options result:result];
   } else if ([@"FaceDetector#processImage" isEqualToString:call.method]) {
     [FaceDetector handleDetection:image options:options result:result];
-  } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
-    [LabelDetector handleDetection:image options:options result:result];
-  } else if ([@"CloudLabelDetector#detectInImage" isEqualToString:call.method]) {
-    [CloudLabelDetector handleDetection:image options:options result:result];
+  } else if ([@"ImageLabeler#processImage" isEqualToString:call.method]) {
+    [ImageLabeler handleDetection:image options:options result:result];
   } else if ([@"TextRecognizer#processImage" isEqualToString:call.method]) {
     [TextRecognizer handleDetection:image options:options result:result];
   } else {

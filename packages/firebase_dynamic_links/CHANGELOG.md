@@ -1,3 +1,24 @@
+## 0.4.0
+
+* Update dependency on firebase_core to 0.4.0.
+
+## 0.3.0.
+
+* Update Android dependencies to 16.1.7.
+* **Breaking change**. Dynamic link parameter `domain` replaced with `uriPrefix`.
+
+## 0.2.1
+
+* Throw `PlatformException` if there is an error retrieving dynamic link.
+
+## 0.2.0+4
+
+* Fix crash when receiving `ShortDynamicLink` warnings.
+
+## 0.2.0+3
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
 ## 0.2.0+2
 
 * Remove categories.

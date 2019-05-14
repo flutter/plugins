@@ -12,6 +12,12 @@ _SerializedEnums _$_SerializedEnumsFromJson(Map json) {
     ..type = _$enumDecode(_$SkuTypeEnumMap, json['type']);
 }
 
+Map<String, dynamic> _$_SerializedEnumsToJson(_SerializedEnums instance) =>
+    <String, dynamic>{
+      'response': _$BillingResponseEnumMap[instance.response],
+      'type': _$SkuTypeEnumMap[instance.type]
+    };
+
 T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
   if (source == null) {
     throw ArgumentError('A value must be provided. Supported values: '
@@ -27,6 +33,7 @@ T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
 
 const _$BillingResponseEnumMap = <BillingResponse, dynamic>{
   BillingResponse.featureNotSupported: -2,
+  BillingResponse.serviceDisconnected: -1,
   BillingResponse.ok: 0,
   BillingResponse.userCanceled: 1,
   BillingResponse.serviceUnavailable: 2,

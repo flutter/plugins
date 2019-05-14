@@ -1,3 +1,33 @@
+## 0.8.0
+
+* Update Android dependencies to latest.
+
+## 0.7.0+2
+
+* Fix analyzer warnings about `const Rect` in tests.
+
+## 0.7.0+1
+
+* Update README to match latest version.
+
+## 0.7.0
+
+* **Breaking Change** Unified and enhanced on-device and cloud image-labeling API.
+  `iOS` now requires minimum deployment target of 9.0. Add `platform :ios, '9.0'` in your `Podfile`.
+  Updated to latest version of `Firebase/MLVision` on `iOS`. Please run `pod update` in directory containing your `iOS` project `Podfile`.
+  `Label` renamed to `ImageLabel`.
+  `LabelDetector` renamed to `ImageLabeler`.
+  Removed `CloudLabelDetector` and replaced it with a cloud `ImageLabeler`.
+
+## 0.6.0+2
+
+* Update README.md
+* Fix crash when receiving barcode urls on iOS.
+
+## 0.6.0+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
 ## 0.6.0
 
 * **Breaking Change** Removed on-device model dependencies from plugin.

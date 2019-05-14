@@ -1,6 +1,6 @@
 name: webview_flutter
 description: A Flutter plugin that provides a WebView widget on Android and iOS.
-version: 0.3.3+1
+version: 0.3.7
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/webview_flutter
 
@@ -14,6 +14,8 @@ dependencies:
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  flutter_driver:
     sdk: flutter
 
 flutter:

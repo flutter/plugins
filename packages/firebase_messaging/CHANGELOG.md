@@ -1,3 +1,35 @@
+## 5.0.1+1
+
+* Enable support for `onMessage` on iOS using `shouldEstablishDirectChannel`.
+
+## 5.0.1
+
+* Fix error in the logs on startup if unable to retrieve token on startup on Android.
+
+## 5.0.0
+
+* Update Android dependencies to latest.
+
+## 4.0.0+4
+
+* Remove obsolete `use_frameworks!` instruction.
+
+## 4.0.0+3
+
+* Update iOS configuration documentation.
+
+## 4.0.0+2
+
+* Fix example app's floating action button that stopped working due to a breaking change.
+
+## 4.0.0+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 4.0.0
+
+*  **Breaking Change** Update message structure for onMessage to match onLaunch and onResume
+
 ## 3.0.1
 
 * Log a more detailed warning at build time about the previous AndroidX

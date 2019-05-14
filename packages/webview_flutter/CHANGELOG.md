@@ -1,3 +1,47 @@
+## 0.3.7
+
+* Fix loadUrlWithHeaders flaky test.
+
+## 0.3.6+1
+
+* Remove un-used method params in webview\_flutter
+
+## 0.3.6
+
+* Add an optional `headers` field to the controller.
+
+## 0.3.5+5
+
+* Fixed error in documentation of `javascriptChannels`.
+
+## 0.3.5+4
+
+* Fix bugs in the example app by updating it to use a `StatefulWidget`.
+
+## 0.3.5+3
+
+* Make sure to post javascript channel messages from the platform thread.
+
+## 0.3.5+2
+
+* Fix crash from `NavigationDelegate` on later versions of Android.
+
+## 0.3.5+1
+
+* Fix a bug where updates to onPageFinished were ignored.
+
+## 0.3.5
+
+* Added an onPageFinished callback.
+
+## 0.3.4
+
+* Support specifying navigation delegates that can prevent navigations from being executed.
+
+## 0.3.3+2
+
+* Exclude LongPress handler from semantics tree since it does nothing.
+
 ## 0.3.3+1
 
 * Fixed a memory leak on Android - the WebView was not properly disposed.

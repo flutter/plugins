@@ -45,7 +45,7 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-messaging:17.3.3'
+        api 'com.google.firebase:firebase-messaging:18.0.0'
         implementation 'androidx.annotation:annotation:1.0.0'
         implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     }
