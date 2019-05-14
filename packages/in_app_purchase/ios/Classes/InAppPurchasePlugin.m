@@ -120,7 +120,7 @@
     if (error) {
       result([FlutterError errorWithCode:@"storekit_getproductrequest_platform_error"
                                  message:error.localizedDescription
-                                 details:error.userInfo]);
+                                 details:error.description]);
       return;
     }
     if (!response) {
@@ -218,8 +218,8 @@
     [self.paymentQueueHandler restoreTransactions:call.arguments];
   } @catch (NSException *e) {
     result([FlutterError errorWithCode:@"storekit_restore_transaction_exception"
-                               message:e.description
-                               details:e.userInfo]);
+                               message:e.name
+                               details:e.description]);
   }
 }
 
@@ -258,8 +258,8 @@
                                                       NSError *_Nullable error) {
     if (error) {
       result([FlutterError errorWithCode:@"storekit_refreshreceiptrequest_platform_error"
-                                 message:error.description
-                                 details:error.userInfo]);
+                                 message:error.localizedDescription
+                                 details:error.description]);
       return;
     }
     result(nil);
