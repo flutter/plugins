@@ -14,18 +14,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
   private boolean trackCameraPosition = false;
+  private boolean myLocationEnabled = false;
+  private boolean myLocationButtonEnabled = false;
+  private Object initialMarkers;
+  private Object initialPolylines;
+  private Object initialCircles;
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
     final GoogleMapController controller =
         new GoogleMapController(id, context, state, registrar, options);
     controller.init();
+    controller.setMyLocationEnabled(myLocationEnabled);
+    controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
+    controller.setInitialMarkers(initialMarkers);
+    controller.setInitialPolylines(initialPolylines);
+    controller.setInitialCircles(initialCircles);
     return controller;
   }
 
-  @Override
-  public void setCameraPosition(CameraPosition position) {
+  void setInitialCameraPosition(CameraPosition position) {
     options.camera(position);
   }
 
@@ -77,5 +86,30 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
     options.zoomGesturesEnabled(zoomGesturesEnabled);
+  }
+
+  @Override
+  public void setMyLocationEnabled(boolean myLocationEnabled) {
+    this.myLocationEnabled = myLocationEnabled;
+  }
+
+  @Override
+  public void setMyLocationButtonEnabled(boolean myLocationButtonEnabled) {
+    this.myLocationButtonEnabled = myLocationButtonEnabled;
+  }
+
+  @Override
+  public void setInitialMarkers(Object initialMarkers) {
+    this.initialMarkers = initialMarkers;
+  }
+
+  @Override
+  public void setInitialPolylines(Object initialPolylines) {
+    this.initialPolylines = initialPolylines;
+  }
+
+  @Override
+  public void setInitialCircles(Object initialCircles) {
+    this.initialCircles = initialCircles;
   }
 }

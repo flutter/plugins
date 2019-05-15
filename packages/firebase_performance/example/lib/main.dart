@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
     });
 
     final Trace trace = _performance.newTrace("test");
-    trace.incrementCounter("counter1", 16);
+    trace.incrementMetric("metric1", 16);
     trace.putAttribute("favorite_color", "blue");
 
     await trace.start();
