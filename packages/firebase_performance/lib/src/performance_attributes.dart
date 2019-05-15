@@ -57,7 +57,7 @@ abstract class PerformanceAttributes {
     );
   }
 
-  /// Removes an already added attribute with [name].
+  /// Removes an already added attribute.
   Future<void> removeAttribute(String name) {
     if (_hasStopped) return Future<void>.value(null);
 
@@ -68,7 +68,9 @@ abstract class PerformanceAttributes {
     );
   }
 
-  /// Returns the value of an attribute with [name].
+  /// Returns the value of an attribute.
+  ///
+  /// Returns `null` if an attribute with this [name] has not been added.
   String getAttribute(String name) => _attributes[name];
 
   /// All attributes added.
