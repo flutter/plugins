@@ -119,6 +119,7 @@ void main() {
           'https://www.google.com/',
           HttpMethod.Delete,
         );
+        testMetric.start();
 
         testMetric.putAttribute('apple', 'sauce');
         testMetric.putAttribute('banana', 'pie');
@@ -132,6 +133,7 @@ void main() {
           'https://www.insidejob.org/',
           HttpMethod.Connect,
         );
+        testMetric.start();
 
         testMetric.putAttribute('sponge', 'bob');
         testMetric.putAttribute('patrick', 'star');
@@ -146,6 +148,7 @@ void main() {
           'https://www.flutter.dev/',
           HttpMethod.Trace,
         );
+        testMetric.start();
 
         testMetric.putAttribute('yugi', 'oh');
 
