@@ -1,6 +1,10 @@
-## 0.11.0+1
+## 0.11.1+1
 
 * Updated the error code documentation for `linkWithCredential`.
+
+## 0.11.1
+
+* Support for `updatePhoneNumberCredential`.
 
 ## 0.11.0
 
