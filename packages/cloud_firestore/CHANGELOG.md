@@ -1,3 +1,49 @@
+## 0.11.0+2
+
+* Remove iOS dependency on Firebase/Database and Firebase/Auth CocoaPods.
+
+## 0.11.0+1
+
+* Update iOS CocoaPod dependencies to '~> 6.0' to ensure support for `FieldValue.increment`.
+
+## 0.11.0
+
+* Update Android dependencies to latest.
+
+## 0.10.1
+
+* Support for `startAtDocument`, `startAfterDocument`, `endAtDocument`, `endBeforeDocument`.
+* Added additional unit and integration tests.
+
+## 0.10.0
+
+* Support for `FieldValue.increment`.
+* Remove `FieldValue.type` and `FieldValue.value` from public API.
+* Additional integration testing.
+
+## 0.9.13+1
+
+* Added an integration test for transactions.
+
+## 0.9.13
+
+* Remove Gradle BoM to avoid Gradle version issues.
+
+## 0.9.12
+
+* Move Android dependency to Gradle BoM to help maintain compatibility
+  with other FlutterFire plugins.
+
+## 0.9.11
+
+* Bump Android dependencies to latest.
+
+# 0.9.10
+
+* Support for cloud_firestore running in the background on Android.
+* Fixed a bug in cleanup for DocumentReference.snapshots().
+* Additional integration testing.
+
 ## 0.9.9
 
 * Remove `invokeMapMethod` calls to prevent crash.

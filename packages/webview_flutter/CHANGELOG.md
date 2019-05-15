@@ -1,6 +1,30 @@
-## 0.3.6+4
+## 0.3.8
 
-* Add `debuggingEnabled` property
+* Add `debuggingEnabled` property.
+
+## 0.3.7+1
+
+* Fix an issue where JavaScriptChannel messages weren't sent from the platform thread on Android.
+
+## 0.3.7
+
+* Fix loadUrlWithHeaders flaky test.
+
+## 0.3.6+1
+
+* Remove un-used method params in webview\_flutter
+
+## 0.3.6
+
+* Add an optional `headers` field to the controller.
+
+## 0.3.5+5
+
+* Fixed error in documentation of `javascriptChannels`.
+
+## 0.3.5+4
+
+* Fix bugs in the example app by updating it to use a `StatefulWidget`.
 
 ## 0.3.5+3
 

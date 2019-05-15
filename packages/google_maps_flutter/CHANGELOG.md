@@ -1,3 +1,60 @@
+## 0.5.13
+
+* Add support for Circle overlays.
+
+## 0.5.12
+
+* Prevent calling null callbacks and callbacks on removed objects.
+
+## 0.5.11+1
+
+* Android: Fix an issue where myLocationButtonEnabled setting was not propagated when set to false onMapLoad.
+
+## 0.5.11
+
+* Add myLocationButtonEnabled option.
+
+## 0.5.10
+
+* Support Color's alpha channel when converting to UIColor on iOS.
+
+## 0.5.9
+
+* BitmapDescriptor#fromBytes accounts for screen scale on ios.
+
+## 0.5.8
+
+* Remove some unused variables and rename method
+
+## 0.5.7
+
+* Add a BitmapDescriptor that is aware of scale.
+
+## 0.5.6
+
+* Add support for Polylines on GoogleMap.
+
+## 0.5.5
+
+* Enable iOS accessibility.
+
+## 0.5.4
+
+* Add method getVisibleRegion for get the latlng bounds of the visible map area.
+
+## 0.5.3
+
+* Added support setting marker icons from bytes.
+
+## 0.5.2
+
+* Added onTap for callback for GoogleMap.
+
+## 0.5.1
+
+* Update Android gradle version.
+* Added infrastructure to write integration tests.
+
 ## 0.5.0
 
 * Add a key parameter to the GoogleMap widget.

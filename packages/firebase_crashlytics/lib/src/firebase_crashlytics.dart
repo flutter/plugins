@@ -34,7 +34,7 @@ class Crashlytics {
     }
 
     if (inDebugMode && !enableInDevMode) {
-      print(Trace.format(details.stack).trimRight().split('\n'));
+      print(Trace.format(details.stack));
     } else {
       // Report error
       final List<String> stackTraceLines =
@@ -47,7 +47,10 @@ class Crashlytics {
           // ignore: strong_mode_implicit_dynamic_method
           await channel.invokeMethod('Crashlytics#onError', <String, dynamic>{
         'exception': details.exceptionAsString(),
-        'context': details.context,
+        // FlutterErrorDetails.context has been migrated from a String to a
+        // DiagnosticsNode. Coerce it to a String here in a way that will work
+        // on both Strings and the new DiagnosticsNode values. See https://groups.google.com/forum/#!topic/flutter-announce/hp1RNIgej38
+        'context': '${details.context}',
         'stackTraceElements': stackTraceElements,
         'logs': _logs.toList(),
         'keys': _prepareKeys(),
