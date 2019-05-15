@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:audio_player/audio_player.dart';
+
 /// An example of using the plugin, controlling lifecycle and playback of the
 /// audio.
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:audio_player/audio_player.dart';
 
 /// Controls play and pause of [controller].
 ///
-/// Toggles play/pause on tap (accompanied by a fading status icon).
+/// Toggles play/pause on tap (accompanied by a change action icon).
 ///
 /// Plays (looping) on initialization, and mutes on deactivation.
 class AudioPlayPause extends StatefulWidget {
@@ -55,41 +56,33 @@ class _AudioPlayPauseState extends State<AudioPlayPause> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> children = <Widget>[
-      GestureDetector(
-        child: AudioPlayer(controller),
-        onTap: () {
-          if (!controller.value.initialized) {
-            return;
-          }
-          if (controller.value.isPlaying) {
-            imageFadeAnim =
-                FadeAnimation(child: const Icon(Icons.pause, size: 100.0));
-            controller.pause();
-          } else {
-            imageFadeAnim =
-                FadeAnimation(child: const Icon(Icons.play_arrow, size: 100.0));
-            controller.play();
-          }
-        },
-      ),
-      Align(
-        alignment: Alignment.bottomCenter,
-        child: AudioProgressIndicator(
-          controller,
-          allowScrubbing: true,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        GestureDetector(
+          child: Container(
+            child: controller.value.isPlaying
+                ? const Icon(Icons.pause)
+                : const Icon(Icons.play_arrow),
+          ),
+          onTap: () {
+            if (!controller.value.initialized) {
+              return;
+            }
+            if (controller.value.isPlaying) {
+              controller.pause();
+            } else {
+              controller.play();
+            }
+          },
         ),
-      ),
-      Center(child: imageFadeAnim),
-      Center(
-          child: controller.value.isBuffering
-              ? const CircularProgressIndicator()
-              : null),
-    ];
-
-    return Stack(
-      fit: StackFit.passthrough,
-      children: children,
+        Flexible(
+          child: AudioProgressIndicator(
+            controller,
+            allowScrubbing: true,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -293,13 +286,10 @@ class AudioInListOfCards extends StatelessWidget {
                 leading: Icon(Icons.cake),
                 title: Text("Audio audio"),
               ),
-              Stack(
-                  alignment: FractionalOffset.bottomRight +
-                      const FractionalOffset(-0.1, -0.1),
-                  children: <Widget>[
-                    AspectRatioAudio(controller),
-                    Image.asset('assets/flutter-mark-square-64.png'),
-                  ]),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Audio(controller),
+              ),
             ],
           ),
         ])),
@@ -313,16 +303,16 @@ class AudioInListOfCards extends StatelessWidget {
   }
 }
 
-class AspectRatioAudio extends StatefulWidget {
-  AspectRatioAudio(this.controller);
+class Audio extends StatefulWidget {
+  Audio(this.controller);
 
   final AudioPlayerController controller;
 
   @override
-  AspectRatioAudioState createState() => AspectRatioAudioState();
+  AudioState createState() => AudioState();
 }
 
-class AspectRatioAudioState extends State<AspectRatioAudio> {
+class AudioState extends State<Audio> {
   AudioPlayerController get controller => widget.controller;
   bool initialized = false;
 
@@ -346,12 +336,7 @@ class AspectRatioAudioState extends State<AspectRatioAudio> {
   @override
   Widget build(BuildContext context) {
     if (initialized) {
-      return Center(
-        child: AspectRatio(
-          aspectRatio: controller.value.aspectRatio,
-          child: AudioPlayPause(controller),
-        ),
-      );
+      return Center(child: AudioPlayPause(controller));
     } else {
       return Container();
     }
@@ -362,15 +347,14 @@ void main() {
   runApp(
     MaterialApp(
       home: DefaultTabController(
-        length: 3,
+        length: 2,
         child: Scaffold(
           appBar: AppBar(
             title: const Text('Audio player example'),
             bottom: const TabBar(
               isScrollable: true,
               tabs: <Widget>[
-                Tab(icon: Icon(Icons.fullscreen)),
-                Tab(icon: Icon(Icons.list)),
+                Tab(icon: Icon(Icons.audiotrack)),
                 Tab(icon: Icon(Icons.list)),
               ],
             ),
@@ -382,7 +366,7 @@ void main() {
                   NetworkPlayerLifeCycle(
                     'https://www.sample-videos.com/audio/mp3/crowd-cheering.mp3',
                     (BuildContext context, AudioPlayerController controller) =>
-                        AspectRatioAudio(controller),
+                        Audio(controller),
                   ),
                   Container(
                     padding: const EdgeInsets.only(top: 20.0),
@@ -390,14 +374,9 @@ void main() {
                   NetworkPlayerLifeCycle(
                     'https://www.sample-videos.com/audio/mp3/crowd-cheering.mp3',
                     (BuildContext context, AudioPlayerController controller) =>
-                        AspectRatioAudio(controller),
+                        Audio(controller),
                   ),
                 ],
-              ),
-              NetworkPlayerLifeCycle(
-                'https://www.sample-videos.com/audio/mp3/crowd-cheering.mp3',
-                (BuildContext context, AudioPlayerController controller) =>
-                    AspectRatioAudio(controller),
               ),
               AssetPlayerLifeCycle(
                   'assets/crowd-cheering.mp3',

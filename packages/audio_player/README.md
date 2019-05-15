@@ -1,4 +1,4 @@
-# Video Player plugin for Flutter
+# Audio Player plugin for Flutter
 
 [![pub package](https://img.shields.io/pub/v/audio_player.svg)](https://pub.dartlang.org/packages/audio_player)
 
@@ -54,21 +54,21 @@ The Flutter project template adds it, so it may already be there.
 import 'package:audio_player/audio_player.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(VideoApp());
+void main() => runApp(AudioApp());
 
-class VideoApp extends StatefulWidget {
+class AudioApp extends StatefulWidget {
   @override
-  _VideoAppState createState() => _VideoAppState();
+  _AudioAppState createState() => _AudioAppState();
 }
 
-class _VideoAppState extends State<VideoApp> {
-  VideoPlayerController _controller;
+class _AudioAppState extends State<AudioApp> {
+  AudioPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(
-        'https://www.sample-videos.com/audio/mp3/crowd-cheering.mp3')
+    _controller = AudioPlayerController.network(
+        'https://www.sample-audios.com/audio/mp3/crowd-cheering.mp3')
       ..initialize().then((_) {
         // Ensure the first frame is shown after the audio is initialized, even before the play button has been pressed.
         setState(() {});
@@ -78,13 +78,13 @@ class _VideoAppState extends State<VideoApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Video Demo',
+      title: 'Audio Demo',
       home: Scaffold(
         body: Center(
           child: _controller.value.initialized
               ? AspectRatio(
                   aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
+                  child: AudioPlayer(_controller),
                 )
               : Container(),
         ),
