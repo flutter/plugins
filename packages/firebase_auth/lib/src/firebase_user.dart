@@ -132,6 +132,27 @@ class FirebaseUser extends UserInfo {
     );
   }
 
+  /// Updates the phone number of the user.
+  ///
+  /// The new phone number credential corresponding to the phone number
+  /// to be added to the Firebase account, if a phone number is already linked to the account.
+  /// this new phone number will replace it.
+  ///
+  /// **Important**: This is a security sensitive operation that requires
+  /// the user to have recently signed in.
+  ///
+  Future<void> updatePhoneNumberCredential(AuthCredential credential) async {
+    assert(credential != null);
+    await FirebaseAuth.channel.invokeMethod<void>(
+      'updatePhoneNumberCredential',
+      <String, dynamic>{
+        'app': _app.name,
+        'provider': credential._provider,
+        'data': credential._data,
+      },
+    );
+  }
+
   /// Updates the password of the user.
   ///
   /// Anonymous users who update both their email and password will no
