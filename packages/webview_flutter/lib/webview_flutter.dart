@@ -206,17 +206,17 @@ class WebView extends StatefulWidget {
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
 
-  /// Set to `true` in order to be able to debug WebView on Android
+  /// Controls whether WebView debugging is enabled.
   ///
-  /// Read more about [WebView debugging on Android](https://developers.google.com/web/tools/chrome-devtools/remote-debugging/)
+  /// Setting this to true enables [WebView debugging on Android](https://developers.google.com/web/tools/chrome-devtools/remote-debugging/).
   ///
-  /// WebView debugging is enabled by default in dev builds on iOS
+  /// WebView debugging is enabled by default in dev builds on iOS.
   ///
-  /// To debug WebView on iOS you need to:
-  /// - enable developer options (Open Safari, go to Preferences -> Advanced and make sure "Show Develop Menu in Menubar" is on.)
+  /// To debug WebViews on iOS:
+  /// - Enable developer options (Open Safari, go to Preferences -> Advanced and make sure "Show Develop Menu in Menubar" is on.)
   /// - From the Menu-bar (of Safari) select Develop -> iPhone Simulator -> <your webview page>
   ///
-  /// Default value is `false`
+  /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
 
   @override

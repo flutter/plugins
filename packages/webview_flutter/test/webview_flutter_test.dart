@@ -6,6 +6,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -723,6 +724,28 @@ void main() {
 
       expect(platformWebView.debuggingEnabled, false);
     });
+
+    testWidgets('can be changed', (WidgetTester tester) async {
+      final GlobalKey key = GlobalKey();
+      await tester.pumpWidget(WebView(key: key));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      await tester.pumpWidget(WebView(
+        key: key,
+        debuggingEnabled: true,
+      ));
+
+      expect(platformWebView.debuggingEnabled, true);
+
+      await tester.pumpWidget(WebView(
+        key: key,
+        debuggingEnabled: false,
+      ));
+
+      expect(platformWebView.debuggingEnabled, false);
+    });
   });
 }
 
@@ -775,6 +798,9 @@ class FakePlatformWebView {
         }
         if (call.arguments['hasNavigationDelegate'] != null) {
           hasNavigationDelegate = call.arguments['hasNavigationDelegate'];
+        }
+        if (call.arguments['debuggingEnabled'] != null) {
+          debuggingEnabled = call.arguments['debuggingEnabled'];
         }
         break;
       case 'canGoBack':
