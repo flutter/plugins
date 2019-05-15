@@ -1,3 +1,7 @@
+## 0.11.0+1
+
+* Updated the error code documentation for `linkWithCredential`.
+
 ## 0.11.0
 
 * **Breaking change**: `linkWithCredential` is now a function of `FirebaseUser`instead of
