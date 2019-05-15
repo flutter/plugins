@@ -68,6 +68,9 @@ abstract class PerformanceAttributes {
     );
   }
 
+  /// Returns the value of an attribute with [name].
+  String getAttribute(String name) => _attributes[name];
+
   /// All attributes added.
   Future<Map<String, String>> getAttributes() {
     if (_hasStopped) {
