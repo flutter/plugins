@@ -346,10 +346,9 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   @override
   Widget build(BuildContext context) {
     if (initialized) {
-      final Size size = controller.value.size;
       return Center(
         child: AspectRatio(
-          aspectRatio: size.width / size.height,
+          aspectRatio: controller.value.aspectRatio,
           child: VideoPlayPause(controller),
         ),
       );
@@ -379,6 +378,7 @@ void main() {
             children: <Widget>[
               Column(
                 children: <Widget>[
+                  const Text('With remote mp4'),
                   NetworkPlayerLifeCycle(
                     'http://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4',
                     (BuildContext context, VideoPlayerController controller) =>
@@ -387,17 +387,13 @@ void main() {
                   Container(
                     padding: const EdgeInsets.only(top: 20.0),
                   ),
+                  const Text('With remote m3u8'),
                   NetworkPlayerLifeCycle(
                     'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
                     (BuildContext context, VideoPlayerController controller) =>
                         AspectRatioVideo(controller),
                   ),
                 ],
-              ),
-              NetworkPlayerLifeCycle(
-                'http://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4',
-                (BuildContext context, VideoPlayerController controller) =>
-                    AspectRatioVideo(controller),
               ),
               AssetPlayerLifeCycle(
                   'assets/Butterfly-209.mp4',
