@@ -116,30 +116,44 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
     return filteredPrefs;
   }
 
+  void backgroundTask(final Editor editor, final MethodChannel.Result result) {
+    new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                boolean status = editor.commit();
+                result.success(status);
+              }
+            })
+        .start();
+  }
+
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     String key = call.argument("key");
-    boolean status = false;
+    Editor editor;
     try {
       switch (call.method) {
         case "setBool":
-          status = preferences.edit().putBoolean(key, (boolean) call.argument("value")).commit();
+          editor = preferences.edit().putBoolean(key, (boolean) call.argument("value"));
+          backgroundTask(editor, result);
           break;
         case "setDouble":
           double doubleValue = ((Number) call.argument("value")).doubleValue();
           String doubleValueStr = Double.toString(doubleValue);
-          status = preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr).commit();
+          editor = preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr);
+          backgroundTask(editor, result);
           break;
         case "setInt":
           Number number = call.argument("value");
-          Editor editor = preferences.edit();
+          editor = preferences.edit();
           if (number instanceof BigInteger) {
             BigInteger integerValue = (BigInteger) number;
             editor.putString(key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX));
           } else {
             editor.putLong(key, number.longValue());
           }
-          status = editor.commit();
+          backgroundTask(editor, result);
           break;
         case "setString":
           String value = (String) call.argument("value");
@@ -150,21 +164,23 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
                 null);
             return;
           }
-          status = preferences.edit().putString(key, value).commit();
+          editor = preferences.edit().putString(key, value);
+          backgroundTask(editor, result);
           break;
         case "setStringList":
           List<String> list = call.argument("value");
-          status = preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list)).commit();
+          editor = preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list));
+          backgroundTask(editor, result);
           break;
         case "commit":
           // We've been committing the whole time.
-          status = true;
+          result.success(true);
           break;
         case "getAll":
           result.success(getAllPrefs());
           return;
         case "remove":
-          status = preferences.edit().remove(key).commit();
+          result.success(preferences.edit().remove(key).commit());
           break;
         case "clear":
           Set<String> keySet = getAllPrefs().keySet();
@@ -172,13 +188,12 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           for (String keyToDelete : keySet) {
             clearEditor.remove(keyToDelete);
           }
-          status = clearEditor.commit();
+          backgroundTask(clearEditor, result);
           break;
         default:
           result.notImplemented();
           break;
       }
-      result.success(status);
     } catch (IOException e) {
       result.error("IOException encountered", call.method, e);
     }
