@@ -117,7 +117,7 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
     return filteredPrefs;
   }
 
-  void backgroundTask(final Editor editor, final MethodChannel.Result result) {
+  private void commitAsync(final Editor editor, final MethodChannel.Result result) {
     new AsyncTask<Void, Void, Boolean>() {
       @Override
       protected Boolean doInBackground(Void... voids) {
@@ -126,7 +126,6 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
 
       @Override
       protected void onPostExecute(Boolean value) {
-        super.onPostExecute(value);
         result.success(value);
       }
     }.execute();
@@ -135,29 +134,28 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     String key = call.argument("key");
-    Editor editor;
     try {
       switch (call.method) {
         case "setBool":
-          editor = preferences.edit().putBoolean(key, (boolean) call.argument("value"));
-          backgroundTask(editor, result);
+          commitAsync(preferences.edit().putBoolean(key, (boolean) call.argument("value")), result);
           break;
         case "setDouble":
           double doubleValue = ((Number) call.argument("value")).doubleValue();
           String doubleValueStr = Double.toString(doubleValue);
-          editor = preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr);
-          backgroundTask(editor, result);
+          commitAsync(preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr), result);
           break;
         case "setInt":
           Number number = call.argument("value");
           editor = preferences.edit();
           if (number instanceof BigInteger) {
             BigInteger integerValue = (BigInteger) number;
-            editor.putString(key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX));
+            commitAsync(
+                editor.putString(
+                    key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX)),
+                result);
           } else {
-            editor.putLong(key, number.longValue());
+            commitAsync(editor.putLong(key, number.longValue()), result);
           }
-          backgroundTask(editor, result);
           break;
         case "setString":
           String value = (String) call.argument("value");
@@ -168,13 +166,12 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
                 null);
             return;
           }
-          editor = preferences.edit().putString(key, value);
-          backgroundTask(editor, result);
+          commitAsync(preferences.edit().putString(key, value), result);
           break;
         case "setStringList":
           List<String> list = call.argument("value");
-          editor = preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list));
-          backgroundTask(editor, result);
+          commitAsync(
+              preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list)), result);
           break;
         case "commit":
           // We've been committing the whole time.
@@ -184,8 +181,7 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           result.success(getAllPrefs());
           return;
         case "remove":
-          editor = preferences.edit().remove(key);
-          backgroundTask(editor, result);
+          commitAsync(preferences.edit().remove(key), result);
           break;
         case "clear":
           Set<String> keySet = getAllPrefs().keySet();
@@ -193,7 +189,7 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           for (String keyToDelete : keySet) {
             clearEditor.remove(keyToDelete);
           }
-          backgroundTask(clearEditor, result);
+          commitAsync(clearEditor, result);
           break;
         default:
           result.notImplemented();
