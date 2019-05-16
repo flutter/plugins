@@ -1,3 +1,7 @@
+## 0.5.2+1
+
+* Fix bug that prevented video recording with audio.
+
 ## 0.5.2
 
 * Added capability to disable audio for the `CameraController`. (e.g. `CameraController(_, _,
