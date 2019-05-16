@@ -6,6 +6,7 @@ package io.flutter.plugins.sharedpreferences;
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.util.Base64;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -117,15 +118,18 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   }
 
   void backgroundTask(final Editor editor, final MethodChannel.Result result) {
-    new Thread(
-            new Runnable() {
-              @Override
-              public void run() {
-                boolean status = editor.commit();
-                result.success(status);
-              }
-            })
-        .start();
+    new AsyncTask<Void, Void, Boolean>() {
+      @Override
+      protected Boolean doInBackground(Void... voids) {
+        return editor.commit();
+      }
+
+      @Override
+      protected void onPostExecute(Boolean value) {
+        super.onPostExecute(value);
+        result.success(value);
+      }
+    }.execute();
   }
 
   @Override
