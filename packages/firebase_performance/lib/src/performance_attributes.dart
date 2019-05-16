@@ -36,7 +36,7 @@ abstract class PerformanceAttributes {
   /// [maxAttributeValueLength], this method will return without adding
   /// anything.
   ///
-  /// If the trace has been stopped, this method returns without adding the
+  /// If this object has been stopped, this method returns without adding the
   /// attribute.
   Future<void> putAttribute(String name, String value) {
     if (_hasStopped ||
@@ -58,6 +58,9 @@ abstract class PerformanceAttributes {
   }
 
   /// Removes an already added attribute.
+  ///
+  /// If this object has been stopped, this method returns without adding the
+  /// attribute.
   Future<void> removeAttribute(String name) {
     if (_hasStopped) return Future<void>.value(null);
 
