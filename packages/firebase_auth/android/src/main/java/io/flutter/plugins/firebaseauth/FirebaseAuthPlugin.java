@@ -139,6 +139,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "updateEmail":
         handleUpdateEmail(call, result, getAuth(call));
         break;
+      case "updatePhoneNumberCredential":
+        handleUpdatePhoneNumber(call, result, getAuth(call));
+        break;
       case "updatePassword":
         handleUpdatePassword(call, result, getAuth(call));
         break;
