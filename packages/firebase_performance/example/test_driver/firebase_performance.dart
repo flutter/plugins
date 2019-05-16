@@ -167,13 +167,15 @@ void main() {
         );
       });
 
-      test('http setters shouldn\'t cause a crash', () {
+      test('http setters shouldn\'t cause a crash', () async {
         testMetric.start();
 
         testMetric.httpResponseCode = 443;
         testMetric.requestPayloadSize = 56734;
         testMetric.responseContentType = '1984';
         testMetric.responsePayloadSize = 4949;
+
+        await pumpEventQueue();
       });
     });
   });
