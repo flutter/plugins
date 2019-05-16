@@ -1,3 +1,7 @@
+## 0.3.0+1
+
+* Update iOS dependencies to latest.
+
 ## 0.3.0
 
 * Update Android dependencies to latest.

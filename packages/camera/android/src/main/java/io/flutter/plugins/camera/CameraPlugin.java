@@ -82,11 +82,13 @@ public class CameraPlugin implements MethodCallHandler {
   }
 
   public static void registerWith(Registrar registrar) {
-    if (registrar.activity() == null) {
+    if (registrar.activity() == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       // When a background flutter view tries to register the plugin, the registrar has no activity.
-      // We stop the registration process as this plugin is foreground only.
+      // We stop the registration process as this plugin is foreground only. Also, if the sdk is
+      // less than 21 (min sdk for Camera2) we don't register the plugin.
       return;
     }
+
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/camera");
 
@@ -126,8 +128,8 @@ public class CameraPlugin implements MethodCallHandler {
             cameras.add(details);
           }
           result.success(cameras);
-        } catch (CameraAccessException e) {
-          result.error("cameraAccess", e.getMessage(), null);
+        } catch (Exception e) {
+          handleException(e, result);
         }
         break;
       case "initialize":
@@ -168,8 +170,8 @@ public class CameraPlugin implements MethodCallHandler {
           try {
             camera.startPreviewWithImageStream();
             result.success(null);
-          } catch (CameraAccessException e) {
-            result.error("CameraAccess", e.getMessage(), null);
+          } catch (Exception e) {
+            handleException(e, result);
           }
           break;
         }
@@ -178,8 +180,8 @@ public class CameraPlugin implements MethodCallHandler {
           try {
             camera.startPreview();
             result.success(null);
-          } catch (CameraAccessException e) {
-            result.error("CameraAccess", e.getMessage(), null);
+          } catch (Exception e) {
+            handleException(e, result);
           }
           break;
         }
@@ -196,6 +198,18 @@ public class CameraPlugin implements MethodCallHandler {
         result.notImplemented();
         break;
     }
+  }
+
+  // We move catching CameraAccessException out of onMethodCall because it causes a crash
+  // on plugin registration for sdks incompatible with Camera2 (< 21). We want this plugin to
+  // to be able to compile with <21 sdks for apps that want the camera and support earlier version.
+  @SuppressWarnings("ConstantConditions")
+  private void handleException(Exception exception, Result result) {
+    if (exception instanceof CameraAccessException) {
+      result.error("CameraAccess", exception.getMessage(), null);
+    }
+
+    throw (RuntimeException) exception;
   }
 
   private static class CompareSizesByArea implements Comparator<Size> {

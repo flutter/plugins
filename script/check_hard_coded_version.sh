@@ -19,7 +19,7 @@ function check_hard_coded_version() {
     PACKAGE_VERSION="$(cd "$dir" && cat pubspec.yaml | grep -E "^version: " | awk '{print $2}')"
     IOS_VERSION="$(cd "$dir" && grep -r "#define LIBRARY_VERSION" ios/Classes/*.m | awk '{print $3}')"
     ANDROID_VERSION="$(cd "$dir" && grep -r LIBRARY_VERSION android/src/main/java/* | awk '{print $8}')"
-    if [[ "$IOS_VERSION" == 0 && "$ANDROID_VERSION" == 0 ]]; then
+    if [[ "$IOS_VERSION" == "" && "$ANDROID_VERSION" == "" ]]; then
       echo "No hard coded version found"
     elif [[ "$IOS_VERSION" == "@\"$PACKAGE_VERSION\"" && "$ANDROID_VERSION" == "\"$PACKAGE_VERSION\";" ]]; then
       echo "Hard coded version matched: $PACKAGE_VERSION"
