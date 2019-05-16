@@ -1,6 +1,6 @@
 ## 0.5.3
 
-* .commit() calls are asynchronous.
+* .commit() calls are now run in an async background task on Android.
 
 ## 0.5.2
 
