@@ -1,4 +1,4 @@
-## 0.5.3
+## 0.5.2+1
 
 * .commit() calls are now run in an async background task on Android.
 
