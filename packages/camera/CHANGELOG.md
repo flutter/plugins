@@ -1,3 +1,10 @@
+## 0.5.1
+
+* Can now be compiled with earlier Android sdks below 21 when
+`<uses-sdk tools:overrideLibrary="io.flutter.plugins.camera"/>` has been added to the project
+`AndroidManifest.xml`. For sdks below 21, the plugin won't be registered and calls to it will throw
+a `MissingPluginException.`
+
 ## 0.5.0
 
 * **Breaking Change** This plugin no longer handles closing and opening the camera on Android
