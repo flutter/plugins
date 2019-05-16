@@ -1,3 +1,8 @@
+## 0.5.2
+
+* Added capability to disable audio for the `CameraController`. (e.g. `CameraController(_, _,
+ enableAudio: false);`)
+
 ## 0.5.1
 
 * Can now be compiled with earlier Android sdks below 21 when
