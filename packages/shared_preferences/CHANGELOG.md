@@ -1,3 +1,7 @@
+## 0.5.3
+
+* .commit() calls are asynchronous.
+
 ## 0.5.2
 
 * Add containsKey method.
