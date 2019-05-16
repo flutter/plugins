@@ -59,7 +59,7 @@ abstract class PerformanceAttributes {
 
   /// Removes an already added attribute.
   ///
-  /// If this object has been stopped, this method returns without adding the
+  /// If this object has been stopped, this method returns without removing the
   /// attribute.
   Future<void> removeAttribute(String name) {
     if (_hasStopped) return Future<void>.value(null);
