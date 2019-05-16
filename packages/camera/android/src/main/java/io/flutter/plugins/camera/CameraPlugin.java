@@ -323,9 +323,7 @@ public class CameraPlugin implements MethodCallHandler {
 
             activity.requestPermissions(
                 enableAudio
-                    ? new String[] {
-                      Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
-                    }
+                    ? new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}
                     : new String[] {Manifest.permission.CAMERA},
                 CAMERA_REQUEST_ID);
           }
