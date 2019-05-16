@@ -180,7 +180,8 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           result.success(getAllPrefs());
           return;
         case "remove":
-          result.success(preferences.edit().remove(key).commit());
+          editor = preferences.edit().remove(key);
+          backgroundTask(editor, result);
           break;
         case "clear":
           Set<String> keySet = getAllPrefs().keySet();
