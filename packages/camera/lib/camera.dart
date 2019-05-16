@@ -203,12 +203,16 @@ class CameraValue {
 ///
 /// To show the camera preview on the screen use a [CameraPreview] widget.
 class CameraController extends ValueNotifier<CameraValue> {
-  CameraController(this.description, this.resolutionPreset,
-      [this.enableAudio = true])
-      : super(const CameraValue.uninitialized());
+  CameraController(
+    this.description,
+    this.resolutionPreset, {
+    this.enableAudio = true,
+  }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
   final ResolutionPreset resolutionPreset;
+
+  /// Whether to include audio when recording a video.
   final bool enableAudio;
 
   int _textureId;

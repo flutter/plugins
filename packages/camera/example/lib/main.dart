@@ -133,7 +133,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       padding: const EdgeInsets.only(left: 25),
       child: Row(
         children: <Widget>[
-          const Text('Audio'),
+          const Text('Enable Audio:'),
           Switch(
             value: enableAudio,
             onChanged: (bool value) {
@@ -256,8 +256,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (controller != null) {
       await controller.dispose();
     }
-    controller =
-        CameraController(cameraDescription, ResolutionPreset.high, enableAudio);
+    controller = CameraController(
+      cameraDescription,
+      ResolutionPreset.high,
+      enableAudio: enableAudio,
+    );
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
