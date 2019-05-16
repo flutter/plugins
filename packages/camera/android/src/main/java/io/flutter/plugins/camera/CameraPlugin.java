@@ -306,8 +306,8 @@ public class CameraPlugin implements MethodCallHandler {
             if (activity == null) {
               throw new IllegalStateException("No activity available!");
             }
-            
-            activity()
+
+            activity
                 .requestPermissions(
                     enableAudio
                         ? new String[] {
