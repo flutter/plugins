@@ -146,15 +146,14 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           break;
         case "setInt":
           Number number = call.argument("value");
-          editor = preferences.edit();
           if (number instanceof BigInteger) {
             BigInteger integerValue = (BigInteger) number;
             commitAsync(
-                editor.putString(
+                preferences.edit().putString(
                     key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX)),
                 result);
           } else {
-            commitAsync(editor.putLong(key, number.longValue()), result);
+            commitAsync(preferences.edit().putLong(key, number.longValue()), result);
           }
           break;
         case "setString":
