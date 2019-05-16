@@ -307,14 +307,13 @@ public class CameraPlugin implements MethodCallHandler {
               throw new IllegalStateException("No activity available!");
             }
 
-            activity
-                .requestPermissions(
-                    enableAudio
-                        ? new String[] {
-                          Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
-                        }
-                        : new String[] {Manifest.permission.CAMERA},
-                    CAMERA_REQUEST_ID);
+            activity.requestPermissions(
+                enableAudio
+                    ? new String[] {
+                      Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
+                    }
+                    : new String[] {Manifest.permission.CAMERA},
+                CAMERA_REQUEST_ID);
           }
         }
       } catch (CameraAccessException e) {

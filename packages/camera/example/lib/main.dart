@@ -36,7 +36,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   String videoPath;
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
-  bool audio = true;
+  bool enableAudio = true;
 
   @override
   void initState() {
@@ -92,6 +92,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
           ),
           _captureControlRowWidget(),
+          _toggleAudioWidget(),
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
@@ -128,21 +129,22 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Toggle recording audio
   Widget _toggleAudioWidget() {
-    return Column(
-      children: <Widget>[
-        const Text('Audio'),
-        Switch(
-          value: audio,
-          onChanged: (bool value) {
-            setState(() {
-              audio = value;
-            });
-            if (controller != null) {
-              onNewCameraSelected(controller.description);
-            }
-          },
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(left: 25),
+      child: Row(
+        children: <Widget>[
+          const Text('Audio'),
+          Switch(
+            value: enableAudio,
+            onChanged: (bool value) {
+              enableAudio = value;
+              if (controller != null) {
+                onNewCameraSelected(controller.description);
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -154,9 +156,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            _toggleAudioWidget(),
             videoController == null && imagePath == null
-                ? null
+                ? Container()
                 : SizedBox(
                     child: (videoController == null)
                         ? Image.file(File(imagePath))
@@ -256,7 +257,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       await controller.dispose();
     }
     controller =
-        CameraController(cameraDescription, ResolutionPreset.high, audio);
+        CameraController(cameraDescription, ResolutionPreset.high, enableAudio);
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
