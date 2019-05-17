@@ -1,3 +1,6 @@
+## 5.0.2+1
+* Suppress a handled deprecation warning on iOS
+
 ## 5.0.2
 * Fixes `closeWebView` failure on iOS.
 
