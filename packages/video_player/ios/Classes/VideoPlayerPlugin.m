@@ -88,7 +88,8 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                                 usingBlock:^(NSNotification* note) {
                                                   if (self->_isLooping) {
                                                     AVPlayerItem* p = [note object];
-                                                    [p seekToTime:kCMTimeZero];
+                                                    [p seekToTime:kCMTimeZero
+                                                        completionHandler:nil];
                                                   } else {
                                                     if (self->_eventSink) {
                                                       self->_eventSink(@{@"event" : @"completed"});
