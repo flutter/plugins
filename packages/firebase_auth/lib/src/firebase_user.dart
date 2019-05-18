@@ -7,19 +7,21 @@ part of firebase_auth;
 /// Represents a user.
 class FirebaseUser extends UserInfo {
   FirebaseUser._(Map<dynamic, dynamic> data, FirebaseApp app)
-      : providerData = data['providerData']
-            .map<UserInfo>((dynamic item) => UserInfo._(item, app))
-            .toList(),
+      : providerData = data['providerData'].map<UserInfo>((dynamic item) => UserInfo._(item, app)).toList(),
         _metadata = FirebaseUserMetadata._(data),
+        _additionalUserInfo = AdditionalUserInfo._(data['additionalUserInfo']),
         super._(data, app);
 
   final List<UserInfo> providerData;
   final FirebaseUserMetadata _metadata;
+  final AdditionalUserInfo _additionalUserInfo;
 
   // Returns true if the user is anonymous; that is, the user account was
   // created with signInAnonymously() and has not been linked to another
   // account.
   FirebaseUserMetadata get metadata => _metadata;
+
+  AdditionalUserInfo get additionalUserInfo => _additionalUserInfo;
 
   bool get isAnonymous => _data['isAnonymous'];
 
@@ -82,8 +84,7 @@ class FirebaseUser extends UserInfo {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    await FirebaseAuth.channel.invokeMethod(
-        'sendEmailVerification', <String, String>{'app': _app.name});
+    await FirebaseAuth.channel.invokeMethod('sendEmailVerification', <String, String>{'app': _app.name});
   }
 
   /// Manually refreshes the data of the current user (for example,
@@ -212,8 +213,7 @@ class FirebaseUser extends UserInfo {
   ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
   ///   • `ERROR_USER_NOT_FOUND` - If the user has been deleted (for example, in the Firebase console)
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
-  Future<FirebaseUser> reauthenticateWithCredential(
-      AuthCredential credential) async {
+  Future<FirebaseUser> reauthenticateWithCredential(AuthCredential credential) async {
     assert(credential != null);
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
