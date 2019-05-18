@@ -16,6 +16,7 @@ import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.ActionCodeSettings;
+import com.google.firebase.auth.AdditionalUserInfo;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -290,7 +291,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       return;
     }
     Map<String, Object> userMap = mapFromUser(user);
-    result.success(userMap);
+    result.success(Collections.unmodifiableMap(userMap));
   }
 
   private void handleSignInAnonymously(
@@ -487,8 +488,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
 
     currentUser
-        .reauthenticate(credential)
-        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+        .reauthenticateAndRetrieveData(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleUnlinkFromProvider(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
@@ -671,8 +672,11 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         reportException(result, task.getException());
       } else {
         FirebaseUser user = task.getResult().getUser();
-        Map<String, Object> userMap = Collections.unmodifiableMap(mapFromUser(user));
-        result.success(userMap);
+        Map<String, Object> userMap = mapFromUser(user);
+        Map<String, Object> additionalMap = mapFromAdditionalUserInfo(
+                task.getResult().getAdditionalUserInfo());
+        userMap.put("additionalUserInfo", Collections.unmodifiableMap(additionalMap));
+        result.success(Collections.unmodifiableMap(userMap));
       }
     }
   }
@@ -752,10 +756,19 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       userMap.put("isAnonymous", user.isAnonymous());
       userMap.put("isEmailVerified", user.isEmailVerified());
       userMap.put("providerData", Collections.unmodifiableList(providerData));
-      return Collections.unmodifiableMap(userMap);
+      return userMap;
     } else {
       return null;
     }
+  }
+
+  private Map<String, Object> mapFromAdditionalUserInfo(AdditionalUserInfo additionalUserInfo) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("providerId", additionalUserInfo.getProviderId());
+    map.put("profile", additionalUserInfo.getProfile());
+    map.put("username", additionalUserInfo.getUsername());
+    map.put("isNewUser", additionalUserInfo.isNewUser());
+    return map;
   }
 
   private void markUserRequired(Result result) {
