@@ -21,6 +21,8 @@ class FirebaseUser extends UserInfo {
   // account.
   FirebaseUserMetadata get metadata => _metadata;
 
+  /// Object that contains additional user information as a result of a successful sign-in, link, or re-authentication operation.
+  /// Available information contained within depends on the provider with which a sign-in, link, or re-authenticate operation was most recently done.
   AdditionalUserInfo get additionalUserInfo => _additionalUserInfo;
 
   bool get isAnonymous => _data['isAnonymous'];
