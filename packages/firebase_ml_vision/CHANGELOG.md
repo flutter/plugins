@@ -1,3 +1,7 @@
+## 0.8.0+1
+
+* Release CVPixelBuffer to prevent memory leak.
+
 ## 0.8.0
 
 * Update Android dependencies to latest.
