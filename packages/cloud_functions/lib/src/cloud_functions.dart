@@ -37,6 +37,6 @@ class CloudFunctions {
   /// @param parameters Parameters to be passed to the callable function.
   HttpsCallable getHttpsCallable(
       {@required String functionName, Map<String, dynamic> parameters}) {
-    return HttpsCallable._(this, functionName);
+    return HttpsCallable._(this, functionName, parameters);
   }
 }

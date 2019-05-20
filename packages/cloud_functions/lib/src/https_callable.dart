@@ -8,10 +8,11 @@ part of cloud_functions;
 ///
 /// You can get an instance by calling [CloudFunctions.instance.getHTTPSCallable].
 class HttpsCallable {
-  HttpsCallable._(this._cloudFunctions, this._functionName);
+  HttpsCallable._(this._cloudFunctions, this._functionName, this._parameters);
 
   final CloudFunctions _cloudFunctions;
   final String _functionName;
+  final Map<String, dynamic> _parameters;
 
   /// Executes this Callable HTTPS trigger asynchronously.
   ///
@@ -36,7 +37,7 @@ class HttpsCallable {
         'region': _cloudFunctions._region,
         'timeoutMicroseconds': timeout?.inMicroseconds,
         'functionName': _functionName,
-        'parameters': parameters,
+        'parameters': parameters ?? _parameters,
       });
       return HttpsCallableResult._(response);
     } on PlatformException catch (e) {
