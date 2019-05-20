@@ -1,3 +1,7 @@
+## 0.6.0+5
+
+* iOS: Picked image now has all the correct meta data from the original image, includes GPS, orientation and etc.
+
 ## 0.6.0+4
 
 * iOS: Using first byte to determine original image type.

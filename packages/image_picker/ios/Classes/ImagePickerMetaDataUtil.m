@@ -44,6 +44,18 @@ const FlutterImagePickerMIMEType kFlutterImagePickerMIMETypeDefault =
   return metadata;
 }
 
++ (NSData *)updateMetaData:(NSDictionary *)metaData toImage:(NSData *)imageData {
+  NSMutableData *mutableData = [NSMutableData data];
+  CGImageSourceRef cgImage = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
+  CGImageDestinationRef destination = CGImageDestinationCreateWithData(
+      (__bridge CFMutableDataRef)mutableData, CGImageSourceGetType(cgImage), 1, nil);
+  CGImageDestinationAddImageFromSource(destination, cgImage, 0, (__bridge CFDictionaryRef)metaData);
+  CGImageDestinationFinalize(destination);
+  CFRelease(cgImage);
+  CFRelease(destination);
+  return mutableData;
+}
+
 + (NSDictionary *)getEXIFFromImageData:(NSData *)imageData {
   NSDictionary *metaData = [self getMetaDataFromImageData:imageData];
   return metaData[(__bridge NSString *)kCGImagePropertyExifDictionary];
@@ -88,6 +100,31 @@ const FlutterImagePickerMIMEType kFlutterImagePickerMIMETypeDefault =
       return UIImageJPEGRepresentation(image, qualityFloat);
     }
   }
+}
+
++ (UIImageOrientation)getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+    (CGImagePropertyOrientation)cgImageOrientation {
+  switch (cgImageOrientation) {
+    case kCGImagePropertyOrientationUp:
+      return UIImageOrientationUp;
+    case kCGImagePropertyOrientationDown:
+      return UIImageOrientationDown;
+    case kCGImagePropertyOrientationLeft:
+      return UIImageOrientationRight;
+    case kCGImagePropertyOrientationRight:
+      return UIImageOrientationLeft;
+    case kCGImagePropertyOrientationUpMirrored:
+      return UIImageOrientationUpMirrored;
+    case kCGImagePropertyOrientationDownMirrored:
+      return UIImageOrientationDownMirrored;
+    case kCGImagePropertyOrientationLeftMirrored:
+      return UIImageOrientationRightMirrored;
+    case kCGImagePropertyOrientationRightMirrored:
+      return UIImageOrientationLeftMirrored;
+    default:
+      return UIImageOrientationUp;
+  }
+  return UIImageOrientationUp;
 }
 
 @end

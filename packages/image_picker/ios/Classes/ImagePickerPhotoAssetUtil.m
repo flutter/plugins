@@ -20,33 +20,41 @@
 + (NSString *)saveImageWithOriginalImageData:(NSData *)originalImageData image:(UIImage *)image {
   NSString *suffix = kFlutterImagePickerDefaultSuffix;
   FlutterImagePickerMIMEType type = kFlutterImagePickerMIMETypeDefault;
-  NSDictionary *exifData = nil;
+  NSDictionary *metaData = nil;
   // Getting the image type from the original image data if necessary.
   if (originalImageData) {
     type = [ImagePickerMetaDataUtil getImageMIMETypeFromImageData:originalImageData];
     suffix =
         [ImagePickerMetaDataUtil imageTypeSuffixFromType:type] ?: kFlutterImagePickerDefaultSuffix;
-    exifData = [ImagePickerMetaDataUtil getEXIFFromImageData:originalImageData];
+    metaData = [ImagePickerMetaDataUtil getMetaDataFromImageData:originalImageData];
   }
-  return [self saveImageWithExif:exifData image:image suffix:suffix type:type];
+  return [self saveImageWithMetaData:metaData image:image suffix:suffix type:type];
 }
 
 + (NSString *)saveImageWithPickerInfo:(nullable NSDictionary *)info image:(UIImage *)image {
-  NSDictionary *exif = info[UIImagePickerControllerMediaMetadata]
-                           [(__bridge NSString *)kCGImagePropertyExifDictionary];
-  return [self saveImageWithExif:exif
-                           image:image
-                          suffix:kFlutterImagePickerDefaultSuffix
-                            type:kFlutterImagePickerMIMETypeDefault];
+  NSDictionary *metaData = info[UIImagePickerControllerMediaMetadata];
+  return [self saveImageWithMetaData:metaData
+                               image:image
+                              suffix:kFlutterImagePickerDefaultSuffix
+                                type:kFlutterImagePickerMIMETypeDefault];
 }
 
-+ (NSString *)saveImageWithExif:(NSDictionary *)exif
-                          image:(UIImage *)image
-                         suffix:(NSString *)suffix
-                           type:(FlutterImagePickerMIMEType)type {
-  NSData *data = [ImagePickerMetaDataUtil convertImage:image usingType:type quality:nil];
-  if (exif) {
-    data = [ImagePickerMetaDataUtil updateEXIFData:exif toImage:data];
++ (NSString *)saveImageWithMetaData:(NSDictionary *)metaData
+                              image:(UIImage *)image
+                             suffix:(NSString *)suffix
+                               type:(FlutterImagePickerMIMEType)type {
+  CGImagePropertyOrientation orientation = (CGImagePropertyOrientation)[metaData[(
+      __bridge NSString *)kCGImagePropertyOrientation] integerValue];
+  UIImage *newImage = [UIImage
+      imageWithCGImage:[image CGImage]
+                 scale:1.0
+           orientation:
+               [ImagePickerMetaDataUtil
+                   getNormalizedUIImageOrientationFromCGImagePropertyOrientation:orientation]];
+
+  NSData *data = [ImagePickerMetaDataUtil convertImage:newImage usingType:type quality:nil];
+  if (metaData) {
+    data = [ImagePickerMetaDataUtil updateMetaData:metaData toImage:data];
   }
 
   NSString *fileExtension = [@"image_picker_%@" stringByAppendingString:suffix];
