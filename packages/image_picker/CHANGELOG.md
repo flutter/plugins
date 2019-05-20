@@ -1,3 +1,9 @@
+## 0.6.0+4
+
+* iOS: Using first byte to determine original image type.
+* iOS: Added XCTest target.
+* iOS: The picked image now has the correct EXIF data copied from the original image.
+
 ## 0.6.0+3
 
 * Android: fixed assertion failures due to reply messages that were sent on the wrong thread.
