@@ -9,6 +9,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'platform_interface.dart';
+import 'src/webview_android.dart';
+import 'src/webview_ios.dart';
+
 typedef void WebViewCreatedCallback(WebViewController controller);
 
 enum JavascriptMode {
@@ -121,6 +125,28 @@ class WebView extends StatefulWidget {
   })  : assert(javascriptMode != null),
         super(key: key);
 
+  static WebViewPlatformInterface _implementation;
+
+  static set implementation(WebViewPlatformInterface implementation) {
+    _implementation = implementation;
+  }
+
+  static WebViewPlatformInterface get implementation {
+    if (_implementation != null) {
+      return implementation;
+    }
+
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return WebViewAndroidImplementation();
+    }
+
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return WebViewIosImplementation();
+    }
+
+    throw UnsupportedError("Trying to use the default webview implementation for $defaultTargetPlatform but there isn't a default one");
+  }
+
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback onWebViewCreated;
 
@@ -229,40 +255,12 @@ class _WebViewState extends State<WebView> {
 
   @override
   Widget build(BuildContext context) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return GestureDetector(
-        // We prevent text selection by intercepting the long press event.
-        // This is a temporary stop gap due to issues with text selection on Android:
-        // https://github.com/flutter/flutter/issues/24585 - the text selection
-        // dialog is not responding to touch events.
-        // https://github.com/flutter/flutter/issues/24584 - the text selection
-        // handles are not showing.
-        // TODO(amirh): remove this when the issues above are fixed.
-        onLongPress: () {},
-        excludeFromSemantics: true,
-        child: AndroidView(
-          viewType: 'plugins.flutter.io/webview',
-          onPlatformViewCreated: _onPlatformViewCreated,
-          gestureRecognizers: widget.gestureRecognizers,
-          // WebView content is not affected by the Android view's layout direction,
-          // we explicitly set it here so that the widget doesn't require an ambient
-          // directionality.
-          layoutDirection: TextDirection.rtl,
-          creationParams: _CreationParams.fromWidget(widget).toMap(),
-          creationParamsCodec: const StandardMessageCodec(),
-        ),
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return UiKitView(
-        viewType: 'plugins.flutter.io/webview',
-        onPlatformViewCreated: _onPlatformViewCreated,
-        gestureRecognizers: widget.gestureRecognizers,
-        creationParams: _CreationParams.fromWidget(widget).toMap(),
-        creationParamsCodec: const StandardMessageCodec(),
-      );
-    }
-    return Text(
-        '$defaultTargetPlatform is not yet supported by the webview_flutter plugin');
+    return WebView.implementation.build(
+      context: context,
+      creationParams: _CreationParams.fromWidget(widget).toMap(),
+      onWebViewCreated: _onWebViewControllerCreated,
+      gestureRecognizers: widget.gestureRecognizers,
+    );
   }
 
   @override
@@ -279,8 +277,9 @@ class _WebViewState extends State<WebView> {
         (WebViewController controller) => controller._updateWidget(widget));
   }
 
-  void _onPlatformViewCreated(int id) {
-    final WebViewController controller = WebViewController._(id, widget);
+  void _onWebViewControllerCreated(WebViewPlatformControllerInterface platformController) {
+    final WebViewController controller =
+      WebViewController._(platformController.id, platformController, widget);
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
@@ -385,6 +384,7 @@ class _WebSettings {
 class WebViewController {
   WebViewController._(
     int id,
+    this._platformInterface,
     this._widget,
   ) : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
     _settings = _WebSettings.fromWidget(_widget);
@@ -393,6 +393,8 @@ class WebViewController {
   }
 
   final MethodChannel _channel;
+
+  final WebViewPlatformControllerInterface _platformInterface;
 
   _WebSettings _settings;
 
@@ -443,13 +445,7 @@ class WebViewController {
   }) async {
     assert(url != null);
     _validateUrlString(url);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod('loadUrl', <String, dynamic>{
-      'url': url,
-      'headers': headers,
-    });
+    return _platformInterface.loadUrl(url, headers);
   }
 
   /// Accessor to the current URL that the WebView is displaying.
