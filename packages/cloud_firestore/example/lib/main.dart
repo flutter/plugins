@@ -12,10 +12,10 @@ Future<void> main() async {
   final FirebaseApp app = await FirebaseApp.configure(
     name: 'test',
     options: const FirebaseOptions(
-      googleAppID: '1:287014366430:android:236f9daea101f77e',
+      googleAppID: '1:79601577497:ios:5f2bcc6ba8cecddd',
       gcmSenderID: '79601577497',
-      apiKey: 'AIzaSyDzR5QjMvUqgLMDqJCjgKFAwlU-dFxDhbk',
-      projectID: 'akhil-app-f3152',
+      apiKey: 'AIzaSyArgmRGfB5kiQT6CunAOmKRVKEsxKmy6YI-G72PVU',
+      projectID: 'flutter-firestore',
     ),
   );
   final Firestore firestore = Firestore(app: app);

@@ -77,7 +77,7 @@ class Firestore {
     assert(path.contains("/"), "Collection IDs must not contain '/'.");
     return Query._(
       firestore: this,
-      collectionGroup: true,
+      isCollectionGroup: true,
       pathComponents: path.split('/'),
     );
   }
