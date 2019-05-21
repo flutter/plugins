@@ -127,10 +127,20 @@ class WebView extends StatefulWidget {
 
   static WebViewBuilder _platformBuilder;
 
+  /// Sets a custom [WebViewBuilder].
+  ///
+  /// This property can be set to use a custom platform implementation for WebViews.
+  ///
+  /// Setting `platformBuilder` doesn't affect [WebView]s that were already created.
+  ///
+  /// The default value is [AndroidWebViewBuilder] on Android and [CupertinoWebViewBuilder] on iOs.
   static set platformBuilder(WebViewBuilder platformBuilder) {
     _platformBuilder = platformBuilder;
   }
 
+  /// The [WebViewBuilder] that's used to create new [WebView]s.
+  ///
+  /// The default value is [AndroidWebViewBuilder] on Android and [CupertinoWebViewBuilder] on iOs.
   static WebViewBuilder get platformBuilder {
     if (_platformBuilder == null) {
       switch (defaultTargetPlatform) {
@@ -436,6 +446,9 @@ class WebViewController {
   }
 
   /// Loads the specified URL.
+  ///
+  /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
+  /// be added as key value pairs of HTTP headers for the request.
   ///
   /// `url` must not be null.
   ///

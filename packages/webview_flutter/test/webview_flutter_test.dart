@@ -1025,11 +1025,12 @@ class MyWebViewBuilder implements WebViewBuilder {
   MyWebViewPlatform lastPlatformBuilt;
 
   @override
-  Widget build(
-      {BuildContext context,
-      Map<String, dynamic> creationParams,
-      @required WebViewPlatformCreatedCallback onWebViewPlatformCreated,
-      Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers}) {
+  Widget build({
+    BuildContext context,
+    Map<String, dynamic> creationParams,
+    @required WebViewPlatformCreatedCallback onWebViewPlatformCreated,
+    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+  }) {
     assert(onWebViewPlatformCreated != null);
     lastPlatformBuilt = MyWebViewPlatform(creationParams, gestureRecognizers);
     onWebViewPlatformCreated(lastPlatformBuilt);

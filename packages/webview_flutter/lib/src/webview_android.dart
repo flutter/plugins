@@ -10,13 +10,19 @@ import 'package:flutter/widgets.dart';
 import '../platform_interface.dart';
 import 'webview_method_channel.dart';
 
+/// Builds an Android webview.
+///
+/// This is used as the default implementation for [WebView.platformBuilder] on Android. It uses
+/// an [AndroidView] to embed the webview in the widget hierarchy, and uses a method channel to
+/// communicate with the platform code.
 class AndroidWebViewBuilder implements WebViewBuilder {
   @override
-  Widget build(
-      {BuildContext context,
-      Map<String, dynamic> creationParams,
-      WebViewPlatformCreatedCallback onWebViewPlatformCreated,
-      Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers}) {
+  Widget build({
+    BuildContext context,
+    Map<String, dynamic> creationParams,
+    WebViewPlatformCreatedCallback onWebViewPlatformCreated,
+    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+  }) {
     return GestureDetector(
       // We prevent text selection by intercepting the long press event.
       // This is a temporary stop gap due to issues with text selection on Android:
