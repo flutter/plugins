@@ -25,7 +25,7 @@ abstract class WebViewPlatform {
   // the discussion is more focused.
   // In this temporary state WebViewController still uses a method channel directly for all other
   // method calls so we need to expose the webview ID.
-  // TODO(amirh): remove this before submitting this PR(after getting an LGTM for the overall approach).
+  // TODO(amirh): remove this before publishing this package.
   int get id;
 }
 
