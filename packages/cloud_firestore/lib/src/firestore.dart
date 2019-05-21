@@ -71,6 +71,16 @@ class Firestore {
     return CollectionReference._(this, path.split('/'));
   }
 
+  /// Gets a [Query] for the specified Collection group.
+  Query collectionGroup(String path) {
+    assert(path != null);
+    return Query._(
+      firestore: this,
+      collectionGroup: true,
+      pathComponents: path.split('/'),
+    );
+  }
+
   /// Gets a [DocumentReference] for the specified Firestore path.
   DocumentReference document(String path) {
     assert(path != null);
