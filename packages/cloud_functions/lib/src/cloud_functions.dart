@@ -32,7 +32,7 @@ class CloudFunctions {
   final String _region;
 
   /// Gets an instance of a Callable HTTPS trigger in Cloud Functions.
-  /// 
+  ///
   /// Can then be executed by calling `call()` on it.
   ///
   /// @param functionName The name of the callable function.
