@@ -12,10 +12,10 @@ Future<void> main() async {
   final FirebaseApp app = await FirebaseApp.configure(
     name: 'test',
     options: const FirebaseOptions(
-      googleAppID: '1:79601577497:ios:5f2bcc6ba8cecddd',
+      googleAppID: '1:287014366430:android:236f9daea101f77e',
       gcmSenderID: '79601577497',
-      apiKey: 'AIzaSyArgmRGfB5kiQT6CunAOmKRVKEsxKmy6YI-G72PVU',
-      projectID: 'flutter-firestore',
+      apiKey: 'AIzaSyDzR5QjMvUqgLMDqJCjgKFAwlU-dFxDhbk',
+      projectID: 'akhil-app-f3152',
     ),
   );
   final Firestore firestore = Firestore(app: app);
@@ -33,7 +33,7 @@ class MessageList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: firestore.collection('messages').snapshots(),
+      stream: firestore.collectionGroup('restros').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) return const Text('Loading...');
         final int messageCount = snapshot.data.documents.length;
