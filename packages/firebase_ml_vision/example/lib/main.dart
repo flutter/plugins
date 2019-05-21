@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-import 'dart:io';
-
+import 'package:camera/camera.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'detector_painters.dart';
+import 'utils.dart';
 
 void main() => runApp(MaterialApp(home: _MyHomePage()));
 
@@ -19,112 +18,116 @@ class _MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<_MyHomePage> {
-  File _imageFile;
-  Size _imageSize;
   dynamic _scanResults;
+  CameraController _camera;
+
   Detector _currentDetector = Detector.text;
+  bool _isDetecting = false;
+  CameraLensDirection _direction = CameraLensDirection.back;
 
-  Future<void> _getAndScanImage() async {
-    setState(() {
-      _imageFile = null;
-      _imageSize = null;
-    });
-
-    final File imageFile =
-        await ImagePicker.pickImage(source: ImageSource.gallery);
-
-    if (imageFile != null) {
-      _getImageSize(imageFile);
-      _scanImage(imageFile);
-    }
-
-    setState(() {
-      _imageFile = imageFile;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _initializeCamera();
   }
 
-  Future<void> _getImageSize(File imageFile) async {
-    final Completer<Size> completer = Completer<Size>();
-
-    final Image image = Image.file(imageFile);
-    image.image.resolve(const ImageConfiguration()).addListener(
-      (ImageInfo info, bool _) {
-        completer.complete(Size(
-          info.image.width.toDouble(),
-          info.image.height.toDouble(),
-        ));
-      },
+  void _initializeCamera() async {
+    CameraDescription description = await getCamera(_direction);
+    ImageRotation rotation = rotationIntToImageRotation(
+      description.sensorOrientation,
     );
 
-    final Size imageSize = await completer.future;
-    setState(() {
-      _imageSize = imageSize;
+    _camera = CameraController(
+      description,
+      defaultTargetPlatform == TargetPlatform.iOS
+          ? ResolutionPreset.low
+          : ResolutionPreset.medium,
+    );
+    await _camera.initialize();
+
+    _camera.startImageStream((CameraImage image) {
+      if (_isDetecting) return;
+
+      _isDetecting = true;
+
+      detect(image, _getDetectionMethod(), rotation).then(
+        (dynamic result) {
+          setState(() {
+            _scanResults = result;
+          });
+
+          _isDetecting = false;
+        },
+      ).catchError(
+        (_) {
+          _isDetecting = false;
+        },
+      );
     });
   }
 
-  Future<void> _scanImage(File imageFile) async {
-    setState(() {
-      _scanResults = null;
-    });
+  HandleDetection _getDetectionMethod() {
+    final FirebaseVision mlVision = FirebaseVision.instance;
 
-    final FirebaseVisionImage visionImage =
-        FirebaseVisionImage.fromFile(imageFile);
-
-    dynamic results;
     switch (_currentDetector) {
-      case Detector.barcode:
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        results = await detector.detectInImage(visionImage);
-        break;
-      case Detector.face:
-        final FaceDetector detector = FirebaseVision.instance.faceDetector();
-        results = await detector.processImage(visionImage);
-        break;
-      case Detector.label:
-        final ImageLabeler labeler = FirebaseVision.instance.imageLabeler();
-        results = await labeler.processImage(visionImage);
-        break;
-      case Detector.cloudLabel:
-        final ImageLabeler labeler =
-            FirebaseVision.instance.cloudImageLabeler();
-        results = await labeler.processImage(visionImage);
-        break;
       case Detector.text:
-        final TextRecognizer recognizer =
-            FirebaseVision.instance.textRecognizer();
-        results = await recognizer.processImage(visionImage);
-        break;
+        return mlVision.textRecognizer().processImage;
+      case Detector.barcode:
+        return mlVision.barcodeDetector().detectInImage;
+      case Detector.label:
+        return mlVision.imageLabeler().processImage;
+      case Detector.cloudLabel:
+        return mlVision.cloudImageLabeler().processImage;
+      case Detector.visionEdgeLabel:
+        return mlVision.visionEdgeImageLabeler('potholes').processImage;
+    break;
       default:
-        return;
+        assert(_currentDetector == Detector.face);
+        return mlVision.faceDetector().processImage;
+    }
+  }
+
+  Widget _buildResults() {
+    const Text noResultsText = const Text('No results!');
+
+    if (_scanResults == null ||
+        _camera == null ||
+        !_camera.value.isInitialized) {
+      return noResultsText;
     }
 
-    setState(() {
-      _scanResults = results;
-    });
-  }
-
-  CustomPaint _buildResults(Size imageSize, dynamic results) {
     CustomPainter painter;
+
+    final Size imageSize = Size(
+      _camera.value.previewSize.height,
+      _camera.value.previewSize.width,
+    );
 
     switch (_currentDetector) {
       case Detector.barcode:
-        painter = BarcodeDetectorPainter(_imageSize, results);
+        if (_scanResults is! List<Barcode>) return noResultsText;
+        painter = BarcodeDetectorPainter(imageSize, _scanResults);
         break;
       case Detector.face:
-        painter = FaceDetectorPainter(_imageSize, results);
+        if (_scanResults is! List<Face>) return noResultsText;
+        painter = FaceDetectorPainter(imageSize, _scanResults);
         break;
       case Detector.label:
-        painter = LabelDetectorPainter(_imageSize, results);
+        if (_scanResults is! List<ImageLabel>) return noResultsText;
+        painter = LabelDetectorPainter(imageSize, _scanResults);
         break;
       case Detector.cloudLabel:
-        painter = LabelDetectorPainter(_imageSize, results);
+        if (_scanResults is! List<ImageLabel>) return noResultsText;
+        painter = LabelDetectorPainter(imageSize, _scanResults);
         break;
-      case Detector.text:
-        painter = TextDetectorPainter(_imageSize, results);
+      case Detector.visionEdgeLabel:
+        if (_scanResults is! List<VisionEdgeImageLabel>) return noResultsText;
+        painter = VisionEdgeLabelDetectorPainter(imageSize, _scanResults);
         break;
       default:
-        break;
+        assert(_currentDetector == Detector.text);
+        if (_scanResults is! VisionText) return noResultsText;
+        painter = TextDetectorPainter(imageSize, _scanResults);
     }
 
     return CustomPaint(
@@ -135,24 +138,41 @@ class _MyHomePageState extends State<_MyHomePage> {
   Widget _buildImage() {
     return Container(
       constraints: const BoxConstraints.expand(),
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: Image.file(_imageFile).image,
-          fit: BoxFit.fill,
-        ),
-      ),
-      child: _imageSize == null || _scanResults == null
+      child: _camera == null
           ? const Center(
               child: Text(
-                'Scanning...',
+                'Initializing Camera...',
                 style: TextStyle(
                   color: Colors.green,
                   fontSize: 30.0,
                 ),
               ),
             )
-          : _buildResults(_imageSize, _scanResults),
+          : Stack(
+              fit: StackFit.expand,
+              children: <Widget>[
+                CameraPreview(_camera),
+                _buildResults(),
+              ],
+            ),
     );
+  }
+
+  void _toggleCameraDirection() async {
+    if (_direction == CameraLensDirection.back) {
+      _direction = CameraLensDirection.front;
+    } else {
+      _direction = CameraLensDirection.back;
+    }
+
+    await _camera.stopImageStream();
+    await _camera.dispose();
+
+    setState(() {
+      _camera = null;
+    });
+
+    _initializeCamera();
   }
 
   @override
@@ -164,7 +184,6 @@ class _MyHomePageState extends State<_MyHomePage> {
           PopupMenuButton<Detector>(
             onSelected: (Detector result) {
               _currentDetector = result;
-              if (_imageFile != null) _scanImage(_imageFile);
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
                   const PopupMenuItem<Detector>(
@@ -187,17 +206,20 @@ class _MyHomePageState extends State<_MyHomePage> {
                     child: Text('Detect Text'),
                     value: Detector.text,
                   ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Vision Edge'),
+                    value: Detector.visionEdgeLabel,
+                  ),
                 ],
           ),
         ],
       ),
-      body: _imageFile == null
-          ? const Center(child: Text('No image selected.'))
-          : _buildImage(),
+      body: _buildImage(),
       floatingActionButton: FloatingActionButton(
-        onPressed: _getAndScanImage,
-        tooltip: 'Pick Image',
-        child: const Icon(Icons.add_a_photo),
+        onPressed: _toggleCameraDirection,
+        child: _direction == CameraLensDirection.back
+            ? const Icon(Icons.camera_front)
+            : const Icon(Icons.camera_rear),
       ),
     );
   }

@@ -18,6 +18,7 @@ dev_dependencies:
   test: any
   path: ^1.6.2
   path_provider: ^0.5.0+1
+  camera: ^0.4.2
 
 flutter:
   plugin:
