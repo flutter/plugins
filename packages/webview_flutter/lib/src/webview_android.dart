@@ -10,9 +10,13 @@ import 'package:flutter/widgets.dart';
 import '../platform_interface.dart';
 import 'webview_method_channel.dart';
 
-class WebViewAndroidImplementation implements WebViewPlatformInterface {
+class AndroidWebViewBuilder implements WebViewBuilder {
   @override
-  Widget build({BuildContext context, Map<String, dynamic> creationParams, WebViewCreatedCallback onWebViewCreated, Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers}) {
+  Widget build(
+      {BuildContext context,
+      Map<String, dynamic> creationParams,
+      WebViewCreatedCallback onWebViewCreated,
+      Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers}) {
     return GestureDetector(
       // We prevent text selection by intercepting the long press event.
       // This is a temporary stop gap due to issues with text selection on Android:
@@ -26,7 +30,10 @@ class WebViewAndroidImplementation implements WebViewPlatformInterface {
       child: AndroidView(
         viewType: 'plugins.flutter.io/webview',
         onPlatformViewCreated: (int id) {
-          onWebViewCreated(WebViewMethodChannelController(id));
+          if (onWebViewCreated == null) {
+            return;
+          }
+          onWebViewCreated(MethodChannelWebViewPlatform(id));
         },
         gestureRecognizers: gestureRecognizers,
         // WebView content is not affected by the Android view's layout direction,

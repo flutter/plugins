@@ -9,14 +9,17 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
 /// Interface for talking to the webview controller on the platform side.
-/// 
+///
 /// An instance implementing this interface is passed to the `onWebViewCreated` callback that is
 /// passed to [WebViewPlatformInterface#onWebViewCreated].
-abstract class WebViewPlatformControllerInterface {
+abstract class WebViewPlatform {
   Future<void> loadUrl(
-      String url,
-      Map<String, String> headers,
-      );
+    String url,
+    Map<String, String> headers,
+  ) {
+    throw UnimplementedError(
+        "WebView loadUrl is not implemented on the current platform");
+  }
 
   // As the PR currently focus about the wiring I've only moved loadUrl to the new way, so
   // the discussion is more focused.
@@ -26,14 +29,14 @@ abstract class WebViewPlatformControllerInterface {
   int get id;
 }
 
-typedef WebViewCreatedCallback = void Function(WebViewPlatformControllerInterface);
+typedef WebViewCreatedCallback = void Function(WebViewPlatform webViewPlatform);
 
 /// Interface for a platform specific webview implementation.
 ///
-/// [WebView#implementation] controls the platform interface that is used by [WebView].
+/// [WebView#iplatformBuilder] controls the platform interface that is used by [WebView].
 /// [WebViewAndroidImplementation] and [WebViewIosImplementation] are the default implementations
 /// for Android and iOS respectively.
-abstract class WebViewPlatformInterface {
+abstract class WebViewBuilder {
   Widget build({
     BuildContext context,
     Map<String, dynamic> creationParams,
@@ -41,4 +44,3 @@ abstract class WebViewPlatformInterface {
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   });
 }
-

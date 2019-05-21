@@ -1,13 +1,17 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 
 import 'package:flutter/services.dart';
 
 import '../platform_interface.dart';
 
-/// A [WebViewPlatformControllerInterface] that uses a method channel to control the webview.
-class WebViewMethodChannelController implements WebViewPlatformControllerInterface {
-
-  WebViewMethodChannelController(this._id) : _channel = MethodChannel('plugins.flutter.io/webview_$_id');
+/// A [WebViewPlatform] that uses a method channel to control the webview.
+class MethodChannelWebViewPlatform implements WebViewPlatform {
+  MethodChannelWebViewPlatform(this._id)
+      : _channel = MethodChannel('plugins.flutter.io/webview_$_id');
 
   final int _id;
 
@@ -15,9 +19,9 @@ class WebViewMethodChannelController implements WebViewPlatformControllerInterfa
 
   @override
   Future<void> loadUrl(
-      String url,
-      Map<String, String> headers,
-      ) async {
+    String url,
+    Map<String, String> headers,
+  ) async {
     assert(url != null);
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431

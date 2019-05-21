@@ -11,7 +11,7 @@ import 'package:flutter/widgets.dart';
 
 import 'platform_interface.dart';
 import 'src/webview_android.dart';
-import 'src/webview_ios.dart';
+import 'src/webview_cupertino.dart';
 
 typedef void WebViewCreatedCallback(WebViewController controller);
 
@@ -125,26 +125,27 @@ class WebView extends StatefulWidget {
   })  : assert(javascriptMode != null),
         super(key: key);
 
-  static WebViewPlatformInterface _implementation;
+  static WebViewBuilder _platformBuilder;
 
-  static set implementation(WebViewPlatformInterface implementation) {
-    _implementation = implementation;
+  static set platformBuilder(WebViewBuilder platformBuilder) {
+    _platformBuilder = platformBuilder;
   }
 
-  static WebViewPlatformInterface get implementation {
-    if (_implementation != null) {
-      return implementation;
+  static WebViewBuilder get platformBuilder {
+    if (_platformBuilder == null) {
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.android:
+          _platformBuilder = AndroidWebViewBuilder();
+          break;
+        case TargetPlatform.iOS:
+          _platformBuilder = CupertinoWebViewBuilder();
+          break;
+        default:
+          throw UnsupportedError(
+              "Trying to use the default webview implementation for $defaultTargetPlatform but there isn't a default one");
+      }
     }
-
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return WebViewAndroidImplementation();
-    }
-
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return WebViewIosImplementation();
-    }
-
-    throw UnsupportedError("Trying to use the default webview implementation for $defaultTargetPlatform but there isn't a default one");
+    return _platformBuilder;
   }
 
   /// If not null invoked once the web view is created.
@@ -255,7 +256,7 @@ class _WebViewState extends State<WebView> {
 
   @override
   Widget build(BuildContext context) {
-    return WebView.implementation.build(
+    return WebView.platformBuilder.build(
       context: context,
       creationParams: _CreationParams.fromWidget(widget).toMap(),
       onWebViewCreated: _onWebViewControllerCreated,
@@ -277,9 +278,9 @@ class _WebViewState extends State<WebView> {
         (WebViewController controller) => controller._updateWidget(widget));
   }
 
-  void _onWebViewControllerCreated(WebViewPlatformControllerInterface platformController) {
+  void _onWebViewControllerCreated(WebViewPlatform platformController) {
     final WebViewController controller =
-      WebViewController._(platformController.id, platformController, widget);
+        WebViewController._(platformController.id, platformController, widget);
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
@@ -394,7 +395,7 @@ class WebViewController {
 
   final MethodChannel _channel;
 
-  final WebViewPlatformControllerInterface _platformInterface;
+  final WebViewPlatform _platformInterface;
 
   _WebSettings _settings;
 

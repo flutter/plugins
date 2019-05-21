@@ -10,13 +10,20 @@ import 'package:flutter/widgets.dart';
 import '../platform_interface.dart';
 import 'webview_method_channel.dart';
 
-class WebViewIosImplementation implements WebViewPlatformInterface {
+class CupertinoWebViewBuilder implements WebViewBuilder {
   @override
-  Widget build({BuildContext context, Map<String, dynamic> creationParams, WebViewCreatedCallback onWebViewCreated, Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers}) {
+  Widget build(
+      {BuildContext context,
+      Map<String, dynamic> creationParams,
+      WebViewCreatedCallback onWebViewCreated,
+      Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers}) {
     return UiKitView(
       viewType: 'plugins.flutter.io/webview',
       onPlatformViewCreated: (int id) {
-        onWebViewCreated(WebViewMethodChannelController(id));
+        if (onWebViewCreated == null) {
+          return;
+        }
+        onWebViewCreated(MethodChannelWebViewPlatform(id));
       },
       gestureRecognizers: gestureRecognizers,
       creationParams: creationParams,
