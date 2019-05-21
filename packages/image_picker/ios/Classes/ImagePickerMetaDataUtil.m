@@ -56,25 +56,6 @@ const FlutterImagePickerMIMEType kFlutterImagePickerMIMETypeDefault =
   return mutableData;
 }
 
-+ (NSDictionary *)getEXIFFromImageData:(NSData *)imageData {
-  NSDictionary *metaData = [self getMetaDataFromImageData:imageData];
-  return metaData[(__bridge NSString *)kCGImagePropertyExifDictionary];
-}
-
-+ (NSData *)updateEXIFData:(NSDictionary *)exifData toImage:(NSData *)imageData {
-  NSMutableData *mutableData = [NSMutableData data];
-  CGImageSourceRef cgImage = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
-  CGImageDestinationRef destination = CGImageDestinationCreateWithData(
-      (__bridge CFMutableDataRef)mutableData, CGImageSourceGetType(cgImage), 1, nil);
-  CGImageDestinationAddImageFromSource(
-      destination, cgImage, 0,
-      (__bridge CFDictionaryRef) @{(__bridge NSString *)kCGImagePropertyExifDictionary : exifData});
-  CGImageDestinationFinalize(destination);
-  CFRelease(cgImage);
-  CFRelease(destination);
-  return mutableData;
-}
-
 + (NSData *)convertImage:(UIImage *)image
                usingType:(FlutterImagePickerMIMEType)type
                  quality:(nullable NSNumber *)quality {

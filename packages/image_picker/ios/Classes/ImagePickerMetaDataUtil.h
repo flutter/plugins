@@ -27,10 +27,6 @@ extern const FlutterImagePickerMIMEType kFlutterImagePickerMIMETypeDefault;
 
 + (NSData *)updateMetaData:(NSDictionary *)metaData toImage:(NSData *)imageData;
 
-+ (NSDictionary *)getEXIFFromImageData:(NSData *)imageData;
-
-+ (NSData *)updateEXIFData:(NSDictionary *)exifData toImage:(NSData *)imageData;
-
 + (UIImageOrientation)getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
     (CGImagePropertyOrientation)cgImageOrientation;
 

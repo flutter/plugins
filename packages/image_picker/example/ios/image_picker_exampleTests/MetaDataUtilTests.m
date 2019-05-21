@@ -70,35 +70,6 @@
   }
 }
 
-- (void)testGetEXIFData {
-  NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
-                                                                             ofType:@"jpg"]];
-  NSDictionary *exif = [ImagePickerMetaDataUtil getEXIFFromImageData:dataJPG];
-  XCTAssertNotNil(exif);
-  // hard coded test case based on the test image file saved in directory.
-  XCTAssertEqualObjects(exif[@"PixelXDimension"], @(12));
-  XCTAssertEqualObjects(exif[@"PixelYDimension"], @(7));
-}
-
-- (void)testWriteEXIFData {
-  NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
-                                                                             ofType:@"jpg"]];
-  NSDictionary *exif = [ImagePickerMetaDataUtil getEXIFFromImageData:dataJPG];
-  NSString *tmpFile = [NSString stringWithFormat:@"image_picker_test.jpg"];
-  NSString *tmpDirectory = NSTemporaryDirectory();
-  NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-  NSData *newData = [ImagePickerMetaDataUtil updateEXIFData:exif toImage:dataJPG];
-  if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:newData attributes:nil]) {
-    NSData *savedTmpImageData = [NSData dataWithContentsOfFile:tmpPath];
-    NSDictionary *tmpMetaData =
-        [ImagePickerMetaDataUtil getMetaDataFromImageData:savedTmpImageData];
-    NSDictionary *tmpExif = [tmpMetaData objectForKey:(NSString *)kCGImagePropertyExifDictionary];
-    XCTAssert([tmpExif isEqualToDictionary:exif]);
-  } else {
-    XCTAssert(NO);
-  }
-}
-
 - (void)testConvertImageToData {
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
                                                                              ofType:@"jpg"]];
