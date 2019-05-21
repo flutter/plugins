@@ -117,6 +117,7 @@ class WebView extends StatefulWidget {
     this.navigationDelegate,
     this.gestureRecognizers,
     this.onPageFinished,
+    this.debuggingEnabled = false,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -204,6 +205,19 @@ class WebView extends StatefulWidget {
   /// directly in the HTML has been loaded and code injected with
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
+
+  /// Controls whether WebView debugging is enabled.
+  ///
+  /// Setting this to true enables [WebView debugging on Android](https://developers.google.com/web/tools/chrome-devtools/remote-debugging/).
+  ///
+  /// WebView debugging is enabled by default in dev builds on iOS.
+  ///
+  /// To debug WebViews on iOS:
+  /// - Enable developer options (Open Safari, go to Preferences -> Advanced and make sure "Show Develop Menu in Menubar" is on.)
+  /// - From the Menu-bar (of Safari) select Develop -> iPhone Simulator -> <your webview page>
+  ///
+  /// By default `debuggingEnabled` is false.
+  final bool debuggingEnabled;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -324,22 +338,26 @@ class _WebSettings {
   _WebSettings({
     this.javascriptMode,
     this.hasNavigationDelegate,
+    this.debuggingEnabled,
   });
 
   static _WebSettings fromWidget(WebView widget) {
     return _WebSettings(
       javascriptMode: widget.javascriptMode,
       hasNavigationDelegate: widget.navigationDelegate != null,
+      debuggingEnabled: widget.debuggingEnabled,
     );
   }
 
   final JavascriptMode javascriptMode;
   final bool hasNavigationDelegate;
+  final bool debuggingEnabled;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javascriptMode.index,
       'hasNavigationDelegate': hasNavigationDelegate,
+      'debuggingEnabled': debuggingEnabled,
     };
   }
 
@@ -351,6 +369,11 @@ class _WebSettings {
     if (hasNavigationDelegate != newSettings.hasNavigationDelegate) {
       updates['hasNavigationDelegate'] = newSettings.hasNavigationDelegate;
     }
+
+    if (debuggingEnabled != newSettings.debuggingEnabled) {
+      updates['debuggingEnabled'] = newSettings.debuggingEnabled;
+    }
+
     return updates;
   }
 }

@@ -88,7 +88,8 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                                 usingBlock:^(NSNotification* note) {
                                                   if (self->_isLooping) {
                                                     AVPlayerItem* p = [note object];
-                                                    [p seekToTime:kCMTimeZero];
+                                                    [p seekToTime:kCMTimeZero
+                                                        completionHandler:nil];
                                                   } else {
                                                     if (self->_eventSink) {
                                                       self->_eventSink(@{@"event" : @"completed"});
@@ -302,6 +303,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
     // The player has not yet initialized.
     if (height == CGSizeZero.height && width == CGSizeZero.width) {
+      return;
+    }
+    // The player may be initialized but still needs to determine the duration.
+    if ([self duration] == 0) {
       return;
     }
 
