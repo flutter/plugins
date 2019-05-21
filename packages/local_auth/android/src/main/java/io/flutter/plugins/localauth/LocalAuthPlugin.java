@@ -4,8 +4,8 @@
 
 package io.flutter.plugins.localauth;
 
-import android.app.Activity;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
+import androidx.fragment.app.FragmentActivity;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -42,7 +42,11 @@ public class LocalAuthPlugin implements MethodCallHandler {
         result.error("auth_in_progress", "Authentication in progress", null);
         return;
       }
-      Activity activity = registrar.activity();
+      if (!(registrar.activity() instanceof FragmentActivity)) {
+        throw new RuntimeException(
+            "Authentication plugin requires activity to be FragmentActivity.");
+      }
+      FragmentActivity activity = (FragmentActivity) registrar.activity();
       if (activity == null || activity.isFinishing()) {
         result.error("no_activity", "local_auth plugin requires a foreground activity", null);
         return;
