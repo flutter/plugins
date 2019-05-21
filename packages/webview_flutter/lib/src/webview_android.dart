@@ -15,7 +15,7 @@ class AndroidWebViewBuilder implements WebViewBuilder {
   Widget build(
       {BuildContext context,
       Map<String, dynamic> creationParams,
-      WebViewCreatedCallback onWebViewCreated,
+      WebViewPlatformCreatedCallback onWebViewPlatformCreated,
       Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers}) {
     return GestureDetector(
       // We prevent text selection by intercepting the long press event.
@@ -30,10 +30,10 @@ class AndroidWebViewBuilder implements WebViewBuilder {
       child: AndroidView(
         viewType: 'plugins.flutter.io/webview',
         onPlatformViewCreated: (int id) {
-          if (onWebViewCreated == null) {
+          if (onWebViewPlatformCreated == null) {
             return;
           }
-          onWebViewCreated(MethodChannelWebViewPlatform(id));
+          onWebViewPlatformCreated(MethodChannelWebViewPlatform(id));
         },
         gestureRecognizers: gestureRecognizers,
         // WebView content is not affected by the Android view's layout direction,

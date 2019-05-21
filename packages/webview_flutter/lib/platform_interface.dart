@@ -29,7 +29,8 @@ abstract class WebViewPlatform {
   int get id;
 }
 
-typedef WebViewCreatedCallback = void Function(WebViewPlatform webViewPlatform);
+typedef WebViewPlatformCreatedCallback = void Function(
+    WebViewPlatform webViewPlatform);
 
 /// Interface for a platform specific webview implementation.
 ///
@@ -40,7 +41,7 @@ abstract class WebViewBuilder {
   Widget build({
     BuildContext context,
     Map<String, dynamic> creationParams,
-    WebViewCreatedCallback onWebViewCreated,
+    WebViewPlatformCreatedCallback onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   });
 }

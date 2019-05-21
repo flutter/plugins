@@ -259,7 +259,7 @@ class _WebViewState extends State<WebView> {
     return WebView.platformBuilder.build(
       context: context,
       creationParams: _CreationParams.fromWidget(widget).toMap(),
-      onWebViewCreated: _onWebViewControllerCreated,
+      onWebViewPlatformCreated: _onWebViewPlatformCreated,
       gestureRecognizers: widget.gestureRecognizers,
     );
   }
@@ -278,7 +278,7 @@ class _WebViewState extends State<WebView> {
         (WebViewController controller) => controller._updateWidget(widget));
   }
 
-  void _onWebViewControllerCreated(WebViewPlatform platformController) {
+  void _onWebViewPlatformCreated(WebViewPlatform platformController) {
     final WebViewController controller =
         WebViewController._(platformController.id, platformController, widget);
     _controller.complete(controller);
