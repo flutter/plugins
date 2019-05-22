@@ -28,6 +28,11 @@
   XCTAssertNotNil(savedPathJPG);
   XCTAssertEqualObjects([savedPathJPG substringFromIndex:savedPathJPG.length - 4], @".jpg");
 
+  NSDictionary *originalMetaDataJPG = [ImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
+  NSData *newDataJPG = [NSData dataWithContentsOfFile:savedPathJPG];
+  NSDictionary *newMetaDataJPG = [ImagePickerMetaDataUtil getMetaDataFromImageData:newDataJPG];
+  XCTAssertEqualObjects(originalMetaDataJPG[@"ProfileName"], newMetaDataJPG[@"ProfileName"]);
+
   // test png
   NSData *dataPNG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"pngImage"
                                                                              ofType:@"png"]];
@@ -36,6 +41,11 @@
                                                                                image:imagePNG];
   XCTAssertNotNil(savedPathPNG);
   XCTAssertEqualObjects([savedPathPNG substringFromIndex:savedPathPNG.length - 4], @".png");
+
+  NSDictionary *originalMetaDataPNG = [ImagePickerMetaDataUtil getMetaDataFromImageData:dataPNG];
+  NSData *newDataPNG = [NSData dataWithContentsOfFile:savedPathPNG];
+  NSDictionary *newMetaDataPNG = [ImagePickerMetaDataUtil getMetaDataFromImageData:newDataPNG];
+  XCTAssertEqualObjects(originalMetaDataPNG[@"ProfileName"], newMetaDataPNG[@"ProfileName"]);
 }
 
 - (void)testSaveImageWithPickerInfo_ShouldSaveWithDefaultExtention {
@@ -63,8 +73,10 @@
   NSString *savedPathJPG = [ImagePickerPhotoAssetUtil saveImageWithPickerInfo:dummyInfo
                                                                         image:imageJPG];
   NSData *data = [NSData dataWithContentsOfFile:savedPathJPG];
-  NSDictionary *exif = [ImagePickerMetaDataUtil getEXIFFromImageData:data];
-  XCTAssertEqualObjects(exif[(__bridge NSString *)kCGImagePropertyExifMakerNote], @"aNote");
+  NSDictionary *meta = [ImagePickerMetaDataUtil getMetaDataFromImageData:data];
+  XCTAssertEqualObjects(meta[(__bridge NSString *)kCGImagePropertyExifDictionary]
+                            [(__bridge NSString *)kCGImagePropertyExifMakerNote],
+                        @"aNote");
 }
 
 @end

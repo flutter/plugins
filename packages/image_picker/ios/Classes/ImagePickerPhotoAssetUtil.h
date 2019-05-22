@@ -14,10 +14,10 @@ typedef void (^FetchAssetsCompletion)(PHAuthorizationStatus status,
 
 + (PHAsset *)getAssetFromImagePickerInfo:(NSDictionary *)info;
 
-// Save image with correct exif data and extention copied from the original asset.
+// Save image with correct meta data and extention copied from the original asset.
 + (NSString *)saveImageWithOriginalImageData:(NSData *)originalImageData image:(UIImage *)image;
 
-// Save image with correct exif data and extention copied from image picker result info.
+// Save image with correct meta data and extention copied from image picker result info.
 + (NSString *)saveImageWithPickerInfo:(nullable NSDictionary *)info image:(UIImage *)image;
 
 @end
