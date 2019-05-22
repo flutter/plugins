@@ -56,6 +56,7 @@ final class GoogleMapController
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener,
         PlatformView {
 
   private static final String TAG = "GoogleMapController";
@@ -171,6 +172,7 @@ final class GoogleMapController
     googleMap.setOnPolylineClickListener(this);
     googleMap.setOnCircleClickListener(this);
     googleMap.setOnMapClickListener(this);
+    googleMap.setOnMapLongClickListener(this);
     updateMyLocationSettings();
     markersController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
@@ -306,6 +308,13 @@ final class GoogleMapController
     final Map<String, Object> arguments = new HashMap<>(2);
     arguments.put("position", Convert.latLngToJson(latLng));
     methodChannel.invokeMethod("map#onTap", arguments);
+  }
+
+  @Override
+  public void onMapLongClick(LatLng latLng) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("position", Convert.latLngToJson(latLng));
+    methodChannel.invokeMethod("map#onLongPress", arguments);
   }
 
   @Override
