@@ -51,6 +51,7 @@ void main() {
           case "sendLinkToEmail":
           case "sendPasswordResetEmail":
           case "updateEmail":
+          case "updatePhoneNumberCredential":
           case "updatePassword":
           case "updateProfile":
             return null;
@@ -218,11 +219,18 @@ void main() {
         email: 'test@example.com',
         link: '<Url with domain from your Firebase project>',
       );
-      final FirebaseUser user = await auth.linkWithCredential(credential);
+      FirebaseUser user = await auth.currentUser();
+      user = await user.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
@@ -294,11 +302,18 @@ void main() {
         authToken: kMockIdToken,
         authTokenSecret: kMockAccessToken,
       );
-      final FirebaseUser user = await auth.linkWithCredential(credential);
+      FirebaseUser user = await auth.currentUser();
+      user = await user.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
@@ -343,11 +358,18 @@ void main() {
       final AuthCredential credential = GithubAuthProvider.getCredential(
         token: kMockGithubToken,
       );
-      final FirebaseUser user = await auth.linkWithCredential(credential);
+      FirebaseUser user = await auth.currentUser();
+      user = await user.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
@@ -390,11 +412,18 @@ void main() {
         email: kMockEmail,
         password: kMockPassword,
       );
-      final FirebaseUser user = await auth.linkWithCredential(credential);
+      FirebaseUser user = await auth.currentUser();
+      user = await user.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
@@ -602,11 +631,18 @@ void main() {
         idToken: kMockIdToken,
         accessToken: kMockAccessToken,
       );
-      final FirebaseUser user = await auth.linkWithCredential(credential);
+      FirebaseUser user = await auth.currentUser();
+      user = await user.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
@@ -626,11 +662,18 @@ void main() {
       final AuthCredential credential = FacebookAuthProvider.getCredential(
         accessToken: kMockAccessToken,
       );
-      final FirebaseUser user = await auth.linkWithCredential(credential);
+      FirebaseUser user = await auth.currentUser();
+      user = await user.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
@@ -673,11 +716,18 @@ void main() {
         authToken: kMockAuthToken,
         authTokenSecret: kMockAuthTokenSecret,
       );
-      final FirebaseUser user = await auth.linkWithCredential(credential);
+      FirebaseUser user = await auth.currentUser();
+      user = await user.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
@@ -722,11 +772,18 @@ void main() {
       final AuthCredential credential = GithubAuthProvider.getCredential(
         token: kMockGithubToken,
       );
-      final FirebaseUser user = await auth.linkWithCredential(credential);
+      FirebaseUser user = await auth.currentUser();
+      user = await user.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
@@ -769,11 +826,18 @@ void main() {
         email: kMockEmail,
         password: kMockPassword,
       );
-      final FirebaseUser user = await auth.linkWithCredential(credential);
+      FirebaseUser user = await auth.currentUser();
+      user = await user.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+            },
+          ),
           isMethodCall(
             'linkWithCredential',
             arguments: <String, dynamic>{
@@ -877,6 +941,32 @@ void main() {
           arguments: <String, String>{
             'email': kMockEmail,
             'app': auth.app.name,
+          },
+        ),
+      ]);
+    });
+
+    test('updatePhoneNumberCredential', () async {
+      final FirebaseUser user = await auth.currentUser();
+      final AuthCredential credentials = PhoneAuthProvider.getCredential(
+        verificationId: kMockVerificationId,
+        smsCode: kMockSmsCode,
+      );
+      await user.updatePhoneNumberCredential(credentials);
+      expect(log, <Matcher>[
+        isMethodCall(
+          'currentUser',
+          arguments: <String, String>{'app': auth.app.name},
+        ),
+        isMethodCall(
+          'updatePhoneNumberCredential',
+          arguments: <String, dynamic>{
+            'app': auth.app.name,
+            'provider': 'phone',
+            'data': <String, String>{
+              'verificationId': kMockVerificationId,
+              'smsCode': kMockSmsCode,
+            },
           },
         ),
       ]);

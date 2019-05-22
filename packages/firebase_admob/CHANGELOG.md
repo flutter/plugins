@@ -1,3 +1,7 @@
+## 0.9.0
+
+* Update Android dependencies to latest.
+
 ## 0.8.0+4
 
 * Update documentation to add AdMob App ID in Info.plist

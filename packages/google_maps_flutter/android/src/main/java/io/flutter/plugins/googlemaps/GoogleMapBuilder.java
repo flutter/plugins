@@ -15,8 +15,10 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
+  private boolean myLocationButtonEnabled = false;
   private Object initialMarkers;
   private Object initialPolylines;
+  private Object initialCircles;
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
@@ -24,9 +26,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
         new GoogleMapController(id, context, state, registrar, options);
     controller.init();
     controller.setMyLocationEnabled(myLocationEnabled);
+    controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
     controller.setInitialMarkers(initialMarkers);
     controller.setInitialPolylines(initialPolylines);
+    controller.setInitialCircles(initialCircles);
     return controller;
   }
 
@@ -90,6 +94,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
+  public void setMyLocationButtonEnabled(boolean myLocationButtonEnabled) {
+    this.myLocationButtonEnabled = myLocationButtonEnabled;
+  }
+
+  @Override
   public void setInitialMarkers(Object initialMarkers) {
     this.initialMarkers = initialMarkers;
   }
@@ -97,5 +106,10 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setInitialPolylines(Object initialPolylines) {
     this.initialPolylines = initialPolylines;
+  }
+
+  @Override
+  public void setInitialCircles(Object initialCircles) {
+    this.initialCircles = initialCircles;
   }
 }

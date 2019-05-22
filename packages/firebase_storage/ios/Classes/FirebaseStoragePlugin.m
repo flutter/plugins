@@ -180,16 +180,35 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 
 - (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSData *data = [NSData dataWithContentsOfFile:call.arguments[@"filename"]];
-  [self put:data call:call result:result];
+  NSURL *fileUrl = [NSURL fileURLWithPath:call.arguments[@"filename"]];
+  [self
+      putHandler:^(FIRStorageReference *fileRef, FIRStorageMetadata *metadata) {
+        return [fileRef putFile:fileUrl metadata:metadata];
+      }
+            call:call
+          result:result];
 }
 
 - (void)putData:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSData *data = [(FlutterStandardTypedData *)call.arguments[@"data"] data];
-  [self put:data call:call result:result];
+  if (data == nil) {
+    result([FlutterError errorWithCode:@"storage_error"
+                               message:@"Failed to read file"
+                               details:nil]);
+    return;
+  }
+  [self
+      putHandler:^(FIRStorageReference *fileRef, FIRStorageMetadata *metadata) {
+        return [fileRef putData:data metadata:metadata];
+      }
+            call:call
+          result:result];
 }
 
-- (void)put:(NSData *)data call:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)putHandler:(FIRStorageUploadTask * (^)(FIRStorageReference *fileRef,
+                                               FIRStorageMetadata *metadata))putHandler
+              call:(FlutterMethodCall *)call
+            result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
   NSDictionary *metadataDictionary = call.arguments[@"metadata"];
   FIRStorageMetadata *metadata;
@@ -197,7 +216,7 @@ static FlutterError *getFlutterError(NSError *error) {
     metadata = [self buildMetadataFromDictionary:metadataDictionary];
   }
   FIRStorageReference *fileRef = [storage.reference child:path];
-  FIRStorageUploadTask *uploadTask = [fileRef putData:data metadata:metadata];
+  FIRStorageUploadTask *uploadTask = putHandler(fileRef, metadata);
   NSNumber *handle = [NSNumber numberWithInt:_nextUploadHandle++];
   [uploadTask observeStatus:FIRStorageTaskStatusSuccess
                     handler:^(FIRStorageTaskSnapshot *snapshot) {

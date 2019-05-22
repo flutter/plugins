@@ -179,6 +179,15 @@ class Convert {
     return data;
   }
 
+  static Object circleIdToJson(String circleId) {
+    if (circleId == null) {
+      return null;
+    }
+    final Map<String, Object> data = new HashMap<>(1);
+    data.put("circleId", circleId);
+    return data;
+  }
+
   static Object latLngToJson(LatLng latLng) {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
@@ -276,6 +285,10 @@ class Convert {
     final Object myLocationEnabled = data.get("myLocationEnabled");
     if (myLocationEnabled != null) {
       sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
+    }
+    final Object myLocationButtonEnabled = data.get("myLocationButtonEnabled");
+    if (myLocationButtonEnabled != null) {
+      sink.setMyLocationButtonEnabled(toBoolean(myLocationButtonEnabled));
     }
   }
 
@@ -402,6 +415,48 @@ class Convert {
       throw new IllegalArgumentException("polylineId was null");
     } else {
       return polylineId;
+    }
+  }
+
+  static String interpretCircleOptions(Object o, CircleOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object consumeTapEvents = data.get("consumeTapEvents");
+    if (consumeTapEvents != null) {
+      sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
+    }
+    final Object fillColor = data.get("fillColor");
+    if (fillColor != null) {
+      sink.setFillColor(toInt(fillColor));
+    }
+    final Object strokeColor = data.get("strokeColor");
+    if (strokeColor != null) {
+      sink.setStrokeColor(toInt(strokeColor));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object strokeWidth = data.get("strokeWidth");
+    if (strokeWidth != null) {
+      sink.setStrokeWidth(toInt(strokeWidth));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final Object center = data.get("center");
+    if (center != null) {
+      sink.setCenter(toLatLng(center));
+    }
+    final Object radius = data.get("radius");
+    if (radius != null) {
+      sink.setRadius(toDouble(radius));
+    }
+    final String circleId = (String) data.get("circleId");
+    if (circleId == null) {
+      throw new IllegalArgumentException("circleId was null");
+    } else {
+      return circleId;
     }
   }
 
