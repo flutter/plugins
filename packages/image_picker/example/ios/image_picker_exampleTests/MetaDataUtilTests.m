@@ -55,11 +55,11 @@
 - (void)testWriteMetaData {
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
                                                                              ofType:@"jpg"]];
-    NSDictionary *metaData = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
+  NSDictionary *metaData = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
   NSString *tmpFile = [NSString stringWithFormat:@"image_picker_test.jpg"];
   NSString *tmpDirectory = NSTemporaryDirectory();
   NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-    NSData *newData = [FLTImagePickerMetaDataUtil updateMetaData:metaData toImage:dataJPG];
+  NSData *newData = [FLTImagePickerMetaDataUtil updateMetaData:metaData toImage:dataJPG];
   if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:newData attributes:nil]) {
     NSData *savedTmpImageData = [NSData dataWithContentsOfFile:tmpPath];
     NSDictionary *tmpMetaData =
@@ -74,57 +74,57 @@
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
                                                                              ofType:@"jpg"]];
   UIImage *imageJPG = [UIImage imageWithData:dataJPG];
-    NSData *convertedDataJPG = [FLTImagePickerMetaDataUtil convertImage:imageJPG
-                                                         usingType:FLTImagePickerMIMETypeJPEG
-                                                           quality:@(0.5)];
-    XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:convertedDataJPG],
+  NSData *convertedDataJPG = [FLTImagePickerMetaDataUtil convertImage:imageJPG
+                                                            usingType:FLTImagePickerMIMETypeJPEG
+                                                              quality:@(0.5)];
+  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:convertedDataJPG],
                  FLTImagePickerMIMETypeJPEG);
 
-    NSData *convertedDataPNG = [FLTImagePickerMetaDataUtil convertImage:imageJPG
-                                                         usingType:FLTImagePickerMIMETypePNG
-                                                           quality:nil];
-    XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:convertedDataPNG],
+  NSData *convertedDataPNG = [FLTImagePickerMetaDataUtil convertImage:imageJPG
+                                                            usingType:FLTImagePickerMIMETypePNG
+                                                              quality:nil];
+  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:convertedDataPNG],
                  FLTImagePickerMIMETypePNG);
 
   // test throws exceptions
-    XCTAssertThrows([FLTImagePickerMetaDataUtil convertImage:imageJPG
-                                              usingType:FLTImagePickerMIMETypePNG
-                                                quality:@(0.5)],
+  XCTAssertThrows([FLTImagePickerMetaDataUtil convertImage:imageJPG
+                                                 usingType:FLTImagePickerMIMETypePNG
+                                                   quality:@(0.5)],
                   @"setting quality when converting to PNG throws exception");
 }
 
 - (void)testGetNormalizedUIImageOrientationFromCGImagePropertyOrientation {
   XCTAssertEqual(
-                 [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                   kCGImagePropertyOrientationUp],
+      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                      kCGImagePropertyOrientationUp],
       UIImageOrientationUp);
   XCTAssertEqual(
       [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                   kCGImagePropertyOrientationDown],
+                                      kCGImagePropertyOrientationDown],
       UIImageOrientationDown);
   XCTAssertEqual(
       [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                   kCGImagePropertyOrientationLeft],
+                                      kCGImagePropertyOrientationLeft],
       UIImageOrientationRight);
   XCTAssertEqual(
       [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                   kCGImagePropertyOrientationRight],
+                                      kCGImagePropertyOrientationRight],
       UIImageOrientationLeft);
   XCTAssertEqual(
       [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                   kCGImagePropertyOrientationUpMirrored],
+                                      kCGImagePropertyOrientationUpMirrored],
       UIImageOrientationUpMirrored);
   XCTAssertEqual(
       [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                   kCGImagePropertyOrientationDownMirrored],
+                                      kCGImagePropertyOrientationDownMirrored],
       UIImageOrientationDownMirrored);
   XCTAssertEqual(
       [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                   kCGImagePropertyOrientationLeftMirrored],
+                                      kCGImagePropertyOrientationLeftMirrored],
       UIImageOrientationRightMirrored);
   XCTAssertEqual(
       [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                   kCGImagePropertyOrientationRightMirrored],
+                                      kCGImagePropertyOrientationRightMirrored],
       UIImageOrientationLeftMirrored);
 }
 

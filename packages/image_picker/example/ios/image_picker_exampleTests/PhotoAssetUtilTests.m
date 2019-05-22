@@ -24,13 +24,13 @@
                                                                              ofType:@"jpg"]];
   UIImage *imageJPG = [UIImage imageWithData:dataJPG];
   NSString *savedPathJPG = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataJPG
-                                                                               image:imageJPG];
+                                                                                  image:imageJPG];
   XCTAssertNotNil(savedPathJPG);
   XCTAssertEqualObjects([savedPathJPG substringFromIndex:savedPathJPG.length - 4], @".jpg");
 
-    NSDictionary *originalMetaDataJPG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
+  NSDictionary *originalMetaDataJPG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
   NSData *newDataJPG = [NSData dataWithContentsOfFile:savedPathJPG];
-    NSDictionary *newMetaDataJPG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:newDataJPG];
+  NSDictionary *newMetaDataJPG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:newDataJPG];
   XCTAssertEqualObjects(originalMetaDataJPG[@"ProfileName"], newMetaDataJPG[@"ProfileName"]);
 
   // test png
@@ -38,13 +38,13 @@
                                                                              ofType:@"png"]];
   UIImage *imagePNG = [UIImage imageWithData:dataPNG];
   NSString *savedPathPNG = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataPNG
-                                                                               image:imagePNG];
+                                                                                  image:imagePNG];
   XCTAssertNotNil(savedPathPNG);
   XCTAssertEqualObjects([savedPathPNG substringFromIndex:savedPathPNG.length - 4], @".png");
 
-    NSDictionary *originalMetaDataPNG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataPNG];
+  NSDictionary *originalMetaDataPNG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataPNG];
   NSData *newDataPNG = [NSData dataWithContentsOfFile:savedPathPNG];
-    NSDictionary *newMetaDataPNG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:newDataPNG];
+  NSDictionary *newMetaDataPNG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:newDataPNG];
   XCTAssertEqualObjects(originalMetaDataPNG[@"ProfileName"], newMetaDataPNG[@"ProfileName"]);
 }
 
@@ -52,7 +52,8 @@
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
                                                                              ofType:@"jpg"]];
   UIImage *imageJPG = [UIImage imageWithData:dataJPG];
-  NSString *savedPathJPG = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil image:imageJPG];
+  NSString *savedPathJPG = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
+                                                                           image:imageJPG];
 
   XCTAssertNotNil(savedPathJPG);
   // should be saved as
@@ -71,9 +72,9 @@
                                                                              ofType:@"jpg"]];
   UIImage *imageJPG = [UIImage imageWithData:dataJPG];
   NSString *savedPathJPG = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:dummyInfo
-                                                                        image:imageJPG];
+                                                                           image:imageJPG];
   NSData *data = [NSData dataWithContentsOfFile:savedPathJPG];
-    NSDictionary *meta = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:data];
+  NSDictionary *meta = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:data];
   XCTAssertEqualObjects(meta[(__bridge NSString *)kCGImagePropertyExifDictionary]
                             [(__bridge NSString *)kCGImagePropertyExifMakerNote],
                         @"aNote");

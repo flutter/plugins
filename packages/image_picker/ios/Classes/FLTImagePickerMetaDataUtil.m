@@ -9,8 +9,7 @@ static const uint8_t kFirstByteJPEG = 0xFF;
 static const uint8_t kFirstBytePNG = 0x89;
 
 NSString *const kFLTImagePickerDefaultSuffix = @".jpg";
-const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault =
-    FLTImagePickerMIMETypeJPEG;
+const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIMETypeJPEG;
 
 @implementation FLTImagePickerMetaDataUtil
 

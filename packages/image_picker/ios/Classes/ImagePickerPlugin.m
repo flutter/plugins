@@ -329,8 +329,8 @@ static const int SOURCE_GALLERY = 1;
 }
 
 - (void)saveImageWithOriginalImageData:(NSData *)originalImageData image:(UIImage *)image {
-  NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:originalImageData
-                                                                            image:image];
+  NSString *savedPath =
+      [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:originalImageData image:image];
   [self handleSavedPath:savedPath];
 }
 
