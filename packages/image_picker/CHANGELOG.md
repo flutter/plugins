@@ -1,3 +1,6 @@
+## 0.6.0+5
+* iOS: Add missing import.
+
 ## 0.6.0+4
 
 * iOS: Using first byte to determine original image type.
