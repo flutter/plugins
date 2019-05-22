@@ -52,31 +52,19 @@
   XCTAssertEqual([exif[(NSString *)kCGImagePropertyExifPixelXDimension] integerValue], 12);
 }
 
-- (void)testGetEXIFData {
-  NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
-                                                                             ofType:@"jpg"]];
-  NSDictionary *exif = [ImagePickerMetaDataUtil getEXIFFromImageData:dataJPG];
-  XCTAssertNotNil(exif);
-  // hard coded test case based on the test image file saved in directory.
-  XCTAssertEqualObjects(exif[@"PixelXDimension"], @(12));
-  XCTAssertEqualObjects(exif[@"PixelYDimension"], @(7));
-}
-
-- (void)testWriteEXIFData {
+- (void)testWriteMetaData {
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
                                                                              ofType:@"jpg"]];
   NSDictionary *metaData = [ImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
-  NSDictionary *exif = [metaData objectForKey:(NSString *)kCGImagePropertyExifDictionary];
   NSString *tmpFile = [NSString stringWithFormat:@"image_picker_test.jpg"];
   NSString *tmpDirectory = NSTemporaryDirectory();
   NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-  NSData *newData = [ImagePickerMetaDataUtil updateEXIFData:exif toImage:dataJPG];
+  NSData *newData = [ImagePickerMetaDataUtil updateMetaData:metaData toImage:dataJPG];
   if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:newData attributes:nil]) {
     NSData *savedTmpImageData = [NSData dataWithContentsOfFile:tmpPath];
     NSDictionary *tmpMetaData =
         [ImagePickerMetaDataUtil getMetaDataFromImageData:savedTmpImageData];
-    NSDictionary *tmpExif = [tmpMetaData objectForKey:(NSString *)kCGImagePropertyExifDictionary];
-    XCTAssert([tmpExif isEqualToDictionary:exif]);
+    XCTAssert([tmpMetaData isEqualToDictionary:metaData]);
   } else {
     XCTAssert(NO);
   }
@@ -104,4 +92,40 @@
                                                 quality:@(0.5)],
                   @"setting quality when converting to PNG throws exception");
 }
+
+- (void)testGetNormalizedUIImageOrientationFromCGImagePropertyOrientation {
+  XCTAssertEqual(
+      [ImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                   kCGImagePropertyOrientationUp],
+      UIImageOrientationUp);
+  XCTAssertEqual(
+      [ImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                   kCGImagePropertyOrientationDown],
+      UIImageOrientationDown);
+  XCTAssertEqual(
+      [ImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                   kCGImagePropertyOrientationLeft],
+      UIImageOrientationRight);
+  XCTAssertEqual(
+      [ImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                   kCGImagePropertyOrientationRight],
+      UIImageOrientationLeft);
+  XCTAssertEqual(
+      [ImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                   kCGImagePropertyOrientationUpMirrored],
+      UIImageOrientationUpMirrored);
+  XCTAssertEqual(
+      [ImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                   kCGImagePropertyOrientationDownMirrored],
+      UIImageOrientationDownMirrored);
+  XCTAssertEqual(
+      [ImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                   kCGImagePropertyOrientationLeftMirrored],
+      UIImageOrientationRightMirrored);
+  XCTAssertEqual(
+      [ImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                   kCGImagePropertyOrientationRightMirrored],
+      UIImageOrientationLeftMirrored);
+}
+
 @end
