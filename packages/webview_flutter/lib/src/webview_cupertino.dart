@@ -32,7 +32,8 @@ class CupertinoWebViewBuilder implements WebViewBuilder {
         onWebViewPlatformCreated(MethodChannelWebViewPlatform(id));
       },
       gestureRecognizers: gestureRecognizers,
-      creationParams: MethodChannelWebViewPlatform.creationParamsToMap(creationParams),
+      creationParams:
+          MethodChannelWebViewPlatform.creationParamsToMap(creationParams),
       creationParamsCodec: const StandardMessageCodec(),
     );
   }

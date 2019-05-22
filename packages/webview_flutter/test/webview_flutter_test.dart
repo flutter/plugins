@@ -768,12 +768,13 @@ void main() {
       final MyWebViewBuilder builder = WebView.platformBuilder;
       final MyWebViewPlatform platform = builder.lastPlatformBuilt;
 
-      expect(platform.creationParams,
+      expect(
+          platform.creationParams,
           MatchesCreationParams(CreationParams(
             initialUrl: 'https://youtube.com',
             webSettings: WebSettings(
-              javascriptMode:  JavascriptMode.disabled,
-              hasNavigationDelegate:  false,
+              javascriptMode: JavascriptMode.disabled,
+              hasNavigationDelegate: false,
               debuggingEnabled: false,
             ),
             // TODO(iskakaushik): Remove this when collection literals makes it to stable.
@@ -1073,17 +1074,20 @@ class MyWebViewPlatform extends WebViewPlatform {
 
 class MatchesWebSettings extends Matcher {
   MatchesWebSettings(this._webSettings);
-  
+
   final WebSettings _webSettings;
-  
-  @override
-  Description describe(Description description) => description.add('$_webSettings');
 
   @override
-  bool matches(covariant WebSettings webSettings, Map<dynamic, dynamic> matchState) {
-    return _webSettings.javascriptMode == webSettings.javascriptMode
-      && _webSettings.hasNavigationDelegate == webSettings.hasNavigationDelegate
-      && _webSettings.debuggingEnabled == webSettings.debuggingEnabled;
+  Description describe(Description description) =>
+      description.add('$_webSettings');
+
+  @override
+  bool matches(
+      covariant WebSettings webSettings, Map<dynamic, dynamic> matchState) {
+    return _webSettings.javascriptMode == webSettings.javascriptMode &&
+        _webSettings.hasNavigationDelegate ==
+            webSettings.hasNavigationDelegate &&
+        _webSettings.debuggingEnabled == webSettings.debuggingEnabled;
   }
 }
 
@@ -1093,12 +1097,16 @@ class MatchesCreationParams extends Matcher {
   final CreationParams _creationParams;
 
   @override
-  Description describe(Description description) => description.add('$_creationParams');
+  Description describe(Description description) =>
+      description.add('$_creationParams');
 
   @override
-  bool matches(covariant CreationParams creationParams, Map<dynamic, dynamic> matchState) {
-    return _creationParams.initialUrl == creationParams.initialUrl
-        && MatchesWebSettings(_creationParams.webSettings).matches(creationParams.webSettings, matchState)
-        && orderedEquals(_creationParams.javascriptChannelNames).matches(creationParams.javascriptChannelNames, matchState);
+  bool matches(covariant CreationParams creationParams,
+      Map<dynamic, dynamic> matchState) {
+    return _creationParams.initialUrl == creationParams.initialUrl &&
+        MatchesWebSettings(_creationParams.webSettings)
+            .matches(creationParams.webSettings, matchState) &&
+        orderedEquals(_creationParams.javascriptChannelNames)
+            .matches(creationParams.javascriptChannelNames, matchState);
   }
 }

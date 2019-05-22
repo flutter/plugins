@@ -37,7 +37,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatform {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    final Map<String, dynamic>  updatesMap = _webSettingsToMap(settings);
+    final Map<String, dynamic> updatesMap = _webSettingsToMap(settings);
     if (updatesMap.isEmpty) {
       return null;
     }
@@ -59,12 +59,12 @@ class MethodChannelWebViewPlatform implements WebViewPlatform {
     return map;
   }
 
-
   /// Converts a [CreationParams] object to a map as expected by `platform_views` channel.
   ///
   /// This is used for the `creationParams` argument of the platform views created by
   /// [AndroidWebViewBuilder] and [CupertinoWebViewBuilder].
-  static Map<String, dynamic> creationParamsToMap(CreationParams creationParams) {
+  static Map<String, dynamic> creationParamsToMap(
+      CreationParams creationParams) {
     return <String, dynamic>{
       'initialUrl': creationParams.initialUrl,
       'settings': _webSettingsToMap(creationParams.webSettings),

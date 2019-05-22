@@ -46,7 +46,8 @@ class AndroidWebViewBuilder implements WebViewBuilder {
         // we explicitly set it here so that the widget doesn't require an ambient
         // directionality.
         layoutDirection: TextDirection.rtl,
-        creationParams: MethodChannelWebViewPlatform.creationParamsToMap(creationParams),
+        creationParams:
+            MethodChannelWebViewPlatform.creationParamsToMap(creationParams),
         creationParamsCodec: const StandardMessageCodec(),
       ),
     );

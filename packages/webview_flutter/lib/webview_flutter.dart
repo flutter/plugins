@@ -311,8 +311,7 @@ CreationParams _creationParamsfromWidget(WebView widget) {
   return CreationParams(
     initialUrl: widget.initialUrl,
     webSettings: _webSettingsFromWidget(widget),
-    javascriptChannelNames:
-    _extractChannelNames(widget.javascriptChannels),
+    javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
   );
 }
 
@@ -343,10 +342,9 @@ WebSettings _webSettingsUpdate(WebSettings currentValue, WebSettings newValue) {
   }
 
   return WebSettings(
-    javascriptMode: javascriptMode,
-    hasNavigationDelegate: hasNavigationDelegate,
-    debuggingEnabled: debuggingEnabled
-  );
+      javascriptMode: javascriptMode,
+      hasNavigationDelegate: hasNavigationDelegate,
+      debuggingEnabled: debuggingEnabled);
 }
 
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
