@@ -8,21 +8,21 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef enum : NSUInteger {
-  FlutterImagePickerMIMETypePNG,
-  FlutterImagePickerMIMETypeJPEG,
-  FlutterImagePickerMIMETypeOther,
-} FlutterImagePickerMIMEType;
+  FLTImagePickerMIMETypePNG,
+  FLTImagePickerMIMETypeJPEG,
+  FLTImagePickerMIMETypeOther,
+} FLTImagePickerMIMEType;
 
-extern NSString *const kFlutterImagePickerDefaultSuffix;
-extern const FlutterImagePickerMIMEType kFlutterImagePickerMIMETypeDefault;
+extern NSString *const kFLTImagePickerDefaultSuffix;
+extern const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault;
 
-@interface ImagePickerMetaDataUtil : NSObject
+@interface FLTImagePickerMetaDataUtil : NSObject
 
 // Retrieve MIME type by reading the image data. We currently only support some popular types.
-+ (FlutterImagePickerMIMEType)getImageMIMETypeFromImageData:(NSData *)imageData;
++ (FLTImagePickerMIMEType)getImageMIMETypeFromImageData:(NSData *)imageData;
 
 // Get corresponding surfix from type.
-+ (NSString *)imageTypeSuffixFromType:(FlutterImagePickerMIMEType)type;
++ (NSString *)imageTypeSuffixFromType:(FLTImagePickerMIMEType)type;
 
 + (NSDictionary *)getMetaDataFromImageData:(NSData *)imageData;
 
@@ -34,11 +34,11 @@ extern const FlutterImagePickerMIMEType kFlutterImagePickerMIMETypeDefault;
 // Converting UIImage to a NSData with the type proveide.
 //
 // The quality is for JPEG type only, it defaults to 1. It throws exception if setting a non-nil
-// quality with type other than FlutterImagePickerMIMETypeJPEG. Converting UIImage to
-// FlutterImagePickerMIMETypeGIF or FlutterImagePickerMIMETypeTIFF is not supported in iOS. This
+// quality with type other than FLTImagePickerMIMETypeJPEG. Converting UIImage to
+// FLTImagePickerMIMETypeGIF or FLTImagePickerMIMETypeTIFF is not supported in iOS. This
 // method throws exception if trying to do so.
 + (nonnull NSData *)convertImage:(nonnull UIImage *)image
-                       usingType:(FlutterImagePickerMIMEType)type
+                       usingType:(FLTImagePickerMIMEType)type
                          quality:(nullable NSNumber *)quality;
 
 @end

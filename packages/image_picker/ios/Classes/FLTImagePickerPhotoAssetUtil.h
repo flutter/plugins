@@ -7,10 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^FetchAssetsCompletion)(PHAuthorizationStatus status,
-                                      PHFetchResult<PHAsset *> *result);
-
-@interface ImagePickerPhotoAssetUtil : NSObject
+@interface FLTImagePickerPhotoAssetUtil : NSObject
 
 + (PHAsset *)getAssetFromImagePickerInfo:(NSDictionary *)info;
 
