@@ -59,9 +59,10 @@ class WebSettings {
     this.debuggingEnabled,
   });
 
+  /// The JavaScript execution mode to be used by the webview.
   final JavascriptMode javascriptMode;
 
-  /// Whether a [NavigationDelegate] should be used for this webview.
+  /// Whether the [WebView] has a [NavigationDelegate] set.
   final bool hasNavigationDelegate;
 
   /// Whether to enable the platform's webview content debugging tools.
@@ -92,7 +93,7 @@ class CreationParams {
 
   /// The initial set of JavaScript channels that are configured for this webview.
   ///
-  /// For each value in this list the platform's webview should make sure that a corresponding
+  /// For each value in this set the platform's webview should make sure that a corresponding
   /// property with a postMessage method is set on `window`. For example for a JavaScript channel
   /// named `Foo` it should be possible for JavaScript code executing in the webview to do
   ///

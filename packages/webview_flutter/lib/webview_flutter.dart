@@ -324,7 +324,11 @@ WebSettings _webSettingsFromWidget(WebView widget) {
   );
 }
 
+// This method assumes that no fields in `currentValue` are null.
 WebSettings _webSettingsUpdate(WebSettings currentValue, WebSettings newValue) {
+  assert(currentValue.javascriptMode != null);
+  assert(currentValue.hasNavigationDelegate != null);
+  assert(currentValue.debuggingEnabled != null);
   JavascriptMode javascriptMode;
   bool hasNavigationDelegate;
   bool debuggingEnabled;

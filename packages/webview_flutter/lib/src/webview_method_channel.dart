@@ -60,6 +60,10 @@ class MethodChannelWebViewPlatform implements WebViewPlatform {
   }
 
 
+  /// Converts a [CreationParams] object to a map as expected by `platform_views` channel.
+  ///
+  /// This is used for the `creationParams` argument of the platform views created by
+  /// [AndroidWebViewBuilder] and [CupertinoWebViewBuilder].
   static Map<String, dynamic> creationParamsToMap(CreationParams creationParams) {
     return <String, dynamic>{
       'initialUrl': creationParams.initialUrl,
