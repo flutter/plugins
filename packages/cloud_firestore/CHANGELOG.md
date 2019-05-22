@@ -1,3 +1,7 @@
+## 0.11.0+3
+
+* Support for `cacheSizeBytes`.
+
 ## 0.11.0+2
 
 * Remove iOS dependency on Firebase/Database and Firebase/Auth CocoaPods.
