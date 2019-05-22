@@ -676,7 +676,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           }
 
           if (arguments.get("cacheSizeBytes") != null) {
-            builder.setCacheSizeBytes((Long) arguments.get("cacheSizeBytes"));
+            builder.setCacheSizeBytes(((Integer) arguments.get("cacheSizeBytes")).longValue());
           }
 
           FirebaseFirestoreSettings settings = builder.build();
