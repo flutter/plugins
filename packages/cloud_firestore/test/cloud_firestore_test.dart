@@ -557,7 +557,7 @@ void main() {
     });
 
     group('Query', () {
-      test('getDocuments', () async {
+      test('getDocumentsFromCollection', () async {
         QuerySnapshot snapshot = await collectionReference.getDocuments();
         DocumentSnapshot document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
@@ -682,10 +682,7 @@ void main() {
           ),
         );
       });
-    });
-
-    group('Query', () {
-      test('getDocuments', () async {
+      test('getDocumentsFromCollectionGroup', () async {
         QuerySnapshot snapshot = await collectionGroupQuery.getDocuments();
         DocumentSnapshot document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
