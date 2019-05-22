@@ -328,6 +328,9 @@ WebSettings _webSettingsUpdate(WebSettings currentValue, WebSettings newValue) {
   assert(currentValue.javascriptMode != null);
   assert(currentValue.hasNavigationDelegate != null);
   assert(currentValue.debuggingEnabled != null);
+  assert(newValue.javascriptMode != null);
+  assert(newValue.hasNavigationDelegate != null);
+  assert(newValue.debuggingEnabled != null);
   JavascriptMode javascriptMode;
   bool hasNavigationDelegate;
   bool debuggingEnabled;
