@@ -84,7 +84,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   }
 
   private Query getReference(Map<String, Object> arguments) {
-    if ((boolean) arguments.get("collectionGroup")) return getCollectionGroupReference(arguments);
+    if ((boolean) arguments.get("isCollectionGroup")) return getCollectionGroupReference(arguments);
     else return getCollectionReference(arguments);
   }
 

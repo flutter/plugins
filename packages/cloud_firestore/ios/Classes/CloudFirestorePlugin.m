@@ -39,7 +39,7 @@ static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy) {
 }
 
 static FIRQuery *getQuery(NSDictionary *arguments) {
-  NSNumber *data = arguments[@"collectionGroup"];
+  NSNumber *data = arguments[@"isCollectionGroup"];
   BOOL isCollectionGroup = data.boolValue;
   FIRQuery *query;
   if (isCollectionGroup) {

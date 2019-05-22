@@ -61,7 +61,7 @@ class Query {
           <String, dynamic>{
             'app': firestore.app.name,
             'path': _path,
-            'collectionGroup': _isCollectionGroup,
+            'isCollectionGroup': _isCollectionGroup,
             'parameters': _parameters,
           },
         ).then<int>((dynamic result) => result);
@@ -90,7 +90,7 @@ class Query {
       <String, dynamic>{
         'app': firestore.app.name,
         'path': _path,
-        'collectionGroup': _isCollectionGroup,
+        'isCollectionGroup': _isCollectionGroup,
         'parameters': _parameters,
       },
     );
