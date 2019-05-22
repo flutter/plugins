@@ -34,6 +34,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(readonly, nonatomic) AVPlayer* player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput* videoOutput;
 @property(readonly, nonatomic) CADisplayLink* displayLink;
+@property(readwrite, nonatomic) CVPixelBufferRef pixelBuffer;
 @property(nonatomic) FlutterEventChannel* eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(nonatomic) CGAffineTransform preferredTransform;
@@ -88,8 +89,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                                 usingBlock:^(NSNotification* note) {
                                                   if (self->_isLooping) {
                                                     AVPlayerItem* p = [note object];
-                                                    [p seekToTime:kCMTimeZero
-                                                        completionHandler:nil];
+                                                    [p seekToTime:kCMTimeZero];
                                                   } else {
                                                     if (self->_eventSink) {
                                                       self->_eventSink(@{@"event" : @"completed"});
@@ -355,7 +355,13 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (CVPixelBufferRef)copyPixelBuffer {
   CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
   if ([_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
-    return [_videoOutput copyPixelBufferForItemTime:outputItemTime itemTimeForDisplay:NULL];
+    if (_pixelBuffer != NULL) {
+      CVPixelBufferRelease(_pixelBuffer);
+    }
+    _pixelBuffer = [_videoOutput copyPixelBufferForItemTime:outputItemTime itemTimeForDisplay:NULL];
+    return CVPixelBufferRetain(_pixelBuffer);
+  } else if (!_isPlaying && _pixelBuffer != NULL) {
+    return CVPixelBufferRetain(_pixelBuffer);
   } else {
     return NULL;
   }
@@ -397,6 +403,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   [_player replaceCurrentItemWithPlayerItem:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [_eventChannel setStreamHandler:nil];
+  if (_pixelBuffer != NULL) {
+    CVPixelBufferRelease(_pixelBuffer);
+  }
 }
 
 @end
