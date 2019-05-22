@@ -39,7 +39,8 @@ static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy) {
 }
 
 static FIRQuery *getQuery(NSDictionary *arguments) {
-  BOOL isCollectionGroup = arguments[@"collectionGroup"];
+  NSNumber *data = arguments[@"collectionGroup"];
+  BOOL isCollectionGroup = data.boolValue;
   FIRQuery *query;
   if (isCollectionGroup) {
     query = [getFirestore(arguments) collectionGroupWithID:arguments[@"path"]];
