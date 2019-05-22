@@ -307,6 +307,7 @@ void main() {
             arguments: <String, dynamic>{
               'app': app.name,
               'path': 'foo',
+              'isCollectionGroup': false,
               'parameters': <String, dynamic>{
                 'where': <List<dynamic>>[],
                 'orderBy': <List<dynamic>>[],
@@ -335,6 +336,7 @@ void main() {
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'foo',
+                'isCollectionGroup': false,
                 'parameters': <String, dynamic>{
                   'where': <List<dynamic>>[
                     <dynamic>['createdAt', '<', 100],
@@ -366,6 +368,7 @@ void main() {
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'foo',
+                'isCollectionGroup': false,
                 'parameters': <String, dynamic>{
                   'where': <List<dynamic>>[
                     <dynamic>['profile', '==', null],
@@ -397,6 +400,7 @@ void main() {
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'foo',
+                'isCollectionGroup': false,
                 'parameters': <String, dynamic>{
                   'where': <List<dynamic>>[],
                   'orderBy': <List<dynamic>>[
@@ -601,6 +605,7 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'isCollectionGroup': false,
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -612,6 +617,7 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'isCollectionGroup': false,
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -627,6 +633,7 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'isCollectionGroup': false,
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -642,6 +649,7 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'isCollectionGroup': false,
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -657,6 +665,7 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'isCollectionGroup': false,
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
