@@ -285,6 +285,7 @@ void main() {
         expect(a.hashCode == b.hashCode, isFalse);
       });
     });
+
     group('CollectionsReference', () {
       test('id', () async {
         expect(collectionReference.id, equals('foo'));
