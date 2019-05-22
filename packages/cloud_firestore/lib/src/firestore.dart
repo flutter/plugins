@@ -74,7 +74,7 @@ class Firestore {
   /// Gets a [Query] for the specified Collection group.
   Query collectionGroup(String path) {
     assert(path != null);
-    assert(path.contains("/"), "Collection IDs must not contain '/'.");
+    assert(!path.contains("/"), "Collection IDs must not contain '/'.");
     return Query._(
       firestore: this,
       isCollectionGroup: true,
