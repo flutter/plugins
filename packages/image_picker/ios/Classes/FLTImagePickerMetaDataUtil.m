@@ -2,35 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ImagePickerMetaDataUtil.h"
+#import "FLTImagePickerMetaDataUtil.h"
 #import <Photos/Photos.h>
 
 static const uint8_t kFirstByteJPEG = 0xFF;
 static const uint8_t kFirstBytePNG = 0x89;
 
-NSString *const kFlutterImagePickerDefaultSuffix = @".jpg";
-const FlutterImagePickerMIMEType kFlutterImagePickerMIMETypeDefault =
-    FlutterImagePickerMIMETypeJPEG;
+NSString *const kFLTImagePickerDefaultSuffix = @".jpg";
+const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIMETypeJPEG;
 
-@implementation ImagePickerMetaDataUtil
+@implementation FLTImagePickerMetaDataUtil
 
-+ (FlutterImagePickerMIMEType)getImageMIMETypeFromImageData:(NSData *)imageData {
++ (FLTImagePickerMIMEType)getImageMIMETypeFromImageData:(NSData *)imageData {
   uint8_t firstByte;
   [imageData getBytes:&firstByte length:1];
   switch (firstByte) {
     case kFirstByteJPEG:
-      return FlutterImagePickerMIMETypeJPEG;
+      return FLTImagePickerMIMETypeJPEG;
     case kFirstBytePNG:
-      return FlutterImagePickerMIMETypePNG;
+      return FLTImagePickerMIMETypePNG;
   }
-  return FlutterImagePickerMIMETypeOther;
+  return FLTImagePickerMIMETypeOther;
 }
 
-+ (NSString *)imageTypeSuffixFromType:(FlutterImagePickerMIMEType)type {
++ (NSString *)imageTypeSuffixFromType:(FLTImagePickerMIMEType)type {
   switch (type) {
-    case FlutterImagePickerMIMETypeJPEG:
+    case FLTImagePickerMIMETypeJPEG:
       return @".jpg";
-    case FlutterImagePickerMIMETypePNG:
+    case FLTImagePickerMIMETypePNG:
       return @".png";
     default:
       return nil;
@@ -57,23 +56,23 @@ const FlutterImagePickerMIMEType kFlutterImagePickerMIMETypeDefault =
 }
 
 + (NSData *)convertImage:(UIImage *)image
-               usingType:(FlutterImagePickerMIMEType)type
+               usingType:(FLTImagePickerMIMEType)type
                  quality:(nullable NSNumber *)quality {
-  if (quality && type != FlutterImagePickerMIMETypeJPEG) {
+  if (quality && type != FLTImagePickerMIMETypeJPEG) {
     @throw [NSException
         exceptionWithName:@"flutter_image_picker_convert_image_exception"
                    reason:[NSString stringWithFormat:@"quality is not available for type %@",
-                                                     [ImagePickerMetaDataUtil
+                                                     [FLTImagePickerMetaDataUtil
                                                          imageTypeSuffixFromType:type]]
                  userInfo:nil];
   }
 
   switch (type) {
-    case FlutterImagePickerMIMETypeJPEG: {
+    case FLTImagePickerMIMETypeJPEG: {
       CGFloat qualityFloat = quality ? quality.floatValue : 1;
       return UIImageJPEGRepresentation(image, qualityFloat);
     }
-    case FlutterImagePickerMIMETypePNG:
+    case FLTImagePickerMIMETypePNG:
       return UIImagePNGRepresentation(image);
     default: {
       // converts to JPEG by default.

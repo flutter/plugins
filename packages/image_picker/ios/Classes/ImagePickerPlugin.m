@@ -9,8 +9,8 @@
 #import <Photos/Photos.h>
 #import <UIKit/UIKit.h>
 
-#import "ImagePickerMetaDataUtil.h"
-#import "ImagePickerPhotoAssetUtil.h"
+#import "FLTImagePickerMetaDataUtil.h"
+#import "FLTImagePickerPhotoAssetUtil.h"
 
 @interface FLTImagePickerPlugin () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
@@ -252,7 +252,7 @@ static const int SOURCE_GALLERY = 1;
       image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
     }
 
-    PHAsset *originalAsset = [ImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+    PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
     if (!originalAsset) {
       // Image picked without an original asset (e.g. User took a photo directly)
       [self saveImageWithPickerInfo:info image:image];
@@ -329,13 +329,13 @@ static const int SOURCE_GALLERY = 1;
 }
 
 - (void)saveImageWithOriginalImageData:(NSData *)originalImageData image:(UIImage *)image {
-  NSString *savedPath = [ImagePickerPhotoAssetUtil saveImageWithOriginalImageData:originalImageData
-                                                                            image:image];
+  NSString *savedPath =
+      [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:originalImageData image:image];
   [self handleSavedPath:savedPath];
 }
 
 - (void)saveImageWithPickerInfo:(NSDictionary *)info image:(UIImage *)image {
-  NSString *savedPath = [ImagePickerPhotoAssetUtil saveImageWithPickerInfo:info image:image];
+  NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info image:image];
   [self handleSavedPath:savedPath];
 }
 
