@@ -19,7 +19,9 @@ part of firebase_ml_vision;
 ///     await textRecognizer.processImage(image);
 /// ```
 class TextRecognizer {
-  TextRecognizer._();
+  TextRecognizer._(this._handle);
+
+  final int _handle;
 
   /// Detects [VisionText] from a [FirebaseVisionImage].
   Future<VisionText> processImage(FirebaseVisionImage visionImage) async {
@@ -30,11 +32,20 @@ class TextRecognizer {
         await FirebaseVision.channel.invokeMethod(
       'TextRecognizer#processImage',
       <String, dynamic>{
+        'handle': _handle,
         'options': <String, dynamic>{},
       }..addAll(visionImage._serialize()),
     );
 
     return VisionText._(reply);
+  }
+
+  /// Release resources used by this recognizer.
+  Future<void> close() {
+    return FirebaseVision.channel.invokeMethod<void>(
+      'TextRecognizer#close',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 }
 

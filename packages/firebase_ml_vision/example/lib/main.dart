@@ -23,6 +23,13 @@ class _MyHomePageState extends State<_MyHomePage> {
   Size _imageSize;
   dynamic _scanResults;
   Detector _currentDetector = Detector.text;
+  final BarcodeDetector _barcodeDetector =
+      FirebaseVision.instance.barcodeDetector();
+  final FaceDetector _faceDetector = FirebaseVision.instance.faceDetector();
+  final ImageLabeler _imageLabeler = FirebaseVision.instance.imageLabeler();
+  final ImageLabeler _cloudImageLabeler =
+      FirebaseVision.instance.cloudImageLabeler();
+  final TextRecognizer _recognizer = FirebaseVision.instance.textRecognizer();
 
   Future<void> _getAndScanImage() async {
     setState(() {
@@ -73,27 +80,19 @@ class _MyHomePageState extends State<_MyHomePage> {
     dynamic results;
     switch (_currentDetector) {
       case Detector.barcode:
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        results = await detector.detectInImage(visionImage);
+        results = await _barcodeDetector.detectInImage(visionImage);
         break;
       case Detector.face:
-        final FaceDetector detector = FirebaseVision.instance.faceDetector();
-        results = await detector.processImage(visionImage);
+        results = await _faceDetector.processImage(visionImage);
         break;
       case Detector.label:
-        final ImageLabeler labeler = FirebaseVision.instance.imageLabeler();
-        results = await labeler.processImage(visionImage);
+        results = await _imageLabeler.processImage(visionImage);
         break;
       case Detector.cloudLabel:
-        final ImageLabeler labeler =
-            FirebaseVision.instance.cloudImageLabeler();
-        results = await labeler.processImage(visionImage);
+        results = await _cloudImageLabeler.processImage(visionImage);
         break;
       case Detector.text:
-        final TextRecognizer recognizer =
-            FirebaseVision.instance.textRecognizer();
-        results = await recognizer.processImage(visionImage);
+        results = await _recognizer.processImage(visionImage);
         break;
       default:
         return;
@@ -200,5 +199,15 @@ class _MyHomePageState extends State<_MyHomePage> {
         child: const Icon(Icons.add_a_photo),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _barcodeDetector.close();
+    _faceDetector.close();
+    _imageLabeler.close();
+    _cloudImageLabeler.close();
+    _recognizer.close();
+    super.dispose();
   }
 }

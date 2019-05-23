@@ -29,6 +29,8 @@ class FirebaseVision {
   static const MethodChannel channel =
       MethodChannel('plugins.flutter.io/firebase_ml_vision');
 
+  static int _nextHandle = 0;
+
   /// Singleton of [FirebaseVision].
   ///
   /// Use this get an instance of a detector:
@@ -40,12 +42,18 @@ class FirebaseVision {
 
   /// Creates an instance of [BarcodeDetector].
   BarcodeDetector barcodeDetector([BarcodeDetectorOptions options]) {
-    return BarcodeDetector._(options ?? const BarcodeDetectorOptions());
+    return BarcodeDetector._(
+      options ?? const BarcodeDetectorOptions(),
+      _nextHandle++,
+    );
   }
 
   /// Creates an instance of [FaceDetector].
   FaceDetector faceDetector([FaceDetectorOptions options]) {
-    return FaceDetector._(options ?? const FaceDetectorOptions());
+    return FaceDetector._(
+      options ?? const FaceDetectorOptions(),
+      _nextHandle++,
+    );
   }
 
   /// Creates an on device instance of [ImageLabeler].
@@ -53,17 +61,19 @@ class FirebaseVision {
     return ImageLabeler._(
       options: options ?? const ImageLabelerOptions(),
       modelType: ModelType.onDevice,
+      handle: _nextHandle++,
     );
   }
 
   /// Creates an instance of [TextRecognizer].
-  TextRecognizer textRecognizer() => TextRecognizer._();
+  TextRecognizer textRecognizer() => TextRecognizer._(_nextHandle++);
 
   /// Creates a cloud instance of [ImageLabeler].
   ImageLabeler cloudImageLabeler([CloudImageLabelerOptions options]) {
     return ImageLabeler._(
       options: options ?? const CloudImageLabelerOptions(),
       modelType: ModelType.cloud,
+      handle: _nextHandle++,
     );
   }
 }

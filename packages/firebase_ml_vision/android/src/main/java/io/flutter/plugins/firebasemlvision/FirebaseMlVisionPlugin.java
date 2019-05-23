@@ -86,8 +86,6 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
 
       final Integer handle = call.argument("handle");
       addDetector(handle, detector);
-
-      detector.handleDetection(image, result);
     }
 
     detector.handleDetection(image, result);
@@ -96,7 +94,11 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
   private void closeDetector(final MethodCall call, final Result result) {
     final Detector detector = getDetector(call);
 
-    if (detector == null) return;
+    if (detector == null) {
+      final Integer handle = call.argument("handle");
+      final String message = String.format("Object for handle does not exists: %s", handle);
+      throw new IllegalArgumentException(message);
+    }
 
     try {
       detector.close();

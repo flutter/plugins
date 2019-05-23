@@ -38,10 +38,11 @@ enum FaceLandmarkType {
 /// final List<Faces> faces = await faceDetector.processImage(image);
 /// ```
 class FaceDetector {
-  FaceDetector._(this.options) : assert(options != null);
+  FaceDetector._(this.options, this._handle) : assert(options != null);
 
   /// The options for the face detector.
   final FaceDetectorOptions options;
+  final int _handle;
 
   /// Detects faces in the input image.
   Future<List<Face>> processImage(FirebaseVisionImage visionImage) async {
@@ -51,6 +52,7 @@ class FaceDetector {
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'FaceDetector#processImage',
       <String, dynamic>{
+        'handle': _handle,
         'options': <String, dynamic>{
           'enableClassification': options.enableClassification,
           'enableLandmarks': options.enableLandmarks,
@@ -67,6 +69,14 @@ class FaceDetector {
     }
 
     return faces;
+  }
+
+  /// Release resources used by this detector.
+  Future<void> close() {
+    return FirebaseVision.channel.invokeMethod<void>(
+      'FaceDetector#close',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 }
 

@@ -26,8 +26,12 @@ part of firebase_ml_vision;
 /// final List<ImageLabel> labels = await imageLabeler.processImage(image);
 /// ```
 class ImageLabeler {
-  ImageLabeler._({@required dynamic options, @required this.modelType})
-      : _options = options,
+  ImageLabeler._({
+    @required dynamic options,
+    @required this.modelType,
+    @required int handle,
+  })  : _options = options,
+        _handle = handle,
         assert(options != null),
         assert(modelType != null);
 
@@ -36,6 +40,7 @@ class ImageLabeler {
 
   // Should be of type ImageLabelerOptions or CloudImageLabelerOptions.
   final dynamic _options;
+  final int _handle;
 
   /// Finds entities in the input image.
   Future<List<ImageLabel>> processImage(FirebaseVisionImage visionImage) async {
@@ -45,6 +50,7 @@ class ImageLabeler {
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'ImageLabeler#processImage',
       <String, dynamic>{
+        'handle': _handle,
         'options': <String, dynamic>{
           'modelType': _enumToString(modelType),
           'confidenceThreshold': _options.confidenceThreshold,
@@ -58,6 +64,14 @@ class ImageLabeler {
     }
 
     return labels;
+  }
+
+  /// Release resources used by this labeler.
+  Future<void> close() {
+    return FirebaseVision.channel.invokeMethod<void>(
+      'ImageLabeler#close',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 }
 
