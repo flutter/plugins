@@ -43,9 +43,14 @@ class FaceDetector {
   /// The options for the face detector.
   final FaceDetectorOptions options;
   final int _handle;
+  bool _hasBeenOpened = false;
+  bool _isClosed = false;
 
   /// Detects faces in the input image.
   Future<List<Face>> processImage(FirebaseVisionImage visionImage) async {
+    assert(!_isClosed);
+
+    _hasBeenOpened = true;
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
@@ -73,6 +78,10 @@ class FaceDetector {
 
   /// Release resources used by this detector.
   Future<void> close() {
+    if (!_hasBeenOpened) _isClosed = true;
+    if (_isClosed) return Future<void>.value(null);
+
+    _isClosed = true;
     return FirebaseVision.channel.invokeMethod<void>(
       'FaceDetector#close',
       <String, dynamic>{'handle': _handle},

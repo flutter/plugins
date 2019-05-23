@@ -188,9 +188,14 @@ class BarcodeDetector {
   /// The options for configuring this detector.
   final BarcodeDetectorOptions options;
   final int _handle;
+  bool _hasBeenOpened = false;
+  bool _isClosed = false;
 
   /// Detects barcodes in the input image.
   Future<List<Barcode>> detectInImage(FirebaseVisionImage visionImage) async {
+    assert(!_isClosed);
+
+    _hasBeenOpened = true;
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
@@ -214,6 +219,10 @@ class BarcodeDetector {
 
   /// Release resources used by this detector.
   Future<void> close() {
+    if (!_hasBeenOpened) _isClosed = true;
+    if (_isClosed) return Future<void>.value(null);
+
+    _isClosed = true;
     return FirebaseVision.channel.invokeMethod<void>(
       'BarcodeDetector#close',
       <String, dynamic>{'handle': _handle},

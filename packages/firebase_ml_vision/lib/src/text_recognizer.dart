@@ -22,9 +22,14 @@ class TextRecognizer {
   TextRecognizer._(this._handle);
 
   final int _handle;
+  bool _hasBeenOpened = false;
+  bool _isClosed = false;
 
   /// Detects [VisionText] from a [FirebaseVisionImage].
   Future<VisionText> processImage(FirebaseVisionImage visionImage) async {
+    assert(!_isClosed);
+
+    _hasBeenOpened = true;
     final Map<dynamic, dynamic> reply =
         // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
         // https://github.com/flutter/flutter/issues/26431
@@ -42,6 +47,10 @@ class TextRecognizer {
 
   /// Release resources used by this recognizer.
   Future<void> close() {
+    if (!_hasBeenOpened) _isClosed = true;
+    if (_isClosed) return Future<void>.value(null);
+
+    _isClosed = true;
     return FirebaseVision.channel.invokeMethod<void>(
       'TextRecognizer#close',
       <String, dynamic>{'handle': _handle},
