@@ -138,12 +138,12 @@ GADAdSize _adSize;
 
   if (_status != LOADED) return;
 
-  _banner.translatesAutoresizingMaskIntoConstraints = NO;
   UIView *screen = [FLTMobileAd rootViewController].view;
   [screen addSubview:_banner];
 
 #if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
   if (@available(ios 11.0, *)) {
+    _banner.translatesAutoresizingMaskIntoConstraints = NO;
     UILayoutGuide *guide = screen.safeAreaLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[
       [_banner.centerXAnchor constraintEqualToAnchor:guide.centerXAnchor],
