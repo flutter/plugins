@@ -25,9 +25,24 @@ void main() {
       firestore = Firestore(app: app);
     });
 
-    test('getDocuments', () async {
+    test('getDocumentsFromCollection', () async {
       final Query query = firestore
           .collection('messages')
+          .where('message', isEqualTo: 'Hello world!')
+          .limit(1);
+      final QuerySnapshot querySnapshot = await query.getDocuments();
+      expect(querySnapshot.documents.first['message'], 'Hello world!');
+      final DocumentReference firstDoc =
+          querySnapshot.documents.first.reference;
+      final DocumentSnapshot documentSnapshot = await firstDoc.get();
+      expect(documentSnapshot.data['message'], 'Hello world!');
+      final DocumentSnapshot snapshot = await firstDoc.snapshots().first;
+      expect(snapshot.data['message'], 'Hello world!');
+    });
+
+    test('getDocumentsFromCollectionGroup', () async {
+      final Query query = firestore
+          .collectionGroup('reviews')
           .where('message', isEqualTo: 'Hello world!')
           .limit(1);
       final QuerySnapshot querySnapshot = await query.getDocuments();
