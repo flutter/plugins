@@ -33,6 +33,7 @@ class Query {
   Query _copyWithParameters(Map<String, dynamic> parameters) {
     return Query._(
       firestore: firestore,
+      isCollectionGroup: _isCollectionGroup,
       pathComponents: _pathComponents,
       parameters: Map<String, dynamic>.unmodifiable(
         Map<String, dynamic>.from(_parameters)..addAll(parameters),
