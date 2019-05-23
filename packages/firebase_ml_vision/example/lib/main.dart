@@ -32,8 +32,8 @@ class _MyHomePageState extends State<_MyHomePage> {
   }
 
   void _initializeCamera() async {
-    CameraDescription description = await getCamera(_direction);
-    ImageRotation rotation = rotationIntToImageRotation(
+    final CameraDescription description = await getCamera(_direction);
+    final ImageRotation rotation = rotationIntToImageRotation(
       description.sensorOrientation,
     );
 
@@ -59,7 +59,7 @@ class _MyHomePageState extends State<_MyHomePage> {
           _isDetecting = false;
         },
       ).catchError(
-        (_) {
+        () {
           _isDetecting = false;
         },
       );
@@ -80,7 +80,7 @@ class _MyHomePageState extends State<_MyHomePage> {
         return mlVision.cloudImageLabeler().processImage;
       case Detector.visionEdgeLabel:
         return mlVision.visionEdgeImageLabeler('potholes').processImage;
-    break;
+        break;
       default:
         assert(_currentDetector == Detector.face);
         return mlVision.faceDetector().processImage;
@@ -88,7 +88,7 @@ class _MyHomePageState extends State<_MyHomePage> {
   }
 
   Widget _buildResults() {
-    const Text noResultsText = const Text('No results!');
+    final Text noResultsText = const Text('No results!');
 
     if (_scanResults == null ||
         _camera == null ||
