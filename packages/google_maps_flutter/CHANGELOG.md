@@ -1,3 +1,7 @@
+## 0.5.14
+
+* Adds onLongPress callback for GoogleMap.
+
 ## 0.5.13
 
 * Add support for Circle overlays.
