@@ -1,3 +1,7 @@
+## 0.8.1
+
+* Can now release resources held by detectors with `close()` method.
+
 ## 0.8.0
 
 * Update Android dependencies to latest.
