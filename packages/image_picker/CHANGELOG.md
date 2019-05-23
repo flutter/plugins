@@ -1,3 +1,7 @@
+## 0.6.0+8
+
+* Bugfix: Add missed return statement into the image_picker example.
+
 ## 0.6.0+7
 
 * iOS: Rename objects to follow Objective-C naming convention to avoid conflicts with other iOS library/frameworks.
