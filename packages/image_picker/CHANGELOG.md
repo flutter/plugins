@@ -1,6 +1,6 @@
 ## 0.6.0+8
 
-* Bugfix:  Add missed return statement into the image_picker example.
+* Bugfix: Add missed return statement into the image_picker example.
 
 ## 0.6.0+7
 
