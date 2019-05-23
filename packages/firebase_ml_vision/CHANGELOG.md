@@ -1,3 +1,7 @@
+## 0.9.0
+
+* Added AutoML Vision Edge Support, iOS, Local Models only
+
 ## 0.8.0
 
 * Update Android dependencies to latest.
