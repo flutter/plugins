@@ -125,11 +125,13 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
 
   @Override
   public void onAuthenticationError(int errorCode, CharSequence errString) {
-    if (!activityPaused || !isAuthSticky) {
-      // Either the authentication got cancelled by user or we are not interested
-      // in sticky auth, so return failure.
-      stop(false);
+    if (activityPaused && isAuthSticky) {
+      return;
     }
+
+    // Either the authentication got cancelled by user or we are not interested
+    // in sticky auth, so return failure.
+    stop(false);
   }
 
   @Override
