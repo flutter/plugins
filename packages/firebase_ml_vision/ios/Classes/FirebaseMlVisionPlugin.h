@@ -8,7 +8,7 @@
 
 @protocol Detector
 @required
-- (instancetype) initWithVision:(FIRVision *)vision options:(NSDictionary *)options;
+- (instancetype)initWithVision:(FIRVision *)vision options:(NSDictionary *)options;
 - (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result;
 @optional
 @end

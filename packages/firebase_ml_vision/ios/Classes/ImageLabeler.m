@@ -13,8 +13,11 @@
     } else if ([@"cloud" isEqualToString:options[@"modelType"]]) {
       _labeler = [vision cloudImageLabelerWithOptions:[ImageLabeler parseCloudOptions:options]];
     } else {
-      NSString *reason = [NSString stringWithFormat:@"Invalid model type: %@", options[@"modelType"]];
-      @throw [[NSException alloc] initWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+      NSString *reason =
+          [NSString stringWithFormat:@"Invalid model type: %@", options[@"modelType"]];
+      @throw [[NSException alloc] initWithName:NSInvalidArgumentException
+                                        reason:reason
+                                      userInfo:nil];
     }
   }
   return self;

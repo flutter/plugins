@@ -13,7 +13,6 @@
   return self;
 }
 
-
 - (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
   [_detector
       processImage:image

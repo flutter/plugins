@@ -15,65 +15,65 @@
 
 - (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
   [_recognizer processImage:image
-                completion:^(FIRVisionText *_Nullable visionText, NSError *_Nullable error) {
-                  if (error) {
-                    [FLTFirebaseMlVisionPlugin handleError:error result:result];
-                    return;
-                  } else if (!visionText) {
-                    result(@{@"text" : @"", @"blocks" : @[]});
-                    return;
-                  }
+                 completion:^(FIRVisionText *_Nullable visionText, NSError *_Nullable error) {
+                   if (error) {
+                     [FLTFirebaseMlVisionPlugin handleError:error result:result];
+                     return;
+                   } else if (!visionText) {
+                     result(@{@"text" : @"", @"blocks" : @[]});
+                     return;
+                   }
 
-                  NSMutableDictionary *visionTextData = [NSMutableDictionary dictionary];
-                  visionTextData[@"text"] = visionText.text;
+                   NSMutableDictionary *visionTextData = [NSMutableDictionary dictionary];
+                   visionTextData[@"text"] = visionText.text;
 
-                  NSMutableArray *allBlockData = [NSMutableArray array];
-                  for (FIRVisionTextBlock *block in visionText.blocks) {
-                    NSMutableDictionary *blockData = [NSMutableDictionary dictionary];
+                   NSMutableArray *allBlockData = [NSMutableArray array];
+                   for (FIRVisionTextBlock *block in visionText.blocks) {
+                     NSMutableDictionary *blockData = [NSMutableDictionary dictionary];
 
-                    [self addData:blockData
-                          confidence:block.confidence
-                        cornerPoints:block.cornerPoints
-                               frame:block.frame
-                           languages:block.recognizedLanguages
-                                text:block.text];
+                     [self addData:blockData
+                           confidence:block.confidence
+                         cornerPoints:block.cornerPoints
+                                frame:block.frame
+                            languages:block.recognizedLanguages
+                                 text:block.text];
 
-                    NSMutableArray *allLineData = [NSMutableArray array];
-                    for (FIRVisionTextLine *line in block.lines) {
-                      NSMutableDictionary *lineData = [NSMutableDictionary dictionary];
+                     NSMutableArray *allLineData = [NSMutableArray array];
+                     for (FIRVisionTextLine *line in block.lines) {
+                       NSMutableDictionary *lineData = [NSMutableDictionary dictionary];
 
-                      [self addData:lineData
-                            confidence:line.confidence
-                          cornerPoints:line.cornerPoints
-                                 frame:line.frame
-                             languages:line.recognizedLanguages
-                                  text:line.text];
+                       [self addData:lineData
+                             confidence:line.confidence
+                           cornerPoints:line.cornerPoints
+                                  frame:line.frame
+                              languages:line.recognizedLanguages
+                                   text:line.text];
 
-                      NSMutableArray *allElementData = [NSMutableArray array];
-                      for (FIRVisionTextElement *element in line.elements) {
-                        NSMutableDictionary *elementData = [NSMutableDictionary dictionary];
+                       NSMutableArray *allElementData = [NSMutableArray array];
+                       for (FIRVisionTextElement *element in line.elements) {
+                         NSMutableDictionary *elementData = [NSMutableDictionary dictionary];
 
-                        [self addData:elementData
-                              confidence:element.confidence
-                            cornerPoints:element.cornerPoints
-                                   frame:element.frame
-                               languages:element.recognizedLanguages
-                                    text:element.text];
+                         [self addData:elementData
+                               confidence:element.confidence
+                             cornerPoints:element.cornerPoints
+                                    frame:element.frame
+                                languages:element.recognizedLanguages
+                                     text:element.text];
 
-                        [allElementData addObject:elementData];
-                      }
+                         [allElementData addObject:elementData];
+                       }
 
-                      lineData[@"elements"] = allElementData;
-                      [allLineData addObject:lineData];
-                    }
+                       lineData[@"elements"] = allElementData;
+                       [allLineData addObject:lineData];
+                     }
 
-                    blockData[@"lines"] = allLineData;
-                    [allBlockData addObject:blockData];
-                  }
+                     blockData[@"lines"] = allLineData;
+                     [allBlockData addObject:blockData];
+                   }
 
-                  visionTextData[@"blocks"] = allBlockData;
-                  result(visionTextData);
-                }];
+                   visionTextData[@"blocks"] = allBlockData;
+                   result(visionTextData);
+                 }];
 }
 
 - (void)addData:(NSMutableDictionary *)addTo
