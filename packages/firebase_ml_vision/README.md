@@ -1,4 +1,4 @@
-# ML Kit Vision for Firebase
+# ML Kit Vision for Firebase with AutoML Vision Edge Support
 
 [![pub package](https://img.shields.io/pub/v/firebase_ml_vision.svg)](https://pub.dartlang.org/packages/firebase_ml_vision)
 
@@ -8,9 +8,25 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 
 *Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
+Note: AutoML Vision Edge <iOS Only>, Local Models supported for now
+
 ## Usage
 
-To use this plugin, add `firebase_ml_vision` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure Firebase for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
+To use this plugin, add `firebase_mlvision` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure Firebase for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
+
+### AutoML Vision Edge
+If you plan to use AutoML Vision Edge to detect labels using a custom model, download the trained model by following [these instructions](https://firebase.google.com/docs/ml-kit/train-image-labeler).
+
+Unzip the file downloaded, and rename the folder to reflect the model name.
+
+Create a `assets` folder and place the previous folder within it. In `pubspec.yaml` add the appropriate paths:
+
+```
+  assets:
+   - assets/<foldername>/dict.txt
+   - assets/<foldername>/manifest.json
+   - assets/<foldername>/model.tflite
+```
 
 ### Android
 If you're using the on-device `ImageLabeler`, include the latest matching [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android) dependency in your app-level build.gradle file.
@@ -74,6 +90,7 @@ final ImageLabeler cloudLabeler = FirebaseVision.instance.cloudImageLabeler();
 final FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
 final ImageLabeler labeler = FirebaseVision.instance.imageLabeler();
 final TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
+final VisionEdgeImageLabeler visionEdgeLabeler = FirebaseVision.instance.visionEdgeImageLabeler('<foldername>');
 ```
 
 You can also configure all detectors, except `TextRecognizer`, with desired options.
@@ -92,6 +109,7 @@ final List<ImageLabel> cloudLabels = await cloudLabeler.processImage(visionImage
 final List<Face> faces = await faceDetector.processImage(visionImage);
 final List<ImageLabel> labels = await labeler.processImage(visionImage);
 final VisionText visionText = await textRecognizer.processImage(visionImage);
+final List<VisionEdgeImageLabel> visionEdgeLabels = await visionEdgeLabeler.processImage(visionImage);
 ```
 
 ### 4. Extract data.
@@ -156,6 +174,15 @@ c. Extract labels.
 for (ImageLabel label in labels) {
   final String text = label.text;
   final String entityId = label.entityId;
+  final double confidence = label.confidence;
+}
+```
+
+c. Extract Cloud Vision Edge labels.
+
+```dart
+for (VisionEdgeImageLabel label in labels) {
+  final String text = label.text;
   final double confidence = label.confidence;
 }
 ```

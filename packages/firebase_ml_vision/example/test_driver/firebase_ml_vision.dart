@@ -62,6 +62,21 @@ void main() {
       });
     });
 
+    group('$VisionEdgeImageLabeler', () {
+      test('processImage', () async {
+        final String tmpFilename = await _loadImage('assets/test_barcode.jpg');
+        final FirebaseVisionImage visionImage =
+            FirebaseVisionImage.fromFilePath(tmpFilename);
+
+        final VisionEdgeImageLabeler visionEdgeLabeler =
+            vision.visionEdgeImageLabeler('potholes');
+        final List<VisionEdgeImageLabel> labels =
+            await visionEdgeLabeler.processImage(visionImage);
+
+        expect(labels.length, greaterThan(0));
+      });
+    });
+
     group('$TextRecognizer', () {
       test('processImage', () async {
         final String tmpFilename = await _loadImage('assets/test_text.png');
