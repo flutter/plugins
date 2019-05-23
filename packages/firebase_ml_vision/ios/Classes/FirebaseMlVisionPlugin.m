@@ -43,7 +43,7 @@ static FlutterError *getFlutterError(NSError *error) {
   } else if ([@"TextRecognizer#processImage" isEqualToString:call.method]) {
     [TextRecognizer handleDetection:image options:options result:result];
   } else if ([@"VisionEdgeImageLabeler#processImage" isEqualToString:call.method]) {
-      [VisionEdgeDetector handleDetection:image options:options result:result];
+    [VisionEdgeDetector handleDetection:image options:options result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }

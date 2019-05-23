@@ -17,7 +17,8 @@ part of firebase_ml_vision;
 /// ```
 
 class VisionEdgeImageLabeler {
-  VisionEdgeImageLabeler._({@required dynamic options, @required String dataset})
+  VisionEdgeImageLabeler._(
+      {@required dynamic options, @required String dataset})
       : _options = options,
         _dataset = dataset,
         assert(options != null),
@@ -29,7 +30,8 @@ class VisionEdgeImageLabeler {
   final String _dataset;
 
   /// Finds entities in the input image.
-  Future<List<VisionEdgeImageLabel>> processImage(FirebaseVisionImage visionImage) async {
+  Future<List<VisionEdgeImageLabel>> processImage(
+      FirebaseVisionImage visionImage) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method

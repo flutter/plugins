@@ -56,12 +56,12 @@ class FirebaseVision {
     );
   }
 
-  VisionEdgeImageLabeler visionEdgeImageLabeler(String dataset, [VisionEdgeImageLabelerOptions options]){
-  return VisionEdgeImageLabeler._(
-    options: options ?? const VisionEdgeImageLabelerOptions(),
-    dataset: dataset
-  );
-}
+  VisionEdgeImageLabeler visionEdgeImageLabeler(String dataset,
+      [VisionEdgeImageLabelerOptions options]) {
+    return VisionEdgeImageLabeler._(
+        options: options ?? const VisionEdgeImageLabelerOptions(),
+        dataset: dataset);
+  }
 
   /// Creates an instance of [TextRecognizer].
   TextRecognizer textRecognizer() => TextRecognizer._();
