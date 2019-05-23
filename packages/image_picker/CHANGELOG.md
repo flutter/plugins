@@ -1,3 +1,7 @@
+## 0.6.0+9
+
+* Remove video_player dev dependency.
+
 ## 0.6.0+8
 
 * Bugfix: Add missed return statement into the image_picker example.
