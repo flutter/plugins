@@ -1,17 +1,20 @@
 #import "FirebaseMlVisionPlugin.h"
 
-@implementation BarcodeDetector
-static FIRVisionBarcodeDetector *barcodeDetector;
+@interface BarcodeDetector ()
+@property FIRVisionBarcodeDetector *detector;
+@end
 
-+ (void)handleDetection:(FIRVisionImage *)image
-                options:(NSDictionary *)options
-                 result:(FlutterResult)result {
-  if (barcodeDetector == nil) {
-    FIRVision *vision = [FIRVision vision];
-    barcodeDetector = [vision barcodeDetectorWithOptions:[BarcodeDetector parseOptions:options]];
+@implementation BarcodeDetector
+- (instancetype)initWithVision:(FIRVision *)vision options:(NSDictionary *)options {
+  self = [super init];
+  if (self) {
+    _detector = [vision barcodeDetectorWithOptions:[BarcodeDetector parseOptions:options]];
   }
-  NSMutableArray *ret = [NSMutableArray array];
-  [barcodeDetector detectInImage:image
+  return self;
+}
+
+- (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
+  [_detector detectInImage:image
                       completion:^(NSArray<FIRVisionBarcode *> *barcodes, NSError *error) {
                         if (error) {
                           [FLTFirebaseMlVisionPlugin handleError:error result:result];
@@ -21,7 +24,7 @@ static FIRVisionBarcodeDetector *barcodeDetector;
                           return;
                         }
 
-                        // Scanned barcode
+                        NSMutableArray *ret = [NSMutableArray array];
                         for (FIRVisionBarcode *barcode in barcodes) {
                           [ret addObject:visionBarcodeToDictionary(barcode)];
                         }

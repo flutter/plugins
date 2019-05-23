@@ -1,15 +1,20 @@
 #import "FirebaseMlVisionPlugin.h"
 
+@interface TextRecognizer ()
+@property FIRVisionTextRecognizer *recognizer;
+@end
+
 @implementation TextRecognizer
-static FIRVisionTextRecognizer *recognizer;
+- (instancetype)initWithVision:(FIRVision *)vision options:(NSDictionary *)options {
+  self = [super init];
+  if (self) {
+    _recognizer = [vision onDeviceTextRecognizer];
+  }
+  return self;
+}
 
-+ (void)handleDetection:(FIRVisionImage *)image
-                options:(NSDictionary *)options
-                 result:(FlutterResult)result {
-  FIRVision *vision = [FIRVision vision];
-  recognizer = [vision onDeviceTextRecognizer];
-
-  [recognizer processImage:image
+- (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
+  [_recognizer processImage:image
                 completion:^(FIRVisionText *_Nullable visionText, NSError *_Nullable error) {
                   if (error) {
                     [FLTFirebaseMlVisionPlugin handleError:error result:result];
@@ -71,7 +76,7 @@ static FIRVisionTextRecognizer *recognizer;
                 }];
 }
 
-+ (void)addData:(NSMutableDictionary *)addTo
+- (void)addData:(NSMutableDictionary *)addTo
       confidence:(NSNumber *)confidence
     cornerPoints:(NSArray<NSValue *> *)cornerPoints
            frame:(CGRect)frame
