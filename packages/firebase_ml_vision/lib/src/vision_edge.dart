@@ -18,9 +18,12 @@ part of firebase_ml_vision;
 
 class VisionEdgeImageLabeler {
   VisionEdgeImageLabeler._(
-      {@required dynamic options, @required String dataset})
+      {@required dynamic options,
+      @required String dataset,
+      @required String modelLocation})
       : _options = options,
         _dataset = dataset,
+        _modelLocation = modelLocation,
         assert(options != null),
         assert(dataset != null);
 
@@ -29,29 +32,55 @@ class VisionEdgeImageLabeler {
 
   final String _dataset;
 
+  final String _modelLocation;
+
   /// Finds entities in the input image.
   Future<List<VisionEdgeImageLabel>> processImage(
       FirebaseVisionImage visionImage) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
-      'VisionEdgeImageLabeler#processImage',
-      <String, dynamic>{
-        'options': <String, dynamic>{
-          'dataset': _dataset,
-          'confidenceThreshold': _options.confidenceThreshold,
-        },
-      }..addAll(visionImage._serialize()),
-    );
+    if (_modelLocation == ModelLocation.Local) {
+      final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
+        'VisionEdgeImageLabeler#processLocalImage',
+        <String, dynamic>{
+          'options': <String, dynamic>{
+            'dataset': _dataset,
+            'confidenceThreshold': _options.confidenceThreshold,
+          },
+        }..addAll(visionImage._serialize()),
+      );
 
-    final List<VisionEdgeImageLabel> labels = <VisionEdgeImageLabel>[];
-    for (dynamic data in reply) {
-      labels.add(VisionEdgeImageLabel._(data));
+      final List<VisionEdgeImageLabel> labels = <VisionEdgeImageLabel>[];
+      for (dynamic data in reply) {
+        labels.add(VisionEdgeImageLabel._(data));
+      }
+
+      return labels;
+    } else {
+      final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
+        'VisionEdgeImageLabeler#processRemoteImage',
+        <String, dynamic>{
+          'options': <String, dynamic>{
+            'dataset': _dataset,
+            'confidenceThreshold': _options.confidenceThreshold,
+          },
+        }..addAll(visionImage._serialize()),
+      );
+
+      final List<VisionEdgeImageLabel> labels = <VisionEdgeImageLabel>[];
+      for (dynamic data in reply) {
+        labels.add(VisionEdgeImageLabel._(data));
+      }
+
+      return labels;
     }
-
-    return labels;
   }
+}
+
+class ModelLocation {
+  static const String Local = 'local';
+  static const String Remote = 'remote';
 }
 
 /// Options for on device image labeler.

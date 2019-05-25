@@ -8,14 +8,16 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 
 *Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
-Note: AutoML Vision Edge <iOS Only>, Local Models supported for now
+Note: AutoML Vision Edge: iOS Only
 
 ## Usage
 
 To use this plugin, add `firebase_mlvision` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure Firebase for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
 
 ### AutoML Vision Edge
-If you plan to use AutoML Vision Edge to detect labels using a custom model, download the trained model by following [these instructions](https://firebase.google.com/docs/ml-kit/train-image-labeler).
+If you plan to use AutoML Vision Edge to detect labels using a custom model, either download or host the trained model by following [these instructions](https://firebase.google.com/docs/ml-kit/train-image-labeler).
+
+If you downloaded the file, follow the instructions below to enable the plugin.
 
 Unzip the file downloaded, and rename the folder to reflect the model name.
 
@@ -80,6 +82,14 @@ final File imageFile = getImageFile();
 final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(imageFile);
 ```
 
+### Special Instructions for VisionEdgeImageLabeler.
+
+Get an instance of `ModelManager`, and setup the local or remote model(optional, results in faster first-use)
+```dart
+FirebaseVision.instance.modelManager().setupModel('<foldername(modelname)>', modelLocation);
+```
+
+
 ### 2. Create an instance of a detector.
 
 Get an instance of a `FirebaseVisionDetector`.
@@ -90,7 +100,7 @@ final ImageLabeler cloudLabeler = FirebaseVision.instance.cloudImageLabeler();
 final FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
 final ImageLabeler labeler = FirebaseVision.instance.imageLabeler();
 final TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
-final VisionEdgeImageLabeler visionEdgeLabeler = FirebaseVision.instance.visionEdgeImageLabeler('<foldername>');
+final VisionEdgeImageLabeler visionEdgeLabeler = FirebaseVision.instance.visionEdgeImageLabeler('<foldername(modelname)>', modelLocation);
 ```
 
 You can also configure all detectors, except `TextRecognizer`, with desired options.

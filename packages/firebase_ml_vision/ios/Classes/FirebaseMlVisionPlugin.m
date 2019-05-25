@@ -32,6 +32,7 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *modelName = call.arguments[@"model"];
   FIRVisionImage *image = [self dataToVisionImage:call.arguments];
   NSDictionary *options = call.arguments[@"options"];
   if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
@@ -42,8 +43,14 @@ static FlutterError *getFlutterError(NSError *error) {
     [ImageLabeler handleDetection:image options:options result:result];
   } else if ([@"TextRecognizer#processImage" isEqualToString:call.method]) {
     [TextRecognizer handleDetection:image options:options result:result];
-  } else if ([@"VisionEdgeImageLabeler#processImage" isEqualToString:call.method]) {
-    [VisionEdgeDetector handleDetection:image options:options result:result];
+  } else if ([@"VisionEdgeImageLabeler#processLocalImage" isEqualToString:call.method]) {
+    [LocalVisionEdgeDetector handleDetection:image options:options result:result];
+  } else if ([@"VisionEdgeImageLabeler#processRemoteImage" isEqualToString:call.method]) {
+    [RemoteVisionEdgeDetector handleDetection:image options:options result:result];
+  } else if ([@"ModelManager#setupLocalModel" isEqualToString:call.method]) {
+    [SetupLocalModel modelName:modelName result:result];
+  } else if ([@"ModelManager#setupRemoteModel" isEqualToString:call.method]) {
+    [SetupRemoteModel modelName:modelName result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }

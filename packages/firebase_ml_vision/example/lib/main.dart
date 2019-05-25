@@ -79,7 +79,9 @@ class _MyHomePageState extends State<_MyHomePage> {
       case Detector.cloudLabel:
         return mlVision.cloudImageLabeler().processImage;
       case Detector.visionEdgeLabel:
-        return mlVision.visionEdgeImageLabeler('potholes').processImage;
+        return mlVision
+            .visionEdgeImageLabeler('potholes', ModelLocation.Local)
+            .processImage;
         break;
       default:
         assert(_currentDetector == Detector.face);

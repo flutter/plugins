@@ -69,7 +69,7 @@ void main() {
             FirebaseVisionImage.fromFilePath(tmpFilename);
 
         final VisionEdgeImageLabeler visionEdgeLabeler =
-            vision.visionEdgeImageLabeler('potholes');
+            vision.visionEdgeImageLabeler('potholes', ModelLocation.Local);
         final List<VisionEdgeImageLabel> labels =
             await visionEdgeLabeler.processImage(visionImage);
 
