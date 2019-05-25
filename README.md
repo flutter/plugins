@@ -70,6 +70,7 @@ These are the available plugins in this repository.
 | [firebase_dynamic_links](./packages/firebase_dynamic_links/) | [![pub package](https://img.shields.io/pub/v/firebase_dynamic_links.svg)](https://pub.dartlang.org/packages/firebase_dynamic_links) |
 | [firebase_messaging](./packages/firebase_messaging/) | [![pub package](https://img.shields.io/pub/v/firebase_messaging.svg)](https://pub.dartlang.org/packages/firebase_messaging) |
 | [firebase_ml_vision](./packages/firebase_ml_vision/) | [![pub package](https://img.shields.io/pub/v/firebase_ml_vision.svg)](https://pub.dartlang.org/packages/firebase_ml_vision) |
+| [firebase_mlkit_language](./packages/firebase_mlkit_language/) | [![pub package](https://img.shields.io/pub/v/firebase_mlkit_language.svg?color=orange)](https://pub.dartlang.org/packages/firebase_mlkit_language) |
 | [firebase_performance](./packages/firebase_performance/) | [![pub package](https://img.shields.io/pub/v/firebase_performance.svg)](https://pub.dartlang.org/packages/firebase_performance) |
 | [firebase_remote_config](./packages/firebase_remote_config/) | [![pub package](https://img.shields.io/pub/v/firebase_remote_config.svg)](https://pub.dartlang.org/packages/firebase_remote_config) |
 | [firebase_storage](./packages/firebase_storage/) | [![pub package](https://img.shields.io/pub/v/firebase_storage.svg)](https://pub.dartlang.org/packages/firebase_storage) |
