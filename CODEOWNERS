@@ -18,6 +18,7 @@ packages/firebase_database/* @collinjackson @kroikie
 packages/firebase_dynamic_links/* @bparrishMines
 packages/firebase_messaging/* @collinjackson @kroikie
 packages/firebase_ml_vision/* @bparrishMines
+packages/firebase_mlkit_language/* @rishab2113
 packages/firebase_performance/* @bparrishMines @collinjackson
 packages/firebase_remote_config/* @collinjackson @kroikie
 packages/firebase_storage/* @collinjackson @kroikie

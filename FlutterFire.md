@@ -5,11 +5,11 @@ that enable Flutter apps to use one or more [Firebase](https://firebase.google.c
 
 [Flutter](https://flutter.io) is a new mobile app SDK to help developers and
 designers build modern mobile apps for iOS and Android.
-  
-*Note*: These plugins are part of the [Flutter open source project](https://github.com/flutter). 
-The plugins are still under development, and some APIs might not be available yet. 
+
+*Note*: These plugins are part of the [Flutter open source project](https://github.com/flutter).
+The plugins are still under development, and some APIs might not be available yet.
 [Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
- 
+
 ## Available FlutterFire plugins
 
 | Plugin | Version | Firebase feature | Source code |
@@ -25,6 +25,7 @@ The plugins are still under development, and some APIs might not be available ye
 | [firebase_dynamic_links][dynamic_links_pub] | ![pub package][dynamic_links_badge] | [Firebase Dynamic Links][dynamic_links_product] | [`packages/firebase_dynamic_links`][dynamic_links_code] |
 | [firebase_messaging][messaging_pub] | ![pub package][messaging_badge] | [Firebase Cloud Messaging][messaging_product] | [`packages/firebase_messaging`][messaging_code] |
 | [firebase_ml_vision][ml_vision_pub] | ![pub package][ml_vision_badge] | [Firebase ML Kit][ml_vision_product] | [`packages/firebase_ml_vision`][ml_vision_code] |
+| [firebase_mlkit_language][mlkit_language_pub] | ![pub package][mlkit_language_badge] | [Firebase ML Kit][mlkit_language_product] | [`packages/firebase_mlkit_language`][mlkit_language_code] |
 | [firebase_performance][performance_pub] | ![pub package][performance_badge] | [Firebase Performance Monitoring][performance_product] | [`packages/firebase_performance`][performance_code] |
 | [firebase_remote_config][remote_config_pub] | ![pub package][remote_config_badge] | [Firebase Remote Config][remote_config_product] | [`packages/firebase_remote_config`][remote_config_code] |
 | [firebase_storage][storage_pub] | ![pub package][storage_badge] | [Firebase Cloud Storage][storage_product] | [`packages/firebase_storage`][storage_code] |
@@ -84,6 +85,11 @@ The plugins are still under development, and some APIs might not be available ye
 [ml_vision_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_ml_vision
 [ml_vision_badge]: https://img.shields.io/pub/v/firebase_ml_vision.svg
 
+[mlkit_language_pub]: https://pub.dartlang.org/packages/firebase_mlkit_language
+[mlkit_language_product]: https://firebase.google.com/products/ml-kit/
+[mlkit_language_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_mlkit_language
+[mlkit_language_badge]: https://img.shields.io/pub/v/firebase_mlkit_language.svg?color=orange
+
 [performance_pub]: https://pub.dartlang.org/packages/firebase_performance
 [performance_product]: https://firebase.google.com/products/performance/
 [performance_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_performance
@@ -98,4 +104,3 @@ The plugins are still under development, and some APIs might not be available ye
 [storage_product]: https://firebase.google.com/products/storage/
 [storage_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_storage
 [storage_badge]: https://img.shields.io/pub/v/firebase_storage.svg
-
