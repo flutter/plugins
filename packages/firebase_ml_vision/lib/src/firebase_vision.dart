@@ -27,7 +27,7 @@ class FirebaseVision {
 
   @visibleForTesting
   static const MethodChannel channel =
-      MethodChannel('plugins.flutter.io/firebase_mlvision');
+      MethodChannel('plugins.flutter.io/firebase_ml_vision');
 
   /// Singleton of [FirebaseVision].
   ///
