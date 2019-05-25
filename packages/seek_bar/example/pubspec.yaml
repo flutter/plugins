@@ -1,0 +1,19 @@
+name: seek_bar_example
+description: Demonstrates how to use the seek_bar package.
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  seek_bar:
+    path: ../
+
+  video_player: ^0.10.1
+
+flutter:
+  uses-material-design: true
+#  assets:

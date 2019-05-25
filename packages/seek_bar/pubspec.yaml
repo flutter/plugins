@@ -1,0 +1,18 @@
+name: seek_bar
+description: A new Flutter package for media seekbar.
+version: 0.0.1
+author: Flutter Team <flutter-dev@googlegroups.com>
+homepage: https://github.com/flutter/plugins/tree/master/packages/seek_bar
+
+dependencies:
+  meta: "^1.0.5"
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+environment:
+  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  flutter: ">=0.2.5 <2.0.0"
