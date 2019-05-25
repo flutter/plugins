@@ -36,6 +36,9 @@ class FakeController extends ValueNotifier<AudioPlayerValue>
   Future<void> setVolume(double volume) async {}
 
   @override
+  Future<void> setSpeed(double speed) async {}
+
+  @override
   Future<void> initialize() async {}
 
   @override

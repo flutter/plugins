@@ -17,8 +17,8 @@ final MethodChannel _channel = const MethodChannel('flutter.io/audioPlayer')
 // ignore: strong_mode_implicit_dynamic_method
   ..invokeMethod('init');
 
-class DurationRange {
-  DurationRange(this.start, this.end);
+class AudioDurationRange {
+  AudioDurationRange(this.start, this.end);
 
   final Duration start;
   final Duration end;
@@ -42,11 +42,12 @@ class AudioPlayerValue {
     @required this.duration,
     this.size,
     this.position = const Duration(),
-    this.buffered = const <DurationRange>[],
+    this.buffered = const <AudioDurationRange>[],
     this.isPlaying = false,
     this.isLooping = false,
     this.isBuffering = false,
     this.volume = 1.0,
+    this.speed = 1.0,
     this.errorDescription,
   });
 
@@ -64,7 +65,7 @@ class AudioPlayerValue {
   final Duration position;
 
   /// The currently buffered ranges.
-  final List<DurationRange> buffered;
+  final List<AudioDurationRange> buffered;
 
   /// True if the audio is playing. False if it's paused.
   final bool isPlaying;
@@ -77,6 +78,9 @@ class AudioPlayerValue {
 
   /// The current volume of the playback.
   final double volume;
+
+  /// The current speed of the playback.
+  final double speed;
 
   /// A description of the error if present.
   ///
@@ -98,11 +102,12 @@ class AudioPlayerValue {
     Duration duration,
     Size size,
     Duration position,
-    List<DurationRange> buffered,
+    List<AudioDurationRange> buffered,
     bool isPlaying,
     bool isLooping,
     bool isBuffering,
     double volume,
+    double speed,
     String errorDescription,
   }) {
     return AudioPlayerValue(
@@ -114,6 +119,7 @@ class AudioPlayerValue {
       isLooping: isLooping ?? this.isLooping,
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
+      speed: speed ?? this.speed,
       errorDescription: errorDescription ?? this.errorDescription,
     );
   }
@@ -127,8 +133,9 @@ class AudioPlayerValue {
         'buffered: [${buffered.join(', ')}], '
         'isPlaying: $isPlaying, '
         'isLooping: $isLooping, '
-        'isBuffering: $isBuffering'
+        'isBuffering: $isBuffering, '
         'volume: $volume, '
+        'speed: $speed, '
         'errorDescription: $errorDescription)';
   }
 }
@@ -221,9 +228,9 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
     _creatingCompleter.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
 
-    DurationRange toDurationRange(dynamic value) {
+    AudioDurationRange toDurationRange(dynamic value) {
       final List<dynamic> pair = value;
-      return DurationRange(
+      return AudioDurationRange(
         Duration(milliseconds: pair[0]),
         Duration(milliseconds: pair[1]),
       );
@@ -241,6 +248,7 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
           initializingCompleter.complete(null);
           _applyLooping();
           _applyVolume();
+          _applySpeed();
           _applyPlayPause();
           break;
         case 'completed':
@@ -250,7 +258,7 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
         case 'bufferingUpdate':
           final List<dynamic> values = map['values'];
           value = value.copyWith(
-            buffered: values.map<DurationRange>(toDurationRange).toList(),
+            buffered: values.map<AudioDurationRange>(toDurationRange).toList(),
           );
           break;
         case 'bufferingStart':
@@ -378,6 +386,19 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
     );
   }
 
+  Future<void> _applySpeed() async {
+    if (!value.initialized || _isDisposed) {
+      return;
+    }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod(
+      'setSpeed',
+      <String, dynamic>{'textureId': _textureId, 'speed': value.speed},
+    );
+  }
+
   /// The position in the current audio.
   Future<Duration> get position async {
     if (_isDisposed) {
@@ -420,6 +441,15 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
   Future<void> setVolume(double volume) async {
     value = value.copyWith(volume: volume.clamp(0.0, 1.0));
     await _applyVolume();
+  }
+
+  /// Sets the playback speed of [this].
+  ///
+  /// [speed] must be greater than zero.
+  Future<void> setSpeed(double speed) async {
+    if (speed <= 0.0) return;
+    value = value.copyWith(speed: speed);
+    await _applySpeed();
   }
 }
 
@@ -641,7 +671,7 @@ class _AudioProgressIndicatorState extends State<AudioProgressIndicator> {
       final int position = controller.value.position.inMilliseconds;
 
       int maxBuffering = 0;
-      for (DurationRange range in controller.value.buffered) {
+      for (AudioDurationRange range in controller.value.buffered) {
         final int end = range.end.inMilliseconds;
         if (end > maxBuffering) {
           maxBuffering = end;

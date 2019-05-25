@@ -15,19 +15,19 @@ import 'package:flutter/material.dart';
 /// Toggles play/pause on tap (accompanied by a change action icon).
 ///
 /// Plays (looping) on initialization, and mutes on deactivation.
-class AudioPlayPause extends StatefulWidget {
-  AudioPlayPause(this.controller);
+class AudioWithControllers extends StatefulWidget {
+  AudioWithControllers(this.controller);
 
   final AudioPlayerController controller;
 
   @override
   State createState() {
-    return _AudioPlayPauseState();
+    return _AudioWithControllersState();
   }
 }
 
-class _AudioPlayPauseState extends State<AudioPlayPause> {
-  _AudioPlayPauseState() {
+class _AudioWithControllersState extends State<AudioWithControllers> {
+  _AudioWithControllersState() {
     listener = () {
       setState(() {});
     };
@@ -44,43 +44,95 @@ class _AudioPlayPauseState extends State<AudioPlayPause> {
     super.initState();
     controller.addListener(listener);
     controller.setVolume(1.0);
+    controller.setSpeed(1.0);
     controller.play();
   }
 
   @override
   void deactivate() {
     controller.setVolume(0.0);
+    controller.pause();
     controller.removeListener(listener);
     super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Column(
       children: <Widget>[
-        GestureDetector(
-          child: Container(
-            child: controller.value.isPlaying
-                ? const Icon(Icons.pause)
-                : const Icon(Icons.play_arrow),
-          ),
-          onTap: () {
-            if (!controller.value.initialized) {
-              return;
-            }
-            if (controller.value.isPlaying) {
-              controller.pause();
-            } else {
-              controller.play();
-            }
-          },
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            GestureDetector(
+              child: controller.value.isPlaying
+                  ? const Icon(Icons.pause)
+                  : const Icon(Icons.play_arrow),
+              onTap: (!controller.value.initialized)
+                  ? null
+                  : () {
+                      if (controller.value.isPlaying) {
+                        controller.pause();
+                      } else {
+                        if (controller.value.position >=
+                            controller.value.duration) {
+                          controller.seekTo(const Duration(microseconds: 0));
+                        }
+                        controller.play();
+                      }
+                    },
+            ),
+            Flexible(
+              child: AudioProgressIndicator(
+                controller,
+                allowScrubbing: true,
+              ),
+            ),
+            GestureDetector(
+              child: controller.value.isLooping
+                  ? const Icon(Icons.loop)
+                  : const Icon(Icons.loop,color: Colors.blueGrey,),
+              onTap: (!controller.value.initialized)
+                  ? null
+                  : () {
+                      if (controller.value.isLooping) {
+                        controller.setLooping(false);
+                      } else {
+                        controller.setLooping(true);
+                      }
+                    },
+            ),
+          ],
         ),
-        Flexible(
-          child: AudioProgressIndicator(
-            controller,
-            allowScrubbing: true,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            const Text('volume'),
+            Expanded(
+              child: Slider(
+                min: 0.0,
+                max: 1.0,
+                label: '${controller.value.volume}',
+                value: controller.value.volume,
+                onChanged: (double newVolume) =>
+                    controller.setVolume(newVolume),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            const Text('speed'),
+            Expanded(
+              child: Slider(
+                min: 0.0,
+                max: 2.0,
+                label: '${controller.value.speed}',
+                value: controller.value.speed,
+                onChanged: (double newSpeed) => controller.setSpeed(newSpeed),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -336,7 +388,7 @@ class AudioState extends State<Audio> {
   @override
   Widget build(BuildContext context) {
     if (initialized) {
-      return Center(child: AudioPlayPause(controller));
+      return Center(child: AudioWithControllers(controller));
     } else {
       return Container();
     }
@@ -363,18 +415,14 @@ void main() {
             children: <Widget>[
               Column(
                 children: <Widget>[
+                  const Text('remote MP3'),
                   NetworkPlayerLifeCycle(
-                    'https://www.sample-videos.com/audio/mp3/crowd-cheering.mp3',
+                    'https://www.musicscreen.be/mp3gallery/content/songs/MP3/Electrique/Vertu.mp3',
                     (BuildContext context, AudioPlayerController controller) =>
                         Audio(controller),
                   ),
                   Container(
                     padding: const EdgeInsets.only(top: 20.0),
-                  ),
-                  NetworkPlayerLifeCycle(
-                    'https://www.sample-videos.com/audio/mp3/crowd-cheering.mp3',
-                    (BuildContext context, AudioPlayerController controller) =>
-                        Audio(controller),
                   ),
                 ],
               ),

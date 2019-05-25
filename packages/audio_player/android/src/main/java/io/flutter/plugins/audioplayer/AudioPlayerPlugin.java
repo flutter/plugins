@@ -14,6 +14,7 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.EventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -229,6 +230,14 @@ public class AudioPlayerPlugin implements MethodCallHandler {
             exoPlayer.setVolume(bracketedValue);
         }
 
+        void setSpeed(double value) {
+            if (value <= 0.0) return;
+            PlaybackParameters parameters = exoPlayer.getPlaybackParameters();
+            PlaybackParameters newParameters =
+                    new PlaybackParameters((float) value, parameters.pitch, parameters.skipSilence);
+            exoPlayer.setPlaybackParameters(newParameters);
+        }
+
         void seekTo(int location) {
             exoPlayer.seekTo(location);
         }
@@ -375,11 +384,15 @@ public class AudioPlayerPlugin implements MethodCallHandler {
     private void onMethodCall(MethodCall call, Result result, long textureId, AudioPlayer player) {
         switch (call.method) {
             case "setLooping":
-                player.setLooping(call.argument("looping"));
+                player.setLooping((Boolean) call.argument("looping"));
                 result.success(null);
                 break;
             case "setVolume":
-                player.setVolume(call.argument("volume"));
+                player.setVolume((Double) call.argument("volume"));
+                result.success(null);
+                break;
+            case "setSpeed":
+                player.setSpeed((Double) call.argument("speed"));
                 result.success(null);
                 break;
             case "play":

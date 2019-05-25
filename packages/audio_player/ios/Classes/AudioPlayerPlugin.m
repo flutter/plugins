@@ -351,6 +351,19 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
 }
 
+- (void)setSpeed:(double)speed {
+  if (speed == 1.0 || speed == 0.0) {
+    _player.rate = speed;
+  } else if (speed < 0 || speed > 2.0) {
+    NSLog(@"Speed outside supported range %f", speed);
+  } else if ((speed > 1.0 && _player.currentItem.canPlayFastForward) ||
+             (speed < 1.0 && _player.currentItem.canPlaySlowForward)) {
+    _player.rate = speed;
+  } else {
+    NSLog(@"Unsupported speed. Cannot play fast/slow forward: %f", speed);
+  }
+}
+
 - (CVPixelBufferRef)copyPixelBuffer {
   CMTime outputItemTime = [_audioOutput itemTimeForHostTime:CACurrentMediaTime()];
   if ([_audioOutput hasNewPixelBufferForItemTime:outputItemTime]) {
@@ -491,6 +504,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       result(nil);
     } else if ([@"setVolume" isEqualToString:call.method]) {
       [player setVolume:[argsMap[@"volume"] doubleValue]];
+      result(nil);
+    } else if ([@"setSpeed" isEqualToString:call.method]) {
+      [player setSpeed:[argsMap[@"speed"] doubleValue]];
       result(nil);
     } else if ([@"play" isEqualToString:call.method]) {
       [player play];
