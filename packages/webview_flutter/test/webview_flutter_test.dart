@@ -6,7 +6,11 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/src/foundation/basic_types.dart';
+import 'package:flutter/src/gestures/recognizer.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 typedef void VoidCallback();
@@ -702,6 +706,104 @@ void main() {
       expect(platformWebView.currentUrl, 'https://flutter.dev');
     });
   });
+
+  group('debuggingEnabled', () {
+    testWidgets('enable debugging', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        debuggingEnabled: true,
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      expect(platformWebView.debuggingEnabled, true);
+    });
+
+    testWidgets('defaults to false', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      expect(platformWebView.debuggingEnabled, false);
+    });
+
+    testWidgets('can be changed', (WidgetTester tester) async {
+      final GlobalKey key = GlobalKey();
+      await tester.pumpWidget(WebView(key: key));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      await tester.pumpWidget(WebView(
+        key: key,
+        debuggingEnabled: true,
+      ));
+
+      expect(platformWebView.debuggingEnabled, true);
+
+      await tester.pumpWidget(WebView(
+        key: key,
+        debuggingEnabled: false,
+      ));
+
+      expect(platformWebView.debuggingEnabled, false);
+    });
+  });
+
+  group('Custom platform implementation', () {
+    setUpAll(() {
+      WebView.platformBuilder = MyWebViewBuilder();
+    });
+    tearDownAll(() {
+      WebView.platformBuilder = null;
+    });
+
+    testWidgets('creation', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const WebView(
+          initialUrl: 'https://youtube.com',
+        ),
+      );
+
+      final MyWebViewBuilder builder = WebView.platformBuilder;
+      final MyWebViewPlatform platform = builder.lastPlatformBuilt;
+
+      expect(platform.creationParams, <String, dynamic>{
+        'initialUrl': 'https://youtube.com',
+        'settings': <String, dynamic>{
+          'jsMode': 0,
+          'hasNavigationDelegate': false,
+          'debuggingEnabled': false
+        },
+        'javascriptChannelNames': <String>[],
+      });
+    });
+
+    testWidgets('loadUrl', (WidgetTester tester) async {
+      WebViewController controller;
+      await tester.pumpWidget(
+        WebView(
+          initialUrl: 'https://youtube.com',
+          onWebViewCreated: (WebViewController webViewController) {
+            controller = webViewController;
+          },
+        ),
+      );
+
+      final MyWebViewBuilder builder = WebView.platformBuilder;
+      final MyWebViewPlatform platform = builder.lastPlatformBuilt;
+
+      final Map<String, String> headers = <String, String>{
+        'header': 'value',
+      };
+
+      await controller.loadUrl('https://google.com', headers: headers);
+
+      expect(platform.lastUrlLoaded, 'https://google.com');
+      expect(platform.lastRequestHeaders, headers);
+    });
+  });
 }
 
 class FakePlatformWebView {
@@ -720,6 +822,8 @@ class FakePlatformWebView {
     javascriptMode = JavascriptMode.values[params['settings']['jsMode']];
     hasNavigationDelegate =
         params['settings']['hasNavigationDelegate'] ?? false;
+    debuggingEnabled = params['settings']['debuggingEnabled'];
+
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
@@ -737,6 +841,7 @@ class FakePlatformWebView {
   List<String> javascriptChannelNames;
 
   bool hasNavigationDelegate;
+  bool debuggingEnabled;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -750,6 +855,9 @@ class FakePlatformWebView {
         }
         if (call.arguments['hasNavigationDelegate'] != null) {
           hasNavigationDelegate = call.arguments['hasNavigationDelegate'];
+        }
+        if (call.arguments['debuggingEnabled'] != null) {
+          debuggingEnabled = call.arguments['debuggingEnabled'];
         }
         break;
       case 'canGoBack':
@@ -911,4 +1019,42 @@ class _FakeCookieManager {
   void reset() {
     hasCookies = true;
   }
+}
+
+class MyWebViewBuilder implements WebViewBuilder {
+  MyWebViewPlatform lastPlatformBuilt;
+
+  @override
+  Widget build({
+    BuildContext context,
+    Map<String, dynamic> creationParams,
+    @required WebViewPlatformCreatedCallback onWebViewPlatformCreated,
+    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+  }) {
+    assert(onWebViewPlatformCreated != null);
+    lastPlatformBuilt = MyWebViewPlatform(creationParams, gestureRecognizers);
+    onWebViewPlatformCreated(lastPlatformBuilt);
+    return Container();
+  }
+}
+
+class MyWebViewPlatform extends WebViewPlatform {
+  MyWebViewPlatform(this.creationParams, this.gestureRecognizers);
+
+  Map<String, dynamic> creationParams;
+  Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+
+  String lastUrlLoaded;
+  Map<String, String> lastRequestHeaders;
+
+  @override
+  Future<void> loadUrl(String url, Map<String, String> headers) {
+    lastUrlLoaded = url;
+    lastRequestHeaders = headers;
+    return null;
+  }
+
+  @override
+  // TODO: implement id
+  int get id => 1;
 }

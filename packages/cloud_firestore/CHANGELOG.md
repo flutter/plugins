@@ -1,3 +1,7 @@
+## 0.11.0+2
+
+* Remove iOS dependency on Firebase/Database and Firebase/Auth CocoaPods.
+
 ## 0.11.0+1
 
 * Fixes startAtDocument, startAfterDocument, endAtDocument & endBeforeDocument.

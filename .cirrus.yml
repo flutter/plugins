@@ -10,6 +10,8 @@ task:
     - git fetch origin master
   activate_script: pub global activate flutter_plugin_tools
   matrix:
+    - name: hard_coded_version
+      script: ./script/check_hard_coded_version.sh
     - name: publishable
       script: ./script/check_publish.sh
     - name: test+format
