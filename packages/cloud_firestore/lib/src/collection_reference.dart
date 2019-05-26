@@ -18,7 +18,7 @@ class CollectionReference extends Query {
   ///
   /// For root collections, null is returned.
   DocumentReference parent() {
-    if (_pathComponents.isEmpty) {
+    if (_pathComponents.length < 2) {
       return null;
     }
     return DocumentReference._(
