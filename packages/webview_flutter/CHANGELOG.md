@@ -1,3 +1,7 @@
+## 0.3.8
+
+* Add `debuggingEnabled` property.
+
 ## 0.3.7+1
 
 * Fix an issue where JavaScriptChannel messages weren't sent from the platform thread on Android.

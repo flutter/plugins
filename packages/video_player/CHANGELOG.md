@@ -1,3 +1,7 @@
+## 0.10.1+1
+
+* iOS: Avoid deprecated `seekToTime` API
+
 ## 0.10.1
 
 * iOS: Consider a player only `initialized` once duration is determined.
