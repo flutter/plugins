@@ -288,9 +288,8 @@ void main() {
         expect(collectionReference.id, equals('foo'));
       });
       test('parent', () async {
-        final CollectionReference colRef =
-            collectionReference.document('bar');
-        expect(collectionReference.parent().id, equals('foo'));
+        final DocumentReference docRef = collectionReference.document('bar');
+        expect(docRef.parent().id, equals('foo'));
         expect(collectionReference.parent(), isNull);
       });
       test('path', () async {
