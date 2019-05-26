@@ -1,3 +1,8 @@
+## 0.11.1
+
+* Fixed `CollectionReference.parent` to correctly return a `DocumentReference`.
+* Added `DocumentReference.parent`.
+
 ## 0.11.0+2
 
 * Remove iOS dependency on Firebase/Database and Firebase/Auth CocoaPods.
