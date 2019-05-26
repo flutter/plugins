@@ -83,7 +83,7 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   }
   id startAtDocument = parameters[@"startAtDocument"];
   if (startAtDocument) {
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:YES];
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     query = [query queryStartingAtValues:getDocumentValues(startAtDocument, orderBy)];
   }
   id startAfter = parameters[@"startAfter"];
@@ -93,7 +93,7 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   }
   id startAfterDocument = parameters[@"startAfterDocument"];
   if (startAfterDocument) {
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:YES];
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     query = [query queryStartingAfterValues:getDocumentValues(startAfterDocument, orderBy)];
   }
   id endAt = parameters[@"endAt"];
@@ -103,7 +103,7 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   }
   id endAtDocument = parameters[@"endAtDocument"];
   if (endAtDocument) {
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:YES];
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     query = [query queryEndingAtValues:getDocumentValues(endAtDocument, orderBy)];
   }
   id endBefore = parameters[@"endBefore"];
@@ -113,7 +113,7 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   }
   id endBeforeDocument = parameters[@"endBeforeDocument"];
   if (endBeforeDocument) {
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:YES];
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
     query = [query queryEndingBeforeValues:getDocumentValues(endBeforeDocument, orderBy)];
   }
   return query;
