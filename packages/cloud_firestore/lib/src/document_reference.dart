@@ -29,9 +29,6 @@ class DocumentReference {
 
   /// Parent returns the containing [CollectionReference].
   CollectionReference parent() {
-    if (_pathComponents.isEmpty) {
-      return null;
-    }
     return CollectionReference._(
       firestore,
       (List<String>.from(_pathComponents)..removeLast()),
