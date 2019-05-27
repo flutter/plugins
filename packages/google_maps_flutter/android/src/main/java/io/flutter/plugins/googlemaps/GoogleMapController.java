@@ -211,6 +211,16 @@ final class GoogleMapController
           }
           break;
         }
+      case "map#setPadding":
+        {
+          double left = call.argument("left");
+          double top = call.argument("top");
+          double right = call.argument("right");
+          double bottom = call.argument("bottom");
+          googleMap.setPadding((int)(left * density), (int)(top * density), (int) (right * density), (int) (bottom * density));
+          result.success(null);
+          break;
+        }
       case "camera#move":
         {
           final CameraUpdate cameraUpdate =

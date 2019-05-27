@@ -189,4 +189,20 @@ class GoogleMapController {
 
     return LatLngBounds(northeast: northeast, southwest: southwest);
   }
+
+  /// Sets padding on the map
+  ///
+  /// The returned [Future] completes after the change has been made on the
+  /// platform side.
+  Future<void> setPadding(double left, double top, double right, double bottom) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await channel.invokeMethod('map#setPadding', <String, dynamic>{
+      'top': top,
+      'left': left,
+      'bottom': bottom,
+      'right': right,
+    });
+  }
 }

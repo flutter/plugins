@@ -1,3 +1,7 @@
+## 0.5.15
+
+  * Add support for add padding to the map.
+
 ## 0.5.14
 
 * Adds onLongPress callback for GoogleMap.
