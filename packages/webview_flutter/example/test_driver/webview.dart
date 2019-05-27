@@ -134,7 +134,7 @@ void main() {
   });
 
   test('userAgent', () async {
-    final Completer<WebViewController> controllerCompleter =
+    final Completer<WebViewController> controllerCompleter01 =
     Completer<WebViewController>();
     await pumpWidget(
       Directionality(
@@ -143,16 +143,37 @@ void main() {
           key: GlobalKey(),
           initialUrl: 'https://flutter.dev/',
           javascriptMode: JavascriptMode.unrestricted,
-          userAgent: 'UA',
+          userAgent: 'UA-01',
           onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
+            controllerCompleter01.complete(controller);
           },
         ),
       ),
     );
-    final WebViewController controller = await controllerCompleter.future;
-    final String userAgent = await controller.getUserAgent();
-    expect(userAgent, 'UA');
+    final WebViewController controller01 = await controllerCompleter01.future;
+    final String userAgent01 = await controller01.getUserAgent();
+    expect(userAgent01, 'UA-01');
+
+    // rebuilds a WebView with a different user agent.
+    final Completer<WebViewController> controllerCompleter02 =
+    Completer<WebViewController>();
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          javascriptMode: JavascriptMode.unrestricted,
+          userAgent: 'UA-02',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter02.complete(controller);
+          },
+        ),
+      ),
+    );
+    final WebViewController controller02 = await controllerCompleter02.future;
+    final String userAgent02 = await controller02.getUserAgent();
+    expect(userAgent02, 'UA-02');
   });
 }
 
