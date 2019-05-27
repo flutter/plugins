@@ -70,6 +70,42 @@ void main() {
     expect(platformWebView.javascriptMode, JavascriptMode.disabled);
   });
 
+  testWidgets('Set UserAgent', (WidgetTester tester) async {
+    await tester.pumpWidget(const WebView(
+      initialUrl: 'https://youtube.com',
+      javascriptMode: JavascriptMode.unrestricted,
+    ));
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.userAgent, isNull);
+
+    await tester.pumpWidget(const WebView(
+      initialUrl: 'https://youtube.com',
+      javascriptMode: JavascriptMode.unrestricted,
+      userAgent: 'UA',
+    ));
+
+    expect(platformWebView.userAgent, 'UA');
+  });
+
+  testWidgets('Get UserAgent', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptMode: JavascriptMode.unrestricted,
+        userAgent: 'UA',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(controller, isNotNull);
+    expect(await controller.userAgent(), 'UA');
+  });
+
   testWidgets('Load url', (WidgetTester tester) async {
     WebViewController controller;
     await tester.pumpWidget(
@@ -823,6 +859,7 @@ class FakePlatformWebView {
     hasNavigationDelegate =
         params['settings']['hasNavigationDelegate'] ?? false;
     debuggingEnabled = params['settings']['debuggingEnabled'];
+    userAgent = params['settings']['userAgent'];
 
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
@@ -842,6 +879,7 @@ class FakePlatformWebView {
 
   bool hasNavigationDelegate;
   bool debuggingEnabled;
+  String userAgent;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -849,6 +887,8 @@ class FakePlatformWebView {
         final Map<dynamic, dynamic> request = call.arguments;
         _loadUrl(request['url']);
         return Future<void>.sync(() {});
+      case 'userAgent':
+        return Future<String>.value(userAgent);
       case 'updateSettings':
         if (call.arguments['jsMode'] != null) {
           javascriptMode = JavascriptMode.values[call.arguments['jsMode']];
@@ -858,6 +898,9 @@ class FakePlatformWebView {
         }
         if (call.arguments['debuggingEnabled'] != null) {
           debuggingEnabled = call.arguments['debuggingEnabled'];
+        }
+        if (call.arguments['userAgent'] != null) {
+          userAgent = call.arguments['userAgent'];
         }
         break;
       case 'canGoBack':
