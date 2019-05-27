@@ -5,8 +5,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
@@ -249,7 +249,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _applyLooping();
           _applyVolume();
           _applyPlayPause();
-          _applyPlayBackSpeed();
+          _applySpeed();
           break;
         case 'completed':
           value = value.copyWith(isPlaying: false, position: value.duration);
@@ -363,7 +363,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       );
 
       // Ensure the video is played at the correct speed
-      await _applyPlayBackSpeed();
+      await _applySpeed();
     } else {
       _timer?.cancel();
       // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
@@ -433,7 +433,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _applyVolume();
   }
 
-  Future<void> _applyPlayBackSpeed() async {
+  Future<void> _applySpeed() async {
     if (!value.initialized || _isDisposed) {
       return;
     }
@@ -446,7 +446,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
     // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod(
-      'setPlayBackSpeed',
+      'setSpeed',
       <String, dynamic>{'textureId': _textureId, 'speed': value.speed},
     );
   }
@@ -457,7 +457,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// by default speed value is 1.0
   Future<void> setSpeed(double speed) async {
     value = value.copyWith(speed: speed);
-    await _applyPlayBackSpeed();
+    await _applySpeed();
   }
 }
 
