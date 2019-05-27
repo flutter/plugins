@@ -132,6 +132,28 @@ void main() {
     await controller.evaluateJavascript('Echo.postMessage("hello");');
     expect(messagesReceived, equals(<String>['hello']));
   });
+
+  test('userAgent', () async {
+    final Completer<WebViewController> controllerCompleter =
+    Completer<WebViewController>();
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          javascriptMode: JavascriptMode.unrestricted,
+          userAgent: 'UA',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    final String userAgent = await controller.userAgent();
+    expect(userAgent, 'UA');
+  });
 }
 
 Future<void> pumpWidget(Widget widget) {
