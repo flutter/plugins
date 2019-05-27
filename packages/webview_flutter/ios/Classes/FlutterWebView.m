@@ -236,6 +236,9 @@
     } else if ([key isEqualToString:@"hasNavigationDelegate"]) {
       NSNumber* hasDartNavigationDelegate = settings[key];
       _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
+    } else if ([key isEqualToString:@"userAgent"]) {
+      NSString* userAgent = settings[key];
+      [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
     } else {
       NSLog(@"webview_flutter: unknown setting key: %@", key);
     }
@@ -272,6 +275,16 @@
   }
 
   return false;
+}
+
+- (void)updateUserAgent:(NSString*)userAgent {
+  if (@available(iOS 9.0, *)) {
+    [_webView setCustomUserAgent:userAgent];
+  } else if (userAgent) {
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent" : userAgent}];
+    WKWebViewConfiguration* configuration = _webView.configuration;
+    _webView = [[WKWebView alloc] initWithFrame:_webView.frame configuration:configuration];
+  }
 }
 
 - (bool)loadUrl:(NSString*)url {

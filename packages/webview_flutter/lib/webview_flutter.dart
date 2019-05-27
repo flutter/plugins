@@ -119,6 +119,7 @@ class WebView extends StatefulWidget {
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
+    this.userAgent,
     this.gestureRecognizers,
     this.onPageFinished,
     this.debuggingEnabled = false,
@@ -256,6 +257,9 @@ class WebView extends StatefulWidget {
   /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
 
+  /// The custom UserAgent.
+  final String userAgent;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -349,6 +353,7 @@ class _WebSettings {
     this.javascriptMode,
     this.hasNavigationDelegate,
     this.debuggingEnabled,
+    this.userAgent,
   });
 
   static _WebSettings fromWidget(WebView widget) {
@@ -356,18 +361,21 @@ class _WebSettings {
       javascriptMode: widget.javascriptMode,
       hasNavigationDelegate: widget.navigationDelegate != null,
       debuggingEnabled: widget.debuggingEnabled,
+      userAgent: widget.userAgent,
     );
   }
 
   final JavascriptMode javascriptMode;
   final bool hasNavigationDelegate;
   final bool debuggingEnabled;
+  final String userAgent;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javascriptMode.index,
       'hasNavigationDelegate': hasNavigationDelegate,
       'debuggingEnabled': debuggingEnabled,
+      'userAgent': userAgent,
     };
   }
 
@@ -384,6 +392,9 @@ class _WebSettings {
       updates['debuggingEnabled'] = newSettings.debuggingEnabled;
     }
 
+    if (userAgent != newSettings.userAgent) {
+      updates['userAgent'] = newSettings.userAgent;
+    }
     return updates;
   }
 }
