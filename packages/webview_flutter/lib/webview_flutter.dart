@@ -541,8 +541,8 @@ class WebViewController {
   }
 
   /// Returns the User-Agent value that will be used for subsequent HTTP requests.
-  Future<String> userAgent() async {
-    return await _channel.invokeMethod('userAgent');
+  Future<String> getUserAgent() async {
+    return await _channel.invokeMethod('getUserAgent');
   }
 
   /// Clears all caches used by the [WebView].

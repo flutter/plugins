@@ -63,8 +63,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "loadUrl":
         loadUrl(methodCall, result);
         break;
-      case "userAgent":
-        userAgent(methodCall, result);
+      case "getUserAgent":
+        getUserAgent(methodCall, result);
         break;
       case "updateSettings":
         updateSettings(methodCall, result);
@@ -147,7 +147,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(webView.getUrl());
   }
 
-  private void userAgent(MethodCall methodCall, Result result) {
+  private void getUserAgent(MethodCall methodCall, Result result) {
     String userAgent = webView.getSettings().getUserAgentString();
     result.success(userAgent);
   }

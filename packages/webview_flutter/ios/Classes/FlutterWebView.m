@@ -112,8 +112,8 @@
     [self onRemoveJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"clearCache"]) {
     [self clearCache:result];
-  } else if ([[call method] isEqualToString:@"userAgent"]) {
-    [self onUserAgent:call result:result];
+  } else if ([[call method] isEqualToString:@"getUserAgent"]) {
+    [self onGetUserAgent:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -230,7 +230,7 @@
   }
 }
 
-- (void)onUserAgent:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onGetUserAgent:(FlutterMethodCall*)call result:(FlutterResult)result {
   [_webView evaluateJavaScript:@"navigator.userAgent"
              completionHandler:^(NSString* userAgent, NSError* error) {
                if (error) {

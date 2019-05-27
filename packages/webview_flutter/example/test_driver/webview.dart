@@ -151,7 +151,7 @@ void main() {
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
-    final String userAgent = await controller.userAgent();
+    final String userAgent = await controller.getUserAgent();
     expect(userAgent, 'UA');
   });
 }

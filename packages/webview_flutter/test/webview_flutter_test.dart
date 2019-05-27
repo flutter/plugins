@@ -103,7 +103,7 @@ void main() {
       ),
     );
     expect(controller, isNotNull);
-    expect(await controller.userAgent(), 'UA');
+    expect(await controller.getUserAgent(), 'UA');
   });
 
   testWidgets('Load url', (WidgetTester tester) async {
