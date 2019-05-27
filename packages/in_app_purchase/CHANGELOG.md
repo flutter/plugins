@@ -1,3 +1,7 @@
+## 0.1.0+5
+
+* Expanded description in `pubspec.yaml`.
+
 ## 0.1.0+4
 
 * Change the `buy` methods to return `Future<bool>` instead of `void` in order
