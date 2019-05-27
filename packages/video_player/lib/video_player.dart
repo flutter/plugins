@@ -5,16 +5,16 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
-  // This will clear all open videos on the platform when a full restart is
-  // performed.
-  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-  // https://github.com/flutter/flutter/issues/26431
-  // ignore: strong_mode_implicit_dynamic_method
+// This will clear all open videos on the platform when a full restart is
+// performed.
+// TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+// https://github.com/flutter/flutter/issues/26431
+// ignore: strong_mode_implicit_dynamic_method
   ..invokeMethod('init');
 
 class DurationRange {
@@ -89,7 +89,9 @@ class VideoPlayerValue {
   final Size size;
 
   bool get initialized => duration != null;
+
   bool get hasError => errorDescription != null;
+
   double get aspectRatio => size != null ? size.width / size.height : 1.0;
 
   VideoPlayerValue copyWith({
@@ -149,8 +151,34 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// The name of the asset is given by the [dataSource] argument and must not be
   /// null. The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
-  VideoPlayerController.asset(this.dataSource, {this.package})
-      : dataSourceType = DataSourceType.asset,
+  VideoPlayerController.asset(
+    this.dataSource, {
+    this.package,
+    // Buffers Ms Settings
+    this.minBufferMs = 15000,
+    this.maxBufferMs = 50000,
+    this.bufferForPlaybackMs = 2500,
+    this.bufferForPlaybackAfterRebufferMs = 5000,
+    // Buffers bytes settings
+    this.targetBufferBytes = -1,
+    // Back Buffer settings
+    this.backBufferDurationMs = 0,
+    this.retainBackBufferFromKeyframe = false,
+  })  : assert(dataSource != null),
+        assert(minBufferMs != null),
+        assert(maxBufferMs != null),
+        assert(bufferForPlaybackMs != null),
+        assert(bufferForPlaybackAfterRebufferMs != null),
+        assert(targetBufferBytes != null),
+        assert(backBufferDurationMs != null),
+        assert(retainBackBufferFromKeyframe != null),
+        assert(maxBufferMs >= 0),
+        assert(minBufferMs >= 0),
+        assert(bufferForPlaybackMs >= 0),
+        assert(backBufferDurationMs >= 0),
+        assert(minBufferMs >= bufferForPlaybackMs),
+        assert(maxBufferMs >= minBufferMs),
+        dataSourceType = DataSourceType.asset,
         super(VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from obtained from
@@ -158,8 +186,33 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// The URI for the video is given by the [dataSource] argument and must not be
   /// null.
-  VideoPlayerController.network(this.dataSource)
-      : dataSourceType = DataSourceType.network,
+  VideoPlayerController.network(
+    this.dataSource, {
+    // Buffers Ms Settings
+    this.minBufferMs = 15000,
+    this.maxBufferMs = 50000,
+    this.bufferForPlaybackMs = 2500,
+    this.bufferForPlaybackAfterRebufferMs = 5000,
+    // Buffers bytes settings
+    this.targetBufferBytes = -1,
+    // Back Buffer settings
+    this.backBufferDurationMs = 0,
+    this.retainBackBufferFromKeyframe = false,
+  })  : assert(dataSource != null),
+        assert(minBufferMs != null),
+        assert(maxBufferMs != null),
+        assert(bufferForPlaybackMs != null),
+        assert(bufferForPlaybackAfterRebufferMs != null),
+        assert(targetBufferBytes != null),
+        assert(backBufferDurationMs != null),
+        assert(retainBackBufferFromKeyframe != null),
+        assert(maxBufferMs >= 0),
+        assert(minBufferMs >= 0),
+        assert(bufferForPlaybackMs >= 0),
+        assert(backBufferDurationMs >= 0),
+        assert(minBufferMs >= bufferForPlaybackMs),
+        assert(maxBufferMs >= minBufferMs),
+        dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: null));
 
@@ -167,8 +220,33 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
-  VideoPlayerController.file(File file)
-      : dataSource = 'file://${file.path}',
+  VideoPlayerController.file(
+    File file, {
+    // Buffers Ms Settings
+    this.minBufferMs = 15000,
+    this.maxBufferMs = 50000,
+    this.bufferForPlaybackMs = 2500,
+    this.bufferForPlaybackAfterRebufferMs = 5000,
+    // Buffers bytes settings
+    this.targetBufferBytes = -1,
+    // Back Buffer settings
+    this.backBufferDurationMs = 0,
+    this.retainBackBufferFromKeyframe = false,
+  })  : assert(file != null),
+        assert(minBufferMs != null),
+        assert(maxBufferMs != null),
+        assert(bufferForPlaybackMs != null),
+        assert(bufferForPlaybackAfterRebufferMs != null),
+        assert(targetBufferBytes != null),
+        assert(backBufferDurationMs != null),
+        assert(retainBackBufferFromKeyframe != null),
+        assert(maxBufferMs >= 0),
+        assert(minBufferMs >= 0),
+        assert(bufferForPlaybackMs >= 0),
+        assert(backBufferDurationMs >= 0),
+        assert(minBufferMs >= bufferForPlaybackMs),
+        assert(maxBufferMs >= minBufferMs),
+        dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
         super(VideoPlayerValue(duration: null));
@@ -181,6 +259,20 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   final DataSourceType dataSourceType;
 
   final String package;
+
+  /// Buffer settings
+  final int minBufferMs;
+  final int maxBufferMs;
+  final int bufferForPlaybackMs;
+  final int bufferForPlaybackAfterRebufferMs;
+
+  /// Buffer bytes settings
+  final int targetBufferBytes;
+
+  /// Back Buffer settings
+  final int backBufferDurationMs;
+  final bool retainBackBufferFromKeyframe;
+
   Timer _timer;
   bool _isDisposed = false;
   Completer<void> _creatingCompleter;
@@ -194,26 +286,51 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
     _lifeCycleObserver.initialize();
     _creatingCompleter = Completer<void>();
-    Map<dynamic, dynamic> dataSourceDescription;
+    Map<dynamic, dynamic> creationDescription;
     switch (dataSourceType) {
       case DataSourceType.asset:
-        dataSourceDescription = <String, dynamic>{
+        creationDescription = <String, dynamic>{
           'asset': dataSource,
-          'package': package
+          'package': package,
+          'minBufferMs': minBufferMs,
+          'maxBufferMs': maxBufferMs,
+          'bufferForPlaybackMs': bufferForPlaybackMs,
+          'bufferForPlaybackAfterRebufferMs': bufferForPlaybackAfterRebufferMs,
+          'targetBufferBytes': targetBufferBytes,
+          'backBufferDurationMs': backBufferDurationMs,
+          'retainBackBufferFromKeyframe': retainBackBufferFromKeyframe,
         };
         break;
       case DataSourceType.network:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource};
+        creationDescription = <String, dynamic>{
+          'uri': dataSource,
+          'minBufferMs': minBufferMs,
+          'maxBufferMs': maxBufferMs,
+          'bufferForPlaybackMs': bufferForPlaybackMs,
+          'bufferForPlaybackAfterRebufferMs': bufferForPlaybackAfterRebufferMs,
+          'targetBufferBytes': targetBufferBytes,
+          'backBufferDurationMs': backBufferDurationMs,
+          'retainBackBufferFromKeyframe': retainBackBufferFromKeyframe,
+        };
         break;
       case DataSourceType.file:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource};
+        creationDescription = <String, dynamic>{
+          'uri': dataSource,
+          'minBufferMs': minBufferMs,
+          'maxBufferMs': maxBufferMs,
+          'bufferForPlaybackMs': bufferForPlaybackMs,
+          'bufferForPlaybackAfterRebufferMs': bufferForPlaybackAfterRebufferMs,
+          'targetBufferBytes': targetBufferBytes,
+          'backBufferDurationMs': backBufferDurationMs,
+          'retainBackBufferFromKeyframe': retainBackBufferFromKeyframe,
+        };
     }
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     final Map<dynamic, dynamic> response = await _channel.invokeMethod(
       'create',
-      dataSourceDescription,
+      creationDescription,
     );
     _textureId = response['textureId'];
     _creatingCompleter.complete(null);

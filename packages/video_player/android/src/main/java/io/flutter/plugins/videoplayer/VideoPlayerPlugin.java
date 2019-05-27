@@ -13,11 +13,14 @@ import android.os.Build;
 import android.util.LongSparseArray;
 import android.view.Surface;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.EventListener;
+import com.google.android.exoplayer2.RenderersFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -71,12 +74,35 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         EventChannel eventChannel,
         TextureRegistry.SurfaceTextureEntry textureEntry,
         String dataSource,
+        // Buffers ms settings
+        int minBufferMs,
+        int maxBufferMs,
+        int bufferForPlaybackMs,
+        int bufferForPlaybackAfterRebufferMs,
+        // Buffers bytes settings
+        int targetBufferBytes,
+        // Back Buffer settings
+        int backBufferDurationMs,
+        boolean retainBackBufferFromKeyframe,
+        /// Results
         Result result) {
       this.eventChannel = eventChannel;
       this.textureEntry = textureEntry;
 
+        RenderersFactory renderersFactory = new DefaultRenderersFactory(context);
       TrackSelector trackSelector = new DefaultTrackSelector();
-      exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+
+      DefaultLoadControl.Builder loadControlBuilder =new DefaultLoadControl.Builder() ;
+
+      loadControlBuilder
+                  .setBufferDurationsMs(minBufferMs,maxBufferMs,bufferForPlaybackMs,bufferForPlaybackAfterRebufferMs);
+      loadControlBuilder.setTargetBufferBytes(targetBufferBytes);
+      loadControlBuilder
+                  .setBackBuffer(backBufferDurationMs,retainBackBufferFromKeyframe);
+
+      DefaultLoadControl defaultLoadControl = loadControlBuilder.createDefaultLoadControl();
+
+      exoPlayer = ExoPlayerFactory.newSimpleInstance(context,renderersFactory, trackSelector,defaultLoadControl);
 
       Uri uri = Uri.parse(dataSource);
 
@@ -328,6 +354,14 @@ public class VideoPlayerPlugin implements MethodCallHandler {
               new EventChannel(
                   registrar.messenger(), "flutter.io/videoPlayer/videoEvents" + handle.id());
 
+          int minBufferMs = call.argument("minBufferMs");
+          int maxBufferMs = call.argument("maxBufferMs");
+          int bufferForPlaybackMs = call.argument("bufferForPlaybackMs");
+          int bufferForPlaybackAfterRebufferMs = call.argument("bufferForPlaybackAfterRebufferMs");
+          int targetBufferBytes = call.argument("targetBufferBytes");
+          int backBufferDurationMs = call.argument("backBufferDurationMs");
+          boolean retainBackBufferFromKeyframe = call.argument("retainBackBufferFromKeyframe");
+
           VideoPlayer player;
           if (call.argument("asset") != null) {
             String assetLookupKey;
@@ -343,12 +377,31 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                     eventChannel,
                     handle,
                     "asset:///" + assetLookupKey,
+                    minBufferMs,
+                    maxBufferMs,
+                    bufferForPlaybackMs,
+                    bufferForPlaybackAfterRebufferMs,
+                    targetBufferBytes,
+                    backBufferDurationMs,
+                    retainBackBufferFromKeyframe,
                     result);
+
             videoPlayers.put(handle.id(), player);
           } else {
             player =
                 new VideoPlayer(
-                    registrar.context(), eventChannel, handle, call.argument("uri"), result);
+                    registrar.context(),
+                    eventChannel,
+                    handle,
+                    call.argument("uri"),
+                    minBufferMs,
+                    maxBufferMs,
+                    bufferForPlaybackMs,
+                    bufferForPlaybackAfterRebufferMs,
+                    targetBufferBytes,
+                    backBufferDurationMs,
+                    retainBackBufferFromKeyframe,
+                    result);
             videoPlayers.put(handle.id(), player);
           }
           break;

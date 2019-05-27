@@ -1,8 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:video_player/video_player.dart';
 
 class FakeController extends ValueNotifier<VideoPlayerValue>
     implements VideoPlayerController {
@@ -18,23 +19,52 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   String get dataSource => '';
+
   @override
   DataSourceType get dataSourceType => DataSourceType.file;
+
   @override
   String get package => null;
+
+  @override
+  int get backBufferDurationMs => null;
+
+  @override
+  int get bufferForPlaybackAfterRebufferMs => null;
+
+  @override
+  int get bufferForPlaybackMs => null;
+
+  @override
+  int get maxBufferMs => null;
+
+  @override
+  int get minBufferMs => null;
+
+  @override
+  bool get retainBackBufferFromKeyframe => null;
+
+  @override
+  int get targetBufferBytes => null;
+
   @override
   Future<Duration> get position async => value.position;
 
   @override
   Future<void> seekTo(Duration moment) async {}
+
   @override
   Future<void> setVolume(double volume) async {}
+
   @override
   Future<void> initialize() async {}
+
   @override
   Future<void> pause() async {}
+
   @override
   Future<void> play() async {}
+
   @override
   Future<void> setLooping(bool looping) async {}
 }
