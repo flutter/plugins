@@ -120,8 +120,7 @@ void main() {
   });
 
   group('queryPurchaseDetails', () {
-    final String queryMethodName =
-        'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)';
+    const String queryMethodName = 'BillingClient#queryPurchases(String)';
     test('handles error', () async {
       final BillingResponse responseCode = BillingResponse.developerError;
       stubPlatform.addResponse(name: queryMethodName, value: <dynamic, dynamic>{
@@ -205,12 +204,52 @@ void main() {
       final PurchaseParam purchaseParam = PurchaseParam(
           productDetails: skuDetails.toProductDetails(),
           applicationUserName: accountId);
-      await GooglePlayConnection.instance
+      final bool launchResult = await GooglePlayConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
+
       PurchaseDetails result = await completer.future;
+      expect(launchResult, isTrue);
       expect(result.purchaseID, 'orderID1');
       expect(result.status, PurchaseStatus.purchased);
       expect(result.productID, dummySkuDetails.sku);
+    });
+
+    test('handles an error with an empty purchases list', () async {
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+      final BillingResponse sentCode = BillingResponse.error;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode),
+          additionalStepBeforeReturn: (_) {
+            // Mock java update purchase callback.
+            MethodCall call = MethodCall(kOnPurchasesUpdated, {
+              'responseCode': BillingResponseConverter().toJson(sentCode),
+              'purchasesList': []
+            });
+            connection.billingClient.callHandler(call);
+          });
+      Completer completer = Completer();
+      PurchaseDetails purchaseDetails;
+      Stream purchaseStream =
+          GooglePlayConnection.instance.purchaseUpdatedStream;
+      StreamSubscription subscription;
+      subscription = purchaseStream.listen((_) {
+        purchaseDetails = _.first;
+        completer.complete(purchaseDetails);
+        subscription.cancel();
+      }, onDone: () {});
+      final PurchaseParam purchaseParam = PurchaseParam(
+          productDetails: skuDetails.toProductDetails(),
+          applicationUserName: accountId);
+      await GooglePlayConnection.instance
+          .buyNonConsumable(purchaseParam: purchaseParam);
+      PurchaseDetails result = await completer.future;
+
+      expect(result.error, isNotNull);
+      expect(result.error.source, PurchaseSource.GooglePlay);
+      expect(result.status, PurchaseStatus.error);
+      expect(result.purchaseID, isNull);
     });
 
     test('buy consumable with auto consume, serializes and deserializes data',
@@ -264,15 +303,46 @@ void main() {
       final PurchaseParam purchaseParam = PurchaseParam(
           productDetails: skuDetails.toProductDetails(),
           applicationUserName: accountId);
-      await GooglePlayConnection.instance
+      final bool launchResult = await GooglePlayConnection.instance
           .buyConsumable(purchaseParam: purchaseParam);
 
       // Verify that the result has succeeded
       PurchaseDetails result = await completer.future;
+      expect(launchResult, isTrue);
       expect(result.billingClientPurchase.purchaseToken,
           await consumeCompleter.future);
       expect(result.status, PurchaseStatus.purchased);
       expect(result.error, isNull);
+    });
+
+    test('buyNonConsumable propagates failures to launch the billing flow',
+        () async {
+      final BillingResponse sentCode = BillingResponse.error;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode));
+
+      final bool result = await GooglePlayConnection.instance.buyNonConsumable(
+          purchaseParam: PurchaseParam(
+              productDetails: dummySkuDetails.toProductDetails()));
+
+      // Verify that the failure has been converted and returned
+      expect(result, isFalse);
+    });
+
+    test('buyConsumable propagates failures to launch the billing flow',
+        () async {
+      final BillingResponse sentCode = BillingResponse.error;
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: BillingResponseConverter().toJson(sentCode));
+
+      final bool result = await GooglePlayConnection.instance.buyConsumable(
+          purchaseParam: PurchaseParam(
+              productDetails: dummySkuDetails.toProductDetails()));
+
+      // Verify that the failure has been converted and returned
+      expect(result, isFalse);
     });
 
     test('adds consumption failures to PurchaseDetails objects', () async {

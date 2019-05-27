@@ -2,11 +2,6 @@
   package="io.flutter.plugins.firebasemessaging">
 
   <application>
-    <service android:name=".FlutterFirebaseInstanceIDService">
-      <intent-filter>
-        <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-      </intent-filter>
-    </service>
     <service android:name=".FlutterFirebaseMessagingService">
       <intent-filter>
         <action android:name="com.google.firebase.MESSAGING_EVENT"/>

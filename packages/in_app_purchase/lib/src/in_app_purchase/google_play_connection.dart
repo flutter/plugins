@@ -48,19 +48,20 @@ class GooglePlayConnection
   }
 
   @override
-  void buyNonConsumable({@required PurchaseParam purchaseParam}) {
-    billingClient.launchBillingFlow(
+  Future<bool> buyNonConsumable({@required PurchaseParam purchaseParam}) async {
+    BillingResponse response = await billingClient.launchBillingFlow(
         sku: purchaseParam.productDetails.id,
         accountId: purchaseParam.applicationUserName);
+    return response == BillingResponse.ok;
   }
 
   @override
-  void buyConsumable(
+  Future<bool> buyConsumable(
       {@required PurchaseParam purchaseParam, bool autoConsume = true}) {
     if (autoConsume) {
       _productIdsToConsume.add(purchaseParam.productDetails.id);
     }
-    buyNonConsumable(purchaseParam: purchaseParam);
+    return buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   @override
@@ -78,8 +79,8 @@ class GooglePlayConnection
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
     final List<PurchasesResultWrapper> responses = await Future.wait([
-      billingClient.queryPurchaseHistory(SkuType.inapp),
-      billingClient.queryPurchaseHistory(SkuType.subs)
+      billingClient.queryPurchases(SkuType.inapp),
+      billingClient.queryPurchases(SkuType.subs)
     ]);
 
     Set errorCodeSet = responses
@@ -183,7 +184,7 @@ class GooglePlayConnection
     } else {
       error = PurchaseError(
         source: PurchaseSource.GooglePlay,
-        code: kRestoredPurchaseErrorCode,
+        code: kPurchaseErrorCode,
         message: {'message': resultWrapper.responseCode.toString()},
       );
       status = PurchaseStatus.error;
@@ -194,7 +195,19 @@ class GooglePlayConnection
         ..status = status
         ..error = error);
     }).toList();
-    return Future.wait(purchases);
+    if (!purchases.isEmpty) {
+      return Future.wait(purchases);
+    } else {
+      return [
+        PurchaseDetails(
+            purchaseID: null,
+            productID: null,
+            transactionDate: null,
+            verificationData: null)
+          ..status = PurchaseStatus.error
+          ..error = error
+      ];
+    }
   }
 
   static Future<PurchaseDetails> _maybeAutoConsumePurchase(
