@@ -362,38 +362,60 @@ void main() {
   runApp(
     MaterialApp(
       home: DefaultTabController(
-        length: 2,
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             title: const Text('Video player example'),
             bottom: const TabBar(
               isScrollable: true,
               tabs: <Widget>[
-                Tab(icon: Icon(Icons.fullscreen)),
-                Tab(icon: Icon(Icons.list)),
+                Tab(
+                  icon: Icon(Icons.cloud),
+                  text: "Remote",
+                ),
+                Tab(icon: Icon(Icons.insert_drive_file), text: "Asset"),
+                Tab(icon: Icon(Icons.list), text: "List example"),
               ],
             ),
           ),
           body: TabBarView(
             children: <Widget>[
-              Column(
-                children: <Widget>[
-                  const Text('With remote mp4'),
-                  NetworkPlayerLifeCycle(
-                    'http://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4',
-                    (BuildContext context, VideoPlayerController controller) =>
-                        AspectRatioVideo(controller),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(top: 20.0),
-                  ),
-                  const Text('With remote m3u8'),
-                  NetworkPlayerLifeCycle(
-                    'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
-                    (BuildContext context, VideoPlayerController controller) =>
-                        AspectRatioVideo(controller),
-                  ),
-                ],
+              SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: const EdgeInsets.only(top: 20.0),
+                    ),
+                    const Text('With remote m3u8'),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: NetworkPlayerLifeCycle(
+                        'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
+                        (BuildContext context,
+                                VideoPlayerController controller) =>
+                            AspectRatioVideo(controller),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: const EdgeInsets.only(top: 20.0),
+                    ),
+                    const Text('With assets mp4'),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: AssetPlayerLifeCycle(
+                          'assets/Butterfly-209.mp4',
+                          (BuildContext context,
+                                  VideoPlayerController controller) =>
+                              AspectRatioVideo(controller)),
+                    ),
+                  ],
+                ),
               ),
               AssetPlayerLifeCycle(
                   'assets/Butterfly-209.mp4',
