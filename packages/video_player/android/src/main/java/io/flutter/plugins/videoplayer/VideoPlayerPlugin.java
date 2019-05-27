@@ -233,7 +233,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       return exoPlayer.getCurrentPosition();
     }
 
-    void setPlayBackSpeed(double value) {
+    void setSpeed(double value) {
       float bracketedValue = (float) value;
       PlaybackParameters existingParam = exoPlayer.getPlaybackParameters();
       PlaybackParameters newParameter =
@@ -411,8 +411,8 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         videoPlayers.remove(textureId);
         result.success(null);
         break;
-      case "setPlayBackSpeed":
-        player.setPlayBackSpeed((Double) call.argument("speed"));
+      case "setSpeed":
+        player.setSpeed((Double) call.argument("speed"));
         result.success(null);
         break;
       default:
