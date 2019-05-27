@@ -1,5 +1,5 @@
 
-## 0.10.0+7
+## 0.10.0+8
 
 * Implemented playback speed feature.
 
