@@ -1,4 +1,4 @@
-## 0.11.1
+## 0.12.0
 
 * **Breaking change**. Fixed `CollectionReference.parent` to correctly return a `DocumentReference`.
   If you were using the method previously to obtain the parent
