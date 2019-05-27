@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
-#import "ImagePickerMetaDataUtil.h"
+#import "FLTImagePickerMetaDataUtil.h"
 
 @interface MetaDataUtilTests : XCTestCase
 
@@ -21,62 +21,50 @@
   // test jpeg
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
                                                                              ofType:@"jpg"]];
-  XCTAssertEqual([ImagePickerMetaDataUtil getImageMIMETypeFromImageData:dataJPG],
-                 FlutterImagePickerMIMETypeJPEG);
+  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:dataJPG],
+                 FLTImagePickerMIMETypeJPEG);
 
   // test png
   NSData *dataPNG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"pngImage"
                                                                              ofType:@"png"]];
-  XCTAssertEqual([ImagePickerMetaDataUtil getImageMIMETypeFromImageData:dataPNG],
-                 FlutterImagePickerMIMETypePNG);
+  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:dataPNG],
+                 FLTImagePickerMIMETypePNG);
 }
 
 - (void)testSuffixFromType {
   // test jpeg
   XCTAssertEqualObjects(
-      [ImagePickerMetaDataUtil imageTypeSuffixFromType:FlutterImagePickerMIMETypeJPEG], @".jpg");
+      [FLTImagePickerMetaDataUtil imageTypeSuffixFromType:FLTImagePickerMIMETypeJPEG], @".jpg");
 
   // test png
   XCTAssertEqualObjects(
-      [ImagePickerMetaDataUtil imageTypeSuffixFromType:FlutterImagePickerMIMETypePNG], @".png");
+      [FLTImagePickerMetaDataUtil imageTypeSuffixFromType:FLTImagePickerMIMETypePNG], @".png");
 
   // test other
-  XCTAssertNil([ImagePickerMetaDataUtil imageTypeSuffixFromType:FlutterImagePickerMIMETypeOther]);
+  XCTAssertNil([FLTImagePickerMetaDataUtil imageTypeSuffixFromType:FLTImagePickerMIMETypeOther]);
 }
 
 - (void)testGetMetaData {
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
                                                                              ofType:@"jpg"]];
-  NSDictionary *metaData = [ImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
+  NSDictionary *metaData = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
   NSDictionary *exif = [metaData objectForKey:(NSString *)kCGImagePropertyExifDictionary];
   XCTAssertEqual([exif[(NSString *)kCGImagePropertyExifPixelXDimension] integerValue], 12);
 }
 
-- (void)testGetEXIFData {
+- (void)testWriteMetaData {
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
                                                                              ofType:@"jpg"]];
-  NSDictionary *exif = [ImagePickerMetaDataUtil getEXIFFromImageData:dataJPG];
-  XCTAssertNotNil(exif);
-  // hard coded test case based on the test image file saved in directory.
-  XCTAssertEqualObjects(exif[@"PixelXDimension"], @(12));
-  XCTAssertEqualObjects(exif[@"PixelYDimension"], @(7));
-}
-
-- (void)testWriteEXIFData {
-  NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
-                                                                             ofType:@"jpg"]];
-  NSDictionary *metaData = [ImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
-  NSDictionary *exif = [metaData objectForKey:(NSString *)kCGImagePropertyExifDictionary];
+  NSDictionary *metaData = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
   NSString *tmpFile = [NSString stringWithFormat:@"image_picker_test.jpg"];
   NSString *tmpDirectory = NSTemporaryDirectory();
   NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-  NSData *newData = [ImagePickerMetaDataUtil updateEXIFData:exif toImage:dataJPG];
+  NSData *newData = [FLTImagePickerMetaDataUtil updateMetaData:metaData toImage:dataJPG];
   if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:newData attributes:nil]) {
     NSData *savedTmpImageData = [NSData dataWithContentsOfFile:tmpPath];
     NSDictionary *tmpMetaData =
-        [ImagePickerMetaDataUtil getMetaDataFromImageData:savedTmpImageData];
-    NSDictionary *tmpExif = [tmpMetaData objectForKey:(NSString *)kCGImagePropertyExifDictionary];
-    XCTAssert([tmpExif isEqualToDictionary:exif]);
+        [FLTImagePickerMetaDataUtil getMetaDataFromImageData:savedTmpImageData];
+    XCTAssert([tmpMetaData isEqualToDictionary:metaData]);
   } else {
     XCTAssert(NO);
   }
@@ -86,22 +74,58 @@
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
                                                                              ofType:@"jpg"]];
   UIImage *imageJPG = [UIImage imageWithData:dataJPG];
-  NSData *convertedDataJPG = [ImagePickerMetaDataUtil convertImage:imageJPG
-                                                         usingType:FlutterImagePickerMIMETypeJPEG
-                                                           quality:@(0.5)];
-  XCTAssertEqual([ImagePickerMetaDataUtil getImageMIMETypeFromImageData:convertedDataJPG],
-                 FlutterImagePickerMIMETypeJPEG);
+  NSData *convertedDataJPG = [FLTImagePickerMetaDataUtil convertImage:imageJPG
+                                                            usingType:FLTImagePickerMIMETypeJPEG
+                                                              quality:@(0.5)];
+  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:convertedDataJPG],
+                 FLTImagePickerMIMETypeJPEG);
 
-  NSData *convertedDataPNG = [ImagePickerMetaDataUtil convertImage:imageJPG
-                                                         usingType:FlutterImagePickerMIMETypePNG
-                                                           quality:nil];
-  XCTAssertEqual([ImagePickerMetaDataUtil getImageMIMETypeFromImageData:convertedDataPNG],
-                 FlutterImagePickerMIMETypePNG);
+  NSData *convertedDataPNG = [FLTImagePickerMetaDataUtil convertImage:imageJPG
+                                                            usingType:FLTImagePickerMIMETypePNG
+                                                              quality:nil];
+  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:convertedDataPNG],
+                 FLTImagePickerMIMETypePNG);
 
   // test throws exceptions
-  XCTAssertThrows([ImagePickerMetaDataUtil convertImage:imageJPG
-                                              usingType:FlutterImagePickerMIMETypePNG
-                                                quality:@(0.5)],
+  XCTAssertThrows([FLTImagePickerMetaDataUtil convertImage:imageJPG
+                                                 usingType:FLTImagePickerMIMETypePNG
+                                                   quality:@(0.5)],
                   @"setting quality when converting to PNG throws exception");
 }
+
+- (void)testGetNormalizedUIImageOrientationFromCGImagePropertyOrientation {
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                      kCGImagePropertyOrientationUp],
+      UIImageOrientationUp);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                      kCGImagePropertyOrientationDown],
+      UIImageOrientationDown);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                      kCGImagePropertyOrientationLeft],
+      UIImageOrientationRight);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                      kCGImagePropertyOrientationRight],
+      UIImageOrientationLeft);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                      kCGImagePropertyOrientationUpMirrored],
+      UIImageOrientationUpMirrored);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                      kCGImagePropertyOrientationDownMirrored],
+      UIImageOrientationDownMirrored);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                      kCGImagePropertyOrientationLeftMirrored],
+      UIImageOrientationRightMirrored);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
+                                      kCGImagePropertyOrientationRightMirrored],
+      UIImageOrientationLeftMirrored);
+}
+
 @end

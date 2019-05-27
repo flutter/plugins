@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
-#import "ImagePickerMetaDataUtil.h"
-#import "ImagePickerPhotoAssetUtil.h"
+#import "FLTImagePickerMetaDataUtil.h"
+#import "FLTImagePickerPhotoAssetUtil.h"
 
 @interface PhotoAssetUtilTests : XCTestCase
 
@@ -23,31 +23,42 @@
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
                                                                              ofType:@"jpg"]];
   UIImage *imageJPG = [UIImage imageWithData:dataJPG];
-  NSString *savedPathJPG = [ImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataJPG
-                                                                               image:imageJPG];
+  NSString *savedPathJPG = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataJPG
+                                                                                  image:imageJPG];
   XCTAssertNotNil(savedPathJPG);
   XCTAssertEqualObjects([savedPathJPG substringFromIndex:savedPathJPG.length - 4], @".jpg");
+
+  NSDictionary *originalMetaDataJPG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
+  NSData *newDataJPG = [NSData dataWithContentsOfFile:savedPathJPG];
+  NSDictionary *newMetaDataJPG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:newDataJPG];
+  XCTAssertEqualObjects(originalMetaDataJPG[@"ProfileName"], newMetaDataJPG[@"ProfileName"]);
 
   // test png
   NSData *dataPNG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"pngImage"
                                                                              ofType:@"png"]];
   UIImage *imagePNG = [UIImage imageWithData:dataPNG];
-  NSString *savedPathPNG = [ImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataPNG
-                                                                               image:imagePNG];
+  NSString *savedPathPNG = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataPNG
+                                                                                  image:imagePNG];
   XCTAssertNotNil(savedPathPNG);
   XCTAssertEqualObjects([savedPathPNG substringFromIndex:savedPathPNG.length - 4], @".png");
+
+  NSDictionary *originalMetaDataPNG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataPNG];
+  NSData *newDataPNG = [NSData dataWithContentsOfFile:savedPathPNG];
+  NSDictionary *newMetaDataPNG = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:newDataPNG];
+  XCTAssertEqualObjects(originalMetaDataPNG[@"ProfileName"], newMetaDataPNG[@"ProfileName"]);
 }
 
 - (void)testSaveImageWithPickerInfo_ShouldSaveWithDefaultExtention {
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
                                                                              ofType:@"jpg"]];
   UIImage *imageJPG = [UIImage imageWithData:dataJPG];
-  NSString *savedPathJPG = [ImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil image:imageJPG];
+  NSString *savedPathJPG = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
+                                                                           image:imageJPG];
 
   XCTAssertNotNil(savedPathJPG);
   // should be saved as
   XCTAssertEqualObjects([savedPathJPG substringFromIndex:savedPathJPG.length - 4],
-                        kFlutterImagePickerDefaultSuffix);
+                        kFLTImagePickerDefaultSuffix);
 }
 
 - (void)testSaveImageWithPickerInfo_ShouldSaveWithTheCorrectExtentionAndMetaData {
@@ -60,11 +71,13 @@
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
                                                                              ofType:@"jpg"]];
   UIImage *imageJPG = [UIImage imageWithData:dataJPG];
-  NSString *savedPathJPG = [ImagePickerPhotoAssetUtil saveImageWithPickerInfo:dummyInfo
-                                                                        image:imageJPG];
+  NSString *savedPathJPG = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:dummyInfo
+                                                                           image:imageJPG];
   NSData *data = [NSData dataWithContentsOfFile:savedPathJPG];
-  NSDictionary *exif = [ImagePickerMetaDataUtil getEXIFFromImageData:data];
-  XCTAssertEqualObjects(exif[(__bridge NSString *)kCGImagePropertyExifMakerNote], @"aNote");
+  NSDictionary *meta = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:data];
+  XCTAssertEqualObjects(meta[(__bridge NSString *)kCGImagePropertyExifDictionary]
+                            [(__bridge NSString *)kCGImagePropertyExifMakerNote],
+                        @"aNote");
 }
 
 @end
