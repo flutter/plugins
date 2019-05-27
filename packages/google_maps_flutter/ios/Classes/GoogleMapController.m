@@ -126,12 +126,12 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     [self moveWithCameraUpdate:ToCameraUpdate(call.arguments[@"cameraUpdate"])];
     result(nil);
   } else if ([call.method isEqualToString:@"map#setPadding"]) {
-     float top = [FLTGoogleMapJsonConversions toFloat:call.arguments[@"top"]];
-     float left = [FLTGoogleMapJsonConversions toFloat:call.arguments[@"left"]];
-     float bottom = [FLTGoogleMapJsonConversions toFloat:call.arguments[@"bottom"]];
-     float right = [FLTGoogleMapJsonConversions toFloat:call.arguments[@"right"]];
-     _mapView.padding = UIEdgeInsetsMake(top, left, bottom, right);
-     result(nil);
+    float top = [FLTGoogleMapJsonConversions toFloat:call.arguments[@"top"]];
+    float left = [FLTGoogleMapJsonConversions toFloat:call.arguments[@"left"]];
+    float bottom = [FLTGoogleMapJsonConversions toFloat:call.arguments[@"bottom"]];
+    float right = [FLTGoogleMapJsonConversions toFloat:call.arguments[@"right"]];
+    _mapView.padding = UIEdgeInsetsMake(top, left, bottom, right);
+    result(nil);
   } else if ([call.method isEqualToString:@"map#update"]) {
     InterpretMapOptions(call.arguments[@"options"], self);
     result(PositionToJson([self cameraPosition]));
