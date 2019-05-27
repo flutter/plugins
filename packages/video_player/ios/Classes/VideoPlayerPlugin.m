@@ -342,7 +342,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _player.volume = (volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume);
 }
 
-- (void)setPlayBackSpeed:(double)speed {
+- (void)setSpeed:(double)speed {
   if (speed == 1.0 || speed == 0.0) {
     _player.rate = speed;
   } else if (speed < 0 || speed > 2.0) {
@@ -507,8 +507,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     } else if ([@"pause" isEqualToString:call.method]) {
       [player pause];
       result(nil);
-    } else if ([@"setPlayBackSpeed" isEqualToString:call.method]) {
-      [player setPlayBackSpeed:[[argsMap objectForKey:@"speed"] doubleValue]];
+    } else if ([@"setSpeed" isEqualToString:call.method]) {
+      [player setSpeed:[[argsMap objectForKey:@"speed"] doubleValue]];
       result(nil);
     } else {
       result(FlutterMethodNotImplemented);
