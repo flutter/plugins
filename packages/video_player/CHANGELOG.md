@@ -1,3 +1,7 @@
+## 0.10.1+2
+
+* Example: Fixed tab display and added scroll view
+
 ## 0.10.1+1
 
 * iOS: Avoid deprecated `seekToTime` API
