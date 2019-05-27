@@ -1,6 +1,14 @@
-## 0.11.0+3
+## 0.12.1
 
 * Fixes `startAtDocument`, `startAfterDocument`, `endAtDocument` and `endBeforeDocument`.
+
+## 0.12.0
+
+* **Breaking change**. Fixed `CollectionReference.parent` to correctly return a `DocumentReference`.
+  If you were using the method previously to obtain the parent
+  document's id via `collectionReference.parent().id`,
+  you will have to use `collectionReference.parent().documentID` now.
+* Added `DocumentReference.parent`.
 
 ## 0.11.0+2
 

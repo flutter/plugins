@@ -286,11 +286,14 @@ void main() {
     group('CollectionsReference', () {
       test('id', () async {
         expect(collectionReference.id, equals('foo'));
-        expect(collectionReference.parent().id, isNull);
+      });
+      test('parent', () async {
+        final DocumentReference docRef = collectionReference.document('bar');
+        expect(docRef.parent().id, equals('foo'));
+        expect(collectionReference.parent(), isNull);
       });
       test('path', () async {
         expect(collectionReference.path, equals('foo'));
-        expect(collectionReference.parent().path, equals(''));
       });
       test('listen', () async {
         final QuerySnapshot snapshot =
@@ -546,7 +549,12 @@ void main() {
       test('collection', () async {
         final CollectionReference colRef =
             collectionReference.document('bar').collection('baz');
-        expect(colRef.path, 'foo/bar/baz');
+        expect(colRef.path, equals('foo/bar/baz'));
+      });
+      test('parent', () async {
+        final CollectionReference colRef =
+            collectionReference.document('bar').collection('baz');
+        expect(colRef.parent().documentID, equals('bar'));
       });
     });
 

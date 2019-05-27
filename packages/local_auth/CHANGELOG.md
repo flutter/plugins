@@ -1,3 +1,8 @@
+## 0.5.0
+ * **Breaking change**. Update the Android API to use androidx Biometric package. This gives
+   the prompt the updated Material look. However, it also requires the activity to be a
+   FragmentActivity. Users can switch to FlutterFragmentActivity in their main app to migrate.
+
 ## 0.4.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
