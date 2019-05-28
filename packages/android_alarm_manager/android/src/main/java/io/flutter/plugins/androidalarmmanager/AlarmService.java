@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.util.Log;
 import androidx.core.app.JobIntentService;
 import io.flutter.plugin.common.MethodChannel;
@@ -421,7 +422,7 @@ public class AlarmService extends JobIntentService {
    * callbacks have been executed.
    */
   @Override
-  protected void onHandleWork(Intent intent) {
+  protected void onHandleWork(final Intent intent) {
     // If we're in the middle of processing queued alarms, add the incoming
     // intent to the queue and return.
     synchronized (sAlarmQueue) {
@@ -434,6 +435,13 @@ public class AlarmService extends JobIntentService {
 
     // There were no pre-existing callback requests. Execute the callback
     // specified by the incoming intent.
-    executeDartCallbackInBackgroundIsolate(intent);
+    new Handler(getMainLooper())
+        .post(
+            new Runnable() {
+              @Override
+              public void run() {
+                executeDartCallbackInBackgroundIsolate(intent);
+              }
+            });
   }
 }
