@@ -324,7 +324,8 @@ WebSettings _webSettingsFromWidget(WebView widget) {
 }
 
 // This method assumes that no fields in `currentValue` are null.
-WebSettings _webSettingsUpdate(WebSettings currentValue, WebSettings newValue) {
+WebSettings _clearUnchangedWebSettings(
+    WebSettings currentValue, WebSettings newValue) {
   assert(currentValue.javascriptMode != null);
   assert(currentValue.hasNavigationDelegate != null);
   assert(currentValue.debuggingEnabled != null);
@@ -525,7 +526,8 @@ class WebViewController {
   }
 
   Future<void> _updateSettings(WebSettings newSettings) {
-    final WebSettings update = _webSettingsUpdate(_settings, newSettings);
+    final WebSettings update =
+        _clearUnchangedWebSettings(_settings, newSettings);
     _settings = newSettings;
     return _platformInterface.updateSettings(update);
   }
