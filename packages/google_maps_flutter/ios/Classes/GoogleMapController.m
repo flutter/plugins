@@ -286,6 +286,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   [_mapView setMinZoom:minZoom maxZoom:maxZoom];
 }
 
+- (void)setPaddingTop:(float)top left:(float)left bottom:(float)bottom right:(float)right {
+    _mapView.padding = UIEdgeInsetsMake(top, left, bottom, right);
+}
+
 - (void)setRotateGesturesEnabled:(BOOL)enabled {
   _mapView.settings.rotateGestures = enabled;
 }
@@ -482,6 +486,14 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
     float minZoom = (zoomData[0] == [NSNull null]) ? kGMSMinZoomLevel : ToFloat(zoomData[0]);
     float maxZoom = (zoomData[1] == [NSNull null]) ? kGMSMaxZoomLevel : ToFloat(zoomData[1]);
     [sink setMinZoom:minZoom maxZoom:maxZoom];
+  }
+  NSArray* paddingData = data[@"padding"];
+  if (paddingData) {
+    float top = (paddingData[0] == [NSNull null]) ? 0 : ToFloat(paddingData[0]);
+    float left = (paddingData[1] == [NSNull null]) ? 0 : ToFloat(paddingData[1]);
+    float bottom = (paddingData[2] == [NSNull null]) ? 0 : ToFloat(paddingData[2]);
+    float right = (paddingData[3] == [NSNull null]) ? 0 : ToFloat(paddingData[3]);
+    [sink setPaddingTop:top left:left bottom:bottom right:right];
   }
   NSNumber* rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
   if (rotateGesturesEnabled) {
