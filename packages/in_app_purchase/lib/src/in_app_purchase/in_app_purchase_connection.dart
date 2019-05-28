@@ -235,7 +235,7 @@ abstract class InAppPurchaseConnection {
 }
 
 /// Which platform the request is on.
-enum IAPSource { GooglePlay, AppStore }
+enum PurchaseSource { GooglePlay, AppStore }
 
 /// Error happened in unified APIs.
 ///
@@ -244,15 +244,15 @@ enum IAPSource { GooglePlay, AppStore }
 /// See also:
 /// * [ProductDetailsResponse] for error when querying product details.
 /// * [PurchaseDetails] for error happened in purchase.
-class IAPError {
-  IAPError(
+class PurchaseError {
+  PurchaseError(
       {@required this.source,
       @required this.code,
       @required this.message,
       this.details = null});
 
   /// Which source is the error on.
-  final IAPSource source;
+  final PurchaseSource source;
 
   /// The error code.
   final String code;

@@ -81,7 +81,7 @@ class ProductDetailsResponse {
   final List<String> notFoundIDs;
 
   /// The error occurred during the request.
-  final IAPError error;
+  final PurchaseError error;
 }
 
 class ProductDetailsError {}

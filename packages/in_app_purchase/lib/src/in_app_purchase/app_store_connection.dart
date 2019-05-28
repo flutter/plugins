@@ -75,7 +75,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
   @override
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
-    IAPError error;
+    PurchaseError error;
     List<PurchaseDetails> pastPurchases = [];
 
     try {
@@ -93,8 +93,8 @@ class AppStoreConnection implements InAppPurchaseConnection {
           ..status = SKTransactionStatusConverter()
               .toPurchaseStatus(transaction.transactionState)
           ..error = transaction.error != null
-              ? IAPError(
-                  source: IAPSource.AppStore,
+              ? PurchaseError(
+                  source: PurchaseSource.AppStore,
                   code: kPurchaseErrorCode,
                   message: transaction.error.domain,
                   details: transaction.error.userInfo,
@@ -102,14 +102,14 @@ class AppStoreConnection implements InAppPurchaseConnection {
               : null;
       }).toList();
     } on PlatformException catch (e) {
-      error = IAPError(
-          source: IAPSource.AppStore,
+      error = PurchaseError(
+          source: PurchaseSource.AppStore,
           code: e.code,
           message: e.message,
           details: e.details);
     } on SKError catch (e) {
-      error = IAPError(
-          source: IAPSource.AppStore,
+      error = PurchaseError(
+          source: PurchaseSource.AppStore,
           code: kRestoredPurchaseErrorCode,
           message: e.domain,
           details: e.userInfo);
@@ -125,7 +125,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
     return PurchaseVerificationData(
         localVerificationData: receipt,
         serverVerificationData: receipt,
-        source: IAPSource.AppStore);
+        source: PurchaseSource.AppStore);
   }
 
   /// Query the product detail list.
@@ -156,8 +156,8 @@ class AppStoreConnection implements InAppPurchaseConnection {
       notFoundIDs: invalidIdentifiers,
       error: exception == null
           ? null
-          : IAPError(
-              source: IAPSource.AppStore,
+          : PurchaseError(
+              source: PurchaseSource.AppStore,
               code: exception.code,
               message: exception.message,
               details: exception.details),
@@ -180,10 +180,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     assert(queue != null);
     _restoreCompleter = Completer();
     queue
-        .restoreTransactions(applicationUserName: applicationUserName)
-        .catchError((e) {
-      _restoreCompleter.completeError(e);
-    });
+        .restoreTransactions(applicationUserName: applicationUserName);
     return _restoreCompleter.future;
   }
 
@@ -214,8 +211,8 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
             ..status = SKTransactionStatusConverter()
                 .toPurchaseStatus(transaction.transactionState)
             ..error = transaction.error != null
-                ? IAPError(
-                    source: IAPSource.AppStore,
+                ? PurchaseError(
+                    source: PurchaseSource.AppStore,
                     code: kPurchaseErrorCode,
                     message: transaction.error.domain,
                     details: transaction.error.userInfo,

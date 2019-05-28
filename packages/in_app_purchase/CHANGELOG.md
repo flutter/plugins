@@ -1,8 +1,7 @@
 ## 0.1.1
 
-* [Breaking change]: Introduce `IAPError` replacing `PurchaseError` and `IAPSource` replacing `PurchaseSource`.
-* [Breaking change]: Some error messages from iOS are slightly changed.
-* `ProductDetailsResponse` returned by `queryProductDetails()` now contains an `IAPError` object that represents any error that might occurred during the request.
+* Some error messages from iOS are slightly changed.
+* `ProductDetailsResponse` returned by `queryProductDetails()` now contains an `PurchaseError` object that represents any error that might occurred during the request.
 * If the device is not connected to the internet, `queryPastPurchases()` on iOS now have the error stored in the response instead of throwing.
 * Clean up minor iOS warning.
 * Example app shows how to handle error when calling `queryProductDetails()` and `queryProductDetails()`.

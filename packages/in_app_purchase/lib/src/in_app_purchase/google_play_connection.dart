@@ -109,16 +109,16 @@ class GooglePlayConnection
       return PurchaseDetails.fromPurchase(purchaseWrapper);
     }).toList();
 
-    IAPError error;
+    PurchaseError error;
     if (exception != null) {
-      error = IAPError(
-          source: IAPSource.GooglePlay,
+      error = PurchaseError(
+          source: PurchaseSource.GooglePlay,
           code: exception.code,
           message: exception.message,
           details: exception.details);
     } else if (errorMessage != null) {
-      error = IAPError(
-          source: IAPSource.GooglePlay,
+      error = PurchaseError(
+          source: PurchaseSource.GooglePlay,
           code: kRestoredPurchaseErrorCode,
           message: errorMessage);
     }
@@ -201,8 +201,8 @@ class GooglePlayConnection
         notFoundIDs: notFoundIDS,
         error: exception == null
             ? null
-            : IAPError(
-                source: IAPSource.GooglePlay,
+            : PurchaseError(
+                source: PurchaseSource.GooglePlay,
                 code: exception.code,
                 message: exception.message,
                 details: exception.details));
@@ -210,14 +210,14 @@ class GooglePlayConnection
 
   static Future<List<PurchaseDetails>> _getPurchaseDetailsFromResult(
       PurchasesResultWrapper resultWrapper) async {
-    IAPError error;
+    PurchaseError error;
     PurchaseStatus status;
     if (resultWrapper.responseCode == BillingResponse.ok) {
       error = null;
       status = PurchaseStatus.purchased;
     } else {
-      error = IAPError(
-        source: IAPSource.GooglePlay,
+      error = PurchaseError(
+        source: PurchaseSource.GooglePlay,
         code: kPurchaseErrorCode,
         message: resultWrapper.responseCode.toString(),
       );
@@ -255,8 +255,8 @@ class GooglePlayConnection
         await instance.consumePurchase(purchaseDetails);
     if (consumedResponse != BillingResponse.ok) {
       purchaseDetails.status = PurchaseStatus.error;
-      purchaseDetails.error = IAPError(
-        source: IAPSource.GooglePlay,
+      purchaseDetails.error = PurchaseError(
+        source: PurchaseSource.GooglePlay,
         code: kConsumptionFailedErrorCode,
         message: consumedResponse.toString(),
       );
