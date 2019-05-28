@@ -1,3 +1,7 @@
+## 0.11.1+1
+
+* Fixed `updatePhoneNumberCredential` implementation.
+
 ## 0.11.1
 
 * Support for `updatePhoneNumberCredential`.
