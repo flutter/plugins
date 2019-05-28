@@ -24,22 +24,20 @@ import java.util.Map;
 /** FirebaseDynamicLinksPlugin */
 public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   private Registrar registrar;
-  private Map<String, Object> dynamicLinkData;
-  private Task extractIntentLinkTask;
+  private Intent latestIntent;
 
   private FirebaseDynamicLinksPlugin(Registrar registrar) {
     this.registrar = registrar;
+    latestIntent = registrar.activity().getIntent();
 
     registrar.addNewIntentListener(
         new PluginRegistry.NewIntentListener() {
           @Override
           public boolean onNewIntent(Intent intent) {
-            checkLinkOnIntent(intent);
+            latestIntent = intent;
             return false;
           }
         });
-
-    checkLinkOnIntent(registrar.activity().getIntent());
   }
 
   public static void registerWith(Registrar registrar) {
@@ -76,14 +74,36 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   }
 
   private void handleRetrieveDynamicLink(final Result result) {
-    extractIntentLinkTask
+    if (latestIntent == null) {
+      result.success(null);
+      return;
+    }
+
+    FirebaseDynamicLinks.getInstance()
+        .getDynamicLink(latestIntent)
         .addOnCompleteListener(
             registrar.activity(),
             new OnCompleteListener<PendingDynamicLinkData>() {
               @Override
               public void onComplete(@NonNull Task<PendingDynamicLinkData> task) {
-                result.success(dynamicLinkData);
-                dynamicLinkData = null;
+                if (task.isSuccessful()) {
+                  PendingDynamicLinkData data = task.getResult();
+                  if (data != null) {
+                    Map<String, Object> dynamicLink = new HashMap<>();
+                    dynamicLink.put("link", data.getLink().toString());
+
+                    Map<String, Object> androidData = new HashMap<>();
+                    androidData.put("clickTimestamp", data.getClickTimestamp());
+                    androidData.put("minimumVersion", data.getMinimumAppVersion());
+
+                    dynamicLink.put("android", androidData);
+
+                    latestIntent = null;
+                    result.success(dynamicLink);
+                    return;
+                  }
+                }
+                result.success(null);
               }
             })
         .addOnFailureListener(
@@ -273,32 +293,5 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     @SuppressWarnings("unchecked")
     T result = (T) map.get(key);
     return result;
-  }
-
-  private void checkLinkOnIntent(Intent intent) {
-    extractIntentLinkTask =
-        FirebaseDynamicLinks.getInstance()
-            .getDynamicLink(intent)
-            .addOnCompleteListener(
-                registrar.activity(),
-                new OnCompleteListener<PendingDynamicLinkData>() {
-                  @Override
-                  public void onComplete(@NonNull Task<PendingDynamicLinkData> task) {
-                    if (task.isSuccessful()) {
-                      PendingDynamicLinkData data = task.getResult();
-                      if (data != null) {
-                        Map<String, Object> linkData = new HashMap<>();
-                        linkData.put("link", data.getLink().toString());
-
-                        Map<String, Object> androidData = new HashMap<>();
-                        androidData.put("clickTimestamp", data.getClickTimestamp());
-                        androidData.put("minimumVersion", data.getMinimumAppVersion());
-
-                        linkData.put("android", androidData);
-                        dynamicLinkData = linkData;
-                      }
-                    }
-                  }
-                });
   }
 }
