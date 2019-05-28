@@ -134,10 +134,7 @@ class SkuDetailsWrapper {
 @BillingResponseConverter()
 class SkuDetailsResponseWrapper {
   @visibleForTesting
-  SkuDetailsResponseWrapper(
-      {@required this.responseCode,
-      this.skuDetailsList,
-      this.platformException = null});
+  SkuDetailsResponseWrapper({@required this.responseCode, this.skuDetailsList});
 
   /// Constructs an instance of this from a key value map of data.
   ///
@@ -151,10 +148,6 @@ class SkuDetailsResponseWrapper {
 
   /// A list of [SkuDetailsWrapper] matching the query to [BillingClient.querySkuDetails].
   final List<SkuDetailsWrapper> skuDetailsList;
-
-  /// Any platformException happened during the request.
-  @JsonKey(ignore: true)
-  final PlatformException platformException;
 
   @override
   bool operator ==(dynamic other) {

@@ -103,8 +103,7 @@ class PurchaseWrapper {
 class PurchasesResultWrapper {
   PurchasesResultWrapper(
       {@required BillingResponse this.responseCode,
-      @required List<PurchaseWrapper> this.purchasesList,
-      this.platformException = null});
+      @required List<PurchaseWrapper> this.purchasesList});
 
   factory PurchasesResultWrapper.fromJson(Map map) =>
       _$PurchasesResultWrapperFromJson(map);
@@ -131,8 +130,4 @@ class PurchasesResultWrapper {
   ///
   /// May be empty, especially if [responseCode] is not [BillingResponse.ok].
   final List<PurchaseWrapper> purchasesList;
-
-  /// Any platformException happened during the request.
-  @JsonKey(ignore: true)
-  final PlatformException platformException;
 }

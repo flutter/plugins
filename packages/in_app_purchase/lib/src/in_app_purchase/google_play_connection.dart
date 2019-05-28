@@ -79,18 +79,22 @@ class GooglePlayConnection
   @override
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
-    final List<PurchasesResultWrapper> responses = await Future.wait([
-      billingClient.queryPurchases(SkuType.inapp),
-      billingClient.queryPurchases(SkuType.subs)
-    ]);
-
-    //It is hard and ugly to merge 2 exceptions into 1. We only return 1 exception at a time.
-    List<PlatformException> exceptions = responses
-        .map((PurchasesResultWrapper response) => response.platformException)
-        .where((PlatformException exception) => exception != null)
-        .toList();
-    PlatformException exception =
-        exceptions.length > 0 ? exceptions.first : null;
+    List<PurchasesResultWrapper> responses;
+    PlatformException exception;
+    try {
+      responses = await Future.wait([
+        billingClient.queryPurchases(SkuType.inapp),
+        billingClient.queryPurchases(SkuType.subs)
+      ]);
+    } on PlatformException catch (e) {
+      exception = e;
+      responses = [
+        PurchasesResultWrapper(
+            responseCode: BillingResponse.error, purchasesList: []),
+        PurchasesResultWrapper(
+            responseCode: BillingResponse.error, purchasesList: [])
+      ];
+    }
 
     Set errorCodeSet = responses
         .where((PurchasesResultWrapper response) =>
@@ -170,21 +174,24 @@ class GooglePlayConnection
   /// to get the [SkuDetailsResponseWrapper].
   Future<ProductDetailsResponse> queryProductDetails(
       Set<String> identifiers) async {
-    List<SkuDetailsResponseWrapper> responses = await Future.wait([
-      billingClient.querySkuDetails(
-          skuType: SkuType.inapp, skusList: identifiers.toList()),
-      billingClient.querySkuDetails(
-          skuType: SkuType.subs, skusList: identifiers.toList())
-    ]);
-
-    //It is hard and ugly to merge 2 exceptions into 1. We only return 1 exception at a time.
-    List<PlatformException> exceptions = responses
-        .map((SkuDetailsResponseWrapper response) => response.platformException)
-        .where((PlatformException exception) => exception != null)
-        .toList();
-    PlatformException exception =
-        exceptions.length > 0 ? exceptions.first : null;
-
+    List<SkuDetailsResponseWrapper> responses;
+    PlatformException exception;
+    try {
+      responses = await Future.wait([
+        billingClient.querySkuDetails(
+            skuType: SkuType.inapp, skusList: identifiers.toList()),
+        billingClient.querySkuDetails(
+            skuType: SkuType.subs, skusList: identifiers.toList())
+      ]);
+    } on PlatformException catch (e) {
+      exception = e;
+      responses = [
+        SkuDetailsResponseWrapper(
+            responseCode: BillingResponse.error, skuDetailsList: []),
+        SkuDetailsResponseWrapper(
+            responseCode: BillingResponse.error, skuDetailsList: [])
+      ];
+    }
     List<ProductDetails> productDetailsList =
         responses.expand((SkuDetailsResponseWrapper response) {
       return response.skuDetailsList;

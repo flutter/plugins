@@ -137,9 +137,15 @@ class AppStoreConnection implements InAppPurchaseConnection {
   Future<ProductDetailsResponse> queryProductDetails(
       Set<String> identifiers) async {
     final SKRequestMaker requestMaker = SKRequestMaker();
-    SkProductResponseWrapper response =
-        await requestMaker.startProductRequest(identifiers.toList());
-    PlatformException exception = response.platformException;
+    SkProductResponseWrapper response;
+    PlatformException exception;
+    try {
+      response = await requestMaker.startProductRequest(identifiers.toList());
+    } on PlatformException catch (e) {
+      exception = e;
+      response = SkProductResponseWrapper(
+          products: [], invalidProductIdentifiers: identifiers.toList());
+    }
     List<ProductDetails> productDetails = [];
     if (response.products != null) {
       productDetails = response.products

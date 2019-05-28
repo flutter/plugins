@@ -24,27 +24,17 @@ class SKRequestMaker {
   /// A [PlatformException] is thrown if the platform code making the request fails.
   Future<SkProductResponseWrapper> startProductRequest(
       List<String> productIdentifiers) async {
-    try {
-      final Map productResponseMap = await channel.invokeMethod(
-        '-[InAppPurchasePlugin startProductRequest:result:]',
-        productIdentifiers,
+    final Map productResponseMap = await channel.invokeMethod(
+      '-[InAppPurchasePlugin startProductRequest:result:]',
+      productIdentifiers,
+    );
+    if (productResponseMap == null) {
+      throw PlatformException(
+        code: 'storekit_no_response',
+        message: 'StoreKit: Failed to get response from platform.',
       );
-      if (productResponseMap == null) {
-        return SkProductResponseWrapper(
-            invalidProductIdentifiers: null,
-            products: null,
-            platformException: PlatformException(
-              code: 'storekit_no_response',
-              message: 'StoreKit: Failed to get response from platform.',
-            ));
-      }
-      return SkProductResponseWrapper.fromJson(productResponseMap);
-    } on PlatformException catch (e) {
-      return SkProductResponseWrapper(
-          invalidProductIdentifiers: null,
-          products: null,
-          platformException: e);
     }
+    return SkProductResponseWrapper.fromJson(productResponseMap);
   }
 
   /// Uses [SKReceiptRefreshRequest](https://developer.apple.com/documentation/storekit/skreceiptrefreshrequest?language=objc) to request a new receipt.

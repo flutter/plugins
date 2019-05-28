@@ -113,21 +113,14 @@ class BillingClient {
   /// and passed in as a class.
   Future<SkuDetailsResponseWrapper> querySkuDetails(
       {@required SkuType skuType, @required List<String> skusList}) async {
-    try {
-      final Map<String, dynamic> arguments = <String, dynamic>{
-        'skuType': SkuTypeConverter().toJson(skuType),
-        'skusList': skusList
-      };
-      return SkuDetailsResponseWrapper.fromJson(await channel.invokeMapMethod<
-              String, dynamic>(
-          'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)',
-          arguments));
-    } on PlatformException catch (e) {
-      return SkuDetailsResponseWrapper(
-          responseCode: BillingResponse.error,
-          skuDetailsList: [],
-          platformException: e);
-    }
+    final Map<String, dynamic> arguments = <String, dynamic>{
+      'skuType': SkuTypeConverter().toJson(skuType),
+      'skusList': skusList
+    };
+    return SkuDetailsResponseWrapper.fromJson(await channel.invokeMapMethod<
+            String, dynamic>(
+        'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)',
+        arguments));
   }
 
   /// Attempt to launch the Play Billing Flow for a given [skuDetails].
@@ -178,16 +171,9 @@ class BillingClient {
   /// skutype)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#querypurchases).
   Future<PurchasesResultWrapper> queryPurchases(SkuType skuType) async {
     assert(skuType != null);
-    try {
-      return PurchasesResultWrapper.fromJson(await channel.invokeMapMethod(
-          'BillingClient#queryPurchases(String)',
-          <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
-    } on PlatformException catch (e) {
-      return PurchasesResultWrapper(
-          responseCode: BillingResponse.error,
-          purchasesList: [],
-          platformException: e);
-    }
+    return PurchasesResultWrapper.fromJson(await channel.invokeMapMethod(
+        'BillingClient#queryPurchases(String)',
+        <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
   }
 
   /// Fetches purchase history for the given [SkuType].
