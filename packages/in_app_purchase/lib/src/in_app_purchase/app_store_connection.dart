@@ -179,8 +179,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
       {@required SKPaymentQueueWrapper queue, String applicationUserName}) {
     assert(queue != null);
     _restoreCompleter = Completer();
-    queue
-        .restoreTransactions(applicationUserName: applicationUserName);
+    queue.restoreTransactions(applicationUserName: applicationUserName);
     return _restoreCompleter.future;
   }
 

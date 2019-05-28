@@ -110,21 +110,6 @@ void main() {
       expect(response.error.details, {'message': 'errorMessage'});
     });
 
-    test('test restore platform exception', () async {
-      fakeIOSPlatform.restoreException = PlatformException(
-        code: 'error_code',
-        message: 'error_message',
-        details: {'info': 'error_info'},
-      );
-      QueryPurchaseDetailsResponse response =
-          await AppStoreConnection.instance.queryPastPurchases();
-      expect(response.pastPurchases, isEmpty);
-      expect(response.error.source, PurchaseSource.AppStore);
-      expect(response.error.code, 'error_code');
-      expect(response.error.message, 'error_message');
-      expect(response.error.details, {'info': 'error_info'});
-    });
-
     test('receipt error should populate null to verificationData.data',
         () async {
       fakeIOSPlatform.receiptData = null;
