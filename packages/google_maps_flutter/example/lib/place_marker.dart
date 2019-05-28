@@ -237,9 +237,9 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
         .resolve(config)
         .addListener(ImageStreamListener((ImageInfo image, bool sync) async {
       final ByteData bytes =
-      await image.image.toByteData(format: ImageByteFormat.png);
+          await image.image.toByteData(format: ImageByteFormat.png);
       final BitmapDescriptor bitmap =
-      BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
+          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
       bitmapIcon.complete(bitmap);
     }));
 
