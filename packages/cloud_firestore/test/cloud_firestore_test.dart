@@ -50,6 +50,9 @@ void main() {
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
             Future<void>.delayed(Duration.zero).then<void>((_) {
+              // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+              // https://github.com/flutter/flutter/issues/33446
+              // ignore: deprecated_member_use
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -79,6 +82,9 @@ void main() {
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
             Future<void>.delayed(Duration.zero).then<void>((_) {
+              // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+              // https://github.com/flutter/flutter/issues/33446
+              // ignore: deprecated_member_use
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
