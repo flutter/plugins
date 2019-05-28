@@ -135,7 +135,7 @@ void main() {
 
   test('userAgent', () async {
     final Completer<WebViewController> controllerCompleter01 =
-    Completer<WebViewController>();
+        Completer<WebViewController>();
     await pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -156,7 +156,7 @@ void main() {
 
     // rebuilds a WebView with a different user agent.
     final Completer<WebViewController> controllerCompleter02 =
-    Completer<WebViewController>();
+        Completer<WebViewController>();
     await pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
