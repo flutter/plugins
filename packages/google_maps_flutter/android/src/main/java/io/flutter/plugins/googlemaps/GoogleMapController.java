@@ -515,11 +515,13 @@ final class GoogleMapController
 
   @Override
   public void setPadding(float top, float left, float bottom, float right) {
-    googleMap.setPadding(
-            (int) (left * density),
-            (int) (top * density),
-            (int) (right * density),
-            (int) (bottom * density));
+    if (googleMap != null) {
+      googleMap.setPadding(
+              (int) (left * density),
+              (int) (top * density),
+              (int) (right * density),
+              (int) (bottom * density));
+    }
   }
 
   @Override

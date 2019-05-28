@@ -21,7 +21,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private Object initialPolygons;
   private Object initialPolylines;
   private Object initialCircles;
-  private Rect padding;
+  private Rect padding = new Rect(0, 0, 0, 0);
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
