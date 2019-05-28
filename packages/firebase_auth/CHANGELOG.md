@@ -1,3 +1,7 @@
+## 0.11.1+2
+
+* Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
+
 ## 0.11.1+1
 
 * Updated the error code documentation for `linkWithCredential`.
