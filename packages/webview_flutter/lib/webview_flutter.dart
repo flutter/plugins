@@ -268,9 +268,9 @@ class _WebViewState extends State<WebView> {
   Widget build(BuildContext context) {
     return WebView.platformBuilder.build(
       context: context,
-      creationParams: _CreationParams.fromWidget(widget).toMap(),
       onWebViewPlatformCreated: _onWebViewPlatformCreated,
       gestureRecognizers: widget.gestureRecognizers,
+      creationParams: _creationParamsfromWidget(widget),
     );
   }
 
@@ -307,6 +307,50 @@ class _WebViewState extends State<WebView> {
   }
 }
 
+CreationParams _creationParamsfromWidget(WebView widget) {
+  return CreationParams(
+    initialUrl: widget.initialUrl,
+    webSettings: _webSettingsFromWidget(widget),
+    javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
+  );
+}
+
+WebSettings _webSettingsFromWidget(WebView widget) {
+  return WebSettings(
+    javascriptMode: widget.javascriptMode,
+    hasNavigationDelegate: widget.navigationDelegate != null,
+    debuggingEnabled: widget.debuggingEnabled,
+  );
+}
+
+// This method assumes that no fields in `currentValue` are null.
+WebSettings _clearUnchangedWebSettings(
+    WebSettings currentValue, WebSettings newValue) {
+  assert(currentValue.javascriptMode != null);
+  assert(currentValue.hasNavigationDelegate != null);
+  assert(currentValue.debuggingEnabled != null);
+  assert(newValue.javascriptMode != null);
+  assert(newValue.hasNavigationDelegate != null);
+  assert(newValue.debuggingEnabled != null);
+  JavascriptMode javascriptMode;
+  bool hasNavigationDelegate;
+  bool debuggingEnabled;
+  if (currentValue.javascriptMode != newValue.javascriptMode) {
+    javascriptMode = newValue.javascriptMode;
+  }
+  if (currentValue.hasNavigationDelegate != newValue.hasNavigationDelegate) {
+    hasNavigationDelegate = newValue.hasNavigationDelegate;
+  }
+  if (currentValue.debuggingEnabled != newValue.debuggingEnabled) {
+    debuggingEnabled = newValue.debuggingEnabled;
+  }
+
+  return WebSettings(
+      javascriptMode: javascriptMode,
+      hasNavigationDelegate: hasNavigationDelegate,
+      debuggingEnabled: debuggingEnabled);
+}
+
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
   final Set<String> channelNames = channels == null
       // TODO(iskakaushik): Remove this when collection literals makes it to stable.
@@ -314,78 +358,6 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
       ? Set<String>()
       : channels.map((JavascriptChannel channel) => channel.name).toSet();
   return channelNames;
-}
-
-class _CreationParams {
-  _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames});
-
-  static _CreationParams fromWidget(WebView widget) {
-    return _CreationParams(
-      initialUrl: widget.initialUrl,
-      settings: _WebSettings.fromWidget(widget),
-      javascriptChannelNames:
-          _extractChannelNames(widget.javascriptChannels).toList(),
-    );
-  }
-
-  final String initialUrl;
-
-  final _WebSettings settings;
-
-  final List<String> javascriptChannelNames;
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'initialUrl': initialUrl,
-      'settings': settings.toMap(),
-      'javascriptChannelNames': javascriptChannelNames,
-    };
-  }
-}
-
-class _WebSettings {
-  _WebSettings({
-    this.javascriptMode,
-    this.hasNavigationDelegate,
-    this.debuggingEnabled,
-  });
-
-  static _WebSettings fromWidget(WebView widget) {
-    return _WebSettings(
-      javascriptMode: widget.javascriptMode,
-      hasNavigationDelegate: widget.navigationDelegate != null,
-      debuggingEnabled: widget.debuggingEnabled,
-    );
-  }
-
-  final JavascriptMode javascriptMode;
-  final bool hasNavigationDelegate;
-  final bool debuggingEnabled;
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'jsMode': javascriptMode.index,
-      'hasNavigationDelegate': hasNavigationDelegate,
-      'debuggingEnabled': debuggingEnabled,
-    };
-  }
-
-  Map<String, dynamic> updatesMap(_WebSettings newSettings) {
-    final Map<String, dynamic> updates = <String, dynamic>{};
-    if (javascriptMode != newSettings.javascriptMode) {
-      updates['jsMode'] = newSettings.javascriptMode.index;
-    }
-    if (hasNavigationDelegate != newSettings.hasNavigationDelegate) {
-      updates['hasNavigationDelegate'] = newSettings.hasNavigationDelegate;
-    }
-
-    if (debuggingEnabled != newSettings.debuggingEnabled) {
-      updates['debuggingEnabled'] = newSettings.debuggingEnabled;
-    }
-
-    return updates;
-  }
 }
 
 /// Controls a [WebView].
@@ -398,7 +370,7 @@ class WebViewController {
     this._platformInterface,
     this._widget,
   ) : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
-    _settings = _WebSettings.fromWidget(_widget);
+    _settings = _webSettingsFromWidget(_widget);
     _updateJavascriptChannelsFromSet(_widget.javascriptChannels);
     _channel.setMethodCallHandler(_onMethodCall);
   }
@@ -407,7 +379,7 @@ class WebViewController {
 
   final WebViewPlatform _platformInterface;
 
-  _WebSettings _settings;
+  WebSettings _settings;
 
   WebView _widget;
 
@@ -549,20 +521,15 @@ class WebViewController {
 
   Future<void> _updateWidget(WebView widget) async {
     _widget = widget;
-    await _updateSettings(_WebSettings.fromWidget(widget));
+    await _updateSettings(_webSettingsFromWidget(widget));
     await _updateJavascriptChannels(widget.javascriptChannels);
   }
 
-  Future<void> _updateSettings(_WebSettings setting) async {
-    final Map<String, dynamic> updateMap = _settings.updatesMap(setting);
-    if (updateMap == null || updateMap.isEmpty) {
-      return null;
-    }
-    _settings = setting;
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod('updateSettings', updateMap);
+  Future<void> _updateSettings(WebSettings newSettings) {
+    final WebSettings update =
+        _clearUnchangedWebSettings(_settings, newSettings);
+    _settings = newSettings;
+    return _platformInterface.updateSettings(update);
   }
 
   Future<void> _updateJavascriptChannels(

@@ -66,7 +66,6 @@ void main() {
       initialUrl: 'https://youtube.com',
       javascriptMode: JavascriptMode.disabled,
     ));
-
     expect(platformWebView.javascriptMode, JavascriptMode.disabled);
   });
 
@@ -769,15 +768,19 @@ void main() {
       final MyWebViewBuilder builder = WebView.platformBuilder;
       final MyWebViewPlatform platform = builder.lastPlatformBuilt;
 
-      expect(platform.creationParams, <String, dynamic>{
-        'initialUrl': 'https://youtube.com',
-        'settings': <String, dynamic>{
-          'jsMode': 0,
-          'hasNavigationDelegate': false,
-          'debuggingEnabled': false
-        },
-        'javascriptChannelNames': <String>[],
-      });
+      expect(
+          platform.creationParams,
+          MatchesCreationParams(CreationParams(
+            initialUrl: 'https://youtube.com',
+            webSettings: WebSettings(
+              javascriptMode: JavascriptMode.disabled,
+              hasNavigationDelegate: false,
+              debuggingEnabled: false,
+            ),
+            // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+            // ignore: prefer_collection_literals
+            javascriptChannelNames: Set<String>(),
+          )));
     });
 
     testWidgets('loadUrl', (WidgetTester tester) async {
@@ -1036,7 +1039,7 @@ class MyWebViewBuilder implements WebViewBuilder {
   @override
   Widget build({
     BuildContext context,
-    Map<String, dynamic> creationParams,
+    CreationParams creationParams,
     @required WebViewPlatformCreatedCallback onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   }) {
@@ -1050,7 +1053,7 @@ class MyWebViewBuilder implements WebViewBuilder {
 class MyWebViewPlatform extends WebViewPlatform {
   MyWebViewPlatform(this.creationParams, this.gestureRecognizers);
 
-  Map<String, dynamic> creationParams;
+  CreationParams creationParams;
   Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
   String lastUrlLoaded;
@@ -1058,6 +1061,7 @@ class MyWebViewPlatform extends WebViewPlatform {
 
   @override
   Future<void> loadUrl(String url, Map<String, String> headers) {
+    equals(1, 1);
     lastUrlLoaded = url;
     lastRequestHeaders = headers;
     return null;
@@ -1066,4 +1070,43 @@ class MyWebViewPlatform extends WebViewPlatform {
   @override
   // TODO: implement id
   int get id => 1;
+}
+
+class MatchesWebSettings extends Matcher {
+  MatchesWebSettings(this._webSettings);
+
+  final WebSettings _webSettings;
+
+  @override
+  Description describe(Description description) =>
+      description.add('$_webSettings');
+
+  @override
+  bool matches(
+      covariant WebSettings webSettings, Map<dynamic, dynamic> matchState) {
+    return _webSettings.javascriptMode == webSettings.javascriptMode &&
+        _webSettings.hasNavigationDelegate ==
+            webSettings.hasNavigationDelegate &&
+        _webSettings.debuggingEnabled == webSettings.debuggingEnabled;
+  }
+}
+
+class MatchesCreationParams extends Matcher {
+  MatchesCreationParams(this._creationParams);
+
+  final CreationParams _creationParams;
+
+  @override
+  Description describe(Description description) =>
+      description.add('$_creationParams');
+
+  @override
+  bool matches(covariant CreationParams creationParams,
+      Map<dynamic, dynamic> matchState) {
+    return _creationParams.initialUrl == creationParams.initialUrl &&
+        MatchesWebSettings(_creationParams.webSettings)
+            .matches(creationParams.webSettings, matchState) &&
+        orderedEquals(_creationParams.javascriptChannelNames)
+            .matches(creationParams.javascriptChannelNames, matchState);
+  }
 }
