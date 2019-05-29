@@ -1,6 +1,10 @@
 ## 0.8.1
 
-* Can now release resources held by detectors with `close()` method.
+* Add capability to release resources held by detectors with `close()` method.
+
+## 0.8.0+1
+
+* Update the sample to use the new ImageStreamListener API introduced in https://github.com/flutter/flutter/pull/32936.
 
 ## 0.8.0
 
