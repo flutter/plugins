@@ -237,7 +237,7 @@ abstract class InAppPurchaseConnection {
 /// Which platform the request is on.
 enum PurchaseSource { GooglePlay, AppStore }
 
-/// Error happened in unified APIs.
+/// Captures an error from the underlying purchase platform.
 ///
 /// The error can happen during the purchase, restoring a purchase, or querying product.
 /// Errors from restoring a purchase are not indicative of any errors during the original purchase.
