@@ -119,6 +119,17 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   return query;
 }
 
+static FIRFirestoreSource getSource(NSDictionary *arguments) {
+  NSString *source = arguments[@"source"];
+  if ([@"server" isEqualToString:source]) {
+    return FIRFirestoreSourceServer;
+  }
+  if ([@"cache" isEqualToString:source]) {
+    return FIRFirestoreSourceCache;
+  }
+  return FIRFirestoreSourceDefault;
+}
+
 static NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
   NSMutableArray *paths = [NSMutableArray array];
   NSMutableArray *documents = [NSMutableArray array];
@@ -449,8 +460,9 @@ const UInt8 INCREMENT_INTEGER = 138;
     [document deleteDocumentWithCompletion:defaultCompletionBlock];
   } else if ([@"DocumentReference#get" isEqualToString:call.method]) {
     FIRDocumentReference *document = getDocumentReference(call.arguments);
-    [document getDocumentWithCompletion:^(FIRDocumentSnapshot *_Nullable snapshot,
-                                          NSError *_Nullable error) {
+    FIRFirestoreSource source = getSource(call.arguments);
+    [document getDocumentWithSource:source
+                        completion:^(FIRDocumentSnapshot *_Nullable snapshot, NSError *_Nullable error) {
       if (snapshot == nil) {
         result(getFlutterError(error));
       } else {
@@ -511,6 +523,7 @@ const UInt8 INCREMENT_INTEGER = 138;
     result(handle);
   } else if ([@"Query#getDocuments" isEqualToString:call.method]) {
     FIRQuery *query;
+    FIRFirestoreSource source = getSource(call.arguments);
     @try {
       query = getQuery(call.arguments);
     } @catch (NSException *exception) {
@@ -518,8 +531,9 @@ const UInt8 INCREMENT_INTEGER = 138;
                                  message:[exception name]
                                  details:[exception reason]]);
     }
-    [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
-                                        NSError *_Nullable error) {
+    
+    [query getDocumentsWithSource:source
+                      completion:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
       if (snapshot == nil) {
         result(getFlutterError(error));
         return;
