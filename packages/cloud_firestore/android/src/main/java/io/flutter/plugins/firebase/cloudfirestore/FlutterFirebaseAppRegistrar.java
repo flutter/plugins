@@ -7,12 +7,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class FlutterFirebaseAppRegistrar implements ComponentRegistrar {
-    private static final String LIBRARY_NAME = "flutter-firebase_cloud_firestore";
-    private static final String LIBRARY_VERSION = "0.12.0+1";
+  private static final String LIBRARY_NAME = "flutter-firebase_cloud_firestore";
+  private static final String LIBRARY_VERSION = "0.12.0+1";
 
-    @Override
-    public List<Component<?>> getComponents() {
-        return Collections.<Component<?>>singletonList(
-                LibraryVersionComponent.create(LIBRARY_NAME, LIBRARY_VERSION));
-    }
+  @Override
+  public List<Component<?>> getComponents() {
+    return Collections.<Component<?>>singletonList(
+        LibraryVersionComponent.create(LIBRARY_NAME, LIBRARY_VERSION));
+  }
 }
