@@ -6,6 +6,9 @@
 
 #import <Firebase/Firebase.h>
 
+#define LIBRARY_NAME @"flutter-firebase_cloud_firestore"
+#define LIBRARY_VERSION @"0.12.0+1"
+
 static FlutterError *getFlutterError(NSError *error) {
   if (error == nil) return nil;
 
@@ -321,6 +324,11 @@ const UInt8 INCREMENT_INTEGER = 138;
   FLTCloudFirestorePlugin *instance = [[FLTCloudFirestorePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)init {
