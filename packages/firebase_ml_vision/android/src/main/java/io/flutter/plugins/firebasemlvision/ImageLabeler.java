@@ -25,6 +25,9 @@ class ImageLabeler implements Detector {
       labeler = vision.getOnDeviceImageLabeler(parseOptions(options));
     } else if (modelType.equals("cloud")) {
       labeler = vision.getCloudImageLabeler(parseCloudOptions(options));
+    } else {
+      final String message = String.format("No model for type: %s", modelType);
+      throw new IllegalArgumentException(message);
     }
   }
 
