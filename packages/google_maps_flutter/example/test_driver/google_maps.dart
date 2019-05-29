@@ -292,7 +292,7 @@ void main() {
     // still being investigated.
     // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
     // https://github.com/flutter/flutter/issues/27550
-    await Future<dynamic>.delayed(Duration(seconds: 3));
+    await Future<dynamic>.delayed(const Duration(seconds: 3));
 
     final LatLngBounds firstVisibleRegion =
         await mapController.getVisibleRegion();
