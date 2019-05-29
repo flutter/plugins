@@ -21,8 +21,8 @@ class DeviceInfoPlugin {
   ///
   /// See: https://developer.android.com/reference/android/os/Build.html
   Future<AndroidDeviceInfo> get androidInfo async =>
-      _cachedAndroidDeviceInfo ??= AndroidDeviceInfo._fromMap(
-          await channel.invokeMapMethod<String, dynamic>('getAndroidDeviceInfo'));
+      _cachedAndroidDeviceInfo ??= AndroidDeviceInfo._fromMap(await channel
+          .invokeMapMethod<String, dynamic>('getAndroidDeviceInfo'));
 
   /// This information does not change from call to call. Cache it.
   IosDeviceInfo _cachedIosDeviceInfo;
@@ -30,8 +30,9 @@ class DeviceInfoPlugin {
   /// Information derived from `UIDevice`.
   ///
   /// See: https://developer.apple.com/documentation/uikit/uidevice
-  Future<IosDeviceInfo> get iosInfo async => _cachedIosDeviceInfo ??=
-      IosDeviceInfo._fromMap(await channel.invokeMapMethod<String, dynamic>('getIosDeviceInfo'));
+  Future<IosDeviceInfo> get iosInfo async =>
+      _cachedIosDeviceInfo ??= IosDeviceInfo._fromMap(
+          await channel.invokeMapMethod<String, dynamic>('getIosDeviceInfo'));
 }
 
 /// Information derived from `android.os.Build`.
@@ -126,7 +127,8 @@ class AndroidDeviceInfo {
   /// Deserializes from the message received from [_kChannel].
   static AndroidDeviceInfo _fromMap(Map<String, dynamic> map) {
     return AndroidDeviceInfo._(
-      version: AndroidBuildVersion._fromMap(map['version']?.cast<String, dynamic>()),
+      version:
+          AndroidBuildVersion._fromMap(map['version']?.cast<String, dynamic>()),
       board: map['board'],
       bootloader: map['bootloader'],
       brand: map['brand'],

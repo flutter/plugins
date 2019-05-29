@@ -4,8 +4,7 @@ description: Demonstrates how to use the device_info plugin.
 dependencies:
   flutter:
     sdk: flutter
-  device_info:
-    path: ../
+  device_info: '>0.4.0'
 
 flutter:
   uses-material-design: true

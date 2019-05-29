@@ -1,3 +1,9 @@
+## 0.4.0+1
+
+* Bump minimum Flutter version to 1.5.0.
+* Add missing template type parameter to `invokeMethod` calls.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
 ## 0.4.0
 
 * Log a more detailed warning at build time about the previous AndroidX
