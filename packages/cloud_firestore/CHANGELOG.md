@@ -1,3 +1,7 @@
+## 0.12.0+1
+
+* Send user agent to Firebase.
+
 ## 0.12.0
 
 * **Breaking change**. Fixed `CollectionReference.parent` to correctly return a `DocumentReference`.
