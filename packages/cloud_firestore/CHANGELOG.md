@@ -1,3 +1,23 @@
+## 0.12.0
+
+* **Breaking change**. Fixed `CollectionReference.parent` to correctly return a `DocumentReference`.
+  If you were using the method previously to obtain the parent
+  document's id via `collectionReference.parent().id`,
+  you will have to use `collectionReference.parent().documentID` now.
+* Added `DocumentReference.parent`.
+
+## 0.11.0+2
+
+* Remove iOS dependency on Firebase/Database and Firebase/Auth CocoaPods.
+
+## 0.11.0+1
+
+* Update iOS CocoaPod dependencies to '~> 6.0' to ensure support for `FieldValue.increment`.
+
+## 0.11.0
+
+* Update Android dependencies to latest.
+
 ## 0.10.1
 
 * Support for `startAtDocument`, `startAfterDocument`, `endAtDocument`, `endBeforeDocument`.

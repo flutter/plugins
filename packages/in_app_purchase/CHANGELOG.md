@@ -1,3 +1,21 @@
+## 0.1.0+4
+
+* Change the `buy` methods to return `Future<bool>` instead of `void` in order
+  to propagate `launchBillingFlow` failures up through `google_play_connection`.
+
+## 0.1.0+3
+
+* Guard against multiple onSetupFinished() calls.
+
+## 0.1.0+2
+
+* Fix bug where error only purchases updates weren't propagated correctly in
+  `google_play_connection.dart`.
+
+## 0.1.0+1
+
+Add more consumable handling to the example app.
+
 ## 0.1.0
 
 Beta relase.

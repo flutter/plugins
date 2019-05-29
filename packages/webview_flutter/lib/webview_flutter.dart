@@ -9,6 +9,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'platform_interface.dart';
+import 'src/webview_android.dart';
+import 'src/webview_cupertino.dart';
+
 typedef void WebViewCreatedCallback(WebViewController controller);
 
 enum JavascriptMode {
@@ -117,8 +121,42 @@ class WebView extends StatefulWidget {
     this.navigationDelegate,
     this.gestureRecognizers,
     this.onPageFinished,
+    this.debuggingEnabled = false,
   })  : assert(javascriptMode != null),
         super(key: key);
+
+  static WebViewBuilder _platformBuilder;
+
+  /// Sets a custom [WebViewBuilder].
+  ///
+  /// This property can be set to use a custom platform implementation for WebViews.
+  ///
+  /// Setting `platformBuilder` doesn't affect [WebView]s that were already created.
+  ///
+  /// The default value is [AndroidWebViewBuilder] on Android and [CupertinoWebViewBuilder] on iOs.
+  static set platformBuilder(WebViewBuilder platformBuilder) {
+    _platformBuilder = platformBuilder;
+  }
+
+  /// The [WebViewBuilder] that's used to create new [WebView]s.
+  ///
+  /// The default value is [AndroidWebViewBuilder] on Android and [CupertinoWebViewBuilder] on iOs.
+  static WebViewBuilder get platformBuilder {
+    if (_platformBuilder == null) {
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.android:
+          _platformBuilder = AndroidWebViewBuilder();
+          break;
+        case TargetPlatform.iOS:
+          _platformBuilder = CupertinoWebViewBuilder();
+          break;
+        default:
+          throw UnsupportedError(
+              "Trying to use the default webview implementation for $defaultTargetPlatform but there isn't a default one");
+      }
+    }
+    return _platformBuilder;
+  }
 
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback onWebViewCreated;
@@ -205,6 +243,19 @@ class WebView extends StatefulWidget {
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
 
+  /// Controls whether WebView debugging is enabled.
+  ///
+  /// Setting this to true enables [WebView debugging on Android](https://developers.google.com/web/tools/chrome-devtools/remote-debugging/).
+  ///
+  /// WebView debugging is enabled by default in dev builds on iOS.
+  ///
+  /// To debug WebViews on iOS:
+  /// - Enable developer options (Open Safari, go to Preferences -> Advanced and make sure "Show Develop Menu in Menubar" is on.)
+  /// - From the Menu-bar (of Safari) select Develop -> iPhone Simulator -> <your webview page>
+  ///
+  /// By default `debuggingEnabled` is false.
+  final bool debuggingEnabled;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -215,40 +266,12 @@ class _WebViewState extends State<WebView> {
 
   @override
   Widget build(BuildContext context) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return GestureDetector(
-        // We prevent text selection by intercepting the long press event.
-        // This is a temporary stop gap due to issues with text selection on Android:
-        // https://github.com/flutter/flutter/issues/24585 - the text selection
-        // dialog is not responding to touch events.
-        // https://github.com/flutter/flutter/issues/24584 - the text selection
-        // handles are not showing.
-        // TODO(amirh): remove this when the issues above are fixed.
-        onLongPress: () {},
-        excludeFromSemantics: true,
-        child: AndroidView(
-          viewType: 'plugins.flutter.io/webview',
-          onPlatformViewCreated: _onPlatformViewCreated,
-          gestureRecognizers: widget.gestureRecognizers,
-          // WebView content is not affected by the Android view's layout direction,
-          // we explicitly set it here so that the widget doesn't require an ambient
-          // directionality.
-          layoutDirection: TextDirection.rtl,
-          creationParams: _CreationParams.fromWidget(widget).toMap(),
-          creationParamsCodec: const StandardMessageCodec(),
-        ),
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return UiKitView(
-        viewType: 'plugins.flutter.io/webview',
-        onPlatformViewCreated: _onPlatformViewCreated,
-        gestureRecognizers: widget.gestureRecognizers,
-        creationParams: _CreationParams.fromWidget(widget).toMap(),
-        creationParamsCodec: const StandardMessageCodec(),
-      );
-    }
-    return Text(
-        '$defaultTargetPlatform is not yet supported by the webview_flutter plugin');
+    return WebView.platformBuilder.build(
+      context: context,
+      onWebViewPlatformCreated: _onWebViewPlatformCreated,
+      gestureRecognizers: widget.gestureRecognizers,
+      creationParams: _creationParamsfromWidget(widget),
+    );
   }
 
   @override
@@ -265,8 +288,9 @@ class _WebViewState extends State<WebView> {
         (WebViewController controller) => controller._updateWidget(widget));
   }
 
-  void _onPlatformViewCreated(int id) {
-    final WebViewController controller = WebViewController._(id, widget);
+  void _onWebViewPlatformCreated(WebViewPlatform platformController) {
+    final WebViewController controller =
+        WebViewController._(platformController.id, platformController, widget);
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
@@ -283,6 +307,50 @@ class _WebViewState extends State<WebView> {
   }
 }
 
+CreationParams _creationParamsfromWidget(WebView widget) {
+  return CreationParams(
+    initialUrl: widget.initialUrl,
+    webSettings: _webSettingsFromWidget(widget),
+    javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
+  );
+}
+
+WebSettings _webSettingsFromWidget(WebView widget) {
+  return WebSettings(
+    javascriptMode: widget.javascriptMode,
+    hasNavigationDelegate: widget.navigationDelegate != null,
+    debuggingEnabled: widget.debuggingEnabled,
+  );
+}
+
+// This method assumes that no fields in `currentValue` are null.
+WebSettings _clearUnchangedWebSettings(
+    WebSettings currentValue, WebSettings newValue) {
+  assert(currentValue.javascriptMode != null);
+  assert(currentValue.hasNavigationDelegate != null);
+  assert(currentValue.debuggingEnabled != null);
+  assert(newValue.javascriptMode != null);
+  assert(newValue.hasNavigationDelegate != null);
+  assert(newValue.debuggingEnabled != null);
+  JavascriptMode javascriptMode;
+  bool hasNavigationDelegate;
+  bool debuggingEnabled;
+  if (currentValue.javascriptMode != newValue.javascriptMode) {
+    javascriptMode = newValue.javascriptMode;
+  }
+  if (currentValue.hasNavigationDelegate != newValue.hasNavigationDelegate) {
+    hasNavigationDelegate = newValue.hasNavigationDelegate;
+  }
+  if (currentValue.debuggingEnabled != newValue.debuggingEnabled) {
+    debuggingEnabled = newValue.debuggingEnabled;
+  }
+
+  return WebSettings(
+      javascriptMode: javascriptMode,
+      hasNavigationDelegate: hasNavigationDelegate,
+      debuggingEnabled: debuggingEnabled);
+}
+
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
   final Set<String> channelNames = channels == null
       // TODO(iskakaushik): Remove this when collection literals makes it to stable.
@@ -292,69 +360,6 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
   return channelNames;
 }
 
-class _CreationParams {
-  _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames});
-
-  static _CreationParams fromWidget(WebView widget) {
-    return _CreationParams(
-      initialUrl: widget.initialUrl,
-      settings: _WebSettings.fromWidget(widget),
-      javascriptChannelNames:
-          _extractChannelNames(widget.javascriptChannels).toList(),
-    );
-  }
-
-  final String initialUrl;
-
-  final _WebSettings settings;
-
-  final List<String> javascriptChannelNames;
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'initialUrl': initialUrl,
-      'settings': settings.toMap(),
-      'javascriptChannelNames': javascriptChannelNames,
-    };
-  }
-}
-
-class _WebSettings {
-  _WebSettings({
-    this.javascriptMode,
-    this.hasNavigationDelegate,
-  });
-
-  static _WebSettings fromWidget(WebView widget) {
-    return _WebSettings(
-      javascriptMode: widget.javascriptMode,
-      hasNavigationDelegate: widget.navigationDelegate != null,
-    );
-  }
-
-  final JavascriptMode javascriptMode;
-  final bool hasNavigationDelegate;
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'jsMode': javascriptMode.index,
-      'hasNavigationDelegate': hasNavigationDelegate,
-    };
-  }
-
-  Map<String, dynamic> updatesMap(_WebSettings newSettings) {
-    final Map<String, dynamic> updates = <String, dynamic>{};
-    if (javascriptMode != newSettings.javascriptMode) {
-      updates['jsMode'] = newSettings.javascriptMode.index;
-    }
-    if (hasNavigationDelegate != newSettings.hasNavigationDelegate) {
-      updates['hasNavigationDelegate'] = newSettings.hasNavigationDelegate;
-    }
-    return updates;
-  }
-}
-
 /// Controls a [WebView].
 ///
 /// A [WebViewController] instance can be obtained by setting the [WebView.onWebViewCreated]
@@ -362,16 +367,19 @@ class _WebSettings {
 class WebViewController {
   WebViewController._(
     int id,
+    this._platformInterface,
     this._widget,
   ) : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
-    _settings = _WebSettings.fromWidget(_widget);
+    _settings = _webSettingsFromWidget(_widget);
     _updateJavascriptChannelsFromSet(_widget.javascriptChannels);
     _channel.setMethodCallHandler(_onMethodCall);
   }
 
   final MethodChannel _channel;
 
-  _WebSettings _settings;
+  final WebViewPlatform _platformInterface;
+
+  WebSettings _settings;
 
   WebView _widget;
 
@@ -411,6 +419,9 @@ class WebViewController {
 
   /// Loads the specified URL.
   ///
+  /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
+  /// be added as key value pairs of HTTP headers for the request.
+  ///
   /// `url` must not be null.
   ///
   /// Throws an ArgumentError if `url` is not a valid URL string.
@@ -420,13 +431,7 @@ class WebViewController {
   }) async {
     assert(url != null);
     _validateUrlString(url);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod('loadUrl', <String, dynamic>{
-      'url': url,
-      'headers': headers,
-    });
+    return _platformInterface.loadUrl(url, headers);
   }
 
   /// Accessor to the current URL that the WebView is displaying.
@@ -516,20 +521,15 @@ class WebViewController {
 
   Future<void> _updateWidget(WebView widget) async {
     _widget = widget;
-    await _updateSettings(_WebSettings.fromWidget(widget));
+    await _updateSettings(_webSettingsFromWidget(widget));
     await _updateJavascriptChannels(widget.javascriptChannels);
   }
 
-  Future<void> _updateSettings(_WebSettings setting) async {
-    final Map<String, dynamic> updateMap = _settings.updatesMap(setting);
-    if (updateMap == null || updateMap.isEmpty) {
-      return null;
-    }
-    _settings = setting;
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod('updateSettings', updateMap);
+  Future<void> _updateSettings(WebSettings newSettings) {
+    final WebSettings update =
+        _clearUnchangedWebSettings(_settings, newSettings);
+    _settings = newSettings;
+    return _platformInterface.updateSettings(update);
   }
 
   Future<void> _updateJavascriptChannels(

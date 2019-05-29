@@ -27,6 +27,14 @@ class DocumentReference {
   @override
   int get hashCode => hashList(_pathComponents);
 
+  /// Parent returns the containing [CollectionReference].
+  CollectionReference parent() {
+    return CollectionReference._(
+      firestore,
+      (List<String>.from(_pathComponents)..removeLast()),
+    );
+  }
+
   /// Slash-delimited path representing the database location of this query.
   String get path => _pathComponents.join('/');
 

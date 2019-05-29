@@ -1,3 +1,7 @@
+## 0.4.0
+
+* Update dependency on firebase_core to 0.4.0.
+
 ## 0.3.0.
 
 * Update Android dependencies to 16.1.7.
