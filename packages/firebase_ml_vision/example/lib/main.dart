@@ -48,12 +48,12 @@ class _MyHomePageState extends State<_MyHomePage> {
 
     final Image image = Image.file(imageFile);
     image.image.resolve(const ImageConfiguration()).addListener(
-      (ImageInfo info, bool _) {
+      ImageStreamListener((ImageInfo info, bool _) {
         completer.complete(Size(
           info.image.width.toDouble(),
           info.image.height.toDouble(),
         ));
-      },
+      }),
     );
 
     final Size imageSize = await completer.future;
@@ -70,29 +70,34 @@ class _MyHomePageState extends State<_MyHomePage> {
     final FirebaseVisionImage visionImage =
         FirebaseVisionImage.fromFile(imageFile);
 
-    FirebaseVisionDetector detector;
+    dynamic results;
     switch (_currentDetector) {
       case Detector.barcode:
-        detector = FirebaseVision.instance.barcodeDetector();
+        final BarcodeDetector detector =
+            FirebaseVision.instance.barcodeDetector();
+        results = await detector.detectInImage(visionImage);
         break;
       case Detector.face:
-        detector = FirebaseVision.instance.faceDetector();
+        final FaceDetector detector = FirebaseVision.instance.faceDetector();
+        results = await detector.processImage(visionImage);
         break;
       case Detector.label:
-        detector = FirebaseVision.instance.labelDetector();
+        final ImageLabeler labeler = FirebaseVision.instance.imageLabeler();
+        results = await labeler.processImage(visionImage);
         break;
       case Detector.cloudLabel:
-        detector = FirebaseVision.instance.cloudLabelDetector();
+        final ImageLabeler labeler =
+            FirebaseVision.instance.cloudImageLabeler();
+        results = await labeler.processImage(visionImage);
         break;
       case Detector.text:
-        detector = FirebaseVision.instance.textRecognizer();
+        final TextRecognizer recognizer =
+            FirebaseVision.instance.textRecognizer();
+        results = await recognizer.processImage(visionImage);
         break;
       default:
         return;
     }
-
-    final dynamic results =
-        await detector.detectInImage(visionImage) ?? <dynamic>[];
 
     setState(() {
       _scanResults = results;

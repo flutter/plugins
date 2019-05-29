@@ -47,6 +47,9 @@ class Query {
     StreamController<Event> controller; // ignore: close_sinks
     controller = StreamController<Event>.broadcast(
       onListen: () {
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         _handle = _database._channel.invokeMethod(
           'Query#observe',
           <String, dynamic>{
@@ -63,6 +66,9 @@ class Query {
       },
       onCancel: () {
         _handle.then((int handle) async {
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
           await _database._channel.invokeMethod(
             'Query#removeObserver',
             <String, dynamic>{
@@ -206,6 +212,9 @@ class Query {
   /// attached for that location. Additionally, while a location is kept synced,
   /// it will not be evicted from the persistent disk cache.
   Future<void> keepSynced(bool value) {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return _database._channel.invokeMethod(
       'Query#keepSynced',
       <String, dynamic>{

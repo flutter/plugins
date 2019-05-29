@@ -68,7 +68,7 @@ class _MainScreenState extends State<_MainScreen> with WidgetsBindingObserver {
     });
 
     final DynamicLinkParameters parameters = DynamicLinkParameters(
-      domain: 'cx4k7.app.goo.gl',
+      uriPrefix: 'https://cx4k7.app.goo.gl',
       link: Uri.parse('https://dynamic.link.example/helloworld'),
       androidParameters: AndroidParameters(
         packageName: 'io.flutter.plugins.firebasedynamiclinksexample',

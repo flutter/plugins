@@ -38,6 +38,9 @@ void main() {
             Map<String, dynamic> updatedValue;
             Future<void> simulateEvent(
                 int transactionKey, final MutableData mutableData) async {
+              // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+              // https://github.com/flutter/flutter/issues/33446
+              // ignore: deprecated_member_use
               await BinaryMessages.handlePlatformMessage(
                 channel.name,
                 channel.codec.encodeMethodCall(
@@ -455,6 +458,9 @@ void main() {
         const String errorDetails = 'Some details';
         final Query query = database.reference().child('some path');
         Future<void> simulateError(String errorMessage) async {
+          // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+          // https://github.com/flutter/flutter/issues/33446
+          // ignore: deprecated_member_use
           await BinaryMessages.handlePlatformMessage(
             channel.name,
             channel.codec.encodeMethodCall(
@@ -483,6 +489,7 @@ void main() {
         final DatabaseError error1 = await errors.remove();
         final DatabaseError error2 = await errors.remove();
         subscription.cancel();
+        expect(error1.toString(), 'DatabaseError(12, Bad foo, Some details)');
         expect(error1.code, errorCode);
         expect(error1.message, 'Bad foo');
         expect(error1.details, errorDetails);
@@ -495,6 +502,9 @@ void main() {
         final String path = 'foo';
         final Query query = database.reference().child(path);
         Future<void> simulateEvent(String value) async {
+          // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+          // https://github.com/flutter/flutter/issues/33446
+          // ignore: deprecated_member_use
           await BinaryMessages.handlePlatformMessage(
             channel.name,
             channel.codec.encodeMethodCall(
