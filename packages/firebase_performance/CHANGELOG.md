@@ -1,8 +1,7 @@
 ## 0.3.0
 
-* **Breaking Change** Assertion errors are no longer thrown for incorrect input for `Trace`s and
-`HttpMetric`s.
 * **Breaking Change** Removed `Trace.incrementCounter`. Please use `Trace.incrementMetric`.
+* Assertion errors are no longer thrown for incorrect input for `Trace`s and `HttpMetric`s.
 * You can now get entire list of attributes from `Trace` and `HttpMetric` with `getAttributes()`.
 * Added access to `Trace` value `name`.
 * Added access to `HttpMetric` values `url` and `HttpMethod`.
