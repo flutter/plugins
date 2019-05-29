@@ -1,5 +1,6 @@
 package io.flutter.plugins.firebasedynamiclinks;
 
+import android.content.Intent;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -13,6 +14,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,9 +24,20 @@ import java.util.Map;
 /** FirebaseDynamicLinksPlugin */
 public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   private Registrar registrar;
+  private Intent latestIntent;
 
   private FirebaseDynamicLinksPlugin(Registrar registrar) {
     this.registrar = registrar;
+    latestIntent = registrar.activity().getIntent();
+
+    registrar.addNewIntentListener(
+        new PluginRegistry.NewIntentListener() {
+          @Override
+          public boolean onNewIntent(Intent intent) {
+            latestIntent = intent;
+            return false;
+          }
+        });
   }
 
   public static void registerWith(Registrar registrar) {
@@ -61,8 +74,13 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   }
 
   private void handleRetrieveDynamicLink(final Result result) {
+    if (latestIntent == null) {
+      result.success(null);
+      return;
+    }
+
     FirebaseDynamicLinks.getInstance()
-        .getDynamicLink(registrar.activity().getIntent())
+        .getDynamicLink(latestIntent)
         .addOnCompleteListener(
             registrar.activity(),
             new OnCompleteListener<PendingDynamicLinkData>() {
@@ -79,6 +97,8 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
                     androidData.put("minimumVersion", data.getMinimumAppVersion());
 
                     dynamicLink.put("android", androidData);
+
+                    latestIntent = null;
                     result.success(dynamicLink);
                     return;
                   }
