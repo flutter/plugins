@@ -32,7 +32,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 Calling a function:
 
 ```dart
-dynamic resp = await CloudFunctions.instance.call(functionName: 'YOUR_CALLABLE_FUNCTION_NAME');
+dynamic resp = await CloudFunctions.instance.getHttpsCallable(functionName: 'YOUR_CALLABLE_FUNCTION_NAME').call();
 ```
 
 ## Getting Started

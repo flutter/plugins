@@ -53,7 +53,8 @@ class FirebaseUser extends UserInfo {
   /// Errors:
   ///   • `ERROR_WEAK_PASSWORD` - If the password is not strong enough.
   ///   • `ERROR_INVALID_CREDENTIAL` - If the credential is malformed or has expired.
-  ///   • `ERROR_CREDENTIAL_ALREADY_IN_USE` - If the account is already in use by a different account.
+  ///   • `ERROR_EMAIL_ALREADY_IN_USE` - If the email is already in use by a different account.
+  ///   • `ERROR_CREDENTIAL_ALREADY_IN_USE` - If the account is already in use by a different account, e.g. with phone auth.
   ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
   ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
   ///   • `ERROR_PROVIDER_ALREADY_LINKED` - If the current user already has an account of this type linked.
@@ -129,6 +130,27 @@ class FirebaseUser extends UserInfo {
     return await FirebaseAuth.channel.invokeMethod(
       'updateEmail',
       <String, String>{'email': email, 'app': _app.name},
+    );
+  }
+
+  /// Updates the phone number of the user.
+  ///
+  /// The new phone number credential corresponding to the phone number
+  /// to be added to the Firebase account, if a phone number is already linked to the account.
+  /// this new phone number will replace it.
+  ///
+  /// **Important**: This is a security sensitive operation that requires
+  /// the user to have recently signed in.
+  ///
+  Future<void> updatePhoneNumberCredential(AuthCredential credential) async {
+    assert(credential != null);
+    await FirebaseAuth.channel.invokeMethod<void>(
+      'updatePhoneNumberCredential',
+      <String, dynamic>{
+        'app': _app.name,
+        'provider': credential._provider,
+        'data': credential._data,
+      },
     );
   }
 
