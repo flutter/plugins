@@ -8,6 +8,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
+import 'webview_flutter.dart';
+
 /// Interface for talking to the webview's platform implementation.
 ///
 /// An instance implementing this interface is passed to the `onWebViewPlatformCreated` callback that is
@@ -29,12 +31,83 @@ abstract class WebViewPlatform {
         "WebView loadUrl is not implemented on the current platform");
   }
 
+  /// Updates the webview settings.
+  ///
+  /// Any non null field in `settings` will be set as the new setting value.
+  /// All null fields in `settings` are ignored.
+  Future<void> updateSettings(WebSettings setting) {
+    throw UnimplementedError(
+        "WebView updateSettings is not implemented on the current platform");
+  }
+
   // As the PR currently focus about the wiring I've only moved loadUrl to the new way, so
   // the discussion is more focused.
   // In this temporary state WebViewController still uses a method channel directly for all other
   // method calls so we need to expose the webview ID.
   // TODO(amirh): remove this before publishing this package.
   int get id;
+}
+
+/// Settings for configuring a WebViewPlatform.
+///
+/// Initial settings are passed as part of [CreationParams], settings updates are sent with
+/// [WebViewPlatform#updateSettings].
+class WebSettings {
+  WebSettings({
+    this.javascriptMode,
+    this.hasNavigationDelegate,
+    this.debuggingEnabled,
+  });
+
+  /// The JavaScript execution mode to be used by the webview.
+  final JavascriptMode javascriptMode;
+
+  /// Whether the [WebView] has a [NavigationDelegate] set.
+  final bool hasNavigationDelegate;
+
+  /// Whether to enable the platform's webview content debugging tools.
+  ///
+  /// See also: [WebView.debuggingEnabled].
+  final bool debuggingEnabled;
+
+  @override
+  String toString() {
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled)';
+  }
+}
+
+/// Configuration to use when creating a new [WebViewPlatform].
+class CreationParams {
+  CreationParams(
+      {this.initialUrl, this.webSettings, this.javascriptChannelNames});
+
+  /// The initialUrl to load in the webview.
+  ///
+  /// When null the webview will be created without loading any page.
+  final String initialUrl;
+
+  /// The initial [WebSettings] for the new webview.
+  ///
+  /// This can later be updated with [WebViewPlatform.updateSettings].
+  final WebSettings webSettings;
+
+  /// The initial set of JavaScript channels that are configured for this webview.
+  ///
+  /// For each value in this set the platform's webview should make sure that a corresponding
+  /// property with a postMessage method is set on `window`. For example for a JavaScript channel
+  /// named `Foo` it should be possible for JavaScript code executing in the webview to do
+  ///
+  /// ```javascript
+  /// Foo.postMessage('hello');
+  /// ```
+  // TODO(amirh): describe what should happen when postMessage is called once that code is migrated
+  // to PlatformWebView.
+  final Set<String> javascriptChannelNames;
+
+  @override
+  String toString() {
+    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames)';
+  }
 }
 
 typedef WebViewPlatformCreatedCallback = void Function(
@@ -67,7 +140,7 @@ abstract class WebViewBuilder {
     // TODO(amirh): convert this to be the actual parameters.
     // I'm starting without it as the PR is starting to become pretty big.
     // I'll followup with the conversion PR.
-    Map<String, dynamic> creationParams,
+    CreationParams creationParams,
     WebViewPlatformCreatedCallback onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   });
