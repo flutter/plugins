@@ -80,8 +80,9 @@ class ProductDetailsResponse {
   /// ranging from products not being correctly configured in the storefront to the queried IDs not existing.
   final List<String> notFoundIDs;
 
-  /// The error occurred during the request.
+  /// A caught platform exception thrown while querying the purchases.
+  ///
+  /// It's possible for this to be null but for there still to be notFoundIds in cases where the request itself was a success but the
+  /// requested IDs could not be found.
   final PurchaseError error;
 }
-
-class ProductDetailsError {}
