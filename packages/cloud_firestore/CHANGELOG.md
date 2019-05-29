@@ -1,6 +1,6 @@
 ## 0.12.1
 
-* Added Support `cacheSizeBytes` to `Firestore.settings`.
+* Added support for `cacheSizeBytes` to `Firestore.settings`.
 
 ## 0.12.0
 
