@@ -1,6 +1,6 @@
 ## 0.12.0+1
 
-* Bump the minimum Flutter version to 1.5
+* Bump the minimum Flutter version to 1.5.
 * Replace invokeMethod with invokeMapMethod wherever necessary.
 
 ## 0.12.0
