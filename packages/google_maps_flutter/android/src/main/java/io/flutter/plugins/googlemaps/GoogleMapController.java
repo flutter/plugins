@@ -26,6 +26,7 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -50,10 +51,12 @@ final class GoogleMapController
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnPolylineClickListener,
+        GoogleMap.OnCircleClickListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener,
         PlatformView {
 
   private static final String TAG = "GoogleMapController";
@@ -73,8 +76,10 @@ final class GoogleMapController
   private final Context context;
   private final MarkersController markersController;
   private final PolylinesController polylinesController;
+  private final CirclesController circlesController;
   private List<Object> initialMarkers;
   private List<Object> initialPolylines;
+  private List<Object> initialCircles;
 
   GoogleMapController(
       int id,
@@ -94,6 +99,7 @@ final class GoogleMapController
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
     this.polylinesController = new PolylinesController(methodChannel);
+    this.circlesController = new CirclesController(methodChannel);
   }
 
   @Override
@@ -164,12 +170,16 @@ final class GoogleMapController
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
     googleMap.setOnPolylineClickListener(this);
+    googleMap.setOnCircleClickListener(this);
     googleMap.setOnMapClickListener(this);
+    googleMap.setOnMapLongClickListener(this);
     updateMyLocationSettings();
     markersController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
+    circlesController.setGoogleMap(googleMap);
     updateInitialMarkers();
     updateInitialPolylines();
+    updateInitialCircles();
   }
 
   @Override
@@ -239,6 +249,17 @@ final class GoogleMapController
           result.success(null);
           break;
         }
+      case "circles#update":
+        {
+          Object circlesToAdd = call.argument("circlesToAdd");
+          circlesController.addCircles((List<Object>) circlesToAdd);
+          Object circlesToChange = call.argument("circlesToChange");
+          circlesController.changeCircles((List<Object>) circlesToChange);
+          Object circleIdsToRemove = call.argument("circleIdsToRemove");
+          circlesController.removeCircles((List<Object>) circleIdsToRemove);
+          result.success(null);
+          break;
+        }
       case "map#isCompassEnabled":
         {
           result.success(googleMap.getUiSettings().isCompassEnabled());
@@ -290,6 +311,13 @@ final class GoogleMapController
   }
 
   @Override
+  public void onMapLongClick(LatLng latLng) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("position", Convert.latLngToJson(latLng));
+    methodChannel.invokeMethod("map#onLongPress", arguments);
+  }
+
+  @Override
   public void onCameraMoveStarted(int reason) {
     final Map<String, Object> arguments = new HashMap<>(2);
     boolean isGesture = reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE;
@@ -325,6 +353,11 @@ final class GoogleMapController
   @Override
   public void onPolylineClick(Polyline polyline) {
     polylinesController.onPolylineTap(polyline.getId());
+  }
+
+  @Override
+  public void onCircleClick(Circle circle) {
+    circlesController.onCircleTap(circle.getId());
   }
 
   @Override
@@ -491,6 +524,18 @@ final class GoogleMapController
 
   private void updateInitialPolylines() {
     polylinesController.addPolylines(initialPolylines);
+  }
+
+  @Override
+  public void setInitialCircles(Object initialCircles) {
+    this.initialCircles = (List<Object>) initialCircles;
+    if (googleMap != null) {
+      updateInitialCircles();
+    }
+  }
+
+  private void updateInitialCircles() {
+    circlesController.addCircles(initialCircles);
   }
 
   @SuppressLint("MissingPermission")

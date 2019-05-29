@@ -1,3 +1,11 @@
+## 3.0.1
+
+* Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
+
+## 3.0.0
+
+* Update Android dependencies to latest.
+
 ## 2.0.3
 
 * Provide a `toString` implementation for `DatabaseError`.
