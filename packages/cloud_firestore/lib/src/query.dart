@@ -89,7 +89,7 @@ class Query {
         'app': firestore.app.name,
         'path': _path,
         'parameters': _parameters,
-        'source': getSourceString(source),
+        'source': _getSourceString(source),
       },
     );
     return QuerySnapshot._(data, firestore);

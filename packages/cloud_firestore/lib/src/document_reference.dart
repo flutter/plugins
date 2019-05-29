@@ -86,7 +86,7 @@ class DocumentReference {
       <String, dynamic>{
         'app': firestore.app.name,
         'path': path,
-        'source': getSourceString(source),
+        'source': _getSourceString(source),
       },
     );
     return DocumentSnapshot._(
