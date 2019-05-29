@@ -96,7 +96,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
 
   private Source getSource(Map<String, Object> arguments) {
     String source = (String) arguments.get("source");
-    switch(source) {
+    switch (source) {
       case "server":
         return Source.SERVER;
       case "cache":
