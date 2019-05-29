@@ -4,7 +4,6 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/services.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the

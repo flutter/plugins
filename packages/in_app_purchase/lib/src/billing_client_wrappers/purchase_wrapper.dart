@@ -5,7 +5,6 @@
 import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:flutter/services.dart';
 import 'enum_converters.dart';
 import 'billing_client_wrapper.dart';
 
