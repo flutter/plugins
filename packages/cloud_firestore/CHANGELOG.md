@@ -1,3 +1,7 @@
+## 0.12.1
+
+* Added support for `Source` to `Query.getDocuments()` and `DocumentReference.get()`.
+
 ## 0.12.0
 
 * **Breaking change**. Fixed `CollectionReference.parent` to correctly return a `DocumentReference`.
