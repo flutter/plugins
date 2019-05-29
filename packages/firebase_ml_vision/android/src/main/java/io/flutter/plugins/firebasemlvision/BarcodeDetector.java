@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 class BarcodeDetector implements Detector {
-  private FirebaseVisionBarcodeDetector detector;
+  private final FirebaseVisionBarcodeDetector detector;
 
   BarcodeDetector(FirebaseVision vision, Map<String, Object> options) {
     detector = vision.getVisionBarcodeDetector(parseOptions(options));

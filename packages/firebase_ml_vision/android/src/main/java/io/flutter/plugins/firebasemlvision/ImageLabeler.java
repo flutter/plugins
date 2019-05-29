@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 class ImageLabeler implements Detector {
-  private FirebaseVisionImageLabeler labeler;
+  private final FirebaseVisionImageLabeler labeler;
 
   ImageLabeler(FirebaseVision vision, Map<String, Object> options) {
     final String modelType = (String) options.get("modelType");

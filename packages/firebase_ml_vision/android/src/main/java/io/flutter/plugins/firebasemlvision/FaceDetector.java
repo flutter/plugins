@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 class FaceDetector implements Detector {
-  private FirebaseVisionFaceDetector detector;
+  private final FirebaseVisionFaceDetector detector;
 
   FaceDetector(FirebaseVision vision, Map<String, Object> options) {
     detector = vision.getVisionFaceDetector(parseOptions(options));

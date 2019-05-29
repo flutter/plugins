@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TextRecognizer implements Detector {
-  private FirebaseVisionTextRecognizer recognizer;
+  private final FirebaseVisionTextRecognizer recognizer;
 
   TextRecognizer(FirebaseVision vision, Map<String, Object> options) {
     recognizer = vision.getOnDeviceTextRecognizer();

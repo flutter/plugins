@@ -198,8 +198,6 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
 
   private Detector getDetector(final MethodCall call) {
     final Integer handle = call.argument("handle");
-
-    if (handle == null) return null;
     return detectors.get(handle);
   }
 }
