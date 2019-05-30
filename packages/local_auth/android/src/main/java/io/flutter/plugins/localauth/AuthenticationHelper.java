@@ -111,38 +111,33 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         .authenticate(promptInfo);
   }
 
-  /**
-   * Stops the fingerprint listener.
-   *
-   * @param success If the authentication was successful.
-   */
-  private void stop(boolean success) {
+  /** Stops the fingerprint listener. */
+  private void stop(Boolean success) {
     activity.getApplication().unregisterActivityLifecycleCallbacks(this);
-    if (success) {
-      completionHandler.onSuccess();
-    } else {
-      completionHandler.onFailure();
-    }
+    if (success) completionHandler.onSuccess();
+    else completionHandler.onFailure();
   }
 
+  @SuppressLint("SwitchIntDef")
   @Override
   public void onAuthenticationError(int errorCode, CharSequence errString) {
-    if (activityPaused && isAuthSticky) {
-      return;
+    switch (errorCode) {
+      case BiometricPrompt.ERROR_LOCKOUT:
+        completionHandler.onError(
+            "LockedOut",
+            "The operation was canceled because the API is locked out due to too many attempts. This occurs after 5 failed attempts, and lasts for 30 seconds.");
+        break;
+      case BiometricPrompt.ERROR_LOCKOUT_PERMANENT:
+        completionHandler.onError(
+            "PermanentlyLockedOut",
+            "The operation was canceled because ERROR_LOCKOUT occurred too many times. Biometric authentication is disabled until the user unlocks with strong authentication (PIN/Pattern/Password)");
+        break;
+      case BiometricPrompt.ERROR_CANCELED:
+        if (activityPaused && isAuthSticky) {
+          return;
+        }
+      default:
     }
-    if (errorCode == BiometricPrompt.ERROR_LOCKOUT) {
-      completionHandler.onError(
-          "LockedOut",
-          "The operation was canceled because the API is locked out due to too many attempts. This occurs after 5 failed attempts, and lasts for 30 seconds.");
-    }
-    if (errorCode == BiometricPrompt.ERROR_LOCKOUT_PERMANENT) {
-      completionHandler.onError(
-          "PermanentlyLockedOut",
-          "The operation was canceled because ERROR_LOCKOUT occurred too many times. Biometric authentication is disabled until the user unlocks with strong authentication (PIN/Pattern/Password)");
-    }
-
-    // Either the authentication got cancelled by user or we are not interested
-    // in sticky auth, so return failure.
     stop(false);
   }
 
