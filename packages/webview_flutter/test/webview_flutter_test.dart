@@ -1025,7 +1025,7 @@ class _FakeCookieManager {
         });
         break;
     }
-    return Future<bool>.sync(() {});
+    return Future<bool>.sync(() => null);
   }
 
   void reset() {
