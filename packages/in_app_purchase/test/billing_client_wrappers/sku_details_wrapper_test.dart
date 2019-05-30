@@ -61,7 +61,7 @@ void main() {
     test('toProductDetails() should return correct Product object', () {
       final SkuDetailsWrapper wrapper =
           SkuDetailsWrapper.fromJson(buildSkuMap(dummySkuDetails));
-      final ProductDetails product = wrapper.toProductDetails();
+      final ProductDetails product = ProductDetails.fromSkuDetails(wrapper);
       expect(product.title, wrapper.title);
       expect(product.description, wrapper.description);
       expect(product.id, wrapper.sku);
