@@ -24,6 +24,8 @@ void main() {
             return true;
           case 'Crashlytics#setUserName':
             return true;
+          case 'Crashlytics#getVersion':
+            return '0.0.0+1';
           default:
             return false;
         }
