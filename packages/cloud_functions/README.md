@@ -29,10 +29,26 @@ with Xcode, and within Xcode place the file inside ios/Runner. Don't follow the 
 import 'package:cloud_functions/cloud_functions.dart';
 ```
 
-Calling a function:
+Getting an instance of the callable function:
 
 ```dart
-dynamic resp = await CloudFunctions.instance.getHttpsCallable(functionName: 'YOUR_CALLABLE_FUNCTION_NAME').call();
+final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+    functionName: 'YOUR_CALLABLE_FUNCTION_NAME',
+);
+```
+
+Calling the function:
+
+```dart
+dynamic resp = await callable.call();
+```
+
+Calling the function with parameters:
+
+```dart
+dynamic resp = await callable.call(<String, dynamic>{
+    'YOUR_PARAMETER_NAME': 'YOUR_PARAMETER_VALUE',
+});
 ```
 
 ## Getting Started

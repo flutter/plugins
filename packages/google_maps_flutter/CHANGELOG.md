@@ -1,3 +1,7 @@
+## 0.5.15
+
+* Add support for Polygons.
+
 ## 0.5.14+1
 
 * Example app update(comment out usage of the ImageStreamListener API which has a breaking change

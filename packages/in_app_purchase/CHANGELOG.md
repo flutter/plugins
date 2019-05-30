@@ -1,3 +1,11 @@
+## 0.1.1
+
+* Some error messages from iOS are slightly changed.
+* `ProductDetailsResponse` returned by `queryProductDetails()` now contains an `PurchaseError` object that represents any error that might occurred during the request.
+* If the device is not connected to the internet, `queryPastPurchases()` on iOS now have the error stored in the response instead of throwing.
+* Clean up minor iOS warning.
+* Example app shows how to handle error when calling `queryProductDetails()` and `queryProductDetails()`.
+
 ## 0.1.0+4
 
 * Change the `buy` methods to return `Future<bool>` instead of `void` in order
@@ -14,11 +22,11 @@
 
 ## 0.1.0+1
 
-Add more consumable handling to the example app.
+* Add more consumable handling to the example app.
 
 ## 0.1.0
 
-Beta relase.
+Beta release.
 
 * Ability to list products, load previous purchases, and make purchases.
 * Simplified Dart API that's been unified for ease of use.

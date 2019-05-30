@@ -2,6 +2,10 @@
 
 * Add capability to release resources held by detectors with `close()` method.
 
+## 0.8.0+2
+
+* Fix crash when passing contact info from barcode.
+
 ## 0.8.0+1
 
 * Update the sample to use the new ImageStreamListener API introduced in https://github.com/flutter/flutter/pull/32936.
