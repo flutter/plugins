@@ -1,6 +1,7 @@
 ## 1.1.1
 
-* Cast error code integers as longs in iOS error format strings to ensure compatibility between arm32 and arm64.
+* Cast error codes as longs in iOS error strings to ensure compatibility
+  between arm32 and arm64.
 
 ## 1.1.0
 
