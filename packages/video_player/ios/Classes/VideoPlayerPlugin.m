@@ -41,6 +41,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
+@property(nonatomic, assign) id notificationObserverId;
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
 - (void)play;
 - (void)pause;
@@ -82,14 +83,14 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
 
+  _notificationObserverId =
   [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
                                                     object:[_player currentItem]
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {
                                                   if (self->_isLooping) {
                                                     AVPlayerItem* p = [note object];
-                                                    [p seekToTime:kCMTimeZero
-                                                        completionHandler:nil];
+                                                    [p seekToTime:kCMTimeZero];
                                                   } else {
                                                     if (self->_eventSink) {
                                                       self->_eventSink(@{@"event" : @"completed"});
@@ -395,7 +396,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                              forKeyPath:@"playbackBufferFull"
                                 context:playbackBufferFullContext];
   [_player replaceCurrentItemWithPlayerItem:nil];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[NSNotificationCenter defaultCenter] removeObserver:_notificationObserverId];
   [_eventChannel setStreamHandler:nil];
 }
 
