@@ -170,9 +170,9 @@ void main() {
     });
 
     test('settings', () async {
-      final FirebaseApp app = const FirebaseApp(name: "appWithSettings");
-      final Firestore instance = Firestore(app: app);
-      await instance.settings(
+      final FirebaseApp app = const FirebaseApp(name: "testApp2");
+      final Firestore firestoreWithSettings = Firestore(app: app);
+      await firestoreWithSettings.settings(
         persistenceEnabled: true,
         host: null,
         sslEnabled: true,
@@ -181,7 +181,7 @@ void main() {
       );
       expect(log, <Matcher>[
         isMethodCall('Firestore#settings', arguments: <String, dynamic>{
-          'app': instance.app.name,
+          'app': firestoreWithSettings.app.name,
           'persistenceEnabled': true,
           'host': null,
           'sslEnabled': true,
