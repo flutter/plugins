@@ -24,6 +24,8 @@ void main() {
             return true;
           case 'Crashlytics#setUserName':
             return true;
+          default:
+            return false;
         }
       });
       log.clear();
