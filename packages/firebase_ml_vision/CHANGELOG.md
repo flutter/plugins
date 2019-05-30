@@ -1,6 +1,6 @@
 ## 0.8.0+2
 
-* Fix iOS crash when passing contact info from barcode.
+* Fix crash when passing contact info from barcode.
 
 ## 0.8.0+1
 
