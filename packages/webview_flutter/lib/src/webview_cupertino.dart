@@ -19,7 +19,7 @@ class CupertinoWebViewBuilder implements WebViewBuilder {
   @override
   Widget build({
     BuildContext context,
-    Map<String, dynamic> creationParams,
+    CreationParams creationParams,
     WebViewPlatformCreatedCallback onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   }) {
@@ -32,7 +32,8 @@ class CupertinoWebViewBuilder implements WebViewBuilder {
         onWebViewPlatformCreated(MethodChannelWebViewPlatform(id));
       },
       gestureRecognizers: gestureRecognizers,
-      creationParams: creationParams,
+      creationParams:
+          MethodChannelWebViewPlatform.creationParamsToMap(creationParams),
       creationParamsCodec: const StandardMessageCodec(),
     );
   }

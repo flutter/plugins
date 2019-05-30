@@ -19,7 +19,7 @@ class AndroidWebViewBuilder implements WebViewBuilder {
   @override
   Widget build({
     BuildContext context,
-    Map<String, dynamic> creationParams,
+    CreationParams creationParams,
     WebViewPlatformCreatedCallback onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   }) {
@@ -46,7 +46,8 @@ class AndroidWebViewBuilder implements WebViewBuilder {
         // we explicitly set it here so that the widget doesn't require an ambient
         // directionality.
         layoutDirection: TextDirection.rtl,
-        creationParams: creationParams,
+        creationParams:
+            MethodChannelWebViewPlatform.creationParamsToMap(creationParams),
         creationParamsCodec: const StandardMessageCodec(),
       ),
     );
