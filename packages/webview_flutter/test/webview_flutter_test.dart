@@ -752,10 +752,10 @@ void main() {
 
   group('Custom platform implementation', () {
     setUpAll(() {
-      WebView.platformBuilder = MyWebViewBuilder();
+      WebView.platform = MyWebViewBuilder();
     });
     tearDownAll(() {
-      WebView.platformBuilder = null;
+      WebView.platform = null;
     });
 
     testWidgets('creation', (WidgetTester tester) async {
@@ -765,7 +765,7 @@ void main() {
         ),
       );
 
-      final MyWebViewBuilder builder = WebView.platformBuilder;
+      final MyWebViewBuilder builder = WebView.platform;
       final MyWebViewPlatform platform = builder.lastPlatformBuilt;
 
       expect(
@@ -794,7 +794,7 @@ void main() {
         ),
       );
 
-      final MyWebViewBuilder builder = WebView.platformBuilder;
+      final MyWebViewBuilder builder = WebView.platform;
       final MyWebViewPlatform platform = builder.lastPlatformBuilt;
 
       final Map<String, String> headers = <String, String>{
@@ -1033,7 +1033,7 @@ class _FakeCookieManager {
   }
 }
 
-class MyWebViewBuilder implements WebViewBuilder {
+class MyWebViewBuilder implements WebViewPlatform {
   MyWebViewPlatform lastPlatformBuilt;
 
   @override
@@ -1050,9 +1050,14 @@ class MyWebViewBuilder implements WebViewBuilder {
     onWebViewPlatformCreated(lastPlatformBuilt);
     return Container();
   }
+
+  @override
+  Future<bool> clearCookies() {
+    return Future<bool>.sync(() => null);
+  }
 }
 
-class MyWebViewPlatform extends WebViewPlatform {
+class MyWebViewPlatform extends WebViewPlatformController {
   MyWebViewPlatform(this.creationParams, this.gestureRecognizers,
       WebViewPlatformCallbacksHandler platformHandler)
       : super(platformHandler);

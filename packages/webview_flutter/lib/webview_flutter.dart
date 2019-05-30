@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'platform_interface.dart';
@@ -125,37 +124,37 @@ class WebView extends StatefulWidget {
   })  : assert(javascriptMode != null),
         super(key: key);
 
-  static WebViewBuilder _platformBuilder;
+  static WebViewPlatform _platform;
 
-  /// Sets a custom [WebViewBuilder].
+  /// Sets a custom [WebViewPlatform].
   ///
   /// This property can be set to use a custom platform implementation for WebViews.
   ///
-  /// Setting `platformBuilder` doesn't affect [WebView]s that were already created.
+  /// Setting `platform` doesn't affect [WebView]s that were already created.
   ///
-  /// The default value is [AndroidWebViewBuilder] on Android and [CupertinoWebViewBuilder] on iOs.
-  static set platformBuilder(WebViewBuilder platformBuilder) {
-    _platformBuilder = platformBuilder;
+  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOs.
+  static set platform(WebViewPlatform platformBuilder) {
+    _platform = platformBuilder;
   }
 
-  /// The [WebViewBuilder] that's used to create new [WebView]s.
+  /// The WebView platform that's used by this WebView.
   ///
-  /// The default value is [AndroidWebViewBuilder] on Android and [CupertinoWebViewBuilder] on iOs.
-  static WebViewBuilder get platformBuilder {
-    if (_platformBuilder == null) {
+  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
+  static WebViewPlatform get platform {
+    if (_platform == null) {
       switch (defaultTargetPlatform) {
         case TargetPlatform.android:
-          _platformBuilder = AndroidWebViewBuilder();
+          _platform = AndroidWebView();
           break;
         case TargetPlatform.iOS:
-          _platformBuilder = CupertinoWebViewBuilder();
+          _platform = CupertinoWebView();
           break;
         default:
           throw UnsupportedError(
               "Trying to use the default webview implementation for $defaultTargetPlatform but there isn't a default one");
       }
     }
-    return _platformBuilder;
+    return _platform;
   }
 
   /// If not null invoked once the web view is created.
@@ -268,7 +267,7 @@ class _WebViewState extends State<WebView> {
 
   @override
   Widget build(BuildContext context) {
-    return WebView.platformBuilder.build(
+    return WebView.platform.build(
       context: context,
       onWebViewPlatformCreated: _onWebViewPlatformCreated,
       webViewPlatformCallbacksHandler: _platformCallbacksHandler,
@@ -294,7 +293,7 @@ class _WebViewState extends State<WebView> {
     });
   }
 
-  void _onWebViewPlatformCreated(WebViewPlatform webViewPlatform) {
+  void _onWebViewPlatformCreated(WebViewPlatformController webViewPlatform) {
     final WebViewController controller =
         WebViewController._(widget, webViewPlatform, _platformCallbacksHandler);
     _controller.complete(controller);
@@ -422,7 +421,7 @@ class WebViewController {
     _settings = _webSettingsFromWidget(_widget);
   }
 
-  final WebViewPlatform _webViewPlatform;
+  final WebViewPlatformController _webViewPlatform;
 
   final _PlatformCallbacksHandler _platformCallbacksHandler;
 
@@ -580,21 +579,14 @@ class CookieManager {
 
   CookieManager._();
 
-  static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.io/cookie_manager');
   static CookieManager _instance;
 
-  /// Clears all cookies.
+  /// Clears all cookies for all [WebView] instances.
   ///
-  /// This is supported for >= IOS 9.
+  /// This is a no op on iOS version smaller than 9.
   ///
   /// Returns true if cookies were present before clearing, else false.
-  Future<bool> clearCookies() => _channel
-      // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      .invokeMethod('clearCookies')
-      .then<bool>((dynamic result) => result);
+  Future<bool> clearCookies() => WebView.platform.clearCookies();
 }
 
 // Throws an ArgumentError if `url` is not a valid URL string.

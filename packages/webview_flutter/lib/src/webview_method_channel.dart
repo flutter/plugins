@@ -8,8 +8,8 @@ import 'package:flutter/services.dart';
 
 import '../platform_interface.dart';
 
-/// A [WebViewPlatform] that uses a method channel to control the webview.
-class MethodChannelWebViewPlatform implements WebViewPlatform {
+/// A [WebViewPlatformController] that uses a method channel to control the webview.
+class MethodChannelWebViewPlatform implements WebViewPlatformController {
   MethodChannelWebViewPlatform(int id, this._platformCallbacksHandler)
       : assert(_platformCallbacksHandler != null),
         _channel = MethodChannel('plugins.flutter.io/webview_$id') {
@@ -19,6 +19,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatform {
   final WebViewPlatformCallbacksHandler _platformCallbacksHandler;
 
   final MethodChannel _channel;
+
+  static const MethodChannel _cookieManagerChannel =
+      MethodChannel('plugins.flutter.io/cookie_manager');
 
   Future<bool> _onMethodCall(MethodCall call) async {
     switch (call.method) {
@@ -103,6 +106,16 @@ class MethodChannelWebViewPlatform implements WebViewPlatform {
   Future<void> removeJavascriptChannels(Set<String> javascriptChannelNames) {
     return _channel.invokeMethod(
         'removeJavascriptChannels', javascriptChannelNames.toList());
+  }
+
+  /// Method channel mplementation for [WebViewPlatform.clearCookies].
+  static Future<bool> clearCookies() {
+    return _cookieManagerChannel
+        // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
+        .invokeMethod('clearCookies')
+        .then<bool>((dynamic result) => result);
   }
 
   static Map<String, dynamic> _webSettingsToMap(WebSettings settings) {
