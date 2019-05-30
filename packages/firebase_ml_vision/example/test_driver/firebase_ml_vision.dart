@@ -57,21 +57,21 @@ void main() {
         expect(name.first, 'John');
         expect(name.last, 'Doe');
         expect(name.formattedName, 'John Doe');
-        expect(name.middle, isEmpty);
-        expect(name.prefix, isEmpty);
-        expect(name.pronunciation, isEmpty);
-        expect(name.suffix, isEmpty);
+        expect(name.middle, anyOf(isNull, isEmpty));
+        expect(name.prefix, anyOf(isNull, isEmpty));
+        expect(name.pronunciation, anyOf(isNull, isEmpty));
+        expect(name.suffix, anyOf(isNull, isEmpty));
 
-        expect(info.jobTitle, isEmpty);
-        expect(info.organization, isEmpty);
+        expect(info.jobTitle, anyOf(isNull, isEmpty));
+        expect(info.organization, anyOf(isNull, isEmpty));
         expect(info.urls, <String>['http://www.example.com']);
-        expect(info.addresses, isEmpty);
+        expect(info.addresses, anyOf(isNull, isEmpty));
 
         expect(info.emails, hasLength(1));
         final BarcodeEmail email = info.emails[0];
         expect(email.address, 'email@example.com');
-        expect(email.body, isEmpty);
-        expect(email.subject, isEmpty);
+        expect(email.body, anyOf(isNull, isEmpty));
+        expect(email.subject, anyOf(isNull, isEmpty));
         expect(email.type, BarcodeEmailType.unknown);
 
         expect(info.phones, hasLength(1));
