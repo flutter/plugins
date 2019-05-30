@@ -152,16 +152,16 @@ NSDictionary *barcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contac
     @"phones" : phones,
     @"urls" : urls,
     @"name" : @{
-      @"formattedName" : contact.name.formattedName ? : [NSNull null],
-      @"first" : contact.name.first ? : [NSNull null],
-      @"last" : contact.name.last ? : [NSNull null],
-      @"middle" : contact.name.middle ? : [NSNull null],
-      @"prefix" : contact.name.prefix ? : [NSNull null],
-      @"pronunciation" : contact.name.pronounciation ? : [NSNull null],
-      @"suffix" : contact.name.suffix ? : [NSNull null],
+      @"formattedName" : contact.name.formattedName ? contact.name.formattedName : [NSNull null],
+      @"first" : contact.name.first ? contact.name.first : [NSNull null],
+      @"last" : contact.name.last ? contact.name.last : [NSNull null],
+      @"middle" : contact.name.middle ? contact.name.middle : [NSNull null],
+      @"prefix" : contact.name.prefix ? contact.name.prefix : [NSNull null],
+      @"pronunciation" : contact.name.pronounciation ? contact.name.pronounciation : [NSNull null],
+      @"suffix" : contact.name.suffix ? contact.name.suffix : [NSNull null],
     },
-    @"jobTitle" : contact.jobTitle ? : [NSNull null],
-    @"organization" : contact.organization ? : [NSNull null],
+    @"jobTitle" : contact.jobTitle ? contact.jobTitle : [NSNull null],
+    @"organization" : contact.organization ? contact.jobTitle : [NSNull null],
   };
 }
 
