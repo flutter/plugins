@@ -140,8 +140,7 @@ class BarcodeDetector implements Detector {
                       for (FirebaseVisionBarcode.Address address : contactInfo.getAddresses()) {
                         Map<String, Object> addressMap = new HashMap<>();
                         if (address.getAddressLines() != null) {
-                          addressMap.put(
-                              "addressLines", Arrays.asList(address.getAddressLines()));
+                          addressMap.put("addressLines", Arrays.asList(address.getAddressLines()));
                         }
                         addressMap.put("type", address.getType());
 
