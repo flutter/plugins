@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import '../../billing_client_wrappers.dart';
@@ -78,10 +79,22 @@ class GooglePlayConnection
   @override
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
       {String applicationUserName}) async {
-    final List<PurchasesResultWrapper> responses = await Future.wait([
-      billingClient.queryPurchases(SkuType.inapp),
-      billingClient.queryPurchases(SkuType.subs)
-    ]);
+    List<PurchasesResultWrapper> responses;
+    PlatformException exception;
+    try {
+      responses = await Future.wait([
+        billingClient.queryPurchases(SkuType.inapp),
+        billingClient.queryPurchases(SkuType.subs)
+      ]);
+    } on PlatformException catch (e) {
+      exception = e;
+      responses = [
+        PurchasesResultWrapper(
+            responseCode: BillingResponse.error, purchasesList: []),
+        PurchasesResultWrapper(
+            responseCode: BillingResponse.error, purchasesList: [])
+      ];
+    }
 
     Set errorCodeSet = responses
         .where((PurchasesResultWrapper response) =>
@@ -97,18 +110,25 @@ class GooglePlayConnection
         responses.expand((PurchasesResultWrapper response) {
       return response.purchasesList;
     }).map((PurchaseWrapper purchaseWrapper) {
-      return purchaseWrapper.toPurchaseDetails();
+      return PurchaseDetails.fromPurchase(purchaseWrapper);
     }).toList();
 
+    PurchaseError error;
+    if (exception != null) {
+      error = PurchaseError(
+          source: PurchaseSource.GooglePlay,
+          code: exception.code,
+          message: exception.message,
+          details: exception.details);
+    } else if (errorMessage != null) {
+      error = PurchaseError(
+          source: PurchaseSource.GooglePlay,
+          code: kRestoredPurchaseErrorCode,
+          message: errorMessage);
+    }
+
     return QueryPurchaseDetailsResponse(
-      pastPurchases: pastPurchases,
-      error: errorMessage != null
-          ? PurchaseError(
-              source: PurchaseSource.GooglePlay,
-              code: kRestoredPurchaseErrorCode,
-              message: {'message': errorMessage})
-          : null,
-    );
+        pastPurchases: pastPurchases, error: error);
   }
 
   @override
@@ -154,24 +174,45 @@ class GooglePlayConnection
   /// to get the [SkuDetailsResponseWrapper].
   Future<ProductDetailsResponse> queryProductDetails(
       Set<String> identifiers) async {
-    List<SkuDetailsResponseWrapper> responses = await Future.wait([
-      billingClient.querySkuDetails(
-          skuType: SkuType.inapp, skusList: identifiers.toList()),
-      billingClient.querySkuDetails(
-          skuType: SkuType.subs, skusList: identifiers.toList())
-    ]);
-    List<ProductDetails> productDetails =
+    List<SkuDetailsResponseWrapper> responses;
+    PlatformException exception;
+    try {
+      responses = await Future.wait([
+        billingClient.querySkuDetails(
+            skuType: SkuType.inapp, skusList: identifiers.toList()),
+        billingClient.querySkuDetails(
+            skuType: SkuType.subs, skusList: identifiers.toList())
+      ]);
+    } on PlatformException catch (e) {
+      exception = e;
+      responses = [
+        SkuDetailsResponseWrapper(
+            responseCode: BillingResponse.error, skuDetailsList: []),
+        SkuDetailsResponseWrapper(
+            responseCode: BillingResponse.error, skuDetailsList: [])
+      ];
+    }
+    List<ProductDetails> productDetailsList =
         responses.expand((SkuDetailsResponseWrapper response) {
       return response.skuDetailsList;
     }).map((SkuDetailsWrapper skuDetailWrapper) {
-      return skuDetailWrapper.toProductDetails();
+      return ProductDetails.fromSkuDetails(skuDetailWrapper);
     }).toList();
-    Set<String> successIDS = productDetails
+
+    Set<String> successIDS = productDetailsList
         .map((ProductDetails productDetails) => productDetails.id)
         .toSet();
     List<String> notFoundIDS = identifiers.difference(successIDS).toList();
     return ProductDetailsResponse(
-        productDetails: productDetails, notFoundIDs: notFoundIDS);
+        productDetails: productDetailsList,
+        notFoundIDs: notFoundIDS,
+        error: exception == null
+            ? null
+            : PurchaseError(
+                source: PurchaseSource.GooglePlay,
+                code: exception.code,
+                message: exception.message,
+                details: exception.details));
   }
 
   static Future<List<PurchaseDetails>> _getPurchaseDetailsFromResult(
@@ -185,13 +226,13 @@ class GooglePlayConnection
       error = PurchaseError(
         source: PurchaseSource.GooglePlay,
         code: kPurchaseErrorCode,
-        message: {'message': resultWrapper.responseCode.toString()},
+        message: resultWrapper.responseCode.toString(),
       );
       status = PurchaseStatus.error;
     }
     final List<Future<PurchaseDetails>> purchases =
         resultWrapper.purchasesList.map((PurchaseWrapper purchase) {
-      return _maybeAutoConsumePurchase(purchase.toPurchaseDetails()
+      return _maybeAutoConsumePurchase(PurchaseDetails.fromPurchase(purchase)
         ..status = status
         ..error = error);
     }).toList();
@@ -224,7 +265,7 @@ class GooglePlayConnection
       purchaseDetails.error = PurchaseError(
         source: PurchaseSource.GooglePlay,
         code: kConsumptionFailedErrorCode,
-        message: {'message': consumedResponse.toString()},
+        message: consumedResponse.toString(),
       );
     }
     _productIdsToConsume.remove(purchaseDetails.productID);
