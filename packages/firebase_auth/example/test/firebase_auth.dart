@@ -19,6 +19,7 @@ void main() {
       final FirebaseUser user = await auth.signInAnonymously();
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isTrue);
+      expect(user.additionalUserInfo.isNewUser, isNotNull);
     });
 
     test('isSignInWithEmailLink', () async {
