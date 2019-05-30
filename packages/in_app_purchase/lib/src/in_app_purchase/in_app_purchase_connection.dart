@@ -233,3 +233,33 @@ abstract class InAppPurchaseConnection {
     return _instance;
   }
 }
+
+/// Which platform the request is on.
+enum PurchaseSource { GooglePlay, AppStore }
+
+/// Captures an error from the underlying purchase platform.
+///
+/// The error can happen during the purchase, restoring a purchase, or querying product.
+/// Errors from restoring a purchase are not indicative of any errors during the original purchase.
+/// See also:
+/// * [ProductDetailsResponse] for error when querying product details.
+/// * [PurchaseDetails] for error happened in purchase.
+class PurchaseError {
+  PurchaseError(
+      {@required this.source,
+      @required this.code,
+      @required this.message,
+      this.details = null});
+
+  /// Which source is the error on.
+  final PurchaseSource source;
+
+  /// The error code.
+  final String code;
+
+  /// A human-readable error message, possibly null.
+  final String message;
+
+  /// Error details, possibly null.
+  final dynamic details;
+}
