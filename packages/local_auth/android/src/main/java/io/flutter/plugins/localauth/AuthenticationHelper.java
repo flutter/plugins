@@ -1,7 +1,6 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 package io.flutter.plugins.localauth;
 
 import android.annotation.SuppressLint;
@@ -21,14 +20,11 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-
 import androidx.biometric.BiometricPrompt;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.fragment.app.FragmentActivity;
-
-import java.util.concurrent.Executors;
-
 import io.flutter.plugin.common.MethodCall;
+import java.util.concurrent.Executors;
 
 /**
  * Authenticates the user with fingerprint and sends corresponding response back to Flutter.
