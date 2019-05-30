@@ -545,8 +545,9 @@ void main() {
         expect(snapshot.data['key1'], equals('val1'));
         expect(snapshot.exists, isTrue);
 
-        final DocumentSnapshot snapshot2 =
-            await collectionReference.document('notExists').get(source: Source.serverAndCache);
+        final DocumentSnapshot snapshot2 = await collectionReference
+            .document('notExists')
+            .get(source: Source.serverAndCache);
         expect(snapshot2.data, isNull);
         expect(snapshot2.exists, isFalse);
         expect(
@@ -583,7 +584,8 @@ void main() {
 
     group('Query', () {
       test('getDocuments', () async {
-        QuerySnapshot snapshot = await collectionReference.getDocuments(source: Source.server);
+        QuerySnapshot snapshot =
+            await collectionReference.getDocuments(source: Source.server);
         DocumentSnapshot document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));

@@ -36,7 +36,8 @@ void main() {
           querySnapshot.documents.first.reference;
       final DocumentSnapshot documentSnapshot = await firstDoc.get();
       expect(documentSnapshot.data['message'], 'Hello world!');
-      final DocumentSnapshot cachedSnapshot = await firstDoc.get(source: Source.cache);
+      final DocumentSnapshot cachedSnapshot =
+          await firstDoc.get(source: Source.cache);
       expect(cachedSnapshot.data['message'], 'Hello world!');
       final DocumentSnapshot snapshot = await firstDoc.snapshots().first;
       expect(snapshot.data['message'], 'Hello world!');
