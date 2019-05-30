@@ -44,7 +44,6 @@ class FirebaseAuth {
 
     StreamController<FirebaseUser> controller;
     controller = StreamController<FirebaseUser>.broadcast(onListen: () {
-
       _handle = channel.invokeMethod<int>('startListeningAuthState',
           <String, String>{"app": app.name}).then<int>((dynamic v) => v);
       _handle.then((int handle) {
@@ -74,7 +73,8 @@ class FirebaseAuth {
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Anonymous accounts are not enabled.
   Future<FirebaseUser> signInAnonymously() async {
     final Map<String, dynamic> data = await channel
-        .invokeMapMethod<String, dynamic>('signInAnonymously', <String, String>{"app": app.name});
+        .invokeMapMethod<String, dynamic>(
+            'signInAnonymously', <String, String>{"app": app.name});
     final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
@@ -94,7 +94,8 @@ class FirebaseAuth {
   }) async {
     assert(email != null);
     assert(password != null);
-    final Map<String, dynamic> data = await channel.invokeMapMethod<String, dynamic>(
+    final Map<String, dynamic> data =
+        await channel.invokeMapMethod<String, dynamic>(
       'createUserWithEmailAndPassword',
       <String, String>{'email': email, 'password': password, 'app': app.name},
     );
@@ -188,7 +189,8 @@ class FirebaseAuth {
   ///   • `ERROR_INVALID` - Indicates the email address is invalid.
   Future<FirebaseUser> signInWithEmailAndLink(
       {String email, String link}) async {
-    final Map<String, dynamic> data = await channel.invokeMapMethod<String, dynamic>(
+    final Map<String, dynamic> data =
+        await channel.invokeMapMethod<String, dynamic>(
       'signInWithEmailAndLink',
       <String, dynamic>{
         'app': app.name,
@@ -251,7 +253,8 @@ class FirebaseAuth {
   ///       This can only occur when using [EmailAuthProvider.getCredentialWithLink] to obtain the credential.
   Future<FirebaseUser> signInWithCredential(AuthCredential credential) async {
     assert(credential != null);
-    final Map<String, dynamic> data = await channel.invokeMapMethod<String, dynamic>(
+    final Map<String, dynamic> data =
+        await channel.invokeMapMethod<String, dynamic>(
       'signInWithCredential',
       <String, dynamic>{
         'app': app.name,
@@ -355,7 +358,8 @@ class FirebaseAuth {
   ///     Ensure your app's SHA1 is correct in the Firebase console.
   Future<FirebaseUser> signInWithCustomToken({@required String token}) async {
     assert(token != null);
-    final Map<String, dynamic> data = await channel.invokeMapMethod<String, dynamic>(
+    final Map<String, dynamic> data =
+        await channel.invokeMapMethod<String, dynamic>(
       'signInWithCustomToken',
       <String, String>{'token': token, 'app': app.name},
     );
@@ -375,7 +379,8 @@ class FirebaseAuth {
   /// Returns the currently signed-in [FirebaseUser] or [null] if there is none.
   Future<FirebaseUser> currentUser() async {
     final Map<String, dynamic> data = await channel
-        .invokeMapMethod<String, dynamic>("currentUser", <String, String>{'app': app.name});
+        .invokeMapMethod<String, dynamic>(
+            "currentUser", <String, String>{'app': app.name});
     final FirebaseUser currentUser =
         data == null ? null : FirebaseUser._(data, app);
     return currentUser;
@@ -386,7 +391,8 @@ class FirebaseAuth {
   /// code should follow the conventions defined by the IETF in BCP47.
   Future<void> setLanguageCode(String language) async {
     assert(language != null);
-    await FirebaseAuth.channel.invokeMethod<void>('setLanguageCode', <String, String>{
+    await FirebaseAuth.channel
+        .invokeMethod<void>('setLanguageCode', <String, String>{
       'language': language,
       'app': app.name,
     });
@@ -440,7 +446,7 @@ class FirebaseAuth {
     final int id = call.arguments["id"];
 
     final FirebaseUser currentUser =
-        data != null ? FirebaseUser._(data, app) : null;
+        data != null ? FirebaseUser._(data.cast<String, dynamic>(), app) : null;
     _authStateChangedControllers[id].add(currentUser);
   }
 }

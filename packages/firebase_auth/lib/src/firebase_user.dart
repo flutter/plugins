@@ -60,7 +60,8 @@ class FirebaseUser extends UserInfo {
   ///       This can only occur when using [EmailAuthProvider.getCredentialWithLink] to obtain the credential.
   Future<FirebaseUser> linkWithCredential(AuthCredential credential) async {
     assert(credential != null);
-    final Map<String, dynamic> data = await FirebaseAuth.channel.invokeMapMethod<String, dynamic>(
+    final Map<String, dynamic> data =
+        await FirebaseAuth.channel.invokeMapMethod<String, dynamic>(
       'linkWithCredential',
       <String, dynamic>{
         'app': _app.name,
