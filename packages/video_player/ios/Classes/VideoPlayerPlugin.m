@@ -50,6 +50,8 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 
 static void* timeRangeContext = &timeRangeContext;
 static void* statusContext = &statusContext;
+static void* durationContext = &durationContext;
+static void* presentationSizeContext = &presentationSizeContext;
 static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
@@ -69,6 +71,14 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
          forKeyPath:@"status"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:statusContext];
+  [item addObserver:self
+         forKeyPath:@"duration"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:durationContext];
+  [item addObserver:self
+         forKeyPath:@"presentationSize"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:presentationSizeContext];
   [item addObserver:self
          forKeyPath:@"playbackLikelyToKeepUp"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
@@ -260,10 +270,19 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       case AVPlayerItemStatusUnknown:
         break;
       case AVPlayerItemStatusReadyToPlay:
-        [item addOutput:_videoOutput];
-        [self sendInitialized];
-        [self updatePlayingState];
+        if (!_isInitialized) {
+          [item addOutput:_videoOutput];
+          [self sendInitialized];
+          [self updatePlayingState];
+        }
         break;
+    }
+  } else if (context == durationContext || context == presentationSizeContext) {
+    if (!_isInitialized) {
+      AVPlayerItem* item = (AVPlayerItem*)object;
+      [item addOutput:_videoOutput];
+      [self sendInitialized];
+      [self updatePlayingState];
     }
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
@@ -374,7 +393,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   // This line ensures the 'initialized' event is sent when the event
   // 'AVPlayerItemStatusReadyToPlay' fires before _eventSink is set (this function
   // onListenWithArguments is called)
-  [self sendInitialized];
+  if (!_isInitialized) {
+    AVPlayerItem* item = _player.currentItem;
+    [item addOutput:_videoOutput];
+    [self sendInitialized];
+    [self updatePlayingState];
+  }
   return nil;
 }
 
@@ -382,6 +406,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _disposed = true;
   [_displayLink invalidate];
   [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
+  [[_player currentItem] removeObserver:self forKeyPath:@"duration" context:durationContext];
+  [[_player currentItem] removeObserver:self forKeyPath:@"presentationSize" context:presentationSizeContext];
   [[_player currentItem] removeObserver:self
                              forKeyPath:@"loadedTimeRanges"
                                 context:timeRangeContext];
