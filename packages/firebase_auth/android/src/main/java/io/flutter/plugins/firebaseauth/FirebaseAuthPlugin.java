@@ -566,9 +566,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     AuthCredential credential = getCredential((Map<String, Object>) call.arguments);
 
     firebaseAuth
-            .getCurrentUser()
-            .updatePhoneNumber((PhoneAuthCredential) credential)
-            .addOnCompleteListener(new TaskVoidCompleteListener(result));
+        .getCurrentUser()
+        .updatePhoneNumber((PhoneAuthCredential) credential)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
   private void handleUpdatePassword(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
