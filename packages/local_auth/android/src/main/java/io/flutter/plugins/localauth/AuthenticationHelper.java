@@ -112,7 +112,8 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   /** Start the fingerprint listener. */
   private void start() {
     activity.getApplication().registerActivityLifecycleCallbacks(this);
-    new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), this).authenticate(promptInfo);
+    new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), this)
+        .authenticate(promptInfo);
   }
 
   /**
@@ -168,7 +169,8 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
       activityPaused = false;
       final BiometricPrompt prompt =
           new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), this);
-      // When activity is resuming, we cannot show the prompt right away. We need to post it to the UI queue.
+      // When activity is resuming, we cannot show the prompt right away. We need to post it to the
+      // UI queue.
       new Handler(Looper.myLooper())
           .postDelayed(
               new Runnable() {
@@ -230,5 +232,3 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   @Override
   public void onActivityDestroyed(Activity activity) {}
 }
-
-
