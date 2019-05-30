@@ -26,6 +26,7 @@ import android.widget.TextView;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.fragment.app.FragmentActivity;
+
 import java.util.concurrent.Executors;
 
 import io.flutter.plugin.common.MethodCall;
@@ -36,18 +37,13 @@ import io.flutter.plugin.common.MethodCall;
  * <p>One instance per call is generated to ensure readable separation of executable paths across
  * method calls.
  */
-@SuppressWarnings("deprecation")
 class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         implements Application.ActivityLifecycleCallbacks {
 
-    /**
-     * The callback that handles the result of this authentication process.
-     */
+    /** The callback that handles the result of this authentication process. */
     interface AuthCompletionHandler {
 
-        /**
-         * Called when authentication was successful.
-         */
+        /** Called when authentication was successful. */
         void onSuccess();
 
         /**
@@ -60,7 +56,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
          * Called when authentication fails due to non-user related problems such as system errors,
          * phone not having a FP reader etc.
          *
-         * @param code  The error code to be returned to Flutter app.
+         * @param code The error code to be returned to Flutter app.
          * @param error The description of the error.
          */
         void onError(String code, String error);
@@ -112,9 +108,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         }
     }
 
-    /**
-     * Start the fingerprint listener.
-     */
+    /** Start the fingerprint listener. */
     private void start() {
         activity.getApplication().registerActivityLifecycleCallbacks(this);
         new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), this).authenticate(promptInfo);
@@ -154,6 +148,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     @Override
     public void onAuthenticationFailed() {
         Log.d("LocalAuth", "Authentication Failed");
+        stop(false);
     }
 
     /**
@@ -221,22 +216,17 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     // Unused methods for activity lifecycle.
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle bundle) {
-    }
+    public void onActivityCreated(Activity activity, Bundle bundle) {}
 
     @Override
-    public void onActivityStarted(Activity activity) {
-    }
+    public void onActivityStarted(Activity activity) {}
 
     @Override
-    public void onActivityStopped(Activity activity) {
-    }
+    public void onActivityStopped(Activity activity) {}
 
     @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
-    }
+    public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {}
 
     @Override
-    public void onActivityDestroyed(Activity activity) {
-    }
+    public void onActivityDestroyed(Activity activity) {}
 }
