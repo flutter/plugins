@@ -130,6 +130,16 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     if (activityPaused && isAuthSticky) {
       return;
     }
+    if (errorCode == BiometricPrompt.ERROR_LOCKOUT) {
+      completionHandler.onError(
+          "LockedOut",
+          "The operation was canceled because the API is locked out due to too many attempts. This occurs after 5 failed attempts, and lasts for 30 seconds.");
+    }
+    if (errorCode == BiometricPrompt.ERROR_LOCKOUT_PERMANENT) {
+      completionHandler.onError(
+          "PermanentlyLockedOut",
+          "The operation was canceled because ERROR_LOCKOUT occurred too many times. Biometric authentication is disabled until the user unlocks with strong authentication (PIN/Pattern/Password)");
+    }
 
     // Either the authentication got cancelled by user or we are not interested
     // in sticky auth, so return failure.
