@@ -206,13 +206,7 @@ int nextHandle = 0;
                                                              error:error];
                                                 }];
   } else if ([@"updatePhoneNumberCredential" isEqualToString:call.method]) {
-    NSString *verificationId = call.arguments[@"verificationId"];
-    NSString *smsCode = call.arguments[@"smsCode"];
-
-    FIRPhoneAuthCredential *credential =
-        [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
-                                                     verificationCode:smsCode];
-
+    FIRPhoneAuthCredential *credential = (FIRPhoneAuthCredential *)[self getCredential:call.arguments];
     [[self getAuth:call.arguments].currentUser
         updatePhoneNumberCredential:credential
                          completion:^(NSError *_Nullable error) {
