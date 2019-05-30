@@ -1,6 +1,6 @@
 ## 0.11.1+1
 
-* Fixed `updatePhoneNumberCredential` implementation.
+* Fixed Android `updatePhoneNumberCredential` implementation.
 
 ## 0.11.1
 
