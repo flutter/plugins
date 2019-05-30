@@ -11,6 +11,9 @@ import 'package:flutter/widgets.dart';
 import 'webview_flutter.dart';
 
 /// Interface for callbacks made by [WebViewPlatform].
+///
+/// The webview plugin implements this class, and passes an instance to the [WebViewPlatform].
+/// [WebViewPlatform] is notifying this handler on events that happened on the platform's webview.
 abstract class WebViewPlatformCallbacksHandler {
   /// Invoked by [WebViewPlatform] when a JavaScript channel message is received.
   void onJavaScriptChannelMessage(String channel, String message);

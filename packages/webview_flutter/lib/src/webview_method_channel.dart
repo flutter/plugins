@@ -56,63 +56,25 @@ class MethodChannelWebViewPlatform implements WebViewPlatform {
   }
 
   @override
-  Future<String> currentUrl() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final String url = await _channel.invokeMethod('currentUrl');
-    return url;
-  }
+  Future<String> currentUrl() => _channel.invokeMethod('currentUrl');
 
   @override
-  Future<bool> canGoBack() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final bool canGoBack = await _channel.invokeMethod("canGoBack");
-    return canGoBack;
-  }
+  Future<bool> canGoBack() => _channel.invokeMethod("canGoBack");
 
   @override
-  Future<bool> canGoForward() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final bool canGoForward = await _channel.invokeMethod("canGoForward");
-    return canGoForward;
-  }
+  Future<bool> canGoForward() => _channel.invokeMethod("canGoForward");
 
   @override
-  Future<void> goBack() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod("goBack");
-  }
+  Future<void> goBack() => _channel.invokeMethod("goBack");
 
   @override
-  Future<void> goForward() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod("goForward");
-  }
+  Future<void> goForward() => _channel.invokeMethod("goForward");
 
   @override
-  Future<void> reload() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod("reload");
-  }
+  Future<void> reload() => _channel.invokeMethod("reload");
 
   @override
-  Future<void> clearCache() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return await _channel.invokeMethod("clearCache");
-  }
+  Future<void> clearCache() => _channel.invokeMethod("clearCache");
 
   @override
   Future<void> updateSettings(WebSettings settings) {
@@ -127,13 +89,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatform {
   }
 
   @override
-  Future<String> evaluateJavascript(String javascriptString) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final String result =
-        await _channel.invokeMethod('evaluateJavascript', javascriptString);
-    return result;
+  Future<String> evaluateJavascript(String javascriptString) {
+    return _channel.invokeMethod('evaluateJavascript', javascriptString);
   }
 
   @override
