@@ -1,4 +1,4 @@
-## 0.3.0+2
+## 0.4.0
 
 * Removed unused `parameters` param from `getHttpsCallable`.
 
