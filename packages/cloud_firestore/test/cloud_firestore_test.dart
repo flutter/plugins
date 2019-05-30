@@ -169,6 +169,28 @@ void main() {
       expect(firestore, equals(Firestore(app: app)));
     });
 
+    test('settings', () async {
+      final FirebaseApp app = const FirebaseApp(name: "appWithSettings");
+      final Firestore instance = Firestore(app: app);
+      await instance.settings(
+        persistenceEnabled: true,
+        host: null,
+        sslEnabled: true,
+        timestampsInSnapshotsEnabled: true,
+        cacheSizeBytes: 500000,
+      );
+      expect(log, <Matcher>[
+        isMethodCall('Firestore#settings', arguments: <String, dynamic>{
+          'app': instance.app.name,
+          'persistenceEnabled': true,
+          'host': null,
+          'sslEnabled': true,
+          'timestampsInSnapshotsEnabled': true,
+          'cacheSizeBytes': 500000,
+        }),
+      ]);
+    });
+
     group('Transaction', () {
       test('runTransaction', () async {
         final Map<String, dynamic> result = await firestore.runTransaction(
