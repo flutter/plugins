@@ -673,8 +673,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       } else {
         FirebaseUser user = task.getResult().getUser();
         Map<String, Object> userMap = mapFromUser(user);
-        Map<String, Object> additionalMap = mapFromAdditionalUserInfo(
-                task.getResult().getAdditionalUserInfo());
+        Map<String, Object> additionalMap =
+            mapFromAdditionalUserInfo(task.getResult().getAdditionalUserInfo());
         userMap.put("additionalUserInfo", Collections.unmodifiableMap(additionalMap));
         result.success(Collections.unmodifiableMap(userMap));
       }

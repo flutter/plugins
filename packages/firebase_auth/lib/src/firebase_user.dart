@@ -6,6 +6,7 @@ part of firebase_auth;
 
 /// Represents a user.
 class FirebaseUser extends UserInfo {
+  FirebaseUser._(Map<String, dynamic> data, FirebaseApp app)
       : providerData = data['providerData']
             .map<UserInfo>((dynamic item) => UserInfo._(item, app))
             .toList(),
@@ -195,7 +196,8 @@ class FirebaseUser extends UserInfo {
   ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
   ///   • `ERROR_USER_NOT_FOUND` - If the user has been deleted (for example, in the Firebase console)
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
-  Future<FirebaseUser> reauthenticateWithCredential(AuthCredential credential) async {
+  Future<FirebaseUser> reauthenticateWithCredential(
+      AuthCredential credential) async {
     assert(credential != null);
     await FirebaseAuth.channel.invokeMethod<void>(
       'reauthenticateWithCredential',
