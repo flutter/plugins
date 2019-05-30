@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -143,14 +142,11 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
 
   @Override
   public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
-    Log.d("LocalAuth", "Authentication Succeed");
     stop(true);
   }
 
   @Override
-  public void onAuthenticationFailed() {
-    Log.d("LocalAuth", "Authentication Failed");
-  }
+  public void onAuthenticationFailed() {}
 
   /**
    * If the activity is paused, we keep track because fingerprint dialog simply returns "User

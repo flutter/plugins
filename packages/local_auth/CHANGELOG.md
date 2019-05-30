@@ -1,6 +1,6 @@
 ## 0.5.1
 * Fix crash on Android versions earlier than 28.
-* [`authenticateWithBiometrics`](https://pub.dev/documentation/local_auth/latest/local_auth/LocalAuthentication/authenticateWithBiometrics.html) will now won't return result unless Biometric Dialog is closed.
+* [`authenticateWithBiometrics`](https://pub.dev/documentation/local_auth/latest/local_auth/LocalAuthentication/authenticateWithBiometrics.html) will not return result unless Biometric Dialog is closed.
 
 ## 0.5.0
  * **Breaking change**. Update the Android API to use androidx Biometric package. This gives
