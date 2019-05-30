@@ -66,6 +66,9 @@ class GoogleMapController {
       case 'polyline#onTap':
         _googleMapState.onPolylineTap(call.arguments['polylineId']);
         break;
+      case 'polygon#onTap':
+        _googleMapState.onPolygonTap(call.arguments['polygonId']);
+        break;
       case 'circle#onTap':
         _googleMapState.onCircleTap(call.arguments['circleId']);
         break;
@@ -114,6 +117,23 @@ class GoogleMapController {
     await channel.invokeMethod(
       'markers#update',
       markerUpdates._toMap(),
+    );
+  }
+
+  /// Updates polygon configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updatePolygons(_PolygonUpdates polygonUpdates) async {
+    assert(polygonUpdates != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await channel.invokeMethod(
+      'polygons#update',
+      polygonUpdates._toMap(),
     );
   }
 
