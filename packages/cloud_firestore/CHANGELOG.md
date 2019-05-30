@@ -1,3 +1,8 @@
+## 0.12.0+2
+
+* Bump the minimum Flutter version to 1.5.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
 ## 0.12.0+1
 
 * Send user agent to Firebase.
