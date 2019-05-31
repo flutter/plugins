@@ -24,7 +24,8 @@ class FirebaseApp {
   /// This getter is asynchronous because apps can also be configured by native
   /// code.
   Future<FirebaseOptions> get options async {
-    final Map<String, dynamic> app = await channel.invokeMapMethod<String, dynamic>(
+    final Map<String, dynamic> app =
+        await channel.invokeMapMethod<String, dynamic>(
       'FirebaseApp#appNamed',
       name,
     );
@@ -38,7 +39,8 @@ class FirebaseApp {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    final Map<String, dynamic> app = await channel.invokeMapMethod<String, dynamic>(
+    final Map<String, dynamic> app =
+        await channel.invokeMapMethod<String, dynamic>(
       'FirebaseApp#appNamed',
       name,
     );
