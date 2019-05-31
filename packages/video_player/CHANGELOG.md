@@ -1,3 +1,7 @@
+## 0.10.1+3
+
+* Example: Fix example and README. Replace http with https
+
 ## 0.10.1+2
 
 * Example: Fixed tab display and added scroll view
