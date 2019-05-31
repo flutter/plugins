@@ -41,8 +41,8 @@ class Crashlytics {
           Trace.format(details.stack).trimRight().split('\n');
       final List<Map<String, String>> stackTraceElements =
           _getStackTraceElements(stackTraceLines);
-      final String result = await channel
-          .invokeMethod<String>('Crashlytics#onError', <String, dynamic>{
+      final dynamic result = await channel
+          .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
         'exception': details.exceptionAsString(),
         // FlutterErrorDetails.context has been migrated from a String to a
         // DiagnosticsNode. Coerce it to a String here in a way that will work
