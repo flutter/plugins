@@ -1,3 +1,8 @@
+## 1.1.1
+
+* Cast error codes as longs in iOS error strings to ensure compatibility
+  between arm32 and arm64.
+
 ## 1.1.0
 
 * Added `getApplicationSupportDirectory`.
