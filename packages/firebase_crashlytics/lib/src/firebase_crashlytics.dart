@@ -41,8 +41,8 @@ class Crashlytics {
           Trace.format(details.stack).trimRight().split('\n');
       final List<Map<String, String>> stackTraceElements =
           _getStackTraceElements(stackTraceLines);
-      final String result =
-          await channel.invokeMethod<String>('Crashlytics#onError', <String, dynamic>{
+      final String result = await channel
+          .invokeMethod<String>('Crashlytics#onError', <String, dynamic>{
         'exception': details.exceptionAsString(),
         // FlutterErrorDetails.context has been migrated from a String to a
         // DiagnosticsNode. Coerce it to a String here in a way that will work
@@ -63,13 +63,15 @@ class Crashlytics {
   /// Reports the global value for debug mode.
   /// TODO(kroikie): Clarify what this means in context of both Android and iOS.
   Future<bool> isDebuggable() async {
-    final bool result = await channel.invokeMethod<bool>('Crashlytics#isDebuggable');
+    final bool result =
+        await channel.invokeMethod<bool>('Crashlytics#isDebuggable');
     return result;
   }
 
   /// Returns Crashlytics SDK version.
   Future<String> getVersion() async {
-    final String result = await channel.invokeMethod<String>('Crashlytics#getVersion');
+    final String result =
+        await channel.invokeMethod<String>('Crashlytics#getVersion');
     return result;
   }
 
