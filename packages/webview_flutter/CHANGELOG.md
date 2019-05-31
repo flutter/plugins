@@ -1,3 +1,7 @@
+## 0.3.9
+
+* Allow external packages to provide webview implementations for new platforms.
+
 ## 0.3.8+1
 
 * Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
