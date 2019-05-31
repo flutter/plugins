@@ -2,6 +2,10 @@
 
 * Exposed user's additional information (isNewUser, getUsername, getProfile)
 
+## 0.11.1+4
+
+* Fix `updatePhoneNumberCredential` on iOS.
+
 ## 0.11.1+3
 
 * Add missing template type parameter to `invokeMethod` calls.

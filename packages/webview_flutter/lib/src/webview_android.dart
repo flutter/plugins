@@ -20,9 +20,11 @@ class AndroidWebViewBuilder implements WebViewBuilder {
   Widget build({
     BuildContext context,
     CreationParams creationParams,
+    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
     WebViewPlatformCreatedCallback onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   }) {
+    assert(webViewPlatformCallbacksHandler != null);
     return GestureDetector(
       // We prevent text selection by intercepting the long press event.
       // This is a temporary stop gap due to issues with text selection on Android:
@@ -39,7 +41,8 @@ class AndroidWebViewBuilder implements WebViewBuilder {
           if (onWebViewPlatformCreated == null) {
             return;
           }
-          onWebViewPlatformCreated(MethodChannelWebViewPlatform(id));
+          onWebViewPlatformCreated(MethodChannelWebViewPlatform(
+              id, webViewPlatformCallbacksHandler));
         },
         gestureRecognizers: gestureRecognizers,
         // WebView content is not affected by the Android view's layout direction,

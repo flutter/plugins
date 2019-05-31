@@ -1025,7 +1025,7 @@ class _FakeCookieManager {
         });
         break;
     }
-    return Future<bool>.sync(() {});
+    return Future<bool>.sync(() => null);
   }
 
   void reset() {
@@ -1040,18 +1040,22 @@ class MyWebViewBuilder implements WebViewBuilder {
   Widget build({
     BuildContext context,
     CreationParams creationParams,
+    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
     @required WebViewPlatformCreatedCallback onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   }) {
     assert(onWebViewPlatformCreated != null);
-    lastPlatformBuilt = MyWebViewPlatform(creationParams, gestureRecognizers);
+    lastPlatformBuilt = MyWebViewPlatform(
+        creationParams, gestureRecognizers, webViewPlatformCallbacksHandler);
     onWebViewPlatformCreated(lastPlatformBuilt);
     return Container();
   }
 }
 
 class MyWebViewPlatform extends WebViewPlatform {
-  MyWebViewPlatform(this.creationParams, this.gestureRecognizers);
+  MyWebViewPlatform(this.creationParams, this.gestureRecognizers,
+      WebViewPlatformCallbacksHandler platformHandler)
+      : super(platformHandler);
 
   CreationParams creationParams;
   Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
@@ -1066,10 +1070,6 @@ class MyWebViewPlatform extends WebViewPlatform {
     lastRequestHeaders = headers;
     return null;
   }
-
-  @override
-  // TODO: implement id
-  int get id => 1;
 }
 
 class MatchesWebSettings extends Matcher {

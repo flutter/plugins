@@ -10,12 +10,35 @@ import '../platform_interface.dart';
 
 /// A [WebViewPlatform] that uses a method channel to control the webview.
 class MethodChannelWebViewPlatform implements WebViewPlatform {
-  MethodChannelWebViewPlatform(this._id)
-      : _channel = MethodChannel('plugins.flutter.io/webview_$_id');
+  MethodChannelWebViewPlatform(int id, this._platformCallbacksHandler)
+      : assert(_platformCallbacksHandler != null),
+        _channel = MethodChannel('plugins.flutter.io/webview_$id') {
+    _channel.setMethodCallHandler(_onMethodCall);
+  }
 
-  final int _id;
+  final WebViewPlatformCallbacksHandler _platformCallbacksHandler;
 
   final MethodChannel _channel;
+
+  Future<bool> _onMethodCall(MethodCall call) async {
+    switch (call.method) {
+      case 'javascriptChannelMessage':
+        final String channel = call.arguments['channel'];
+        final String message = call.arguments['message'];
+        _platformCallbacksHandler.onJavaScriptChannelMessage(channel, message);
+        return true;
+      case 'navigationRequest':
+        return _platformCallbacksHandler.onNavigationRequest(
+          url: call.arguments['url'],
+          isForMainFrame: call.arguments['isForMainFrame'],
+        );
+      case 'onPageFinished':
+        _platformCallbacksHandler.onPageFinished(call.arguments['url']);
+        return null;
+    }
+    throw MissingPluginException(
+        '${call.method} was invoked but has no handler');
+  }
 
   @override
   Future<void> loadUrl(
@@ -33,6 +56,27 @@ class MethodChannelWebViewPlatform implements WebViewPlatform {
   }
 
   @override
+  Future<String> currentUrl() => _channel.invokeMethod('currentUrl');
+
+  @override
+  Future<bool> canGoBack() => _channel.invokeMethod("canGoBack");
+
+  @override
+  Future<bool> canGoForward() => _channel.invokeMethod("canGoForward");
+
+  @override
+  Future<void> goBack() => _channel.invokeMethod("goBack");
+
+  @override
+  Future<void> goForward() => _channel.invokeMethod("goForward");
+
+  @override
+  Future<void> reload() => _channel.invokeMethod("reload");
+
+  @override
+  Future<void> clearCache() => _channel.invokeMethod("clearCache");
+
+  @override
   Future<void> updateSettings(WebSettings settings) {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
@@ -42,6 +86,23 @@ class MethodChannelWebViewPlatform implements WebViewPlatform {
       return null;
     }
     return _channel.invokeMethod('updateSettings', updatesMap);
+  }
+
+  @override
+  Future<String> evaluateJavascript(String javascriptString) {
+    return _channel.invokeMethod('evaluateJavascript', javascriptString);
+  }
+
+  @override
+  Future<void> addJavascriptChannels(Set<String> javascriptChannelNames) {
+    return _channel.invokeMethod(
+        'addJavascriptChannels', javascriptChannelNames.toList());
+  }
+
+  @override
+  Future<void> removeJavascriptChannels(Set<String> javascriptChannelNames) {
+    return _channel.invokeMethod(
+        'removeJavascriptChannels', javascriptChannelNames.toList());
   }
 
   static Map<String, dynamic> _webSettingsToMap(WebSettings settings) {
@@ -71,7 +132,4 @@ class MethodChannelWebViewPlatform implements WebViewPlatform {
       'javascriptChannelNames': creationParams.javascriptChannelNames.toList(),
     };
   }
-
-  @override
-  int get id => _id;
 }
