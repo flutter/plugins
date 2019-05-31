@@ -1,7 +1,6 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 package io.flutter.plugins.localauth;
 
 import android.annotation.SuppressLint;
@@ -25,6 +24,7 @@ import androidx.biometric.BiometricPrompt;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.fragment.app.FragmentActivity;
 import io.flutter.plugin.common.MethodCall;
+import java.util.concurrent.Executors;
 
 /**
  * Authenticates the user with fingerprint and sends corresponding response back to Flutter.
@@ -32,6 +32,7 @@ import io.flutter.plugin.common.MethodCall;
  * <p>One instance per call is generated to ensure readable separation of executable paths across
  * method calls.
  */
+@SuppressWarnings("deprecation")
 class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     implements Application.ActivityLifecycleCallbacks {
 
@@ -106,31 +107,37 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   /** Start the fingerprint listener. */
   private void start() {
     activity.getApplication().registerActivityLifecycleCallbacks(this);
-    new BiometricPrompt(activity, activity.getMainExecutor(), this).authenticate(promptInfo);
+    new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), this)
+        .authenticate(promptInfo);
   }
 
-  /**
-   * Stops the fingerprint listener.
-   *
-   * @param success If the authentication was successful.
-   */
-  private void stop(boolean success) {
+  /** Stops the fingerprint listener. */
+  private void stop(Boolean success) {
     activity.getApplication().unregisterActivityLifecycleCallbacks(this);
-    if (success) {
-      completionHandler.onSuccess();
-    } else {
-      completionHandler.onFailure();
-    }
+    if (success) completionHandler.onSuccess();
+    else completionHandler.onFailure();
   }
 
+  @SuppressLint("SwitchIntDef")
   @Override
   public void onAuthenticationError(int errorCode, CharSequence errString) {
-    if (activityPaused && isAuthSticky) {
-      return;
+    switch (errorCode) {
+      case BiometricPrompt.ERROR_LOCKOUT:
+        completionHandler.onError(
+            "LockedOut",
+            "The operation was canceled because the API is locked out due to too many attempts. This occurs after 5 failed attempts, and lasts for 30 seconds.");
+        break;
+      case BiometricPrompt.ERROR_LOCKOUT_PERMANENT:
+        completionHandler.onError(
+            "PermanentlyLockedOut",
+            "The operation was canceled because ERROR_LOCKOUT occurred too many times. Biometric authentication is disabled until the user unlocks with strong authentication (PIN/Pattern/Password)");
+        break;
+      case BiometricPrompt.ERROR_CANCELED:
+        if (activityPaused && isAuthSticky) {
+          return;
+        }
+      default:
     }
-
-    // Either the authentication got cancelled by user or we are not interested
-    // in sticky auth, so return failure.
     stop(false);
   }
 
@@ -140,9 +147,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   }
 
   @Override
-  public void onAuthenticationFailed() {
-    stop(false);
-  }
+  public void onAuthenticationFailed() {}
 
   /**
    * If the activity is paused, we keep track because fingerprint dialog simply returns "User
@@ -160,8 +165,9 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     if (isAuthSticky) {
       activityPaused = false;
       final BiometricPrompt prompt =
-          new BiometricPrompt(activity, activity.getMainExecutor(), this);
-      // When activity is resuming, we cannot show the prompt right away. We need to post it to the UI queue.
+          new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), this);
+      // When activity is resuming, we cannot show the prompt right away. We need to post it to the
+      // UI queue.
       new Handler(Looper.myLooper())
           .postDelayed(
               new Runnable() {

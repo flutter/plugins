@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** LocalAuthPlugin */
+@SuppressWarnings("deprecation")
 public class LocalAuthPlugin implements MethodCallHandler {
   private final Registrar registrar;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
