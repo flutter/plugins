@@ -217,7 +217,7 @@ class CreationParams {
 }
 
 typedef WebViewPlatformCreatedCallback = void Function(
-    WebViewPlatformController webViewPlatform);
+    WebViewPlatformController webViewPlatformController);
 
 /// Interface for a platform implementation of a WebView.
 ///

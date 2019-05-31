@@ -752,7 +752,7 @@ void main() {
 
   group('Custom platform implementation', () {
     setUpAll(() {
-      WebView.platform = MyWebViewBuilder();
+      WebView.platform = MyWebViewPlatform();
     });
     tearDownAll(() {
       WebView.platform = null;
@@ -765,8 +765,8 @@ void main() {
         ),
       );
 
-      final MyWebViewBuilder builder = WebView.platform;
-      final MyWebViewPlatform platform = builder.lastPlatformBuilt;
+      final MyWebViewPlatform builder = WebView.platform;
+      final MyWebViewPlatformController platform = builder.lastPlatformBuilt;
 
       expect(
           platform.creationParams,
@@ -794,8 +794,8 @@ void main() {
         ),
       );
 
-      final MyWebViewBuilder builder = WebView.platform;
-      final MyWebViewPlatform platform = builder.lastPlatformBuilt;
+      final MyWebViewPlatform builder = WebView.platform;
+      final MyWebViewPlatformController platform = builder.lastPlatformBuilt;
 
       final Map<String, String> headers = <String, String>{
         'header': 'value',
@@ -1033,8 +1033,8 @@ class _FakeCookieManager {
   }
 }
 
-class MyWebViewBuilder implements WebViewPlatform {
-  MyWebViewPlatform lastPlatformBuilt;
+class MyWebViewPlatform implements WebViewPlatform {
+  MyWebViewPlatformController lastPlatformBuilt;
 
   @override
   Widget build({
@@ -1045,7 +1045,7 @@ class MyWebViewBuilder implements WebViewPlatform {
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   }) {
     assert(onWebViewPlatformCreated != null);
-    lastPlatformBuilt = MyWebViewPlatform(
+    lastPlatformBuilt = MyWebViewPlatformController(
         creationParams, gestureRecognizers, webViewPlatformCallbacksHandler);
     onWebViewPlatformCreated(lastPlatformBuilt);
     return Container();
@@ -1057,8 +1057,8 @@ class MyWebViewBuilder implements WebViewPlatform {
   }
 }
 
-class MyWebViewPlatform extends WebViewPlatformController {
-  MyWebViewPlatform(this.creationParams, this.gestureRecognizers,
+class MyWebViewPlatformController extends WebViewPlatformController {
+  MyWebViewPlatformController(this.creationParams, this.gestureRecognizers,
       WebViewPlatformCallbacksHandler platformHandler)
       : super(platformHandler);
 

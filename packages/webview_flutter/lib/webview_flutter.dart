@@ -132,9 +132,9 @@ class WebView extends StatefulWidget {
   ///
   /// Setting `platform` doesn't affect [WebView]s that were already created.
   ///
-  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOs.
-  static set platform(WebViewPlatform platformBuilder) {
-    _platform = platformBuilder;
+  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
+  static set platform(WebViewPlatform platform) {
+    _platform = platform;
   }
 
   /// The WebView platform that's used by this WebView.
@@ -415,13 +415,13 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
 class WebViewController {
   WebViewController._(
     this._widget,
-    this._webViewPlatform,
+    this._webViewPlatformController,
     this._platformCallbacksHandler,
-  ) : assert(_webViewPlatform != null) {
+  ) : assert(_webViewPlatformController != null) {
     _settings = _webSettingsFromWidget(_widget);
   }
 
-  final WebViewPlatformController _webViewPlatform;
+  final WebViewPlatformController _webViewPlatformController;
 
   final _PlatformCallbacksHandler _platformCallbacksHandler;
 
@@ -443,7 +443,7 @@ class WebViewController {
   }) async {
     assert(url != null);
     _validateUrlString(url);
-    return _webViewPlatform.loadUrl(url, headers);
+    return _webViewPlatformController.loadUrl(url, headers);
   }
 
   /// Accessor to the current URL that the WebView is displaying.
@@ -454,7 +454,7 @@ class WebViewController {
   /// words, by the time this future completes, the WebView may be displaying a
   /// different URL).
   Future<String> currentUrl() {
-    return _webViewPlatform.currentUrl();
+    return _webViewPlatformController.currentUrl();
   }
 
   /// Checks whether there's a back history item.
@@ -462,7 +462,7 @@ class WebViewController {
   /// Note that this operation is asynchronous, and it is possible that the "canGoBack" state has
   /// changed by the time the future completed.
   Future<bool> canGoBack() {
-    return _webViewPlatform.canGoBack();
+    return _webViewPlatformController.canGoBack();
   }
 
   /// Checks whether there's a forward history item.
@@ -470,26 +470,26 @@ class WebViewController {
   /// Note that this operation is asynchronous, and it is possible that the "canGoForward" state has
   /// changed by the time the future completed.
   Future<bool> canGoForward() {
-    return _webViewPlatform.canGoForward();
+    return _webViewPlatformController.canGoForward();
   }
 
   /// Goes back in the history of this WebView.
   ///
   /// If there is no back history item this is a no-op.
   Future<void> goBack() {
-    return _webViewPlatform.goBack();
+    return _webViewPlatformController.goBack();
   }
 
   /// Goes forward in the history of this WebView.
   ///
   /// If there is no forward history item this is a no-op.
   Future<void> goForward() {
-    return _webViewPlatform.goForward();
+    return _webViewPlatformController.goForward();
   }
 
   /// Reloads the current URL.
   Future<void> reload() {
-    return _webViewPlatform.reload();
+    return _webViewPlatformController.reload();
   }
 
   /// Clears all caches used by the [WebView].
@@ -503,7 +503,7 @@ class WebViewController {
   ///
   /// Note: Calling this method also triggers a reload.
   Future<void> clearCache() async {
-    await _webViewPlatform.clearCache();
+    await _webViewPlatformController.clearCache();
     return reload();
   }
 
@@ -517,7 +517,7 @@ class WebViewController {
     final WebSettings update =
         _clearUnchangedWebSettings(_settings, newSettings);
     _settings = newSettings;
-    return _webViewPlatform.updateSettings(update);
+    return _webViewPlatformController.updateSettings(update);
   }
 
   Future<void> _updateJavascriptChannels(
@@ -530,10 +530,10 @@ class WebViewController {
     final Set<String> channelsToRemove =
         currentChannels.difference(newChannelNames);
     if (channelsToRemove.isNotEmpty) {
-      _webViewPlatform.removeJavascriptChannels(channelsToRemove);
+      _webViewPlatformController.removeJavascriptChannels(channelsToRemove);
     }
     if (channelsToAdd.isNotEmpty) {
-      _webViewPlatform.addJavascriptChannels(channelsToAdd);
+      _webViewPlatformController.addJavascriptChannels(channelsToAdd);
     }
     _platformCallbacksHandler._updateJavascriptChannelsFromSet(newChannels);
   }
@@ -566,7 +566,7 @@ class WebViewController {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    return _webViewPlatform.evaluateJavascript(javascriptString);
+    return _webViewPlatformController.evaluateJavascript(javascriptString);
   }
 }
 
