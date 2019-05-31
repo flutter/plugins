@@ -144,14 +144,14 @@ void main() {
       expect(log, <Matcher>[isMethodCall('clear', arguments: null)]);
     });
 
-    test('refreshing cache', () async {
+    test('reloading', () async {
       await preferences.setString('String', kTestValues['flutter.String']);
       expect(preferences.getString('String'), kTestValues['flutter.String']);
 
       SharedPreferences.setMockInitialValues(kTestValues2);
       expect(preferences.getString('String'), kTestValues['flutter.String']);
 
-      await preferences.refreshCache();
+      await preferences.reload();
       expect(preferences.getString('String'), kTestValues2['flutter.String']);
     });
 

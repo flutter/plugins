@@ -1,6 +1,6 @@
 ## 0.5.3
 
-* Add refreshCache method.
+* Add reload method.
 
 ## 0.5.2+2
 

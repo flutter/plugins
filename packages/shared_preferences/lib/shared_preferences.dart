@@ -148,8 +148,11 @@ class SharedPreferences {
     return await _kChannel.invokeMethod('clear');
   }
 
-  /// Refreshes the local cache
-  Future<void> refreshCache() async {
+  /// Fetches the latest values from the host platform.
+  ///
+  /// Use this method to observe modifications that were made in native code
+  /// (without using the plugin) while the app is running.
+  Future<void> reload() async {
     final Map<String, Object> preferences =
         await SharedPreferences._getSharedPreferencesMap();
     _preferenceCache.clear();
