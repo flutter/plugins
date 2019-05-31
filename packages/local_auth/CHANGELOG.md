@@ -1,3 +1,6 @@
+## 0.5.2+1
+* Use post instead of postDelayed to show the dialog onResume.
+
 ## 0.5.2
 * Executor thread needs to be UI thread.
 

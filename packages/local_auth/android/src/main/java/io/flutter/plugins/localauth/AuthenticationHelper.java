@@ -173,14 +173,13 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
       final BiometricPrompt prompt = new BiometricPrompt(activity, uiThreadExecutor, this);
       // When activity is resuming, we cannot show the prompt right away. We need to post it to the
       // UI queue.
-      uiThreadExecutor.handler.postDelayed(
+      uiThreadExecutor.handler.post(
           new Runnable() {
             @Override
             public void run() {
               prompt.authenticate(promptInfo);
             }
-          },
-          100);
+          });
     }
   }
 
