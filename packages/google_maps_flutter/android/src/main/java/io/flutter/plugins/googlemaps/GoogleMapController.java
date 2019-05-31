@@ -503,10 +503,10 @@ final class GoogleMapController
   public void setPadding(float top, float left, float bottom, float right) {
     if (googleMap != null) {
       googleMap.setPadding(
-            (int) (left * density),
-            (int) (top * density),
-            (int) (right * density),
-            (int) (bottom * density));
+          (int) (left * density),
+          (int) (top * density),
+          (int) (right * density),
+          (int) (bottom * density));
     }
   }
 
