@@ -1,4 +1,4 @@
-## 3.0.1+1
+## 3.0.2
 
 * Add missing template type parameter to `invokeMethod` calls.
 * Bump minimum Flutter version to 1.5.0.
