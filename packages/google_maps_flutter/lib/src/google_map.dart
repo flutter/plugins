@@ -31,6 +31,7 @@ class GoogleMap extends StatefulWidget {
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
     this.markers,
+    this.polygons,
     this.polylines,
     this.circles,
     this.onCameraMoveStarted,
@@ -74,6 +75,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Markers to be placed on the map.
   final Set<Marker> markers;
+
+  /// Polygons to be placed on the map.
+  final Set<Polygon> polygons;
 
   /// Polylines to be placed on the map.
   final Set<Polyline> polylines;
@@ -166,6 +170,7 @@ class _GoogleMapState extends State<GoogleMap> {
       Completer<GoogleMapController>();
 
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
+  Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
   _GoogleMapOptions _googleMapOptions;
@@ -176,6 +181,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'initialCameraPosition': widget.initialCameraPosition?._toMap(),
       'options': _googleMapOptions.toMap(),
       'markersToAdd': _serializeMarkerSet(widget.markers),
+      'polygonsToAdd': _serializePolygonSet(widget.polygons),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'circlesToAdd': _serializeCircleSet(widget.circles),
     };
@@ -206,6 +212,7 @@ class _GoogleMapState extends State<GoogleMap> {
     super.initState();
     _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
     _markers = _keyByMarkerId(widget.markers);
+    _polygons = _keyByPolygonId(widget.polygons);
     _polylines = _keyByPolylineId(widget.polylines);
     _circles = _keyByCircleId(widget.circles);
   }
@@ -215,6 +222,7 @@ class _GoogleMapState extends State<GoogleMap> {
     super.didUpdateWidget(oldWidget);
     _updateOptions();
     _updateMarkers();
+    _updatePolygons();
     _updatePolylines();
     _updateCircles();
   }
@@ -236,6 +244,13 @@ class _GoogleMapState extends State<GoogleMap> {
     controller._updateMarkers(
         _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
     _markers = _keyByMarkerId(widget.markers);
+  }
+
+  void _updatePolygons() async {
+    final GoogleMapController controller = await _controller.future;
+    controller._updatePolygons(
+        _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
+    _polygons = _keyByPolygonId(widget.polygons);
   }
 
   void _updatePolylines() async {
@@ -270,6 +285,12 @@ class _GoogleMapState extends State<GoogleMap> {
     if (_markers[markerId]?.onTap != null) {
       _markers[markerId].onTap();
     }
+  }
+
+  void onPolygonTap(String polygonIdParam) {
+    assert(polygonIdParam != null);
+    final PolygonId polygonId = PolygonId(polygonIdParam);
+    _polygons[polygonId].onTap();
   }
 
   void onPolylineTap(String polylineIdParam) {

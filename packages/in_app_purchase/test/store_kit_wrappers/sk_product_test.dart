@@ -5,6 +5,7 @@
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
+import 'package:in_app_purchase/src/in_app_purchase/in_app_purchase_connection.dart';
 import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'sk_test_stub_objects.dart';
@@ -72,7 +73,7 @@ void main() {
     test('toProductDetails() should return correct Product object', () {
       final SKProductWrapper wrapper =
           SKProductWrapper.fromJson(buildProductMap(dummyProductWrapper));
-      final ProductDetails product = wrapper.toProductDetails();
+      final ProductDetails product = ProductDetails.fromSKProduct(wrapper);
       expect(product.title, wrapper.localizedTitle);
       expect(product.description, wrapper.localizedDescription);
       expect(product.id, wrapper.productIdentifier);
@@ -128,7 +129,7 @@ void main() {
 
     test('toPurchaseDetails() should return correct PurchaseDetail object', () {
       PurchaseDetails details =
-          dummyTransaction.toPurchaseDetails('receipt data');
+          PurchaseDetails.fromSKTransaction(dummyTransaction, 'receipt data');
       expect(dummyTransaction.transactionIdentifier, details.purchaseID);
       expect(dummyTransaction.payment.productIdentifier, details.productID);
       expect((dummyTransaction.transactionTimeStamp * 1000).toInt().toString(),

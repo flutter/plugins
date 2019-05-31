@@ -227,6 +227,7 @@ class BarcodeDetectorOptions {
   final BarcodeFormat barcodeFormats;
 }
 
+// TODO(bparrishMines): Normalize default string values. Some values return null on iOS while Android returns empty string.
 /// Represents a single recognized barcode and its value.
 class Barcode {
   Barcode._(Map<dynamic, dynamic> _data)

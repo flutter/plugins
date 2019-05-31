@@ -1,3 +1,12 @@
+## 0.5.15
+
+* Add support for Polygons.
+
+## 0.5.14+1
+
+* Example app update(comment out usage of the ImageStreamListener API which has a breaking change
+  that's not yet on master). See: https://github.com/flutter/flutter/issues/33438
+
 ## 0.5.14
 
 * Adds onLongPress callback for GoogleMap.
