@@ -1,3 +1,7 @@
+## 0.4.0
+
+* Removed unused `parameters` param from `getHttpsCallable`.
+
 ## 0.3.0+1
 
 * Update iOS dependencies to latest.
