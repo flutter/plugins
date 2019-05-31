@@ -7,7 +7,18 @@ dependencies:
     sdk: flutter
   firebase_auth:
     path: ../
+<<<<<<< HEAD
   google_sign_in: ^3.0.4
+=======
+  google_sign_in: ^4.0.0
+  firebase_core: ^0.4.0
+  firebase_dynamic_links: ^0.3.0
+
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  test: any
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
 flutter:
   uses-material-design: true

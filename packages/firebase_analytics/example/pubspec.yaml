@@ -6,6 +6,17 @@ dependencies:
     sdk: flutter
   firebase_analytics:
     path: ../
+<<<<<<< HEAD
+=======
+  firebase_core: ^0.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  test: any
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

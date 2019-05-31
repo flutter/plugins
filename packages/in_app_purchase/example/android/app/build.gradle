@@ -38,6 +38,10 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 flutter {

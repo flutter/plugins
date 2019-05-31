@@ -6,46 +6,75 @@ part of firebase_performance;
 
 /// Metric used to collect data for network requests/responses.
 ///
-/// It is possible to have more than one httpmetric running at a time.
+/// It is possible to have more than one [HttpMetric] running at a time.
 /// Attributes can also be added to help measure performance related events. A
-/// httpmetric also measures the time between calling start() and stop().
+/// [HttpMetric] also measures the time between calling `start()` and `stop()`.
 ///
 /// Data collected is automatically sent to the associated Firebase console
 /// after stop() is called.
 ///
 /// You can confirm that Performance Monitoring results appear in the Firebase
 /// console. Results should appear within 12 hours.
+///
+/// It is highly recommended that one always calls `start()` and `stop()` on
+/// each created [HttpMetric] to avoid leaking on the platform side.
 class HttpMetric extends PerformanceAttributes {
-  HttpMetric._(this._handle, this._url, this._httpMethod);
+  HttpMetric._(this._handle, this.url, this.httpMethod);
 
-  final int _handle;
-  final String _url;
-  final HttpMethod _httpMethod;
+  final String url;
+  final HttpMethod httpMethod;
 
+  @override
   bool _hasStarted = false;
+
+  @override
   bool _hasStopped = false;
 
+  int _httpResponseCode;
+  int _requestPayloadSize;
+  String _responseContentType;
+  int _responsePayloadSize;
+
+  @override
+  final int _handle;
+
   /// HttpResponse code of the request.
-  int httpResponseCode;
+  int get httpResponseCode => _httpResponseCode;
 
   /// Size of the request payload.
-  int requestPayloadSize;
+  int get requestPayloadSize => _requestPayloadSize;
 
   /// Content type of the response such as text/html, application/json, etc...
-  String responseContentType;
+  String get responseContentType => _responseContentType;
 
   /// Size of the response payload.
-  int responsePayloadSize;
+  int get responsePayloadSize => _responsePayloadSize;
 
-  /// Starts this httpmetric.
+  /// HttpResponse code of the request.
   ///
-  /// Can only be called once, otherwise assertion error is thrown.
-  ///
-  /// Using ```await``` with this method is only necessary when accurate timing
-  /// is relevant.
-  Future<void> start() {
-    assert(!_hasStarted);
+  /// If the [HttpMetric] has already been stopped, returns immediately without
+  /// taking action.
+  set httpResponseCode(int httpResponseCode) {
+    if (_hasStopped) return;
 
+    _httpResponseCode = httpResponseCode;
+    FirebasePerformance.channel.invokeMethod<void>(
+      '$HttpMetric#httpResponseCode',
+      <String, dynamic>{
+        'handle': _handle,
+        'httpResponseCode': httpResponseCode,
+      },
+    );
+  }
+
+  /// Size of the request payload.
+  ///
+  /// If the [HttpMetric] has already been stopped, returns immediately without
+  /// taking action.
+  set requestPayloadSize(int requestPayloadSize) {
+    if (_hasStopped) return;
+
+<<<<<<< HEAD
     _hasStarted = true;
     return FirebasePerformance.channel
         .invokeMethod('HttpMetric#start', <String, dynamic>{
@@ -53,53 +82,88 @@ class HttpMetric extends PerformanceAttributes {
       'url': _url,
       'httpMethod': _httpMethod.index,
     });
+=======
+    _requestPayloadSize = requestPayloadSize;
+    FirebasePerformance.channel.invokeMethod<void>(
+      '$HttpMetric#requestPayloadSize',
+      <String, dynamic>{
+        'handle': _handle,
+        'requestPayloadSize': requestPayloadSize,
+      },
+    );
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 
-  /// Stops this httpMetric.
+  /// Content type of the response such as text/html, application/json, etc...
   ///
-  /// Can only be called once and only after start(), otherwise assertion error
-  /// is thrown. Data collected is automatically sent to the associated
-  /// Firebase console after stop() is called.
+  /// If the [HttpMetric] has already been stopped, returns immediately without
+  /// taking action.
+  set responseContentType(String responseContentType) {
+    if (_hasStopped) return;
+
+    _responseContentType = responseContentType;
+    FirebasePerformance.channel.invokeMethod<void>(
+      '$HttpMetric#responseContentType',
+      <String, dynamic>{
+        'handle': _handle,
+        'responseContentType': responseContentType,
+      },
+    );
+  }
+
+  /// Size of the response payload.
   ///
-  /// Not necessary to use ```await``` with this method.
-  Future<void> stop() {
-    assert(!_hasStopped);
-    assert(_hasStarted);
+  /// If the [HttpMetric] has already been stopped, returns immediately without
+  /// taking action.
+  set responsePayloadSize(int responsePayloadSize) {
+    if (_hasStopped) return;
 
-    final Map<String, dynamic> data = <String, dynamic>{
-      'handle': _handle,
-      'httpResponseCode': httpResponseCode,
-      'requestPayloadSize': requestPayloadSize,
-      'responseContentType': responseContentType,
-      'responsePayloadSize': responsePayloadSize,
-      'attributes': _attributes,
-    };
-
+<<<<<<< HEAD
     _hasStopped = true;
     return FirebasePerformance.channel.invokeMethod('HttpMetric#stop', data);
+=======
+    _responsePayloadSize = responsePayloadSize;
+    FirebasePerformance.channel.invokeMethod<void>(
+      '$HttpMetric#responsePayloadSize',
+      <String, dynamic>{
+        'handle': _handle,
+        'responsePayloadSize': responsePayloadSize,
+      },
+    );
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 
-  /// Sets a String [value] for the specified [attribute].
+  /// Starts this [HttpMetric].
   ///
-  /// If the httpmetric has been stopped, this method throws an assertion
-  /// error.
+  /// Can only be called once.
   ///
-  /// See [PerformanceAttributes.putAttribute].
-  @override
-  void putAttribute(String attribute, String value) {
-    assert(!_hasStopped);
-    super.putAttribute(attribute, value);
+  /// Using `await` with this method is only necessary when accurate timing
+  /// is relevant.
+  Future<void> start() {
+    if (_hasStopped) return Future<void>.value(null);
+
+    _hasStarted = true;
+    return FirebasePerformance.channel.invokeMethod<void>(
+      '$HttpMetric#start',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 
-  /// Removes an already added [attribute].
+  /// Stops this [HttpMetric].
   ///
-  /// If the httpmetric has been stopped, this method throws an assertion
-  /// error.
+  /// Can only be called once and only after start(), Data collected is
+  /// automatically sent to the associate Firebase console after stop() is
+  /// called. You can confirm that Performance Monitoring results appear in the
+  /// Firebase console. Results should appear within 12 hours.
   ///
-  /// See [PerformanceAttributes.removeAttribute].
-  @override
-  void removeAttribute(String attribute) {
-    assert(!_hasStopped);
-    super.removeAttribute(attribute);
+  /// Not necessary to use `await` with this method.
+  Future<void> stop() {
+    if (_hasStopped) return Future<void>.value(null);
+
+    _hasStopped = true;
+    return FirebasePerformance.channel.invokeMethod<void>(
+      '$HttpMetric#stop',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 }

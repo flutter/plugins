@@ -35,6 +35,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<Directory> _tempDirectory;
+  Future<Directory> _appSupportDirectory;
   Future<Directory> _appDocumentsDirectory;
   Future<Directory> _externalDocumentsDirectory;
 
@@ -62,6 +63,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void _requestAppDocumentsDirectory() {
     setState(() {
       _appDocumentsDirectory = getApplicationDocumentsDirectory();
+    });
+  }
+
+  void _requestAppSupportDirectory() {
+    setState(() {
+      _appSupportDirectory = getApplicationSupportDirectory();
     });
   }
 
@@ -111,8 +118,28 @@ class _MyHomePageState extends State<MyHomePage> {
               child: new FutureBuilder<Directory>(
                   future: _appDocumentsDirectory, builder: _buildDirectory),
             ),
+<<<<<<< HEAD
             new Column(children: <Widget>[
               new Padding(
+=======
+            Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: RaisedButton(
+                    child: const Text('Get Application Support Directory'),
+                    onPressed: _requestAppSupportDirectory,
+                  ),
+                ),
+              ],
+            ),
+            Expanded(
+              child: FutureBuilder<Directory>(
+                  future: _appSupportDirectory, builder: _buildDirectory),
+            ),
+            Column(children: <Widget>[
+              Padding(
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
                 padding: const EdgeInsets.all(16.0),
                 child: new RaisedButton(
                   child: new Text(

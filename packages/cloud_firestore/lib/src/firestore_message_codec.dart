@@ -12,6 +12,26 @@ class FirestoreMessageCodec extends StandardMessageCodec {
   static const int _kGeoPoint = 129;
   static const int _kDocumentReference = 130;
   static const int _kBlob = 131;
+<<<<<<< HEAD
+=======
+  static const int _kArrayUnion = 132;
+  static const int _kArrayRemove = 133;
+  static const int _kDelete = 134;
+  static const int _kServerTimestamp = 135;
+  static const int _kTimestamp = 136;
+  static const int _kIncrementDouble = 137;
+  static const int _kIncrementInteger = 138;
+
+  static const Map<FieldValueType, int> _kFieldValueCodes =
+      <FieldValueType, int>{
+    FieldValueType.arrayUnion: _kArrayUnion,
+    FieldValueType.arrayRemove: _kArrayRemove,
+    FieldValueType.delete: _kDelete,
+    FieldValueType.serverTimestamp: _kServerTimestamp,
+    FieldValueType.incrementDouble: _kIncrementDouble,
+    FieldValueType.incrementInteger: _kIncrementInteger,
+  };
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
   @override
   void writeValue(WriteBuffer buffer, dynamic value) {
@@ -59,7 +79,27 @@ class FirestoreMessageCodec extends StandardMessageCodec {
       case _kBlob:
         final int length = readSize(buffer);
         final List<int> bytes = buffer.getUint8List(length);
+<<<<<<< HEAD
         return new Blob(bytes);
+=======
+        return Blob(bytes);
+      case _kArrayUnion:
+        final List<dynamic> value = readValue(buffer);
+        return FieldValue.arrayUnion(value);
+      case _kArrayRemove:
+        final List<dynamic> value = readValue(buffer);
+        return FieldValue.arrayRemove(value);
+      case _kDelete:
+        return FieldValue.delete();
+      case _kServerTimestamp:
+        return FieldValue.serverTimestamp();
+      case _kIncrementDouble:
+        final double value = readValue(buffer);
+        return FieldValue.increment(value);
+      case _kIncrementInteger:
+        final int value = readValue(buffer);
+        return FieldValue.increment(value);
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
       default:
         return super.readValueOfType(type, buffer);
     }

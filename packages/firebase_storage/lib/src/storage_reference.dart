@@ -58,8 +58,14 @@ class StorageReference {
   /// Asynchronously uploads a file to the currently specified
   /// [StorageReference], with an optional [metadata].
   StorageUploadTask putFile(File file, [StorageMetadata metadata]) {
+<<<<<<< HEAD
     final _StorageFileUploadTask task = new _StorageFileUploadTask._(
         file, _firebaseStorage, _pathComponents.join("/"), metadata);
+=======
+    assert(file.existsSync());
+    final _StorageFileUploadTask task =
+        _StorageFileUploadTask._(file, _firebaseStorage, this, metadata);
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
     task._start();
     return task;
   }

@@ -111,12 +111,18 @@ class Firestore {
         'Transaction timeout must be more than 0 milliseconds');
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
+<<<<<<< HEAD
     final Map<dynamic, dynamic> result = await channel
         .invokeMethod('Firestore#runTransaction', <String, dynamic>{
+=======
+    final Map<String, dynamic> result = await channel
+        .invokeMapMethod<String, dynamic>(
+            'Firestore#runTransaction', <String, dynamic>{
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
       'app': app.name,
       'transactionId': transactionId,
       'transactionTimeout': timeout.inMilliseconds
     });
-    return result?.cast<String, dynamic>() ?? <String, dynamic>{};
+    return result ?? <String, dynamic>{};
   }
 }

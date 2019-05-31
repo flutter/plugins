@@ -125,9 +125,9 @@ NSDictionary *barcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contac
   [contact.emails enumerateObjectsUsingBlock:^(FIRVisionBarcodeEmail *_Nonnull email,
                                                NSUInteger idx, BOOL *_Nonnull stop) {
     [emails addObject:@{
-      @"address" : email.address,
-      @"body" : email.body,
-      @"subject" : email.subject,
+      @"address" : email.address ? email.address : [NSNull null],
+      @"body" : email.body ? email.body : [NSNull null],
+      @"subject" : email.subject ? email.subject : [NSNull null],
       @"type" : @(email.type),
     }];
   }];
@@ -136,7 +136,7 @@ NSDictionary *barcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contac
   [contact.phones enumerateObjectsUsingBlock:^(FIRVisionBarcodePhone *_Nonnull phone,
                                                NSUInteger idx, BOOL *_Nonnull stop) {
     [phones addObject:@{
-      @"number" : phone.number,
+      @"number" : phone.number ? phone.number : [NSNull null],
       @"type" : @(phone.type),
     }];
   }];
@@ -149,19 +149,19 @@ NSDictionary *barcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contac
   return @{
     @"addresses" : addresses,
     @"emails" : emails,
-    @"name" : @{
-      @"formattedName" : contact.name.formattedName,
-      @"first" : contact.name.first,
-      @"last" : contact.name.last,
-      @"middle" : contact.name.middle,
-      @"prefix" : contact.name.prefix,
-      @"pronunciation" : contact.name.pronounciation,
-      @"suffix" : contact.name.suffix,
-    },
     @"phones" : phones,
     @"urls" : urls,
-    @"jobTitle" : contact.jobTitle,
-    @"organization" : contact.organization,
+    @"name" : @{
+      @"formattedName" : contact.name.formattedName ? contact.name.formattedName : [NSNull null],
+      @"first" : contact.name.first ? contact.name.first : [NSNull null],
+      @"last" : contact.name.last ? contact.name.last : [NSNull null],
+      @"middle" : contact.name.middle ? contact.name.middle : [NSNull null],
+      @"prefix" : contact.name.prefix ? contact.name.prefix : [NSNull null],
+      @"pronunciation" : contact.name.pronounciation ? contact.name.pronounciation : [NSNull null],
+      @"suffix" : contact.name.suffix ? contact.name.suffix : [NSNull null],
+    },
+    @"jobTitle" : contact.jobTitle ? contact.jobTitle : [NSNull null],
+    @"organization" : contact.organization ? contact.jobTitle : [NSNull null],
   };
 }
 

@@ -230,8 +230,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _applyPlayPause();
           break;
         case 'completed':
+<<<<<<< HEAD
           value = value.copyWith(isPlaying: false);
           timer?.cancel();
+=======
+          value = value.copyWith(isPlaying: false, position: value.duration);
+          _timer?.cancel();
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
           break;
         case 'bufferingUpdate':
           final List<dynamic> values = map['values'];

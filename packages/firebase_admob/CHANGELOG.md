@@ -1,3 +1,58 @@
+<<<<<<< HEAD
+=======
+## 0.9.0+1
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+
+## 0.9.0
+
+* Update Android dependencies to latest.
+
+## 0.8.0+4
+
+* Update documentation to add AdMob App ID in Info.plist
+* Add iOS AdMob App ID in Info.plist in example project
+
+## 0.8.0+3
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.8.0+2
+
+* Remove categories.
+
+## 0.8.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.8.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.7.0
+
+* Mark Dart code as deprecated where the newer version AdMob deprecates features (Birthday, Gender, and Family targeting).
+* Update gradle dependencies.
+* Add documentation for new AndroidManifest requirements.
+
+## 0.6.1+1
+
+* Bump Android dependencies to latest.
+* __THIS WAS AN UNINTENTIONAL BREAKING CHANGE__. Users should consume 0.6.1 instead if they need the old API, or 0.7.0 for the bumped version.
+* Guide how to fix crash with admob version 17.0.0 in README
+
+## 0.6.1
+
+* listener on MobileAd shouldn't be final.
+* Ad listeners can to be set in or out of Ad initialization.
+
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 ## 0.6.0
 
 * Add nonPersonalizedAds option to MobileAdTargetingInfo

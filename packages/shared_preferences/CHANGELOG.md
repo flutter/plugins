@@ -1,3 +1,43 @@
+<<<<<<< HEAD
+=======
+## 0.5.2+2
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.5.2+1
+
+* .commit() calls are now run in an async background task on Android.
+
+## 0.5.2
+
+* Add containsKey method.
+
+## 0.5.1+2
+
+* Add a driver test
+
+## 0.5.1+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.5.1
+
+* Use String to save double in Android.
+
+## 0.5.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.4.3
+
+* Prevent strings that match special prefixes from being saved. This is a bugfix that prevents apps from accidentally setting special values that would be interpreted incorrectly.
+
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 ## 0.4.2
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

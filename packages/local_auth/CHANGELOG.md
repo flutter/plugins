@@ -1,3 +1,36 @@
+<<<<<<< HEAD
+=======
+## 0.5.1
+* Fix crash on Android versions earlier than 28.
+* [`authenticateWithBiometrics`](https://pub.dev/documentation/local_auth/latest/local_auth/LocalAuthentication/authenticateWithBiometrics.html) will not return result unless Biometric Dialog is closed.
+* Added two more error codes `LockedOut` and `PermanentlyLockedOut`.
+
+## 0.5.0
+ * **Breaking change**. Update the Android API to use androidx Biometric package. This gives
+   the prompt the updated Material look. However, it also requires the activity to be a
+   FragmentActivity. Users can switch to FlutterFragmentActivity in their main app to migrate.
+
+## 0.4.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.4.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.3.1
+* Fix crash on Android versions earlier than 24.
+
+## 0.3.0
+
+* **Breaking change**. Add canCheckBiometrics and getAvailableBiometrics which leads to a new API.
+
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 ## 0.2.1
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

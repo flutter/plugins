@@ -34,7 +34,7 @@ int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timesca
 @property(nonatomic) FlutterEventSink eventSink;
 @property(nonatomic, readonly) bool disposed;
 @property(nonatomic, readonly) bool isPlaying;
-@property(nonatomic, readonly) bool isLooping;
+@property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
 - (void)play;
@@ -92,13 +92,64 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                                 usingBlock:^(NSNotification* note) {
                                                   if (_isLooping) {
                                                     AVPlayerItem* p = [note object];
-                                                    [p seekToTime:kCMTimeZero];
+                                                    [p seekToTime:kCMTimeZero
+                                                        completionHandler:nil];
                                                   } else {
                                                     if (_eventSink) {
                                                       _eventSink(@{@"event" : @"completed"});
                                                     }
                                                   }
                                                 }];
+<<<<<<< HEAD
+=======
+}
+
+static inline CGFloat radiansToDegrees(CGFloat radians) {
+  // Input range [-pi, pi] or [-180, 180]
+  CGFloat degrees = GLKMathRadiansToDegrees((float)radians);
+  if (degrees < 0) {
+    // Convert -90 to 270 and -180 to 180
+    return degrees + 360;
+  }
+  // Output degrees in between [0, 360[
+  return degrees;
+};
+
+- (AVMutableVideoComposition*)getVideoCompositionWithTransform:(CGAffineTransform)transform
+                                                     withAsset:(AVAsset*)asset
+                                                withVideoTrack:(AVAssetTrack*)videoTrack {
+  AVMutableVideoCompositionInstruction* instruction =
+      [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+  instruction.timeRange = CMTimeRangeMake(kCMTimeZero, [asset duration]);
+  AVMutableVideoCompositionLayerInstruction* layerInstruction =
+      [AVMutableVideoCompositionLayerInstruction
+          videoCompositionLayerInstructionWithAssetTrack:videoTrack];
+  [layerInstruction setTransform:_preferredTransform atTime:kCMTimeZero];
+
+  AVMutableVideoComposition* videoComposition = [AVMutableVideoComposition videoComposition];
+  instruction.layerInstructions = @[ layerInstruction ];
+  videoComposition.instructions = @[ instruction ];
+
+  // If in portrait mode, switch the width and height of the video
+  CGFloat width = videoTrack.naturalSize.width;
+  CGFloat height = videoTrack.naturalSize.height;
+  NSInteger rotationDegrees =
+      (NSInteger)round(radiansToDegrees(atan2(_preferredTransform.b, _preferredTransform.a)));
+  if (rotationDegrees == 90 || rotationDegrees == 270) {
+    width = videoTrack.naturalSize.height;
+    height = videoTrack.naturalSize.width;
+  }
+  videoComposition.renderSize = CGSizeMake(width, height);
+
+  // TODO(@recastrodiaz): should we use videoTrack.nominalFrameRate ?
+  // Currently set at a constant 30 FPS
+  videoComposition.frameDuration = CMTimeMake(1, 30);
+
+  return videoComposition;
+}
+
+- (void)createVideoOutputAndDisplayLink:(FLTFrameUpdater*)frameUpdater {
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   NSDictionary* pixBuffAttributes = @{
     (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA),
     (id)kCVPixelBufferIOSurfacePropertiesKey : @{}
@@ -110,7 +161,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
     if ([asset statusOfValueForKey:@"tracks" error:nil] == AVKeyValueStatusLoaded) {
       NSArray* tracks = [asset tracksWithMediaType:AVMediaTypeVideo];
       if ([tracks count] > 0) {
-        AVAssetTrack* videoTrack = [tracks objectAtIndex:0];
+        AVAssetTrack* videoTrack = tracks[0];
         void (^trackCompletionHandler)(void) = ^{
           if (_disposed) return;
           if ([videoTrack statusOfValueForKey:@"preferredTransform" error:nil] ==
@@ -150,7 +201,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   } else if (context == statusContext) {
     AVPlayerItem* item = (AVPlayerItem*)object;
     switch (item.status) {
-      case AVPlayerStatusFailed:
+      case AVPlayerItemStatusFailed:
         if (_eventSink != nil) {
           _eventSink([FlutterError
               errorWithCode:@"VideoError"
@@ -162,7 +213,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       case AVPlayerItemStatusUnknown:
         break;
       case AVPlayerItemStatusReadyToPlay:
-        _isInitialized = true;
         [item addOutput:_videoOutput];
         [self sendInitialized];
         [self updatePlayingState];
@@ -199,8 +249,24 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 }
 
 - (void)sendInitialized {
-  if (_eventSink && _isInitialized) {
+  if (_eventSink && !_isInitialized) {
     CGSize size = [self.player currentItem].presentationSize;
+<<<<<<< HEAD
+=======
+    CGFloat width = size.width;
+    CGFloat height = size.height;
+
+    // The player has not yet initialized.
+    if (height == CGSizeZero.height && width == CGSizeZero.width) {
+      return;
+    }
+    // The player may be initialized but still needs to determine the duration.
+    if ([self duration] == 0) {
+      return;
+    }
+
+    _isInitialized = true;
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
@@ -239,7 +305,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 }
 
 - (void)setVolume:(double)volume {
-  _player.volume = (volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume);
+  _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
@@ -320,7 +386,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 
     for (NSNumber* textureId in _players) {
       [_registry unregisterTexture:[textureId unsignedIntegerValue]];
-      [[_players objectForKey:textureId] dispose];
+      [_players[textureId] dispose];
     }
     [_players removeAllObjects];
     result(nil);
@@ -363,10 +429,10 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       [player dispose];
       result(nil);
     } else if ([@"setLooping" isEqualToString:call.method]) {
-      [player setIsLooping:[[argsMap objectForKey:@"looping"] boolValue]];
+      [player setIsLooping:[argsMap[@"looping"] boolValue]];
       result(nil);
     } else if ([@"setVolume" isEqualToString:call.method]) {
-      [player setVolume:[[argsMap objectForKey:@"volume"] doubleValue]];
+      [player setVolume:[argsMap[@"volume"] doubleValue]];
       result(nil);
     } else if ([@"play" isEqualToString:call.method]) {
       [player play];
@@ -374,7 +440,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
     } else if ([@"position" isEqualToString:call.method]) {
       result(@([player position]));
     } else if ([@"seekTo" isEqualToString:call.method]) {
-      [player seekTo:[[argsMap objectForKey:@"location"] intValue]];
+      [player seekTo:[argsMap[@"location"] intValue]];
       result(nil);
     } else if ([@"pause" isEqualToString:call.method]) {
       [player pause];

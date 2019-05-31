@@ -20,6 +20,11 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+<<<<<<< HEAD
+=======
+import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FieldValue;
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
@@ -27,6 +32,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Source;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 import io.flutter.plugin.common.MethodCall;
@@ -87,6 +93,32 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   private DocumentReference getDocumentReference(Map<String, Object> arguments) {
     String path = (String) arguments.get("path");
     return getFirestore(arguments).document(path);
+  }
+
+  private Source getSource(Map<String, Object> arguments) {
+    String source = (String) arguments.get("source");
+    switch (source) {
+      case "server":
+        return Source.SERVER;
+      case "cache":
+        return Source.CACHE;
+      default:
+        return Source.DEFAULT;
+    }
+  }
+
+  private Object[] getDocumentValues(Map<String, Object> document, List<List<Object>> orderBy) {
+    String documentId = (String) document.get("id");
+    Map<String, Object> documentData = (Map<String, Object>) document.get("data");
+    List<Object> data = new ArrayList<>();
+    if (orderBy != null) {
+      for (List<Object> order : orderBy) {
+        String orderByFieldName = (String) order.get(0);
+        data.add(documentData.get(orderByFieldName));
+      }
+    }
+    data.add(documentId);
+    return data.toArray();
   }
 
   private Map<String, Object> parseQuerySnapshot(QuerySnapshot querySnapshot) {
@@ -171,11 +203,43 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       query = query.orderBy(orderByFieldName, direction);
     }
     @SuppressWarnings("unchecked")
+    Map<String, Object> startAtDocument = (Map<String, Object>) parameters.get("startAtDocument");
+    if (startAtDocument != null) {
+      query =
+          query
+              .orderBy(FieldPath.documentId())
+              .startAt(getDocumentValues(startAtDocument, orderBy));
+    }
+    @SuppressWarnings("unchecked")
+    Map<String, Object> startAfterDocument =
+        (Map<String, Object>) parameters.get("startAfterDocument");
+    if (startAfterDocument != null) {
+      query =
+          query
+              .orderBy(FieldPath.documentId())
+              .startAfter(getDocumentValues(startAfterDocument, orderBy));
+    }
+    @SuppressWarnings("unchecked")
     List<Object> startAt = (List<Object>) parameters.get("startAt");
     if (startAt != null) query = query.startAt(startAt.toArray());
     @SuppressWarnings("unchecked")
     List<Object> startAfter = (List<Object>) parameters.get("startAfter");
     if (startAfter != null) query = query.startAfter(startAfter.toArray());
+    @SuppressWarnings("unchecked")
+    Map<String, Object> endAtDocument = (Map<String, Object>) parameters.get("endAtDocument");
+    if (endAtDocument != null) {
+      query =
+          query.orderBy(FieldPath.documentId()).endAt(getDocumentValues(endAtDocument, orderBy));
+    }
+    @SuppressWarnings("unchecked")
+    Map<String, Object> endBeforeDocument =
+        (Map<String, Object>) parameters.get("endBeforeDocument");
+    if (endBeforeDocument != null) {
+      query =
+          query
+              .orderBy(FieldPath.documentId())
+              .endBefore(getDocumentValues(endBeforeDocument, orderBy));
+    }
     @SuppressWarnings("unchecked")
     List<Object> endAt = (List<Object>) parameters.get("endAt");
     if (endAt != null) query = query.endAt(endAt.toArray());
@@ -481,7 +545,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         {
           Map<String, Object> arguments = call.arguments();
           Query query = getQuery(arguments);
-          Task<QuerySnapshot> task = query.get();
+          Source source = getSource(arguments);
+          Task<QuerySnapshot> task = query.get(source);
           task.addOnSuccessListener(
                   new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -527,7 +592,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         {
           Map<String, Object> arguments = call.arguments();
           DocumentReference documentReference = getDocumentReference(arguments);
-          Task<DocumentSnapshot> task = documentReference.get();
+          Source source = getSource(arguments);
+          Task<DocumentSnapshot> task = documentReference.get(source);
           task.addOnSuccessListener(
                   new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -575,6 +641,16 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte GEO_POINT = (byte) 129;
   private static final byte DOCUMENT_REFERENCE = (byte) 130;
   private static final byte BLOB = (byte) 131;
+<<<<<<< HEAD
+=======
+  private static final byte ARRAY_UNION = (byte) 132;
+  private static final byte ARRAY_REMOVE = (byte) 133;
+  private static final byte DELETE = (byte) 134;
+  private static final byte SERVER_TIMESTAMP = (byte) 135;
+  private static final byte TIMESTAMP = (byte) 136;
+  private static final byte INCREMENT_DOUBLE = (byte) 137;
+  private static final byte INCREMENT_INTEGER = (byte) 138;
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
@@ -618,6 +694,23 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       case BLOB:
         final byte[] bytes = readBytes(buffer);
         return Blob.fromBytes(bytes);
+<<<<<<< HEAD
+=======
+      case ARRAY_UNION:
+        return FieldValue.arrayUnion(toArray(readValue(buffer)));
+      case ARRAY_REMOVE:
+        return FieldValue.arrayRemove(toArray(readValue(buffer)));
+      case DELETE:
+        return FieldValue.delete();
+      case SERVER_TIMESTAMP:
+        return FieldValue.serverTimestamp();
+      case INCREMENT_INTEGER:
+        final Number integerIncrementValue = (Number) readValue(buffer);
+        return FieldValue.increment(integerIncrementValue.intValue());
+      case INCREMENT_DOUBLE:
+        final Number doubleIncrementValue = (Number) readValue(buffer);
+        return FieldValue.increment(doubleIncrementValue.doubleValue());
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
       default:
         return super.readValueOfType(type, buffer);
     }

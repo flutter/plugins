@@ -10,6 +10,19 @@ static uint64_t _nextMapId = 0;
   GMSMapView* _mapView;
   NSMutableDictionary* _markers;
   BOOL _trackCameraPosition;
+<<<<<<< HEAD
+=======
+  NSObject<FlutterPluginRegistrar>* _registrar;
+  // Used for the temporary workaround for a bug that the camera is not properly positioned at
+  // initialization. https://github.com/flutter/flutter/issues/24806
+  // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
+  // https://github.com/flutter/flutter/issues/27550
+  BOOL _cameraDidInitialSetup;
+  FLTMarkersController* _markersController;
+  FLTPolygonsController* _polygonsController;
+  FLTPolylinesController* _polylinesController;
+  FLTCirclesController* _circlesController;
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 }
 
 + (instancetype)controllerWithWidth:(CGFloat)width
@@ -26,6 +39,51 @@ static uint64_t _nextMapId = 0;
     _mapId = mapId;
     _markers = [NSMutableDictionary dictionaryWithCapacity:1];
     _trackCameraPosition = NO;
+<<<<<<< HEAD
+=======
+    InterpretMapOptions(args[@"options"], self);
+    NSString* channelName =
+        [NSString stringWithFormat:@"plugins.flutter.io/google_maps_%lld", viewId];
+    _channel = [FlutterMethodChannel methodChannelWithName:channelName
+                                           binaryMessenger:registrar.messenger];
+    __weak __typeof__(self) weakSelf = self;
+    [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
+      if (weakSelf) {
+        [weakSelf onMethodCall:call result:result];
+      }
+    }];
+    _mapView.delegate = weakSelf;
+    _registrar = registrar;
+    _cameraDidInitialSetup = NO;
+    _markersController = [[FLTMarkersController alloc] init:_channel
+                                                    mapView:_mapView
+                                                  registrar:registrar];
+    _polygonsController = [[FLTPolygonsController alloc] init:_channel
+                                                      mapView:_mapView
+                                                    registrar:registrar];
+    _polylinesController = [[FLTPolylinesController alloc] init:_channel
+                                                        mapView:_mapView
+                                                      registrar:registrar];
+    _circlesController = [[FLTCirclesController alloc] init:_channel
+                                                    mapView:_mapView
+                                                  registrar:registrar];
+    id markersToAdd = args[@"markersToAdd"];
+    if ([markersToAdd isKindOfClass:[NSArray class]]) {
+      [_markersController addMarkers:markersToAdd];
+    }
+    id polygonsToAdd = args[@"polygonToAdd"];
+    if ([polygonsToAdd isKindOfClass:[NSArray class]]) {
+      [_polygonsController addPolygons:polygonsToAdd];
+    }
+    id polylinesToAdd = args[@"polylinesToAdd"];
+    if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
+      [_polylinesController addPolylines:polylinesToAdd];
+    }
+    id circlesToAdd = args[@"circlesToAdd"];
+    if ([circlesToAdd isKindOfClass:[NSArray class]]) {
+      [_circlesController addCircles:circlesToAdd];
+    }
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
   return self;
 }
@@ -36,9 +94,121 @@ static uint64_t _nextMapId = 0;
   [view addSubview:_mapView];
 }
 
+<<<<<<< HEAD
 - (void)removeFromView {
   [_mapView removeFromSuperview];
   _mapView.delegate = nil;
+=======
+- (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+  if ([call.method isEqualToString:@"map#show"]) {
+    [self showAtX:ToDouble(call.arguments[@"x"]) Y:ToDouble(call.arguments[@"y"])];
+    result(nil);
+  } else if ([call.method isEqualToString:@"map#hide"]) {
+    [self hide];
+    result(nil);
+  } else if ([call.method isEqualToString:@"camera#animate"]) {
+    [self animateWithCameraUpdate:ToCameraUpdate(call.arguments[@"cameraUpdate"])];
+    result(nil);
+  } else if ([call.method isEqualToString:@"camera#move"]) {
+    [self moveWithCameraUpdate:ToCameraUpdate(call.arguments[@"cameraUpdate"])];
+    result(nil);
+  } else if ([call.method isEqualToString:@"map#update"]) {
+    InterpretMapOptions(call.arguments[@"options"], self);
+    result(PositionToJson([self cameraPosition]));
+  } else if ([call.method isEqualToString:@"map#getVisibleRegion"]) {
+    if (_mapView != nil) {
+      GMSVisibleRegion visibleRegion = _mapView.projection.visibleRegion;
+      GMSCoordinateBounds* bounds = [[GMSCoordinateBounds alloc] initWithRegion:visibleRegion];
+
+      result(GMSCoordinateBoundsToJson(bounds));
+    } else {
+      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                 message:@"getVisibleRegion called prior to map initialization"
+                                 details:nil]);
+    }
+  } else if ([call.method isEqualToString:@"map#waitForMap"]) {
+    result(nil);
+  } else if ([call.method isEqualToString:@"markers#update"]) {
+    id markersToAdd = call.arguments[@"markersToAdd"];
+    if ([markersToAdd isKindOfClass:[NSArray class]]) {
+      [_markersController addMarkers:markersToAdd];
+    }
+    id markersToChange = call.arguments[@"markersToChange"];
+    if ([markersToChange isKindOfClass:[NSArray class]]) {
+      [_markersController changeMarkers:markersToChange];
+    }
+    id markerIdsToRemove = call.arguments[@"markerIdsToRemove"];
+    if ([markerIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_markersController removeMarkerIds:markerIdsToRemove];
+    }
+    result(nil);
+  } else if ([call.method isEqualToString:@"polygons#update"]) {
+    id polygonsToAdd = call.arguments[@"polygonsToAdd"];
+    if ([polygonsToAdd isKindOfClass:[NSArray class]]) {
+      [_polygonsController addPolygons:polygonsToAdd];
+    }
+    id polygonsToChange = call.arguments[@"polygonsToChange"];
+    if ([polygonsToChange isKindOfClass:[NSArray class]]) {
+      [_polygonsController changePolygons:polygonsToChange];
+    }
+    id polygonIdsToRemove = call.arguments[@"polygonIdsToRemove"];
+    if ([polygonIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_polygonsController removePolygonIds:polygonIdsToRemove];
+    }
+    result(nil);
+  } else if ([call.method isEqualToString:@"polylines#update"]) {
+    id polylinesToAdd = call.arguments[@"polylinesToAdd"];
+    if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
+      [_polylinesController addPolylines:polylinesToAdd];
+    }
+    id polylinesToChange = call.arguments[@"polylinesToChange"];
+    if ([polylinesToChange isKindOfClass:[NSArray class]]) {
+      [_polylinesController changePolylines:polylinesToChange];
+    }
+    id polylineIdsToRemove = call.arguments[@"polylineIdsToRemove"];
+    if ([polylineIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_polylinesController removePolylineIds:polylineIdsToRemove];
+    }
+    result(nil);
+  } else if ([call.method isEqualToString:@"circles#update"]) {
+    id circlesToAdd = call.arguments[@"circlesToAdd"];
+    if ([circlesToAdd isKindOfClass:[NSArray class]]) {
+      [_circlesController addCircles:circlesToAdd];
+    }
+    id circlesToChange = call.arguments[@"circlesToChange"];
+    if ([circlesToChange isKindOfClass:[NSArray class]]) {
+      [_circlesController changeCircles:circlesToChange];
+    }
+    id circleIdsToRemove = call.arguments[@"circleIdsToRemove"];
+    if ([circleIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_circlesController removeCircleIds:circleIdsToRemove];
+    }
+    result(nil);
+  } else if ([call.method isEqualToString:@"map#isCompassEnabled"]) {
+    NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
+    result(isCompassEnabled);
+  } else if ([call.method isEqualToString:@"map#getMinMaxZoomLevels"]) {
+    NSArray* zoomLevels = @[ @(_mapView.minZoom), @(_mapView.maxZoom) ];
+    result(zoomLevels);
+  } else if ([call.method isEqualToString:@"map#isZoomGesturesEnabled"]) {
+    NSNumber* isZoomGesturesEnabled = @(_mapView.settings.zoomGestures);
+    result(isZoomGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isTiltGesturesEnabled"]) {
+    NSNumber* isTiltGesturesEnabled = @(_mapView.settings.tiltGestures);
+    result(isTiltGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isRotateGesturesEnabled"]) {
+    NSNumber* isRotateGesturesEnabled = @(_mapView.settings.rotateGestures);
+    result(isRotateGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isScrollGesturesEnabled"]) {
+    NSNumber* isScrollGesturesEnabled = @(_mapView.settings.scrollGestures);
+    result(isScrollGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isMyLocationButtonEnabled"]) {
+    NSNumber* isMyLocationButtonEnabled = @(_mapView.settings.myLocationButton);
+    result(isMyLocationButtonEnabled);
+  } else {
+    result(FlutterMethodNotImplemented);
+  }
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 }
 
 - (void)showAtX:(CGFloat)x Y:(CGFloat)y {
@@ -128,6 +298,18 @@ static uint64_t _nextMapId = 0;
   _mapView.settings.zoomGestures = enabled;
 }
 
+<<<<<<< HEAD
+=======
+- (void)setMyLocationEnabled:(BOOL)enabled {
+  _mapView.myLocationEnabled = enabled;
+  _mapView.settings.myLocationButton = enabled;
+}
+
+- (void)setMyLocationButtonEnabled:(BOOL)enabled {
+  _mapView.settings.myLocationButton = enabled;
+}
+
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 #pragma mark - GMSMapViewDelegate methods
 
 - (void)mapView:(GMSMapView*)mapView willMove:(BOOL)gesture {
@@ -152,6 +334,173 @@ static uint64_t _nextMapId = 0;
 
 - (void)mapView:(GMSMapView*)mapView didTapInfoWindow:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
+<<<<<<< HEAD
   [_delegate onInfoWindowTappedOnMap:_mapId marker:markerId];
 }
 @end
+=======
+  [_markersController onInfoWindowTap:markerId];
+}
+- (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
+  NSString* overlayId = overlay.userData[0];
+  if ([_polylinesController hasPolylineWithId:overlayId]) {
+    [_polylinesController onPolylineTap:overlayId];
+  } else if ([_polygonsController hasPolygonWithId:overlayId]) {
+    [_polygonsController onPolygonTap:overlayId];
+  } else if ([_circlesController hasCircleWithId:overlayId]) {
+    [_circlesController onCircleTap:overlayId];
+  }
+}
+
+- (void)mapView:(GMSMapView*)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
+  [_channel invokeMethod:@"map#onTap" arguments:@{@"position" : LocationToJson(coordinate)}];
+}
+
+- (void)mapView:(GMSMapView*)mapView didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate {
+  [_channel invokeMethod:@"map#onLongPress" arguments:@{@"position" : LocationToJson(coordinate)}];
+}
+
+@end
+
+#pragma mark - Implementations of JSON conversion functions.
+
+static NSArray* LocationToJson(CLLocationCoordinate2D position) {
+  return @[ @(position.latitude), @(position.longitude) ];
+}
+
+static NSDictionary* PositionToJson(GMSCameraPosition* position) {
+  if (!position) {
+    return nil;
+  }
+  return @{
+    @"target" : LocationToJson([position target]),
+    @"zoom" : @([position zoom]),
+    @"bearing" : @([position bearing]),
+    @"tilt" : @([position viewingAngle]),
+  };
+}
+
+static NSDictionary* GMSCoordinateBoundsToJson(GMSCoordinateBounds* bounds) {
+  if (!bounds) {
+    return nil;
+  }
+  return @{
+    @"southwest" : LocationToJson([bounds southWest]),
+    @"northeast" : LocationToJson([bounds northEast]),
+  };
+}
+
+static float ToFloat(NSNumber* data) { return [FLTGoogleMapJsonConversions toFloat:data]; }
+
+static CLLocationCoordinate2D ToLocation(NSArray* data) {
+  return [FLTGoogleMapJsonConversions toLocation:data];
+}
+
+static int ToInt(NSNumber* data) { return [FLTGoogleMapJsonConversions toInt:data]; }
+
+static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:data]; }
+
+static CGPoint ToPoint(NSArray* data) { return [FLTGoogleMapJsonConversions toPoint:data]; }
+
+static GMSCameraPosition* ToCameraPosition(NSDictionary* data) {
+  return [GMSCameraPosition cameraWithTarget:ToLocation(data[@"target"])
+                                        zoom:ToFloat(data[@"zoom"])
+                                     bearing:ToDouble(data[@"bearing"])
+                                viewingAngle:ToDouble(data[@"tilt"])];
+}
+
+static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json) {
+  return json ? ToCameraPosition(json) : nil;
+}
+
+static GMSCoordinateBounds* ToBounds(NSArray* data) {
+  return [[GMSCoordinateBounds alloc] initWithCoordinate:ToLocation(data[0])
+                                              coordinate:ToLocation(data[1])];
+}
+
+static GMSCoordinateBounds* ToOptionalBounds(NSArray* data) {
+  return (data[0] == [NSNull null]) ? nil : ToBounds(data[0]);
+}
+
+static GMSMapViewType ToMapViewType(NSNumber* json) {
+  int value = ToInt(json);
+  return (GMSMapViewType)(value == 0 ? 5 : value);
+}
+
+static GMSCameraUpdate* ToCameraUpdate(NSArray* data) {
+  NSString* update = data[0];
+  if ([update isEqualToString:@"newCameraPosition"]) {
+    return [GMSCameraUpdate setCamera:ToCameraPosition(data[1])];
+  } else if ([update isEqualToString:@"newLatLng"]) {
+    return [GMSCameraUpdate setTarget:ToLocation(data[1])];
+  } else if ([update isEqualToString:@"newLatLngBounds"]) {
+    return [GMSCameraUpdate fitBounds:ToBounds(data[1]) withPadding:ToDouble(data[2])];
+  } else if ([update isEqualToString:@"newLatLngZoom"]) {
+    return [GMSCameraUpdate setTarget:ToLocation(data[1]) zoom:ToFloat(data[2])];
+  } else if ([update isEqualToString:@"scrollBy"]) {
+    return [GMSCameraUpdate scrollByX:ToDouble(data[1]) Y:ToDouble(data[2])];
+  } else if ([update isEqualToString:@"zoomBy"]) {
+    if (data.count == 2) {
+      return [GMSCameraUpdate zoomBy:ToFloat(data[1])];
+    } else {
+      return [GMSCameraUpdate zoomBy:ToFloat(data[1]) atPoint:ToPoint(data[2])];
+    }
+  } else if ([update isEqualToString:@"zoomIn"]) {
+    return [GMSCameraUpdate zoomIn];
+  } else if ([update isEqualToString:@"zoomOut"]) {
+    return [GMSCameraUpdate zoomOut];
+  } else if ([update isEqualToString:@"zoomTo"]) {
+    return [GMSCameraUpdate zoomTo:ToFloat(data[1])];
+  }
+  return nil;
+}
+
+static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> sink) {
+  NSArray* cameraTargetBounds = data[@"cameraTargetBounds"];
+  if (cameraTargetBounds) {
+    [sink setCameraTargetBounds:ToOptionalBounds(cameraTargetBounds)];
+  }
+  NSNumber* compassEnabled = data[@"compassEnabled"];
+  if (compassEnabled) {
+    [sink setCompassEnabled:ToBool(compassEnabled)];
+  }
+  NSNumber* mapType = data[@"mapType"];
+  if (mapType) {
+    [sink setMapType:ToMapViewType(mapType)];
+  }
+  NSArray* zoomData = data[@"minMaxZoomPreference"];
+  if (zoomData) {
+    float minZoom = (zoomData[0] == [NSNull null]) ? kGMSMinZoomLevel : ToFloat(zoomData[0]);
+    float maxZoom = (zoomData[1] == [NSNull null]) ? kGMSMaxZoomLevel : ToFloat(zoomData[1]);
+    [sink setMinZoom:minZoom maxZoom:maxZoom];
+  }
+  NSNumber* rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
+  if (rotateGesturesEnabled) {
+    [sink setRotateGesturesEnabled:ToBool(rotateGesturesEnabled)];
+  }
+  NSNumber* scrollGesturesEnabled = data[@"scrollGesturesEnabled"];
+  if (scrollGesturesEnabled) {
+    [sink setScrollGesturesEnabled:ToBool(scrollGesturesEnabled)];
+  }
+  NSNumber* tiltGesturesEnabled = data[@"tiltGesturesEnabled"];
+  if (tiltGesturesEnabled) {
+    [sink setTiltGesturesEnabled:ToBool(tiltGesturesEnabled)];
+  }
+  NSNumber* trackCameraPosition = data[@"trackCameraPosition"];
+  if (trackCameraPosition) {
+    [sink setTrackCameraPosition:ToBool(trackCameraPosition)];
+  }
+  NSNumber* zoomGesturesEnabled = data[@"zoomGesturesEnabled"];
+  if (zoomGesturesEnabled) {
+    [sink setZoomGesturesEnabled:ToBool(zoomGesturesEnabled)];
+  }
+  NSNumber* myLocationEnabled = data[@"myLocationEnabled"];
+  if (myLocationEnabled) {
+    [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
+  }
+  NSNumber* myLocationButtonEnabled = data[@"myLocationButtonEnabled"];
+  if (myLocationButtonEnabled) {
+    [sink setMyLocationButtonEnabled:ToBool(myLocationButtonEnabled)];
+  }
+}
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a

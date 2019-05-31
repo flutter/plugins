@@ -6,6 +6,7 @@
 
 #import "Firebase/Firebase.h"
 
+<<<<<<< HEAD
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
 @end
@@ -15,6 +16,14 @@
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
                              message:self.domain
                              details:self.localizedDescription];
+=======
+static NSString *getFlutterErrorCode(NSError *error) {
+  NSString *code = [error userInfo][FIRAuthErrorUserInfoNameKey];
+  if (code != nil) {
+    return code;
+  }
+  return [NSString stringWithFormat:@"ERROR_%d", (int)error.code];
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 }
 @end
 
@@ -59,6 +68,23 @@ int nextHandle = 0;
   return self;
 }
 
+<<<<<<< HEAD
+=======
+- (FIRAuth *_Nullable)getAuth:(NSDictionary *)args {
+  NSString *appName = [args objectForKey:@"app"];
+  return [FIRAuth authWithApp:[FIRApp appNamed:appName]];
+}
+
+// TODO(jackson): We should use the renamed versions of the following methods
+// when they are available in the Firebase SDK that this plugin is dependent on.
+// * fetchSignInMethodsForEmail:completion:
+// * reauthenticateAndRetrieveDataWithCredential:completion:
+// * linkAndRetrieveDataWithCredential:completion:
+// * signInAndRetrieveDataWithCredential:completion:
+// See discussion at https://github.com/flutter/plugins/pull/1487
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"currentUser" isEqualToString:call.method]) {
     id __block listener = [[FIRAuth auth]
@@ -151,8 +177,53 @@ int nextHandle = 0;
                       completion:^(NSString *_Nullable token, NSError *_Nullable error) {
                         result(error != nil ? error.flutterError : token);
                       }];
+<<<<<<< HEAD
   } else if ([@"linkWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
+=======
+  } else if ([@"reauthenticateWithCredential" isEqualToString:call.method]) {
+    [[self getAuth:call.arguments].currentUser
+        reauthenticateAndRetrieveDataWithCredential:[self getCredential:call.arguments]
+                                         completion:^(FIRAuthDataResult *r,
+                                                      NSError *_Nullable error) {
+                                           [self sendResult:result forObject:nil error:error];
+                                         }];
+  } else if ([@"linkWithCredential" isEqualToString:call.method]) {
+    [[self getAuth:call.arguments].currentUser
+        linkAndRetrieveDataWithCredential:[self getCredential:call.arguments]
+                               completion:^(FIRAuthDataResult *r, NSError *error) {
+                                 [self sendResult:result forUser:r.user error:error];
+                               }];
+  } else if ([@"unlinkFromProvider" isEqualToString:call.method]) {
+    NSString *provider = call.arguments[@"provider"];
+    [[self getAuth:call.arguments].currentUser
+        unlinkFromProvider:provider
+                completion:^(FIRUser *_Nullable user, NSError *_Nullable error) {
+                  [self sendResult:result forUser:user error:error];
+                }];
+  } else if ([@"updateEmail" isEqualToString:call.method]) {
+    NSString *email = call.arguments[@"email"];
+    [[self getAuth:call.arguments].currentUser updateEmail:email
+                                                completion:^(NSError *error) {
+                                                  [self sendResult:result
+                                                         forObject:nil
+                                                             error:error];
+                                                }];
+  } else if ([@"updatePhoneNumberCredential" isEqualToString:call.method]) {
+    NSString *verificationId = call.arguments[@"verificationId"];
+    NSString *smsCode = call.arguments[@"smsCode"];
+
+    FIRPhoneAuthCredential *credential =
+        [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
+                                                     verificationCode:smsCode];
+
+    [[self getAuth:call.arguments].currentUser
+        updatePhoneNumberCredential:credential
+                         completion:^(NSError *_Nullable error) {
+                           [self sendResult:result forObject:nil error:error];
+                         }];
+  } else if ([@"updatePassword" isEqualToString:call.method]) {
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
     NSString *password = call.arguments[@"password"];
     FIRAuthCredential *credential =
         [FIREmailAuthProvider credentialWithEmail:email password:password];
@@ -256,10 +327,18 @@ int nextHandle = 0;
     FIRPhoneAuthCredential *credential =
         [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
                                                      verificationCode:smsCode];
+<<<<<<< HEAD
     [[FIRAuth auth] signInWithCredential:credential
                               completion:^(FIRUser *user, NSError *error) {
                                 [self sendResult:result forUser:user error:error];
                               }];
+=======
+    [[self getAuth:call.arguments]
+        signInAndRetrieveDataWithCredential:credential
+                                 completion:^(FIRAuthDataResult *r, NSError *_Nullable error) {
+                                   [self sendResult:result forUser:r.user error:error];
+                                 }];
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   } else if ([@"setLanguageCode" isEqualToString:call.method]) {
     NSString *language = call.arguments[@"language"];
     [[FIRAuth auth] setLanguageCode:language];
@@ -281,6 +360,7 @@ int nextHandle = 0;
   userData[@"providerData"] = providerData;
   return userData;
 }
+#pragma clang diagnostic pop
 
 - (void)sendResult:(FlutterResult)result forUser:(FIRUser *)user error:(NSError *)error {
   if (error != nil) {

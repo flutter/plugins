@@ -16,8 +16,13 @@ A new flutter plugin project.
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
   s.dependency 'Firebase/Core'
+<<<<<<< HEAD
   s.dependency 'Firebase/Functions'
   
   s.ios.deployment_target = '8.0'
+=======
+  s.dependency 'Firebase/Functions', '~> 6.0'
+  s.static_framework = true
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 end
 

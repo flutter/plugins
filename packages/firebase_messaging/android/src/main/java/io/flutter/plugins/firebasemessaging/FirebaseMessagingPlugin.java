@@ -44,7 +44,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
     FirebaseApp.initializeApp(registrar.context());
 
     IntentFilter intentFilter = new IntentFilter();
-    intentFilter.addAction(FlutterFirebaseInstanceIDService.ACTION_TOKEN);
+    intentFilter.addAction(FlutterFirebaseMessagingService.ACTION_TOKEN);
     intentFilter.addAction(FlutterFirebaseMessagingService.ACTION_REMOTE_MESSAGE);
     LocalBroadcastManager manager = LocalBroadcastManager.getInstance(registrar.context());
     manager.registerReceiver(this, intentFilter);
@@ -54,8 +54,18 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   @Override
   public void onReceive(Context context, Intent intent) {
     String action = intent.getAction();
+<<<<<<< HEAD
     if (action.equals(FlutterFirebaseInstanceIDService.ACTION_TOKEN)) {
       String token = intent.getStringExtra(FlutterFirebaseInstanceIDService.EXTRA_TOKEN);
+=======
+
+    if (action == null) {
+      return;
+    }
+
+    if (action.equals(FlutterFirebaseMessagingService.ACTION_TOKEN)) {
+      String token = intent.getStringExtra(FlutterFirebaseMessagingService.EXTRA_TOKEN);
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
       channel.invokeMethod("onToken", token);
     } else if (action.equals(FlutterFirebaseMessagingService.ACTION_REMOTE_MESSAGE)) {
       RemoteMessage message =
@@ -67,7 +77,19 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     if ("configure".equals(call.method)) {
-      FlutterFirebaseInstanceIDService.broadcastToken(registrar.context());
+      FirebaseInstanceId.getInstance()
+          .getInstanceId()
+          .addOnCompleteListener(
+              new OnCompleteListener<InstanceIdResult>() {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                  if (!task.isSuccessful()) {
+                    Log.w(TAG, "getToken, error fetching instanceID: ", task.getException());
+                    return;
+                  }
+                  channel.invokeMethod("onToken", task.getResult().getToken());
+                }
+              });
       if (registrar.activity() != null) {
         sendMessageFromIntent("onLaunch", registrar.activity().getIntent());
       }

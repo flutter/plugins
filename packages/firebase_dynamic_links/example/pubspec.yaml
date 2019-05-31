@@ -7,6 +7,12 @@ dependencies:
 
   firebase_dynamic_links:
     path: ../
+<<<<<<< HEAD
+=======
+  firebase_core: ^0.4.0
+
+  url_launcher: ^4.2.0
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
 flutter:
   uses-material-design: true

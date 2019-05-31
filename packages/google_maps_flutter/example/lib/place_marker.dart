@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:math';
+<<<<<<< HEAD
+=======
+import 'dart:ui';
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -175,11 +179,59 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   Future<void> _changeZIndex() async {
+<<<<<<< HEAD
     final double current = _selectedMarker.options.zIndex;
     _updateSelectedMarker(
       MarkerOptions(zIndex: current == 12.0 ? 0.0 : current + 1.0),
     );
   }
+=======
+    final Marker marker = markers[selectedMarker];
+    final double current = marker.zIndex;
+    setState(() {
+      markers[selectedMarker] = marker.copyWith(
+        zIndexParam: current == 12.0 ? 0.0 : current + 1.0,
+      );
+    });
+  }
+
+// A breaking change to the ImageStreamListener API affects this sample.
+// I've updates the sample to use the new API, but as we cannot use the new
+// API before it makes it to stable I'm commenting out this sample for now
+// TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
+// https://github.com/flutter/flutter/issues/33438
+//
+//  void _setMarkerIcon(BitmapDescriptor assetIcon) {
+//    if (selectedMarker == null) {
+//      return;
+//    }
+//
+//    final Marker marker = markers[selectedMarker];
+//    setState(() {
+//      markers[selectedMarker] = marker.copyWith(
+//        iconParam: assetIcon,
+//      );
+//    });
+//  }
+//
+//  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
+//    final Completer<BitmapDescriptor> bitmapIcon =
+//        Completer<BitmapDescriptor>();
+//    final ImageConfiguration config = createLocalImageConfiguration(context);
+//
+//    const AssetImage('assets/red_square.png')
+//        .resolve(config)
+//        .addListener(ImageStreamListener((ImageInfo image, bool sync) async {
+//      final ByteData bytes =
+//          await image.image.toByteData(format: ImageByteFormat.png);
+//      final BitmapDescriptor bitmap =
+//          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
+//      bitmapIcon.complete(bitmap);
+//    }));
+//
+//    return await bitmapIcon.future;
+//  }
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
   @override
   Widget build(BuildContext context) {
@@ -231,6 +283,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                       onPressed:
                           (_selectedMarker == null) ? null : _toggleDraggable,
                     ),
+<<<<<<< HEAD
                     FlatButton(
                       child: const Text('toggle flat'),
                       onPressed: (_selectedMarker == null) ? null : _toggleFlat,
@@ -254,6 +307,59 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                       child: const Text('change zIndex'),
                       onPressed:
                           (_selectedMarker == null) ? null : _changeZIndex,
+=======
+                    Column(
+                      children: <Widget>[
+                        FlatButton(
+                          child: const Text('change alpha'),
+                          onPressed: _changeAlpha,
+                        ),
+                        FlatButton(
+                          child: const Text('change anchor'),
+                          onPressed: _changeAnchor,
+                        ),
+                        FlatButton(
+                          child: const Text('toggle draggable'),
+                          onPressed: _toggleDraggable,
+                        ),
+                        FlatButton(
+                          child: const Text('toggle flat'),
+                          onPressed: _toggleFlat,
+                        ),
+                        FlatButton(
+                          child: const Text('change position'),
+                          onPressed: _changePosition,
+                        ),
+                        FlatButton(
+                          child: const Text('change rotation'),
+                          onPressed: _changeRotation,
+                        ),
+                        FlatButton(
+                          child: const Text('toggle visible'),
+                          onPressed: _toggleVisible,
+                        ),
+                        FlatButton(
+                          child: const Text('change zIndex'),
+                          onPressed: _changeZIndex,
+                        ),
+                        // A breaking change to the ImageStreamListener API affects this sample.
+                        // I've updates the sample to use the new API, but as we cannot use the new
+                        // API before it makes it to stable I'm commenting out this sample for now
+                        // TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
+                        // https://github.com/flutter/flutter/issues/33438
+                        //
+                        // FlatButton(
+                        //   child: const Text('set marker icon'),
+                        //   onPressed: () {
+                        //     _getAssetIcon(context).then(
+                        //       (BitmapDescriptor icon) {
+                        //         _setMarkerIcon(icon);
+                        //       },
+                        //     );
+                        //   },
+                        // ),
+                      ],
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
                     ),
                   ],
                 ),

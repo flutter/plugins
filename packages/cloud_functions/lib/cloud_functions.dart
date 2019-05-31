@@ -1,9 +1,10 @@
-// Copyright 2018, the Chromium project authors.  Please see the AUTHORS file
+// Copyright 2019, the Chromium project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:async';
+library cloud_functions;
 
+<<<<<<< HEAD
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
@@ -56,3 +57,13 @@ class CloudFunctions {
     }
   }
 }
+=======
+import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
+
+part 'src/cloud_functions.dart';
+part 'src/https_callable.dart';
+part 'src/https_callable_result.dart';
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a

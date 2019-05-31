@@ -88,8 +88,13 @@ void main() {
       });
 
       test('$AndroidParameters', () async {
+<<<<<<< HEAD
         final DynamicLinkParameters components = new DynamicLinkParameters(
           domain: 'test-domain',
+=======
+        final DynamicLinkParameters components = DynamicLinkParameters(
+          uriPrefix: 'https://test-domain/',
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
           link: Uri.parse('test-link.com'),
           androidParameters: new AndroidParameters(
             fallbackUrl: Uri.parse('test-url'),
@@ -110,7 +115,7 @@ void main() {
                 'minimumVersion': 1,
                 'packageName': 'test-package',
               },
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': null,
               'googleAnalyticsParameters': null,
               'iosParameters': null,
@@ -128,7 +133,7 @@ void main() {
                 'minimumVersion': 1,
                 'packageName': 'test-package',
               },
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': null,
               'googleAnalyticsParameters': null,
               'iosParameters': null,
@@ -142,8 +147,13 @@ void main() {
       });
 
       test('$DynamicLinkParametersOptions', () async {
+<<<<<<< HEAD
         final DynamicLinkParameters components = new DynamicLinkParameters(
           domain: 'test-domain',
+=======
+        final DynamicLinkParameters components = DynamicLinkParameters(
+          uriPrefix: 'https://test-domain/',
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
           link: Uri.parse('test-link.com'),
           dynamicLinkParametersOptions: new DynamicLinkParametersOptions(
               shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short),
@@ -157,7 +167,7 @@ void main() {
             'DynamicLinkParameters#buildUrl',
             arguments: <String, dynamic>{
               'androidParameters': null,
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': <String, dynamic>{
                 'shortDynamicLinkPathLength':
                     ShortDynamicLinkPathLength.short.index,
@@ -174,7 +184,7 @@ void main() {
             'DynamicLinkParameters#buildShortLink',
             arguments: <String, dynamic>{
               'androidParameters': null,
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': <String, dynamic>{
                 'shortDynamicLinkPathLength':
                     ShortDynamicLinkPathLength.short.index,
@@ -196,8 +206,13 @@ void main() {
       });
 
       test('$GoogleAnalyticsParameters', () async {
+<<<<<<< HEAD
         final DynamicLinkParameters components = new DynamicLinkParameters(
           domain: 'test-domain',
+=======
+        final DynamicLinkParameters components = DynamicLinkParameters(
+          uriPrefix: 'https://test-domain/',
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
           link: Uri.parse('test-link.com'),
           googleAnalyticsParameters: new GoogleAnalyticsParameters(
             campaign: 'where',
@@ -216,7 +231,7 @@ void main() {
             'DynamicLinkParameters#buildUrl',
             arguments: <String, dynamic>{
               'androidParameters': null,
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': null,
               'googleAnalyticsParameters': <String, dynamic>{
                 'campaign': 'where',
@@ -236,7 +251,7 @@ void main() {
             'DynamicLinkParameters#buildShortLink',
             arguments: <String, dynamic>{
               'androidParameters': null,
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': null,
               'googleAnalyticsParameters': <String, dynamic>{
                 'campaign': 'where',
@@ -256,8 +271,13 @@ void main() {
       });
 
       test('$IosParameters', () async {
+<<<<<<< HEAD
         final DynamicLinkParameters components = new DynamicLinkParameters(
           domain: 'test-domain',
+=======
+        final DynamicLinkParameters components = DynamicLinkParameters(
+          uriPrefix: 'https://test-domain/',
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
           link: Uri.parse('test-link.com'),
           iosParameters: IosParameters(
             appStoreId: 'is',
@@ -278,7 +298,7 @@ void main() {
             'DynamicLinkParameters#buildUrl',
             arguments: <String, dynamic>{
               'androidParameters': null,
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': null,
               'googleAnalyticsParameters': null,
               'iosParameters': <String, dynamic>{
@@ -300,7 +320,7 @@ void main() {
             'DynamicLinkParameters#buildShortLink',
             arguments: <String, dynamic>{
               'androidParameters': null,
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': null,
               'googleAnalyticsParameters': null,
               'iosParameters': <String, dynamic>{
@@ -322,8 +342,13 @@ void main() {
       });
 
       test('$ItunesConnectAnalyticsParameters', () async {
+<<<<<<< HEAD
         final DynamicLinkParameters components = new DynamicLinkParameters(
           domain: 'test-domain',
+=======
+        final DynamicLinkParameters components = DynamicLinkParameters(
+          uriPrefix: 'https://test-domain/',
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
           link: Uri.parse('test-link.com'),
           itunesConnectAnalyticsParameters:
               new ItunesConnectAnalyticsParameters(
@@ -341,7 +366,7 @@ void main() {
             'DynamicLinkParameters#buildUrl',
             arguments: <String, dynamic>{
               'androidParameters': null,
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': null,
               'googleAnalyticsParameters': null,
               'iosParameters': null,
@@ -359,7 +384,7 @@ void main() {
             'DynamicLinkParameters#buildShortLink',
             arguments: <String, dynamic>{
               'androidParameters': null,
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': null,
               'googleAnalyticsParameters': null,
               'iosParameters': null,
@@ -377,8 +402,13 @@ void main() {
       });
 
       test('$NavigationInfoParameters', () async {
+<<<<<<< HEAD
         final DynamicLinkParameters components = new DynamicLinkParameters(
           domain: 'test-domain',
+=======
+        final DynamicLinkParameters components = DynamicLinkParameters(
+          uriPrefix: 'https://test-domain/',
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
           link: Uri.parse('test-link.com'),
           navigationInfoParameters:
               new NavigationInfoParameters(forcedRedirectEnabled: true),
@@ -392,7 +422,7 @@ void main() {
             'DynamicLinkParameters#buildUrl',
             arguments: <String, dynamic>{
               'androidParameters': null,
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': null,
               'googleAnalyticsParameters': null,
               'iosParameters': null,
@@ -408,7 +438,7 @@ void main() {
             'DynamicLinkParameters#buildShortLink',
             arguments: <String, dynamic>{
               'androidParameters': null,
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': null,
               'googleAnalyticsParameters': null,
               'iosParameters': null,
@@ -424,8 +454,13 @@ void main() {
       });
 
       test('$SocialMetaTagParameters', () async {
+<<<<<<< HEAD
         final DynamicLinkParameters components = new DynamicLinkParameters(
           domain: 'test-domain',
+=======
+        final DynamicLinkParameters components = DynamicLinkParameters(
+          uriPrefix: 'https://test-domain/',
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
           link: Uri.parse('test-link.com'),
           socialMetaTagParameters: SocialMetaTagParameters(
             description: 'describe',
@@ -442,7 +477,7 @@ void main() {
             'DynamicLinkParameters#buildUrl',
             arguments: <String, dynamic>{
               'androidParameters': null,
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': null,
               'googleAnalyticsParameters': null,
               'iosParameters': null,
@@ -460,7 +495,7 @@ void main() {
             'DynamicLinkParameters#buildShortLink',
             arguments: <String, dynamic>{
               'androidParameters': null,
-              'domain': 'test-domain',
+              'uriPrefix': 'https://test-domain/',
               'dynamicLinkParametersOptions': null,
               'googleAnalyticsParameters': null,
               'iosParameters': null,

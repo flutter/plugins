@@ -15,7 +15,32 @@ import com.google.firebase.FirebaseApiNotAvailableException;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseTooManyRequestsException;
+<<<<<<< HEAD
 import com.google.firebase.auth.*;
+=======
+import com.google.firebase.auth.ActionCodeSettings;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.FirebaseUserMetadata;
+import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.auth.GithubAuthProvider;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken;
+import com.google.firebase.auth.SignInMethodQueryResult;
+import com.google.firebase.auth.TwitterAuthProvider;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.gson.Gson;
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -160,19 +185,11 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
           @Override
           public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            firebaseAuth
-                .signInWithCredential(phoneAuthCredential)
-                .addOnCompleteListener(
-                    new OnCompleteListener<AuthResult>() {
-                      @Override
-                      public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                          Map<String, Object> arguments = new HashMap<>();
-                          arguments.put("handle", handle);
-                          channel.invokeMethod("phoneVerificationCompleted", arguments);
-                        }
-                      }
-                    });
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("handle", handle);
+            String parsedJson = new Gson().toJson(phoneAuthCredential);
+            arguments.put("phoneAuthCredential", parsedJson);
+            channel.invokeMethod("phoneVerificationCompleted", arguments);
           }
 
           @Override
@@ -351,6 +368,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleLinkWithGoogleCredential(MethodCall call, final Result result) {
     @SuppressWarnings("unchecked")
+<<<<<<< HEAD
     Map<String, String> arguments = (Map<String, String>) call.arguments;
     String idToken = arguments.get("idToken");
     String accessToken = arguments.get("accessToken");
@@ -359,6 +377,67 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .getCurrentUser()
         .linkWithCredential(credential)
         .addOnCompleteListener(new SignInCompleteListener(result));
+=======
+    Map<String, String> data = (Map<String, String>) arguments.get("data");
+
+    switch ((String) arguments.get("provider")) {
+      case EmailAuthProvider.PROVIDER_ID:
+        {
+          String email = data.get("email");
+          if (data.containsKey("password")) {
+            String password = data.get("password");
+            credential = EmailAuthProvider.getCredential(email, password);
+          } else {
+            String link = data.get("link");
+            credential = EmailAuthProvider.getCredentialWithLink(email, link);
+          }
+          break;
+        }
+      case GoogleAuthProvider.PROVIDER_ID:
+        {
+          String idToken = data.get("idToken");
+          String accessToken = data.get("accessToken");
+          credential = GoogleAuthProvider.getCredential(idToken, accessToken);
+          break;
+        }
+      case FacebookAuthProvider.PROVIDER_ID:
+        {
+          String accessToken = data.get("accessToken");
+          credential = FacebookAuthProvider.getCredential(accessToken);
+          break;
+        }
+      case TwitterAuthProvider.PROVIDER_ID:
+        {
+          String authToken = data.get("authToken");
+          String authTokenSecret = data.get("authTokenSecret");
+          credential = TwitterAuthProvider.getCredential(authToken, authTokenSecret);
+          break;
+        }
+      case GithubAuthProvider.PROVIDER_ID:
+        {
+          String token = data.get("token");
+          credential = GithubAuthProvider.getCredential(token);
+          break;
+        }
+      case PhoneAuthProvider.PROVIDER_ID:
+        {
+          if (data.containsKey("verificationId")) {
+            String accessToken = data.get("verificationId");
+            String smsCode = data.get("smsCode");
+            credential = PhoneAuthProvider.getCredential(accessToken, smsCode);
+          } else {
+            credential = new Gson().fromJson(data.get("jsonObject"), PhoneAuthCredential.class);
+          }
+          break;
+        }
+      default:
+        {
+          credential = null;
+          break;
+        }
+    }
+    return credential;
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 
   private void handleLinkWithFacebookCredential(MethodCall call, final Result result) {
@@ -424,9 +503,62 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
             });
   }
 
+<<<<<<< HEAD
   private void handleUpdateProfile(MethodCall call, final Result result) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
+=======
+  private void handleUpdateEmail(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+    if (currentUser == null) {
+      markUserRequired(result);
+      return;
+    }
+
+    Map<String, String> arguments = call.arguments();
+    final String email = arguments.get("email");
+
+    currentUser.updateEmail(email).addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleUpdatePhoneNumber(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    Map<String, String> arguments = call.arguments();
+    String verificationId = arguments.get("verificationId");
+    String smsCode = arguments.get("smsCode");
+
+    PhoneAuthCredential phoneAuthCredential =
+        PhoneAuthProvider.getCredential(verificationId, smsCode);
+
+    firebaseAuth
+        .getCurrentUser()
+        .updatePhoneNumber(phoneAuthCredential)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleUpdatePassword(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+    if (currentUser == null) {
+      markUserRequired(result);
+      return;
+    }
+
+    Map<String, String> arguments = call.arguments();
+    final String password = arguments.get("password");
+
+    currentUser
+        .updatePassword(password)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleUpdateProfile(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+    if (currentUser == null) {
+      markUserRequired(result);
+      return;
+    }
+
+    Map<String, String> arguments = call.arguments();
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
     UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
     if (arguments.containsKey("displayName")) {

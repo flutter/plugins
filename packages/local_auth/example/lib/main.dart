@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
       authenticated = await auth.authenticateWithBiometrics(
           localizedReason: 'Scan your fingerprint to authenticate',
           useErrorDialogs: true,
-          stickyAuth: false);
+          stickyAuth: true);
     } on PlatformException catch (e) {
       print(e);
     }

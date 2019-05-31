@@ -79,7 +79,13 @@ void main() {
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.unknown);
+<<<<<<< HEAD
         expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
+=======
+        // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+        // ignore: prefer_const_constructors
+        expect(barcode.boundingBox, Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
         expect(barcode.rawValue, 'hello:raw');
         expect(barcode.displayValue, 'hello:display');
         expect(barcode.cornerPoints, const <Point<int>>[
@@ -499,7 +505,13 @@ void main() {
         ]);
 
         final Face face = faces[0];
+<<<<<<< HEAD
         expect(face.boundingBox, const Rectangle<int>(0, 1, 2, 3));
+=======
+        // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+        // ignore: prefer_const_constructors
+        expect(face.boundingBox, Rect.fromLTWH(0.0, 1.0, 2.0, 3.0));
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
         expect(face.headEulerAngleY, 4.0);
         expect(face.headEulerAngleZ, 5.0);
         expect(face.leftEyeOpenProbability, 0.4);
@@ -685,6 +697,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
+<<<<<<< HEAD
         final List<TextBlock> blocks = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
@@ -720,6 +733,101 @@ void main() {
           Point<int>(5, 6),
           Point<int>(7, 8),
         ]);
+=======
+      group('$TextBlock', () {
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
+
+          expect(text.blocks, hasLength(2));
+
+          TextBlock block = text.blocks[0];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
+          expect(block.boundingBox, Rect.fromLTWH(13.0, 14.0, 15.0, 16.0));
+          expect(block.text, 'friend');
+          expect(block.cornerPoints, const <Offset>[
+            Offset(17.0, 18.0),
+            Offset(19.0, 20.0),
+          ]);
+          expect(block.recognizedLanguages, hasLength(2));
+          expect(block.recognizedLanguages[0].languageCode, 'ij');
+          expect(block.recognizedLanguages[1].languageCode, 'kl');
+          expect(block.confidence, 0.5);
+
+          block = text.blocks[1];
+          // ignore: prefer_const_constructors
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
+          expect(block.boundingBox, Rect.fromLTWH(14.0, 13.0, 16.0, 15.0));
+          expect(block.text, 'hello');
+          expect(block.cornerPoints, const <Offset>[
+            Offset(18.0, 17.0),
+            Offset(20.0, 19.0),
+          ]);
+          expect(block.confidence, 0.6);
+        });
+      });
+
+      group('$TextLine', () {
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
+
+          TextLine line = text.blocks[0].lines[0];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
+          expect(line.boundingBox, Rect.fromLTWH(5, 6, 7, 8));
+          expect(line.text, 'friend');
+          expect(line.cornerPoints, const <Offset>[
+            Offset(9.0, 10.0),
+            Offset(11.0, 12.0),
+          ]);
+          expect(line.recognizedLanguages, hasLength(2));
+          expect(line.recognizedLanguages[0].languageCode, 'ef');
+          expect(line.recognizedLanguages[1].languageCode, 'gh');
+          expect(line.confidence, 0.3);
+
+          line = text.blocks[0].lines[1];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
+          expect(line.boundingBox, Rect.fromLTWH(8.0, 7.0, 4.0, 5.0));
+          expect(line.text, 'how');
+          expect(line.cornerPoints, const <Offset>[
+            Offset(10.0, 9.0),
+            Offset(12.0, 11.0),
+          ]);
+          expect(line.confidence, 0.4);
+        });
+      });
+
+      group('$TextElement', () {
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
+
+          TextElement element = text.blocks[0].lines[0].elements[0];
+          // ignore: prefer_const_constructors
+          expect(element.boundingBox, Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
+          expect(element.text, 'hello');
+          expect(element.cornerPoints, const <Offset>[
+            Offset(5.0, 6.0),
+            Offset(7.0, 8.0),
+          ]);
+          expect(element.recognizedLanguages, hasLength(2));
+          expect(element.recognizedLanguages[0].languageCode, 'ab');
+          expect(element.recognizedLanguages[1].languageCode, 'cd');
+          expect(element.confidence, 0.1);
+
+          element = text.blocks[0].lines[0].elements[1];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
+          expect(element.boundingBox, Rect.fromLTWH(4.0, 3.0, 2.0, 1.0));
+          expect(element.text, 'my');
+          expect(element.cornerPoints, const <Offset>[
+            Offset(6.0, 5.0),
+            Offset(8.0, 7.0),
+          ]);
+          expect(element.confidence, 0.2);
+        });
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
       });
 
       test('detectInImage no blocks', () async {

@@ -1,5 +1,11 @@
 package io.flutter.plugins.imagepicker;
 
+<<<<<<< HEAD
+=======
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -80,7 +86,7 @@ public class ImagePickerPluginTest {
 
     plugin.onMethodCall(call, mockResult);
 
-    verify(mockImagePickerDelegate).chooseImageFromGallery(call, mockResult);
+    verify(mockImagePickerDelegate).chooseImageFromGallery(eq(call), any());
     verifyZeroInteractions(mockResult);
   }
 
@@ -91,7 +97,7 @@ public class ImagePickerPluginTest {
 
     plugin.onMethodCall(call, mockResult);
 
-    verify(mockImagePickerDelegate).takeImageWithCamera(call, mockResult);
+    verify(mockImagePickerDelegate).takeImageWithCamera(eq(call), any());
     verifyZeroInteractions(mockResult);
   }
 

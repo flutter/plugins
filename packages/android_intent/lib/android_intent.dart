@@ -27,17 +27,33 @@ class AndroidIntent {
   /// intent.
   /// [arguments] is the map that will be converted into an extras bundle and
   /// passed to the intent.
+  /// [package] refers to the package parameter of the intent, can be null.
+  /// [componentName] refers to the component name of the intent, can be null.
+  /// If not null, then [package] but also be provided.
   const AndroidIntent({
     @required this.action,
     this.category,
     this.data,
     this.arguments,
     this.package,
+    this.componentName,
     Platform platform,
   })  : assert(action != null),
         _channel = const MethodChannel(kChannelName),
         _platform = platform ?? const LocalPlatform();
 
+<<<<<<< HEAD
+=======
+  final String action;
+  final String category;
+  final String data;
+  final Map<String, dynamic> arguments;
+  final String package;
+  final String componentName;
+  final MethodChannel _channel;
+  final Platform _platform;
+
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   /// Launch the intent.
   ///
   /// This works only on Android platforms. Please guard the call so that your
@@ -56,6 +72,9 @@ class AndroidIntent {
     }
     if (package != null) {
       args['package'] = package;
+      if (componentName != null) {
+        args['componentName'] = componentName;
+      }
     }
     await _channel.invokeMethod('launch', args);
   }

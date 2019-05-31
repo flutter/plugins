@@ -1,3 +1,93 @@
+<<<<<<< HEAD
+=======
+## 5.0.1+1
+
+* Enable support for `onMessage` on iOS using `shouldEstablishDirectChannel`.
+
+## 5.0.1
+
+* Fix error in the logs on startup if unable to retrieve token on startup on Android.
+
+## 5.0.0
+
+* Update Android dependencies to latest.
+
+## 4.0.0+4
+
+* Remove obsolete `use_frameworks!` instruction.
+
+## 4.0.0+3
+
+* Update iOS configuration documentation.
+
+## 4.0.0+2
+
+* Fix example app's floating action button that stopped working due to a breaking change.
+
+## 4.0.0+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 4.0.0
+
+*  **Breaking Change** Update message structure for onMessage to match onLaunch and onResume
+
+## 3.0.1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 3.0.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+  This was originally incorrectly pushed in the `2.2.0` update.
+
+## 2.2.0+1
+
+* **Revert the breaking 2.2.0 update**. 2.2.0 was known to be breaking and
+  should have incremented the major version number instead of the minor. This
+  revert is in and of itself breaking for anyone that has already migrated
+  however. Anyone who has already migrated their app to AndroidX should
+  immediately update to `3.0.0` instead. That's the correctly versioned new push
+  of `2.2.0`.
+
+## 2.2.0
+
+* **BAD**. This was a breaking change that was incorrectly published on a minor
+  version upgrade, should never have happened. Reverted by `2.2.0+1`.
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 2.1.0
+
+* Adding support for deleteInstanceID(), autoInitEnabled() and setAutoInitEnabled().
+
+## 2.0.3
+
+* Removing local cache of getToken() in the dart part of the plugin. Now getToken() calls directly its counterparts in the iOS and Android implementations. This enables obtaining its value without calling configure() or having to wait for a new token refresh.
+
+## 2.0.2
+
+* Use boolean values when checking for notification types on iOS.
+
+## 2.0.1
+
+* Bump Android dependencies to latest.
+
+## 2.0.0
+
+* Updated Android to send Remote Message's title and body to Dart.
+
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 ## 1.0.5
 
 * Bumped test and mockito versions to pick up Dart 2 support.

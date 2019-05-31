@@ -24,9 +24,9 @@ myTrace.start();
 
 final Item item = cache.fetch("item");
 if (item != null) {
-  myTrace.incrementCounter("item_cache_hit");
+  myTrace.incrementMetric("item_cache_hit", 1);
 } else {
-  myTrace.incrementCounter("item_cache_miss");
+  myTrace.incrementMetric("item_cache_miss", 1);
 }
 
 myTrace.stop();

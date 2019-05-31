@@ -40,7 +40,13 @@ void main() {
   test('sharing origin sets the right params', () async {
     await Share.share(
       'some text to share',
+<<<<<<< HEAD
       sharePositionOrigin: new Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
+=======
+      // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+      // ignore: prefer_const_constructors
+      sharePositionOrigin: Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
     );
     verify(mockChannel.invokeMethod('share', <String, dynamic>{
       'text': 'some text to share',

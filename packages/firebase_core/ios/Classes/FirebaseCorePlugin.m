@@ -6,12 +6,22 @@
 
 #import <Firebase/Firebase.h>
 
+<<<<<<< HEAD
 @interface FIROptions (FLTFirebaseCorePlugin)
 @property(readonly, nonatomic) NSDictionary *dictionary;
 @end
 
 @implementation FIROptions (FLTFirebaseCorePlugin)
 - (NSDictionary *)flutterDictionary {
+=======
+#define LIBRARY_NAME @"flutter-fire-core"
+#define LIBRARY_VERSION @"0.4.0+3"
+
+static NSDictionary *getDictionaryFromFIROptions(FIROptions *options) {
+  if (!options) {
+    return nil;
+  }
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   return @{
     @"googleAppID" : self.googleAppID ?: [NSNull null],
     @"bundleID" : self.bundleID ?: [NSNull null],
@@ -44,6 +54,11 @@
                                   binaryMessenger:[registrar messenger]];
   FLTFirebaseCorePlugin *instance = [[FLTFirebaseCorePlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {

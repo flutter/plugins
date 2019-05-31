@@ -32,7 +32,11 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
+<<<<<<< HEAD
         api 'com.google.firebase:firebase-auth:16.0.2'
         api 'com.google.firebase:firebase-analytics:16.0.1'
+=======
+        api 'com.google.firebase:firebase-analytics:16.5.0'
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
     }
 }

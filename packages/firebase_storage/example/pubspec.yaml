@@ -7,7 +7,20 @@ dependencies:
     sdk: flutter
   firebase_storage:
     path: ../
+<<<<<<< HEAD
   http: ^0.11.3
+=======
+  firebase_core: ^0.4.0
+  uuid: "^1.0.0"
+  http: ^0.12.0
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  test: any
 
 flutter:
   uses-material-design: true

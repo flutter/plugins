@@ -39,7 +39,11 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   private ConnectivityPlugin(Registrar registrar) {
     this.registrar = registrar;
     this.manager =
-        (ConnectivityManager) registrar.context().getSystemService(Context.CONNECTIVITY_SERVICE);
+        (ConnectivityManager)
+            registrar
+                .context()
+                .getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
   }
 
   @Override
@@ -72,6 +76,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
+<<<<<<< HEAD
     if (call.method.equals("check")) {
       NetworkInfo info = manager.getActiveNetworkInfo();
       if (info != null && info.isConnected()) {
@@ -79,11 +84,82 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
       } else {
         result.success("none");
       }
+=======
+    switch (call.method) {
+      case "check":
+        handleCheck(call, result);
+        break;
+      case "wifiName":
+        handleWifiName(call, result);
+        break;
+      case "wifiBSSID":
+        handleBSSID(call, result);
+        break;
+      case "wifiIPAddress":
+        handleWifiIPAddress(call, result);
+        break;
+      default:
+        result.notImplemented();
+        break;
+    }
+  }
+
+  private void handleCheck(MethodCall call, final Result result) {
+    NetworkInfo info = manager.getActiveNetworkInfo();
+    if (info != null && info.isConnected()) {
+      result.success(getNetworkType(info.getType()));
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
     } else {
       result.notImplemented();
     }
   }
 
+<<<<<<< HEAD
+=======
+  private WifiInfo getWifiInfo() {
+    WifiManager wifiManager =
+        (WifiManager)
+            registrar.context().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    return wifiManager == null ? null : wifiManager.getConnectionInfo();
+  }
+
+  private void handleWifiName(MethodCall call, final Result result) {
+    WifiInfo wifiInfo = getWifiInfo();
+    String ssid = null;
+    if (wifiInfo != null) ssid = wifiInfo.getSSID();
+    if (ssid != null) ssid = ssid.replaceAll("\"", ""); // Android returns "SSID"
+    result.success(ssid);
+  }
+
+  private void handleBSSID(MethodCall call, MethodChannel.Result result) {
+    WifiInfo wifiInfo = getWifiInfo();
+    String bssid = null;
+    if (wifiInfo != null) bssid = wifiInfo.getBSSID();
+    result.success(bssid);
+  }
+
+  private void handleWifiIPAddress(MethodCall call, final Result result) {
+    WifiManager wifiManager =
+        (WifiManager)
+            registrar.context().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+    WifiInfo wifiInfo = null;
+    if (wifiManager != null) wifiInfo = wifiManager.getConnectionInfo();
+
+    String ip = null;
+    int i_ip = 0;
+    if (wifiInfo != null) i_ip = wifiInfo.getIpAddress();
+
+    if (i_ip != 0)
+      ip =
+          String.format(
+              "%d.%d.%d.%d",
+              (i_ip & 0xff), (i_ip >> 8 & 0xff), (i_ip >> 16 & 0xff), (i_ip >> 24 & 0xff));
+
+    result.success(ip);
+  }
+
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   private BroadcastReceiver createReceiver(final EventSink events) {
     return new BroadcastReceiver() {
       @Override

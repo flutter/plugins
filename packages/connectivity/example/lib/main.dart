@@ -89,4 +89,50 @@ class _MyHomePageState extends State<MyHomePage> {
           child: new Text('Connection Status: $_connectionStatus\n')),
     );
   }
+<<<<<<< HEAD
+=======
+
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    switch (result) {
+      case ConnectivityResult.wifi:
+        String wifiName, wifiBSSID, wifiIP;
+
+        try {
+          wifiName = await _connectivity.getWifiName();
+        } on PlatformException catch (e) {
+          print(e.toString());
+          wifiName = "Failed to get Wifi Name";
+        }
+
+        try {
+          wifiBSSID = await _connectivity.getWifiBSSID();
+        } on PlatformException catch (e) {
+          print(e.toString());
+          wifiBSSID = "Failed to get Wifi BSSID";
+        }
+
+        try {
+          wifiIP = await _connectivity.getWifiIP();
+        } on PlatformException catch (e) {
+          print(e.toString());
+          wifiIP = "Failed to get Wifi IP";
+        }
+
+        setState(() {
+          _connectionStatus = '$result\n'
+              'Wifi Name: $wifiName\n'
+              'Wifi BSSID: $wifiBSSID\n'
+              'Wifi IP: $wifiIP\n';
+        });
+        break;
+      case ConnectivityResult.mobile:
+      case ConnectivityResult.none:
+        setState(() => _connectionStatus = result.toString());
+        break;
+      default:
+        setState(() => _connectionStatus = 'Failed to get connectivity.');
+        break;
+    }
+  }
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 }

@@ -145,10 +145,15 @@
 
 - (FIRDynamicLinkComponents *)setupParameters:(NSDictionary *)arguments {
   NSURL *link = [NSURL URLWithString:arguments[@"link"]];
-  NSString *domain = arguments[@"domain"];
+  NSString *uriPrefix = arguments[@"uriPrefix"];
 
+<<<<<<< HEAD
   FIRDynamicLinkComponents *components =
       [FIRDynamicLinkComponents componentsWithLink:link domain:domain];
+=======
+  FIRDynamicLinkComponents *components = [FIRDynamicLinkComponents componentsWithLink:link
+                                                                      domainURIPrefix:uriPrefix];
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
   if (![arguments[@"androidParameters"] isEqual:[NSNull null]]) {
     NSDictionary *params = arguments[@"androidParameters"];

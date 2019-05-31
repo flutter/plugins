@@ -27,6 +27,14 @@ class DocumentReference {
   @override
   int get hashCode => hashList(_pathComponents);
 
+  /// Parent returns the containing [CollectionReference].
+  CollectionReference parent() {
+    return CollectionReference._(
+      firestore,
+      (List<String>.from(_pathComponents)..removeLast()),
+    );
+  }
+
   /// Slash-delimited path representing the database location of this query.
   String get path => _pathComponents.join('/');
 
@@ -68,10 +76,20 @@ class DocumentReference {
   /// Reads the document referenced by this [DocumentReference].
   ///
   /// If no document exists, the read will return null.
+<<<<<<< HEAD
   Future<DocumentSnapshot> get() async {
     final Map<dynamic, dynamic> data = await Firestore.channel.invokeMethod(
+=======
+  Future<DocumentSnapshot> get({Source source = Source.serverAndCache}) async {
+    final Map<String, dynamic> data =
+        await Firestore.channel.invokeMapMethod<String, dynamic>(
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
       'DocumentReference#get',
-      <String, dynamic>{'app': firestore.app.name, 'path': path},
+      <String, dynamic>{
+        'app': firestore.app.name,
+        'path': path,
+        'source': _getSourceString(source),
+      },
     );
     return new DocumentSnapshot._(
       data['path'],

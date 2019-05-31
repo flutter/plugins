@@ -32,6 +32,23 @@ class _MainScreenState extends State<_MainScreen> {
   void initState() {
     super.initState();
     _retrieveDynamicLink();
+<<<<<<< HEAD
+=======
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _retrieveDynamicLink();
+    }
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 
   Future<void> _retrieveDynamicLink() async {
@@ -49,8 +66,13 @@ class _MainScreenState extends State<_MainScreen> {
       _isCreatingLink = true;
     });
 
+<<<<<<< HEAD
     final DynamicLinkParameters parameters = new DynamicLinkParameters(
       domain: 'cx4k7.app.goo.gl',
+=======
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: 'https://cx4k7.app.goo.gl',
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
       link: Uri.parse('https://dynamic.link.example/helloworld'),
       androidParameters: new AndroidParameters(
         packageName: 'io.flutter.plugins.firebasedynamiclinksexample',

@@ -4,7 +4,9 @@
 
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import "GoogleMapCircleController.h"
 #import "GoogleMapMarkerController.h"
+<<<<<<< HEAD
 
 // Defines events to be sent to Flutter.
 @protocol FLTGoogleMapDelegate
@@ -14,6 +16,10 @@
 - (void)onMarkerTappedOnMap:(id)mapId marker:(NSString*)markerId;
 - (void)onInfoWindowTappedOnMap:(id)mapId marker:(NSString*)markerId;
 @end
+=======
+#import "GoogleMapPolygonController.h"
+#import "GoogleMapPolylineController.h"
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
 // Defines map UI options writable from Flutter.
 @protocol FLTGoogleMapOptionsSink
@@ -27,6 +33,11 @@
 - (void)setTiltGesturesEnabled:(BOOL)enabled;
 - (void)setTrackCameraPosition:(BOOL)enabled;
 - (void)setZoomGesturesEnabled:(BOOL)enabled;
+<<<<<<< HEAD
+=======
+- (void)setMyLocationEnabled:(BOOL)enabled;
+- (void)setMyLocationButtonEnabled:(BOOL)enabled;
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 @end
 
 // Defines map overlay controllable from Flutter.

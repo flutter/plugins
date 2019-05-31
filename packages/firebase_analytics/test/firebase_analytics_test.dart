@@ -39,7 +39,11 @@ void main() {
       invokedMethod = null;
       arguments = null;
 
+<<<<<<< HEAD
       when(mockChannel.invokeMethod(any, any))
+=======
+      when(mockChannel.invokeMethod<void>(any, any))
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
           .thenAnswer((Invocation invocation) {
         invokedMethod = invocation.positionalArguments[0];
         arguments = invocation.positionalArguments[1];
@@ -125,7 +129,11 @@ void main() {
       name = null;
       parameters = null;
 
+<<<<<<< HEAD
       when(mockChannel.invokeMethod('logEvent', any))
+=======
+      when(mockChannel.invokeMethod<void>('logEvent', any))
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
           .thenAnswer((Invocation invocation) {
         final Map<String, dynamic> args = invocation.positionalArguments[1];
         name = args['name'];
@@ -134,8 +142,13 @@ void main() {
         return Future<void>.value();
       });
 
+<<<<<<< HEAD
       when(mockChannel.invokeMethod(argThat(isNot('logEvent')), any))
           .thenThrow(new ArgumentError('Only logEvent invocations expected'));
+=======
+      when(mockChannel.invokeMethod<void>(argThat(isNot('logEvent')), any))
+          .thenThrow(ArgumentError('Only logEvent invocations expected'));
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
       analytics = new FirebaseAnalytics.private(mockChannel);
     });

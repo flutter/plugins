@@ -115,7 +115,54 @@ class Convert {
     return data;
   }
 
+<<<<<<< HEAD
   private static Object toJson(LatLng latLng) {
+=======
+  static Object latlngBoundsToJson(LatLngBounds latLngBounds) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("southwest", latLngToJson(latLngBounds.southwest));
+    arguments.put("northeast", latLngToJson(latLngBounds.northeast));
+    return arguments;
+  }
+
+  static Object markerIdToJson(String markerId) {
+    if (markerId == null) {
+      return null;
+    }
+    final Map<String, Object> data = new HashMap<>(1);
+    data.put("markerId", markerId);
+    return data;
+  }
+
+  static Object polygonIdToJson(String polygonId) {
+    if (polygonId == null) {
+      return null;
+    }
+    final Map<String, Object> data = new HashMap<>(1);
+    data.put("polygonId", polygonId);
+    return data;
+  }
+
+  static Object polylineIdToJson(String polylineId) {
+    if (polylineId == null) {
+      return null;
+    }
+    final Map<String, Object> data = new HashMap<>(1);
+    data.put("polylineId", polylineId);
+    return data;
+  }
+
+  static Object circleIdToJson(String circleId) {
+    if (circleId == null) {
+      return null;
+    }
+    final Map<String, Object> data = new HashMap<>(1);
+    data.put("circleId", circleId);
+    return data;
+  }
+
+  static Object latLngToJson(LatLng latLng) {
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 
@@ -207,6 +254,17 @@ class Convert {
     if (zoomGesturesEnabled != null) {
       sink.setZoomGesturesEnabled(toBoolean(zoomGesturesEnabled));
     }
+<<<<<<< HEAD
+=======
+    final Object myLocationEnabled = data.get("myLocationEnabled");
+    if (myLocationEnabled != null) {
+      sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
+    }
+    final Object myLocationButtonEnabled = data.get("myLocationButtonEnabled");
+    if (myLocationButtonEnabled != null) {
+      sink.setMyLocationButtonEnabled(toBoolean(myLocationButtonEnabled));
+    }
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 
   static void interpretMarkerOptions(Object o, MarkerOptionsSink sink) {
@@ -262,5 +320,227 @@ class Convert {
     if (zIndex != null) {
       sink.setZIndex(toFloat(zIndex));
     }
+<<<<<<< HEAD
+=======
+    final String markerId = (String) data.get("markerId");
+    if (markerId == null) {
+      throw new IllegalArgumentException("markerId was null");
+    } else {
+      return markerId;
+    }
+  }
+
+  private static void interpretInfoWindowOptions(
+      MarkerOptionsSink sink, Map<String, Object> infoWindow) {
+    String title = (String) infoWindow.get("title");
+    String snippet = (String) infoWindow.get("snippet");
+    // snippet is nullable.
+    if (title != null) {
+      sink.setInfoWindowText(title, snippet);
+    }
+    Object infoWindowAnchor = infoWindow.get("anchor");
+    if (infoWindowAnchor != null) {
+      final List<?> anchorData = toList(infoWindowAnchor);
+      sink.setInfoWindowAnchor(toFloat(anchorData.get(0)), toFloat(anchorData.get(1)));
+    }
+  }
+
+  static String interpretPolygonOptions(Object o, PolygonOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object consumeTapEvents = data.get("consumeTapEvents");
+    if (consumeTapEvents != null) {
+      sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
+    }
+    final Object geodesic = data.get("geodesic");
+    if (geodesic != null) {
+      sink.setGeodesic(toBoolean(geodesic));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object fillColor = data.get("fillColor");
+    if (fillColor != null) {
+      sink.setFillColor(toInt(fillColor));
+    }
+    final Object strokeColor = data.get("strokeColor");
+    if (strokeColor != null) {
+      sink.setStrokeColor(toInt(strokeColor));
+    }
+    final Object strokeWidth = data.get("strokeWidth");
+    if (strokeWidth != null) {
+      sink.setStrokeWidth(toInt(strokeWidth));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final Object points = data.get("points");
+    if (points != null) {
+      sink.setPoints(toPoints(points));
+    }
+    final String polygonId = (String) data.get("polygonId");
+    if (polygonId == null) {
+      throw new IllegalArgumentException("polygonId was null");
+    } else {
+      return polygonId;
+    }
+  }
+
+  static String interpretPolylineOptions(Object o, PolylineOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object consumeTapEvents = data.get("consumeTapEvents");
+    if (consumeTapEvents != null) {
+      sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
+    }
+    final Object color = data.get("color");
+    if (color != null) {
+      sink.setColor(toInt(color));
+    }
+    final Object endCap = data.get("endCap");
+    if (endCap != null) {
+      sink.setEndCap(toCap(endCap));
+    }
+    final Object geodesic = data.get("geodesic");
+    if (geodesic != null) {
+      sink.setGeodesic(toBoolean(geodesic));
+    }
+    final Object jointType = data.get("jointType");
+    if (jointType != null) {
+      sink.setJointType(toInt(jointType));
+    }
+    final Object startCap = data.get("startCap");
+    if (startCap != null) {
+      sink.setStartCap(toCap(startCap));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object width = data.get("width");
+    if (width != null) {
+      sink.setWidth(toInt(width));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final Object points = data.get("points");
+    if (points != null) {
+      sink.setPoints(toPoints(points));
+    }
+    final Object pattern = data.get("pattern");
+    if (pattern != null) {
+      sink.setPattern(toPattern(pattern));
+    }
+    final String polylineId = (String) data.get("polylineId");
+    if (polylineId == null) {
+      throw new IllegalArgumentException("polylineId was null");
+    } else {
+      return polylineId;
+    }
+  }
+
+  static String interpretCircleOptions(Object o, CircleOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object consumeTapEvents = data.get("consumeTapEvents");
+    if (consumeTapEvents != null) {
+      sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
+    }
+    final Object fillColor = data.get("fillColor");
+    if (fillColor != null) {
+      sink.setFillColor(toInt(fillColor));
+    }
+    final Object strokeColor = data.get("strokeColor");
+    if (strokeColor != null) {
+      sink.setStrokeColor(toInt(strokeColor));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object strokeWidth = data.get("strokeWidth");
+    if (strokeWidth != null) {
+      sink.setStrokeWidth(toInt(strokeWidth));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final Object center = data.get("center");
+    if (center != null) {
+      sink.setCenter(toLatLng(center));
+    }
+    final Object radius = data.get("radius");
+    if (radius != null) {
+      sink.setRadius(toDouble(radius));
+    }
+    final String circleId = (String) data.get("circleId");
+    if (circleId == null) {
+      throw new IllegalArgumentException("circleId was null");
+    } else {
+      return circleId;
+    }
+  }
+
+  private static List<LatLng> toPoints(Object o) {
+    final List<?> data = toList(o);
+    final List<LatLng> points = new ArrayList<>(data.size());
+
+    for (Object ob : data) {
+      final List<?> point = toList(ob);
+      points.add(new LatLng(toFloat(point.get(0)), toFloat(point.get(1))));
+    }
+    return points;
+  }
+
+  private static List<PatternItem> toPattern(Object o) {
+    final List<?> data = toList(o);
+
+    if (data.isEmpty()) {
+      return null;
+    }
+
+    final List<PatternItem> pattern = new ArrayList<>(data.size());
+
+    for (Object ob : data) {
+      final List<?> patternItem = toList(ob);
+      switch (toString(patternItem.get(0))) {
+        case "dot":
+          pattern.add(new Dot());
+          break;
+        case "dash":
+          pattern.add(new Dash(toFloat(patternItem.get(1))));
+          break;
+        case "gap":
+          pattern.add(new Gap(toFloat(patternItem.get(1))));
+          break;
+        default:
+          throw new IllegalArgumentException("Cannot interpret " + pattern + " as PatternItem");
+      }
+    }
+
+    return pattern;
+  }
+
+  private static Cap toCap(Object o) {
+    final List<?> data = toList(o);
+    switch (toString(data.get(0))) {
+      case "buttCap":
+        return new ButtCap();
+      case "roundCap":
+        return new RoundCap();
+      case "squareCap":
+        return new SquareCap();
+      case "customCap":
+        if (data.size() == 2) {
+          return new CustomCap(toBitmapDescriptor(data.get(1)));
+        } else {
+          return new CustomCap(toBitmapDescriptor(data.get(1)), toFloat(data.get(2)));
+        }
+      default:
+        throw new IllegalArgumentException("Cannot interpret " + o + " as Cap");
+    }
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 }

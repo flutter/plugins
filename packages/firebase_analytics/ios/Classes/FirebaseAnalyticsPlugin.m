@@ -53,6 +53,16 @@
     NSString *value = call.arguments[@"value"];
     [FIRAnalytics setUserPropertyString:value forName:name];
     result(nil);
+<<<<<<< HEAD
+=======
+  } else if ([@"setAnalyticsCollectionEnabled" isEqualToString:call.method]) {
+    NSNumber *enabled = [NSNumber numberWithBool:call.arguments];
+    [FIRAnalytics setAnalyticsCollectionEnabled:[enabled boolValue]];
+    result(nil);
+  } else if ([@"resetAnalyticsData" isEqualToString:call.method]) {
+    [FIRAnalytics resetAnalyticsData];
+    result(nil);
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   } else {
     result(FlutterMethodNotImplemented);
   }

@@ -500,7 +500,11 @@ class FirebaseAdMob {
 }
 
 Future<bool> _invokeBooleanMethod(String method, [dynamic arguments]) async {
+<<<<<<< HEAD
   final bool result = await FirebaseAdMob.instance._channel.invokeMethod(
+=======
+  final bool result = await FirebaseAdMob.instance._channel.invokeMethod<bool>(
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
     method,
     arguments,
   );

@@ -42,6 +42,38 @@ class Connectivity {
     final String result = await _methodChannel.invokeMethod('check');
     return _parseConnectivityResult(result);
   }
+<<<<<<< HEAD
+=======
+
+  /// Obtains the wifi name (SSID) of the connected network
+  ///
+  /// Please note that it DOESN'T WORK on emulators (returns null).
+  ///
+  /// From android 8.0 onwards the GPS must be ON (high accuracy)
+  /// in order to be able to obtain the SSID.
+  Future<String> getWifiName() async {
+    String wifiName = await methodChannel.invokeMethod<String>('wifiName');
+    // as Android might return <unknown ssid>, uniforming result
+    // our iOS implementation will return null
+    if (wifiName == '<unknown ssid>') wifiName = null;
+    return wifiName;
+  }
+
+  /// Obtains the wifi BSSID of the connected network.
+  ///
+  /// Please note that it DOESN'T WORK on emulators (returns null).
+  ///
+  /// From Android 8.0 onwards the GPS must be ON (high accuracy)
+  /// in order to be able to obtain the BSSID.
+  Future<String> getWifiBSSID() async {
+    return await methodChannel.invokeMethod<String>('wifiBSSID');
+  }
+
+  /// Obtains the IP address of the connected wifi network
+  Future<String> getWifiIP() async {
+    return await methodChannel.invokeMethod<String>('wifiIPAddress');
+  }
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 }
 
 ConnectivityResult _parseConnectivityResult(String state) {

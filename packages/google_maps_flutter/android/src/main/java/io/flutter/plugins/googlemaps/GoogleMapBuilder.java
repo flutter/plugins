@@ -14,6 +14,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
   private boolean trackCameraPosition = false;
+<<<<<<< HEAD
+=======
+  private boolean myLocationEnabled = false;
+  private boolean myLocationButtonEnabled = false;
+  private Object initialMarkers;
+  private Object initialPolygons;
+  private Object initialPolylines;
+  private Object initialCircles;
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
   GoogleMapController build(
       AtomicInteger state,
@@ -24,7 +33,17 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     final GoogleMapController controller =
         new GoogleMapController(state, registrar, width, height, options, result);
     controller.init();
+<<<<<<< HEAD
     controller.setTrackCameraPosition(trackCameraPosition);
+=======
+    controller.setMyLocationEnabled(myLocationEnabled);
+    controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
+    controller.setTrackCameraPosition(trackCameraPosition);
+    controller.setInitialMarkers(initialMarkers);
+    controller.setInitialPolygons(initialPolygons);
+    controller.setInitialPolylines(initialPolylines);
+    controller.setInitialCircles(initialCircles);
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
     return controller;
   }
 
@@ -82,4 +101,37 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
     options.zoomGesturesEnabled(zoomGesturesEnabled);
   }
+<<<<<<< HEAD
+=======
+
+  @Override
+  public void setMyLocationEnabled(boolean myLocationEnabled) {
+    this.myLocationEnabled = myLocationEnabled;
+  }
+
+  @Override
+  public void setMyLocationButtonEnabled(boolean myLocationButtonEnabled) {
+    this.myLocationButtonEnabled = myLocationButtonEnabled;
+  }
+
+  @Override
+  public void setInitialMarkers(Object initialMarkers) {
+    this.initialMarkers = initialMarkers;
+  }
+
+  @Override
+  public void setInitialPolygons(Object initialPolygons) {
+    this.initialPolygons = initialPolygons;
+  }
+
+  @Override
+  public void setInitialPolylines(Object initialPolylines) {
+    this.initialPolylines = initialPolylines;
+  }
+
+  @Override
+  public void setInitialCircles(Object initialCircles) {
+    this.initialCircles = initialCircles;
+  }
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 }

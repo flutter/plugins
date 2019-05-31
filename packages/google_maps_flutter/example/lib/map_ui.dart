@@ -48,10 +48,26 @@ class MapUiBody extends StatefulWidget {
 class MapUiBodyState extends State<MapUiBody> {
   MapUiBodyState(this.mapController);
 
+<<<<<<< HEAD
   final GoogleMapController mapController;
   CameraPosition _position;
   GoogleMapOptions _options;
   bool _isMoving;
+=======
+  CameraPosition _position = _kInitialPosition;
+  bool _isMapCreated = false;
+  bool _isMoving = false;
+  bool _compassEnabled = true;
+  CameraTargetBounds _cameraTargetBounds = CameraTargetBounds.unbounded;
+  MinMaxZoomPreference _minMaxZoomPreference = MinMaxZoomPreference.unbounded;
+  MapType _mapType = MapType.normal;
+  bool _rotateGesturesEnabled = true;
+  bool _scrollGesturesEnabled = true;
+  bool _tiltGesturesEnabled = true;
+  bool _zoomGesturesEnabled = true;
+  bool _myLocationEnabled = true;
+  bool _myLocationButtonEnabled = true;
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
   @override
   void initState() {
@@ -194,8 +210,79 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Widget _myLocationButtonToggler() {
+    return FlatButton(
+      child: Text(
+          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
+      onPressed: () {
+        setState(() {
+          _myLocationButtonEnabled = !_myLocationButtonEnabled;
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
+=======
+    final GoogleMap googleMap = GoogleMap(
+      onMapCreated: onMapCreated,
+      initialCameraPosition: _kInitialPosition,
+      compassEnabled: _compassEnabled,
+      cameraTargetBounds: _cameraTargetBounds,
+      minMaxZoomPreference: _minMaxZoomPreference,
+      mapType: _mapType,
+      rotateGesturesEnabled: _rotateGesturesEnabled,
+      scrollGesturesEnabled: _scrollGesturesEnabled,
+      tiltGesturesEnabled: _tiltGesturesEnabled,
+      zoomGesturesEnabled: _zoomGesturesEnabled,
+      myLocationEnabled: _myLocationEnabled,
+      myLocationButtonEnabled: _myLocationButtonEnabled,
+      onCameraMove: _updateCameraPosition,
+    );
+
+    final List<Widget> columnChildren = <Widget>[
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Center(
+          child: SizedBox(
+            width: 300.0,
+            height: 200.0,
+            child: googleMap,
+          ),
+        ),
+      ),
+    ];
+
+    if (_isMapCreated) {
+      columnChildren.add(
+        Expanded(
+          child: ListView(
+            children: <Widget>[
+              Text('camera bearing: ${_position.bearing}'),
+              Text(
+                  'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
+                  '${_position.target.longitude.toStringAsFixed(4)}'),
+              Text('camera zoom: ${_position.zoom}'),
+              Text('camera tilt: ${_position.tilt}'),
+              Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
+              _compassToggler(),
+              _latLngBoundsToggler(),
+              _mapTypeCycler(),
+              _zoomBoundsToggler(),
+              _rotateToggler(),
+              _scrollToggler(),
+              _tiltToggler(),
+              _zoomToggler(),
+              _myLocationToggler(),
+              _myLocationButtonToggler(),
+            ],
+          ),
+        ),
+      );
+    }
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,

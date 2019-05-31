@@ -55,23 +55,46 @@ class FirebaseAnalytics {
           'Prefix "$kReservedPrefix" is reserved and cannot be used.');
     }
 
+<<<<<<< HEAD
     await _channel.invokeMethod('logEvent', <String, dynamic>{
+=======
+    await _channel.invokeMethod<void>('logEvent', <String, dynamic>{
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
       'name': name,
       'parameters': parameters,
     });
   }
 
+<<<<<<< HEAD
+=======
+  /// Sets whether analytics collection is enabled for this app on this device.
+  ///
+  /// This setting is persisted across app sessions. By default it is enabled.
+  Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
+    if (enabled == null) {
+      throw ArgumentError.notNull('enabled');
+    }
+
+    await _channel.invokeMethod<void>('setAnalyticsCollectionEnabled', enabled);
+  }
+
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   /// Sets the user ID property.
   ///
   /// This feature must be used in accordance with [Google's Privacy Policy][1].
   ///
   /// [1]: https://www.google.com/policies/privacy/
+<<<<<<< HEAD
   Future<Null> setUserId(String id) async {
     if (id == null) {
       throw new ArgumentError.notNull('id');
     }
 
     await _channel.invokeMethod('setUserId', id);
+=======
+  Future<void> setUserId(String id) async {
+    await _channel.invokeMethod<void>('setUserId', id);
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 
   /// Sets the current [screenName], which specifies the current visual context
@@ -98,7 +121,11 @@ class FirebaseAnalytics {
       throw new ArgumentError.notNull('screenName');
     }
 
+<<<<<<< HEAD
     await _channel.invokeMethod('setCurrentScreen', <String, String>{
+=======
+    await _channel.invokeMethod<void>('setCurrentScreen', <String, String>{
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
       'screenName': screenName,
       'screenClassOverride': screenClassOverride,
     });
@@ -133,12 +160,24 @@ class FirebaseAnalytics {
       throw new ArgumentError.value(
           name, 'name', '"firebase_" prefix is reserved');
 
+<<<<<<< HEAD
     await _channel.invokeMethod('setUserProperty', <String, String>{
+=======
+    await _channel.invokeMethod<void>('setUserProperty', <String, String>{
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
       'name': name,
       'value': value,
     });
   }
 
+<<<<<<< HEAD
+=======
+  /// Clears all analytics data for this app from the device and resets the app instance id.
+  Future<void> resetAnalyticsData() async {
+    await _channel.invokeMethod<void>('resetAnalyticsData');
+  }
+
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   /// Logs the standard `add_payment_info` event.
   ///
   /// This event signifies that a user has submitted their payment information
@@ -791,8 +830,12 @@ class FirebaseAnalyticsAndroid {
     if (enabled == null) {
       throw new ArgumentError.notNull('enabled');
     }
+<<<<<<< HEAD
 
     await _channel.invokeMethod('setAnalyticsCollectionEnabled', enabled);
+=======
+    await _channel.invokeMethod<void>('setAnalyticsCollectionEnabled', enabled);
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 
   /// Sets the minimum engagement time required before starting a session.
@@ -802,8 +845,13 @@ class FirebaseAnalyticsAndroid {
     if (milliseconds == null) {
       throw new ArgumentError.notNull('milliseconds');
     }
+<<<<<<< HEAD
 
     await _channel.invokeMethod('setMinimumSessionDuration', milliseconds);
+=======
+    await _channel.invokeMethod<void>(
+        'setMinimumSessionDuration', milliseconds);
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 
   /// Sets the duration of inactivity that terminates the current session.
@@ -813,8 +861,13 @@ class FirebaseAnalyticsAndroid {
     if (milliseconds == null) {
       throw new ArgumentError.notNull('milliseconds');
     }
+<<<<<<< HEAD
 
     await _channel.invokeMethod('setSessionTimeoutDuration', milliseconds);
+=======
+    await _channel.invokeMethod<void>(
+        'setSessionTimeoutDuration', milliseconds);
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 }
 

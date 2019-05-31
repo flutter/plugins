@@ -32,6 +32,11 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
+<<<<<<< HEAD
         api 'com.google.firebase:firebase-invites:16.0.1'
+=======
+        api 'com.google.firebase:firebase-dynamic-links:16.1.8'
+        implementation 'androidx.annotation:annotation:1.0.0'
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
     }
 }

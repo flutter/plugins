@@ -109,9 +109,24 @@ class GoogleMapController extends ChangeNotifier {
         _cameraPosition = CameraPosition._fromJson(call.arguments['position']);
         notifyListeners();
         break;
+<<<<<<< HEAD
       case 'camera#onIdle':
         _isCameraMoving = false;
         notifyListeners();
+=======
+      case 'polygon#onTap':
+        _googleMapState.onPolygonTap(call.arguments['polygonId']);
+        break;
+      case 'circle#onTap':
+        _googleMapState.onCircleTap(call.arguments['circleId']);
+        break;
+      case 'map#onTap':
+        _googleMapState.onTap(LatLng._fromJson(call.arguments['position']));
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
+        break;
+      case 'map#onLongPress':
+        _googleMapState
+            .onLongPress(LatLng._fromJson(call.arguments['position']));
         break;
       default:
         throw new MissingPluginException();
@@ -163,7 +178,28 @@ class GoogleMapController extends ChangeNotifier {
     });
   }
 
+<<<<<<< HEAD
   /// Adds a marker to the map, configured using the specified custom [options].
+=======
+  /// Updates polygon configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updatePolygons(_PolygonUpdates polygonUpdates) async {
+    assert(polygonUpdates != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await channel.invokeMethod(
+      'polygons#update',
+      polygonUpdates._toMap(),
+    );
+  }
+
+  /// Updates polyline configuration.
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   ///
   /// Change listeners are notified once the marker has been added on the
   /// platform side.
@@ -187,8 +223,29 @@ class GoogleMapController extends ChangeNotifier {
     return marker;
   }
 
+<<<<<<< HEAD
   /// Updates the specified [marker] with the given [changes]. The marker must
   /// be a current member of the [markers] set.
+=======
+  /// Updates circle configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updateCircles(_CircleUpdates circleUpdates) async {
+    assert(circleUpdates != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await channel.invokeMethod(
+      'circles#update',
+      circleUpdates._toMap(),
+    );
+  }
+
+  /// Starts an animated change of the map camera position.
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   ///
   /// Change listeners are notified once the marker has been updated on the
   /// platform side.

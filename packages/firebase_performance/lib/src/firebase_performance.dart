@@ -11,53 +11,107 @@ enum HttpMethod { Connect, Delete, Get, Head, Options, Patch, Post, Put, Trace }
 ///
 /// You can get an instance by calling [FirebasePerformance.instance].
 class FirebasePerformance {
-  FirebasePerformance._();
+  FirebasePerformance._(this._handle) {
+    channel.invokeMethod<bool>(
+      'FirebasePerformance#instance',
+      <String, dynamic>{'handle': _handle},
+    );
+  }
 
-  static int _traceCount = 0;
-  static int _httpMetricCount = 0;
+  static int _nextHandle = 0;
+
+  final int _handle;
 
   @visibleForTesting
   static const MethodChannel channel =
       MethodChannel('plugins.flutter.io/firebase_performance');
 
   /// Singleton of [FirebasePerformance].
+<<<<<<< HEAD
   static final FirebasePerformance instance = new FirebasePerformance._();
+=======
+  static final FirebasePerformance instance =
+      FirebasePerformance._(_nextHandle++);
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 
   /// Determines whether performance monitoring is enabled or disabled.
   ///
   /// True if performance monitoring is enabled and false if performance
   /// monitoring is disabled. This is for dynamic enable/disable state. This
   /// does not reflect whether instrumentation is enabled/disabled.
+<<<<<<< HEAD
   Future<bool> isPerformanceCollectionEnabled() async {
     final bool isEnabled = await channel
         .invokeMethod('FirebasePerformance#isPerformanceCollectionEnabled');
     return isEnabled;
+=======
+  Future<bool> isPerformanceCollectionEnabled() {
+    return channel.invokeMethod<bool>(
+      '$FirebasePerformance#isPerformanceCollectionEnabled',
+      <String, dynamic>{'handle': _handle},
+    );
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 
   /// Enables or disables performance monitoring.
   ///
   /// This setting is persisted and applied on future invocations of your
   /// application. By default, performance monitoring is enabled.
+<<<<<<< HEAD
   Future<void> setPerformanceCollectionEnabled(bool enable) async {
     await channel.invokeMethod(
         'FirebasePerformance#setPerformanceCollectionEnabled', enable);
+=======
+  Future<void> setPerformanceCollectionEnabled(bool enable) {
+    return channel.invokeMethod<void>(
+      '$FirebasePerformance#setPerformanceCollectionEnabled',
+      <String, dynamic>{'handle': _handle, 'enable': enable},
+    );
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 
   /// Creates a [Trace] object with given [name].
   ///
   /// The [name] requires no leading or trailing whitespace, no leading
-  /// underscore _ character, max length of [Trace.maxTraceNameLength]
+  /// underscore _ character, and max length of [Trace.maxTraceNameLength]
   /// characters.
   Trace newTrace(String name) {
+<<<<<<< HEAD
     return new Trace._(_traceCount++, name);
+=======
+    final int handle = _nextHandle++;
+
+    FirebasePerformance.channel.invokeMethod<void>(
+      '$FirebasePerformance#newTrace',
+      <String, dynamic>{'handle': _handle, 'traceHandle': handle, 'name': name},
+    );
+
+    return Trace._(handle, name);
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 
   /// Creates [HttpMetric] for collecting performance for one request/response.
   HttpMetric newHttpMetric(String url, HttpMethod httpMethod) {
+<<<<<<< HEAD
     return new HttpMetric._(_httpMetricCount++, url, httpMethod);
+=======
+    final int handle = _nextHandle++;
+
+    FirebasePerformance.channel.invokeMethod<void>(
+      '$FirebasePerformance#newHttpMetric',
+      <String, dynamic>{
+        'handle': _handle,
+        'httpMetricHandle': handle,
+        'url': url,
+        'httpMethod': httpMethod.toString(),
+      },
+    );
+
+    return HttpMetric._(handle, url, httpMethod);
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
   }
 
-  /// Creates a [Trace] object with given [name] and start the trace.
+  /// Creates a [Trace] object with given [name] and starts the trace.
   ///
   /// The [name] requires no leading or trailing whitespace, no leading
   /// underscore _ character, max length of [Trace.maxTraceNameLength]

@@ -27,9 +27,20 @@ void main() {
     });
 
     test('call', () async {
+<<<<<<< HEAD
       await CloudFunctions.instance.call(functionName: 'baz');
       await CloudFunctions.instance
           .call(functionName: 'qux', parameters: <String, dynamic>{
+=======
+      await CloudFunctions.instance
+          .getHttpsCallable(functionName: 'baz')
+          .call();
+      final HttpsCallable callable =
+          CloudFunctions(app: const FirebaseApp(name: '1337'), region: 'space')
+              .getHttpsCallable(functionName: 'qux')
+                ..timeout = const Duration(days: 300);
+      await callable.call(<String, dynamic>{
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
         'quux': 'quuz',
       });
       expect(
@@ -39,6 +50,7 @@ void main() {
             'CloudFunctions#call',
             arguments: <String, dynamic>{
               'functionName': 'baz',
+              'timeoutMicroseconds': null,
               'parameters': null,
             },
           ),
@@ -46,9 +58,8 @@ void main() {
             'CloudFunctions#call',
             arguments: <String, dynamic>{
               'functionName': 'qux',
-              'parameters': <String, dynamic>{
-                'quux': 'quuz',
-              },
+              'timeoutMicroseconds': (const Duration(days: 300)).inMicroseconds,
+              'parameters': <String, dynamic>{'quux': 'quuz'},
             },
           ),
         ],

@@ -347,11 +347,18 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   @override
   Widget build(BuildContext context) {
     if (initialized) {
+<<<<<<< HEAD
       final Size size = controller.value.size;
       return new Center(
         child: new AspectRatio(
           aspectRatio: size.width / size.height,
           child: new VideoPlayPause(controller),
+=======
+      return Center(
+        child: AspectRatio(
+          aspectRatio: controller.value.aspectRatio,
+          child: VideoPlayPause(controller),
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
         ),
       );
     } else {
@@ -362,22 +369,35 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
 
 void main() {
   runApp(
+<<<<<<< HEAD
     new MaterialApp(
       home: new DefaultTabController(
         length: 2,
         child: new Scaffold(
           appBar: new AppBar(
+=======
+    MaterialApp(
+      home: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: AppBar(
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
             title: const Text('Video player example'),
             bottom: const TabBar(
               isScrollable: true,
               tabs: <Widget>[
-                Tab(icon: Icon(Icons.fullscreen)),
-                Tab(icon: Icon(Icons.list)),
+                Tab(
+                  icon: Icon(Icons.cloud),
+                  text: "Remote",
+                ),
+                Tab(icon: Icon(Icons.insert_drive_file), text: "Asset"),
+                Tab(icon: Icon(Icons.list), text: "List example"),
               ],
             ),
           ),
           body: new TabBarView(
             children: <Widget>[
+<<<<<<< HEAD
               new Column(
                 children: <Widget>[
                   new NetworkPlayerLifeCycle(
@@ -399,6 +419,44 @@ void main() {
                 'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
                 (BuildContext context, VideoPlayerController controller) =>
                     new AspectRatioVideo(controller),
+=======
+              SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: const EdgeInsets.only(top: 20.0),
+                    ),
+                    const Text('With remote m3u8'),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: NetworkPlayerLifeCycle(
+                        'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
+                        (BuildContext context,
+                                VideoPlayerController controller) =>
+                            AspectRatioVideo(controller),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: const EdgeInsets.only(top: 20.0),
+                    ),
+                    const Text('With assets mp4'),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: AssetPlayerLifeCycle(
+                          'assets/Butterfly-209.mp4',
+                          (BuildContext context,
+                                  VideoPlayerController controller) =>
+                              AspectRatioVideo(controller)),
+                    ),
+                  ],
+                ),
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
               ),
               new AssetPlayerLifeCycle(
                   'assets/Butterfly-209.mp4',

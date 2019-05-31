@@ -162,16 +162,35 @@
 }
 
 - (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSData *data = [NSData dataWithContentsOfFile:call.arguments[@"filename"]];
-  [self put:data call:call result:result];
+  NSURL *fileUrl = [NSURL fileURLWithPath:call.arguments[@"filename"]];
+  [self
+      putHandler:^(FIRStorageReference *fileRef, FIRStorageMetadata *metadata) {
+        return [fileRef putFile:fileUrl metadata:metadata];
+      }
+            call:call
+          result:result];
 }
 
 - (void)putData:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSData *data = [(FlutterStandardTypedData *)call.arguments[@"data"] data];
-  [self put:data call:call result:result];
+  if (data == nil) {
+    result([FlutterError errorWithCode:@"storage_error"
+                               message:@"Failed to read file"
+                               details:nil]);
+    return;
+  }
+  [self
+      putHandler:^(FIRStorageReference *fileRef, FIRStorageMetadata *metadata) {
+        return [fileRef putData:data metadata:metadata];
+      }
+            call:call
+          result:result];
 }
 
-- (void)put:(NSData *)data call:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)putHandler:(FIRStorageUploadTask * (^)(FIRStorageReference *fileRef,
+                                               FIRStorageMetadata *metadata))putHandler
+              call:(FlutterMethodCall *)call
+            result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
   NSDictionary *metadataDictionary = call.arguments[@"metadata"];
   FIRStorageMetadata *metadata;
@@ -179,6 +198,7 @@
     metadata = [self buildMetadataFromDictionary:metadataDictionary];
   }
   FIRStorageReference *fileRef = [storage.reference child:path];
+<<<<<<< HEAD
   [fileRef putData:data
           metadata:metadata
         completion:^(FIRStorageMetadata *metadata, NSError *error) {
@@ -194,6 +214,67 @@
             }];
           }
         }];
+=======
+  FIRStorageUploadTask *uploadTask = putHandler(fileRef, metadata);
+  NSNumber *handle = [NSNumber numberWithInt:_nextUploadHandle++];
+  [uploadTask observeStatus:FIRStorageTaskStatusSuccess
+                    handler:^(FIRStorageTaskSnapshot *snapshot) {
+                      [self invokeStorageTaskEvent:handle type:kSuccess snapshot:snapshot];
+                      [self->_uploadTasks removeObjectForKey:handle];
+                    }];
+  [uploadTask observeStatus:FIRStorageTaskStatusProgress
+                    handler:^(FIRStorageTaskSnapshot *snapshot) {
+                      [self invokeStorageTaskEvent:handle type:kProgress snapshot:snapshot];
+                    }];
+  [uploadTask observeStatus:FIRStorageTaskStatusResume
+                    handler:^(FIRStorageTaskSnapshot *snapshot) {
+                      [self invokeStorageTaskEvent:handle type:kResume snapshot:snapshot];
+                    }];
+  [uploadTask observeStatus:FIRStorageTaskStatusPause
+                    handler:^(FIRStorageTaskSnapshot *snapshot) {
+                      [self invokeStorageTaskEvent:handle type:kPause snapshot:snapshot];
+                    }];
+  [uploadTask observeStatus:FIRStorageTaskStatusFailure
+                    handler:^(FIRStorageTaskSnapshot *snapshot) {
+                      [self invokeStorageTaskEvent:handle type:kFailure snapshot:snapshot];
+                      [self->_uploadTasks removeObjectForKey:handle];
+                    }];
+  _uploadTasks[handle] = uploadTask;
+  result(handle);
+}
+
+typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
+  kResume,
+  kProgress,
+  kPause,
+  kSuccess,
+  kFailure
+};
+
+- (void)invokeStorageTaskEvent:(NSNumber *)handle
+                          type:(StorageTaskEventType)type
+                      snapshot:(FIRStorageTaskSnapshot *)snapshot {
+  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+  [dictionary setValue:handle forKey:@"handle"];
+  [dictionary setValue:@((int)type) forKey:@"type"];
+  [dictionary setValue:[self buildDictionaryFromTaskSnapshot:snapshot] forKey:@"snapshot"];
+  [self.channel invokeMethod:@"StorageTaskEvent" arguments:dictionary];
+}
+
+- (NSDictionary *)buildDictionaryFromTaskSnapshot:(FIRStorageTaskSnapshot *)snapshot {
+  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+  [dictionary setValue:@((long)([snapshot.progress completedUnitCount]))
+                forKey:@"bytesTransferred"];
+  [dictionary setValue:@((long)([snapshot.progress totalUnitCount])) forKey:@"totalByteCount"];
+  if ([snapshot error] != nil) {
+    [dictionary setValue:@((long)[snapshot.error code]) forKey:@"error"];
+  }
+  if ([snapshot metadata] != nil) {
+    [dictionary setValue:[self buildDictionaryFromMetadata:snapshot.metadata]
+                  forKey:@"storageMetadata"];
+  }
+  return dictionary;
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 }
 
 - (FIRStorageMetadata *)buildMetadataFromDictionary:(NSDictionary *)dictionary {

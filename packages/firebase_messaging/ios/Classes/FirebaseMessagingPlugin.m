@@ -61,6 +61,7 @@
 
     result(nil);
   } else if ([@"configure" isEqualToString:method]) {
+    [FIRMessaging messaging].shouldEstablishDirectChannel = true;
     [[UIApplication sharedApplication] registerForRemoteNotifications];
     if (_launchNotification != nil) {
       [_channel invokeMethod:@"onLaunch" arguments:_launchNotification];
@@ -159,6 +160,11 @@
 - (void)messaging:(nonnull FIRMessaging *)messaging
     didReceiveRegistrationToken:(nonnull NSString *)fcmToken {
   [_channel invokeMethod:@"onToken" arguments:fcmToken];
+}
+
+- (void)messaging:(FIRMessaging *)messaging
+    didReceiveMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+  [_channel invokeMethod:@"onMessage" arguments:remoteMessage.appData];
 }
 
 @end

@@ -8,13 +8,80 @@ displaying banner, interstitial (full-screen), and rewarded video ads using the
 [Feedback](https://github.com/flutter/flutter/issues) and
 [Pull Requests](https://github.com/flutter/plugins/pulls) are welcome.
 
+<<<<<<< HEAD
+=======
+## AndroidManifest changes
+
+AdMob 17 requires the App ID to be included in the `AndroidManifest.xml`. Failure
+to do so will result in a crash on launch of your app.  The line should look like:
+
+```xml
+<meta-data
+    android:name="com.google.android.gms.ads.APPLICATION_ID"
+    android:value="[ADMOB_APP_ID]"/>
+```
+
+where `[ADMOB_APP_ID]` is your App ID.  You must pass the same value when you 
+initialize the plugin in your Dart code.
+
+See https://goo.gl/fQ2neu for more information about configuring `AndroidManifest.xml`
+and setting up your App ID.
+
+## Info.plist changes
+
+Admob 7.42.0 requires the App ID to be included in `Info.plist`. Failure to do so will result in a crash on launch of your app. The lines should look like:
+
+```xml
+<key>GADApplicationIdentifier</key>
+<string>[ADMOB_APP_ID]</string>
+```
+
+where `[ADMOB_APP_ID]` is your App ID.  You must pass the same value when you initialize the plugin in your Dart code.
+
+See https://developers.google.com/admob/ios/quick-start#update_your_infoplist for more information about configuring `Info.plist` and setting up your App ID.
+
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 ## Initializing the plugin
 The AdMob plugin must be initialized with an AdMob App ID.
 
 ```
+<<<<<<< HEAD
 FirebaseAdMob.instance.initialize(appId: appId);
 ```
 
+=======
+### Android
+Starting in version 17.0.0, if you are an AdMob publisher you are now required to add your AdMob app ID in your **AndroidManifest.xml** file. Once you find your AdMob app ID in the AdMob UI, add it to your manifest adding the following tag:
+
+```xml
+<manifest>
+    <application>
+        <!-- TODO: Replace with your real AdMob app ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-################~##########"/>
+    </application>
+</manifest>
+```
+
+Failure to add this tag will result in the app crashing at app launch with a message starting with *"The Google Mobile Ads SDK was initialized incorrectly."*
+
+On Android, this value must be the same as the App ID value set in your 
+`AndroidManifest.xml`.
+
+### iOS
+Starting in version 7.42.0, you are required to add your AdMob app ID in your **Info.plist** file under the Runner directory. You can add it using Xcode or edit the file manually:
+
+```xml
+<dict>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-################~##########</string>
+</dict>
+```
+
+Failure to add this tag will result in the app crashing at app launch with a message including *"GADVerifyApplicationID."*
+
+>>>>>>> 0f80e7380086ceed3c61c05dc431a41d2c32253a
 ## Using banners and interstitials
 Banner and interstitial ads can be configured with target information. 
 And in the example below, the ads are given test ad unit IDs for a quick start.
