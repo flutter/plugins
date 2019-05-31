@@ -1,3 +1,7 @@
+## 0.1.1+1
+
+* Make `AdditionalSteps`(Used in the unit test) a void function.
+
 ## 0.1.1
 
 * Some error messages from iOS are slightly changed.

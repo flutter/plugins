@@ -7,7 +7,7 @@
 #import <Firebase/Firebase.h>
 
 #define LIBRARY_NAME @"flutter-firebase_cloud_firestore"
-#define LIBRARY_VERSION @"0.12.0+2"
+#define LIBRARY_VERSION @"0.12.1"
 
 static FlutterError *getFlutterError(NSError *error) {
   if (error == nil) return nil;
@@ -120,6 +120,17 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
     query = [query queryEndingBeforeValues:getDocumentValues(endBeforeDocument, orderBy)];
   }
   return query;
+}
+
+static FIRFirestoreSource getSource(NSDictionary *arguments) {
+  NSString *source = arguments[@"source"];
+  if ([@"server" isEqualToString:source]) {
+    return FIRFirestoreSourceServer;
+  }
+  if ([@"cache" isEqualToString:source]) {
+    return FIRFirestoreSourceCache;
+  }
+  return FIRFirestoreSourceDefault;
 }
 
 static NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
@@ -457,21 +468,23 @@ const UInt8 INCREMENT_INTEGER = 138;
     [document deleteDocumentWithCompletion:defaultCompletionBlock];
   } else if ([@"DocumentReference#get" isEqualToString:call.method]) {
     FIRDocumentReference *document = getDocumentReference(call.arguments);
-    [document getDocumentWithCompletion:^(FIRDocumentSnapshot *_Nullable snapshot,
-                                          NSError *_Nullable error) {
-      if (snapshot == nil) {
-        result(getFlutterError(error));
-      } else {
-        result(@{
-          @"path" : snapshot.reference.path,
-          @"data" : snapshot.exists ? snapshot.data : [NSNull null],
-          @"metadata" : @{
-            @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
-            @"isFromCache" : @(snapshot.metadata.isFromCache),
-          },
-        });
-      }
-    }];
+    FIRFirestoreSource source = getSource(call.arguments);
+    [document
+        getDocumentWithSource:source
+                   completion:^(FIRDocumentSnapshot *_Nullable snapshot, NSError *_Nullable error) {
+                     if (snapshot == nil) {
+                       result(getFlutterError(error));
+                     } else {
+                       result(@{
+                         @"path" : snapshot.reference.path,
+                         @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+                         @"metadata" : @{
+                           @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
+                           @"isFromCache" : @(snapshot.metadata.isFromCache),
+                         },
+                       });
+                     }
+                   }];
   } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     FIRQuery *query;
@@ -519,6 +532,7 @@ const UInt8 INCREMENT_INTEGER = 138;
     result(handle);
   } else if ([@"Query#getDocuments" isEqualToString:call.method]) {
     FIRQuery *query;
+    FIRFirestoreSource source = getSource(call.arguments);
     @try {
       query = getQuery(call.arguments);
     } @catch (NSException *exception) {
@@ -526,14 +540,16 @@ const UInt8 INCREMENT_INTEGER = 138;
                                  message:[exception name]
                                  details:[exception reason]]);
     }
-    [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
-                                        NSError *_Nullable error) {
-      if (snapshot == nil) {
-        result(getFlutterError(error));
-        return;
-      }
-      result(parseQuerySnapshot(snapshot));
-    }];
+
+    [query
+        getDocumentsWithSource:source
+                    completion:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
+                      if (snapshot == nil) {
+                        result(getFlutterError(error));
+                        return;
+                      }
+                      result(parseQuerySnapshot(snapshot));
+                    }];
   } else if ([@"Query#removeListener" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
     [[_listeners objectForKey:handle] remove];

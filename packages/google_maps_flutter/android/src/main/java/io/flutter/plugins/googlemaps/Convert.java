@@ -170,6 +170,15 @@ class Convert {
     return data;
   }
 
+  static Object polygonIdToJson(String polygonId) {
+    if (polygonId == null) {
+      return null;
+    }
+    final Map<String, Object> data = new HashMap<>(1);
+    data.put("polygonId", polygonId);
+    return data;
+  }
+
   static Object polylineIdToJson(String polylineId) {
     if (polylineId == null) {
       return null;
@@ -361,6 +370,48 @@ class Convert {
     if (infoWindowAnchor != null) {
       final List<?> anchorData = toList(infoWindowAnchor);
       sink.setInfoWindowAnchor(toFloat(anchorData.get(0)), toFloat(anchorData.get(1)));
+    }
+  }
+
+  static String interpretPolygonOptions(Object o, PolygonOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object consumeTapEvents = data.get("consumeTapEvents");
+    if (consumeTapEvents != null) {
+      sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
+    }
+    final Object geodesic = data.get("geodesic");
+    if (geodesic != null) {
+      sink.setGeodesic(toBoolean(geodesic));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object fillColor = data.get("fillColor");
+    if (fillColor != null) {
+      sink.setFillColor(toInt(fillColor));
+    }
+    final Object strokeColor = data.get("strokeColor");
+    if (strokeColor != null) {
+      sink.setStrokeColor(toInt(strokeColor));
+    }
+    final Object strokeWidth = data.get("strokeWidth");
+    if (strokeWidth != null) {
+      sink.setStrokeWidth(toInt(strokeWidth));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final Object points = data.get("points");
+    if (points != null) {
+      sink.setPoints(toPoints(points));
+    }
+    final String polygonId = (String) data.get("polygonId");
+    if (polygonId == null) {
+      throw new IllegalArgumentException("polygonId was null");
+    } else {
+      return polygonId;
     }
   }
 
