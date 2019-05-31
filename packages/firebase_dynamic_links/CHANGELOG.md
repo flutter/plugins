@@ -1,3 +1,7 @@
+## 0.4.0+2
+
+* Fixed bug on Android when a headless plugin tries to register this plugin causing a crash due no activity from the registrar.
+
 ## 0.4.0+1
 
 * Fixed bug where link persists after starting an app with a Dynamic Link.
