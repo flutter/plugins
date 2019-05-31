@@ -8,10 +8,7 @@ class OnDisconnect {
   final String path;
 
   Future<void> set(dynamic value, {dynamic priority}) {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _database._channel.invokeMethod(
+    return _database._channel.invokeMethod<void>(
       'OnDisconnect#set',
       <String, dynamic>{
         'app': _database.app?.name,
@@ -26,10 +23,7 @@ class OnDisconnect {
   Future<void> remove() => set(null);
 
   Future<void> cancel() {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _database._channel.invokeMethod(
+    return _database._channel.invokeMethod<void>(
       'OnDisconnect#cancel',
       <String, dynamic>{
         'app': _database.app?.name,
@@ -40,10 +34,7 @@ class OnDisconnect {
   }
 
   Future<void> update(Map<String, dynamic> value) {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _database._channel.invokeMethod(
+    return _database._channel.invokeMethod<void>(
       'OnDisconnect#update',
       <String, dynamic>{
         'app': _database.app?.name,
