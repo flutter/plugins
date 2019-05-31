@@ -5,6 +5,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
+import 'in_app_purchase_connection.dart';
 
 /// The class represents the information of a product.
 ///
@@ -41,6 +42,24 @@ class ProductDetails {
   ///
   /// This is null on iOS.
   final SkuDetailsWrapper skuDetail;
+
+  /// Generate a [ProductDetails] object based on an iOS [SKProductWrapper] object.
+  ProductDetails.fromSKProduct(SKProductWrapper product)
+      : this.id = product.productIdentifier,
+        this.title = product.localizedTitle,
+        this.description = product.localizedDescription,
+        this.price = product.priceLocale.currencySymbol + product.price,
+        this.skProduct = product,
+        this.skuDetail = null;
+
+  /// Generate a [ProductDetails] object based on an Android [SkuDetailsWrapper] object.
+  ProductDetails.fromSkuDetails(SkuDetailsWrapper skuDetails)
+      : this.id = skuDetails.sku,
+        this.title = skuDetails.title,
+        this.description = skuDetails.description,
+        this.price = skuDetails.price,
+        this.skProduct = null,
+        this.skuDetail = skuDetails;
 }
 
 /// The response returned by [InAppPurchaseConnection.queryProductDetails].
@@ -48,7 +67,9 @@ class ProductDetails {
 /// A list of [ProductDetails] can be obtained from the this response.
 class ProductDetailsResponse {
   ProductDetailsResponse(
-      {@required this.productDetails, @required this.notFoundIDs});
+      {@required this.productDetails,
+      @required this.notFoundIDs,
+      this.error = null});
 
   /// Each [ProductDetails] uniquely matches one valid identifier in [identifiers] of [InAppPurchaseConnection.queryProductDetails].
   final List<ProductDetails> productDetails;
@@ -58,4 +79,10 @@ class ProductDetailsResponse {
   /// There's multiple platform specific reasons that product information could fail to be fetched,
   /// ranging from products not being correctly configured in the storefront to the queried IDs not existing.
   final List<String> notFoundIDs;
+
+  /// A caught platform exception thrown while querying the purchases.
+  ///
+  /// It's possible for this to be null but for there still to be notFoundIds in cases where the request itself was a success but the
+  /// requested IDs could not be found.
+  final PurchaseError error;
 }

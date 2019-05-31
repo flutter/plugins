@@ -48,12 +48,12 @@ class _MyHomePageState extends State<_MyHomePage> {
 
     final Image image = Image.file(imageFile);
     image.image.resolve(const ImageConfiguration()).addListener(
-      (ImageInfo info, bool _) {
+      ImageStreamListener((ImageInfo info, bool _) {
         completer.complete(Size(
           info.image.width.toDouble(),
           info.image.height.toDouble(),
         ));
-      },
+      }),
     );
 
     final Size imageSize = await completer.future;

@@ -6,8 +6,11 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/src/foundation/basic_types.dart';
+import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 typedef void VoidCallback();
@@ -63,7 +66,6 @@ void main() {
       initialUrl: 'https://youtube.com',
       javascriptMode: JavascriptMode.disabled,
     ));
-
     expect(platformWebView.javascriptMode, JavascriptMode.disabled);
   });
 
@@ -747,6 +749,64 @@ void main() {
       expect(platformWebView.debuggingEnabled, false);
     });
   });
+
+  group('Custom platform implementation', () {
+    setUpAll(() {
+      WebView.platformBuilder = MyWebViewBuilder();
+    });
+    tearDownAll(() {
+      WebView.platformBuilder = null;
+    });
+
+    testWidgets('creation', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const WebView(
+          initialUrl: 'https://youtube.com',
+        ),
+      );
+
+      final MyWebViewBuilder builder = WebView.platformBuilder;
+      final MyWebViewPlatform platform = builder.lastPlatformBuilt;
+
+      expect(
+          platform.creationParams,
+          MatchesCreationParams(CreationParams(
+            initialUrl: 'https://youtube.com',
+            webSettings: WebSettings(
+              javascriptMode: JavascriptMode.disabled,
+              hasNavigationDelegate: false,
+              debuggingEnabled: false,
+            ),
+            // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+            // ignore: prefer_collection_literals
+            javascriptChannelNames: Set<String>(),
+          )));
+    });
+
+    testWidgets('loadUrl', (WidgetTester tester) async {
+      WebViewController controller;
+      await tester.pumpWidget(
+        WebView(
+          initialUrl: 'https://youtube.com',
+          onWebViewCreated: (WebViewController webViewController) {
+            controller = webViewController;
+          },
+        ),
+      );
+
+      final MyWebViewBuilder builder = WebView.platformBuilder;
+      final MyWebViewPlatform platform = builder.lastPlatformBuilt;
+
+      final Map<String, String> headers = <String, String>{
+        'header': 'value',
+      };
+
+      await controller.loadUrl('https://google.com', headers: headers);
+
+      expect(platform.lastUrlLoaded, 'https://google.com');
+      expect(platform.lastRequestHeaders, headers);
+    });
+  });
 }
 
 class FakePlatformWebView {
@@ -850,6 +910,9 @@ class FakePlatformWebView {
     };
     final ByteData data = codec
         .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
+    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+    // https://github.com/flutter/flutter/issues/33446
+    // ignore: deprecated_member_use
     BinaryMessages.handlePlatformMessage(
         channel.name, data, (ByteData data) {});
   }
@@ -869,6 +932,9 @@ class FakePlatformWebView {
     };
     final ByteData data =
         codec.encodeMethodCall(MethodCall('navigationRequest', arguments));
+    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+    // https://github.com/flutter/flutter/issues/33446
+    // ignore: deprecated_member_use
     BinaryMessages.handlePlatformMessage(channel.name, data, (ByteData data) {
       final bool allow = codec.decodeEnvelope(data);
       if (allow) {
@@ -885,6 +951,9 @@ class FakePlatformWebView {
       <dynamic, dynamic>{'url': currentUrl},
     ));
 
+    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+    // https://github.com/flutter/flutter/issues/33446
+    // ignore: deprecated_member_use
     BinaryMessages.handlePlatformMessage(
       channel.name,
       data,
@@ -956,10 +1025,88 @@ class _FakeCookieManager {
         });
         break;
     }
-    return Future<bool>.sync(() {});
+    return Future<bool>.sync(() => null);
   }
 
   void reset() {
     hasCookies = true;
+  }
+}
+
+class MyWebViewBuilder implements WebViewBuilder {
+  MyWebViewPlatform lastPlatformBuilt;
+
+  @override
+  Widget build({
+    BuildContext context,
+    CreationParams creationParams,
+    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
+    @required WebViewPlatformCreatedCallback onWebViewPlatformCreated,
+    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+  }) {
+    assert(onWebViewPlatformCreated != null);
+    lastPlatformBuilt = MyWebViewPlatform(
+        creationParams, gestureRecognizers, webViewPlatformCallbacksHandler);
+    onWebViewPlatformCreated(lastPlatformBuilt);
+    return Container();
+  }
+}
+
+class MyWebViewPlatform extends WebViewPlatform {
+  MyWebViewPlatform(this.creationParams, this.gestureRecognizers,
+      WebViewPlatformCallbacksHandler platformHandler)
+      : super(platformHandler);
+
+  CreationParams creationParams;
+  Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+
+  String lastUrlLoaded;
+  Map<String, String> lastRequestHeaders;
+
+  @override
+  Future<void> loadUrl(String url, Map<String, String> headers) {
+    equals(1, 1);
+    lastUrlLoaded = url;
+    lastRequestHeaders = headers;
+    return null;
+  }
+}
+
+class MatchesWebSettings extends Matcher {
+  MatchesWebSettings(this._webSettings);
+
+  final WebSettings _webSettings;
+
+  @override
+  Description describe(Description description) =>
+      description.add('$_webSettings');
+
+  @override
+  bool matches(
+      covariant WebSettings webSettings, Map<dynamic, dynamic> matchState) {
+    return _webSettings.javascriptMode == webSettings.javascriptMode &&
+        _webSettings.hasNavigationDelegate ==
+            webSettings.hasNavigationDelegate &&
+        _webSettings.debuggingEnabled == webSettings.debuggingEnabled;
+  }
+}
+
+class MatchesCreationParams extends Matcher {
+  MatchesCreationParams(this._creationParams);
+
+  final CreationParams _creationParams;
+
+  @override
+  Description describe(Description description) =>
+      description.add('$_creationParams');
+
+  @override
+  bool matches(covariant CreationParams creationParams,
+      Map<dynamic, dynamic> matchState) {
+    return _creationParams.initialUrl == creationParams.initialUrl &&
+        MatchesWebSettings(_creationParams.webSettings)
+            .matches(creationParams.webSettings, matchState) &&
+        orderedEquals(_creationParams.javascriptChannelNames)
+            .matches(creationParams.javascriptChannelNames, matchState);
   }
 }
