@@ -24,7 +24,7 @@ import androidx.biometric.BiometricPrompt;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.fragment.app.FragmentActivity;
 import io.flutter.plugin.common.MethodCall;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
 
 /**
  * Authenticates the user with fingerprint and sends corresponding response back to Flutter.
@@ -65,6 +65,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   private final MethodCall call;
   private final BiometricPrompt.PromptInfo promptInfo;
   private final boolean isAuthSticky;
+  private final UiThreadExecutor uiThreadExecutor;
   private boolean activityPaused = false;
 
   public AuthenticationHelper(
@@ -75,6 +76,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     this.keyguardManager = (KeyguardManager) activity.getSystemService(Context.KEYGUARD_SERVICE);
     this.fingerprintManager = FingerprintManagerCompat.from(activity);
     this.isAuthSticky = call.argument("stickyAuth");
+    this.uiThreadExecutor = new UiThreadExecutor();
     this.promptInfo =
         new BiometricPrompt.PromptInfo.Builder()
             .setDescription((String) call.argument("localizedReason"))
@@ -107,15 +109,12 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   /** Start the fingerprint listener. */
   private void start() {
     activity.getApplication().registerActivityLifecycleCallbacks(this);
-    new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), this)
-        .authenticate(promptInfo);
+    new BiometricPrompt(activity, uiThreadExecutor, this).authenticate(promptInfo);
   }
 
   /** Stops the fingerprint listener. */
-  private void stop(Boolean success) {
+  private void stop() {
     activity.getApplication().unregisterActivityLifecycleCallbacks(this);
-    if (success) completionHandler.onSuccess();
-    else completionHandler.onFailure();
   }
 
   @SuppressLint("SwitchIntDef")
@@ -133,17 +132,24 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             "The operation was canceled because ERROR_LOCKOUT occurred too many times. Biometric authentication is disabled until the user unlocks with strong authentication (PIN/Pattern/Password)");
         break;
       case BiometricPrompt.ERROR_CANCELED:
+        // If we are doing sticky auth and the activity has been paused,
+        // ignore this error. We will start listening again when resumed.
         if (activityPaused && isAuthSticky) {
           return;
+        } else {
+          completionHandler.onFailure();
         }
+        break;
       default:
+        completionHandler.onFailure();
     }
-    stop(false);
+    stop();
   }
 
   @Override
   public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
-    stop(true);
+    completionHandler.onSuccess();
+    stop();
   }
 
   @Override
@@ -164,19 +170,17 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   public void onActivityResumed(Activity ignored) {
     if (isAuthSticky) {
       activityPaused = false;
-      final BiometricPrompt prompt =
-          new BiometricPrompt(activity, Executors.newSingleThreadExecutor(), this);
+      final BiometricPrompt prompt = new BiometricPrompt(activity, uiThreadExecutor, this);
       // When activity is resuming, we cannot show the prompt right away. We need to post it to the
       // UI queue.
-      new Handler(Looper.myLooper())
-          .postDelayed(
-              new Runnable() {
-                @Override
-                public void run() {
-                  prompt.authenticate(promptInfo);
-                }
-              },
-              100);
+      uiThreadExecutor.handler.postDelayed(
+          new Runnable() {
+            @Override
+            public void run() {
+              prompt.authenticate(promptInfo);
+            }
+          },
+          100);
     }
   }
 
@@ -193,7 +197,8 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            stop(false);
+            completionHandler.onFailure();
+            stop();
             activity.startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
           }
         };
@@ -201,7 +206,8 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            stop(false);
+            completionHandler.onFailure();
+            stop();
           }
         };
     new AlertDialog.Builder(context)
@@ -228,4 +234,13 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
 
   @Override
   public void onActivityDestroyed(Activity activity) {}
+
+  private static class UiThreadExecutor implements Executor {
+    public final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    public void execute(Runnable command) {
+      handler.post(command);
+    }
+  }
 }
