@@ -281,7 +281,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)setPaddingTop:(float)top left:(float)left bottom:(float)bottom right:(float)right {
   _mapView.padding = UIEdgeInsetsMake(top, left, bottom, right);
- }
+}
 
 - (void)setRotateGesturesEnabled:(BOOL)enabled {
   _mapView.settings.rotateGestures = enabled;
