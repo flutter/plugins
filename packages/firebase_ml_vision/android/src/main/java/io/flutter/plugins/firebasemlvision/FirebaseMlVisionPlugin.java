@@ -34,7 +34,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     Map<String, Object> options = call.argument("options");
-
+    String modelName = call.argument("model");
     FirebaseVisionImage image;
     Map<String, Object> imageData = call.arguments();
     try {
@@ -56,6 +56,18 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         break;
       case "TextRecognizer#processImage":
         TextRecognizer.instance.handleDetection(image, options, result);
+        break;
+       case "VisionEdgeImageLabeler#processLocalImage":
+         LocalVisionEdgeDetector.instance.handleDetection(image, options, result);
+         break;
+      case "VisionEdgeImageLabeler#processRemoteImage":
+        RemoteVisionEdgeDetector.instance.handleDetection(image, options, result);
+        break;
+      case "ModelManager#setupLocalModel":
+        SetupLocalModel.instance.setup(modelName, result);
+        break;
+      case "ModelManager#setupRemoteModel":
+        SetupRemoteModel.instance.setup(modelName, result);
         break;
       default:
         result.notImplemented();
