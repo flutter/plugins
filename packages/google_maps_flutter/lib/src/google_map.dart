@@ -34,6 +34,7 @@ class GoogleMap extends StatefulWidget {
     this.polygons,
     this.polylines,
     this.circles,
+    this.padding,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -84,6 +85,8 @@ class GoogleMap extends StatefulWidget {
 
   /// Circles to be placed on the map.
   final Set<Circle> circles;
+
+  final EdgeInsets padding;
 
   /// Called when the camera starts moving.
   ///
@@ -347,6 +350,7 @@ class _GoogleMapOptions {
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
     this.myLocationButtonEnabled,
+    this.padding,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -362,6 +366,7 @@ class _GoogleMapOptions {
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
+      padding: map.padding,
     );
   }
 
@@ -387,6 +392,8 @@ class _GoogleMapOptions {
 
   final bool myLocationButtonEnabled;
 
+  final EdgeInsets padding;
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -407,7 +414,12 @@ class _GoogleMapOptions {
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
-
+    addIfNonNull('padding', <double>[
+      padding?.top,
+      padding?.left,
+      padding?.bottom,
+      padding?.right,
+    ]);
     return optionsMap;
   }
 

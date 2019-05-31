@@ -1,3 +1,7 @@
+## 0.5.16
+
+* Add support for add padding to the map.
+
 ## 0.5.15
 
 * Add support for Polygons.
