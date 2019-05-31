@@ -1,3 +1,6 @@
+## 0.5.2
+* Executor thread needs to be UI thread.
+
 ## 0.5.1
 * Fix crash on Android versions earlier than 28.
 * [`authenticateWithBiometrics`](https://pub.dev/documentation/local_auth/latest/local_auth/LocalAuthentication/authenticateWithBiometrics.html) will not return result unless Biometric Dialog is closed.
