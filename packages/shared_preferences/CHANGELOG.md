@@ -1,3 +1,7 @@
+## 0.5.3
+
+* Add reload method.
+
 ## 0.5.2+2
 
 * Updated Gradle tooling to match Android Studio 3.4.
