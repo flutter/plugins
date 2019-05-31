@@ -1,5 +1,0 @@
-<resources>
-  <dimen name="body_text_size">14sp</dimen>
-  <dimen name="medium_text_size">16sp</dimen>
-  <dimen name="huge_text_size">20sp</dimen>
-</resources>
