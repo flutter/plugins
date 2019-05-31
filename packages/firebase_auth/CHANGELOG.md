@@ -1,3 +1,7 @@
+## 0.11.1+5
+
+* Fix `updatePhoneNumberCredential` on Android.
+
 ## 0.11.1+4
 
 * Fix `updatePhoneNumberCredential` on iOS.
