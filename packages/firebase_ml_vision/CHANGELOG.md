@@ -1,3 +1,9 @@
+## 0.8.0+3
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
 ## 0.8.0+2
 
 * Fix crash when passing contact info from barcode.
