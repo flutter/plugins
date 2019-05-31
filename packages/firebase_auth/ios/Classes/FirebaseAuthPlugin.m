@@ -206,7 +206,8 @@ int nextHandle = 0;
                                                              error:error];
                                                 }];
   } else if ([@"updatePhoneNumberCredential" isEqualToString:call.method]) {
-    FIRPhoneAuthCredential *credential = (FIRPhoneAuthCredential *)[self getCredential:call.arguments];
+    FIRPhoneAuthCredential *credential =
+        (FIRPhoneAuthCredential *)[self getCredential:call.arguments];
     [[self getAuth:call.arguments].currentUser
         updatePhoneNumberCredential:credential
                          completion:^(NSError *_Nullable error) {
