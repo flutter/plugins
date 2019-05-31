@@ -17,8 +17,6 @@ If you're using Google Sign-in with Firebase auth, be sure to include a support 
 ### Import the firebase_auth plugin
 To use the firebase_auth plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/firebase_auth#pub-pkg-tab-installing).
 
-### Add a support email
-
 ### Android integration
 
 Enable the Google services by configuring the Gradle scripts as such.
