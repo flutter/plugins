@@ -57,9 +57,9 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       case "TextRecognizer#processImage":
         TextRecognizer.instance.handleDetection(image, options, result);
         break;
-       case "VisionEdgeImageLabeler#processLocalImage":
-         LocalVisionEdgeDetector.instance.handleDetection(image, options, result);
-         break;
+      case "VisionEdgeImageLabeler#processLocalImage":
+        LocalVisionEdgeDetector.instance.handleDetection(image, options, result);
+        break;
       case "VisionEdgeImageLabeler#processRemoteImage":
         RemoteVisionEdgeDetector.instance.handleDetection(image, options, result);
         break;
