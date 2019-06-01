@@ -15,7 +15,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  final inputTextController = TextEditingController();
+  final TextEditingController inputTextController = TextEditingController();
 
   @override
   void dispose() {
@@ -24,13 +24,13 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  var translatedText = "Translated Text";
-  var inputText;
-  var identifiedLang = "Detected Language";
+  String translatedText = "Translated Text";
+  String inputText;
+  String identifiedLang = "Detected Language";
 
   void onPressed() async {
     inputText = inputTextController.text;
-    var result = await FirebaseLanguage.instance
+    final String result = await FirebaseLanguage.instance
         .languageTranslator(
             SupportedLanguages.English, SupportedLanguages.Spanish)
         .processText(inputText);
@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
 
   void onPoked() async {
     inputText = inputTextController.text;
-    var result = await FirebaseLanguage.instance
+    final List<LanguageLabel> result = await FirebaseLanguage.instance
         .languageIdentifier()
         .processText(inputText);
 
@@ -58,39 +58,38 @@ class _MyAppState extends State<MyApp> {
             title: const Text("Plug-In Example App"),
             backgroundColor: Colors.blue,
           ),
-          body: new Container(
-            padding: EdgeInsets.all(50),
-            child: new Center(
-              child: new Column(
+          body: Container(
+            padding: const EdgeInsets.all(50),
+            child: Center(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  new TextField(controller: inputTextController),
-                  new SizedBox(height: 50),
-                  new RaisedButton(
-                      child: new Text("Translate",
+                  TextField(controller: inputTextController),
+                  const SizedBox(height: 50),
+                  RaisedButton(
+                      child: Text("Translate",
                           style: TextStyle(color: Colors.white)),
                       color: Colors.blue,
                       onPressed: onPressed),
-                  new SizedBox(height: 25),
-                  new Container(
-                    padding: EdgeInsets.all(20),
-                    child: new SizedBox(
-                        child: new Text(translatedText), height: 20),
-                    decoration: new BoxDecoration(
+                  const SizedBox(height: 25),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    child: SizedBox(child: Text(translatedText), height: 20),
+                    decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.05),
                     ),
                   ),
-                  new SizedBox(height: 20),
-                  new RaisedButton(
-                      child: new Text("Identify Language",
+                  const SizedBox(height: 20),
+                  RaisedButton(
+                      child: Text("Identify Language",
                           style: TextStyle(color: Colors.white)),
                       color: Colors.blue,
                       onPressed: onPoked),
-                  new SizedBox(height: 25),
-                  new Container(
-                    padding: EdgeInsets.all(10),
-                    child: new Text(identifiedLang),
-                    decoration: new BoxDecoration(
+                  const SizedBox(height: 25),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(identifiedLang),
+                    decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.05),
                     ),
                   ),
