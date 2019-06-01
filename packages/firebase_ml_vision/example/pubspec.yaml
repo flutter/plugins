@@ -26,4 +26,5 @@ flutter:
   assets:
     - assets/test_face.jpg
     - assets/test_barcode.jpg
+    - assets/test_contact_barcode.png
     - assets/test_text.png

@@ -144,6 +144,17 @@ void main() {
       expect(log, <Matcher>[isMethodCall('clear', arguments: null)]);
     });
 
+    test('reloading', () async {
+      await preferences.setString('String', kTestValues['flutter.String']);
+      expect(preferences.getString('String'), kTestValues['flutter.String']);
+
+      SharedPreferences.setMockInitialValues(kTestValues2);
+      expect(preferences.getString('String'), kTestValues['flutter.String']);
+
+      await preferences.reload();
+      expect(preferences.getString('String'), kTestValues2['flutter.String']);
+    });
+
     test('mocking', () async {
       // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
       // https://github.com/flutter/flutter/issues/26431

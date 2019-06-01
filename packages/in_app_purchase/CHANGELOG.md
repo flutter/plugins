@@ -1,6 +1,10 @@
-## 0.1.1+1
+## 0.1.1+2
 
 * Expanded description in `pubspec.yaml`.
+
+## 0.1.1+1
+
+* Make `AdditionalSteps`(Used in the unit test) a void function.
 
 ## 0.1.1
 
