@@ -5,9 +5,7 @@
 @implementation LanguageTranslator
 
 + (void)handleEvent:(NSString *)text options:(NSDictionary *)options result:(FlutterResult)result {
-  [LanguageTranslator downloadModel:options[@"fromLanguage"]];
-  [LanguageTranslator downloadModel:options[@"toLanguage"]];
-
+    
   FIRTranslateLanguage sourceModel = FIRTranslateLanguageForLanguageCode(options[@"fromLanguage"]);
   FIRTranslateLanguage targetModel = FIRTranslateLanguageForLanguageCode(options[@"toLanguage"]);
 
@@ -37,20 +35,5 @@
                                           result(translatedText);
                                         }];
                                }];
-}
-
-+ (void)downloadModel:(NSString *)text {
-  FIRTranslateLanguage modelName = FIRTranslateLanguageForLanguageCode(text);
-  FIRModelDownloadConditions *conditions =
-      [[FIRModelDownloadConditions alloc] initWithAllowsCellularAccess:YES
-                                           allowsBackgroundDownloading:YES];
-  FIRTranslateRemoteModel *modelToDownload =
-      [FIRTranslateRemoteModel translateRemoteModelForApp:FIRApp.defaultApp
-                                                 language:modelName
-                                               conditions:conditions];
-  if ([[FIRModelManager modelManager] isRemoteModelDownloaded:modelToDownload] == false) {
-    [[FIRModelManager modelManager] downloadRemoteModel:modelToDownload];
-    return;
-  }
 }
 @end

@@ -1,5 +1,7 @@
 # ML Kit Natural Language Plugin
 
+![Pub](https://img.shields.io/pub/v/firebase_mlkit_language.svg?color=orange)
+
 A Flutter plugin to use the [ML Kit Natural Language for Firebase API](https://firebase.google.com/docs/ml-kit/).
 
 For Flutter plugins for other Firebase products, see [FlutterFire.md](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
@@ -57,7 +59,7 @@ for (LanguageLabel label in labels) {
 Get an instance of `ModelManager`, and download the needed translation models(optional, results in faster first-use).
 
 ```dart
-FirebaseVision.instance.modelManager().downloadModel(SupportedLanguages.lang);
+FirebaseLanguage.instance.modelManager().downloadModel(SupportedLanguages.lang);
 ```
 
 ### 1. Create an instance of a language translator
@@ -91,7 +93,7 @@ final ModelManager modelManager = FirebaseLanguage.instance.modelManager()
 `downloadModel()` downloads the specified model to the device's local storage. It is recommended to download all the models needed to be used before translating to ensure a fast first-use. On a successful download, the string "Downloaded" will be returned.
 
 ```dart
-modelManager.downloadModel(SupportedLanguages.English)
+modelManager.downloadModel(SupportedLanguages.lang)
 ```
 
 ### 3. Delete Model using the model manager
