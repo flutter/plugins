@@ -9,31 +9,31 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 
 static NSMutableDictionary *getDictionaryFromDynamicLink(FIRDynamicLink *dynamicLink) {
-    if (dynamicLink != nil) {
-        NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-        dictionary[@"link"] = dynamicLink.url.absoluteString;
+  if (dynamicLink != nil) {
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    dictionary[@"link"] = dynamicLink.url.absoluteString;
 
-        NSMutableDictionary *iosData = [[NSMutableDictionary alloc] init];
-        if (dynamicLink.minimumAppVersion) {
-            iosData[@"minimumVersion"] = dynamicLink.minimumAppVersion;
-        }
-        dictionary[@"ios"] = iosData;
-        return dictionary;
-    } else {
-        return nil;
+    NSMutableDictionary *iosData = [[NSMutableDictionary alloc] init];
+    if (dynamicLink.minimumAppVersion) {
+      iosData[@"minimumVersion"] = dynamicLink.minimumAppVersion;
     }
+    dictionary[@"ios"] = iosData;
+    return dictionary;
+  } else {
+    return nil;
+  }
 }
 
-static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError * error) {
-    if (error == nil) {
-        return nil;
-    }
+static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError *error) {
+  if (error == nil) {
+    return nil;
+  }
 
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-    dictionary[@"code"] = error.code;
-    dictionary[@"message"] = error.message;
-    dictionary[@"details"] = error.details;
-    return dictionary;
+  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+  dictionary[@"code"] = error.code;
+  dictionary[@"message"] = error.message;
+  dictionary[@"details"] = error.details;
+  return dictionary;
 }
 
 @interface FLTFirebaseDynamicLinksPlugin ()
@@ -48,7 +48,8 @@ static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError * error) 
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_dynamic_links"
                                   binaryMessenger:[registrar messenger]];
-  FLTFirebaseDynamicLinksPlugin *instance = [[FLTFirebaseDynamicLinksPlugin alloc] initWithChannel:channel];
+  FLTFirebaseDynamicLinksPlugin *instance =
+      [[FLTFirebaseDynamicLinksPlugin alloc] initWithChannel:channel];
   [registrar addMethodCallDelegate:instance channel:channel];
   [registrar addApplicationDelegate:instance];
 }
@@ -81,20 +82,20 @@ static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError * error) 
                                  options:options
                               completion:[self createShortLinkCompletion:result]];
   } else if ([@"FirebaseDynamicLinks#getInitialLink" isEqualToString:call.method]) {
-      _initiated = YES;
-      NSMutableDictionary *dict = [self getInitialLink];
-      if (dict == nil && self.flutterError) {
-          result(self.flutterError);
-      } else {
-          result(dict);
-      }
+    _initiated = YES;
+    NSMutableDictionary *dict = [self getInitialLink];
+    if (dict == nil && self.flutterError) {
+      result(self.flutterError);
+    } else {
+      result(dict);
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
 - (NSMutableDictionary *)getInitialLink {
-    return getDictionaryFromDynamicLink(_initialDynamicLink);
+  return getDictionaryFromDynamicLink(_initialDynamicLink);
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -120,40 +121,40 @@ static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError * error) 
 }
 
 - (BOOL)onLink:(NSUserActivity *)userActivity {
-    BOOL handled = [[FIRDynamicLinks dynamicLinks]
-                    handleUniversalLink:userActivity.webpageURL
-                    completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
-                        if (error) {
-                           FlutterError *flutterError = getFlutterError(error);
-                           [self.channel invokeMethod:@"onLinkError" arguments:getDictionaryFromFlutterError(flutterError)];
-                       }
-                       else {
-                           NSMutableDictionary *dictionary = getDictionaryFromDynamicLink(dynamicLink);
-                           [self.channel invokeMethod:@"onLinkSuccess" arguments:dictionary];
-                       }
-                    }];
-   return handled;
+  BOOL handled = [[FIRDynamicLinks dynamicLinks]
+      handleUniversalLink:userActivity.webpageURL
+               completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
+                 if (error) {
+                   FlutterError *flutterError = getFlutterError(error);
+                   [self.channel invokeMethod:@"onLinkError"
+                                    arguments:getDictionaryFromFlutterError(flutterError)];
+                 } else {
+                   NSMutableDictionary *dictionary = getDictionaryFromDynamicLink(dynamicLink);
+                   [self.channel invokeMethod:@"onLinkSuccess" arguments:dictionary];
+                 }
+               }];
+  return handled;
 }
 
 - (BOOL)onInitialLink:(NSUserActivity *)userActivity {
-    BOOL handled = [[FIRDynamicLinks dynamicLinks]
-                    handleUniversalLink:userActivity.webpageURL
-                    completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
-                        if (error) {
-                            self.flutterError = getFlutterError(error);
-                        }
-                        self.initialDynamicLink = dynamicLink;
-                    }];
-    return handled;
+  BOOL handled = [[FIRDynamicLinks dynamicLinks]
+      handleUniversalLink:userActivity.webpageURL
+               completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
+                 if (error) {
+                   self.flutterError = getFlutterError(error);
+                 }
+                 self.initialDynamicLink = dynamicLink;
+               }];
+  return handled;
 }
 
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(NSUserActivity *)userActivity
-    restorationHandler:(void (^)(NSArray *))restorationHandler {
-    if (_initiated) {
-        return [self onLink:userActivity];
-    }
-    return [self onInitialLink:userActivity];
+      restorationHandler:(void (^)(NSArray *))restorationHandler {
+  if (_initiated) {
+    return [self onLink:userActivity];
+  }
+  return [self onInitialLink:userActivity];
 }
 
 - (FIRDynamicLinkShortenerCompletion)createShortLinkCompletion:(FlutterResult)result {
