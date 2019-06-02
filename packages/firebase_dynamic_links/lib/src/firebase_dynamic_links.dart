@@ -4,6 +4,9 @@
 
 part of firebase_dynamic_links;
 
+typedef Future<dynamic> OnLinkSuccessHandler(PendingDynamicLinkData linkData);
+typedef Future<dynamic> OnLinkErrorHandler(OnLinkErrorException error);
+
 /// Firebase Dynamic Links API.
 ///
 /// You can get an instance by calling [FirebaseDynamicLinks.instance].
@@ -17,18 +20,24 @@ class FirebaseDynamicLinks {
   /// Singleton of [FirebaseDynamicLinks].
   static final FirebaseDynamicLinks instance = FirebaseDynamicLinks._();
 
-  /// Attempts to retrieve a pending dynamic link.
+  OnLinkSuccessHandler _onLinkSuccess;
+  OnLinkErrorHandler _onLinkError;
+
+  /// Attempts to retrieve the initial dynamic link clicked on app open.
   ///
   /// This method always returns a Future. That Future completes to null if
   /// there is no pending dynamic link or any call to this method after the
   /// the first attempt.
-  Future<PendingDynamicLinkData> retrieveDynamicLink() async {
+  Future<PendingDynamicLinkData> getInitialLink() async {
     final Map<dynamic, dynamic> linkData =
         // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
         // https://github.com/flutter/flutter/issues/26431
         // ignore: strong_mode_implicit_dynamic_method
-        await channel.invokeMethod('FirebaseDynamicLinks#retrieveDynamicLink');
+        await channel.invokeMethod('FirebaseDynamicLinks#getInitialLink');
+    return this.getPendingDynamicLinkDataFromMap(linkData);
+  }
 
+  PendingDynamicLinkData getPendingDynamicLinkDataFromMap(Map<dynamic, dynamic> linkData) {
     if (linkData == null) return null;
 
     PendingDynamicLinkDataAndroid androidData;
@@ -51,6 +60,29 @@ class FirebaseDynamicLinks {
       androidData,
       iosData,
     );
+  }
+
+  /// Configures onLink listeners: it has two methods for success and failure.
+  void configure({
+    OnLinkSuccessHandler onLinkSuccess,
+    OnLinkErrorHandler onLinkError,
+  }) {
+    _onLinkSuccess = onLinkSuccess;
+    _onLinkError = onLinkError;
+    channel.setMethodCallHandler(_handleMethod);
+  }
+
+  Future<dynamic> _handleMethod(MethodCall call) async {
+    switch (call.method) {
+      case "onLinkSuccess":
+        Map<dynamic, dynamic> data = call.arguments.cast<dynamic, dynamic>();
+        PendingDynamicLinkData linkData = this.getPendingDynamicLinkDataFromMap(data);
+        return _onLinkSuccess(linkData);
+      case "onLinkError":
+        Map<dynamic, dynamic> data = call.arguments.cast<dynamic, dynamic>();
+        OnLinkErrorException e = OnLinkErrorException._(data['code'], data['message'], data['details']);
+        return _onLinkError(e);
+    }
   }
 }
 
@@ -105,4 +137,15 @@ class PendingDynamicLinkDataIOS {
   /// It is app developer's responsibility to open AppStore when received link
   /// declares higher [minimumVersion] than currently installed.
   final String minimumVersion;
+}
+
+
+class OnLinkErrorException {
+  OnLinkErrorException._(this.code, this.message, this.details);
+
+  final String code;
+
+  final String message;
+
+  final dynamic details;
 }
