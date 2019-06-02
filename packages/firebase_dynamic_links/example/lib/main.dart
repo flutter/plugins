@@ -36,10 +36,12 @@ class _MainScreenState extends State<_MainScreen> {
   @override
   void initState() {
     super.initState();
-    this.initDynamicLinks();
+    initDynamicLinks();
   }
+
   void initDynamicLinks() async {
-    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final PendingDynamicLinkData data =
+        await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
@@ -48,17 +50,15 @@ class _MainScreenState extends State<_MainScreen> {
 
     FirebaseDynamicLinks.instance.configure(
         onLinkSuccess: (PendingDynamicLinkData dynamicLink) async {
-          final Uri deepLink = dynamicLink?.link;
+      final Uri deepLink = dynamicLink?.link;
 
-          if (deepLink != null) {
-            Navigator.pushNamed(context, deepLink.path);
-          }
-        },
-        onLinkError: (OnLinkErrorException e) async {
-          print('onLinkError');
-          print(e.message);
-        }
-    );
+      if (deepLink != null) {
+        Navigator.pushNamed(context, deepLink.path);
+      }
+    }, onLinkError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    });
   }
 
   Future<void> _createDynamicLink(bool short) async {

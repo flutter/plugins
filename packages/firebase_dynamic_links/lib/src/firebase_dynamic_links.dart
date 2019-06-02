@@ -34,10 +34,11 @@ class FirebaseDynamicLinks {
         // https://github.com/flutter/flutter/issues/26431
         // ignore: strong_mode_implicit_dynamic_method
         await channel.invokeMethod('FirebaseDynamicLinks#getInitialLink');
-    return this.getPendingDynamicLinkDataFromMap(linkData);
+    return getPendingDynamicLinkDataFromMap(linkData);
   }
 
-  PendingDynamicLinkData getPendingDynamicLinkDataFromMap(Map<dynamic, dynamic> linkData) {
+  PendingDynamicLinkData getPendingDynamicLinkDataFromMap(
+      Map<dynamic, dynamic> linkData) {
     if (linkData == null) return null;
 
     PendingDynamicLinkDataAndroid androidData;
@@ -75,12 +76,16 @@ class FirebaseDynamicLinks {
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onLinkSuccess":
-        Map<dynamic, dynamic> data = call.arguments.cast<dynamic, dynamic>();
-        PendingDynamicLinkData linkData = this.getPendingDynamicLinkDataFromMap(data);
+        final Map<dynamic, dynamic> data =
+            call.arguments.cast<dynamic, dynamic>();
+        final PendingDynamicLinkData linkData =
+            getPendingDynamicLinkDataFromMap(data);
         return _onLinkSuccess(linkData);
       case "onLinkError":
-        Map<dynamic, dynamic> data = call.arguments.cast<dynamic, dynamic>();
-        OnLinkErrorException e = OnLinkErrorException._(data['code'], data['message'], data['details']);
+        final Map<dynamic, dynamic> data =
+            call.arguments.cast<dynamic, dynamic>();
+        final OnLinkErrorException e = OnLinkErrorException._(
+            data['code'], data['message'], data['details']);
         return _onLinkError(e);
     }
   }
@@ -138,7 +143,6 @@ class PendingDynamicLinkDataIOS {
   /// declares higher [minimumVersion] than currently installed.
   final String minimumVersion;
 }
-
 
 class OnLinkErrorException {
   OnLinkErrorException._(this.code, this.message, this.details);
