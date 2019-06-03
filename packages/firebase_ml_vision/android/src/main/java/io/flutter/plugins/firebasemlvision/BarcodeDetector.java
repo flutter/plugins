@@ -13,6 +13,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +139,9 @@ class BarcodeDetector implements Detector {
                       List<Map<String, Object>> addresses = new ArrayList<>();
                       for (FirebaseVisionBarcode.Address address : contactInfo.getAddresses()) {
                         Map<String, Object> addressMap = new HashMap<>();
-                        addressMap.put("addressLines", address.getAddressLines());
+                        if (address.getAddressLines() != null) {
+                          addressMap.put("addressLines", Arrays.asList(address.getAddressLines()));
+                        }
                         addressMap.put("type", address.getType());
 
                         addresses.add(addressMap);
@@ -180,7 +183,9 @@ class BarcodeDetector implements Detector {
                       }
                       typeValue.put("phones", phones);
 
-                      typeValue.put("urls", contactInfo.getUrls());
+                      if (contactInfo.getUrls() != null) {
+                        typeValue.put("urls", Arrays.asList(contactInfo.getUrls()));
+                      }
                       typeValue.put("jobTitle", contactInfo.getTitle());
                       typeValue.put("organization", contactInfo.getOrganization());
 

@@ -23,11 +23,8 @@ class TextRecognizer {
 
   /// Detects [VisionText] from a [FirebaseVisionImage].
   Future<VisionText> processImage(FirebaseVisionImage visionImage) async {
-    final Map<dynamic, dynamic> reply =
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await FirebaseVision.channel.invokeMethod(
+    final Map<String, dynamic> reply =
+        await FirebaseVision.channel.invokeMapMethod<String, dynamic>(
       'TextRecognizer#processImage',
       <String, dynamic>{
         'options': <String, dynamic>{},
@@ -40,7 +37,7 @@ class TextRecognizer {
 
 /// Recognized text in an image.
 class VisionText {
-  VisionText._(Map<dynamic, dynamic> data)
+  VisionText._(Map<String, dynamic> data)
       : text = data['text'],
         blocks = List<TextBlock>.unmodifiable(data['blocks']
             .map<TextBlock>((dynamic block) => TextBlock._(block)));
