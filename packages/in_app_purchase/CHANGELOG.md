@@ -1,4 +1,4 @@
-## 0.2.1
+## 0.2.0
 
 * [Breaking Change] Rename 'PurchaseError' to 'IAPError'.
 * [Breaking Change] Rename 'PurchaseSource' to 'IAPSource'.
