@@ -1,3 +1,7 @@
+## 1.1.1
+
+* Minor updates
+
 ## 1.1.0
 
 * Added support for Android

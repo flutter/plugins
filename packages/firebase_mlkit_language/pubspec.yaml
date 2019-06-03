@@ -1,6 +1,6 @@
 name: firebase_mlkit_language
 description: Firebase ML Kit Language Plugin for Flutter, enables Language Detection and Translation between 59 Languages
-version: 1.1.0
+version: 1.1.1
 authors:
   - Rishab Nayak <rishab@bu.edu>
   - Nikzad Khani <nikzad@bu.edu>
