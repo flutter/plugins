@@ -5,7 +5,6 @@
 @implementation LanguageTranslator
 
 + (void)handleEvent:(NSString *)text options:(NSDictionary *)options result:(FlutterResult)result {
-    
   FIRTranslateLanguage sourceModel = FIRTranslateLanguageForLanguageCode(options[@"fromLanguage"]);
   FIRTranslateLanguage targetModel = FIRTranslateLanguageForLanguageCode(options[@"toLanguage"]);
 
