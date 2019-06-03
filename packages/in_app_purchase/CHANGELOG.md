@@ -1,3 +1,8 @@
+## 0.2.1
+
+* [Breaking Change] Rename 'PurchaseError' to 'IAPError'.
+* [Breaking Change] Rename 'PurchaseSource' to 'IAPSource'.
+
 ## 0.1.1+2
 
 * Add missing template type parameter to `invokeMethod` calls.
