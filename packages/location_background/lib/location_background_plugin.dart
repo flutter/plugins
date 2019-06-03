@@ -117,11 +117,8 @@ class LocationBackgroundPlugin {
     final CallbackHandle handle =
         PluginUtilities.getCallbackHandle(_backgroundCallbackDispatcher);
     assert(handle != null, 'Unable to lookup callback.');
-    _channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod(_kStartHeadlessService, <dynamic>[handle.toRawHandle()]);
+    _channel.invokeMethod<void>(
+        _kStartHeadlessService, <dynamic>[handle.toRawHandle()]);
   }
 
   // The method channel we'll use to communicate with the native portion of our
@@ -147,10 +144,7 @@ class LocationBackgroundPlugin {
       throw ArgumentError.notNull('callback');
     }
     final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod(_kMonitorLocationChanges, <dynamic>[
+    return _channel.invokeMethod<bool>(_kMonitorLocationChanges, <dynamic>[
       handle.toRawHandle(),
       pauseLocationUpdatesAutomatically,
       showsBackgroundLocationIndicator,
@@ -160,8 +154,5 @@ class LocationBackgroundPlugin {
 
   /// Stop all location updates.
   Future<void> cancelLocationUpdates() =>
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      _channel.invokeMethod(_kCancelLocationUpdates);
+      _channel.invokeMethod<void>(_kCancelLocationUpdates);
 }
