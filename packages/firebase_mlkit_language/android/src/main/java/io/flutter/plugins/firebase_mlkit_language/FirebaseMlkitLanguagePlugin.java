@@ -1,11 +1,12 @@
 package io.flutter.plugins.firebase_mlkit_language;
 
+import java.util.Map;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import java.util.Map;
 
 /** FirebaseMlkitLanguagePlugin */
 public class FirebaseMlkitLanguagePlugin implements MethodCallHandler {
@@ -21,7 +22,7 @@ public class FirebaseMlkitLanguagePlugin implements MethodCallHandler {
     String modelname = call.argument("model");
     String text = call.argument("text");
     Map<String, Object> options = call.argument("options");
-    switch (call.method) {
+    switch (call.method){
       case "LanguageIdentifier#processText":
         LanguageIdentifier.instance.handleEvent(text, options, result);
         break;
@@ -32,10 +33,10 @@ public class FirebaseMlkitLanguagePlugin implements MethodCallHandler {
         ViewModels.instance.handleEvent(result);
         break;
       case "ModelManager#deleteModel":
-        DeleteModel.instance.handleEvent(modelname, result);
+        DeleteModel.instance.handleEvent(modelname,result);
         break;
       case "ModelManager#downloadModel":
-        DownloadModel.instance.handleEvent(modelname, result);
+        DownloadModel.instance.handleEvent(modelname,result);
         break;
       default:
         result.notImplemented();

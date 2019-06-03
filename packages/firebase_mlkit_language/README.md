@@ -8,8 +8,6 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 
 *Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback](https://github.com/rishab2113/firebase_mlkit_language/issues) and [Pull Requests](https://github.com/rishab2113/firebase_mlkit_language/pulls) are most welcome!
 
-Note: iOS Only
-
 ## Usage
 
 To use this plugin, add `firebase_mlkit_language` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure Firebase for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
