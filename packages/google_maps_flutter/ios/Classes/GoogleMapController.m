@@ -226,6 +226,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isMyLocationButtonEnabled"]) {
     NSNumber* isMyLocationButtonEnabled = @(_mapView.settings.myLocationButton);
     result(isMyLocationButtonEnabled);
+  } else if ([call.method isEqualToString:@"map#setStyle"]) {
+    NSString* mapStyle = [call arguments];
+    NSNumber* mapStyleSet = @([self setMapStyle:mapStyle]);
+    result(mapStyleSet);
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -306,6 +310,22 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)setMyLocationButtonEnabled:(BOOL)enabled {
   _mapView.settings.myLocationButton = enabled;
+}
+
+- (BOOL)setMapStyle:(NSString*)mapStyle {
+  if (mapStyle == (id)[NSNull null] || mapStyle.length == 0) {
+    _mapView.mapStyle = nil;
+    return YES;
+  }
+  NSError* error;
+  GMSMapStyle* style = [GMSMapStyle styleWithJSONString:mapStyle error:&error];
+  if (!style) {
+    NSLog(@"The map style definition could not be loaded: %@", error);
+    return NO;
+  } else {
+    _mapView.mapStyle = style;
+    return YES;
+  }
 }
 
 #pragma mark - GMSMapViewDelegate methods

@@ -173,6 +173,20 @@ class GoogleMapController {
     });
   }
 
+  /// Sets the styling of the base map.
+  ///
+  /// Set to `null` to clear any previous custom styling.
+  ///
+  /// Returns `true` if the style was successfully parsed; `false` if problems were
+  /// detected with the [mapStyle], including un-parsable styling JSON, unrecognized
+  /// feature type, unrecognized element type, or invalid styler keys. If the return
+  /// value is `false`, the current style is left unchanged.
+  ///
+  /// The style string can be generated using https://mapstyle.withgoogle.com/
+  Future<bool> setMapStyle(String mapStyle) async {
+    return channel.invokeMethod<bool>('map#setStyle', mapStyle);
+  }
+
   /// Return [LatLngBounds] defining the region that is visible in a map.
   Future<LatLngBounds> getVisibleRegion() async {
     final Map<String, dynamic> latLngBounds =
