@@ -10,7 +10,6 @@
   **Note** this is an Android only change, the iOS implementation was not impacted.
 * Updated the Firebase reporting string to `flutter-fire-fst` to be consistent
   with other reporting libraries.
->>>>>>> origin/master
 
 ## 0.12.1
 
