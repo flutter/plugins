@@ -1,6 +1,16 @@
+## 0.12.3
+
+* Added support for `Query.collectionGroup`.
+
 ## 0.12.2
 
-* Added support for collectionGroup query.
+* Ensure that all channel calls to the Dart side from the Java side are done
+  on the UI thread. This change allows Transactions to work with upcoming
+  Engine restrictions, which require channel calls be made on the UI thread.
+  **Note** this is an Android only change, the iOS implementation was not impacted.
+* Updated the Firebase reporting string to `flutter-fire-fst` to be consistent
+  with other reporting libraries.
+>>>>>>> origin/master
 
 ## 0.12.1
 
