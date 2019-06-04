@@ -1,3 +1,26 @@
+## 0.11.1+5
+
+* Fix `updatePhoneNumberCredential` on Android.
+
+## 0.11.1+4
+
+* Fix `updatePhoneNumberCredential` on iOS.
+
+## 0.11.1+3
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+* FirebaseUser private constructor takes `Map<String, dynamic>` instead of `Map<dynamic, dynamic>`.
+
+## 0.11.1+2
+
+* Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
+
+## 0.11.1+1
+
+* Updated the error code documentation for `linkWithCredential`.
+
 ## 0.11.1
 
 * Support for `updatePhoneNumberCredential`.

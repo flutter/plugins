@@ -22,10 +22,7 @@ class GoogleMapController {
     assert(id != null);
     final MethodChannel channel =
         MethodChannel('plugins.flutter.io/google_maps_$id');
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod('map#waitForMap');
+    await channel.invokeMethod<void>('map#waitForMap');
     return GoogleMapController._(
       channel,
       initialCameraPosition,
@@ -66,6 +63,9 @@ class GoogleMapController {
       case 'polyline#onTap':
         _googleMapState.onPolylineTap(call.arguments['polylineId']);
         break;
+      case 'polygon#onTap':
+        _googleMapState.onPolygonTap(call.arguments['polygonId']);
+        break;
       case 'circle#onTap':
         _googleMapState.onCircleTap(call.arguments['circleId']);
         break;
@@ -89,10 +89,7 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) async {
     assert(optionsUpdate != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
       'map#update',
       <String, dynamic>{
         'options': optionsUpdate,
@@ -108,12 +105,23 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMarkers(_MarkerUpdates markerUpdates) async {
     assert(markerUpdates != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
       'markers#update',
       markerUpdates._toMap(),
+    );
+  }
+
+  /// Updates polygon configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updatePolygons(_PolygonUpdates polygonUpdates) async {
+    assert(polygonUpdates != null);
+    await channel.invokeMethod<void>(
+      'polygons#update',
+      polygonUpdates._toMap(),
     );
   }
 
@@ -125,10 +133,7 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updatePolylines(_PolylineUpdates polylineUpdates) async {
     assert(polylineUpdates != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
       'polylines#update',
       polylineUpdates._toMap(),
     );
@@ -142,10 +147,7 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateCircles(_CircleUpdates circleUpdates) async {
     assert(circleUpdates != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
       'circles#update',
       circleUpdates._toMap(),
     );
@@ -156,10 +158,7 @@ class GoogleMapController {
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
   Future<void> animateCamera(CameraUpdate cameraUpdate) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod('camera#animate', <String, dynamic>{
+    await channel.invokeMethod<void>('camera#animate', <String, dynamic>{
       'cameraUpdate': cameraUpdate._toJson(),
     });
   }
@@ -169,21 +168,15 @@ class GoogleMapController {
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
   Future<void> moveCamera(CameraUpdate cameraUpdate) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod('camera#move', <String, dynamic>{
+    await channel.invokeMethod<void>('camera#move', <String, dynamic>{
       'cameraUpdate': cameraUpdate._toJson(),
     });
   }
 
   /// Return [LatLngBounds] defining the region that is visible in a map.
   Future<LatLngBounds> getVisibleRegion() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final Map<dynamic, dynamic> latLngBounds =
-        await channel.invokeMethod('map#getVisibleRegion');
+    final Map<String, dynamic> latLngBounds =
+        await channel.invokeMapMethod<String, dynamic>('map#getVisibleRegion');
     final LatLng southwest = LatLng._fromJson(latLngBounds['southwest']);
     final LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
 

@@ -36,6 +36,7 @@ class _MainScreenState extends State<_MainScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    _retrieveDynamicLink();
     WidgetsBinding.instance.addObserver(this);
   }
 
