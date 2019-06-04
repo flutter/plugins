@@ -1,3 +1,9 @@
+## 0.5.2+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
 ## 0.5.2+1
 * Use post instead of postDelayed to show the dialog onResume.
 

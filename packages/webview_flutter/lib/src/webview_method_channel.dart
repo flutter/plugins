@@ -49,72 +49,64 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     Map<String, String> headers,
   ) async {
     assert(url != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod('loadUrl', <String, dynamic>{
+    return _channel.invokeMethod<void>('loadUrl', <String, dynamic>{
       'url': url,
       'headers': headers,
     });
   }
 
   @override
-  Future<String> currentUrl() => _channel.invokeMethod('currentUrl');
+  Future<String> currentUrl() => _channel.invokeMethod<String>('currentUrl');
 
   @override
-  Future<bool> canGoBack() => _channel.invokeMethod("canGoBack");
+  Future<bool> canGoBack() => _channel.invokeMethod<bool>("canGoBack");
 
   @override
-  Future<bool> canGoForward() => _channel.invokeMethod("canGoForward");
+  Future<bool> canGoForward() => _channel.invokeMethod<bool>("canGoForward");
 
   @override
-  Future<void> goBack() => _channel.invokeMethod("goBack");
+  Future<void> goBack() => _channel.invokeMethod<void>("goBack");
 
   @override
-  Future<void> goForward() => _channel.invokeMethod("goForward");
+  Future<void> goForward() => _channel.invokeMethod<void>("goForward");
 
   @override
-  Future<void> reload() => _channel.invokeMethod("reload");
+  Future<void> reload() => _channel.invokeMethod<void>("reload");
 
   @override
-  Future<void> clearCache() => _channel.invokeMethod("clearCache");
+  Future<void> clearCache() => _channel.invokeMethod<void>("clearCache");
 
   @override
   Future<void> updateSettings(WebSettings settings) {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
     final Map<String, dynamic> updatesMap = _webSettingsToMap(settings);
     if (updatesMap.isEmpty) {
       return null;
     }
-    return _channel.invokeMethod('updateSettings', updatesMap);
+    return _channel.invokeMethod<void>('updateSettings', updatesMap);
   }
 
   @override
   Future<String> evaluateJavascript(String javascriptString) {
-    return _channel.invokeMethod('evaluateJavascript', javascriptString);
+    return _channel.invokeMethod<String>(
+        'evaluateJavascript', javascriptString);
   }
 
   @override
   Future<void> addJavascriptChannels(Set<String> javascriptChannelNames) {
-    return _channel.invokeMethod(
+    return _channel.invokeMethod<void>(
         'addJavascriptChannels', javascriptChannelNames.toList());
   }
 
   @override
   Future<void> removeJavascriptChannels(Set<String> javascriptChannelNames) {
-    return _channel.invokeMethod(
+    return _channel.invokeMethod<void>(
         'removeJavascriptChannels', javascriptChannelNames.toList());
   }
 
   /// Method channel mplementation for [WebViewPlatform.clearCookies].
   static Future<bool> clearCookies() {
     return _cookieManagerChannel
-        // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('clearCookies')
+        .invokeMethod<bool>('clearCookies')
         .then<bool>((dynamic result) => result);
   }
 
