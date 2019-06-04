@@ -30,6 +30,13 @@ PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
 });
 ```
 
+## IOS-specific Instructions
+
+As noted [here](https://github.com/flutter/flutter/issues/20761), package_info on iOS 
+requires the Xcode build folder to be rebuilt after changes to the version string in `pubspec.yaml`. 
+Clean the Xcode build folder with: 
+`XCode Menu -> Product -> (Holding Option Key) Clean build folder`. 
+
 ## Getting Started
 
 For help getting started with Flutter, view our online
