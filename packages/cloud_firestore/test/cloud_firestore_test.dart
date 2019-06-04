@@ -52,6 +52,9 @@ void main() {
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
             Future<void>.delayed(Duration.zero).then<void>((_) {
+              // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+              // https://github.com/flutter/flutter/issues/33446
+              // ignore: deprecated_member_use
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -81,6 +84,9 @@ void main() {
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
             Future<void>.delayed(Duration.zero).then<void>((_) {
+              // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+              // https://github.com/flutter/flutter/issues/33446
+              // ignore: deprecated_member_use
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -233,6 +239,7 @@ void main() {
           isMethodCall('DocumentReference#get', arguments: <String, dynamic>{
             'app': app.name,
             'path': 'foo/bar',
+            'source': 'default',
           }),
           isMethodCall('Transaction#set', arguments: <String, dynamic>{
             'app': app.name,
@@ -254,6 +261,7 @@ void main() {
           isMethodCall('DocumentReference#get', arguments: <String, dynamic>{
             'app': app.name,
             'path': 'foo/bar',
+            'source': 'default',
           }),
           isMethodCall('Transaction#set', arguments: <String, dynamic>{
             'app': app.name,
@@ -523,7 +531,7 @@ void main() {
       });
       test('get', () async {
         final DocumentSnapshot snapshot =
-            await collectionReference.document('bar').get();
+            await collectionReference.document('bar').get(source: Source.cache);
         expect(snapshot.reference.firestore, firestore);
         expect(
           log,
@@ -533,19 +541,35 @@ void main() {
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'foo/bar',
+                'source': 'cache',
               },
             ),
           ]),
         );
+        log.clear();
         expect(snapshot.reference.path, equals('foo/bar'));
         expect(snapshot.data.containsKey('key1'), equals(true));
         expect(snapshot.data['key1'], equals('val1'));
         expect(snapshot.exists, isTrue);
 
-        final DocumentSnapshot snapshot2 =
-            await collectionReference.document('notExists').get();
+        final DocumentSnapshot snapshot2 = await collectionReference
+            .document('notExists')
+            .get(source: Source.serverAndCache);
         expect(snapshot2.data, isNull);
         expect(snapshot2.exists, isFalse);
+        expect(
+          log,
+          equals(<Matcher>[
+            isMethodCall(
+              'DocumentReference#get',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'path': 'foo/notExists',
+                'source': 'default',
+              },
+            ),
+          ]),
+        );
 
         try {
           await collectionReference.document('baz').get();
@@ -567,7 +591,7 @@ void main() {
 
     group('Query', () {
       test('getDocumentsFromCollection', () async {
-        QuerySnapshot snapshot = await collectionReference.getDocuments();
+        QuerySnapshot snapshot = await collectionReference.getDocuments(source: Source.server);
         DocumentSnapshot document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
@@ -616,7 +640,11 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+<<<<<<< HEAD
                   'isCollectionGroup': false,
+=======
+                  'source': 'server',
+>>>>>>> origin/master
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -628,7 +656,11 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+<<<<<<< HEAD
                   'isCollectionGroup': false,
+=======
+                  'source': 'default',
+>>>>>>> origin/master
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -644,7 +676,11 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+<<<<<<< HEAD
                   'isCollectionGroup': false,
+=======
+                  'source': 'default',
+>>>>>>> origin/master
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -660,7 +696,11 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+<<<<<<< HEAD
                   'isCollectionGroup': false,
+=======
+                  'source': 'default',
+>>>>>>> origin/master
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -676,6 +716,7 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+<<<<<<< HEAD
                   'isCollectionGroup': false,
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
@@ -802,6 +843,9 @@ void main() {
                   'app': app.name,
                   'path': 'bar',
                   'isCollectionGroup': true,
+=======
+                  'source': 'default',
+>>>>>>> origin/master
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],

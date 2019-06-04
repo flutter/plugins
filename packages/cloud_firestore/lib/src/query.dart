@@ -84,7 +84,9 @@ class Query {
   }
 
   /// Fetch the documents for this query
-  Future<QuerySnapshot> getDocuments() async {
+  Future<QuerySnapshot> getDocuments(
+      {Source source = Source.serverAndCache}) async {
+    assert(source != null);
     final Map<dynamic, dynamic> data =
         await Firestore.channel.invokeMapMethod<String, dynamic>(
       'Query#getDocuments',
@@ -93,6 +95,7 @@ class Query {
         'path': _path,
         'isCollectionGroup': _isCollectionGroup,
         'parameters': _parameters,
+        'source': _getSourceString(source),
       },
     );
     return QuerySnapshot._(data, firestore);

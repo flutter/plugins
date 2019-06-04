@@ -24,7 +24,8 @@ class SKRequestMaker {
   /// A [PlatformException] is thrown if the platform code making the request fails.
   Future<SkProductResponseWrapper> startProductRequest(
       List<String> productIdentifiers) async {
-    final Map productResponseMap = await channel.invokeMethod(
+    final Map<String, dynamic> productResponseMap =
+        await channel.invokeMapMethod<String, dynamic>(
       '-[InAppPurchasePlugin startProductRequest:result:]',
       productIdentifiers,
     );
@@ -47,7 +48,7 @@ class SKRequestMaker {
   /// * isRevoked: whether the receipt has been revoked.
   /// * isVolumePurchase: whether the receipt is a Volume Purchase Plan receipt.
   Future<void> startRefreshReceiptRequest({Map receiptProperties}) {
-    return channel.invokeMethod(
+    return channel.invokeMethod<void>(
       '-[InAppPurchasePlugin refreshReceipt:result:]',
       receiptProperties,
     );

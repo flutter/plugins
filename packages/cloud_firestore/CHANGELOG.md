@@ -1,6 +1,19 @@
-## 0.12.0+1
+## 0.12.2
 
 * Added support for collectionGroup query.
+
+## 0.12.1
+
+* Added support for `Source` to `Query.getDocuments()` and `DocumentReference.get()`.
+
+## 0.12.0+2
+
+* Bump the minimum Flutter version to 1.5.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.12.0+1
+
+* Send user agent to Firebase.
 
 ## 0.12.0
 

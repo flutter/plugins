@@ -1,3 +1,17 @@
+## 0.3.9+1
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.3.9
+
+* Allow external packages to provide webview implementations for new platforms.
+
+## 0.3.8+1
+
+* Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
+
 ## 0.3.8
 
 * Add `debuggingEnabled` property.

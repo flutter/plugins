@@ -23,11 +23,9 @@ class FirebaseDynamicLinks {
   /// there is no pending dynamic link or any call to this method after the
   /// the first attempt.
   Future<PendingDynamicLinkData> retrieveDynamicLink() async {
-    final Map<dynamic, dynamic> linkData =
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await channel.invokeMethod('FirebaseDynamicLinks#retrieveDynamicLink');
+    final Map<String, dynamic> linkData =
+        await channel.invokeMapMethod<String, dynamic>(
+            'FirebaseDynamicLinks#retrieveDynamicLink');
 
     if (linkData == null) return null;
 
