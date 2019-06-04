@@ -182,7 +182,10 @@ class GoogleMapController {
   /// feature type, unrecognized element type, or invalid styler keys. If the return
   /// value is `false`, the current style is left unchanged.
   ///
-  /// The style string can be generated using https://mapstyle.withgoogle.com/
+  /// The style string can be generated using [map style tool](https://mapstyle.withgoogle.com/).
+  /// Also, refer [iOS](https://developers.google.com/maps/documentation/ios-sdk/style-reference)
+  /// and [Android](https://developers.google.com/maps/documentation/android-sdk/style-reference)
+  /// style reference for more information regarding the supported styles.
   Future<bool> setMapStyle(String mapStyle) async {
     return channel.invokeMethod<bool>('map#setStyle', mapStyle);
   }
