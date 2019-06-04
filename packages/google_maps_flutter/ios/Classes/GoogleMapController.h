@@ -22,7 +22,7 @@
 - (void)setZoomGesturesEnabled:(BOOL)enabled;
 - (void)setMyLocationEnabled:(BOOL)enabled;
 - (void)setMyLocationButtonEnabled:(BOOL)enabled;
-- (BOOL)setMapStyle:(NSString *)mapStyle;
+- (NSString *)setMapStyle:(NSString *)mapStyle;
 @end
 
 // Defines map overlay controllable from Flutter.

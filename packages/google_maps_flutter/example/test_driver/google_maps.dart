@@ -449,8 +449,7 @@ void main() {
     final GoogleMapController controller = await controllerCompleter.future;
     final String mapStyle =
         '[{"elementType":"geometry","stylers":[{"color":"#242f3e"}]}]';
-    final bool mapStyleSet = await controller.setMapStyle(mapStyle);
-    expect(mapStyleSet, true);
+    await controller.setMapStyle(mapStyle);
   });
 
   test('testSetMapStyle invalid Json String', () async {
@@ -470,8 +469,14 @@ void main() {
     ));
 
     final GoogleMapController controller = await controllerCompleter.future;
-    final bool mapStyleSet = await controller.setMapStyle('invalid_value');
-    expect(mapStyleSet, false);
+
+    try {
+      await controller.setMapStyle('invalid_value');
+      fail('expected MapStyleException');
+    } on MapStyleException catch (e) {
+      expect(e.cause,
+          'The data couldn’t be read because it isn’t in the correct format.');
+    }
   });
 
   test('testSetMapStyle null string', () async {
@@ -491,7 +496,6 @@ void main() {
     ));
 
     final GoogleMapController controller = await controllerCompleter.future;
-    final bool mapStyleSet = await controller.setMapStyle(null);
-    expect(mapStyleSet, true);
+    await controller.setMapStyle(null);
   });
 }

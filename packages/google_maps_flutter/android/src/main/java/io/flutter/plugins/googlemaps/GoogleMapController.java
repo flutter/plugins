@@ -327,7 +327,13 @@ final class GoogleMapController
           } else {
             mapStyleSet = googleMap.setMapStyle(new MapStyleOptions(mapStyle));
           }
-          result.success(mapStyleSet);
+          ArrayList<Object> mapStyleResult = new ArrayList<>(2);
+          mapStyleResult.add(mapStyleSet);
+          if (!mapStyleSet) {
+            mapStyleResult.add(
+                "Unable to set the map style. Please check console logs for errors.");
+          }
+          result.success(mapStyleResult);
           break;
         }
       default:
