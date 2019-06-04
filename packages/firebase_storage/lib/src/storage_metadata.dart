@@ -27,7 +27,7 @@ class StorageMetadata {
             ? null
             : Map<String, String>.unmodifiable(customMetadata);
 
-  StorageMetadata._fromMap(Map<dynamic, dynamic> map)
+  StorageMetadata._fromMap(Map<String, dynamic> map)
       : bucket = map['bucket'],
         generation = map['generation'],
         metadataGeneration = map['metadataGeneration'],
