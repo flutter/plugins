@@ -1,6 +1,6 @@
 ## 0.1.1+3
 
-* Expanded description in `pubspec.yaml` and fixed typo in `README.MD`.
+* Expanded description in `pubspec.yaml` and fixed typo in `README.md`.
 
 ## 0.1.1+2
 
