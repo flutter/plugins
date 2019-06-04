@@ -41,11 +41,8 @@ class Crashlytics {
           Trace.format(details.stack).trimRight().split('\n');
       final List<Map<String, String>> stackTraceElements =
           _getStackTraceElements(stackTraceLines);
-      final dynamic result =
-          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-          // https://github.com/flutter/flutter/issues/26431
-          // ignore: strong_mode_implicit_dynamic_method
-          await channel.invokeMethod('Crashlytics#onError', <String, dynamic>{
+      final dynamic result = await channel
+          .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
         'exception': details.exceptionAsString(),
         // FlutterErrorDetails.context has been migrated from a String to a
         // DiagnosticsNode. Coerce it to a String here in a way that will work
@@ -66,19 +63,15 @@ class Crashlytics {
   /// Reports the global value for debug mode.
   /// TODO(kroikie): Clarify what this means in context of both Android and iOS.
   Future<bool> isDebuggable() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final bool result = await channel.invokeMethod('Crashlytics#isDebuggable');
+    final bool result =
+        await channel.invokeMethod<bool>('Crashlytics#isDebuggable');
     return result;
   }
 
   /// Returns Crashlytics SDK version.
   Future<String> getVersion() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final String result = await channel.invokeMethod('Crashlytics#getVersion');
+    final String result =
+        await channel.invokeMethod<String>('Crashlytics#getVersion');
     return result;
   }
 
@@ -126,30 +119,21 @@ class Crashlytics {
   /// Optionally set a end-user's name or username for display within the
   /// Crashlytics UI. Please be mindful of end-user's privacy.
   Future<void> setUserEmail(String email) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
         'Crashlytics#setUserEmail', <String, dynamic>{'email': email});
   }
 
   /// Specify a user identifier which will be visible in the Crashlytics UI.
   /// Please be mindful of end-user's privacy.
   Future<void> setUserIdentifier(String identifier) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod('Crashlytics#setUserIdentifier',
+    await channel.invokeMethod<void>('Crashlytics#setUserIdentifier',
         <String, dynamic>{'identifier': identifier});
   }
 
   /// Specify a user name which will be visible in the Crashlytics UI. Please
   /// be mindful of end-user's privacy.
   Future<void> setUserName(String name) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
         'Crashlytics#setUserName', <String, dynamic>{'name': name});
   }
 

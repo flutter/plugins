@@ -195,11 +195,8 @@ class BarcodeDetector {
   Future<List<Barcode>> detectInImage(FirebaseVisionImage visionImage) async {
     assert(!_isClosed);
 
-    _hasBeenOpened = true;
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
+    final List<dynamic> reply =
+        await FirebaseVision.channel.invokeListMethod<dynamic>(
       'BarcodeDetector#detectInImage',
       <String, dynamic>{
         'handle': _handle,

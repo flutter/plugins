@@ -18,7 +18,7 @@ enum SignInOption { standard, games }
 class GoogleSignInAuthentication {
   GoogleSignInAuthentication._(this._data);
 
-  final Map<dynamic, dynamic> _data;
+  final Map<String, dynamic> _data;
 
   /// An OpenID Connect ID token that identifies the user.
   String get idToken => _data['idToken'];
@@ -31,7 +31,7 @@ class GoogleSignInAuthentication {
 }
 
 class GoogleSignInAccount implements GoogleIdentity {
-  GoogleSignInAccount._(this._googleSignIn, Map<dynamic, dynamic> data)
+  GoogleSignInAccount._(this._googleSignIn, Map<String, dynamic> data)
       : displayName = data['displayName'],
         email = data['email'],
         id = data['id'],
@@ -78,11 +78,8 @@ class GoogleSignInAccount implements GoogleIdentity {
       throw StateError('User is no longer signed in.');
     }
 
-    final Map<dynamic, dynamic> response =
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await GoogleSignIn.channel.invokeMethod(
+    final Map<String, dynamic> response =
+        await GoogleSignIn.channel.invokeMapMethod<String, dynamic>(
       'getTokens',
       <String, dynamic>{
         'email': email,
@@ -111,10 +108,7 @@ class GoogleSignInAccount implements GoogleIdentity {
   /// this method and grab `authHeaders` once again.
   Future<void> clearAuthCache() async {
     final String token = (await authentication).accessToken;
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await GoogleSignIn.channel.invokeMethod(
+    await GoogleSignIn.channel.invokeMethod<void>(
       'clearAuthCache',
       <String, dynamic>{'token': token},
     );
@@ -220,10 +214,8 @@ class GoogleSignIn {
   Future<GoogleSignInAccount> _callMethod(String method) async {
     await _ensureInitialized();
 
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final Map<dynamic, dynamic> response = await channel.invokeMethod(method);
+    final Map<String, dynamic> response =
+        await channel.invokeMapMethod<String, dynamic>(method);
     return _setCurrentUser(response != null && response.isNotEmpty
         ? GoogleSignInAccount._(this, response)
         : null);
@@ -239,10 +231,7 @@ class GoogleSignIn {
 
   Future<void> _ensureInitialized() {
     if (_initialization == null) {
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      _initialization = channel.invokeMethod('init', <String, dynamic>{
+      _initialization = channel.invokeMethod<void>('init', <String, dynamic>{
         'signInOption': (signInOption ?? SignInOption.standard).toString(),
         'scopes': scopes ?? <String>[],
         'hostedDomain': hostedDomain,
@@ -318,11 +307,7 @@ class GoogleSignIn {
   /// Returns a future that resolves to whether a user is currently signed in.
   Future<bool> isSignedIn() async {
     await _ensureInitialized();
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final bool result = await channel.invokeMethod('isSignedIn');
-    return result;
+    return await channel.invokeMethod<bool>('isSignedIn');
   }
 
   /// Starts the interactive sign-in process.
