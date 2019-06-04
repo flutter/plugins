@@ -66,7 +66,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         String signInOption = call.argument("signInOption");
         List<String> requestedScopes = call.argument("scopes");
         String hostedDomain = call.argument("hostedDomain");
-        delegate.init(result, signInOption, requestedScopes, hostedDomain);
+        boolean requestAuthCode = call.argument("requestAuthCode");
+        delegate.init(result, signInOption, requestedScopes, hostedDomain, requestAuthCode);
         break;
 
       case METHOD_SIGN_IN_SILENTLY:
@@ -113,7 +114,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   public interface IDelegate {
     /** Initializes this delegate so that it is ready to perform other operations. */
     public void init(
-        Result result, String signInOption, List<String> requestedScopes, String hostedDomain);
+        Result result, String signInOption, List<String> requestedScopes, String hostedDomain, boolean requestAuthCode);
 
     /**
      * Returns the account information for the user who is signed in to this app. If no user is
@@ -210,7 +211,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      */
     @Override
     public void init(
-        Result result, String signInOption, List<String> requestedScopes, String hostedDomain) {
+        Result result, String signInOption, List<String> requestedScopes, String hostedDomain, boolean requestAuthCode) {
       try {
         GoogleSignInOptions.Builder optionsBuilder;
 
@@ -221,7 +222,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
             break;
           case DEFAULT_SIGN_IN:
             optionsBuilder =
-                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail();
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestEmail();
             break;
           default:
             throw new IllegalStateException("Unknown signInOption");
@@ -238,8 +240,13 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 .getIdentifier(
                     "default_web_client_id", "string", registrar.context().getPackageName());
         if (clientIdIdentifier != 0) {
-          optionsBuilder.requestIdToken(registrar.context().getString(clientIdIdentifier));
+          final String clientIdFromContext = registrar.context().getString(clientIdIdentifier);
+          optionsBuilder.requestIdToken(clientIdFromContext);
+          if (requestAuthCode) {
+              optionsBuilder.requestServerAuthCode(clientIdFromContext);
+          }
         }
+
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
         }
@@ -361,6 +368,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       response.put("id", account.getId());
       response.put("idToken", account.getIdToken());
       response.put("displayName", account.getDisplayName());
+      response.put("authCode", account.getServerAuthCode());
       if (account.getPhotoUrl() != null) {
         response.put("photoUrl", account.getPhotoUrl().toString());
       }
