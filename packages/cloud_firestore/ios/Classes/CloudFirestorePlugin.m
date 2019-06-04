@@ -7,7 +7,7 @@
 #import <Firebase/Firebase.h>
 
 #define LIBRARY_NAME @"flutter-firebase_cloud_firestore"
-#define LIBRARY_VERSION @"0.12.2"
+#define LIBRARY_VERSION @"0.12.3"
 
 static FlutterError *getFlutterError(NSError *error) {
   if (error == nil) return nil;

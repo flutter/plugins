@@ -590,7 +590,8 @@ void main() {
 
     group('Query', () {
       test('getDocumentsFromCollection', () async {
-        QuerySnapshot snapshot = await collectionReference.getDocuments(source: Source.server);
+        QuerySnapshot snapshot =
+            await collectionReference.getDocuments(source: Source.server);
         DocumentSnapshot document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
