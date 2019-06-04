@@ -83,7 +83,7 @@ class GoogleSignInAccount implements GoogleIdentity {
     }
 
     final Map<dynamic, dynamic> response =
-        await GoogleSignIn.channel.invokeMethod(
+        await GoogleSignIn.channel.invokeMapMethod<String, dynamic>(
       'getTokens',
       <String, dynamic>{
         'email': email,
@@ -112,7 +112,7 @@ class GoogleSignInAccount implements GoogleIdentity {
   /// this method and grab `authHeaders` once again.
   Future<void> clearAuthCache() async {
     final String token = (await authentication).accessToken;
-    await GoogleSignIn.channel.invokeMethod(
+    await GoogleSignIn.channel.invokeMethod<void>(
       'clearAuthCache',
       <String, dynamic>{'token': token},
     );
@@ -223,7 +223,8 @@ class GoogleSignIn {
   Future<GoogleSignInAccount> _callMethod(String method) async {
     await _ensureInitialized();
     
-    final Map<dynamic, dynamic> response = await channel.invokeMethod(method);
+    final Map<String, dynamic> response = 
+      await channel.invokeMapMethod<String, dynamic>(method);
     return _setCurrentUser(response != null && response.isNotEmpty
         ? GoogleSignInAccount._(this, response)
         : null);
@@ -239,7 +240,7 @@ class GoogleSignIn {
 
   Future<void> _ensureInitialized() {
     if (_initialization == null) {
-      _initialization = channel.invokeMethod('init', <String, dynamic>{
+      _initialization = channel.invokeMethod<void>('init', <String, dynamic>{
         'signInOption': (signInOption ?? SignInOption.standard).toString(),
         'scopes': scopes ?? <String>[],
         'hostedDomain': hostedDomain,
@@ -316,8 +317,7 @@ class GoogleSignIn {
   /// Returns a future that resolves to whether a user is currently signed in.
   Future<bool> isSignedIn() async {
     await _ensureInitialized();
-    final bool result = await channel.invokeMethod('isSignedIn');
-    return result;
+    return await channel.invokeMethod<bool>('isSignedIn');
   }
 
   /// Starts the interactive sign-in process.
