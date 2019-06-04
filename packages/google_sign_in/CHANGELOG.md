@@ -1,4 +1,4 @@
-## 4.0.2
+## 4.0.3
 
 * Support to requesting serverAuthCode on Android
 
