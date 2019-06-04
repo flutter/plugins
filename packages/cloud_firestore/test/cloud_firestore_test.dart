@@ -26,7 +26,6 @@ void main() {
       "hasPendingWrites": false,
       "isFromCache": false,
     };
-
     setUp(() async {
       mockHandleId = 0;
       // Required for FirebaseApp.configure
@@ -640,11 +639,8 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
-<<<<<<< HEAD
                   'isCollectionGroup': false,
-=======
                   'source': 'server',
->>>>>>> origin/master
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -656,11 +652,8 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
-<<<<<<< HEAD
                   'isCollectionGroup': false,
-=======
                   'source': 'default',
->>>>>>> origin/master
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -676,11 +669,8 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
-<<<<<<< HEAD
                   'isCollectionGroup': false,
-=======
                   'source': 'default',
->>>>>>> origin/master
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -696,11 +686,8 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
-<<<<<<< HEAD
                   'isCollectionGroup': false,
-=======
                   'source': 'default',
->>>>>>> origin/master
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -716,8 +703,8 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
-<<<<<<< HEAD
                   'isCollectionGroup': false,
+                  'source': 'default',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -787,6 +774,7 @@ void main() {
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
                   },
+                  'source': 'default',
                 },
               ),
               isMethodCall(
@@ -803,6 +791,7 @@ void main() {
                       'data': kMockDocumentSnapshotData,
                     },
                   },
+                  'source': 'default',
                 },
               ),
               isMethodCall(
@@ -819,6 +808,7 @@ void main() {
                       'data': kMockDocumentSnapshotData,
                     },
                   },
+                  'source': 'default',
                 },
               ),
               isMethodCall(
@@ -835,6 +825,7 @@ void main() {
                       'data': kMockDocumentSnapshotData,
                     },
                   },
+                  'source': 'default',
                 },
               ),
               isMethodCall(
@@ -843,9 +834,7 @@ void main() {
                   'app': app.name,
                   'path': 'bar',
                   'isCollectionGroup': true,
-=======
                   'source': 'default',
->>>>>>> origin/master
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -854,6 +843,7 @@ void main() {
                       'data': kMockDocumentSnapshotData,
                     },
                   },
+                  'source': 'default',
                 },
               ),
             ],
