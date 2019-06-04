@@ -82,7 +82,7 @@ class GoogleSignInAccount implements GoogleIdentity {
       throw StateError('User is no longer signed in.');
     }
 
-    final Map<dynamic, dynamic> response =
+    final Map<String, dynamic> response =
         await GoogleSignIn.channel.invokeMapMethod<String, dynamic>(
       'getTokens',
       <String, dynamic>{
