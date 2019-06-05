@@ -195,6 +195,7 @@ class BarcodeDetector {
   Future<List<Barcode>> detectInImage(FirebaseVisionImage visionImage) async {
     assert(!_isClosed);
 
+    _hasBeenOpened = true;
     final List<dynamic> reply =
         await FirebaseVision.channel.invokeListMethod<dynamic>(
       'BarcodeDetector#detectInImage',

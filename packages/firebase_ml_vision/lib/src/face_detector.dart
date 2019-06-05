@@ -50,6 +50,7 @@ class FaceDetector {
   Future<List<Face>> processImage(FirebaseVisionImage visionImage) async {
     assert(!_isClosed);
 
+    _hasBeenOpened = true;
     final List<dynamic> reply =
         await FirebaseVision.channel.invokeListMethod<dynamic>(
       'FaceDetector#processImage',
