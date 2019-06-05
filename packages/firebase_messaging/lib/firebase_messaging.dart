@@ -30,7 +30,6 @@ class FirebaseMessaging {
   final Platform _platform;
 
   MessageHandler _onMessage;
-  MessageHandler _onLaunch;
   MessageHandler _onResume;
 
   /// On iOS, prompts the user for notification permissions the first time
@@ -59,14 +58,17 @@ class FirebaseMessaging {
   /// Sets up [MessageHandler] for incoming messages.
   void configure({
     MessageHandler onMessage,
-    MessageHandler onLaunch,
     MessageHandler onResume,
   }) {
     _onMessage = onMessage;
-    _onLaunch = onLaunch;
     _onResume = onResume;
     _channel.setMethodCallHandler(_handleMethod);
     _channel.invokeMethod<void>('configure');
+  }
+
+  Future<Map<dynamic, dynamic>> getLaunchMessage() async {
+    return await _channel
+        .invokeMethod<Map<dynamic, dynamic>>('getLaunchMessage');
   }
 
   final StreamController<String> _tokenStreamController =
@@ -126,8 +128,6 @@ class FirebaseMessaging {
         return null;
       case "onMessage":
         return _onMessage(call.arguments.cast<String, dynamic>());
-      case "onLaunch":
-        return _onLaunch(call.arguments.cast<String, dynamic>());
       case "onResume":
         return _onResume(call.arguments.cast<String, dynamic>());
       default:

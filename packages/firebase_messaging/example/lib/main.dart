@@ -137,14 +137,21 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
   @override
   void initState() {
     super.initState();
+  }
+
+  void initPushNotifications() async {
+    final Map<String, dynamic> message =
+        await _firebaseMessaging.getLaunchMessage();
+
+    if (message != null) {
+      print("getLaunchMessage $message");
+      _navigateToItemDetail(message);
+    }
+
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
         _showItemDialog(message);
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
-        _navigateToItemDetail(message);
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");

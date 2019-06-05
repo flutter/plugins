@@ -1,3 +1,7 @@
+## 6.0.0
+*  **Breaking Change** Separated onLaunch to an specific method to be able to retrieve launch
+   message in a synchronous way.
+
 ## 5.0.4
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.

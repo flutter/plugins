@@ -57,12 +57,18 @@ Next, you should probably request permissions for receiving Push Notifications. 
 
 ## Receiving Messages
 
-Messages are sent to your Flutter app via the `onMessage`, `onLaunch`, and `onResume` callbacks that you configured with the plugin during setup. Here is how different message types are delivered on the supported platforms:
+Launch messages (when application is closed) are retrieved on application init so you can act based on the notification data:
+
+```dart
+ Map<String, dynamic> message = await _firebaseMessaging.getLaunchMessage();
+```
+
+Messages when the application is not in foreground are sent to your Flutter app via the `onMessage` and `onResume` callbacks that you configured with the plugin during setup. Here is how different message types are delivered on the supported platforms:
 
 |                             | App in Foreground | App in Background | App Terminated |
 | --------------------------: | ----------------- | ----------------- | -------------- |
-| **Notification on Android** | `onMessage` | Notification is delivered to system tray. When the user clicks on it to open app `onResume` fires if `click_action: FLUTTER_NOTIFICATION_CLICK` is set (see below). | Notification is delivered to system tray. When the user clicks on it to open app `onLaunch` fires if `click_action: FLUTTER_NOTIFICATION_CLICK` is set (see below). |
-| **Notification on iOS** | `onMessage` | Notification is delivered to system tray. When the user clicks on it to open app `onResume` fires. | Notification is delivered to system tray. When the user clicks on it to open app `onLaunch` fires. |
+| **Notification on Android** | `onMessage` | Notification is delivered to system tray. When the user clicks on it to open app `onResume` fires if `click_action: FLUTTER_NOTIFICATION_CLICK` is set (see below). | Notification is delivered to system tray. When the user clicks on it to open app `geLaunchMessage` fires if `click_action: FLUTTER_NOTIFICATION_CLICK` is set (see below). |
+| **Notification on iOS** | `onMessage` | Notification is delivered to system tray. When the user clicks on it to open app `onResume` fires. | Notification is delivered to system tray. When the user clicks on it to open app `getLaunchMessage` fires. |
 | **Data Message on Android** | `onMessage` | `onMessage` while app stays in the background. | *not supported by plugin, message is lost* |
 | **Data Message on iOS**     | `onMessage` | Message is stored by FCM and delivered to app via `onMessage` when the app is brought back to foreground. | Message is stored by FCM and delivered to app via `onMessage` when the app is brought back to foreground. |
 

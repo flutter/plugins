@@ -68,12 +68,11 @@
     [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
 
     result(nil);
+  } else if ([@"getLaunchMessage" isEqualToString:method]) {
+    result(_launchNotification);
   } else if ([@"configure" isEqualToString:method]) {
     [FIRMessaging messaging].shouldEstablishDirectChannel = true;
     [[UIApplication sharedApplication] registerForRemoteNotifications];
-    if (_launchNotification != nil) {
-      [_channel invokeMethod:@"onLaunch" arguments:_launchNotification];
-    }
     result(nil);
   } else if ([@"subscribeToTopic" isEqualToString:method]) {
     NSString *topic = call.arguments;

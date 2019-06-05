@@ -89,15 +89,48 @@ void main() {
     expect((await iosSettingsFromStream).toMap(), iosSettings.toMap());
   });
 
+  test('getLaunchMessage', () async {
+    final MethodChannel channel =
+        const MethodChannel('plugins.flutter.io/firebase_messaging');
+    firebaseMessaging =
+        FirebaseMessaging.private(channel, const LocalPlatform());
+
+    channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      switch (methodCall.method) {
+        case 'getLaunchMessage':
+          return <dynamic, dynamic>{
+            'notification': <dynamic, dynamic>{
+              'title': 'Title',
+              'body': 'Body',
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            },
+            'data': <dynamic, dynamic>{
+              'variable1': 'value1',
+              'variable2': 'value2',
+            },
+          };
+        default:
+          return null;
+      }
+    });
+
+    final Map<dynamic, dynamic> message =
+        await firebaseMessaging.getLaunchMessage();
+
+    expect(message['notification']['title'], 'Title');
+    expect(message['notification']['body'], 'Body');
+    expect(
+        message['notification']['click_action'], 'FLUTTER_NOTIFICATION_CLICK');
+    expect(message['data']['variable1'], 'value1');
+    expect(message['data']['variable2'], 'value2');
+  });
+
   test('incoming messages', () async {
     final Completer<dynamic> onMessage = Completer<dynamic>();
-    final Completer<dynamic> onLaunch = Completer<dynamic>();
     final Completer<dynamic> onResume = Completer<dynamic>();
 
     firebaseMessaging.configure(onMessage: (dynamic m) async {
       onMessage.complete(m);
-    }, onLaunch: (dynamic m) async {
-      onLaunch.complete(m);
     }, onResume: (dynamic m) async {
       onResume.complete(m);
     });
@@ -105,16 +138,10 @@ void main() {
         verify(mockChannel.setMethodCallHandler(captureAny)).captured.single;
 
     final Map<String, dynamic> onMessageMessage = <String, dynamic>{};
-    final Map<String, dynamic> onLaunchMessage = <String, dynamic>{};
     final Map<String, dynamic> onResumeMessage = <String, dynamic>{};
 
     await handler(MethodCall('onMessage', onMessageMessage));
     expect(await onMessage.future, onMessageMessage);
-    expect(onLaunch.isCompleted, isFalse);
-    expect(onResume.isCompleted, isFalse);
-
-    await handler(MethodCall('onLaunch', onLaunchMessage));
-    expect(await onLaunch.future, onLaunchMessage);
     expect(onResume.isCompleted, isFalse);
 
     await handler(MethodCall('onResume', onResumeMessage));
