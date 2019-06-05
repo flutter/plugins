@@ -15,6 +15,7 @@ import 'place_marker.dart';
 import 'place_polygon.dart';
 import 'place_polyline.dart';
 import 'scrolling_map.dart';
+import 'padding.dart';
 
 final List<Page> _allPages = <Page>[
   MapUiPage(),
@@ -28,6 +29,7 @@ final List<Page> _allPages = <Page>[
   PlacePolylinePage(),
   PlacePolygonPage(),
   PlaceCirclePage(),
+  PaddingPage(),
 ];
 
 class MapsDemo extends StatelessWidget {
