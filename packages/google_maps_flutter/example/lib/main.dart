@@ -17,7 +17,6 @@ import 'place_polygon.dart';
 import 'place_polyline.dart';
 import 'scrolling_map.dart';
 
-
 final List<Page> _allPages = <Page>[
   MapUiPage(),
   MapCoordinatesPage(),
