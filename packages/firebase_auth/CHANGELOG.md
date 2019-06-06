@@ -1,6 +1,6 @@
 ## 0.11.2
 
-* Exposed user's additional information (isNewUser, getUsername, getProfile)
+* Exposed user's additional information (`isNewUser`, `getUsername`, `getProfile`)
 
 ## 0.11.1+4
 
