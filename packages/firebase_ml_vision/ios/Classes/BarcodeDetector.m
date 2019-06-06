@@ -1,32 +1,35 @@
 #import "FirebaseMlVisionPlugin.h"
 
+@interface BarcodeDetector ()
+@property FIRVisionBarcodeDetector *detector;
+@end
+
 @implementation BarcodeDetector
-static FIRVisionBarcodeDetector *barcodeDetector;
-
-+ (void)handleDetection:(FIRVisionImage *)image
-                options:(NSDictionary *)options
-                 result:(FlutterResult)result {
-  if (barcodeDetector == nil) {
-    FIRVision *vision = [FIRVision vision];
-    barcodeDetector = [vision barcodeDetectorWithOptions:[BarcodeDetector parseOptions:options]];
+- (instancetype)initWithVision:(FIRVision *)vision options:(NSDictionary *)options {
+  self = [super init];
+  if (self) {
+    _detector = [vision barcodeDetectorWithOptions:[BarcodeDetector parseOptions:options]];
   }
-  NSMutableArray *ret = [NSMutableArray array];
-  [barcodeDetector detectInImage:image
-                      completion:^(NSArray<FIRVisionBarcode *> *barcodes, NSError *error) {
-                        if (error) {
-                          [FLTFirebaseMlVisionPlugin handleError:error result:result];
-                          return;
-                        } else if (!barcodes) {
-                          result(@[]);
-                          return;
-                        }
+  return self;
+}
 
-                        // Scanned barcode
-                        for (FIRVisionBarcode *barcode in barcodes) {
-                          [ret addObject:visionBarcodeToDictionary(barcode)];
-                        }
-                        result(ret);
-                      }];
+- (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
+  [_detector detectInImage:image
+                completion:^(NSArray<FIRVisionBarcode *> *barcodes, NSError *error) {
+                  if (error) {
+                    [FLTFirebaseMlVisionPlugin handleError:error result:result];
+                    return;
+                  } else if (!barcodes) {
+                    result(@[]);
+                    return;
+                  }
+
+                  NSMutableArray *ret = [NSMutableArray array];
+                  for (FIRVisionBarcode *barcode in barcodes) {
+                    [ret addObject:visionBarcodeToDictionary(barcode)];
+                  }
+                  result(ret);
+                }];
 }
 
 NSDictionary *visionBarcodeToDictionary(FIRVisionBarcode *barcode) {
