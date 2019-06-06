@@ -1,3 +1,11 @@
+## 0.12.4
+
+* Added support for `Query.collectionGroup`.
+
+## 0.12.3
+
+* Added support for `cacheSizeBytes` to `Firestore.settings`.
+
 ## 0.12.2
 
 * Ensure that all channel calls to the Dart side from the Java side are done
