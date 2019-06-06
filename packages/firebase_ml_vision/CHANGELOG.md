@@ -1,6 +1,7 @@
-## 0.8.1
+## 0.9.0
 
-* Add capability to release resources held by detectors with `close()` method.
+* **Breaking Change** Add capability to release resources held by detectors with `close()` method.
+You should now call `*detector*.close()` when a detector will no longer be used.
 
 ## 0.8.0+3
 
