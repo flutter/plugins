@@ -59,13 +59,11 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
     );
   }
 
-
   void _onMapCreated(GoogleMapController controllerParam) {
     setState(() {
       controller = controllerParam;
     });
   }
-
 
   Widget _setPaddingButton() {
     return Padding(
