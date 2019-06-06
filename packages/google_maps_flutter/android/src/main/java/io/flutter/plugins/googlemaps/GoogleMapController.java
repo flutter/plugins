@@ -59,7 +59,8 @@ final class GoogleMapController
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMapLongClickListener,
-        PlatformView, GoogleMap.OnMarkerDragListener {
+        PlatformView,
+        GoogleMap.OnMarkerDragListener {
 
   private static final String TAG = "GoogleMapController";
   private final int id;
@@ -371,14 +372,10 @@ final class GoogleMapController
   }
 
   @Override
-  public void onMarkerDragStart(Marker marker) {
-
-  }
+  public void onMarkerDragStart(Marker marker) {}
 
   @Override
-  public void onMarkerDrag(Marker marker) {
-
-  }
+  public void onMarkerDrag(Marker marker) {}
 
   @Override
   public void onMarkerDragEnd(Marker marker) {

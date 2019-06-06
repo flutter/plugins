@@ -85,10 +85,6 @@ class MarkersController {
     data.put("markerId", markerId);
     data.put("position", Convert.latLngToJson(latLng));
     methodChannel.invokeMethod("marker#onDragEnd", data);
-    MarkerController markerController = markerIdToController.get(markerId);
-    if (markerController != null) {
-//      return markerController.consumeTapEvents();
-    }
   }
 
   void onInfoWindowTap(String googleMarkerId) {
