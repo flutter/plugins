@@ -46,16 +46,10 @@ void main() {
     test('getDocumentsFromCollectionGroup', () async {
       final Query query = firestore
           .collectionGroup('reviews')
-          .where('message', isEqualTo: 'Hello world!')
+          .where('stars', isEqualTo: 5)
           .limit(1);
       final QuerySnapshot querySnapshot = await query.getDocuments();
-      expect(querySnapshot.documents.first['message'], 'Hello world!');
-      final DocumentReference firstDoc =
-          querySnapshot.documents.first.reference;
-      final DocumentSnapshot documentSnapshot = await firstDoc.get();
-      expect(documentSnapshot.data['message'], 'Hello world!');
-      final DocumentSnapshot snapshot = await firstDoc.snapshots().first;
-      expect(snapshot.data['message'], 'Hello world!');
+      expect(querySnapshot.documents.first['stars'], '5');
     });
 
     test('increment', () async {
