@@ -750,6 +750,10 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                 (Boolean) arguments.get("timestampsInSnapshotsEnabled"));
           }
 
+          if (arguments.get("cacheSizeBytes") != null) {
+            builder.setCacheSizeBytes(((Integer) arguments.get("cacheSizeBytes")).longValue());
+          }
+
           FirebaseFirestoreSettings settings = builder.build();
           getFirestore(arguments).setFirestoreSettings(settings);
           result.success(null);
