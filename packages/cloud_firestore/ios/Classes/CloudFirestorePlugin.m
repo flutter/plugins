@@ -617,6 +617,9 @@ const UInt8 INCREMENT_INTEGER = 138;
     if (![call.arguments[@"timestampsInSnapshotsEnabled"] isEqual:[NSNull null]]) {
       settings.timestampsInSnapshotsEnabled = (bool)call.arguments[@"timestampsInSnapshotsEnabled"];
     }
+    if (![call.arguments[@"cacheSizeBytes"] isEqual:[NSNull null]]) {
+      settings.cacheSizeBytes = ((NSNumber *)call.arguments[@"cacheSizeBytes"]).intValue;
+    }
     FIRFirestore *db = getFirestore(call.arguments);
     db.settings = settings;
     result(nil);
