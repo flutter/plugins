@@ -70,6 +70,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
         return "wifi";
       case ConnectivityManager.TYPE_MOBILE:
       case ConnectivityManager.TYPE_MOBILE_DUN:
+      case ConnectivityManager.TYPE_MOBILE_HIPRI:
         return "mobile";
       default:
         return "none";
