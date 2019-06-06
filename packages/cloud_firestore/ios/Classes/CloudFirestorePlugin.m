@@ -7,7 +7,7 @@
 #import <Firebase/Firebase.h>
 
 #define LIBRARY_NAME @"flutter-firebase_cloud_firestore"
-#define LIBRARY_VERSION @"0.12.2"
+#define LIBRARY_VERSION @"0.12.3"
 
 static FlutterError *getFlutterError(NSError *error) {
   if (error == nil) return nil;
@@ -609,6 +609,9 @@ const UInt8 INCREMENT_INTEGER = 138;
     }
     if (![call.arguments[@"timestampsInSnapshotsEnabled"] isEqual:[NSNull null]]) {
       settings.timestampsInSnapshotsEnabled = (bool)call.arguments[@"timestampsInSnapshotsEnabled"];
+    }
+    if (![call.arguments[@"cacheSizeBytes"] isEqual:[NSNull null]]) {
+      settings.cacheSizeBytes = ((NSNumber *)call.arguments[@"cacheSizeBytes"]).intValue;
     }
     FIRFirestore *db = getFirestore(call.arguments);
     db.settings = settings;
