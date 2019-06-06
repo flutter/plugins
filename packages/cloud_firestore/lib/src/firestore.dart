@@ -71,6 +71,17 @@ class Firestore {
     return CollectionReference._(this, path.split('/'));
   }
 
+  /// Gets a [Query] for the specified collection group.
+  Query collectionGroup(String path) {
+    assert(path != null);
+    assert(!path.contains("/"), "Collection IDs must not contain '/'.");
+    return Query._(
+      firestore: this,
+      isCollectionGroup: true,
+      pathComponents: path.split('/'),
+    );
+  }
+
   /// Gets a [DocumentReference] for the specified Firestore path.
   DocumentReference document(String path) {
     assert(path != null);

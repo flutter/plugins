@@ -42,7 +42,14 @@ static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy) {
 }
 
 static FIRQuery *getQuery(NSDictionary *arguments) {
-  FIRQuery *query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
+  NSNumber *data = arguments[@"isCollectionGroup"];
+  BOOL isCollectionGroup = data.boolValue;
+  FIRQuery *query;
+  if (isCollectionGroup) {
+    query = [getFirestore(arguments) collectionGroupWithID:arguments[@"path"]];
+  } else {
+    query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
+  }
   NSDictionary *parameters = arguments[@"parameters"];
   NSArray *whereConditions = parameters[@"where"];
   for (id item in whereConditions) {
