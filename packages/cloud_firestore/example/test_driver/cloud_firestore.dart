@@ -11,18 +11,38 @@ void main() {
 
   group('$Firestore', () {
     Firestore firestore;
+    Firestore firestoreWithSettings;
 
     setUp(() async {
+      final FirebaseOptions firebaseOptions = const FirebaseOptions(
+        googleAppID: '1:79601577497:ios:5f2bcc6ba8cecddd',
+        gcmSenderID: '79601577497',
+        apiKey: 'AIzaSyArgmRGfB5kiQT6CunAOmKRVKEsxKmy6YI-G72PVU',
+        projectID: 'flutter-firestore',
+      );
       final FirebaseApp app = await FirebaseApp.configure(
         name: 'test',
-        options: const FirebaseOptions(
-          googleAppID: '1:79601577497:ios:5f2bcc6ba8cecddd',
-          gcmSenderID: '79601577497',
-          apiKey: 'AIzaSyArgmRGfB5kiQT6CunAOmKRVKEsxKmy6YI-G72PVU',
-          projectID: 'flutter-firestore',
-        ),
+        options: firebaseOptions,
+      );
+      final FirebaseApp app2 = await FirebaseApp.configure(
+        name: 'test2',
+        options: firebaseOptions,
       );
       firestore = Firestore(app: app);
+      firestoreWithSettings = Firestore(app: app2);
+      await firestoreWithSettings.settings(
+        persistenceEnabled: true,
+        host: null,
+        sslEnabled: true,
+        timestampsInSnapshotsEnabled: true,
+        cacheSizeBytes: 500000,
+      );
+    });
+
+    test('getDocumentsWithFirestoreSettings', () async {
+      final Query query = firestoreWithSettings.collection('messages').limit(1);
+      final QuerySnapshot querySnapshot = await query.getDocuments();
+      expect(querySnapshot.documents.length, 1);
     });
 
     test('getDocuments', () async {
@@ -36,6 +56,9 @@ void main() {
           querySnapshot.documents.first.reference;
       final DocumentSnapshot documentSnapshot = await firstDoc.get();
       expect(documentSnapshot.data['message'], 'Hello world!');
+      final DocumentSnapshot cachedSnapshot =
+          await firstDoc.get(source: Source.cache);
+      expect(cachedSnapshot.data['message'], 'Hello world!');
       final DocumentSnapshot snapshot = await firstDoc.snapshots().first;
       expect(snapshot.data['message'], 'Hello world!');
     });

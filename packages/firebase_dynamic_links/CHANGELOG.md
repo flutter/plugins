@@ -1,3 +1,8 @@
+## 0.4.0+1
+
+* Fixed bug where link persists after starting an app with a Dynamic Link.
+* Fixed bug where retrieving a link would fail when app was already running.
+
 ## 0.4.0
 
 * Update dependency on firebase_core to 0.4.0.

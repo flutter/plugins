@@ -31,6 +31,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Source;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 import io.flutter.plugin.common.MethodCall;
@@ -91,6 +92,18 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   private DocumentReference getDocumentReference(Map<String, Object> arguments) {
     String path = (String) arguments.get("path");
     return getFirestore(arguments).document(path);
+  }
+
+  private Source getSource(Map<String, Object> arguments) {
+    String source = (String) arguments.get("source");
+    switch (source) {
+      case "server":
+        return Source.SERVER;
+      case "cache":
+        return Source.CACHE;
+      default:
+        return Source.DEFAULT;
+    }
   }
 
   private Object[] getDocumentValues(Map<String, Object> document, List<List<Object>> orderBy) {
@@ -557,7 +570,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         {
           Map<String, Object> arguments = call.arguments();
           Query query = getQuery(arguments);
-          Task<QuerySnapshot> task = query.get();
+          Source source = getSource(arguments);
+          Task<QuerySnapshot> task = query.get(source);
           task.addOnSuccessListener(
                   new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -605,7 +619,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         {
           Map<String, Object> arguments = call.arguments();
           DocumentReference documentReference = getDocumentReference(arguments);
-          Task<DocumentSnapshot> task = documentReference.get();
+          Source source = getSource(arguments);
+          Task<DocumentSnapshot> task = documentReference.get(source);
           task.addOnSuccessListener(
                   new OnSuccessListener<DocumentSnapshot>() {
                     @Override

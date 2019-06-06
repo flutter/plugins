@@ -50,6 +50,9 @@ void main() {
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
             Future<void>.delayed(Duration.zero).then<void>((_) {
+              // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+              // https://github.com/flutter/flutter/issues/33446
+              // ignore: deprecated_member_use
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -79,6 +82,9 @@ void main() {
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
             Future<void>.delayed(Duration.zero).then<void>((_) {
+              // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+              // https://github.com/flutter/flutter/issues/33446
+              // ignore: deprecated_member_use
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -163,6 +169,28 @@ void main() {
       expect(firestore, equals(Firestore(app: app)));
     });
 
+    test('settings', () async {
+      final FirebaseApp app = const FirebaseApp(name: "testApp2");
+      final Firestore firestoreWithSettings = Firestore(app: app);
+      await firestoreWithSettings.settings(
+        persistenceEnabled: true,
+        host: null,
+        sslEnabled: true,
+        timestampsInSnapshotsEnabled: true,
+        cacheSizeBytes: 500000,
+      );
+      expect(log, <Matcher>[
+        isMethodCall('Firestore#settings', arguments: <String, dynamic>{
+          'app': firestoreWithSettings.app.name,
+          'persistenceEnabled': true,
+          'host': null,
+          'sslEnabled': true,
+          'timestampsInSnapshotsEnabled': true,
+          'cacheSizeBytes': 500000,
+        }),
+      ]);
+    });
+
     group('Transaction', () {
       test('runTransaction', () async {
         final Map<String, dynamic> result = await firestore.runTransaction(
@@ -231,6 +259,7 @@ void main() {
           isMethodCall('DocumentReference#get', arguments: <String, dynamic>{
             'app': app.name,
             'path': 'foo/bar',
+            'source': 'default',
           }),
           isMethodCall('Transaction#set', arguments: <String, dynamic>{
             'app': app.name,
@@ -252,6 +281,7 @@ void main() {
           isMethodCall('DocumentReference#get', arguments: <String, dynamic>{
             'app': app.name,
             'path': 'foo/bar',
+            'source': 'default',
           }),
           isMethodCall('Transaction#set', arguments: <String, dynamic>{
             'app': app.name,
@@ -516,7 +546,7 @@ void main() {
       });
       test('get', () async {
         final DocumentSnapshot snapshot =
-            await collectionReference.document('bar').get();
+            await collectionReference.document('bar').get(source: Source.cache);
         expect(snapshot.reference.firestore, firestore);
         expect(
           log,
@@ -526,19 +556,35 @@ void main() {
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'foo/bar',
+                'source': 'cache',
               },
             ),
           ]),
         );
+        log.clear();
         expect(snapshot.reference.path, equals('foo/bar'));
         expect(snapshot.data.containsKey('key1'), equals(true));
         expect(snapshot.data['key1'], equals('val1'));
         expect(snapshot.exists, isTrue);
 
-        final DocumentSnapshot snapshot2 =
-            await collectionReference.document('notExists').get();
+        final DocumentSnapshot snapshot2 = await collectionReference
+            .document('notExists')
+            .get(source: Source.serverAndCache);
         expect(snapshot2.data, isNull);
         expect(snapshot2.exists, isFalse);
+        expect(
+          log,
+          equals(<Matcher>[
+            isMethodCall(
+              'DocumentReference#get',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'path': 'foo/notExists',
+                'source': 'default',
+              },
+            ),
+          ]),
+        );
 
         try {
           await collectionReference.document('baz').get();
@@ -560,7 +606,8 @@ void main() {
 
     group('Query', () {
       test('getDocuments', () async {
-        QuerySnapshot snapshot = await collectionReference.getDocuments();
+        QuerySnapshot snapshot =
+            await collectionReference.getDocuments(source: Source.server);
         DocumentSnapshot document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
@@ -609,6 +656,7 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'source': 'server',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -620,6 +668,7 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'source': 'default',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -635,6 +684,7 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'source': 'default',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -650,6 +700,7 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'source': 'default',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -665,6 +716,7 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'source': 'default',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
