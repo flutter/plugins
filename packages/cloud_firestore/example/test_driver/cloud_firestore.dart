@@ -49,7 +49,7 @@ void main() {
           .where('stars', isEqualTo: 5)
           .limit(1);
       final QuerySnapshot querySnapshot = await query.getDocuments();
-      expect(querySnapshot.documents.first['stars'], '5');
+      expect(querySnapshot.documents.first['stars'], 5);
     });
 
     test('increment', () async {
