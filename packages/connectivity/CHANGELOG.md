@@ -1,6 +1,6 @@
 ## 0.4.3+3
 
-* Support for case TYPE_MOBILE_HIPRI on Android.
+* Support for TYPE_MOBILE_HIPRI on Android.
 
 ## 0.4.3+2
 
