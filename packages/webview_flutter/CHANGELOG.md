@@ -1,3 +1,37 @@
+## 0.3.9+1
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.3.9
+
+* Allow external packages to provide webview implementations for new platforms.
+
+## 0.3.8+1
+
+* Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
+
+## 0.3.8
+
+* Add `debuggingEnabled` property.
+
+## 0.3.7+1
+
+* Fix an issue where JavaScriptChannel messages weren't sent from the platform thread on Android.
+
+## 0.3.7
+
+* Fix loadUrlWithHeaders flaky test.
+
+## 0.3.6+1
+
+* Remove un-used method params in webview\_flutter
+
+## 0.3.6
+
+* Add an optional `headers` field to the controller.
+
 ## 0.3.5+5
 
 * Fixed error in documentation of `javascriptChannels`.

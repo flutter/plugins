@@ -190,10 +190,8 @@ class BarcodeDetector {
 
   /// Detects barcodes in the input image.
   Future<List<Barcode>> detectInImage(FirebaseVisionImage visionImage) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
+    final List<dynamic> reply =
+        await FirebaseVision.channel.invokeListMethod<dynamic>(
       'BarcodeDetector#detectInImage',
       <String, dynamic>{
         'options': <String, dynamic>{
@@ -227,6 +225,7 @@ class BarcodeDetectorOptions {
   final BarcodeFormat barcodeFormats;
 }
 
+// TODO(bparrishMines): Normalize default string values. Some values return null on iOS while Android returns empty string.
 /// Represents a single recognized barcode and its value.
 class Barcode {
   Barcode._(Map<dynamic, dynamic> _data)

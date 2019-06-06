@@ -12,7 +12,7 @@ part of firebase_dynamic_links;
 class DynamicLinkParameters {
   DynamicLinkParameters({
     this.androidParameters,
-    @required this.domain,
+    @required this.uriPrefix,
     this.dynamicLinkParametersOptions,
     this.googleAnalyticsParameters,
     this.iosParameters,
@@ -20,17 +20,18 @@ class DynamicLinkParameters {
     @required this.link,
     this.navigationInfoParameters,
     this.socialMetaTagParameters,
-  })  : assert(domain != null),
+  })  : assert(uriPrefix != null),
         assert(link != null);
 
   /// Android parameters for a generated Dynamic Link URL.
   final AndroidParameters androidParameters;
 
-  /// The Firebase project’s Dynamic Links domain.
-  ///
-  /// You can find this value in the Dynamic Links section of the Firebase
-  /// console. https://console.firebase.google.com/
-  final String domain;
+  /// Domain URI Prefix of your App.
+  // This value must be your assigned domain from the Firebase console.
+  // (e.g. https://xyz.page.link)
+  //
+  // The domain URI prefix must start with a valid HTTPS scheme (https://).
+  final String uriPrefix;
 
   /// Defines behavior for generating Dynamic Link URLs.
   final DynamicLinkParametersOptions dynamicLinkParametersOptions;
@@ -65,11 +66,9 @@ class DynamicLinkParameters {
   /// using [DynamicLinkParameters].
   static Future<ShortDynamicLink> shortenUrl(Uri url,
       [DynamicLinkParametersOptions options]) async {
-    final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('DynamicLinkParameters#shortenUrl', <String, dynamic>{
+    final Map<String, dynamic> reply = await FirebaseDynamicLinks.channel
+        .invokeMapMethod<String, dynamic>(
+            'DynamicLinkParameters#shortenUrl', <String, dynamic>{
       'url': url.toString(),
       'dynamicLinkParametersOptions': options?._data,
     });
@@ -78,7 +77,7 @@ class DynamicLinkParameters {
 
   Map<String, dynamic> get _data => <String, dynamic>{
         'androidParameters': androidParameters?._data,
-        'domain': domain,
+        'uriPrefix': uriPrefix,
         'dynamicLinkParametersOptions': dynamicLinkParametersOptions?._data,
         'googleAnalyticsParameters': googleAnalyticsParameters?._data,
         'iosParameters': iosParameters?._data,
@@ -92,24 +91,19 @@ class DynamicLinkParameters {
   /// Generate a long Dynamic Link URL.
   Future<Uri> buildUrl() async {
     final String url = await FirebaseDynamicLinks.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('DynamicLinkParameters#buildUrl', _data);
+        .invokeMethod<String>('DynamicLinkParameters#buildUrl', _data);
     return Uri.parse(url);
   }
 
   /// Generate a short Dynamic Link.
   Future<ShortDynamicLink> buildShortLink() async {
-    final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('DynamicLinkParameters#buildShortLink', _data);
+    final Map<String, dynamic> reply = await FirebaseDynamicLinks.channel
+        .invokeMapMethod<String, dynamic>(
+            'DynamicLinkParameters#buildShortLink', _data);
     return _parseShortLink(reply);
   }
 
-  static ShortDynamicLink _parseShortLink(Map<dynamic, dynamic> reply) {
+  static ShortDynamicLink _parseShortLink(Map<String, dynamic> reply) {
     final List<dynamic> warnings = reply['warnings'];
     return ShortDynamicLink._(Uri.parse(reply['url']), warnings?.cast());
   }

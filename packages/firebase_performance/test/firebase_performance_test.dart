@@ -7,318 +7,486 @@ import 'package:flutter/services.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class MockPerformanceAttributes extends PerformanceAttributes {}
-
 void main() {
   group('$FirebasePerformance', () {
-    final FirebasePerformance performance = FirebasePerformance.instance;
-    final List<MethodCall> log = <MethodCall>[];
-    bool performanceCollectionEnable = true;
-    int currentTraceHandle;
-    int currentHttpMetricHandle;
+    final List<MethodCall> performanceLog = <MethodCall>[];
 
-    setUp(() {
+    FirebasePerformance performance;
+    int firebasePerformanceHandle;
+
+    int nextHandle = 0;
+
+    bool isPerformanceCollectionEnabledResult;
+
+    setUpAll(() {
       FirebasePerformance.channel
           .setMockMethodCallHandler((MethodCall methodCall) async {
-        log.add(methodCall);
+        performanceLog.add(methodCall);
         switch (methodCall.method) {
           case 'FirebasePerformance#isPerformanceCollectionEnabled':
-            return performanceCollectionEnable;
-          case 'FirebasePerformance#setPerformanceCollectionEnabled':
-            performanceCollectionEnable = methodCall.arguments;
-            return null;
-          case 'Trace#start':
-            currentTraceHandle = methodCall.arguments['handle'];
-            return null;
-          case 'Trace#stop':
-            return null;
-          case 'HttpMetric#start':
-            currentHttpMetricHandle = methodCall.arguments['handle'];
-            return null;
-          case 'HttpMetric#stop':
-            return null;
+            return isPerformanceCollectionEnabledResult;
           default:
             return null;
         }
       });
-      log.clear();
+    });
+
+    setUp(() {
+      performanceLog.clear();
+    });
+
+    test('instance', () {
+      firebasePerformanceHandle = nextHandle++;
+      performance = FirebasePerformance.instance;
+
+      expect(performanceLog, <Matcher>[
+        isMethodCall(
+          'FirebasePerformance#instance',
+          arguments: <String, dynamic>{'handle': firebasePerformanceHandle},
+        ),
+      ]);
     });
 
     test('isPerformanceCollectionEnabled', () async {
+      isPerformanceCollectionEnabledResult = true;
       final bool enabled = await performance.isPerformanceCollectionEnabled();
+      expect(enabled, isTrue);
 
-      expect(performanceCollectionEnable, enabled);
-      expect(log, <Matcher>[
+      isPerformanceCollectionEnabledResult = false;
+      final bool disabled = await performance.isPerformanceCollectionEnabled();
+      expect(disabled, isFalse);
+
+      expect(performanceLog, <Matcher>[
         isMethodCall(
           'FirebasePerformance#isPerformanceCollectionEnabled',
-          arguments: null,
+          arguments: <String, dynamic>{'handle': firebasePerformanceHandle},
+        ),
+        isMethodCall(
+          'FirebasePerformance#isPerformanceCollectionEnabled',
+          arguments: <String, dynamic>{'handle': firebasePerformanceHandle},
         ),
       ]);
     });
 
-    test('setPerformanceCollectionEnabled', () async {
-      await performance.setPerformanceCollectionEnabled(true);
-      performanceCollectionEnable = true;
+    test('setPerformanceCollectionEnabled', () {
+      performance.setPerformanceCollectionEnabled(true);
+      performance.setPerformanceCollectionEnabled(false);
 
-      await performance.setPerformanceCollectionEnabled(false);
-      performanceCollectionEnable = false;
-
-      expect(log, <Matcher>[
+      expect(performanceLog, <Matcher>[
         isMethodCall(
           'FirebasePerformance#setPerformanceCollectionEnabled',
-          arguments: true,
+          arguments: <String, dynamic>{
+            'handle': firebasePerformanceHandle,
+            'enable': true,
+          },
         ),
         isMethodCall(
           'FirebasePerformance#setPerformanceCollectionEnabled',
-          arguments: false,
+          arguments: <String, dynamic>{
+            'handle': firebasePerformanceHandle,
+            'enable': false,
+          },
         ),
       ]);
     });
 
-    test('newTrace', () async {
-      final Trace trace = performance.newTrace('test-trace');
-      await trace.start();
+    test('newTrace', () {
+      performance.newTrace('test-trace');
 
-      expect(log, <Matcher>[
+      expect(performanceLog, <Matcher>[
         isMethodCall(
-          'Trace#start',
-          arguments: <String, Object>{
-            'handle': currentTraceHandle,
+          'FirebasePerformance#newTrace',
+          arguments: <String, dynamic>{
+            'handle': firebasePerformanceHandle,
+            'traceHandle': nextHandle++,
             'name': 'test-trace',
           },
         ),
       ]);
     });
 
-    test('newHttpMetric', () async {
-      final HttpMetric metric = performance.newHttpMetric(
-        'https://google.com',
-        HttpMethod.Connect,
-      );
-      await metric.start();
+    test('newHttpMetric', () {
+      performance.newHttpMetric('https://google.com', HttpMethod.Connect);
 
-      expect(log, <Matcher>[
+      expect(performanceLog, <Matcher>[
         isMethodCall(
-          'HttpMetric#start',
-          arguments: <String, Object>{
-            'handle': currentTraceHandle,
+          'FirebasePerformance#newHttpMetric',
+          arguments: <String, dynamic>{
+            'handle': firebasePerformanceHandle,
+            'httpMetricHandle': nextHandle++,
             'url': 'https://google.com',
-            'httpMethod': HttpMethod.Connect.index,
+            'httpMethod': HttpMethod.Connect.toString(),
           },
         ),
       ]);
     });
 
-    test('startTrace', () async {
-      await FirebasePerformance.startTrace('startTrace-test');
+    test('startTrace', () {
+      final int currentHandle = nextHandle++;
+      FirebasePerformance.startTrace('test-start-trace');
 
-      expect(log, <Matcher>[
+      expect(performanceLog, <Matcher>[
+        isMethodCall(
+          'FirebasePerformance#newTrace',
+          arguments: <String, dynamic>{
+            'handle': firebasePerformanceHandle,
+            'traceHandle': currentHandle,
+            'name': 'test-start-trace',
+          },
+        ),
         isMethodCall(
           'Trace#start',
-          arguments: <String, Object>{
-            'handle': currentTraceHandle,
-            'name': 'startTrace-test',
-          },
+          arguments: <String, dynamic>{'handle': currentHandle},
         ),
       ]);
     });
 
-    test('$HttpMethod', () async {
-      expect(HttpMethod.Connect.index, 0);
-      expect(HttpMethod.Delete.index, 1);
-      expect(HttpMethod.Get.index, 2);
-      expect(HttpMethod.Head.index, 3);
-      expect(HttpMethod.Options.index, 4);
-      expect(HttpMethod.Patch.index, 5);
-      expect(HttpMethod.Post.index, 6);
-      expect(HttpMethod.Put.index, 7);
-      expect(HttpMethod.Trace.index, 8);
+    test('$HttpMethod', () {
+      performance.newHttpMetric('https://google.com', HttpMethod.Delete);
+
+      expect(performanceLog, <Matcher>[
+        isMethodCall(
+          'FirebasePerformance#newHttpMetric',
+          arguments: <String, dynamic>{
+            'handle': firebasePerformanceHandle,
+            'httpMetricHandle': nextHandle++,
+            'url': 'https://google.com',
+            'httpMethod': HttpMethod.Delete.toString(),
+          },
+        ),
+      ]);
     });
 
     group('$Trace', () {
+      final List<MethodCall> traceLog = <MethodCall>[];
+
       Trace testTrace;
+      int currentTestTraceHandle;
+
+      setUpAll(() {
+        FirebasePerformance.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          traceLog.add(methodCall);
+          switch (methodCall.method) {
+            case 'FirebasePerformance#isPerformanceCollectionEnabled':
+              return isPerformanceCollectionEnabledResult;
+            default:
+              return null;
+          }
+        });
+      });
 
       setUp(() {
         testTrace = performance.newTrace('test');
+        currentTestTraceHandle = nextHandle++;
+
+        traceLog.clear();
       });
 
-      test('start', () async {
-        await testTrace.start();
+      test('start', () {
+        testTrace.start();
 
-        expect(log, <Matcher>[
+        expect(traceLog, <Matcher>[
           isMethodCall(
             'Trace#start',
-            arguments: <String, Object>{
-              'handle': currentTraceHandle,
-              'name': 'test',
+            arguments: <String, dynamic>{'handle': currentTestTraceHandle},
+          ),
+        ]);
+      });
+
+      test('stop', () {
+        testTrace.start();
+        traceLog.clear();
+
+        testTrace.stop();
+
+        expect(traceLog, <Matcher>[
+          isMethodCall(
+            'Trace#stop',
+            arguments: <String, dynamic>{'handle': currentTestTraceHandle},
+          ),
+        ]);
+      });
+
+      test('incrementMetric', () {
+        testTrace.start();
+        traceLog.clear();
+
+        testTrace.incrementMetric('metric1', 3);
+
+        expect(traceLog, <Matcher>[
+          isMethodCall(
+            'Trace#incrementMetric',
+            arguments: <String, dynamic>{
+              'handle': currentTestTraceHandle,
+              'name': 'metric1',
+              'value': 3,
             },
           ),
         ]);
       });
 
-      test('stop', () async {
-        await testTrace.start();
-        await testTrace.stop();
+      test('setMetric', () {
+        testTrace.start();
+        traceLog.clear();
 
-        expect(log, <Matcher>[
-          isMethodCall('Trace#start', arguments: <String, Object>{
-            'handle': currentTraceHandle,
-            'name': 'test',
-          }),
+        testTrace.setMetric('metric3', 5);
+
+        expect(traceLog, <Matcher>[
           isMethodCall(
-            'Trace#stop',
+            'Trace#setMetric',
             arguments: <String, dynamic>{
-              'handle': currentTraceHandle,
-              'name': 'test',
-              'counters': <String, int>{},
-              'attributes': <String, String>{},
+              'handle': currentTestTraceHandle,
+              'name': 'metric3',
+              'value': 5,
             },
           ),
         ]);
       });
 
-      test('incrementCounter', () async {
-        final Trace trace = performance.newTrace('test');
-        trace.incrementCounter('counter1');
+      test('getMetric', () {
+        testTrace.getMetric('metric4');
 
-        trace.incrementCounter('counter2');
-        trace.incrementCounter('counter2');
-
-        trace.incrementCounter('counter3', 5);
-        trace.incrementCounter('counter3', 5);
-
-        trace.incrementCounter('counter4', -5);
-
-        await trace.start();
-        await trace.stop();
-
-        expect(log, <Matcher>[
+        expect(traceLog, <Matcher>[
           isMethodCall(
-            'Trace#start',
-            arguments: <String, Object>{
-              'handle': currentTraceHandle,
-              'name': 'test',
-            },
-          ),
-          isMethodCall(
-            'Trace#stop',
+            'Trace#getMetric',
             arguments: <String, dynamic>{
-              'handle': currentTraceHandle,
-              'name': 'test',
-              'counters': <String, int>{
-                'counter1': 1,
-                'counter2': 2,
-                'counter3': 10,
-                'counter4': -5,
-              },
-              'attributes': <String, String>{},
+              'handle': currentTestTraceHandle,
+              'name': 'metric4',
             },
           ),
         ]);
+      });
+
+      test('invokeMethod not called if trace hasn\'t started', () {
+        testTrace.incrementMetric('any', 211);
+        testTrace.setMetric('what', 23);
+
+        expect(traceLog, isEmpty);
+      });
+
+      test('invokeMethod not called if trace has stopped', () {
+        testTrace.start();
+        testTrace.stop();
+        traceLog.clear();
+
+        testTrace.start();
+        testTrace.stop();
+        testTrace.incrementMetric('any', 211);
+        testTrace.setMetric('what', 23);
+        testTrace.getMetric('efser');
+
+        expect(traceLog, isEmpty);
       });
     });
 
     group('$HttpMetric', () {
+      final List<MethodCall> httpMetricLog = <MethodCall>[];
+
       HttpMetric testMetric;
+      int currentTestMetricHandle;
+
+      setUpAll(() {
+        FirebasePerformance.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          httpMetricLog.add(methodCall);
+          switch (methodCall.method) {
+            case 'FirebasePerformance#isPerformanceCollectionEnabled':
+              return isPerformanceCollectionEnabledResult;
+            default:
+              return null;
+          }
+        });
+      });
 
       setUp(() {
         testMetric = performance.newHttpMetric(
           'https://google.com',
           HttpMethod.Get,
         );
+        currentTestMetricHandle = nextHandle++;
+
+        httpMetricLog.clear();
       });
 
-      test('start', () async {
-        await testMetric.start();
+      test('start', () {
+        testMetric.start();
 
-        expect(log, <Matcher>[
+        expect(httpMetricLog, <Matcher>[
           isMethodCall(
             'HttpMetric#start',
-            arguments: <String, Object>{
-              'handle': currentHttpMetricHandle,
-              'url': 'https://google.com',
-              'httpMethod': HttpMethod.Get.index,
-            },
+            arguments: <String, dynamic>{'handle': currentTestMetricHandle},
           ),
         ]);
       });
 
-      test('stop', () async {
-        testMetric.httpResponseCode = 1;
-        testMetric.requestPayloadSize = 5000000;
-        testMetric.responseContentType = 'text/html';
-        testMetric.responsePayloadSize = 1992304820934820;
+      test('stop', () {
+        testMetric.start();
+        httpMetricLog.clear();
 
-        await testMetric.start();
-        await testMetric.stop();
+        testMetric.stop();
 
-        expect(log, <Matcher>[
-          isMethodCall(
-            'HttpMetric#start',
-            arguments: <String, Object>{
-              'handle': currentHttpMetricHandle,
-              'url': 'https://google.com',
-              'httpMethod': HttpMethod.Get.index,
-            },
-          ),
+        expect(httpMetricLog, <Matcher>[
           isMethodCall(
             'HttpMetric#stop',
+            arguments: <String, dynamic>{'handle': currentTestMetricHandle},
+          ),
+        ]);
+      });
+
+      test('httpResponseCode', () {
+        testMetric.httpResponseCode = 45;
+
+        expect(httpMetricLog, <Matcher>[
+          isMethodCall(
+            'HttpMetric#httpResponseCode',
             arguments: <String, dynamic>{
-              'handle': currentHttpMetricHandle,
-              'httpResponseCode': 1,
-              'requestPayloadSize': 5000000,
-              'responseContentType': 'text/html',
-              'responsePayloadSize': 1992304820934820,
-              'attributes': <String, String>{},
+              'handle': currentTestMetricHandle,
+              'httpResponseCode': 45,
             },
           ),
         ]);
+      });
+
+      test('requestPayloadSize', () {
+        testMetric.requestPayloadSize = 436;
+
+        expect(httpMetricLog, <Matcher>[
+          isMethodCall(
+            'HttpMetric#requestPayloadSize',
+            arguments: <String, dynamic>{
+              'handle': currentTestMetricHandle,
+              'requestPayloadSize': 436,
+            },
+          ),
+        ]);
+      });
+
+      test('responseContentType', () {
+        testMetric.responseContentType = 'hi';
+
+        expect(httpMetricLog, <Matcher>[
+          isMethodCall(
+            'HttpMetric#responseContentType',
+            arguments: <String, dynamic>{
+              'handle': currentTestMetricHandle,
+              'responseContentType': 'hi',
+            },
+          ),
+        ]);
+      });
+
+      test('responsePayloadSize', () {
+        testMetric.responsePayloadSize = 12;
+
+        expect(httpMetricLog, <Matcher>[
+          isMethodCall(
+            'HttpMetric#responsePayloadSize',
+            arguments: <String, dynamic>{
+              'handle': currentTestMetricHandle,
+              'responsePayloadSize': 12,
+            },
+          ),
+        ]);
+      });
+
+      test('invokeMethod not called if httpMetric has stopped', () {
+        testMetric.start();
+        testMetric.stop();
+        httpMetricLog.clear();
+
+        testMetric.start();
+        testMetric.stop();
+        testMetric.httpResponseCode = 12;
+        testMetric.requestPayloadSize = 23;
+        testMetric.responseContentType = 'potato';
+        testMetric.responsePayloadSize = 123;
+
+        expect(httpMetricLog, isEmpty);
       });
     });
 
     group('$PerformanceAttributes', () {
-      PerformanceAttributes attributes;
+      final List<MethodCall> attributeLog = <MethodCall>[];
+
+      Trace attributeTrace;
+      int currentTraceHandle;
+
+      setUpAll(() {
+        FirebasePerformance.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          attributeLog.add(methodCall);
+          switch (methodCall.method) {
+            case 'PerformanceAttributes#getAttributes':
+              return <dynamic, dynamic>{
+                'a1': 'hello',
+                'a2': 'friend',
+              };
+            default:
+              return null;
+          }
+        });
+      });
 
       setUp(() {
-        attributes = MockPerformanceAttributes();
+        attributeTrace = performance.newTrace('trace');
+        currentTraceHandle = nextHandle++;
+
+        attributeLog.clear();
       });
 
-      test('putAttribute', () async {
-        attributes.putAttribute('attr1', 'apple');
-        attributes.putAttribute('attr2', 'are');
-        expect(attributes.attributes, <String, String>{
-          'attr1': 'apple',
-          'attr2': 'are',
-        });
+      test('putAttribute', () {
+        attributeTrace.putAttribute('attr1', 'apple');
 
-        attributes.putAttribute('attr1', 'delicious');
-        expect(attributes.attributes, <String, String>{
-          'attr1': 'delicious',
-          'attr2': 'are',
-        });
+        expect(attributeLog, <Matcher>[
+          isMethodCall(
+            'PerformanceAttributes#putAttribute',
+            arguments: <String, dynamic>{
+              'handle': currentTraceHandle,
+              'name': 'attr1',
+              'value': 'apple',
+            },
+          ),
+        ]);
       });
 
-      test('removeAttribute', () async {
-        attributes.putAttribute('attr1', 'apple');
-        attributes.putAttribute('attr2', 'are');
-        attributes.removeAttribute('no-attr');
-        expect(attributes.attributes, <String, String>{
-          'attr1': 'apple',
-          'attr2': 'are',
-        });
+      test('removeAttribute', () {
+        attributeTrace.removeAttribute('attr14');
 
-        attributes.removeAttribute('attr1');
-        expect(attributes.attributes, <String, String>{
-          'attr2': 'are',
-        });
+        expect(attributeLog, <Matcher>[
+          isMethodCall(
+            'PerformanceAttributes#removeAttribute',
+            arguments: <String, dynamic>{
+              'handle': currentTraceHandle,
+              'name': 'attr14',
+            },
+          ),
+        ]);
       });
 
-      test('getAttribute', () {
-        attributes.putAttribute('attr1', 'apple');
-        attributes.putAttribute('attr2', 'are');
-        expect(attributes.getAttribute('attr1'), 'apple');
+      test('getAttributes', () async {
+        final Map<String, String> result = await attributeTrace.getAttributes();
 
-        expect(attributes.getAttribute('attr3'), isNull);
+        expect(attributeLog, <Matcher>[
+          isMethodCall(
+            'PerformanceAttributes#getAttributes',
+            arguments: <String, dynamic>{'handle': currentTraceHandle},
+          ),
+        ]);
+
+        expect(result, <dynamic, dynamic>{'a1': 'hello', 'a2': 'friend'});
+      });
+
+      test('invokeMethod not called if trace has stopped', () {
+        attributeTrace.start();
+        attributeTrace.stop();
+        attributeLog.clear();
+
+        attributeTrace.putAttribute('tonto', 'orale');
+        attributeTrace.removeAttribute('ewfo');
+        attributeTrace.getAttributes();
+
+        expect(attributeLog, isEmpty);
       });
     });
   });

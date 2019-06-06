@@ -205,6 +205,14 @@ int nextHandle = 0;
                                                          forObject:nil
                                                              error:error];
                                                 }];
+  } else if ([@"updatePhoneNumberCredential" isEqualToString:call.method]) {
+    FIRPhoneAuthCredential *credential =
+        (FIRPhoneAuthCredential *)[self getCredential:call.arguments];
+    [[self getAuth:call.arguments].currentUser
+        updatePhoneNumberCredential:credential
+                         completion:^(NSError *_Nullable error) {
+                           [self sendResult:result forObject:nil error:error];
+                         }];
   } else if ([@"updatePassword" isEqualToString:call.method]) {
     NSString *password = call.arguments[@"password"];
     [[self getAuth:call.arguments].currentUser updatePassword:password

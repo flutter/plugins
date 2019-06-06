@@ -383,4 +383,34 @@ void main() {
 
     expect(platformGoogleMap.myLocationEnabled, true);
   });
+
+  testWidgets('Can update myLocationButtonEnabled',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          myLocationEnabled: false,
+        ),
+      ),
+    );
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.myLocationButtonEnabled, true);
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          myLocationButtonEnabled: false,
+        ),
+      ),
+    );
+
+    expect(platformGoogleMap.myLocationButtonEnabled, false);
+  });
 }

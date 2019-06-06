@@ -94,6 +94,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
               if (value.isEmpty) {
                 return 'Please enter some text';
               }
+              return null;
             },
           ),
           TextFormField(
@@ -103,6 +104,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
               if (value.isEmpty) {
                 return 'Please enter some text';
               }
+              return null;
             },
           ),
           Container(
@@ -235,6 +237,7 @@ class _EmailLinkSignInSectionState extends State<_EmailLinkSignInSection>
               if (value.isEmpty) {
                 return 'Please enter your email.';
               }
+              return null;
             },
           ),
           Container(
@@ -462,6 +465,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
             if (value.isEmpty) {
               return 'Phone number (+x xxx-xxx-xxxx)';
             }
+            return null;
           },
         ),
         Container(
@@ -506,9 +510,10 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
       _message = '';
     });
     final PhoneVerificationCompleted verificationCompleted =
-        (FirebaseUser user) {
+        (AuthCredential phoneAuthCredential) {
+      _auth.signInWithCredential(phoneAuthCredential);
       setState(() {
-        _message = 'signInWithPhoneNumber auto succeeded: $user';
+        _message = 'Received phone auth credential: $phoneAuthCredential';
       });
     };
 

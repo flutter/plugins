@@ -4,7 +4,9 @@
 
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import "GoogleMapCircleController.h"
 #import "GoogleMapMarkerController.h"
+#import "GoogleMapPolygonController.h"
 #import "GoogleMapPolylineController.h"
 
 // Defines map UI options writable from Flutter.
@@ -19,6 +21,8 @@
 - (void)setTrackCameraPosition:(BOOL)enabled;
 - (void)setZoomGesturesEnabled:(BOOL)enabled;
 - (void)setMyLocationEnabled:(BOOL)enabled;
+- (void)setMyLocationButtonEnabled:(BOOL)enabled;
+- (NSString *)setMapStyle:(NSString *)mapStyle;
 @end
 
 // Defines map overlay controllable from Flutter.

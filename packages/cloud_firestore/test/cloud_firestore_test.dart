@@ -50,6 +50,9 @@ void main() {
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
             Future<void>.delayed(Duration.zero).then<void>((_) {
+              // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+              // https://github.com/flutter/flutter/issues/33446
+              // ignore: deprecated_member_use
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -79,6 +82,9 @@ void main() {
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
             Future<void>.delayed(Duration.zero).then<void>((_) {
+              // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+              // https://github.com/flutter/flutter/issues/33446
+              // ignore: deprecated_member_use
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -231,6 +237,7 @@ void main() {
           isMethodCall('DocumentReference#get', arguments: <String, dynamic>{
             'app': app.name,
             'path': 'foo/bar',
+            'source': 'default',
           }),
           isMethodCall('Transaction#set', arguments: <String, dynamic>{
             'app': app.name,
@@ -252,6 +259,7 @@ void main() {
           isMethodCall('DocumentReference#get', arguments: <String, dynamic>{
             'app': app.name,
             'path': 'foo/bar',
+            'source': 'default',
           }),
           isMethodCall('Transaction#set', arguments: <String, dynamic>{
             'app': app.name,
@@ -286,11 +294,14 @@ void main() {
     group('CollectionsReference', () {
       test('id', () async {
         expect(collectionReference.id, equals('foo'));
-        expect(collectionReference.parent().id, isNull);
+      });
+      test('parent', () async {
+        final DocumentReference docRef = collectionReference.document('bar');
+        expect(docRef.parent().id, equals('foo'));
+        expect(collectionReference.parent(), isNull);
       });
       test('path', () async {
         expect(collectionReference.path, equals('foo'));
-        expect(collectionReference.parent().path, equals(''));
       });
       test('listen', () async {
         final QuerySnapshot snapshot =
@@ -513,7 +524,7 @@ void main() {
       });
       test('get', () async {
         final DocumentSnapshot snapshot =
-            await collectionReference.document('bar').get();
+            await collectionReference.document('bar').get(source: Source.cache);
         expect(snapshot.reference.firestore, firestore);
         expect(
           log,
@@ -523,19 +534,35 @@ void main() {
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'foo/bar',
+                'source': 'cache',
               },
             ),
           ]),
         );
+        log.clear();
         expect(snapshot.reference.path, equals('foo/bar'));
         expect(snapshot.data.containsKey('key1'), equals(true));
         expect(snapshot.data['key1'], equals('val1'));
         expect(snapshot.exists, isTrue);
 
-        final DocumentSnapshot snapshot2 =
-            await collectionReference.document('notExists').get();
+        final DocumentSnapshot snapshot2 = await collectionReference
+            .document('notExists')
+            .get(source: Source.serverAndCache);
         expect(snapshot2.data, isNull);
         expect(snapshot2.exists, isFalse);
+        expect(
+          log,
+          equals(<Matcher>[
+            isMethodCall(
+              'DocumentReference#get',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'path': 'foo/notExists',
+                'source': 'default',
+              },
+            ),
+          ]),
+        );
 
         try {
           await collectionReference.document('baz').get();
@@ -546,14 +573,58 @@ void main() {
       test('collection', () async {
         final CollectionReference colRef =
             collectionReference.document('bar').collection('baz');
-        expect(colRef.path, 'foo/bar/baz');
+        expect(colRef.path, equals('foo/bar/baz'));
+      });
+      test('parent', () async {
+        final CollectionReference colRef =
+            collectionReference.document('bar').collection('baz');
+        expect(colRef.parent().documentID, equals('bar'));
       });
     });
 
     group('Query', () {
       test('getDocuments', () async {
-        final QuerySnapshot snapshot = await collectionReference.getDocuments();
-        final DocumentSnapshot document = snapshot.documents.first;
+        QuerySnapshot snapshot =
+            await collectionReference.getDocuments(source: Source.server);
+        DocumentSnapshot document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
+        // startAtDocument
+        snapshot =
+            await collectionReference.startAtDocument(document).getDocuments();
+        document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
+        // startAfterDocument
+        snapshot = await collectionReference
+            .startAfterDocument(document)
+            .getDocuments();
+        document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
+        // endAtDocument
+        snapshot =
+            await collectionReference.endAtDocument(document).getDocuments();
+        document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
+        // endBeforeDocument
+        snapshot = await collectionReference
+            .endBeforeDocument(document)
+            .getDocuments();
+        document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
         expect(
           log,
           equals(
@@ -563,18 +634,80 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'source': 'server',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
                   },
                 },
               ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'foo',
+                  'source': 'default',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'startAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                  },
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'foo',
+                  'source': 'default',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'startAfterDocument': <String, dynamic>{
+                      'id': '0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                  },
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'foo',
+                  'source': 'default',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'endAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                  },
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'foo',
+                  'source': 'default',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'endBeforeDocument': <String, dynamic>{
+                      'id': '0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                  },
+                },
+              ),
             ],
           ),
         );
-        expect(document.documentID, equals('0'));
-        expect(document.reference.path, equals('foo/0'));
-        expect(document.data, equals(kMockDocumentSnapshotData));
       });
     });
 
@@ -609,6 +742,8 @@ void main() {
         _checkEncodeDecode<dynamic>(codec, FieldValue.arrayRemove(<int>[123]));
         _checkEncodeDecode<dynamic>(codec, FieldValue.delete());
         _checkEncodeDecode<dynamic>(codec, FieldValue.serverTimestamp());
+        _checkEncodeDecode<dynamic>(codec, FieldValue.increment(1.0));
+        _checkEncodeDecode<dynamic>(codec, FieldValue.increment(1));
       });
     });
 
@@ -881,5 +1016,7 @@ bool _deepEqualsMap(
 bool _deepEqualsFieldValue(FieldValue valueA, FieldValue valueB) {
   if (valueA.type != valueB.type) return false;
   if (valueA.value == null) return valueB.value == null;
-  return _deepEqualsList(valueA.value, valueB.value);
+  if (valueA.value is List) return _deepEqualsList(valueA.value, valueB.value);
+  if (valueA.value is Map) return _deepEqualsMap(valueA.value, valueB.value);
+  return valueA.value == valueB.value;
 }

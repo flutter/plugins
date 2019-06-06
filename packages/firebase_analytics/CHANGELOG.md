@@ -1,3 +1,18 @@
+## 3.0.2
+
+* Bump minimum Flutter version to 1.5.0.
+* Add missing template type parameter to `invokeMethod` calls.
+
+## 3.0.1
+
+* Switch to using the `FIRAnalytics` version of `setAnalyticsCollectionEnabled` for
+  compatibility with Firebase Analytics iOS CocoaPod version 6.0.
+* Update podspec to ensure availability of `setAnalyticsCollectionEnabled`.
+
+## 3.0.0
+
+* Update Android dependencies to latest.
+
 ## 2.1.1+3
 
 * Added an initial integration test.

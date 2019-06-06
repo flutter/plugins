@@ -32,10 +32,8 @@ class PackageInfo {
     if (_fromPlatform == null) {
       final Completer<PackageInfo> completer = Completer<PackageInfo>();
 
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      _kChannel.invokeMethod('getAll').then((dynamic result) {
+      _kChannel.invokeMapMethod<String, dynamic>('getAll').then(
+          (dynamic result) {
         final Map<dynamic, dynamic> map = result;
 
         completer.complete(PackageInfo(

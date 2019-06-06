@@ -1,3 +1,23 @@
+## 0.4.0+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.4.0+1
+
+* Fixed bug where link persists after starting an app with a Dynamic Link.
+* Fixed bug where retrieving a link would fail when app was already running.
+
+## 0.4.0
+
+* Update dependency on firebase_core to 0.4.0.
+
+## 0.3.0.
+
+* Update Android dependencies to 16.1.7.
+* **Breaking change**. Dynamic link parameter `domain` replaced with `uriPrefix`.
+
 ## 0.2.1
 
 * Throw `PlatformException` if there is an error retrieving dynamic link.

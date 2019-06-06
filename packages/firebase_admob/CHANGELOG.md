@@ -1,6 +1,11 @@
-## 0.8.0+5
+## 0.9.0+1
 
-* Fix firebase_admob crash when used with android alarm manager
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+
+## 0.9.0
+
+* Update Android dependencies to latest.
 
 ## 0.8.0+4
 
