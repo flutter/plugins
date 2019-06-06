@@ -45,7 +45,7 @@ void main() {
       expect(querySnapshot.documents.length, 1);
     });
 
-    test('getDocuments', () async {
+    test('getDocumentsFromCollection', () async {
       final Query query = firestore
           .collection('messages')
           .where('message', isEqualTo: 'Hello world!')
@@ -61,6 +61,15 @@ void main() {
       expect(cachedSnapshot.data['message'], 'Hello world!');
       final DocumentSnapshot snapshot = await firstDoc.snapshots().first;
       expect(snapshot.data['message'], 'Hello world!');
+    });
+
+    test('getDocumentsFromCollectionGroup', () async {
+      final Query query = firestore
+          .collectionGroup('reviews')
+          .where('stars', isEqualTo: 5)
+          .limit(1);
+      final QuerySnapshot querySnapshot = await query.getDocuments();
+      expect(querySnapshot.documents.first['stars'], 5);
     });
 
     test('increment', () async {

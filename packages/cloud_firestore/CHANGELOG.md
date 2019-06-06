@@ -1,3 +1,7 @@
+## 0.12.4
+
+* Added support for `Query.collectionGroup`.
+
 ## 0.12.3
 
 * Added support for `cacheSizeBytes` to `Firestore.settings`.
