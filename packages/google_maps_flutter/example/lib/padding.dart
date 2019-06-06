@@ -1,6 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'dart:math';
 import 'page.dart';
 
 class PaddingPage extends Page {
@@ -71,9 +71,8 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
       child: RaisedButton(
         child: const Text('Change padding'),
         onPressed: () async {
-          var rng = new Random();
           setState(() {
-            _padding = rng.nextInt(150).toDouble();
+            _padding = Random().nextInt(150).toDouble();
           });
         },
       ),

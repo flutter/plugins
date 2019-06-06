@@ -9,13 +9,14 @@ import 'map_coordinates.dart';
 import 'map_ui.dart';
 import 'marker_icons.dart';
 import 'move_camera.dart';
+import 'padding.dart';
 import 'page.dart';
 import 'place_circle.dart';
 import 'place_marker.dart';
 import 'place_polygon.dart';
 import 'place_polyline.dart';
 import 'scrolling_map.dart';
-import 'padding.dart';
+
 
 final List<Page> _allPages = <Page>[
   MapUiPage(),
