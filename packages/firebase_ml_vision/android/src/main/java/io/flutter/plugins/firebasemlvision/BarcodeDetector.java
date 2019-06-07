@@ -13,40 +13,20 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 class BarcodeDetector implements Detector {
-  static final BarcodeDetector instance = new BarcodeDetector();
+  private final FirebaseVisionBarcodeDetector detector;
 
-  private BarcodeDetector() {}
-
-  private FirebaseVisionBarcodeDetector detector;
-  private Map<String, Object> lastOptions;
+  BarcodeDetector(FirebaseVision vision, Map<String, Object> options) {
+    detector = vision.getVisionBarcodeDetector(parseOptions(options));
+  }
 
   @Override
-  public void handleDetection(
-      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-
-    // Use instantiated detector if the options are the same. Otherwise, close and instantiate new
-    // options.
-
-    if (detector == null) {
-      lastOptions = options;
-      detector = FirebaseVision.getInstance().getVisionBarcodeDetector(parseOptions(lastOptions));
-    } else if (!options.equals(lastOptions)) {
-      try {
-        detector.close();
-      } catch (IOException e) {
-        result.error("barcodeDetectorIOError", e.getLocalizedMessage(), null);
-        return;
-      }
-
-      lastOptions = options;
-      detector = FirebaseVision.getInstance().getVisionBarcodeDetector(parseOptions(lastOptions));
-    }
-
+  public void handleDetection(final FirebaseVisionImage image, final MethodChannel.Result result) {
     detector
         .detectInImage(image)
         .addOnSuccessListener(
@@ -138,7 +118,9 @@ class BarcodeDetector implements Detector {
                       List<Map<String, Object>> addresses = new ArrayList<>();
                       for (FirebaseVisionBarcode.Address address : contactInfo.getAddresses()) {
                         Map<String, Object> addressMap = new HashMap<>();
-                        addressMap.put("addressLines", address.getAddressLines());
+                        if (address.getAddressLines() != null) {
+                          addressMap.put("addressLines", Arrays.asList(address.getAddressLines()));
+                        }
                         addressMap.put("type", address.getType());
 
                         addresses.add(addressMap);
@@ -180,7 +162,9 @@ class BarcodeDetector implements Detector {
                       }
                       typeValue.put("phones", phones);
 
-                      typeValue.put("urls", contactInfo.getUrls());
+                      if (contactInfo.getUrls() != null) {
+                        typeValue.put("urls", Arrays.asList(contactInfo.getUrls()));
+                      }
                       typeValue.put("jobTitle", contactInfo.getTitle());
                       typeValue.put("organization", contactInfo.getOrganization());
 
@@ -242,10 +226,14 @@ class BarcodeDetector implements Detector {
   }
 
   private FirebaseVisionBarcodeDetectorOptions parseOptions(Map<String, Object> optionsData) {
-    @SuppressWarnings("unchecked")
     Integer barcodeFormats = (Integer) optionsData.get("barcodeFormats");
     return new FirebaseVisionBarcodeDetectorOptions.Builder()
         .setBarcodeFormats(barcodeFormats)
         .build();
+  }
+
+  @Override
+  public void close() throws IOException {
+    detector.close();
   }
 }
