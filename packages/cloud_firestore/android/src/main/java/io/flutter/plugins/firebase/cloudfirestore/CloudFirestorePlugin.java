@@ -89,6 +89,16 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     return FirebaseFirestore.getInstance(FirebaseApp.getInstance(appName));
   }
 
+  private Query getReference(Map<String, Object> arguments) {
+    if ((boolean) arguments.get("isCollectionGroup")) return getCollectionGroupReference(arguments);
+    else return getCollectionReference(arguments);
+  }
+
+  private Query getCollectionGroupReference(Map<String, Object> arguments) {
+    String path = (String) arguments.get("path");
+    return getFirestore(arguments).collectionGroup(path);
+  }
+
   private CollectionReference getCollectionReference(Map<String, Object> arguments) {
     String path = (String) arguments.get("path");
     return getFirestore(arguments).collection(path);
@@ -180,7 +190,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   }
 
   private Query getQuery(Map<String, Object> arguments) {
-    Query query = getCollectionReference(arguments);
+    Query query = getReference(arguments);
     @SuppressWarnings("unchecked")
     Map<String, Object> parameters = (Map<String, Object>) arguments.get("parameters");
     if (parameters == null) return query;
