@@ -9,6 +9,7 @@ flutter:
   plugin:
     androidPackage: io.flutter.plugins.pathprovider
     iosPrefix: FLT
+    macosPrefix: FLT
     pluginClass: PathProviderPlugin
 
 dependencies:

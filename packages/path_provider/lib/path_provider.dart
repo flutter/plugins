@@ -41,8 +41,8 @@ Future<Directory> getTemporaryDirectory() async {
 ///
 /// On Android, this function throws an [UnsupportedError].
 Future<Directory> getApplicationSupportDirectory() async {
-  if (!Platform.isIOS)
-    throw UnsupportedError("getApplicationSupportDirectory requires iOS");
+  if (!(Platform.isIOS || Platform.isMacOS))
+    throw UnsupportedError("getApplicationSupportDirectory requires iOS or macOS");
   final String path =
       await _channel.invokeMethod<String>('getApplicationSupportDirectory');
   if (path == null) {
@@ -80,6 +80,8 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 Future<Directory> getExternalStorageDirectory() async {
   if (Platform.isIOS)
     throw UnsupportedError("Functionality not available on iOS");
+  if (Platform.isMacOS)
+    throw UnsupportedError("Functionality not implemented on macOS");
   final String path =
       await _channel.invokeMethod<String>('getStorageDirectory');
   if (path == null) {
