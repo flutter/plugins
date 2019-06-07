@@ -9,6 +9,7 @@ flutter:
   plugin:
     androidPackage: io.flutter.plugins.sharedpreferences
     iosPrefix: FLT
+    macosPrefix: FLT
     pluginClass: SharedPreferencesPlugin
 
 dependencies:
