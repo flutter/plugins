@@ -9,6 +9,7 @@ flutter:
   plugin:
     androidPackage: io.flutter.plugins.urllauncher
     iosPrefix: FLT
+    macosPrefix: FLT
     pluginClass: UrlLauncherPlugin
 
 dependencies:
