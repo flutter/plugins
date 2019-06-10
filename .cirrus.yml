@@ -72,6 +72,7 @@ task:
     - brew install libimobiledevice
     - brew install ideviceinstaller
     - brew install ios-deploy
+    - brew upgrade cocoapods || echo No upgrade necessary
     - pod repo update
     - git clone https://github.com/flutter/flutter.git
     - git fetch origin master

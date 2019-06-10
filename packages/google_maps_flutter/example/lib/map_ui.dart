@@ -7,6 +7,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 import 'page.dart';
 
@@ -53,6 +54,8 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
   bool _myLocationButtonEnabled = true;
+  GoogleMapController _controller;
+  bool _nightMode = false;
 
   @override
   void initState() {
@@ -192,6 +195,33 @@ class MapUiBodyState extends State<MapUiBody> {
       child: const Text('make snapshot'),
       onPressed: () {
         _controller.snapshot();
+
+  Future<String> _getFileData(String path) async {
+    return await rootBundle.loadString(path);
+  }
+
+  void _setMapStyle(String mapStyle) {
+    setState(() {
+      _nightMode = true;
+      _controller.setMapStyle(mapStyle);
+    });
+  }
+
+  Widget _nightModeToggler() {
+    if (!_isMapCreated) {
+      return null;
+    }
+    return FlatButton(
+      child: Text('${_nightMode ? 'disable' : 'enable'} night mode'),
+      onPressed: () {
+        if (_nightMode) {
+          setState(() {
+            _nightMode = false;
+            _controller.setMapStyle(null);
+          });
+        } else {
+          _getFileData('assets/night_mode.json').then(_setMapStyle);
+        }
       },
     );
   }
@@ -251,6 +281,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _myLocationToggler(),
               _myLocationButtonToggler(),
               _snapshotter(),
+              _nightModeToggler(),
             ],
           ),
         ),
@@ -272,6 +303,7 @@ class MapUiBodyState extends State<MapUiBody> {
   void onMapCreated(GoogleMapController controller) {
     _controller = controller;
     setState(() {
+      _controller = controller;
       _isMapCreated = true;
     });
   }

@@ -9,8 +9,10 @@ class Query {
   Query._(
       {@required this.firestore,
       @required List<String> pathComponents,
+      bool isCollectionGroup = false,
       Map<String, dynamic> parameters})
       : _pathComponents = pathComponents,
+        _isCollectionGroup = isCollectionGroup,
         _parameters = parameters ??
             Map<String, dynamic>.unmodifiable(<String, dynamic>{
               'where': List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
@@ -24,12 +26,14 @@ class Query {
 
   final List<String> _pathComponents;
   final Map<String, dynamic> _parameters;
+  final bool _isCollectionGroup;
 
   String get _path => _pathComponents.join('/');
 
   Query _copyWithParameters(Map<String, dynamic> parameters) {
     return Query._(
       firestore: firestore,
+      isCollectionGroup: _isCollectionGroup,
       pathComponents: _pathComponents,
       parameters: Map<String, dynamic>.unmodifiable(
         Map<String, dynamic>.from(_parameters)..addAll(parameters),
@@ -58,6 +62,7 @@ class Query {
           <String, dynamic>{
             'app': firestore.app.name,
             'path': _path,
+            'isCollectionGroup': _isCollectionGroup,
             'parameters': _parameters,
           },
         ).then<int>((dynamic result) => result);
@@ -88,6 +93,7 @@ class Query {
       <String, dynamic>{
         'app': firestore.app.name,
         'path': _path,
+        'isCollectionGroup': _isCollectionGroup,
         'parameters': _parameters,
         'source': _getSourceString(source),
       },

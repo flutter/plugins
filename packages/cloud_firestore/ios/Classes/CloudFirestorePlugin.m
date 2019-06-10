@@ -7,7 +7,7 @@
 #import <Firebase/Firebase.h>
 
 #define LIBRARY_NAME @"flutter-firebase_cloud_firestore"
-#define LIBRARY_VERSION @"0.12.1"
+#define LIBRARY_VERSION @"0.12.3"
 
 static FlutterError *getFlutterError(NSError *error) {
   if (error == nil) return nil;
@@ -42,7 +42,14 @@ static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy) {
 }
 
 static FIRQuery *getQuery(NSDictionary *arguments) {
-  FIRQuery *query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
+  NSNumber *data = arguments[@"isCollectionGroup"];
+  BOOL isCollectionGroup = data.boolValue;
+  FIRQuery *query;
+  if (isCollectionGroup) {
+    query = [getFirestore(arguments) collectionGroupWithID:arguments[@"path"]];
+  } else {
+    query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
+  }
   NSDictionary *parameters = arguments[@"parameters"];
   NSArray *whereConditions = parameters[@"where"];
   for (id item in whereConditions) {
@@ -609,6 +616,9 @@ const UInt8 INCREMENT_INTEGER = 138;
     }
     if (![call.arguments[@"timestampsInSnapshotsEnabled"] isEqual:[NSNull null]]) {
       settings.timestampsInSnapshotsEnabled = (bool)call.arguments[@"timestampsInSnapshotsEnabled"];
+    }
+    if (![call.arguments[@"cacheSizeBytes"] isEqual:[NSNull null]]) {
+      settings.cacheSizeBytes = ((NSNumber *)call.arguments[@"cacheSizeBytes"]).intValue;
     }
     FIRFirestore *db = getFirestore(call.arguments);
     db.settings = settings;

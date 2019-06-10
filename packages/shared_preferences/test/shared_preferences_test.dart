@@ -156,15 +156,11 @@ void main() {
     });
 
     test('mocking', () async {
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      expect(await channel.invokeMethod('getAll'), kTestValues);
+      expect(
+          await channel.invokeMapMethod<String, Object>('getAll'), kTestValues);
       SharedPreferences.setMockInitialValues(kTestValues2);
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      expect(await channel.invokeMethod('getAll'), kTestValues2);
+      expect(await channel.invokeMapMethod<String, Object>('getAll'),
+          kTestValues2);
     });
   });
 }

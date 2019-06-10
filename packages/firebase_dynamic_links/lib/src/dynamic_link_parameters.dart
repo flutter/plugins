@@ -66,11 +66,9 @@ class DynamicLinkParameters {
   /// using [DynamicLinkParameters].
   static Future<ShortDynamicLink> shortenUrl(Uri url,
       [DynamicLinkParametersOptions options]) async {
-    final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('DynamicLinkParameters#shortenUrl', <String, dynamic>{
+    final Map<String, dynamic> reply = await FirebaseDynamicLinks.channel
+        .invokeMapMethod<String, dynamic>(
+            'DynamicLinkParameters#shortenUrl', <String, dynamic>{
       'url': url.toString(),
       'dynamicLinkParametersOptions': options?._data,
     });
@@ -93,24 +91,19 @@ class DynamicLinkParameters {
   /// Generate a long Dynamic Link URL.
   Future<Uri> buildUrl() async {
     final String url = await FirebaseDynamicLinks.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('DynamicLinkParameters#buildUrl', _data);
+        .invokeMethod<String>('DynamicLinkParameters#buildUrl', _data);
     return Uri.parse(url);
   }
 
   /// Generate a short Dynamic Link.
   Future<ShortDynamicLink> buildShortLink() async {
-    final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('DynamicLinkParameters#buildShortLink', _data);
+    final Map<String, dynamic> reply = await FirebaseDynamicLinks.channel
+        .invokeMapMethod<String, dynamic>(
+            'DynamicLinkParameters#buildShortLink', _data);
     return _parseShortLink(reply);
   }
 
-  static ShortDynamicLink _parseShortLink(Map<dynamic, dynamic> reply) {
+  static ShortDynamicLink _parseShortLink(Map<String, dynamic> reply) {
     final List<dynamic> warnings = reply['warnings'];
     return ShortDynamicLink._(Uri.parse(reply['url']), warnings?.cast());
   }
