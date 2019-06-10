@@ -1,3 +1,7 @@
+## 0.5.17
+
+* Add support for holes in Polygons
+
 ## 0.5.16
 
 * Add support for custom map styling.

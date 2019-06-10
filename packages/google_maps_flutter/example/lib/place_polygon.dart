@@ -138,6 +138,22 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
     });
   }
 
+  void _addHoles() {
+    final Polygon polygon = polygons[selectedPolygon];
+    setState(() {
+      polygons[selectedPolygon] = polygon.copyWith(holesParam: _createHoles());
+    });
+  }
+
+  void _removeHoles() {
+    final Polygon polygon = polygons[selectedPolygon];
+    setState(() {
+      polygons[selectedPolygon] = polygon.copyWith(
+        holesParam: <List<LatLng>>[],
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -191,6 +207,22 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
                     Column(
                       children: <Widget>[
                         FlatButton(
+                          child: const Text('add holes'),
+                          onPressed: (selectedPolygon == null)
+                              ? null
+                              : ((polygons[selectedPolygon].holes.isNotEmpty)
+                                  ? null
+                                  : _addHoles),
+                        ),
+                        FlatButton(
+                          child: const Text('remove holes'),
+                          onPressed: (selectedPolygon == null)
+                              ? null
+                              : ((polygons[selectedPolygon].holes.isEmpty)
+                                  ? null
+                                  : _removeHoles),
+                        ),
+                        FlatButton(
                           child: const Text('change stroke width'),
                           onPressed:
                               (selectedPolygon == null) ? null : _changeWidth,
@@ -227,6 +259,27 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
     points.add(_createLatLng(52.4351 + offset, -4.5235));
     points.add(_createLatLng(52.1231 + offset, -5.0829));
     return points;
+  }
+
+  List<List<LatLng>> _createHoles() {
+    final List<List<LatLng>> holes = <List<LatLng>>[];
+    final double offset = _polygonIdCounter.ceilToDouble();
+
+    final List<LatLng> hole1 = <LatLng>[];
+    hole1.add(_createLatLng(51.8395 + offset, -3.8814));
+    hole1.add(_createLatLng(52.0234 + offset, -3.9914));
+    hole1.add(_createLatLng(52.1351 + offset, -4.4435));
+    hole1.add(_createLatLng(52.0231 + offset, -4.5829));
+    holes.add(hole1);
+
+    final List<LatLng> hole2 = <LatLng>[];
+    hole2.add(_createLatLng(52.2395 + offset, -3.6814));
+    hole2.add(_createLatLng(52.4234 + offset, -3.7914));
+    hole2.add(_createLatLng(52.5351 + offset, -4.2435));
+    hole2.add(_createLatLng(52.4231 + offset, -4.3829));
+    holes.add(hole2);
+
+    return holes;
   }
 
   LatLng _createLatLng(double lat, double lng) {
