@@ -122,8 +122,8 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   id endAtDocument = parameters[@"endAtDocument"];
   if (endAtDocument) {
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
-    query = [query
-        queryEndingAtValues:getDocumentValues(endAtDocument, orderBy, isCollectionGroup)];
+    query =
+        [query queryEndingAtValues:getDocumentValues(endAtDocument, orderBy, isCollectionGroup)];
   }
   id endBefore = parameters[@"endBefore"];
   if (endBefore) {
