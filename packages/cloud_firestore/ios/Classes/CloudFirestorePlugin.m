@@ -26,7 +26,8 @@ static FIRDocumentReference *getDocumentReference(NSDictionary *arguments) {
   return [getFirestore(arguments) documentWithPath:arguments[@"path"]];
 }
 
-static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy, BOOL *isCollectionGroup) {
+static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy,
+                                  BOOL *isCollectionGroup) {
   NSMutableArray *values = [[NSMutableArray alloc] init];
   NSDictionary *documentData = document[@"data"];
   if (orderBy) {
@@ -37,7 +38,7 @@ static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy, BOOL
     }
   }
   if (isCollectionGroup) {
-    NSString *path = document[@"path"]
+    NSString *path = document[@"path"];
     [values addObject:path];
   } else {
     NSString *documentId = document[@"id"];

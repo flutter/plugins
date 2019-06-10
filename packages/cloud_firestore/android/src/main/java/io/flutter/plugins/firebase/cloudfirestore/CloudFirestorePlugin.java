@@ -128,9 +128,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   }
 
   private Object[] getDocumentValues(
-      Map<String, Object> document,
-      List<List<Object>> orderBy,
-      Map<String, Object> arguments) {
+      Map<String, Object> document, List<List<Object>> orderBy, Map<String, Object> arguments) {
     String documentId = (String) document.get("id");
     Map<String, Object> documentData = (Map<String, Object>) document.get("data");
     List<Object> data = new ArrayList<>();
@@ -268,7 +266,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     }
     @SuppressWarnings("unchecked")
     Map<String, Object> endBeforeDocument =
-            (Map<String, Object>) parameters.get("endBeforeDocument");
+        (Map<String, Object>) parameters.get("endBeforeDocument");
     if (endBeforeDocument != null) {
       query =
           implicitOrderBy(query, orderBy)
