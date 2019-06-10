@@ -4,6 +4,7 @@
   with `Query.collectionGroup` queries.
 * Fixes `startAtDocument`, `startAfterDocument`, `endAtDocument` and `endBeforeDocument` to
   also work with a descending order as the last explicit sort order.
+* Fixed an integration test by increasing the value of `cacheSizeBytes` to a valid value.
 
 ## 0.12.4
 
