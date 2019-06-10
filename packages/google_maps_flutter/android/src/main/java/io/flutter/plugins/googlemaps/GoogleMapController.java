@@ -37,7 +37,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
-
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -224,10 +223,10 @@ final class GoogleMapController
           break;
         }
       case "map#snapshot":
-      {
-        googleMap.snapshot(this);
-        break;
-      }
+        {
+          googleMap.snapshot(this);
+          break;
+        }
       case "camera#move":
         {
           final CameraUpdate cameraUpdate =

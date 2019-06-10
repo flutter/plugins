@@ -78,11 +78,15 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _latLngBoundsToggler() {
     return FlatButton(
       child: Text(
-        _cameraTargetBounds.bounds == null ? 'bound camera target' : 'release camera target',
+        _cameraTargetBounds.bounds == null
+            ? 'bound camera target'
+            : 'release camera target',
       ),
       onPressed: () {
         setState(() {
-          _cameraTargetBounds = _cameraTargetBounds.bounds == null ? CameraTargetBounds(sydneyBounds) : CameraTargetBounds.unbounded;
+          _cameraTargetBounds = _cameraTargetBounds.bounds == null
+              ? CameraTargetBounds(sydneyBounds)
+              : CameraTargetBounds.unbounded;
         });
       },
     );
@@ -90,17 +94,22 @@ class MapUiBodyState extends State<MapUiBody> {
 
   Widget _zoomBoundsToggler() {
     return FlatButton(
-      child: Text(_minMaxZoomPreference.minZoom == null ? 'bound zoom' : 'release zoom'),
+      child: Text(_minMaxZoomPreference.minZoom == null
+          ? 'bound zoom'
+          : 'release zoom'),
       onPressed: () {
         setState(() {
-          _minMaxZoomPreference = _minMaxZoomPreference.minZoom == null ? const MinMaxZoomPreference(12.0, 16.0) : MinMaxZoomPreference.unbounded;
+          _minMaxZoomPreference = _minMaxZoomPreference.minZoom == null
+              ? const MinMaxZoomPreference(12.0, 16.0)
+              : MinMaxZoomPreference.unbounded;
         });
       },
     );
   }
 
   Widget _mapTypeCycler() {
-    final MapType nextType = MapType.values[(_mapType.index + 1) % MapType.values.length];
+    final MapType nextType =
+        MapType.values[(_mapType.index + 1) % MapType.values.length];
     return FlatButton(
       child: Text('change map type to $nextType'),
       onPressed: () {
@@ -168,7 +177,8 @@ class MapUiBodyState extends State<MapUiBody> {
 
   Widget _myLocationButtonToggler() {
     return FlatButton(
-      child: Text('${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
+      child: Text(
+          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
       onPressed: () {
         setState(() {
           _myLocationButtonEnabled = !_myLocationButtonEnabled;
@@ -224,7 +234,8 @@ class MapUiBodyState extends State<MapUiBody> {
           child: ListView(
             children: <Widget>[
               Text('camera bearing: ${_position.bearing}'),
-              Text('camera target: ${_position.target.latitude.toStringAsFixed(4)},'
+              Text(
+                  'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
                   '${_position.target.longitude.toStringAsFixed(4)}'),
               Text('camera zoom: ${_position.zoom}'),
               Text('camera tilt: ${_position.tilt}'),
@@ -270,5 +281,23 @@ class MapUiBodyState extends State<MapUiBody> {
     final frame = await codec.getNextFrame();
     final img = frame.image;
     print('${argument.length} bytes, ${img.width} x ${img.height} px');
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            actions: <Widget>[
+              FlatButton(
+                child: const Text('OK'),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            ],
+            content: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 66),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [Image.memory(argument)],
+                )));
+      },
+    );
   }
 }

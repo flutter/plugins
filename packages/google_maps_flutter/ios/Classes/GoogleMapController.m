@@ -136,6 +136,14 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#update"]) {
     InterpretMapOptions(call.arguments[@"options"], self);
     result(PositionToJson([self cameraPosition]));
+  } else if ([call.method isEqualToString:@"map#snapshot"]) {
+    UIGraphicsBeginImageContext(_mapView.frame.size);
+    [_mapView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage* screenShotImage = UIGraphicsGetImageFromCurrentImageContext();
+    NSData* imageData = UIImagePNGRepresentation(screenShotImage);
+    [_channel invokeMethod:@"map#onSnapshot" arguments:imageData];
+    UIGraphicsEndImageContext();
+    result(nil);
   } else if ([call.method isEqualToString:@"map#getVisibleRegion"]) {
     if (_mapView != nil) {
       GMSVisibleRegion visibleRegion = _mapView.projection.visibleRegion;
