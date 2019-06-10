@@ -121,10 +121,12 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     }
   }
 
-  private Query implicitOrderBy(Query query, Map<String, Object> document, List<List<Object>> orderBy, Map<String, Object> arguments) {
+  private Query implicitOrderBy(Query query,
+      Map<String, Object> document,
+      List<List<Object>> orderBy,
+      Map<String, Object> arguments) {
     boolean descending = (boolean) orderBy.get(orderBy.size() - 1).get(1);
-    Query.Direction direction =
-            descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
+    Query.Direction direction = descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
     if ((boolean) arguments.get("isCollectionGroup")) {
       query = query.orderBy((String) document.get("path"), direction);
     } else {
