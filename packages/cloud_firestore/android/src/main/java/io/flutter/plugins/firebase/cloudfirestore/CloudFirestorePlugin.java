@@ -256,7 +256,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         (Map<String, Object>) parameters.get("startAfterDocument");
     if (startAfterDocument != null) {
       query =
-          implicitOrderBy(query, startAtDocument, orderBy, arguments)
+          implicitOrderBy(query, startAfterDocument, orderBy, arguments)
               .startAfter(getDocumentValues(startAfterDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
@@ -269,7 +269,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     Map<String, Object> endAtDocument = (Map<String, Object>) parameters.get("endAtDocument");
     if (endAtDocument != null) {
       query =
-          implicitOrderBy(query, startAtDocument, orderBy, arguments)
+          implicitOrderBy(query, endAtDocument, orderBy, arguments)
               .endAt(getDocumentValues(endAtDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
@@ -277,7 +277,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         (Map<String, Object>) parameters.get("endBeforeDocument");
     if (endBeforeDocument != null) {
       query =
-          implicitOrderBy(query, startAtDocument, orderBy, arguments)
+          implicitOrderBy(query, endBeforeDocument, orderBy, arguments)
               .endBefore(getDocumentValues(endBeforeDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
