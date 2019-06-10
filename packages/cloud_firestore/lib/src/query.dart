@@ -192,6 +192,7 @@ class Query {
     return _copyWithParameters(<String, dynamic>{
       'startAfterDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
+        'path': documentSnapshot.reference.path,
         'data': documentSnapshot.data
       }
     });
@@ -218,6 +219,7 @@ class Query {
     return _copyWithParameters(<String, dynamic>{
       'startAtDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
+        'path': documentSnapshot.reference.path,
         'data': documentSnapshot.data
       },
     });
@@ -276,6 +278,7 @@ class Query {
     return _copyWithParameters(<String, dynamic>{
       'endAtDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
+        'path': documentSnapshot.reference.path,
         'data': documentSnapshot.data
       },
     });
@@ -318,6 +321,7 @@ class Query {
     return _copyWithParameters(<String, dynamic>{
       'endBeforeDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
+        'path': documentSnapshot.reference.path,
         'data': documentSnapshot.data,
       },
     });
