@@ -121,6 +121,18 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     }
   }
 
+  private Query implicitOrderBy(Query query, Map<String, Object> document, List<List<Object>> orderBy, Map<String, Object> arguments) {
+    boolean descending = (boolean) orderBy.get(orderBy.size() - 1).get(1);
+    Query.Direction direction =
+            descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
+    if ((boolean) arguments.get("isCollectionGroup")) {
+      query = query.orderBy((String) document.get("path"), direction);
+    } else {
+      query = query.orderBy(FieldPath.documentId(), direction);
+    }
+    return query;
+  }
+
   private Object[] getDocumentValues(Map<String, Object> document, List<List<Object>> orderBy) {
     String documentId = (String) document.get("id");
     Map<String, Object> documentData = (Map<String, Object>) document.get("data");
@@ -224,7 +236,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     if (orderBy == null) return query;
     for (List<Object> order : orderBy) {
       String orderByFieldName = (String) order.get(0);
-      Boolean descending = (Boolean) order.get(1);
+      boolean descending = (boolean) order.get(1);
       Query.Direction direction =
           descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
       query = query.orderBy(orderByFieldName, direction);
@@ -233,8 +245,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     Map<String, Object> startAtDocument = (Map<String, Object>) parameters.get("startAtDocument");
     if (startAtDocument != null) {
       query =
-          query
-              .orderBy(FieldPath.documentId())
+          implicitOrderBy(query, startAtDocument, orderBy, arguments)
               .startAt(getDocumentValues(startAtDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
@@ -242,8 +253,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         (Map<String, Object>) parameters.get("startAfterDocument");
     if (startAfterDocument != null) {
       query =
-          query
-              .orderBy(FieldPath.documentId())
+          implicitOrderBy(query, startAtDocument, orderBy, arguments)
               .startAfter(getDocumentValues(startAfterDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
@@ -256,15 +266,15 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     Map<String, Object> endAtDocument = (Map<String, Object>) parameters.get("endAtDocument");
     if (endAtDocument != null) {
       query =
-          query.orderBy(FieldPath.documentId()).endAt(getDocumentValues(endAtDocument, orderBy));
+          implicitOrderBy(query, startAtDocument, orderBy, arguments)
+              .endAt(getDocumentValues(endAtDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
     Map<String, Object> endBeforeDocument =
         (Map<String, Object>) parameters.get("endBeforeDocument");
     if (endBeforeDocument != null) {
       query =
-          query
-              .orderBy(FieldPath.documentId())
+          implicitOrderBy(query, startAtDocument, orderBy, arguments)
               .endBefore(getDocumentValues(endBeforeDocument, orderBy));
     }
     @SuppressWarnings("unchecked")
