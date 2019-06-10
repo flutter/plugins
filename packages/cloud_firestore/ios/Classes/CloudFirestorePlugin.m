@@ -101,7 +101,8 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   if (startAtDocument) {
     NSArray *orderByParameters = [orderBy lastObject];
     NSNumber *descending = orderByParameters[1];
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:[descending boolValue]];
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID
+                                descending:[descending boolValue]];
     query = [query
         queryStartingAtValues:getDocumentValues(startAtDocument, orderBy, isCollectionGroup)];
   }
@@ -114,7 +115,8 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   if (startAfterDocument) {
     NSArray *orderByParameters = [orderBy lastObject];
     NSNumber *descending = orderByParameters[1];
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:[descending boolValue]];
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID
+                                descending:[descending boolValue]];
     query = [query
         queryStartingAfterValues:getDocumentValues(startAfterDocument, orderBy, isCollectionGroup)];
   }
@@ -127,7 +129,8 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   if (endAtDocument) {
     NSArray *orderByParameters = [orderBy lastObject];
     NSNumber *descending = orderByParameters[1];
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:[descending boolValue]];
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID
+                                descending:[descending boolValue]];
     query =
         [query queryEndingAtValues:getDocumentValues(endAtDocument, orderBy, isCollectionGroup)];
   }
@@ -140,7 +143,8 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
   if (endBeforeDocument) {
     NSArray *orderByParameters = [orderBy lastObject];
     NSNumber *descending = orderByParameters[1];
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:[descending boolValue]];
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID
+                                descending:[descending boolValue]];
     query = [query
         queryEndingBeforeValues:getDocumentValues(endBeforeDocument, orderBy, isCollectionGroup)];
   }
