@@ -121,7 +121,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     }
   }
 
-  private Query implicitOrderBy(Query query,
+  private Query implicitOrderBy(
+      Query query,
       Map<String, Object> document,
       List<List<Object>> orderBy,
       Map<String, Object> arguments) {
