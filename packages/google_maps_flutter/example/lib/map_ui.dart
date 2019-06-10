@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -36,6 +39,7 @@ class MapUiBodyState extends State<MapUiBody> {
     zoom: 11.0,
   );
 
+  GoogleMapController _controller;
   CameraPosition _position = _kInitialPosition;
   bool _isMapCreated = false;
   bool _isMoving = false;
@@ -74,15 +78,11 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _latLngBoundsToggler() {
     return FlatButton(
       child: Text(
-        _cameraTargetBounds.bounds == null
-            ? 'bound camera target'
-            : 'release camera target',
+        _cameraTargetBounds.bounds == null ? 'bound camera target' : 'release camera target',
       ),
       onPressed: () {
         setState(() {
-          _cameraTargetBounds = _cameraTargetBounds.bounds == null
-              ? CameraTargetBounds(sydneyBounds)
-              : CameraTargetBounds.unbounded;
+          _cameraTargetBounds = _cameraTargetBounds.bounds == null ? CameraTargetBounds(sydneyBounds) : CameraTargetBounds.unbounded;
         });
       },
     );
@@ -90,22 +90,17 @@ class MapUiBodyState extends State<MapUiBody> {
 
   Widget _zoomBoundsToggler() {
     return FlatButton(
-      child: Text(_minMaxZoomPreference.minZoom == null
-          ? 'bound zoom'
-          : 'release zoom'),
+      child: Text(_minMaxZoomPreference.minZoom == null ? 'bound zoom' : 'release zoom'),
       onPressed: () {
         setState(() {
-          _minMaxZoomPreference = _minMaxZoomPreference.minZoom == null
-              ? const MinMaxZoomPreference(12.0, 16.0)
-              : MinMaxZoomPreference.unbounded;
+          _minMaxZoomPreference = _minMaxZoomPreference.minZoom == null ? const MinMaxZoomPreference(12.0, 16.0) : MinMaxZoomPreference.unbounded;
         });
       },
     );
   }
 
   Widget _mapTypeCycler() {
-    final MapType nextType =
-        MapType.values[(_mapType.index + 1) % MapType.values.length];
+    final MapType nextType = MapType.values[(_mapType.index + 1) % MapType.values.length];
     return FlatButton(
       child: Text('change map type to $nextType'),
       onPressed: () {
@@ -173,12 +168,20 @@ class MapUiBodyState extends State<MapUiBody> {
 
   Widget _myLocationButtonToggler() {
     return FlatButton(
-      child: Text(
-          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
+      child: Text('${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
       onPressed: () {
         setState(() {
           _myLocationButtonEnabled = !_myLocationButtonEnabled;
         });
+      },
+    );
+  }
+
+  Widget _snapshotter() {
+    return FlatButton(
+      child: const Text('make snapshot'),
+      onPressed: () {
+        _controller.snapshot();
       },
     );
   }
@@ -199,6 +202,7 @@ class MapUiBodyState extends State<MapUiBody> {
       myLocationEnabled: _myLocationEnabled,
       myLocationButtonEnabled: _myLocationButtonEnabled,
       onCameraMove: _updateCameraPosition,
+      onSnapshot: _snapshot,
     );
 
     final List<Widget> columnChildren = <Widget>[
@@ -220,8 +224,7 @@ class MapUiBodyState extends State<MapUiBody> {
           child: ListView(
             children: <Widget>[
               Text('camera bearing: ${_position.bearing}'),
-              Text(
-                  'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
+              Text('camera target: ${_position.target.latitude.toStringAsFixed(4)},'
                   '${_position.target.longitude.toStringAsFixed(4)}'),
               Text('camera zoom: ${_position.zoom}'),
               Text('camera tilt: ${_position.tilt}'),
@@ -236,6 +239,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _zoomToggler(),
               _myLocationToggler(),
               _myLocationButtonToggler(),
+              _snapshotter(),
             ],
           ),
         ),
@@ -255,8 +259,16 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   void onMapCreated(GoogleMapController controller) {
+    _controller = controller;
     setState(() {
       _isMapCreated = true;
     });
+  }
+
+  void _snapshot(Uint8List argument) async {
+    final codec = await instantiateImageCodec(argument);
+    final frame = await codec.getNextFrame();
+    final img = frame.image;
+    print('${argument.length} bytes, ${img.width} x ${img.height} px');
   }
 }
