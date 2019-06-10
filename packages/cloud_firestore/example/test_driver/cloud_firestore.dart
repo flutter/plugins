@@ -35,7 +35,7 @@ void main() {
         host: null,
         sslEnabled: true,
         timestampsInSnapshotsEnabled: true,
-        cacheSizeBytes: 500000,
+        cacheSizeBytes: 1048576,
       );
     });
 
