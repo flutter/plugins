@@ -12,7 +12,7 @@ void main() {
 
   setUp(() {
     mockChannel = MockMethodChannel();
-    quickActions = QuickActions.private(
+    quickActions = QuickActions.withMethodChannel(
       mockChannel,
     );
   });
