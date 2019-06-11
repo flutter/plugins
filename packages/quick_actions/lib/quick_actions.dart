@@ -7,6 +7,9 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
+const MethodChannel _kChannel =
+    MethodChannel('plugins.flutter.io/quick_actions');
+
 /// Handler for a quick action launch event.
 ///
 /// The argument [type] corresponds to the [ShortcutItem]'s field.
@@ -36,19 +39,17 @@ class QuickActions {
   factory QuickActions() => _instance;
 
   @visibleForTesting
-  QuickActions.private(MethodChannel channel) : _kChannel = channel;
+  QuickActions.private(MethodChannel channel) : _channel = channel;
 
-  static final QuickActions _instance = QuickActions.private(
-    const MethodChannel('plugins.flutter.io/quick_actions'),
-  );
+  static final QuickActions _instance = QuickActions.private(_kChannel);
 
-  final MethodChannel _kChannel;
+  final MethodChannel _channel;
 
   /// Initializes this plugin.
   ///
   /// Call this once before any further interaction with the the plugin.
   void initialize(QuickActionHandler handler) {
-    _kChannel.setMethodCallHandler((MethodCall call) async {
+    _channel.setMethodCallHandler((MethodCall call) async {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
@@ -58,12 +59,12 @@ class QuickActions {
   Future<void> setShortcutItems(List<ShortcutItem> items) async {
     final List<Map<String, String>> itemsList =
         items.map(_serializeItem).toList();
-    await _kChannel.invokeMethod<void>('setShortcutItems', itemsList);
+    await _channel.invokeMethod<void>('setShortcutItems', itemsList);
   }
 
   /// Removes all [ShortcutItem]s registered for the app.
   Future<void> clearShortcutItems() =>
-      _kChannel.invokeMethod<void>('clearShortcutItems');
+      _channel.invokeMethod<void>('clearShortcutItems');
 
   Map<String, String> _serializeItem(ShortcutItem item) {
     return <String, String>{
