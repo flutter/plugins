@@ -26,10 +26,7 @@ void main() {
         ShortcutItem(type: type, localizedTitle: localizedTitle, icon: icon)
       ],
     );
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    verify(mockChannel.invokeMethod(
+    verify(mockChannel.invokeMethod<void>(
       'setShortcutItems',
       <Map<String, String>>[
         <String, String>{
@@ -48,10 +45,7 @@ void main() {
 
   test('clearShortcutItems', () {
     quickActions.clearShortcutItems();
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    verify(mockChannel.invokeMethod('clearShortcutItems'));
+    verify(mockChannel.invokeMethod<void>('clearShortcutItems'));
   });
 }
 
