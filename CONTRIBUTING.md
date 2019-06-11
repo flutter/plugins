@@ -45,7 +45,6 @@ Running the tests
 
 Flutter plugins have both unit tests of their Dart API and integration tests that run on a virtual or actual device.
 
-
 To run the unit tests:
 
 ```
