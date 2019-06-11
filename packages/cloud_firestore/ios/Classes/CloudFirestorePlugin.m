@@ -105,7 +105,7 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
     NSArray *orderByParameters = [orderBy lastObject];
     NSNumber *descending = orderByParameters[1];
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID
-                                  descending:[descending boolValue]];
+                                descending:[descending boolValue]];
   }
   if (startAtDocument) {
     query = [query

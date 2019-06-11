@@ -234,15 +234,19 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     Map<String, Object> startAtDocument = (Map<String, Object>) parameters.get("startAtDocument");
     @SuppressWarnings("unchecked")
     Map<String, Object> startAfterDocument =
-            (Map<String, Object>) parameters.get("startAfterDocument");
+        (Map<String, Object>) parameters.get("startAfterDocument");
     @SuppressWarnings("unchecked")
     Map<String, Object> endAtDocument = (Map<String, Object>) parameters.get("endAtDocument");
     @SuppressWarnings("unchecked")
     Map<String, Object> endBeforeDocument =
             (Map<String, Object>) parameters.get("endBeforeDocument");
-    if (startAtDocument != null || startAfterDocument != null || endAtDocument != null || endBeforeDocument != null) {
+    if (startAtDocument != null
+        || startAfterDocument != null
+        || endAtDocument != null
+        || endBeforeDocument != null) {
       boolean descending = (boolean) orderBy.get(orderBy.size() - 1).get(1);
-      Query.Direction direction = descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
+      Query.Direction direction =
+          descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
       query = query.orderBy(FieldPath.documentId(), direction);
     }
     if (startAtDocument != null) {
