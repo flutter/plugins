@@ -60,8 +60,8 @@ final class GoogleMapController
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMapLongClickListener,
-        PlatformView,
-        GoogleMap.OnMarkerDragListener {
+        GoogleMap.OnMarkerDragListener,
+        PlatformView {
 
   private static final String TAG = "GoogleMapController";
   private final int id;
