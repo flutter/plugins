@@ -17,7 +17,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -38,7 +37,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,7 +60,6 @@ final class GoogleMapController
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMapLongClickListener,
-        GoogleMap.SnapshotReadyCallback,
         PlatformView {
 
   private static final String TAG = "GoogleMapController";
@@ -221,11 +218,6 @@ final class GoogleMapController
                 "getVisibleRegion called prior to map initialization",
                 null);
           }
-          break;
-        }
-      case "map#snapshot":
-        {
-          googleMap.snapshot(this);
           break;
         }
       case "camera#move":
@@ -409,15 +401,6 @@ final class GoogleMapController
   @Override
   public void onCircleClick(Circle circle) {
     circlesController.onCircleTap(circle.getId());
-  }
-
-  @Override
-  public void onSnapshotReady(Bitmap bitmap) {
-    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-    byte[] byteArray = stream.toByteArray();
-    bitmap.recycle();
-    methodChannel.invokeMethod("map#onSnapshot", byteArray);
   }
 
   @Override
