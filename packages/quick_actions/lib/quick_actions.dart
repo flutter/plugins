@@ -41,7 +41,8 @@ class QuickActions {
   @visibleForTesting
   QuickActions.withMethodChannel(MethodChannel channel) : _channel = channel;
 
-  static final QuickActions _instance = QuickActions.withMethodChannel(_kChannel);
+  static final QuickActions _instance =
+      QuickActions.withMethodChannel(_kChannel);
 
   final MethodChannel _channel;
 
