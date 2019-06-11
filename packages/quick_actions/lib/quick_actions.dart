@@ -39,9 +39,9 @@ class QuickActions {
   factory QuickActions() => _instance;
 
   @visibleForTesting
-  QuickActions.private(MethodChannel channel) : _channel = channel;
+  QuickActions.withMethodChannel(MethodChannel channel) : _channel = channel;
 
-  static final QuickActions _instance = QuickActions.private(_kChannel);
+  static final QuickActions _instance = QuickActions.withMethodChannel(_kChannel);
 
   final MethodChannel _channel;
 
