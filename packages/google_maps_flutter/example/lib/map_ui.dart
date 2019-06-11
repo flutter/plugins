@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:typed_data';
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -299,9 +299,9 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   void _snapshot(Uint8List argument) async {
-    final codec = await instantiateImageCodec(argument);
-    final frame = await codec.getNextFrame();
-    final img = frame.image;
+    final ui.Codec codec = await ui.instantiateImageCodec(argument);
+    final ui.FrameInfo frame = await codec.getNextFrame();
+    final ui.Image img = frame.image;
     print('${argument.length} bytes, ${img.width} x ${img.height} px');
     await showDialog<void>(
       context: context,
@@ -317,7 +317,7 @@ class MapUiBodyState extends State<MapUiBody> {
                 padding: const EdgeInsets.symmetric(vertical: 66),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [Image.memory(argument)],
+                  children: <Widget>[Image.memory(argument)],
                 )));
       },
     );
