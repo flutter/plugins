@@ -239,7 +239,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     Map<String, Object> endAtDocument = (Map<String, Object>) parameters.get("endAtDocument");
     @SuppressWarnings("unchecked")
     Map<String, Object> endBeforeDocument =
-            (Map<String, Object>) parameters.get("endBeforeDocument");
+        (Map<String, Object>) parameters.get("endBeforeDocument");
     if (startAtDocument != null
         || startAfterDocument != null
         || endAtDocument != null
