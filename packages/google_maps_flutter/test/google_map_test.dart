@@ -384,8 +384,7 @@ void main() {
     expect(platformGoogleMap.myLocationEnabled, true);
   });
 
-  testWidgets('Can update myLocationButtonEnabled',
-      (WidgetTester tester) async {
+  testWidgets('Can update myLocationButtonEnabled', (WidgetTester tester) async {
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
