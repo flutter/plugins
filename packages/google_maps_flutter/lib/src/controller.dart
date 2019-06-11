@@ -76,6 +76,9 @@ class GoogleMapController {
         _googleMapState
             .onLongPress(LatLng._fromJson(call.arguments['position']));
         break;
+      case 'map#onSnapshot':
+        _googleMapState.onSnaphot(call.arguments);
+        break;
       default:
         throw MissingPluginException();
     }
@@ -203,5 +206,10 @@ class GoogleMapController {
     final LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
 
     return LatLngBounds(northeast: northeast, southwest: southwest);
+  }
+
+  /// Ask for a snapshot to be returned via onSnapshot event
+  Future<void> snapshot() async {
+    await channel.invokeMethod<void>('map#snapshot');
   }
 }
