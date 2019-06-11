@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -186,6 +189,14 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Widget _snapshotter() {
+    return FlatButton(
+        child: const Text('make snapshot'),
+        onPressed: () {
+          _controller.snapshot();
+        });
+  }
+
   Future<String> _getFileData(String path) async {
     return await rootBundle.loadString(path);
   }
@@ -232,6 +243,7 @@ class MapUiBodyState extends State<MapUiBody> {
       myLocationEnabled: _myLocationEnabled,
       myLocationButtonEnabled: _myLocationButtonEnabled,
       onCameraMove: _updateCameraPosition,
+      onSnapshot: _snapshot,
     );
 
     final List<Widget> columnChildren = <Widget>[
@@ -269,6 +281,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _zoomToggler(),
               _myLocationToggler(),
               _myLocationButtonToggler(),
+              _snapshotter(),
               _nightModeToggler(),
             ],
           ),
@@ -289,9 +302,35 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   void onMapCreated(GoogleMapController controller) {
+    _controller = controller;
     setState(() {
       _controller = controller;
       _isMapCreated = true;
     });
+  }
+
+  void _snapshot(Uint8List argument) async {
+    final ui.Codec codec = await ui.instantiateImageCodec(argument);
+    final ui.FrameInfo frame = await codec.getNextFrame();
+    final ui.Image img = frame.image;
+    print('${argument.length} bytes, ${img.width} x ${img.height} px');
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            actions: <Widget>[
+              FlatButton(
+                child: const Text('OK'),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            ],
+            content: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 66),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[Image.memory(argument)],
+                )));
+      },
+    );
   }
 }
