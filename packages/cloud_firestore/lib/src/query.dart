@@ -9,8 +9,10 @@ class Query {
   Query._(
       {@required this.firestore,
       @required List<String> pathComponents,
+      bool isCollectionGroup = false,
       Map<String, dynamic> parameters})
       : _pathComponents = pathComponents,
+        _isCollectionGroup = isCollectionGroup,
         _parameters = parameters ??
             Map<String, dynamic>.unmodifiable(<String, dynamic>{
               'where': List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
@@ -24,12 +26,14 @@ class Query {
 
   final List<String> _pathComponents;
   final Map<String, dynamic> _parameters;
+  final bool _isCollectionGroup;
 
   String get _path => _pathComponents.join('/');
 
   Query _copyWithParameters(Map<String, dynamic> parameters) {
     return Query._(
       firestore: firestore,
+      isCollectionGroup: _isCollectionGroup,
       pathComponents: _pathComponents,
       parameters: Map<String, dynamic>.unmodifiable(
         Map<String, dynamic>.from(_parameters)..addAll(parameters),
@@ -58,6 +62,7 @@ class Query {
           <String, dynamic>{
             'app': firestore.app.name,
             'path': _path,
+            'isCollectionGroup': _isCollectionGroup,
             'parameters': _parameters,
           },
         ).then<int>((dynamic result) => result);
@@ -79,14 +84,18 @@ class Query {
   }
 
   /// Fetch the documents for this query
-  Future<QuerySnapshot> getDocuments() async {
+  Future<QuerySnapshot> getDocuments(
+      {Source source = Source.serverAndCache}) async {
+    assert(source != null);
     final Map<dynamic, dynamic> data =
         await Firestore.channel.invokeMapMethod<String, dynamic>(
       'Query#getDocuments',
       <String, dynamic>{
         'app': firestore.app.name,
         'path': _path,
+        'isCollectionGroup': _isCollectionGroup,
         'parameters': _parameters,
+        'source': _getSourceString(source),
       },
     );
     return QuerySnapshot._(data, firestore);
@@ -183,6 +192,7 @@ class Query {
     return _copyWithParameters(<String, dynamic>{
       'startAfterDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
+        'path': documentSnapshot.reference.path,
         'data': documentSnapshot.data
       }
     });
@@ -209,6 +219,7 @@ class Query {
     return _copyWithParameters(<String, dynamic>{
       'startAtDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
+        'path': documentSnapshot.reference.path,
         'data': documentSnapshot.data
       },
     });
@@ -267,6 +278,7 @@ class Query {
     return _copyWithParameters(<String, dynamic>{
       'endAtDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
+        'path': documentSnapshot.reference.path,
         'data': documentSnapshot.data
       },
     });
@@ -309,6 +321,7 @@ class Query {
     return _copyWithParameters(<String, dynamic>{
       'endBeforeDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
+        'path': documentSnapshot.reference.path,
         'data': documentSnapshot.data,
       },
     });

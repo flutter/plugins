@@ -1,6 +1,12 @@
-## 0.10.1+3
+## 0.10.1+4
 
 * Fix race condition while disposing the VideoController.
+
+## 0.10.1+3
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
 
 ## 0.10.1+2
 

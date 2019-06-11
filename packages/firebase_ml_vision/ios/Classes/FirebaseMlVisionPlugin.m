@@ -7,11 +7,14 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 
 @implementation FLTFirebaseMlVisionPlugin
+static NSMutableDictionary<NSNumber *, id<Detector>> *detectors;
+
 + (void)handleError:(NSError *)error result:(FlutterResult)result {
   result(getFlutterError(error));
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  detectors = [NSMutableDictionary new];
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_ml_vision"
                                   binaryMessenger:[registrar messenger]];
@@ -32,19 +35,44 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  FIRVisionImage *image = [self dataToVisionImage:call.arguments];
-  NSDictionary *options = call.arguments[@"options"];
-  if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
-    [BarcodeDetector handleDetection:image options:options result:result];
-  } else if ([@"FaceDetector#processImage" isEqualToString:call.method]) {
-    [FaceDetector handleDetection:image options:options result:result];
-  } else if ([@"ImageLabeler#processImage" isEqualToString:call.method]) {
-    [ImageLabeler handleDetection:image options:options result:result];
-  } else if ([@"TextRecognizer#processImage" isEqualToString:call.method]) {
-    [TextRecognizer handleDetection:image options:options result:result];
+  if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method] ||
+      [@"FaceDetector#processImage" isEqualToString:call.method] ||
+      [@"ImageLabeler#processImage" isEqualToString:call.method] ||
+      [@"TextRecognizer#processImage" isEqualToString:call.method]) {
+    [self handleDetection:call result:result];
+  } else if ([@"BarcodeDetector#close" isEqualToString:call.method] ||
+             [@"FaceDetector#close" isEqualToString:call.method] ||
+             [@"ImageLabeler#close" isEqualToString:call.method] ||
+             [@"TextRecognizer#close" isEqualToString:call.method]) {
+    NSNumber *handle = call.arguments[@"handle"];
+    [detectors removeObjectForKey:handle];
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (void)handleDetection:(FlutterMethodCall *)call result:(FlutterResult)result {
+  FIRVisionImage *image = [self dataToVisionImage:call.arguments];
+  NSDictionary *options = call.arguments[@"options"];
+
+  NSNumber *handle = call.arguments[@"handle"];
+  id<Detector> detector = detectors[handle];
+  if (!detector) {
+    if ([call.method hasPrefix:@"BarcodeDetector"]) {
+      detector = [[BarcodeDetector alloc] initWithVision:[FIRVision vision] options:options];
+    } else if ([call.method hasPrefix:@"FaceDetector"]) {
+      detector = [[FaceDetector alloc] initWithVision:[FIRVision vision] options:options];
+    } else if ([call.method hasPrefix:@"ImageLabeler"]) {
+      detector = [[ImageLabeler alloc] initWithVision:[FIRVision vision] options:options];
+    } else if ([call.method hasPrefix:@"TextRecognizer"]) {
+      detector = [[TextRecognizer alloc] initWithVision:[FIRVision vision] options:options];
+    }
+
+    [FLTFirebaseMlVisionPlugin addDetector:handle detector:detector];
+  }
+
+  [detectors[handle] handleDetection:image result:result];
 }
 
 - (FIRVisionImage *)dataToVisionImage:(NSDictionary *)imageData {
@@ -184,5 +212,15 @@ static FlutterError *getFlutterError(NSError *error) {
   UIImage *uiImage = [UIImage imageWithCGImage:videoImage];
   CGImageRelease(videoImage);
   return [[FIRVisionImage alloc] initWithImage:uiImage];
+}
+
++ (void)addDetector:(NSNumber *)handle detector:(id<Detector>)detector {
+  if (detectors[handle]) {
+    NSString *reason =
+        [[NSString alloc] initWithFormat:@"Object for handle already exists: %d", handle.intValue];
+    @throw [[NSException alloc] initWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+  }
+
+  detectors[handle] = detector;
 }
 @end

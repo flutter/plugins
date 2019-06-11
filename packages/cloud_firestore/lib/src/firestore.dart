@@ -71,6 +71,17 @@ class Firestore {
     return CollectionReference._(this, path.split('/'));
   }
 
+  /// Gets a [Query] for the specified collection group.
+  Query collectionGroup(String path) {
+    assert(path != null);
+    assert(!path.contains("/"), "Collection IDs must not contain '/'.");
+    return Query._(
+      firestore: this,
+      isCollectionGroup: true,
+      pathComponents: path.split('/'),
+    );
+  }
+
   /// Gets a [DocumentReference] for the specified Firestore path.
   DocumentReference document(String path) {
     assert(path != null);
@@ -112,14 +123,14 @@ class Firestore {
         'Transaction timeout must be more than 0 milliseconds');
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
-    final Map<dynamic, dynamic> result = await channel
-        .invokeMethod<Map<dynamic, dynamic>>(
+    final Map<String, dynamic> result = await channel
+        .invokeMapMethod<String, dynamic>(
             'Firestore#runTransaction', <String, dynamic>{
       'app': app.name,
       'transactionId': transactionId,
       'transactionTimeout': timeout.inMilliseconds
     });
-    return result?.cast<String, dynamic>() ?? <String, dynamic>{};
+    return result ?? <String, dynamic>{};
   }
 
   @deprecated
@@ -136,13 +147,15 @@ class Firestore {
       {bool persistenceEnabled,
       String host,
       bool sslEnabled,
-      bool timestampsInSnapshotsEnabled}) async {
+      bool timestampsInSnapshotsEnabled,
+      int cacheSizeBytes}) async {
     await channel.invokeMethod<void>('Firestore#settings', <String, dynamic>{
       'app': app.name,
       'persistenceEnabled': persistenceEnabled,
       'host': host,
       'sslEnabled': sslEnabled,
       'timestampsInSnapshotsEnabled': timestampsInSnapshotsEnabled,
+      'cacheSizeBytes': cacheSizeBytes,
     });
   }
 }

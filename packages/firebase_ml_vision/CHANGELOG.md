@@ -1,3 +1,18 @@
+## 0.9.0
+
+* **Breaking Change** Add capability to release resources held by detectors with `close()` method.
+You should now call `detector.close()` when a detector will no longer be used.
+
+## 0.8.0+3
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.8.0+2
+
+* Fix crash when passing contact info from barcode.
+
 ## 0.8.0+1
 
 * Update the sample to use the new ImageStreamListener API introduced in https://github.com/flutter/flutter/pull/32936.

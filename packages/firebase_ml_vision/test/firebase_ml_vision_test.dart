@@ -31,6 +31,7 @@ void main() {
         }
       });
       log.clear();
+      FirebaseVision.nextHandle = 0;
     });
 
     group('$FirebaseVisionImageMetadata', () {
@@ -65,6 +66,7 @@ void main() {
           isMethodCall(
             'TextRecognizer#processImage',
             arguments: <String, dynamic>{
+              'handle': 0,
               'type': 'bytes',
               'path': null,
               'bytes': Uint8List(0),
@@ -123,6 +125,7 @@ void main() {
           isMethodCall(
             'BarcodeDetector#detectInImage',
             arguments: <String, dynamic>{
+              'handle': 0,
               'type': 'file',
               'path': 'empty',
               'bytes': null,
@@ -548,6 +551,7 @@ void main() {
           isMethodCall(
             'FaceDetector#processImage',
             arguments: <String, dynamic>{
+              'handle': 0,
               'type': 'file',
               'path': 'empty',
               'bytes': null,
@@ -626,13 +630,13 @@ void main() {
     });
 
     group('$TextRecognizer', () {
-      final TextRecognizer recognizer =
-          FirebaseVision.instance.textRecognizer();
+      TextRecognizer recognizer;
       final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
         'empty',
       );
 
       setUp(() {
+        recognizer = FirebaseVision.instance.textRecognizer();
         final List<dynamic> elements = <dynamic>[
           <dynamic, dynamic>{
             'text': 'hello',
@@ -856,6 +860,7 @@ void main() {
           isMethodCall(
             'TextRecognizer#processImage',
             arguments: <String, dynamic>{
+              'handle': 0,
               'type': 'file',
               'path': 'empty',
               'bytes': null,
