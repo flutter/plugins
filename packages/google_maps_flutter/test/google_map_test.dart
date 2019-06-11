@@ -421,7 +421,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          padding: EdgeInsets.fromLTRB(10, 20, 30 , 40),
+          padding: EdgeInsets.fromLTRB(10, 20, 30, 40),
         ),
       ),
     );
@@ -436,7 +436,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          padding: EdgeInsets.fromLTRB(50, 60, 70 , 80),
+          padding: EdgeInsets.fromLTRB(50, 60, 70, 80),
         ),
       ),
     );
