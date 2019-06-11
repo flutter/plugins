@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'platform_interface.dart';
@@ -125,37 +124,37 @@ class WebView extends StatefulWidget {
   })  : assert(javascriptMode != null),
         super(key: key);
 
-  static WebViewBuilder _platformBuilder;
+  static WebViewPlatform _platform;
 
-  /// Sets a custom [WebViewBuilder].
+  /// Sets a custom [WebViewPlatform].
   ///
   /// This property can be set to use a custom platform implementation for WebViews.
   ///
-  /// Setting `platformBuilder` doesn't affect [WebView]s that were already created.
+  /// Setting `platform` doesn't affect [WebView]s that were already created.
   ///
-  /// The default value is [AndroidWebViewBuilder] on Android and [CupertinoWebViewBuilder] on iOs.
-  static set platformBuilder(WebViewBuilder platformBuilder) {
-    _platformBuilder = platformBuilder;
+  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
+  static set platform(WebViewPlatform platform) {
+    _platform = platform;
   }
 
-  /// The [WebViewBuilder] that's used to create new [WebView]s.
+  /// The WebView platform that's used by this WebView.
   ///
-  /// The default value is [AndroidWebViewBuilder] on Android and [CupertinoWebViewBuilder] on iOs.
-  static WebViewBuilder get platformBuilder {
-    if (_platformBuilder == null) {
+  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
+  static WebViewPlatform get platform {
+    if (_platform == null) {
       switch (defaultTargetPlatform) {
         case TargetPlatform.android:
-          _platformBuilder = AndroidWebViewBuilder();
+          _platform = AndroidWebView();
           break;
         case TargetPlatform.iOS:
-          _platformBuilder = CupertinoWebViewBuilder();
+          _platform = CupertinoWebView();
           break;
         default:
           throw UnsupportedError(
               "Trying to use the default webview implementation for $defaultTargetPlatform but there isn't a default one");
       }
     }
-    return _platformBuilder;
+    return _platform;
   }
 
   /// If not null invoked once the web view is created.
@@ -268,7 +267,7 @@ class _WebViewState extends State<WebView> {
 
   @override
   Widget build(BuildContext context) {
-    return WebView.platformBuilder.build(
+    return WebView.platform.build(
       context: context,
       onWebViewPlatformCreated: _onWebViewPlatformCreated,
       webViewPlatformCallbacksHandler: _platformCallbacksHandler,
@@ -294,7 +293,7 @@ class _WebViewState extends State<WebView> {
     });
   }
 
-  void _onWebViewPlatformCreated(WebViewPlatform webViewPlatform) {
+  void _onWebViewPlatformCreated(WebViewPlatformController webViewPlatform) {
     final WebViewController controller =
         WebViewController._(widget, webViewPlatform, _platformCallbacksHandler);
     _controller.complete(controller);
@@ -416,13 +415,13 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
 class WebViewController {
   WebViewController._(
     this._widget,
-    this._webViewPlatform,
+    this._webViewPlatformController,
     this._platformCallbacksHandler,
-  ) : assert(_webViewPlatform != null) {
+  ) : assert(_webViewPlatformController != null) {
     _settings = _webSettingsFromWidget(_widget);
   }
 
-  final WebViewPlatform _webViewPlatform;
+  final WebViewPlatformController _webViewPlatformController;
 
   final _PlatformCallbacksHandler _platformCallbacksHandler;
 
@@ -444,7 +443,7 @@ class WebViewController {
   }) async {
     assert(url != null);
     _validateUrlString(url);
-    return _webViewPlatform.loadUrl(url, headers);
+    return _webViewPlatformController.loadUrl(url, headers);
   }
 
   /// Accessor to the current URL that the WebView is displaying.
@@ -455,7 +454,7 @@ class WebViewController {
   /// words, by the time this future completes, the WebView may be displaying a
   /// different URL).
   Future<String> currentUrl() {
-    return _webViewPlatform.currentUrl();
+    return _webViewPlatformController.currentUrl();
   }
 
   /// Checks whether there's a back history item.
@@ -463,7 +462,7 @@ class WebViewController {
   /// Note that this operation is asynchronous, and it is possible that the "canGoBack" state has
   /// changed by the time the future completed.
   Future<bool> canGoBack() {
-    return _webViewPlatform.canGoBack();
+    return _webViewPlatformController.canGoBack();
   }
 
   /// Checks whether there's a forward history item.
@@ -471,26 +470,26 @@ class WebViewController {
   /// Note that this operation is asynchronous, and it is possible that the "canGoForward" state has
   /// changed by the time the future completed.
   Future<bool> canGoForward() {
-    return _webViewPlatform.canGoForward();
+    return _webViewPlatformController.canGoForward();
   }
 
   /// Goes back in the history of this WebView.
   ///
   /// If there is no back history item this is a no-op.
   Future<void> goBack() {
-    return _webViewPlatform.goBack();
+    return _webViewPlatformController.goBack();
   }
 
   /// Goes forward in the history of this WebView.
   ///
   /// If there is no forward history item this is a no-op.
   Future<void> goForward() {
-    return _webViewPlatform.goForward();
+    return _webViewPlatformController.goForward();
   }
 
   /// Reloads the current URL.
   Future<void> reload() {
-    return _webViewPlatform.reload();
+    return _webViewPlatformController.reload();
   }
 
   /// Clears all caches used by the [WebView].
@@ -504,7 +503,7 @@ class WebViewController {
   ///
   /// Note: Calling this method also triggers a reload.
   Future<void> clearCache() async {
-    await _webViewPlatform.clearCache();
+    await _webViewPlatformController.clearCache();
     return reload();
   }
 
@@ -518,7 +517,7 @@ class WebViewController {
     final WebSettings update =
         _clearUnchangedWebSettings(_settings, newSettings);
     _settings = newSettings;
-    return _webViewPlatform.updateSettings(update);
+    return _webViewPlatformController.updateSettings(update);
   }
 
   Future<void> _updateJavascriptChannels(
@@ -531,10 +530,10 @@ class WebViewController {
     final Set<String> channelsToRemove =
         currentChannels.difference(newChannelNames);
     if (channelsToRemove.isNotEmpty) {
-      _webViewPlatform.removeJavascriptChannels(channelsToRemove);
+      _webViewPlatformController.removeJavascriptChannels(channelsToRemove);
     }
     if (channelsToAdd.isNotEmpty) {
-      _webViewPlatform.addJavascriptChannels(channelsToAdd);
+      _webViewPlatformController.addJavascriptChannels(channelsToAdd);
     }
     _platformCallbacksHandler._updateJavascriptChannelsFromSet(newChannels);
   }
@@ -567,7 +566,7 @@ class WebViewController {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    return _webViewPlatform.evaluateJavascript(javascriptString);
+    return _webViewPlatformController.evaluateJavascript(javascriptString);
   }
 }
 
@@ -580,21 +579,14 @@ class CookieManager {
 
   CookieManager._();
 
-  static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.io/cookie_manager');
   static CookieManager _instance;
 
-  /// Clears all cookies.
+  /// Clears all cookies for all [WebView] instances.
   ///
-  /// This is supported for >= IOS 9.
+  /// This is a no op on iOS version smaller than 9.
   ///
   /// Returns true if cookies were present before clearing, else false.
-  Future<bool> clearCookies() => _channel
-      // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      .invokeMethod('clearCookies')
-      .then<bool>((dynamic result) => result);
+  Future<bool> clearCookies() => WebView.platform.clearCookies();
 }
 
 // Throws an ArgumentError if `url` is not a valid URL string.

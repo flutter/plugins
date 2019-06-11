@@ -1,20 +1,30 @@
 #import "FirebaseMlVisionPlugin.h"
 
+@interface ImageLabeler ()
+@property FIRVisionImageLabeler *labeler;
+@end
+
 @implementation ImageLabeler
-static FIRVisionImageLabeler *labeler;
-
-+ (void)handleDetection:(FIRVisionImage *)image
-                options:(NSDictionary *)options
-                 result:(FlutterResult)result {
-  FIRVision *vision = [FIRVision vision];
-
-  if ([@"onDevice" isEqualToString:options[@"modelType"]]) {
-    labeler = [vision onDeviceImageLabelerWithOptions:[ImageLabeler parseOptions:options]];
-  } else if ([@"cloud" isEqualToString:options[@"modelType"]]) {
-    labeler = [vision cloudImageLabelerWithOptions:[ImageLabeler parseCloudOptions:options]];
+- (instancetype)initWithVision:(FIRVision *)vision options:(NSDictionary *)options {
+  self = [super init];
+  if (self) {
+    if ([@"onDevice" isEqualToString:options[@"modelType"]]) {
+      _labeler = [vision onDeviceImageLabelerWithOptions:[ImageLabeler parseOptions:options]];
+    } else if ([@"cloud" isEqualToString:options[@"modelType"]]) {
+      _labeler = [vision cloudImageLabelerWithOptions:[ImageLabeler parseCloudOptions:options]];
+    } else {
+      NSString *reason =
+          [NSString stringWithFormat:@"Invalid model type: %@", options[@"modelType"]];
+      @throw [[NSException alloc] initWithName:NSInvalidArgumentException
+                                        reason:reason
+                                      userInfo:nil];
+    }
   }
+  return self;
+}
 
-  [labeler
+- (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
+  [_labeler
       processImage:image
         completion:^(NSArray<FIRVisionImageLabel *> *_Nullable labels, NSError *_Nullable error) {
           if (error) {
