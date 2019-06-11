@@ -1,6 +1,6 @@
 ## 0.5.17
 
-* Add support for add padding to the map.
+* Add support for Padding.
 
 ## 0.5.16
 
