@@ -34,7 +34,7 @@ class GoogleMap extends StatefulWidget {
     this.polygons,
     this.polylines,
     this.circles,
-    this.padding,
+    this.padding = const EdgeInsets.all(0),
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,

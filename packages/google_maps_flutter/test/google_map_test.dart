@@ -414,7 +414,37 @@ void main() {
     expect(platformGoogleMap.myLocationButtonEnabled, false);
   });
 
+  testWidgets('Is default padding 0', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+        ),
+      ),
+    );
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.padding, <double>[0, 0, 0, 0]);
+  });
+
   testWidgets('Can update padding', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+        ),
+      ),
+    );
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.padding, <double>[0, 0, 0, 0]);
+
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -424,9 +454,6 @@ void main() {
         ),
       ),
     );
-
-    final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
 
     expect(platformGoogleMap.padding, <double>[20, 10, 40, 30]);
 
