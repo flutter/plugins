@@ -24,6 +24,7 @@ void main() {
         }
       });
       log.clear();
+      FirebaseVision.nextHandle = 0;
     });
 
     group('$ImageLabeler', () {
@@ -57,6 +58,7 @@ void main() {
           isMethodCall(
             'ImageLabeler#processImage',
             arguments: <String, dynamic>{
+              'handle': 0,
               'type': 'file',
               'path': 'empty',
               'bytes': null,
@@ -93,6 +95,7 @@ void main() {
           isMethodCall(
             'ImageLabeler#processImage',
             arguments: <String, dynamic>{
+              'handle': 0,
               'type': 'file',
               'path': 'empty',
               'bytes': null,
@@ -140,6 +143,7 @@ void main() {
           isMethodCall(
             'ImageLabeler#processImage',
             arguments: <String, dynamic>{
+              'handle': 0,
               'type': 'file',
               'path': 'empty',
               'bytes': null,

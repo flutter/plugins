@@ -1,6 +1,6 @@
 # In App Purchase
 
-A Flutter plugin for in-app purchases. Exposes APIs for making in app purchases
+A Flutter plugin for in-app purchases. Exposes APIs for making in-app purchases
 through the App Store (on iOS) and Google Play (on Android).
 
 ## Features
