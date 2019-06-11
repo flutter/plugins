@@ -1,3 +1,87 @@
+## 0.5.16
+
+* Add support for custom map styling.
+
+## 0.5.15+1
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.5.15
+
+* Add support for Polygons.
+
+## 0.5.14+1
+
+* Example app update(comment out usage of the ImageStreamListener API which has a breaking change
+  that's not yet on master). See: https://github.com/flutter/flutter/issues/33438
+
+## 0.5.14
+
+* Adds onLongPress callback for GoogleMap.
+
+## 0.5.13
+
+* Add support for Circle overlays.
+
+## 0.5.12
+
+* Prevent calling null callbacks and callbacks on removed objects.
+
+## 0.5.11+1
+
+* Android: Fix an issue where myLocationButtonEnabled setting was not propagated when set to false onMapLoad.
+
+## 0.5.11
+
+* Add myLocationButtonEnabled option.
+
+## 0.5.10
+
+* Support Color's alpha channel when converting to UIColor on iOS.
+
+## 0.5.9
+
+* BitmapDescriptor#fromBytes accounts for screen scale on ios.
+
+## 0.5.8
+
+* Remove some unused variables and rename method
+
+## 0.5.7
+
+* Add a BitmapDescriptor that is aware of scale.
+
+## 0.5.6
+
+* Add support for Polylines on GoogleMap.
+
+## 0.5.5
+
+* Enable iOS accessibility.
+
+## 0.5.4
+
+* Add method getVisibleRegion for get the latlng bounds of the visible map area.
+
+## 0.5.3
+
+* Added support setting marker icons from bytes.
+
+## 0.5.2
+
+* Added onTap for callback for GoogleMap.
+
+## 0.5.1
+
+* Update Android gradle version.
+* Added infrastructure to write integration tests.
+
+## 0.5.0
+
+* Add a key parameter to the GoogleMap widget.
+
 ## 0.4.0
 
 * Change events are call backs on GoogleMap widget.

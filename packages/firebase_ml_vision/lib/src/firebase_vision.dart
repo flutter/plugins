@@ -11,6 +11,9 @@ enum _ImageType { file, bytes }
 /// Rotation is counter-clockwise.
 enum ImageRotation { rotation0, rotation90, rotation180, rotation270 }
 
+/// Indicates whether a model is ran on device or in the cloud.
+enum ModelType { onDevice, cloud }
+
 /// The Firebase machine learning vision API.
 ///
 /// You can get an instance by calling [FirebaseVision.instance] and then get
@@ -26,6 +29,9 @@ class FirebaseVision {
   static const MethodChannel channel =
       MethodChannel('plugins.flutter.io/firebase_ml_vision');
 
+  @visibleForTesting
+  static int nextHandle = 0;
+
   /// Singleton of [FirebaseVision].
   ///
   /// Use this get an instance of a detector:
@@ -37,25 +43,39 @@ class FirebaseVision {
 
   /// Creates an instance of [BarcodeDetector].
   BarcodeDetector barcodeDetector([BarcodeDetectorOptions options]) {
-    return BarcodeDetector._(options ?? const BarcodeDetectorOptions());
+    return BarcodeDetector._(
+      options ?? const BarcodeDetectorOptions(),
+      nextHandle++,
+    );
   }
 
   /// Creates an instance of [FaceDetector].
   FaceDetector faceDetector([FaceDetectorOptions options]) {
-    return FaceDetector._(options ?? const FaceDetectorOptions());
+    return FaceDetector._(
+      options ?? const FaceDetectorOptions(),
+      nextHandle++,
+    );
   }
 
-  /// Creates an instance of [LabelDetector].
-  LabelDetector labelDetector([LabelDetectorOptions options]) {
-    return LabelDetector._(options ?? const LabelDetectorOptions());
+  /// Creates an on device instance of [ImageLabeler].
+  ImageLabeler imageLabeler([ImageLabelerOptions options]) {
+    return ImageLabeler._(
+      options: options ?? const ImageLabelerOptions(),
+      modelType: ModelType.onDevice,
+      handle: nextHandle++,
+    );
   }
 
   /// Creates an instance of [TextRecognizer].
-  TextRecognizer textRecognizer() => TextRecognizer._();
+  TextRecognizer textRecognizer() => TextRecognizer._(nextHandle++);
 
-  /// Creates an instance of [CloudLabelDetector].
-  CloudLabelDetector cloudLabelDetector([CloudDetectorOptions options]) {
-    return CloudLabelDetector._(options ?? const CloudDetectorOptions());
+  /// Creates a cloud instance of [ImageLabeler].
+  ImageLabeler cloudImageLabeler([CloudImageLabelerOptions options]) {
+    return ImageLabeler._(
+      options: options ?? const CloudImageLabelerOptions(),
+      modelType: ModelType.cloud,
+      handle: nextHandle++,
+    );
   }
 }
 

@@ -1,5 +1,7 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -22,6 +24,10 @@ void main() {
             return true;
           case 'Crashlytics#setUserName':
             return true;
+          case 'Crashlytics#getVersion':
+            return '0.0.0+1';
+          default:
+            return false;
         }
       });
       log.clear();
@@ -32,10 +38,7 @@ void main() {
         exception: 'foo exception',
         stack: StackTrace.current,
         library: 'foo library',
-        context: 'foo context',
-        informationCollector: (StringBuffer information) {
-          information.writeln('foo information');
-        },
+        context: ErrorDescription('foo context'),
       );
       crashlytics.enableInDevMode = true;
       crashlytics.log('foo');

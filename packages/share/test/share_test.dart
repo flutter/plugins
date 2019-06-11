@@ -43,6 +43,8 @@ void main() {
   test('sharing origin sets the right params', () async {
     await Share.share(
       'some text to share',
+      // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+      // ignore: prefer_const_constructors
       sharePositionOrigin: Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
     );
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.

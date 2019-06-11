@@ -118,12 +118,9 @@
   [handler startProductRequestWithCompletionHandler:^(SKProductsResponse *_Nullable response,
                                                       NSError *_Nullable error) {
     if (error) {
-      NSString *details = [NSString stringWithFormat:@"Reason:%@\nRecoverSuggestion:%@",
-                                                     error.localizedFailureReason,
-                                                     error.localizedRecoverySuggestion];
       result([FlutterError errorWithCode:@"storekit_getproductrequest_platform_error"
-                                 message:error.description
-                                 details:details]);
+                                 message:error.localizedDescription
+                                 details:error.description]);
       return;
     }
     if (!response) {
@@ -255,8 +252,8 @@
                                                       NSError *_Nullable error) {
     if (error) {
       result([FlutterError errorWithCode:@"storekit_refreshreceiptrequest_platform_error"
-                                 message:error.description
-                                 details:error.userInfo]);
+                                 message:error.localizedDescription
+                                 details:error.description]);
       return;
     }
     result(nil);
@@ -283,10 +280,8 @@
 }
 
 - (void)handleTransactionRestoreFailed:(NSError *)error {
-  FlutterError *fltError = [FlutterError errorWithCode:error.domain
-                                               message:error.description
-                                               details:error.description];
-  [self.callbackChannel invokeMethod:@"restoreCompletedTransactions" arguments:fltError];
+  [self.callbackChannel invokeMethod:@"restoreCompletedTransactionsFailed"
+                           arguments:[FIAObjectTranslator getMapFromNSError:error]];
 }
 
 - (void)restoreCompletedTransactionsFinished {
@@ -295,11 +290,7 @@
 }
 
 - (void)updatedDownloads:(NSArray<SKDownload *> *)downloads {
-  NSMutableArray *maps = [NSMutableArray new];
-  for (SKDownload *download in downloads) {
-    [maps addObject:[FIAObjectTranslator getMapFromSKDownload:download]];
-  }
-  [self.callbackChannel invokeMethod:@"updatedDownloads" arguments:maps];
+  NSLog(@"Received an updatedDownloads callback, but downloads are not supported.");
 }
 
 - (BOOL)shouldAddStorePayment:(SKPayment *)payment product:(SKProduct *)product {

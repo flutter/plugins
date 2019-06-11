@@ -29,12 +29,37 @@ IconData getCameraLensIcon(CameraLensDirection direction) {
 void logError(String code, String message) =>
     print('Error: $code\nError Message: $message');
 
-class _CameraExampleHomeState extends State<CameraExampleHome> {
+class _CameraExampleHomeState extends State<CameraExampleHome>
+    with WidgetsBindingObserver {
   CameraController controller;
   String imagePath;
   String videoPath;
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
+  bool enableAudio = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive) {
+      controller?.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      if (controller != null) {
+        onNewCameraSelected(controller.description);
+      }
+    }
+  }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -67,6 +92,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
             ),
           ),
           _captureControlRowWidget(),
+          _toggleAudioWidget(),
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
@@ -101,30 +127,57 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     }
   }
 
+  /// Toggle recording audio
+  Widget _toggleAudioWidget() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 25),
+      child: Row(
+        children: <Widget>[
+          const Text('Enable Audio:'),
+          Switch(
+            value: enableAudio,
+            onChanged: (bool value) {
+              enableAudio = value;
+              if (controller != null) {
+                onNewCameraSelected(controller.description);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   /// Display the thumbnail of the captured image or video.
   Widget _thumbnailWidget() {
     return Expanded(
       child: Align(
         alignment: Alignment.centerRight,
-        child: videoController == null && imagePath == null
-            ? null
-            : SizedBox(
-                child: (videoController == null)
-                    ? Image.file(File(imagePath))
-                    : Container(
-                        child: Center(
-                          child: AspectRatio(
-                              aspectRatio: videoController.value.size != null
-                                  ? videoController.value.aspectRatio
-                                  : 1.0,
-                              child: VideoPlayer(videoController)),
-                        ),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.pink)),
-                      ),
-                width: 64.0,
-                height: 64.0,
-              ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            videoController == null && imagePath == null
+                ? Container()
+                : SizedBox(
+                    child: (videoController == null)
+                        ? Image.file(File(imagePath))
+                        : Container(
+                            child: Center(
+                              child: AspectRatio(
+                                  aspectRatio:
+                                      videoController.value.size != null
+                                          ? videoController.value.aspectRatio
+                                          : 1.0,
+                                  child: VideoPlayer(videoController)),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.pink)),
+                          ),
+                    width: 64.0,
+                    height: 64.0,
+                  ),
+          ],
+        ),
       ),
     );
   }
@@ -203,7 +256,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     if (controller != null) {
       await controller.dispose();
     }
-    controller = CameraController(cameraDescription, ResolutionPreset.high);
+    controller = CameraController(
+      cameraDescription,
+      ResolutionPreset.high,
+      enableAudio: enableAudio,
+    );
 
     // If the controller is updated then update the UI.
     controller.addListener(() {

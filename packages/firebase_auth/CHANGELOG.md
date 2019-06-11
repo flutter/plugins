@@ -1,6 +1,91 @@
+## 0.11.1+6
+
+* Add documentation of support email requirement to README.
+
+## 0.11.1+5
+
+* Fix `updatePhoneNumberCredential` on Android.
+
+## 0.11.1+4
+
+* Fix `updatePhoneNumberCredential` on iOS.
+
+## 0.11.1+3
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+* FirebaseUser private constructor takes `Map<String, dynamic>` instead of `Map<dynamic, dynamic>`.
+
+## 0.11.1+2
+
+* Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
+
+## 0.11.1+1
+
+* Updated the error code documentation for `linkWithCredential`.
+
+## 0.11.1
+
+* Support for `updatePhoneNumberCredential`.
+
+## 0.11.0
+
+* **Breaking change**: `linkWithCredential` is now a function of `FirebaseUser`instead of
+  `FirebaseAuth`.
+* Added test for newer `linkWithCredential` function.
+
+## 0.10.0+1
+
+* Increase Firebase/Auth CocoaPod dependency to '~> 6.0'.
+
+## 0.10.0
+
+* Update firebase_dynamic_links dependency.
+* Update Android dependencies to latest.
+
+## 0.9.0
+
+* **Breaking change**: `PhoneVerificationCompleted` now provides an `AuthCredential` that can
+  be used with `signInWithCredential` or `linkWithCredential` instead of signing in automatically.
+* **Breaking change**: Remove internal counter `nextHandle` from public API.
+
+## 0.8.4+5
+
+* Increase Firebase/Auth CocoaPod dependency to '~> 5.19'.
+
+## 0.8.4+4
+
+* Update FirebaseAuth CocoaPod dependency to ensure availability of `FIRAuthErrorUserInfoNameKey`.
+
+## 0.8.4+3
+
+* Updated deprecated API usage on iOS to use non-deprecated versions.
+* Updated FirebaseAuth CocoaPod dependency to ensure a minimum version of 5.0.
+
+## 0.8.4+2
+
+* Fixes an error in the documentation of createUserWithEmailAndPassword.
+
+## 0.8.4+1
+
+* Adds credential for email authentication with link.
+
+## 0.8.4
+
+* Adds support for email link authentication.
+
+## 0.8.3
+
+* Make providerId 'const String' to use in 'case' statement.
+
+## 0.8.2+1
+
+* Fixed bug where `PhoneCodeAutoRetrievalTimeout` callback was never called.
+
 ## 0.8.2
 
- * Fixed `linkWithCredential` on Android.
+* Fixed `linkWithCredential` on Android.
 
 ## 0.8.1+5
 

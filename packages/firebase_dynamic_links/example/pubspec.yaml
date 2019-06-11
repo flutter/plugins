@@ -7,7 +7,7 @@ dependencies:
 
   firebase_dynamic_links:
     path: ../
-  firebase_core: ^0.3.0
+  firebase_core: ^0.4.0
 
   url_launcher: ^4.2.0
 

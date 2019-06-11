@@ -1,3 +1,28 @@
+## 0.4.3+3
+
+* Support for TYPE_MOBILE_HIPRI on Android.
+
+## 0.4.3+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+
+## 0.4.3+1
+
+* Fixes lint error by using `getApplicationContext()` when accessing the Wifi Service.
+
+## 0.4.3
+
+* Add getWifiBSSID to obtain current wifi network's BSSID.
+
+## 0.4.2+2
+
+* Add integration test.
+
+## 0.4.2+1
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
 ## 0.4.2
 
 * Adding getWifiIP() to obtain current wifi network's IP.

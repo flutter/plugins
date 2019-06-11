@@ -7,15 +7,18 @@ package io.flutter.plugins.webviewflutter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -24,10 +27,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final WebView webView;
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
+  private final Handler platformThreadHandler;
 
   @SuppressWarnings("unchecked")
   FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
+    platformThreadHandler = new Handler(context.getMainLooper());
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
 
@@ -40,8 +45,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
       registerJavaScriptChannelNames((List<String>) params.get(JS_CHANNEL_NAMES_FIELD));
     }
-
-    webView.setWebViewClient(flutterWebViewClient);
 
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
@@ -64,22 +67,22 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         updateSettings(methodCall, result);
         break;
       case "canGoBack":
-        canGoBack(methodCall, result);
+        canGoBack(result);
         break;
       case "canGoForward":
-        canGoForward(methodCall, result);
+        canGoForward(result);
         break;
       case "goBack":
-        goBack(methodCall, result);
+        goBack(result);
         break;
       case "goForward":
-        goForward(methodCall, result);
+        goForward(result);
         break;
       case "reload":
-        reload(methodCall, result);
+        reload(result);
         break;
       case "currentUrl":
-        currentUrl(methodCall, result);
+        currentUrl(result);
         break;
       case "evaluateJavascript":
         evaluateJavaScript(methodCall, result);
@@ -98,40 +101,46 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void loadUrl(MethodCall methodCall, Result result) {
-    String url = (String) methodCall.arguments;
-    webView.loadUrl(url);
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    String url = (String) request.get("url");
+    Map<String, String> headers = (Map<String, String>) request.get("headers");
+    if (headers == null) {
+      headers = Collections.emptyMap();
+    }
+    webView.loadUrl(url, headers);
     result.success(null);
   }
 
-  private void canGoBack(MethodCall methodCall, Result result) {
+  private void canGoBack(Result result) {
     result.success(webView.canGoBack());
   }
 
-  private void canGoForward(MethodCall methodCall, Result result) {
+  private void canGoForward(Result result) {
     result.success(webView.canGoForward());
   }
 
-  private void goBack(MethodCall methodCall, Result result) {
+  private void goBack(Result result) {
     if (webView.canGoBack()) {
       webView.goBack();
     }
     result.success(null);
   }
 
-  private void goForward(MethodCall methodCall, Result result) {
+  private void goForward(Result result) {
     if (webView.canGoForward()) {
       webView.goForward();
     }
     result.success(null);
   }
 
-  private void reload(MethodCall methodCall, Result result) {
+  private void reload(Result result) {
     webView.reload();
     result.success(null);
   }
 
-  private void currentUrl(MethodCall methodCall, Result result) {
+  private void currentUrl(Result result) {
     result.success(webView.getUrl());
   }
 
@@ -186,7 +195,17 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           updateJsMode((Integer) settings.get(key));
           break;
         case "hasNavigationDelegate":
-          flutterWebViewClient.setHasNavigationDelegate((boolean) settings.get(key));
+          final boolean hasNavigationDelegate = (boolean) settings.get(key);
+
+          final WebViewClient webViewClient =
+              flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
+
+          webView.setWebViewClient(webViewClient);
+          break;
+        case "debuggingEnabled":
+          final boolean debuggingEnabled = (boolean) settings.get(key);
+
+          webView.setWebContentsDebuggingEnabled(debuggingEnabled);
           break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
@@ -210,7 +229,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private void registerJavaScriptChannelNames(List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.addJavascriptInterface(
-          new JavaScriptChannel(methodChannel, channelName), channelName);
+          new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
     }
   }
 

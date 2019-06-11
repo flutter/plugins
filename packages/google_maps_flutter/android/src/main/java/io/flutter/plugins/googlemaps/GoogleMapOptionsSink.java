@@ -28,5 +28,13 @@ interface GoogleMapOptionsSink {
 
   void setMyLocationEnabled(boolean myLocationEnabled);
 
+  void setMyLocationButtonEnabled(boolean myLocationButtonEnabled);
+
   void setInitialMarkers(Object initialMarkers);
+
+  void setInitialPolygons(Object initialPolygons);
+
+  void setInitialPolylines(Object initialPolylines);
+
+  void setInitialCircles(Object initialCircles);
 }
