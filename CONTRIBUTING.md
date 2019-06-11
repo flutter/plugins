@@ -45,6 +45,7 @@ Running the tests
 
 Flutter plugins have both unit tests of their Dart API and integration tests that run on a virtual or actual device.
 
+
 To run the unit tests:
 
 ```
@@ -95,6 +96,13 @@ Please make sure all your checkins have detailed commit messages explaining the 
 Plugins tests are run automatically on contributions using Cirrus CI. However, due to
 cost constraints, pull requests from non-committers may not run all the tests
 automatically.
+
+The plugins team prefers that unit tests are written using `setMockMethodCallHandler`
+rather than using mockito to mock out `MethodChannel`. For a list of the plugins that
+are still using the mockito testing style and need to be converted, see
+flutter/flutter#34284. If you are contributing tests to an existing plugin that
+uses mockito `MethodChannel`, consider converting them to `setMockMethodCallHandler`
+instead.
 
 Once you've gotten an LGTM from a project maintainer and once your PR has received
 the green light from all our automated testing, wait for one the package maintainers
