@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'package:flutter/services.dart';
-import 'package:mockito/mockito.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:quick_actions/quick_actions.dart';
-import 'package:test/test.dart';
 
 void main() {
-  MockMethodChannel mockChannel;
   QuickActions quickActions;
+  final List<MethodCall> log = <MethodCall>[];
 
   setUp(() {
-    mockChannel = MockMethodChannel();
-    quickActions = QuickActions.withMethodChannel(
-      mockChannel,
+    quickActions = QuickActions();
+    quickActions.channel.setMockMethodCallHandler(
+      (MethodCall methodCall) async {
+        log.add(methodCall);
+        return null;
+      },
     );
   });
 
@@ -26,27 +28,31 @@ void main() {
         ShortcutItem(type: type, localizedTitle: localizedTitle, icon: icon)
       ],
     );
-    verify(mockChannel.invokeMethod<void>(
-      'setShortcutItems',
-      <Map<String, String>>[
-        <String, String>{
-          'type': type,
-          'localizedTitle': localizedTitle,
-          'icon': icon,
-        }
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall(
+          'setShortcutItems',
+          arguments: <Map<String, String>>[
+            <String, String>{
+              'type': type,
+              'localizedTitle': localizedTitle,
+              'icon': icon,
+            }
+          ],
+        ),
       ],
-    ));
-  });
-
-  test('initialize', () {
-    quickActions.initialize((_) {});
-    verify(mockChannel.setMethodCallHandler(any));
+    );
+    log.clear();
   });
 
   test('clearShortcutItems', () {
     quickActions.clearShortcutItems();
-    verify(mockChannel.invokeMethod<void>('clearShortcutItems'));
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('clearShortcutItems', arguments: null),
+      ],
+    );
   });
 }
-
-class MockMethodChannel extends Mock implements MethodChannel {}
