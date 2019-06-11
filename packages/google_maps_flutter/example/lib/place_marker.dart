@@ -53,8 +53,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     if (tappedMarker != null) {
       setState(() {
         if (markers.containsKey(selectedMarker)) {
-          final Marker resetOld = markers[selectedMarker]
-              .copyWith(iconParam: BitmapDescriptor.defaultMarker);
+          final Marker resetOld = markers[selectedMarker].copyWith(iconParam: BitmapDescriptor.defaultMarker);
           markers[selectedMarker] = resetOld;
         }
         selectedMarker = markerId;
@@ -65,6 +64,32 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
         );
         markers[markerId] = newMarker;
       });
+    }
+  }
+
+  void _onMarkerDragEnd(MarkerId markerId, LatLng newPosition) async {
+    final Marker tappedMarker = markers[markerId];
+    if (tappedMarker != null) {
+      await showDialog<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                actions: <Widget>[
+                  FlatButton(
+                    child: const Text('OK'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                ],
+                content: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 66),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text('Old position: ${tappedMarker.position}'),
+                        Text('New position: $newPosition'),
+                      ],
+                    )));
+          });
     }
   }
 
@@ -90,7 +115,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
         _onMarkerTapped(markerId);
       },
       onDragEnd: (LatLng position) {
-        print(position);
+        _onMarkerDragEnd(markerId, position);
       },
     );
 
