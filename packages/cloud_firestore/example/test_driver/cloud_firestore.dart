@@ -35,7 +35,7 @@ void main() {
         host: null,
         sslEnabled: true,
         timestampsInSnapshotsEnabled: true,
-        cacheSizeBytes: 500000,
+        cacheSizeBytes: 1048576,
       );
     });
 
@@ -144,6 +144,7 @@ void main() {
 
       // startAtDocument
       snapshot = await messages
+          .orderBy('created_at')
           .where('test_run', isEqualTo: testRun)
           .startAtDocument(snapshot1)
           .getDocuments();
@@ -154,6 +155,7 @@ void main() {
 
       // startAfterDocument
       snapshot = await messages
+          .orderBy('created_at')
           .where('test_run', isEqualTo: testRun)
           .startAfterDocument(snapshot1)
           .getDocuments();
@@ -163,6 +165,7 @@ void main() {
 
       // endAtDocument
       snapshot = await messages
+          .orderBy('created_at')
           .where('test_run', isEqualTo: testRun)
           .endAtDocument(snapshot2)
           .getDocuments();
@@ -173,6 +176,7 @@ void main() {
 
       // endBeforeDocument
       snapshot = await messages
+          .orderBy('created_at')
           .where('test_run', isEqualTo: testRun)
           .endBeforeDocument(snapshot2)
           .getDocuments();
