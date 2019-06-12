@@ -1,3 +1,7 @@
+## 0.9.0+1
+
+* Update example app Podfile to match latest Flutter template and prevent compile failures.
+
 ## 0.9.0
 
 * **Breaking Change** Add capability to release resources held by detectors with `close()` method.
