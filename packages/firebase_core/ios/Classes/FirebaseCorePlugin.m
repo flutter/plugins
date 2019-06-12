@@ -45,7 +45,9 @@ static NSDictionary *getDictionaryFromFIRApp(FIRApp *app) {
 
   SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
   if ([FIRApp respondsToSelector:sel]) {
-    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+    NSString *version = [LIBRARY_VERSION stringByReplacingOccurrencesOfString:@"+"
+                                                                   withString:@"-"];
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:version];
   }
 }
 

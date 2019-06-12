@@ -21,7 +21,8 @@ A new flutter plugin project.
 
   s.prepare_command = <<-CMD
     PUBSPEC_VERSION=`cat ../pubspec.yaml | grep version: | sed 's/version: //g'`
-    echo "#define LIBRARY_VERSION @\\"$PUBSPEC_VERSION\\"" > Classes/version.h
+    echo // Generated file, do not edit > Classes/version.h
+    echo "#define LIBRARY_VERSION @\\"$PUBSPEC_VERSION\\"" >> Classes/version.h
   CMD
 
 end
