@@ -8,7 +8,7 @@ import java.util.List;
 
 public class FlutterFirebaseAppRegistrar implements ComponentRegistrar {
   private static final String LIBRARY_NAME = "flutter-fire-core";
-  private static final String LIBRARY_VERSION = "0.4.0+3";
+  private static final String LIBRARY_VERSION = BuildConfig.FLUTTER_FIRE_VERSION;
 
   @Override
   public List<Component<?>> getComponents() {
