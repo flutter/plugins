@@ -20,6 +20,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import android.net.NetworkInfo;
+import android.telephony.TelephonyManager;
 
 /** ConnectivityPlugin */
 public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
@@ -62,7 +64,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
     receiver = null;
   }
 
-  private static String getNetworkType(int type) {
+  private static String getNetworkType(int type, int subType) {
     switch (type) {
       case ConnectivityManager.TYPE_ETHERNET:
       case ConnectivityManager.TYPE_WIFI:
@@ -71,7 +73,46 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
       case ConnectivityManager.TYPE_MOBILE:
       case ConnectivityManager.TYPE_MOBILE_DUN:
       case ConnectivityManager.TYPE_MOBILE_HIPRI:
-        return "mobile";
+        switch(subType){
+                case TelephonyManager.NETWORK_TYPE_1xRTT:
+                    return "2G"; // ~ 50-100 kbps
+                case TelephonyManager.NETWORK_TYPE_CDMA:
+                    return "2G"; // ~ 14-64 kbps
+                case TelephonyManager.NETWORK_TYPE_EDGE:
+                    return "2G"; // ~ 50-100 kbps
+                case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                    return "3G"; // ~ 400-1000 kbps
+                case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                    return "3G"; // ~ 600-1400 kbps
+                case TelephonyManager.NETWORK_TYPE_GPRS:
+                    return "2G"; // ~ 100 kbps
+                case TelephonyManager.NETWORK_TYPE_HSDPA:
+                    return "3G"; // ~ 2-14 Mbps
+                case TelephonyManager.NETWORK_TYPE_HSPA:
+                    return "3G"; // ~ 700-1700 kbps
+                case TelephonyManager.NETWORK_TYPE_HSUPA:
+                    return "3G"; // ~ 1-23 Mbps
+                case TelephonyManager.NETWORK_TYPE_UMTS:
+                    return "3G"; // ~ 400-7000 kbps
+            /*
+             * Above API level 7, make sure to set android:targetSdkVersion 
+             * to appropriate level to use these
+             */
+                case TelephonyManager.NETWORK_TYPE_EHRPD: // API level 11 
+                    return "3G"; // ~ 1-2 Mbps
+                case TelephonyManager.NETWORK_TYPE_EVDO_B: // API level 9
+                    return "3G"; // ~ 5 Mbps
+                case TelephonyManager.NETWORK_TYPE_HSPAP: // API level 13
+                    return "3G"; // ~ 10-20 Mbps
+                case TelephonyManager.NETWORK_TYPE_IDEN: // API level 8
+                    return "2G"; // ~25 kbps 
+                case TelephonyManager.NETWORK_TYPE_LTE: // API level 11
+                    return "4G"; // ~ 10+ Mbps
+                // Unknown
+                case TelephonyManager.NETWORK_TYPE_UNKNOWN:
+                default:
+                    return "none";
+            }
       default:
         return "none";
     }
@@ -101,7 +142,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   private void handleCheck(MethodCall call, final Result result) {
     NetworkInfo info = manager.getActiveNetworkInfo();
     if (info != null && info.isConnected()) {
-      result.success(getNetworkType(info.getType()));
+      result.success(getNetworkType(info.getType(), info.getSubtype()));
     } else {
       result.success("none");
     }
