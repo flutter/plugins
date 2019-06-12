@@ -1,3 +1,7 @@
+## 0.5.17
+
+* Fixed build issue on iOS
+
 ## 0.5.16
 
 * Add support for custom map styling.
