@@ -7,13 +7,13 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
+cd $REPO_DIR/examples/all_plugins
+flutter clean > /dev/null
+
 binaries=("apk" "ipa")
 versions=("debug" "release")
 
 failures=()
-
-cd $REPO_DIR/examples/all_plugins
-flutter clean > /dev/null
 
 for binary in "${binaries[@]}"; do
   for version in "${versions[@]}"; do
