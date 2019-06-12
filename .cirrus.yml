@@ -67,12 +67,13 @@ task:
       PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
       PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
     SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
+  install_cocoapods_script:
+    - sudo gem install cocoapods
   setup_script:
     - brew update
     - brew install libimobiledevice
     - brew install ideviceinstaller
     - brew install ios-deploy
-    - brew upgrade cocoapods || echo No upgrade necessary
     - pod repo update
     - git clone https://github.com/flutter/flutter.git
     - git fetch origin master
