@@ -17,7 +17,9 @@ failures=()
 
 for platform in "${platforms[@]}"; do
   for version in "${versions[@]}"; do
-    if [[ $(cd "$dir" && flutter build $platform --$version) ]]; then
+    cd "$dir" && flutter build $platform --$version
+
+    if [ $? -eq 0 ]; then
       echo "Successfully built all_plugins $version $platform." 
     else
       error "Failed to build $version $platform."
