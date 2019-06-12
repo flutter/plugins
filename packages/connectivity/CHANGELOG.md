@@ -1,3 +1,7 @@
+## 0.4.4+0
+
+* Return type of mobile connection based on speed (2G, 3G or 4G)
+
 ## 0.4.3+3
 
 * Support for TYPE_MOBILE_HIPRI on Android.
