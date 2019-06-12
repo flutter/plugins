@@ -24,8 +24,9 @@ task:
       test_script: ./script/incremental_build.sh test
     - name: analyze
       script: ./script/incremental_build.sh analyze
-    - name: all_plugins_app
-      script: ./script/build_all_plugins_app.sh
+    - name: build_all_plugins_app
+      - cd examples/all_plugins && flutter build apk --debug
+      - cd examples/all_plugins && flutter build apk --release
     - name: build-apks+java-test+drive-examples
       env:
         matrix:
