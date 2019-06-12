@@ -93,7 +93,32 @@
     case ReachableViaWiFi:
       return @"wifi";
     case ReachableViaWWAN:
-      return @"mobile";
+      CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
+        NSString * carrierType = netinfo.currentRadioAccessTechnology;
+        if ([carrierType isEqualToString:CTRadioAccessTechnologyGPRS]) {
+             return @"2G";
+        } else if ([carrierType isEqualToString:CTRadioAccessTechnologyEdge]) {
+             return @"2G";
+        } else if ([carrierType isEqualToString:CTRadioAccessTechnologyWCDMA]) {
+             return @"3G";
+        } else if ([carrierType isEqualToString:CTRadioAccessTechnologyHSDPA]) {
+             return @"3G";
+        } else if ([carrierType isEqualToString:CTRadioAccessTechnologyHSUPA]) {
+             return @"3G";
+        } else if ([carrierType isEqualToString:CTRadioAccessTechnologyCDMA1x]) {
+             return @"2G";
+        } else if ([carrierType isEqualToString:CTRadioAccessTechnologyCDMAEVDORev0]) {
+             return @"3G";
+        } else if ([carrierType isEqualToString:CTRadioAccessTechnologyCDMAEVDORevA]) {
+             return @"3G";
+        } else if ([carrierType isEqualToString:CTRadioAccessTechnologyCDMAEVDORevB]) {
+             return @"3G";
+        } else if ([carrierType isEqualToString:CTRadioAccessTechnologyeHRPD]) {
+             return @"3G";
+        } else if ([carrierType isEqualToString:CTRadioAccessTechnologyLTE]) {
+             return @"4G";
+        }
+      return @"none";
   }
 }
 
