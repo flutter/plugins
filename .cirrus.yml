@@ -24,9 +24,8 @@ task:
       test_script: ./script/incremental_build.sh test
     - name: analyze
       script: ./script/incremental_build.sh analyze
-    - name: build_all_plugins_app
-      - cd examples/all_plugins && flutter build apk --debug
-      - cd examples/all_plugins && flutter build apk --release
+    - name: build_all_plugins_app_apk
+      script: ./script/build_all_plugins_app.sh/ apk
     - name: build-apks+java-test+drive-examples
       env:
         matrix:
@@ -87,3 +86,4 @@ task:
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - ./script/incremental_build.sh build-examples --ipa
     - ./script/incremental_build.sh drive-examples
+    - ./script/build_all_plugins_app.sh ios --no-codesign

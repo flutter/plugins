@@ -14,32 +14,17 @@ function error() {
 cd $REPO_DIR/examples/all_plugins
 flutter clean > /dev/null
 
-binaries=("apk" "ipa")
-versions=("debug" "release")
-
 failures=()
 
-for binary in "${binaries[@]}"; do
-  for version in "${versions[@]}"; do
-    params=""
-    if [ "$binary" = "apk" ]; then
-      params="apk"
-    elif [ "$binary" = "ipa" ]; then
-      params="ios --no-codesign"
-    fi
+for version in "debug" "release"; do
+  (flutter build $@ --$version) > /dev/null
 
-    (flutter build $params --$version) > /dev/null
-
-    exit_status=$?
-    binary_version="$version $binary"
-
-    if [ $exit_status -eq 0 ]; then
-      echo "Successfully built all_plugins $binary_version." 
-    else
-      error "Failed to build all_plugins $binary_version."
-      failures=("${failures[@]}" "$binary_version")
-    fi
-  done
+  if [ $? -eq 0 ]; then
+    echo "Successfully built $version all_plugins app."
+  else
+    error "Failed to build $version all_plugins app."
+    failures=("${failures[@]}")
+  fi
 done
 
 exit "${#failures[@]}"
