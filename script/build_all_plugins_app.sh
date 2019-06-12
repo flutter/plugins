@@ -7,23 +7,31 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
-source "$SCRIPT_DIR/common.sh"
-
+binaries=("apk" "ipa")
 versions=("debug" "release")
-platforms=("apk" "ios --no-codesign")
+
 failures=()
 
 cd $REPO_DIR/examples/all_plugins
+flutter clean > /dev/null
 
-for platform in "${platforms[@]}"; do
+for binary in "${binaries[@]}"; do
   for version in "${versions[@]}"; do
-    (flutter build $platform --$version) > /dev/null
+    params=""
+    if [ "$binary" = "apk" ]; then
+      params="apk"
+    elif [ "$binary" = "ipa" ]; then
+      params="ios --no-codesign"
+    fi
 
+    (flutter build $params --$version) > /dev/null
+
+    binary_version="$version $binary"
     if [ $? -eq 0 ]; then
-      echo "Successfully built all_plugins $version $platform." 
+      echo "Successfully built all_plugins $binary_version." 
     else
-      error "Failed to build all_plugins $version $platform."
-      failures=("${failures[@]}" "$version $platform")
+      error "Failed to build all_plugins $binary_version."
+      failures=("${failures[@]}" "$binary_version")
     fi
   done
 done
