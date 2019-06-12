@@ -1,3 +1,7 @@
+## 0.11.1+6
+
+* Add documentation of support email requirement to README.
+
 ## 0.11.1+5
 
 * Fix `updatePhoneNumberCredential` on Android.
