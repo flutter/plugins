@@ -682,6 +682,7 @@ void main() {
                     'orderBy': <List<dynamic>>[],
                     'startAtDocument': <String, dynamic>{
                       'id': '0',
+                      'path': 'foo/0',
                       'data': kMockDocumentSnapshotData,
                     },
                   },
@@ -699,6 +700,7 @@ void main() {
                     'orderBy': <List<dynamic>>[],
                     'startAfterDocument': <String, dynamic>{
                       'id': '0',
+                      'path': 'foo/0',
                       'data': kMockDocumentSnapshotData,
                     },
                   },
@@ -716,6 +718,7 @@ void main() {
                     'orderBy': <List<dynamic>>[],
                     'endAtDocument': <String, dynamic>{
                       'id': '0',
+                      'path': 'foo/0',
                       'data': kMockDocumentSnapshotData,
                     },
                   },
@@ -733,6 +736,7 @@ void main() {
                     'orderBy': <List<dynamic>>[],
                     'endBeforeDocument': <String, dynamic>{
                       'id': '0',
+                      'path': 'foo/0',
                       'data': kMockDocumentSnapshotData,
                     },
                   },
@@ -811,6 +815,7 @@ void main() {
                     'orderBy': <List<dynamic>>[],
                     'startAtDocument': <String, dynamic>{
                       'id': '0',
+                      'path': 'bar/0',
                       'data': kMockDocumentSnapshotData,
                     },
                   },
@@ -828,6 +833,7 @@ void main() {
                     'orderBy': <List<dynamic>>[],
                     'startAfterDocument': <String, dynamic>{
                       'id': '0',
+                      'path': 'bar/0',
                       'data': kMockDocumentSnapshotData,
                     },
                   },
@@ -845,6 +851,7 @@ void main() {
                     'orderBy': <List<dynamic>>[],
                     'endAtDocument': <String, dynamic>{
                       'id': '0',
+                      'path': 'bar/0',
                       'data': kMockDocumentSnapshotData,
                     },
                   },
@@ -863,6 +870,7 @@ void main() {
                     'orderBy': <List<dynamic>>[],
                     'endBeforeDocument': <String, dynamic>{
                       'id': '0',
+                      'path': 'bar/0',
                       'data': kMockDocumentSnapshotData,
                     },
                   },
