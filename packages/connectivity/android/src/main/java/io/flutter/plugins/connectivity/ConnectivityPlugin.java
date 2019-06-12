@@ -202,7 +202,9 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
         }
 
         int type = intent.getIntExtra(ConnectivityManager.EXTRA_NETWORK_TYPE, -1);
-        events.success(getNetworkType(type));
+        TelephonyManager mTelephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        int subType = mTelephonyManager.getNetworkType();
+        events.success(getNetworkType(type, subType));
       }
     };
   }
