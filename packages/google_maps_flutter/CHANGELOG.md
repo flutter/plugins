@@ -1,6 +1,7 @@
-## 0.5.16+1
+## 0.5.16+2
 
 * Update Dart code to conform to current Dart formatter.
+* Fixed build issue on iOS.
 
 ## 0.5.16
 
