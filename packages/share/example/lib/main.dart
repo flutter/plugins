@@ -37,8 +37,8 @@ class DemoAppState extends State<DemoApp> {
                   ),
                   maxLines: 2,
                   onChanged: (String value) => setState(() {
-                        text = value;
-                      }),
+                    text = value;
+                  }),
                 ),
                 const Padding(padding: EdgeInsets.only(top: 24.0)),
                 Builder(
