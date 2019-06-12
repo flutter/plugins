@@ -26,8 +26,10 @@ for binary in "${binaries[@]}"; do
 
     (flutter build $params --$version) > /dev/null
 
+    exit_status=$?
     binary_version="$version $binary"
-    if [ $? -eq 0 ]; then
+
+    if [ $exit_status -eq 0 ]; then
       echo "Successfully built all_plugins $binary_version." 
     else
       error "Failed to build all_plugins $binary_version."
