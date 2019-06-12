@@ -7,6 +7,10 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
+function error() {
+  echo "$@" 1>&2
+}
+
 cd $REPO_DIR/examples/all_plugins
 flutter clean > /dev/null
 
