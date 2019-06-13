@@ -184,7 +184,7 @@ public class ImagePickerDelegateTest {
 
   @Test
   public void
-      onRequestPermissionsResult_WhenReadExternalStoragePermissionDenied_FinishesWithNull() {
+      onRequestPermissionsResult_WhenReadExternalStoragePermissionDenied_FinishesWithError() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
     delegate.onRequestPermissionsResult(
@@ -192,7 +192,7 @@ public class ImagePickerDelegateTest {
         new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
         new int[] {PackageManager.PERMISSION_DENIED});
 
-    verify(mockResult).success(null);
+    verify(mockResult).error("photo_access_denied", "The user did not allow photo access.", null);
     verifyNoMoreInteractions(mockResult);
   }
 
@@ -227,7 +227,7 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
-  public void onRequestPermissionsResult_WhenCameraPermissionDenied_FinishesWithNull() {
+  public void onRequestPermissionsResult_WhenCameraPermissionDenied_FinishesWithError() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
     delegate.onRequestPermissionsResult(
@@ -235,7 +235,7 @@ public class ImagePickerDelegateTest {
         new String[] {Manifest.permission.CAMERA},
         new int[] {PackageManager.PERMISSION_DENIED});
 
-    verify(mockResult).success(null);
+    verify(mockResult).error("camera_access_denied", "The user did not allow camera access.", null);
     verifyNoMoreInteractions(mockResult);
   }
 
