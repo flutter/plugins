@@ -10,7 +10,7 @@ if (pubspec.exists()) {
     Matcher versionMatcher = Pattern.compile("^version:\\s*(.*)\$", Pattern.MULTILINE).matcher(yaml)
     if (versionMatcher.find()) libraryVersionName = versionMatcher.group(1)
     if (libraryVersionName != null) {
-        String[] tokens = version.tokenize('.')
+        String[] tokens = libraryVersionName.tokenize('.')
         int major = Integer.parseInt(tokens[0])
         int minor = Integer.parseInt(tokens[1])
 
