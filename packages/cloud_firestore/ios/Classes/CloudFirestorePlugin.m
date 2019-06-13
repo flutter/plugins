@@ -7,7 +7,6 @@
 #import <Firebase/Firebase.h>
 
 #define LIBRARY_NAME @"flutter-firebase_cloud_firestore"
-#define LIBRARY_VERSION @"0.12.5"
 
 static FlutterError *getFlutterError(NSError *error) {
   if (error == nil) return nil;
@@ -367,7 +366,16 @@ const UInt8 INCREMENT_INTEGER = 138;
 
   SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
   if ([FIRApp respondsToSelector:sel]) {
-    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+    NSString *version = @"0.0.0";
+    NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"cloud_firestore" ofType:@"bundle"];
+    NSBundle *bundle = [NSBundle bundleWithPath:bundlePath];
+    if (bundle != nil) {
+      NSDictionary *bundleDictionary = [bundle infoDictionary];
+      if (bundleDictionary != nil) {
+        version = (NSString *) bundleDictionary[@"CFBundleVersion"];
+      }
+    }
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:version];
   }
 }
 

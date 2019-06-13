@@ -1,0 +1,38 @@
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
+int libraryVersionCode = 1
+String libraryVersionName = null
+File pubspec = new File(project.projectDir.parentFile,  'pubspec.yaml')
+
+if (pubspec.exists()) {
+    String yaml = pubspec.text
+    Matcher versionMatcher = Pattern.compile("^version:\\s*(.*)\$", Pattern.MULTILINE).matcher(yaml)
+    if (versionMatcher.find()) libraryVersionName = versionMatcher.group(1)
+    if (libraryVersionName != null) {
+        String[] tokens = version.tokenize('.')
+        int major = Integer.parseInt(tokens[0])
+        int minor = Integer.parseInt(tokens[1])
+
+        // additionally strip off pre-releases etc off patch,
+        // e.g. strips off `-alpha25` from `6.0.0-alpha25`
+        int patch = Integer.parseInt(tokens[2].tokenize('-')[0])
+
+        // versionCode expects an int, e.g. 0.12.5 becomes 12005
+        libraryVersionCode = major * 1000000 + minor * 1000 + patch
+        // versionCode expects a string
+        libraryVersionName = version
+    }
+}
+
+// apply the version code to default config
+// these are available in java via io.flutter.plugins.firebase.firestore.BuildConfig;
+android {
+    defaultConfig {
+        // BuildConfig.VERSION_CODE
+        versionCode libraryVersionCode
+        
+        // BuildConfig.VERSION_NAME
+        versionName libraryVersionName ?: "1.0.0"
+    }
+}

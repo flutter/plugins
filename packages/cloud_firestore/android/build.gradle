@@ -52,3 +52,5 @@ android {
         implementation 'androidx.annotation:annotation:1.0.0'
     }
 }
+
+apply from: file("./apply-version.gradle")

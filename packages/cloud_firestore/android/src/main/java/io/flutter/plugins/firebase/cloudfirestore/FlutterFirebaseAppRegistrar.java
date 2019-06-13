@@ -6,13 +6,14 @@ import com.google.firebase.platforminfo.LibraryVersionComponent;
 import java.util.Collections;
 import java.util.List;
 
+import io.flutter.plugins.firebase.firestore.BuildConfig;
+
 public class FlutterFirebaseAppRegistrar implements ComponentRegistrar {
   private static final String LIBRARY_NAME = "flutter-fire-fst";
-  private static final String LIBRARY_VERSION = "0.12.5";
 
   @Override
   public List<Component<?>> getComponents() {
     return Collections.<Component<?>>singletonList(
-        LibraryVersionComponent.create(LIBRARY_NAME, LIBRARY_VERSION));
+        LibraryVersionComponent.create(LIBRARY_NAME, BuildConfig.VERSION_NAME));
   }
 }
