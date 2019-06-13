@@ -17,7 +17,7 @@ function error() {
   echo "$@" 1>&2
 }
 
-failures=()
+failures=0
 
 for version in "debug" "release"; do
   (flutter build $@ --$version) > /dev/null
@@ -36,8 +36,8 @@ for version in "debug" "release"; do
       done
       echo ""
     fi
-    failures=("${failures[@]}")
+    failures=$(($failures + 1))
   fi
 done
 
-exit "${#failures[@]}"
+exit $failures

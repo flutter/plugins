@@ -76,6 +76,7 @@ task:
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-12-1 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
+      PATH: $PATH
       script: ./script/build_all_plugins_app.sh ios --no-codesign
     - name: build-ipas+drive-examples
       env:
