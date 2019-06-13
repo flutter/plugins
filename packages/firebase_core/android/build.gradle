@@ -34,12 +34,29 @@ rootProject.allprojects {
 
 apply plugin: 'com.android.library'
 
+/**
+ * Get the current version of the plugin from the plugin's pubspec.yaml file.
+ *
+ * @return String representing version of the plugin.
+ */
+def flutterFireVersion() {
+    File pubspec = new File('../../pubspec.yaml')
+    def lines = pubspec.readLines()
+    for (line in lines) {
+        if (line.contains('version: ')) {
+            return "${line}".substring(9).trim()
+        }
+    }
+    throw new Exception('Version not found in pubspec.yaml file.')
+}
+
 android {
     compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 16
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        versionName flutterFireVersion()
     }
     lintOptions {
         disable 'InvalidPackage'
