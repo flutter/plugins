@@ -1,3 +1,7 @@
+## 0.0.4+5
+
+* Fix parsing stacktrace.
+
 ## 0.0.4+4
 
 * Add missing template type parameter to `invokeMethod` calls.
