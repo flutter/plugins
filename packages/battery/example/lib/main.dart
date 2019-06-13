@@ -66,16 +66,16 @@ class _MyHomePageState extends State<MyHomePage> {
           showDialog<void>(
             context: context,
             builder: (_) => AlertDialog(
-                  content: Text('Battery: $batteryLevel%'),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: const Text('OK'),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    )
-                  ],
-                ),
+              content: Text('Battery: $batteryLevel%'),
+              actions: <Widget>[
+                FlatButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            ),
           );
         },
       ),

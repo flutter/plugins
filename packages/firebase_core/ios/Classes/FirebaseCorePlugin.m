@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #import "FirebaseCorePlugin.h"
+#import "version.h"
 
 #import <Firebase/Firebase.h>
 
 #define LIBRARY_NAME @"flutter-fire-core"
-#define LIBRARY_VERSION @"0.4.0+3"
 
 static NSDictionary *getDictionaryFromFIROptions(FIROptions *options) {
   if (!options) {
@@ -45,7 +45,8 @@ static NSDictionary *getDictionaryFromFIRApp(FIRApp *app) {
 
   SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
   if ([FIRApp respondsToSelector:sel]) {
-    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+    NSString *version = [LIBRARY_VERSION stringByReplacingOccurrencesOfString:@"+" withString:@"-"];
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:version];
   }
 }
 
