@@ -9,7 +9,7 @@ import 'picture_scanner.dart';
 void main() {
   runApp(
     MaterialApp(
-      routes: <String, Widget Function(BuildContext)>{
+      routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => _ExampleList(),
         '/$PictureScanner': (BuildContext context) => PictureScanner(),
       },
