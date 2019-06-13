@@ -386,21 +386,29 @@ public class ImagePickerDelegate
       case REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION:
         if (permissionGranted) {
           launchPickImageFromGalleryIntent();
+        } else {
+          finishWithError("photo_access_denied", "The user did not allow photo access.");
         }
         break;
       case REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION:
         if (permissionGranted) {
           launchPickVideoFromGalleryIntent();
+        } else {
+          finishWithError("photo_access_denied", "The user did not allow photo access.");
         }
         break;
       case REQUEST_CAMERA_IMAGE_PERMISSION:
         if (permissionGranted) {
           launchTakeImageWithCameraIntent();
+        } else {
+          finishWithError("camera_access_denied", "The user did not allow camera access.");
         }
         break;
       case REQUEST_CAMERA_VIDEO_PERMISSION:
         if (permissionGranted) {
           launchTakeVideoWithCameraIntent();
+        } else {
+          finishWithError("camera_access_denied", "The user did not allow camera access.");
         }
         break;
       default:
