@@ -40,7 +40,7 @@ apply plugin: 'com.android.library'
  * @return String representing version of the plugin.
  */
 def flutterFireVersion() {
-    File pubspec = new File('../../pubspec.yaml')
+    File pubspec = new File('../pubspec.yaml')
     def lines = pubspec.readLines()
     for (line in lines) {
         if (line.contains('version: ')) {
