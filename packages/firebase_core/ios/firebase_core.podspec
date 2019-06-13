@@ -18,4 +18,11 @@ A new flutter plugin project.
   s.dependency 'Firebase/Core'
   s.ios.deployment_target = '8.0'
   s.static_framework = true
+
+  s.prepare_command = <<-CMD
+    PUBSPEC_VERSION=`cat ../pubspec.yaml | grep version: | sed 's/version: //g'`
+    echo // Generated file, do not edit > Classes/version.h
+    echo "#define LIBRARY_VERSION @\\"$PUBSPEC_VERSION\\"" >> Classes/version.h
+  CMD
+
 end
