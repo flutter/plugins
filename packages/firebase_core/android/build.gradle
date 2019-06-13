@@ -56,7 +56,7 @@ android {
     defaultConfig {
         minSdkVersion 16
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "FLUTTER_FIRE_VERSION", "\"${flutterFireVersion()}\""
+        versionName flutterFireVersion()
     }
     lintOptions {
         disable 'InvalidPackage'
