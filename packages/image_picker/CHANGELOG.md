@@ -1,3 +1,7 @@
+## 0.6.0+10
+
+* Android: Finish with error when user denies permissions
+
 ## 0.6.0+9
 
 * Add missing template type parameter to `invokeMethod` calls.
