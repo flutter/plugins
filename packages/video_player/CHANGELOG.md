@@ -1,3 +1,8 @@
+## 0.10.2
+
+* iOS: Revert the changes made in version `0.10.1` that made live streams not able to initialize due to the lack of duration.
+
+
 ## 0.10.1+3
 
 * Add missing template type parameter to `invokeMethod` calls.
