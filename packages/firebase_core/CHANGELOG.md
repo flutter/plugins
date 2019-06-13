@@ -1,3 +1,7 @@
+## 0.4.0+4
+
+* Automate the retrieval of the plugin's version when reporting usage to Firebase.
+
 ## 0.4.0+3
 
 * Add missing template type parameter to `invokeMethod` calls.
