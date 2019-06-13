@@ -7,12 +7,15 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
-function error() {
-  echo "$@" 1>&2
-}
+source "$SCRIPT_DIR/common.sh"
+check_changed_packages > /dev/null
 
 cd $REPO_DIR/examples/all_plugins
 flutter clean > /dev/null
+
+function error() {
+  echo "$@" 1>&2
+}
 
 failures=()
 
@@ -21,8 +24,18 @@ for version in "debug" "release"; do
 
   if [ $? -eq 0 ]; then
     echo "Successfully built $version all_plugins app."
+    echo "All first party plugins compile together."
   else
     error "Failed to build $version all_plugins app."
+    if [[ "${#CHANGED_PACKAGE_LIST[@]}" == 0 ]]; then
+      error "There was a failure to comiple all first party plugins together, but there were no changes detected in packages."
+    else
+      error "Changes to the following packages may prevent all first party plugins to compile together:"
+      for package in "${CHANGED_PACKAGE_LIST[@]}"; do
+        error "$package"
+      done
+      echo ""
+    fi
     failures=("${failures[@]}")
   fi
 done
