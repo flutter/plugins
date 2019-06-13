@@ -1,6 +1,7 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
+
 require 'yaml'
 pubspec = YAML.load_file(File.join('..', 'pubspec.yaml'))
 
@@ -10,7 +11,6 @@ Pod::Spec.new do |s|
   s.description      = pubspec['description']
   s.homepage         = pubspec['homepage']
   s.author           = pubspec['author']
-
   s.summary          = 'Firestore plugin for Flutter.'
   s.license          = { :file => '../LICENSE' }
   s.source           = { :path => '.' }
@@ -21,11 +21,4 @@ Pod::Spec.new do |s|
   s.dependency 'Firebase/Core'
   s.dependency 'Firebase/Firestore', '~> 6.0'
   s.static_framework = true
-
-  s.pod_target_xcconfig = {
-      'FLUTTER_PLUGIN_VERSION' => pubspec['version']
-  }
-  s.resource_bundles = {
-      'cloud_firestore' => ['${PODS_TARGET_SRCROOT}/Info.plist'],
-  }
 end

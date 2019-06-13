@@ -372,7 +372,7 @@ const UInt8 INCREMENT_INTEGER = 138;
     if (bundle != nil) {
       NSDictionary *bundleDictionary = [bundle infoDictionary];
       if (bundleDictionary != nil) {
-        version = (NSString *) bundleDictionary[@"CFBundleVersion"];
+        version = (NSString *) bundleDictionary[@"CFBundleShortVersionString"];
       }
     }
     [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:version];
