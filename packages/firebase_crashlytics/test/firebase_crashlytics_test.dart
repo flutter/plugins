@@ -97,5 +97,35 @@ void main() {
             arguments: <String, dynamic>{'name': 'foo'})
       ]);
     });
+
+    test('getStackTraceElements with character index', () async {
+      final List<String> lines = <String>[
+        'package:flutter/src/widgets/framework.dart 3825:27  StatefulElement.build'
+      ];
+      final List<Map<String, String>> elements =
+          crashlytics.getStackTraceElements(lines);
+      expect(elements.length, 1);
+      expect(elements.first, <String, String>{
+        'class': 'StatefulElement',
+        'method': 'build',
+        'file': 'package:flutter/src/widgets/framework.dart',
+        'line': '3825',
+      });
+    });
+
+    test('getStackTraceElements without character index', () async {
+      final List<String> lines = <String>[
+        'package:flutter/src/widgets/framework.dart 3825  StatefulElement.build'
+      ];
+      final List<Map<String, String>> elements =
+          crashlytics.getStackTraceElements(lines);
+      expect(elements.length, 1);
+      expect(elements.first, <String, String>{
+        'class': 'StatefulElement',
+        'method': 'build',
+        'file': 'package:flutter/src/widgets/framework.dart',
+        'line': '3825',
+      });
+    });
   });
 }
