@@ -99,11 +99,15 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   }
 
   private void handleCheck(MethodCall call, final Result result) {
+    result.success(checkNetworkType());
+  }
+
+  private String checkNetworkType() {
     NetworkInfo info = manager.getActiveNetworkInfo();
     if (info != null && info.isConnected()) {
-      result.success(getNetworkType(info.getType()));
+      return getNetworkType(info.getType());
     } else {
-      result.success("none");
+      return "none";
     }
   }
 
@@ -154,14 +158,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
     return new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
-        boolean isLost = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-        if (isLost) {
-          events.success("none");
-          return;
-        }
-
-        int type = intent.getIntExtra(ConnectivityManager.EXTRA_NETWORK_TYPE, -1);
-        events.success(getNetworkType(type));
+        events.success(checkNetworkType());
       }
     };
   }
