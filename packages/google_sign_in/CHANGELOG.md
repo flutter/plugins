@@ -1,3 +1,7 @@
+## 4.0.3
+
+* Fix a bug where uncaught exception breakpoint stops the process unexpectedly.
+
 ## 4.0.2
 
 * Add missing template type parameter to `invokeMethod` calls.

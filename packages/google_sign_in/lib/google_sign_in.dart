@@ -251,15 +251,15 @@ class GoogleSignIn {
   ///
   /// At most one in flight call is allowed to prevent concurrent (out of order)
   /// updates to [currentUser] and [onCurrentUserChanged].
-  Future<GoogleSignInAccount> _addMethodCall(String method) {
+  Future<GoogleSignInAccount> _addMethodCall(String method) async {
     if (_lastMethodCompleter == null) {
-      _lastMethodCompleter = _MethodCompleter(method)
-        ..complete(_callMethod(method));
+      final GoogleSignInAccount account = await _callMethod(method);
+      _lastMethodCompleter = _MethodCompleter(method)..complete(account);
       return _lastMethodCompleter.future;
     }
 
     final _MethodCompleter completer = _MethodCompleter(method);
-    _lastMethodCompleter.future.whenComplete(() {
+    _lastMethodCompleter.future.whenComplete(() async {
       // If after the last completed call currentUser is not null and requested
       // method is a sign in method, re-use the same authenticated user
       // instead of making extra call to the native side.
@@ -267,7 +267,8 @@ class GoogleSignIn {
       if (kSignInMethods.contains(method) && _currentUser != null) {
         completer.complete(_currentUser);
       } else {
-        completer.complete(_callMethod(method));
+        final GoogleSignInAccount account = await _callMethod(method);
+        completer.complete(account);
       }
     }).catchError((dynamic _) {
       // Ignore if previous call completed with an error.
