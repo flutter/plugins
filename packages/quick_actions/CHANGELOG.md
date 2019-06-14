@@ -1,3 +1,7 @@
+## 0.3.0+3
+
+* Update usage example in README.
+
 ## 0.3.0+2
 
 * Add missing template type parameter to `invokeMethod` calls.
