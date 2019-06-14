@@ -732,6 +732,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_camera close];
+      // need to unregister stream handler when disposing the camera
+      [_camera.eventChannel setStreamHandler:nil];
       _dispatchQueue = nil;
       result(nil);
     } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
