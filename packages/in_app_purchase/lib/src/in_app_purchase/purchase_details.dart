@@ -35,8 +35,8 @@ final String kConsumptionFailedErrorCode = 'consume_purchase_failed';
 class PurchaseVerificationData {
   /// The data used for local verification.
   ///
-  /// If the [source] is [PurchaseSource.AppStore], this data is a based64 encoded string. The structure of the payload is defined using ASN.1.
-  /// If the [source] is [PurchaseSource.GooglePlay], this data is a JSON String.
+  /// If the [source] is [IAPSource.AppStore], this data is a based64 encoded string. The structure of the payload is defined using ASN.1.
+  /// If the [source] is [IAPSource.GooglePlay], this data is a JSON String.
   final String localVerificationData;
 
   /// The data used for server verification.
@@ -45,7 +45,7 @@ class PurchaseVerificationData {
   final String serverVerificationData;
 
   /// Indicates the source of the purchase.
-  final PurchaseSource source;
+  final IAPSource source;
 
   PurchaseVerificationData(
       {@required this.localVerificationData,
@@ -125,7 +125,7 @@ class PurchaseDetails {
   PurchaseStatus status;
 
   /// The error is only available when [status] is [PurchaseStatus.error].
-  PurchaseError error;
+  IAPError error;
 
   /// Points back to the `StoreKits`'s [SKPaymentTransactionWrapper] object that generated this [PurchaseDetails] object.
   ///
@@ -154,7 +154,7 @@ class PurchaseDetails {
         this.verificationData = PurchaseVerificationData(
             localVerificationData: base64EncodedReceipt,
             serverVerificationData: base64EncodedReceipt,
-            source: PurchaseSource.AppStore),
+            source: IAPSource.AppStore),
         this.transactionDate = transaction.transactionTimeStamp != null
             ? (transaction.transactionTimeStamp * 1000).toInt().toString()
             : null,
@@ -168,7 +168,7 @@ class PurchaseDetails {
         this.verificationData = PurchaseVerificationData(
             localVerificationData: purchase.originalJson,
             serverVerificationData: purchase.purchaseToken,
-            source: PurchaseSource.GooglePlay),
+            source: IAPSource.GooglePlay),
         this.transactionDate = purchase.purchaseTime.toString(),
         this.skPaymentTransaction = null,
         this.billingClientPurchase = purchase;
@@ -190,5 +190,5 @@ class QueryPurchaseDetailsResponse {
   /// The error when fetching past purchases.
   ///
   /// If the fetch is successful, the value is null.
-  final PurchaseError error;
+  final IAPError error;
 }
