@@ -40,7 +40,7 @@ class Crashlytics {
       final List<String> stackTraceLines =
           Trace.format(details.stack).trimRight().split('\n');
       final List<Map<String, String>> stackTraceElements =
-          _getStackTraceElements(stackTraceLines);
+          getStackTraceElements(stackTraceLines);
       final dynamic result = await channel
           .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
         'exception': details.exceptionAsString(),
@@ -161,14 +161,16 @@ class Crashlytics {
     return crashlyticsKeys;
   }
 
-  List<Map<String, String>> _getStackTraceElements(List<String> lines) {
+  @visibleForTesting
+  List<Map<String, String>> getStackTraceElements(List<String> lines) {
     final List<Map<String, String>> elements = <Map<String, String>>[];
     for (String line in lines) {
       final List<String> lineParts = line.split(RegExp('\\s+'));
       try {
         final String fileName = lineParts[0];
-        final String lineNumber =
-            lineParts[1].substring(0, lineParts[1].indexOf(":")).trim();
+        final String lineNumber = lineParts[1].contains(":")
+            ? lineParts[1].substring(0, lineParts[1].indexOf(":")).trim()
+            : lineParts[1];
         final String className =
             lineParts[2].substring(0, lineParts[2].indexOf(".")).trim();
         final String methodName =

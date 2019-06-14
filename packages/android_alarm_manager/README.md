@@ -57,7 +57,7 @@ main() async {
 `printHello` will then run (roughly) every minute, even if the main app ends. However, `printHello`
 will not run in the same isolate as the main application. Unlike threads, isolates do not share
 memory and communication between isolates must be done via message passing (see more documentation on
-isolates [here](https://api.dartlang.org/stable/2.0.0/dart-isolate/dart-isolate-library.html)).
+isolates [here](https://api.dart.dev/stable/2.0.0/dart-isolate/dart-isolate-library.html)).
 
 If alarm callbacks will need access to other Flutter plugins, including the
 alarm manager plugin itself, it is necessary to teach the background service how

@@ -1,3 +1,7 @@
+## 5.0.4
+
+* Update Dart code to conform to current Dart formatter.
+
 ## 5.0.3
 
 * Add missing template type parameter to `invokeMethod` calls.
@@ -5,6 +9,7 @@
 * Replace invokeMethod with invokeMapMethod wherever necessary.
 
 ## 5.0.2
+
 * Fixes `closeWebView` failure on iOS.
 
 ## 5.0.1

@@ -136,7 +136,7 @@ void main() {
           details.transactionDate);
       expect(details.verificationData.localVerificationData, 'receipt data');
       expect(details.verificationData.serverVerificationData, 'receipt data');
-      expect(details.verificationData.source, PurchaseSource.AppStore);
+      expect(details.verificationData.source, IAPSource.AppStore);
       expect(details.skPaymentTransaction, dummyTransaction);
       expect(details.billingClientPurchase, null);
     });
