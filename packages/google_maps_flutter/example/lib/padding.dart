@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
@@ -59,7 +58,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
       ),
     ];
 
-    columnChildren.addAll([_paddingInput(), _buttons()]);
+    columnChildren.addAll(<Widget>[_paddingInput(), _buttons()]);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
