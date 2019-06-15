@@ -1,3 +1,7 @@
+## 5.0.3
+
+* Update Dart code to conform to current Dart formatter.
+
 ## 5.0.2
 
 * Add missing template type parameter to `invokeMethod` calls.

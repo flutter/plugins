@@ -22,12 +22,13 @@ void main() {
     final FirebaseVision vision = FirebaseVision.instance;
 
     group('$BarcodeDetector', () {
+      final BarcodeDetector detector = vision.barcodeDetector();
+
       test('detectInImage', () async {
         final String tmpFilename = await _loadImage('assets/test_barcode.jpg');
         final FirebaseVisionImage visionImage =
             FirebaseVisionImage.fromFilePath(tmpFilename);
 
-        final BarcodeDetector detector = vision.barcodeDetector();
         final List<Barcode> barcodes = await detector.detectInImage(
           visionImage,
         );
@@ -79,44 +80,63 @@ void main() {
         expect(phone.number, '555-555-5555');
         expect(phone.type, BarcodePhoneType.unknown);
       });
+
+      test('close', () {
+        expect(detector.close(), completes);
+      });
     });
 
     group('$FaceDetector', () {
+      final FaceDetector detector = vision.faceDetector();
+
       test('processImage', () async {
         final String tmpFilename = await _loadImage('assets/test_face.jpg');
         final FirebaseVisionImage visionImage =
             FirebaseVisionImage.fromFilePath(tmpFilename);
 
-        final FaceDetector detector = vision.faceDetector();
         final List<Face> faces = await detector.processImage(visionImage);
 
         expect(faces.length, 1);
       });
+
+      test('close', () {
+        expect(detector.close(), completes);
+      });
     });
 
     group('$ImageLabeler', () {
+      final ImageLabeler labeler = vision.imageLabeler();
+
       test('processImage', () async {
         final String tmpFilename = await _loadImage('assets/test_barcode.jpg');
         final FirebaseVisionImage visionImage =
             FirebaseVisionImage.fromFilePath(tmpFilename);
 
-        final ImageLabeler labeler = vision.imageLabeler();
         final List<ImageLabel> labels = await labeler.processImage(visionImage);
 
         expect(labels.length, greaterThan(0));
       });
+
+      test('close', () {
+        expect(labeler.close(), completes);
+      });
     });
 
     group('$TextRecognizer', () {
+      final TextRecognizer recognizer = vision.textRecognizer();
+
       test('processImage', () async {
         final String tmpFilename = await _loadImage('assets/test_text.png');
         final FirebaseVisionImage visionImage =
             FirebaseVisionImage.fromFilePath(tmpFilename);
 
-        final TextRecognizer recognizer = vision.textRecognizer();
         final VisionText text = await recognizer.processImage(visionImage);
 
         expect(text.text, 'TEXT');
+      });
+
+      test('close', () {
+        expect(recognizer.close(), completes);
       });
     });
   });
