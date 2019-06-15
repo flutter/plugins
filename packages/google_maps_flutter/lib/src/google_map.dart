@@ -30,6 +30,7 @@ class GoogleMap extends StatefulWidget {
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
+
     /// If no padding is specified default padding will be 0.
     this.padding = const EdgeInsets.all(0),
     this.markers,
