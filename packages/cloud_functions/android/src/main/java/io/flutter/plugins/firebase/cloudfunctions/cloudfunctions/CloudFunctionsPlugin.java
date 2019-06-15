@@ -57,7 +57,7 @@ public class CloudFunctionsPlugin implements MethodCallHandler {
                             exceptionMap);
                       } else {
                         Exception exception = task.getException();
-                        result.error(null, exception.getMessage(), null);
+                        result.error("genericError", exception.getMessage(), null);
                       }
                     }
                   }
