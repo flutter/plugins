@@ -10,7 +10,9 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 ## Usage
 
 ### Configure the Google sign-in plugin
-The Google Sign-in plugin is required to use the firebase_auth plugin. Follow the [Google sign-in plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#pub-pkg-tab-installing).
+The Google Sign-in plugin is required to use the firebase_auth plugin for Google authentication. Follow the [Google sign-in plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#pub-pkg-tab-installing).
+
+If you're using Google Sign-in with Firebase auth, be sure to include a support email in the [Firebase console](https://console.firebase.google.com/). If you don't, you may encounter `com.google.android.gms.common.api.ApiException: 12500`.
 
 ### Import the firebase_auth plugin
 To use the firebase_auth plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/firebase_auth#pub-pkg-tab-installing).

@@ -1,3 +1,9 @@
+## 4.0.2
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
 ## 4.0.1+3
 
 * Update example to gracefully handle null user information.

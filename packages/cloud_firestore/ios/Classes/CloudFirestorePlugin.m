@@ -7,7 +7,7 @@
 #import <Firebase/Firebase.h>
 
 #define LIBRARY_NAME @"flutter-firebase_cloud_firestore"
-#define LIBRARY_VERSION @"0.12.1"
+#define LIBRARY_VERSION @"0.12.5+1"
 
 static FlutterError *getFlutterError(NSError *error) {
   if (error == nil) return nil;
@@ -26,9 +26,9 @@ static FIRDocumentReference *getDocumentReference(NSDictionary *arguments) {
   return [getFirestore(arguments) documentWithPath:arguments[@"path"]];
 }
 
-static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy) {
+static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy,
+                                  BOOL *isCollectionGroup) {
   NSMutableArray *values = [[NSMutableArray alloc] init];
-  NSString *documentId = document[@"id"];
   NSDictionary *documentData = document[@"data"];
   if (orderBy) {
     for (id item in orderBy) {
@@ -37,12 +37,25 @@ static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy) {
       [values addObject:[documentData objectForKey:fieldName]];
     }
   }
-  [values addObject:documentId];
+  if (isCollectionGroup) {
+    NSString *path = document[@"path"];
+    [values addObject:path];
+  } else {
+    NSString *documentId = document[@"id"];
+    [values addObject:documentId];
+  }
   return values;
 }
 
 static FIRQuery *getQuery(NSDictionary *arguments) {
-  FIRQuery *query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
+  NSNumber *data = arguments[@"isCollectionGroup"];
+  BOOL isCollectionGroup = data.boolValue;
+  FIRQuery *query;
+  if (isCollectionGroup) {
+    query = [getFirestore(arguments) collectionGroupWithID:arguments[@"path"]];
+  } else {
+    query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
+  }
   NSDictionary *parameters = arguments[@"parameters"];
   NSArray *whereConditions = parameters[@"where"];
   for (id item in whereConditions) {
@@ -85,39 +98,45 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
     query = [query queryStartingAtValues:startAtValues];
   }
   id startAtDocument = parameters[@"startAtDocument"];
+  id startAfterDocument = parameters[@"startAfterDocument"];
+  id endAtDocument = parameters[@"endAtDocument"];
+  id endBeforeDocument = parameters[@"endBeforeDocument"];
+  if (startAtDocument || startAfterDocument || endAtDocument || endBeforeDocument) {
+    NSArray *orderByParameters = [orderBy lastObject];
+    NSNumber *descending = orderByParameters[1];
+    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID
+                                descending:[descending boolValue]];
+  }
   if (startAtDocument) {
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
-    query = [query queryStartingAtValues:getDocumentValues(startAtDocument, orderBy)];
+    query = [query
+        queryStartingAtValues:getDocumentValues(startAtDocument, orderBy, isCollectionGroup)];
   }
   id startAfter = parameters[@"startAfter"];
   if (startAfter) {
     NSArray *startAfterValues = startAfter;
     query = [query queryStartingAfterValues:startAfterValues];
   }
-  id startAfterDocument = parameters[@"startAfterDocument"];
   if (startAfterDocument) {
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
-    query = [query queryStartingAfterValues:getDocumentValues(startAfterDocument, orderBy)];
+    query = [query
+        queryStartingAfterValues:getDocumentValues(startAfterDocument, orderBy, isCollectionGroup)];
   }
   id endAt = parameters[@"endAt"];
   if (endAt) {
     NSArray *endAtValues = endAt;
     query = [query queryEndingAtValues:endAtValues];
   }
-  id endAtDocument = parameters[@"endAtDocument"];
   if (endAtDocument) {
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
-    query = [query queryEndingAtValues:getDocumentValues(endAtDocument, orderBy)];
+    query =
+        [query queryEndingAtValues:getDocumentValues(endAtDocument, orderBy, isCollectionGroup)];
   }
   id endBefore = parameters[@"endBefore"];
   if (endBefore) {
     NSArray *endBeforeValues = endBefore;
     query = [query queryEndingBeforeValues:endBeforeValues];
   }
-  id endBeforeDocument = parameters[@"endBeforeDocument"];
   if (endBeforeDocument) {
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID descending:NO];
-    query = [query queryEndingBeforeValues:getDocumentValues(endBeforeDocument, orderBy)];
+    query = [query
+        queryEndingBeforeValues:getDocumentValues(endBeforeDocument, orderBy, isCollectionGroup)];
   }
   return query;
 }
@@ -609,6 +628,9 @@ const UInt8 INCREMENT_INTEGER = 138;
     }
     if (![call.arguments[@"timestampsInSnapshotsEnabled"] isEqual:[NSNull null]]) {
       settings.timestampsInSnapshotsEnabled = (bool)call.arguments[@"timestampsInSnapshotsEnabled"];
+    }
+    if (![call.arguments[@"cacheSizeBytes"] isEqual:[NSNull null]]) {
+      settings.cacheSizeBytes = ((NSNumber *)call.arguments[@"cacheSizeBytes"]).intValue;
     }
     FIRFirestore *db = getFirestore(call.arguments);
     db.settings = settings;
