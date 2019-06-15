@@ -1,3 +1,7 @@
+## 5.0.4
+
+* Update to README with explanation of differences in data format.
+
 ## 5.0.3
 
 * Update Dart code to conform to current Dart formatter.
