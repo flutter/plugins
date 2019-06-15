@@ -1,6 +1,12 @@
 package io.flutter.plugins.firebasemlvision;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
+import android.util.SparseArray;
+import androidx.exifinterface.media.ExifInterface;
+import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
 import io.flutter.plugin.common.MethodCall;
@@ -14,6 +20,8 @@ import java.util.Map;
 
 /** FirebaseMlVisionPlugin */
 public class FirebaseMlVisionPlugin implements MethodCallHandler {
+  private final SparseArray<Detector> detectors = new SparseArray<>();
+
   private Registrar registrar;
 
   private FirebaseMlVisionPlugin(Registrar registrar) {
@@ -29,6 +37,25 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
+    switch (call.method) {
+      case "BarcodeDetector#detectInImage":
+      case "FaceDetector#processImage":
+      case "ImageLabeler#processImage":
+      case "TextRecognizer#processImage":
+        handleDetection(call, result);
+        break;
+      case "BarcodeDetector#close":
+      case "FaceDetector#close":
+      case "ImageLabeler#close":
+      case "TextRecognizer#close":
+        closeDetector(call, result);
+        break;
+      default:
+        result.notImplemented();
+    }
+  }
+
+  private void handleDetection(MethodCall call, Result result) {
     Map<String, Object> options = call.argument("options");
 
     FirebaseVisionImage image;
@@ -40,34 +67,73 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       return;
     }
 
-    switch (call.method) {
-      case "BarcodeDetector#detectInImage":
-        BarcodeDetector.instance.handleDetection(image, options, result);
-        break;
-      case "FaceDetector#detectInImage":
-        FaceDetector.instance.handleDetection(image, options, result);
-        break;
-      case "LabelDetector#detectInImage":
-        LabelDetector.instance.handleDetection(image, options, result);
-        break;
-      case "CloudLabelDetector#detectInImage":
-        CloudLabelDetector.instance.handleDetection(image, options, result);
-        break;
-      case "TextRecognizer#processImage":
-        TextRecognizer.instance.handleDetection(image, options, result);
-        break;
-      default:
-        result.notImplemented();
+    Detector detector = getDetector(call);
+    if (detector == null) {
+      switch (call.method.split("#")[0]) {
+        case "BarcodeDetector":
+          detector = new BarcodeDetector(FirebaseVision.getInstance(), options);
+          break;
+        case "FaceDetector":
+          detector = new FaceDetector(FirebaseVision.getInstance(), options);
+          break;
+        case "ImageLabeler":
+          detector = new ImageLabeler(FirebaseVision.getInstance(), options);
+          break;
+        case "TextRecognizer":
+          detector = new TextRecognizer(FirebaseVision.getInstance(), options);
+          break;
+      }
+
+      final Integer handle = call.argument("handle");
+      addDetector(handle, detector);
+    }
+
+    detector.handleDetection(image, result);
+  }
+
+  private void closeDetector(final MethodCall call, final Result result) {
+    final Detector detector = getDetector(call);
+
+    if (detector == null) {
+      final Integer handle = call.argument("handle");
+      final String message = String.format("Object for handle does not exists: %s", handle);
+      throw new IllegalArgumentException(message);
+    }
+
+    try {
+      detector.close();
+      result.success(null);
+    } catch (IOException e) {
+      final String code = String.format("%sIOError", detector.getClass().getSimpleName());
+      result.error(code, e.getLocalizedMessage(), null);
+    } finally {
+      final Integer handle = call.argument("handle");
+      detectors.remove(handle);
     }
   }
 
   private FirebaseVisionImage dataToVisionImage(Map<String, Object> imageData) throws IOException {
     String imageType = (String) imageData.get("type");
+    assert imageType != null;
 
     switch (imageType) {
       case "file":
-        File file = new File((String) imageData.get("path"));
-        return FirebaseVisionImage.fromFilePath(registrar.context(), Uri.fromFile(file));
+        final String imageFilePath = (String) imageData.get("path");
+        final int rotation = getImageExifOrientation(imageFilePath);
+
+        if (rotation == 0) {
+          File file = new File(imageFilePath);
+          return FirebaseVisionImage.fromFilePath(registrar.context(), Uri.fromFile(file));
+        }
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotation);
+
+        final Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
+        final Bitmap rotatedBitmap =
+            Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+        return FirebaseVisionImage.fromBitmap(rotatedBitmap);
       case "bytes":
         @SuppressWarnings("unchecked")
         Map<String, Object> metadataData = (Map<String, Object>) imageData.get("metadata");
@@ -80,9 +146,29 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
                 .setRotation(getRotation((int) metadataData.get("rotation")))
                 .build();
 
-        return FirebaseVisionImage.fromByteArray((byte[]) imageData.get("bytes"), metadata);
+        byte[] bytes = (byte[]) imageData.get("bytes");
+        assert bytes != null;
+
+        return FirebaseVisionImage.fromByteArray(bytes, metadata);
       default:
         throw new IllegalArgumentException(String.format("No image type for: %s", imageType));
+    }
+  }
+
+  private int getImageExifOrientation(String imageFilePath) throws IOException {
+    ExifInterface exif = new ExifInterface(imageFilePath);
+    int orientation =
+        exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+    switch (orientation) {
+      case ExifInterface.ORIENTATION_ROTATE_90:
+        return 90;
+      case ExifInterface.ORIENTATION_ROTATE_180:
+        return 180;
+      case ExifInterface.ORIENTATION_ROTATE_270:
+        return 270;
+      default:
+        return 0;
     }
   }
 
@@ -99,5 +185,19 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       default:
         throw new IllegalArgumentException(String.format("No rotation for: %d", rotation));
     }
+  }
+
+  private void addDetector(final int handle, final Detector detector) {
+    if (detectors.get(handle) != null) {
+      final String message = String.format("Object for handle already exists: %s", handle);
+      throw new IllegalArgumentException(message);
+    }
+
+    detectors.put(handle, detector);
+  }
+
+  private Detector getDetector(final MethodCall call) {
+    final Integer handle = call.argument("handle");
+    return detectors.get(handle);
   }
 }

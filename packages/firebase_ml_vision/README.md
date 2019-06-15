@@ -1,8 +1,8 @@
-# ML Kit for Firebase
+# ML Kit Vision for Firebase
 
 [![pub package](https://img.shields.io/pub/v/firebase_ml_vision.svg)](https://pub.dartlang.org/packages/firebase_ml_vision)
 
-A Flutter plugin to use the [ML Kit for Firebase API](https://firebase.google.com/docs/ml-kit/).
+A Flutter plugin to use the [ML Kit Vision for Firebase API](https://firebase.google.com/docs/ml-kit/).
 
 For Flutter plugins for other Firebase products, see [FlutterFire.md](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
 
@@ -13,6 +13,20 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 To use this plugin, add `firebase_ml_vision` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure Firebase for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
 
 ### Android
+If you're using the on-device `ImageLabeler`, include the latest matching [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android) dependency in your app-level build.gradle file.
+
+```xml
+android {
+    dependencies {
+        // ...
+
+        api 'com.google.firebase:firebase-ml-vision-image-label-model:17.0.2'
+    }
+}
+```
+
+If you receive compilation errors, try an earlier version of [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android).
+
 Optional but recommended: If you use the on-device API, configure your app to automatically download the ML model to the device after your app is installed from the Play Store. To do so, add the following declaration to your app's AndroidManifest.xml file:
 
 ```xml
@@ -25,7 +39,21 @@ Optional but recommended: If you use the on-device API, configure your app to au
 </application>
 ```
 
-## Using an On-device FirbaseVisionDetector
+### iOS
+Versions `0.7.0+` use the latest ML Kit for Firebase version which requires a minimum deployment
+target of 9.0. You can add the line `platform :ios, '9.0'` in your iOS project `Podfile`.
+
+If you're using one of the on-device APIs, include the corresponding ML Kit library model in your
+`Podfile`. Then run `pod update` in a terminal within the same directory as your `Podfile`.
+
+```
+pod 'Firebase/MLVisionBarcodeModel'
+pod 'Firebase/MLVisionFaceModel'
+pod 'Firebase/MLVisionLabelModel'
+pod 'Firebase/MLVisionTextModel'
+```
+
+## Using an ML Vision Detector
 
 ### 1. Create a `FirebaseVisionImage`.
 
@@ -42,28 +70,28 @@ Get an instance of a `FirebaseVisionDetector`.
 
 ```dart
 final BarcodeDetector barcodeDetector = FirebaseVision.instance.barcodeDetector();
-final CloudLabelDetector cloudLabelDetector = FirebaseVision.instance.cloudLabelDetector();
+final ImageLabeler cloudLabeler = FirebaseVision.instance.cloudImageLabeler();
 final FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
-final LabelDetector labelDetector = FirebaseVision.instance.labelDetector();
+final ImageLabeler labeler = FirebaseVision.instance.imageLabeler();
 final TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
 ```
 
-You can also configure all detectors except `TextRecognizer` with desired options.
+You can also configure all detectors, except `TextRecognizer`, with desired options.
 
 ```dart
-final LabelDetector detector = FirebaseVision.instance.labelDetector(
-  LabelDetectorOptions(confidenceThreshold: 0.75),
+final ImageLabeler labeler = FirebaseVision.instance.imageLabler(
+  ImageLabelerOptions(confidenceThreshold: 0.75),
 );
 ```
 
-### 3. Call `detectInImage()` with `visionImage`.
+### 3. Call `detectInImage()` or `processImage()` with `visionImage`.
 
 ```dart
 final List<Barcode> barcodes = await barcodeDetector.detectInImage(visionImage);
-final List<Label> labels = await cloudLabelDetector.detectInImage(visionImage);
-final List<Face> faces = await faceDetector.detectInImage(visionImage);
-final List<Label> labels = await labelDetector.detectInImage(visionImage);
-final VisionText visionText = await textRecognizer.detectInImage(visionImage);
+final List<ImageLabel> cloudLabels = await cloudLabeler.processImage(visionImage);
+final List<Face> faces = await faceDetector.processImage(visionImage);
+final List<ImageLabel> labels = await labeler.processImage(visionImage);
+final VisionText visionText = await textRecognizer.processImage(visionImage);
 ```
 
 ### 4. Extract data.
@@ -77,7 +105,7 @@ for (Barcode barcode in barcodes) {
 
   final String rawValue = barcode.rawValue;
 
-  final BarcordeValueType valueType = barcode.valueType;
+  final BarcodeValueType valueType = barcode.valueType;
 
   // See API reference for complete list of supported types
   switch (valueType) {
@@ -125,8 +153,8 @@ for (Face face in faces) {
 c. Extract labels.
 
 ```dart
-for (Label label in labels) {
-  final String text = label.label;
+for (ImageLabel label in labels) {
+  final String text = label.text;
   final String entityId = label.entityId;
   final double confidence = label.confidence;
 }
@@ -137,8 +165,8 @@ d. Extract text.
 ```dart
 String text = visionText.text;
 for (TextBlock block in visionText.blocks) {
-  final Rectangle<int> boundingBox = block.boundingBox;
-  final List<Point<int>> cornerPoints = block.cornerPoints;
+  final Rect boundingBox = block.boundingBox;
+  final List<Offset> cornerPoints = block.cornerPoints;
   final String text = block.text;
   final List<RecognizedLanguage> languages = block.recognizedLanguages;
 
@@ -151,6 +179,16 @@ for (TextBlock block in visionText.blocks) {
 }
 ```
 
+### 5. Release resources with `close()`.
+
+```dart
+barcodeDetector.close();
+cloudLabeler.close();
+faceDetector.close();
+labeler.close();
+textRecognizer.close();
+```
+
 ## Getting Started
 
-See the `example` directory for a complete sample app using ML Kit for Firebase.
+See the `example` directory for a complete sample app using ML Kit Vision for Firebase.

@@ -41,7 +41,11 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   private ConnectivityPlugin(Registrar registrar) {
     this.registrar = registrar;
     this.manager =
-        (ConnectivityManager) registrar.context().getSystemService(Context.CONNECTIVITY_SERVICE);
+        (ConnectivityManager)
+            registrar
+                .context()
+                .getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
   }
 
   @Override
@@ -66,6 +70,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
         return "wifi";
       case ConnectivityManager.TYPE_MOBILE:
       case ConnectivityManager.TYPE_MOBILE_DUN:
+      case ConnectivityManager.TYPE_MOBILE_HIPRI:
         return "mobile";
       default:
         return "none";
@@ -80,6 +85,12 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
         break;
       case "wifiName":
         handleWifiName(call, result);
+        break;
+      case "wifiBSSID":
+        handleBSSID(call, result);
+        break;
+      case "wifiIPAddress":
+        handleWifiIPAddress(call, result);
         break;
       default:
         result.notImplemented();
@@ -96,19 +107,47 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
     }
   }
 
-  private void handleWifiName(MethodCall call, final Result result) {
+  private WifiInfo getWifiInfo() {
     WifiManager wifiManager =
-        (WifiManager) registrar.context().getSystemService(Context.WIFI_SERVICE);
+        (WifiManager)
+            registrar.context().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    return wifiManager == null ? null : wifiManager.getConnectionInfo();
+  }
+
+  private void handleWifiName(MethodCall call, final Result result) {
+    WifiInfo wifiInfo = getWifiInfo();
+    String ssid = null;
+    if (wifiInfo != null) ssid = wifiInfo.getSSID();
+    if (ssid != null) ssid = ssid.replaceAll("\"", ""); // Android returns "SSID"
+    result.success(ssid);
+  }
+
+  private void handleBSSID(MethodCall call, MethodChannel.Result result) {
+    WifiInfo wifiInfo = getWifiInfo();
+    String bssid = null;
+    if (wifiInfo != null) bssid = wifiInfo.getBSSID();
+    result.success(bssid);
+  }
+
+  private void handleWifiIPAddress(MethodCall call, final Result result) {
+    WifiManager wifiManager =
+        (WifiManager)
+            registrar.context().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
     WifiInfo wifiInfo = null;
     if (wifiManager != null) wifiInfo = wifiManager.getConnectionInfo();
 
-    String ssid = null;
-    if (wifiInfo != null) ssid = wifiInfo.getSSID();
+    String ip = null;
+    int i_ip = 0;
+    if (wifiInfo != null) i_ip = wifiInfo.getIpAddress();
 
-    if (ssid != null) ssid = ssid.replaceAll("\"", ""); // Android returns "SSID"
+    if (i_ip != 0)
+      ip =
+          String.format(
+              "%d.%d.%d.%d",
+              (i_ip & 0xff), (i_ip >> 8 & 0xff), (i_ip >> 16 & 0xff), (i_ip >> 24 & 0xff));
 
-    result.success(ssid);
+    result.success(ip);
   }
 
   private BroadcastReceiver createReceiver(final EventSink events) {

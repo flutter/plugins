@@ -57,6 +57,16 @@ void main() {
       verify(analytics.setCurrentScreen(screenName: 'route')).called(1);
     });
 
+    test('setCurrentScreen on route pushReplacement', () {
+      final PageRoute<dynamic> route = MockPageRoute();
+      final PageRoute<dynamic> previousRoute = MockPageRoute();
+      when(route.settings).thenReturn(const RouteSettings(name: 'route'));
+
+      observer.didReplace(newRoute: route, oldRoute: previousRoute);
+
+      verify(analytics.setCurrentScreen(screenName: 'route')).called(1);
+    });
+
     test('uses nameExtractor', () {
       observer = FirebaseAnalyticsObserver(
         analytics: analytics,

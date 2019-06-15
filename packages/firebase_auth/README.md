@@ -10,7 +10,9 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 ## Usage
 
 ### Configure the Google sign-in plugin
-The Google Sign-in plugin is required to use the firebase_auth plugin. Follow the [Google sign-in plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#pub-pkg-tab-installing).
+The Google Sign-in plugin is required to use the firebase_auth plugin for Google authentication. Follow the [Google sign-in plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#pub-pkg-tab-installing).
+
+If you're using Google Sign-in with Firebase auth, be sure to include a support email in the [Firebase console](https://console.firebase.google.com/). If you don't, you may encounter `com.google.android.gms.common.api.ApiException: 12500`.
 
 ### Import the firebase_auth plugin
 To use the firebase_auth plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/firebase_auth#pub-pkg-tab-installing).
@@ -61,12 +63,15 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 You can now use the Firebase `_auth` to authenticate in your Dart code, e.g.
 ```dart
 Future<FirebaseUser> _handleSignIn() async {
-  GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-  GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-  FirebaseUser user = await _auth.signInWithGoogle(
+  final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+  final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+  final AuthCredential credential = GoogleAuthProvider.getCredential(
     accessToken: googleAuth.accessToken,
     idToken: googleAuth.idToken,
   );
+
+  final FirebaseUser user = await _auth.signInWithCredential(credential);
   print("signed in " + user.displayName);
   return user;
 }
@@ -80,10 +85,34 @@ _handleSignIn()
     .catchError((e) => print(e));
 ```
 
+### Register a user
+
+```dart
+final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
+      email: 'an email',
+      password: 'a password',
+    );
+```
+
+### Supported Firebase authentication methods
+
+* Google
+* Email and Password
+* Phone
+* Anonymously
+* GitHub
+* Facebook
+* Twitter
+
 ### Phone Auth
 
 You can use Firebase Authentication to sign in a user by sending an SMS message to
 the user's phone. The user signs in using a one-time code contained in the SMS message.
+
+### After authentication
+
+After a successful authentication, you will receive a `FirebaseUser` object. You can use this object to check if the email is verified, to update email, to send verification email and so on. See the [FirebaseUser](https://pub.dartlang.org/documentation/firebase_auth/latest/firebase_auth/FirebaseUser-class.html) API documentation for more details on the `FirebaseUser` object.
+
 
 #### iOS setup
 

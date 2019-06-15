@@ -8,12 +8,31 @@ Dart code in the background when alarms fire.
 ## Getting Started
 
 After importing this plugin to your project as usual, add the following to your
-`AndroidManifest.xml`:
+`AndroidManifest.xml` within the `<manifest></manifest>` tags:
+
+```xml
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+<uses-permission android:name="android.permission.WAKE_LOCK"/>
+```
+
+Next, within the `<application></application>` tags, add:
 
 ```xml
 <service
     android:name="io.flutter.plugins.androidalarmmanager.AlarmService"
+    android:permission="android.permission.BIND_JOB_SERVICE"
     android:exported="false"/>
+<receiver
+    android:name="io.flutter.plugins.androidalarmmanager.AlarmBroadcastReceiver"
+    android:exported="false"/>
+<receiver
+    android:name="io.flutter.plugins.androidalarmmanager.RebootBroadcastReceiver"
+    android:enabled="false">
+    <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+    </intent-filter>
+</receiver>
+
 ```
 
 Then in Dart code add:
@@ -38,7 +57,7 @@ main() async {
 `printHello` will then run (roughly) every minute, even if the main app ends. However, `printHello`
 will not run in the same isolate as the main application. Unlike threads, isolates do not share
 memory and communication between isolates must be done via message passing (see more documentation on
-isolates [here](https://api.dartlang.org/stable/2.0.0/dart-isolate/dart-isolate-library.html)).
+isolates [here](https://api.dart.dev/stable/2.0.0/dart-isolate/dart-isolate-library.html)).
 
 If alarm callbacks will need access to other Flutter plugins, including the
 alarm manager plugin itself, it is necessary to teach the background service how
@@ -69,6 +88,9 @@ Which must be reflected in the application's `AndroidManifest.xml`. E.g.:
         android:name=".Application"
         ...
 ```
+
+**Note:** Not calling `AlarmService.setPluginRegistrant` will result in an exception being
+thrown when an alarm eventually fires.
 
 For help getting started with Flutter, view our online
 [documentation](http://flutter.io/).
