@@ -7,7 +7,7 @@
 #import <Firebase/Firebase.h>
 
 #define LIBRARY_NAME @"flutter-fire-core"
-#define LIBRARY_VERSION @"0.4.0+3"
+#define LIBRARY_VERSION @"0.4.0+5"
 
 static NSDictionary *getDictionaryFromFIROptions(FIROptions *options) {
   if (!options) {

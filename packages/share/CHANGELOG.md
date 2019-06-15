@@ -1,3 +1,7 @@
+## 0.6.1+2
+
+* Update Dart code to conform to current Dart formatter.
+
 ## 0.6.1+1
 
 * Fix analyzer warnings about `const Rect` in tests.
