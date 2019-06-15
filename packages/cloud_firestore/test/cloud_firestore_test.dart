@@ -653,6 +653,16 @@ void main() {
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
 
+        // startAtDocument - endAtDocument
+        snapshot = await collectionReference
+            .startAtDocument(document)
+            .endAtDocument(document)
+            .getDocuments();
+        document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
         expect(
           log,
           equals(
@@ -742,6 +752,29 @@ void main() {
                   },
                 },
               ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'foo',
+                  'isCollectionGroup': false,
+                  'source': 'default',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'startAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'path': 'foo/0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                    'endAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'path': 'foo/0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                  },
+                },
+              ),
             ],
           ),
         );
@@ -781,6 +814,16 @@ void main() {
         // endBeforeDocument
         snapshot = await collectionGroupQuery
             .endBeforeDocument(document)
+            .getDocuments();
+        document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('bar/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
+        // startAtDocument - endAtDocument
+        snapshot = await collectionGroupQuery
+            .startAtDocument(document)
+            .endAtDocument(document)
             .getDocuments();
         document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
@@ -869,6 +912,30 @@ void main() {
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
                     'endBeforeDocument': <String, dynamic>{
+                      'id': '0',
+                      'path': 'bar/0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                  },
+                  'source': 'default',
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'bar',
+                  'isCollectionGroup': true,
+                  'source': 'default',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'startAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'path': 'bar/0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                    'endAtDocument': <String, dynamic>{
                       'id': '0',
                       'path': 'bar/0',
                       'data': kMockDocumentSnapshotData,
