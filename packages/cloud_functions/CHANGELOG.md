@@ -1,3 +1,7 @@
+## 0.0.5+1
+
+* Fix crash due to use of null error code when encountering generic errors.
+
 ## 0.0.5
 
 * Set iOS deployment target to 8.0 (minimum supported by both Firebase SDKs and Flutter), fixes compilation errors.
