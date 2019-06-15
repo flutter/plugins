@@ -53,10 +53,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
         child: Center(
           child: Text(
             "Enter Padding Below",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold
-            ),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
       ),
@@ -134,8 +131,6 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               ),
             ),
           ),
-          
-          
         ],
       ),
     );
@@ -152,11 +147,10 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
             onPressed: () {
               setState(() {
                 _padding = EdgeInsets.fromLTRB(
-                  double.tryParse(_leftController.value?.text) ?? 0,
-                  double.tryParse(_topController.value?.text) ?? 0,
-                  double.tryParse(_rightController.value?.text) ?? 0,
-                  double.tryParse(_bottomController.value?.text) ?? 0
-                ); 
+                    double.tryParse(_leftController.value?.text) ?? 0,
+                    double.tryParse(_topController.value?.text) ?? 0,
+                    double.tryParse(_rightController.value?.text) ?? 0,
+                    double.tryParse(_bottomController.value?.text) ?? 0);
               });
             },
           ),
@@ -168,13 +162,12 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
                 _bottomController.clear();
                 _leftController.clear();
                 _rightController.clear();
-                _padding = const EdgeInsets.all(0); 
+                _padding = const EdgeInsets.all(0);
               });
             },
           )
         ],
-      ),  
+      ),
     );
   }
 }
-
