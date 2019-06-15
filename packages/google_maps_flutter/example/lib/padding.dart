@@ -24,7 +24,7 @@ const LatLng _kMapCenter = LatLng(52.4478, -3.5402);
 class MarkerIconsBodyState extends State<MarkerIconsBody> {
   GoogleMapController controller;
 
-  double _padding = 0;
+  EdgeInsets _padding = const EdgeInsets.all(0);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
         target: _kMapCenter,
         zoom: 7.0,
       ),
-      padding: EdgeInsets.only(bottom: _padding),
+      padding: _padding,
     );
 
     final List<Widget> columnChildren = <Widget>[
@@ -48,9 +48,21 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
           ),
         ),
       ),
+      Padding(
+        padding: const EdgeInsets.only(top: 20),
+        child: Center(
+          child: Text(
+            "Enter Padding Below",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold
+            ),
+          ),
+        ),
+      ),
     ];
 
-    columnChildren.add(_setPaddingButton());
+    columnChildren.addAll([_paddingInput(), _buttons()]);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -65,17 +77,104 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
     });
   }
 
-  Widget _setPaddingButton() {
+  TextEditingController _topController = TextEditingController();
+  TextEditingController _bottomController = TextEditingController();
+  TextEditingController _leftController = TextEditingController();
+  TextEditingController _rightController = TextEditingController();
+
+  Widget _paddingInput() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: RaisedButton(
-        child: const Text('Change padding'),
-        onPressed: () async {
-          setState(() {
-            _padding = Random().nextInt(150).toDouble();
-          });
-        },
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: <Widget>[
+          Flexible(
+            flex: 2,
+            child: TextField(
+              controller: _topController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                hintText: "Top",
+              ),
+            ),
+          ),
+          Spacer(),
+          Flexible(
+            flex: 2,
+            child: TextField(
+              controller: _bottomController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                hintText: "Bottom",
+              ),
+            ),
+          ),
+          Spacer(),
+          Flexible(
+            flex: 2,
+            child: TextField(
+              controller: _leftController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                hintText: "Left",
+              ),
+            ),
+          ),
+          Spacer(),
+          Flexible(
+            flex: 2,
+            child: TextField(
+              controller: _rightController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                hintText: "Right",
+              ),
+            ),
+          ),
+          
+          
+        ],
       ),
     );
   }
+
+  Widget _buttons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          FlatButton(
+            child: const Text("Set Padding"),
+            onPressed: () {
+              setState(() {
+                _padding = EdgeInsets.fromLTRB(
+                  double.tryParse(_leftController.value?.text) ?? 0,
+                  double.tryParse(_topController.value?.text) ?? 0,
+                  double.tryParse(_rightController.value?.text) ?? 0,
+                  double.tryParse(_bottomController.value?.text) ?? 0
+                ); 
+              });
+            },
+          ),
+          FlatButton(
+            child: const Text("Reset Padding"),
+            onPressed: () {
+              setState(() {
+                _topController.clear();
+                _bottomController.clear();
+                _leftController.clear();
+                _rightController.clear();
+                _padding = const EdgeInsets.all(0); 
+              });
+            },
+          )
+        ],
+      ),  
+    );
+  }
 }
+

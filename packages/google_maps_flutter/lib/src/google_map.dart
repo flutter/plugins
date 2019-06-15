@@ -30,11 +30,12 @@ class GoogleMap extends StatefulWidget {
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
+    /// If no padding is specified default padding will be 0.
+    this.padding = const EdgeInsets.all(0),
     this.markers,
     this.polygons,
     this.polylines,
     this.circles,
-    this.padding = const EdgeInsets.all(0),
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -74,6 +75,9 @@ class GoogleMap extends StatefulWidget {
   /// True if the map view should respond to tilt gestures.
   final bool tiltGesturesEnabled;
 
+  /// Padding to be set on map. See https://developers.google.com/maps/documentation/android-sdk/map#map_padding for more details.
+  final EdgeInsets padding;
+
   /// Markers to be placed on the map.
   final Set<Marker> markers;
 
@@ -85,8 +89,6 @@ class GoogleMap extends StatefulWidget {
 
   /// Circles to be placed on the map.
   final Set<Circle> circles;
-
-  final EdgeInsets padding;
 
   /// Called when the camera starts moving.
   ///
