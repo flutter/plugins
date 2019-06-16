@@ -4,7 +4,6 @@ import com.google.firebase.BuildConfig;
 import com.google.firebase.components.Component;
 import com.google.firebase.components.ComponentRegistrar;
 import com.google.firebase.platforminfo.LibraryVersionComponent;
-
 import java.util.Collections;
 import java.util.List;
 
