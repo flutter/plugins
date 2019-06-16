@@ -1,3 +1,8 @@
+## 0.2.0+3
+
+* Auto retrieve pubspec version to report usage to
+  Firebase.
+
 ## 0.2.0+2
 
 * Add missing template type parameter to `invokeMethod` calls.

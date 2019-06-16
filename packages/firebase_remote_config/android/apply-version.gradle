@@ -1,0 +1,21 @@
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
+String libraryVersionName = "UNKNOWN"
+File pubspec = new File(project.projectDir.parentFile,  'pubspec.yaml')
+
+if (pubspec.exists()) {
+    String yaml = pubspec.text
+    // Using \s*['|"]?([^'|"]*)['|"]? to extract version number.
+    Matcher versionMatcher = Pattern.compile("^version:\\s*['|\"]?([^'|\"]*)['|\"]?\$", Pattern.MULTILINE).matcher(yaml)
+    if (versionMatcher.find()) libraryVersionName = versionMatcher.group(1)
+}
+
+// Apply the version name to default config
+// these are available in java via io.flutter.plugins.firebase.firestore.BuildConfig;
+android {
+    defaultConfig {
+        // BuildConfig.VERSION_NAME
+        versionName libraryVersionName.replaceAll("\\+", "-")
+    }
+}

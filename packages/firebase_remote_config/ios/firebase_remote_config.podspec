@@ -1,6 +1,11 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
+
+require 'yaml'
+pubspec = YAML.load_file(File.join('..', 'pubspec.yaml'))
+ffVersion = pubspec['version'].gsub('+', '-')
+
 Pod::Spec.new do |s|
   s.name             = 'firebase_remote_config'
   s.version          = '0.0.1'
@@ -18,5 +23,10 @@ Firebase Remote Config plugin for Flutter.
   s.dependency 'Flutter'
   s.dependency 'Firebase/RemoteConfig'
   s.static_framework = true
+
+  s.prepare_command = <<-CMD
+      echo // Generated file, do not edit > Classes/version.h
+      echo "#define LIBRARY_VERSION @\\"#{ffVersion}\\"" >> Classes/version.h
+    CMD
 end
 
