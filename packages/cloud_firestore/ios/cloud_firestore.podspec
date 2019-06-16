@@ -21,4 +21,6 @@ Pod::Spec.new do |s|
   s.dependency 'Firebase/Core'
   s.dependency 'Firebase/Firestore', '~> 6.0'
   s.static_framework = true
+  # Generate an empty resource bundle so that Pod metadata can be read at runtime
+  s.resource_bundle = { pubspec['name'] => 'Pod/Assets/*' }
 end
