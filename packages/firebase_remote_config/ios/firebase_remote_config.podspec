@@ -25,8 +25,9 @@ Firebase Remote Config plugin for Flutter.
   s.static_framework = true
 
   s.prepare_command = <<-CMD
-      echo // Generated file, do not edit > Classes/version.h
-      echo "#define LIBRARY_VERSION @\\"#{ffVersion}\\"" >> Classes/version.h
+      echo // Generated file, do not edit > Classes/UserAgent.h
+      echo "#define LIBRARY_VERSION @\\"#{ffVersion}\\"" >> Classes/UserAgent.h
+      echo "#define LIBRARY_NAME @\\"#{pubspec['name']}\\"" >> Classes/UserAgent.h
     CMD
 end
 

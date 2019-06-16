@@ -1,9 +1,7 @@
 #import "FirebaseRemoteConfigPlugin.h"
-#import "version.h"
+#import "UserAgent.h"
 
 #import <Firebase/Firebase.h>
-
-#define LIBRARY_NAME @"flutter-fire-rc"
 
 @interface FirebaseRemoteConfigPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
@@ -20,7 +18,6 @@
 
   SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
   if ([FIRApp respondsToSelector:sel]) {
-    NSLog(@"bundle: %@", LIBRARY_VERSION);
     [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
   }
 }
