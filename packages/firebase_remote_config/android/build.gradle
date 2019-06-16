@@ -51,4 +51,4 @@ android {
     }
 }
 
-apply from: file("./apply-version.gradle")
+apply from: file("./user-agent.gradle")
