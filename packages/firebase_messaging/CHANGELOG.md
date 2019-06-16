@@ -1,6 +1,6 @@
 ## 5.0.4
 
-* Update to README with explanation of differences in data format.
+* Updates to README and example with explanations of differences in data format.
 
 ## 5.0.3
 
