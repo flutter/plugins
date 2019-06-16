@@ -6,7 +6,6 @@ import com.google.firebase.platforminfo.LibraryVersionComponent;
 import java.util.Collections;
 import java.util.List;
 
-
 public class FlutterFirebaseAppRegistrar implements ComponentRegistrar {
   @Override
   public List<Component<?>> getComponents() {
