@@ -1,3 +1,7 @@
+## 0.0.4+6
+
+* Fixed an issue where `Crashlytics#setUserIdentifier` incorrectly called `setUserEmail` natively on iOS.
+
 ## 0.0.4+5
 
 * Fix parsing stacktrace.
