@@ -28,7 +28,7 @@ for version in "debug" "release"; do
   else
     error "Failed to build $version all_plugins app."
     if [[ "${#CHANGED_PACKAGE_LIST[@]}" == 0 ]]; then
-      error "There was a failure to comiple all first party plugins together, but there were no changes detected in packages."
+      error "There was a failure to compile all first party plugins together, but there were no changes detected in packages."
     else
       error "Changes to the following packages may prevent all first party plugins to compile together:"
       for package in "${CHANGED_PACKAGE_LIST[@]}"; do
