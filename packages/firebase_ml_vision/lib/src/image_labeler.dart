@@ -26,8 +26,12 @@ part of firebase_ml_vision;
 /// final List<ImageLabel> labels = await imageLabeler.processImage(image);
 /// ```
 class ImageLabeler {
-  ImageLabeler._({@required dynamic options, @required this.modelType})
-      : _options = options,
+  ImageLabeler._({
+    @required dynamic options,
+    @required this.modelType,
+    @required int handle,
+  })  : _options = options,
+        _handle = handle,
         assert(options != null),
         assert(modelType != null);
 
@@ -36,13 +40,20 @@ class ImageLabeler {
 
   // Should be of type ImageLabelerOptions or CloudImageLabelerOptions.
   final dynamic _options;
+  final int _handle;
+  bool _hasBeenOpened = false;
+  bool _isClosed = false;
 
   /// Finds entities in the input image.
   Future<List<ImageLabel>> processImage(FirebaseVisionImage visionImage) async {
+    assert(!_isClosed);
+
+    _hasBeenOpened = true;
     final List<dynamic> reply =
         await FirebaseVision.channel.invokeListMethod<dynamic>(
       'ImageLabeler#processImage',
       <String, dynamic>{
+        'handle': _handle,
         'options': <String, dynamic>{
           'modelType': _enumToString(modelType),
           'confidenceThreshold': _options.confidenceThreshold,
@@ -56,6 +67,18 @@ class ImageLabeler {
     }
 
     return labels;
+  }
+
+  /// Release resources used by this labeler.
+  Future<void> close() {
+    if (!_hasBeenOpened) _isClosed = true;
+    if (_isClosed) return Future<void>.value(null);
+
+    _isClosed = true;
+    return FirebaseVision.channel.invokeMethod<void>(
+      'ImageLabeler#close',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 }
 

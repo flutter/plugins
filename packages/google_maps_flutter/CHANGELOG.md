@@ -1,5 +1,13 @@
 ## 0.5.17
 
+* Add support for Padding.
+
+## 0.5.16+1
+
+* Update Dart code to conform to current Dart formatter.
+
+## 0.5.17
+
 * Add support for holes in Polygons
 
 ## 0.5.16

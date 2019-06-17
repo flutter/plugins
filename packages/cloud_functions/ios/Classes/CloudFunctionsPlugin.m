@@ -4,7 +4,6 @@
 
 #import "CloudFunctionsPlugin.h"
 
-#import "FIRFunctions+Internal.h"
 #import "Firebase/Firebase.h"
 
 @interface CloudFunctionsPlugin ()
