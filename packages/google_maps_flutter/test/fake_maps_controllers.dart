@@ -47,6 +47,8 @@ class FakePlatformGoogleMap {
 
   bool myLocationButtonEnabled;
 
+  List<dynamic> padding;
+
   Set<MarkerId> markerIdsToRemove;
 
   Set<Marker> markersToAdd;
@@ -333,6 +335,9 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('myLocationButtonEnabled')) {
       myLocationButtonEnabled = options['myLocationButtonEnabled'];
+    }
+    if (options.containsKey('padding')) {
+      padding = options['padding'];
     }
   }
 }
