@@ -1,3 +1,11 @@
+## 0.5.16+1
+
+* Update Dart code to conform to current Dart formatter.
+
+## 0.5.16
+
+* Add support for custom map styling.
+
 ## 0.5.15+1
 
 * Add missing template type parameter to `invokeMethod` calls.

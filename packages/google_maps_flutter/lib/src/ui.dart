@@ -97,3 +97,13 @@ class MinMaxZoomPreference {
     return 'MinMaxZoomPreference(minZoom: $minZoom, maxZoom: $maxZoom)';
   }
 }
+
+/// Exception when a map style is invalid or was unable to be set.
+///
+/// See also: `setStyle` on [GoogleMapController] for why this exception
+/// might be thrown.
+class MapStyleException implements Exception {
+  const MapStyleException(this.cause);
+
+  final String cause;
+}

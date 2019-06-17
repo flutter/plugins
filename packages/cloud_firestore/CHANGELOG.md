@@ -1,3 +1,32 @@
+## 0.12.5+1
+* Added support for combining any of `Query.startAtDocument` and `Query.startAfterDocument`
+  with any of `Query.endAtDocument` and `Query.endBeforeDocument`.
+
+## 0.12.5
+
+* Makes `startAtDocument`, `startAfterDocument`, `endAtDocument` and `endBeforeDocument` work
+  with `Query.collectionGroup` queries.
+* Fixes `startAtDocument`, `startAfterDocument`, `endAtDocument` and `endBeforeDocument` to
+  also work with a descending order as the last explicit sort order.
+* Fixed an integration test by increasing the value of `cacheSizeBytes` to a valid value.
+
+## 0.12.4
+
+* Added support for `Query.collectionGroup`.
+
+## 0.12.3
+
+* Added support for `cacheSizeBytes` to `Firestore.settings`.
+
+## 0.12.2
+
+* Ensure that all channel calls to the Dart side from the Java side are done
+  on the UI thread. This change allows Transactions to work with upcoming
+  Engine restrictions, which require channel calls be made on the UI thread.
+  **Note** this is an Android only change, the iOS implementation was not impacted.
+* Updated the Firebase reporting string to `flutter-fire-fst` to be consistent
+  with other reporting libraries.
+
 ## 0.12.1
 
 * Added support for `Source` to `Query.getDocuments()` and `DocumentReference.get()`.
