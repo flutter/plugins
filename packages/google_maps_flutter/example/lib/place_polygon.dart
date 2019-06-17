@@ -24,6 +24,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
 
   GoogleMapController controller;
   Map<PolygonId, Polygon> polygons = <PolygonId, Polygon>{};
+  Map<PolygonId, double> polygonOffsets = <PolygonId, double>{};
   int _polygonIdCounter = 1;
   PolygonId selectedPolygon;
 
@@ -90,6 +91,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
 
     setState(() {
       polygons[polygonId] = polygon;
+      polygonOffsets[polygonId] = _polygonIdCounter.ceilToDouble();
     });
   }
 
@@ -263,7 +265,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
 
   List<List<LatLng>> _createHoles() {
     final List<List<LatLng>> holes = <List<LatLng>>[];
-    final double offset = _polygonIdCounter.ceilToDouble();
+    final double offset = polygonOffsets[selectedPolygon];
 
     final List<LatLng> hole1 = <LatLng>[];
     hole1.add(_createLatLng(51.8395 + offset, -3.8814));
