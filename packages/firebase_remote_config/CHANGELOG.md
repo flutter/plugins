@@ -1,7 +1,6 @@
 ## 0.2.0+3
 
-* Auto retrieve pubspec version to report usage to
-  Firebase.
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
 
 ## 0.2.0+2
 

@@ -4,7 +4,7 @@
 
 require 'yaml'
 pubspec = YAML.load_file(File.join('..', 'pubspec.yaml'))
-ffVersion = pubspec['version'].gsub('+', '-')
+libraryVersion = pubspec['version'].gsub('+', '-')
 
 Pod::Spec.new do |s|
   s.name             = 'firebase_remote_config'
@@ -26,7 +26,7 @@ Firebase Remote Config plugin for Flutter.
 
   s.prepare_command = <<-CMD
       echo // Generated file, do not edit > Classes/UserAgent.h
-      echo "#define LIBRARY_VERSION @\\"#{ffVersion}\\"" >> Classes/UserAgent.h
+      echo "#define LIBRARY_VERSION @\\"#{libraryVersion}\\"" >> Classes/UserAgent.h
       echo "#define LIBRARY_NAME @\\"flutter-fire-rc\\"" >> Classes/UserAgent.h
     CMD
 end

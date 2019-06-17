@@ -10,11 +10,8 @@ if (pubspec.exists()) {
     // Using \s*['|"]?([^\n|'|"]*)['|"]? to extract version number.
     Matcher versionMatcher = Pattern.compile("^version:\\s*['|\"]?([^\\n|'|\"]*)['|\"]?\$", Pattern.MULTILINE).matcher(yaml)
     if (versionMatcher.find()) libraryVersionName = versionMatcher.group(1).replaceAll("\\+", "-")
-    println(libraryVersionName)
 }
 
-// Apply the library name and version to default config
-// these are available in java via io.flutter.plugins.firebase.firebaseremoteconfig.BuildConfig;
 android {
     defaultConfig {
         // BuildConfig.VERSION_NAME
