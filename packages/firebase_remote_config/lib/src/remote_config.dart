@@ -35,11 +35,8 @@ class RemoteConfig extends ChangeNotifier {
   }
 
   static void _getRemoteConfigInstance() async {
-    final Map<dynamic, dynamic> properties =
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await channel.invokeMethod('RemoteConfig#instance');
+    final Map<String, dynamic> properties =
+        await channel.invokeMapMethod<String, dynamic>('RemoteConfig#instance');
 
     final RemoteConfig instance = RemoteConfig();
 
@@ -102,10 +99,7 @@ class RemoteConfig extends ChangeNotifier {
   Future<void> setConfigSettings(
       RemoteConfigSettings remoteConfigSettings) async {
     await channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('RemoteConfig#setConfigSettings', <String, dynamic>{
+        .invokeMethod<void>('RemoteConfig#setConfigSettings', <String, dynamic>{
       'debugMode': remoteConfigSettings.debugMode,
     });
     _remoteConfigSettings = remoteConfigSettings;
@@ -119,12 +113,9 @@ class RemoteConfig extends ChangeNotifier {
   /// Expiration must be defined in seconds.
   Future<void> fetch({Duration expiration = const Duration(hours: 12)}) async {
     try {
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      final Map<dynamic, dynamic> properties = await channel.invokeMethod(
-          'RemoteConfig#fetch',
-          <dynamic, dynamic>{'expiration': expiration.inSeconds});
+      final Map<String, dynamic> properties = await channel
+          .invokeMapMethod<String, dynamic>('RemoteConfig#fetch',
+              <dynamic, dynamic>{'expiration': expiration.inSeconds});
       _lastFetchTime =
           DateTime.fromMillisecondsSinceEpoch(properties['lastFetchTime']);
       _lastFetchStatus = _parseLastFetchStatus(properties['lastFetchStatus']);
@@ -146,11 +137,8 @@ class RemoteConfig extends ChangeNotifier {
   /// The returned Future completes true if the fetched config is different
   /// from the currently activated config, it contains false otherwise.
   Future<bool> activateFetched() async {
-    final Map<dynamic, dynamic> properties =
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await channel.invokeMethod('RemoteConfig#activate');
+    final Map<String, dynamic> properties =
+        await channel.invokeMapMethod<String, dynamic>('RemoteConfig#activate');
     final Map<dynamic, dynamic> rawParameters = properties['parameters'];
     final bool newConfig = properties['newConfig'];
     final Map<String, RemoteConfigValue> fetchedParameters =
@@ -176,10 +164,7 @@ class RemoteConfig extends ChangeNotifier {
         _parameters[key] = remoteConfigValue;
       }
     });
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
         'RemoteConfig#setDefaults', <String, dynamic>{'defaults': defaults});
   }
 

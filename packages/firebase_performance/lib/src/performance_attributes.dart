@@ -26,17 +26,23 @@ abstract class PerformanceAttributes {
   ///
   /// Updates the value of the attribute if the attribute already exists.
   /// The maximum number of attributes that can be added are
-  /// [maxCustomAttributes].
+  /// [maxCustomAttributes]. An attempt to add more than [maxCustomAttributes]
+  /// to this object will return without adding the attribute.
   ///
   /// Name of the attribute has max length of [maxAttributeKeyLength]
   /// characters. Value of the attribute has max length of
-  /// [maxAttributeValueLength] characters.
+  /// [maxAttributeValueLength] characters. If the name has a length greater
+  /// than [maxAttributeKeyLength] or the value has a length greater than
+  /// [maxAttributeValueLength], this method will return without adding
+  /// anything.
+  ///
+  /// If this object has been stopped, this method returns without adding the
+  /// attribute.
   Future<void> putAttribute(String name, String value) {
-    if (!_hasStarted ||
-        _hasStopped ||
+    if (_hasStopped ||
         name.length > maxAttributeKeyLength ||
         value.length > maxAttributeValueLength ||
-        _attributes.length == 5) {
+        _attributes.length == maxCustomAttributes) {
       return Future<void>.value(null);
     }
 
@@ -51,9 +57,12 @@ abstract class PerformanceAttributes {
     );
   }
 
-  /// Removes an already added attribute with [name].
+  /// Removes an already added attribute.
+  ///
+  /// If this object has been stopped, this method returns without removing the
+  /// attribute.
   Future<void> removeAttribute(String name) {
-    if (!_hasStarted || _hasStopped) return Future<void>.value(null);
+    if (_hasStopped) return Future<void>.value(null);
 
     _attributes.remove(name);
     return FirebasePerformance.channel.invokeMethod<void>(
@@ -62,12 +71,17 @@ abstract class PerformanceAttributes {
     );
   }
 
+  /// Returns the value of an attribute.
+  ///
+  /// Returns `null` if an attribute with this [name] has not been added.
+  String getAttribute(String name) => _attributes[name];
+
   /// All attributes added.
   Future<Map<String, String>> getAttributes() {
     if (_hasStopped) {
-      return Future<Map<String, String>>.value(Map<String, String>.unmodifiable(
-        _attributes,
-      ));
+      return Future<Map<String, String>>.value(
+        Map<String, String>.unmodifiable(_attributes),
+      );
     }
 
     return FirebasePerformance.channel.invokeMapMethod<String, String>(

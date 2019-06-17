@@ -24,6 +24,8 @@ part 'src/marker.dart';
 part 'src/marker_updates.dart';
 part 'src/location.dart';
 part 'src/pattern_item.dart';
+part 'src/polygon.dart';
+part 'src/polygon_updates.dart';
 part 'src/polyline.dart';
 part 'src/polyline_updates.dart';
 part 'src/circle.dart';

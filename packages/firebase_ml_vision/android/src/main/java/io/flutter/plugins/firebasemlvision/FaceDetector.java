@@ -17,35 +17,14 @@ import java.util.List;
 import java.util.Map;
 
 class FaceDetector implements Detector {
-  static final FaceDetector instance = new FaceDetector();
+  private final FirebaseVisionFaceDetector detector;
 
-  private FaceDetector() {}
-
-  private FirebaseVisionFaceDetector detector;
-  private Map<String, Object> lastOptions;
+  FaceDetector(FirebaseVision vision, Map<String, Object> options) {
+    detector = vision.getVisionFaceDetector(parseOptions(options));
+  }
 
   @Override
-  public void handleDetection(
-      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-
-    // Use instantiated detector if the options are the same. Otherwise, close and instantiate new
-    // options.
-
-    if (detector == null) {
-      lastOptions = options;
-      detector = FirebaseVision.getInstance().getVisionFaceDetector(parseOptions(lastOptions));
-    } else if (!options.equals(lastOptions)) {
-      try {
-        detector.close();
-      } catch (IOException e) {
-        result.error("faceDetectorIOError", e.getLocalizedMessage(), null);
-        return;
-      }
-
-      lastOptions = options;
-      detector = FirebaseVision.getInstance().getVisionFaceDetector(parseOptions(lastOptions));
-    }
-
+  public void handleDetection(final FirebaseVisionImage image, final MethodChannel.Result result) {
     detector
         .detectInImage(image)
         .addOnSuccessListener(
@@ -160,5 +139,10 @@ class FaceDetector implements Detector {
     }
 
     return builder.build();
+  }
+
+  @Override
+  public void close() throws IOException {
+    detector.close();
   }
 }

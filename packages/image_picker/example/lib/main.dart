@@ -185,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           textAlign: TextAlign.center,
                         );
                       } else {
-                        const Text(
+                        return const Text(
                           'You have not yet picked an image.',
                           textAlign: TextAlign.center,
                         );

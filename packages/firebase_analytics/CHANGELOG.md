@@ -1,3 +1,8 @@
+## 3.0.2
+
+* Bump minimum Flutter version to 1.5.0.
+* Add missing template type parameter to `invokeMethod` calls.
+
 ## 3.0.1
 
 * Switch to using the `FIRAnalytics` version of `setAnalyticsCollectionEnabled` for
