@@ -30,7 +30,7 @@ for version in "debug" "release"; do
     if [[ "${#CHANGED_PACKAGE_LIST[@]}" == 0 ]]; then
       error "There was a failure to compile all first party plugins together, but there were no changes detected in packages."
     else
-      error "Changes to the following packages may prevent all first party plugins to compile together:"
+      error "Changes to the following packages may prevent all first party plugins from compiling together:"
       for package in "${CHANGED_PACKAGE_LIST[@]}"; do
         error "$package"
       done
