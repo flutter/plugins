@@ -275,10 +275,10 @@ class Convert {
     if (padding != null) {
       final List<?> paddingData = toList(padding);
       sink.setPadding(
-              toFloat(paddingData.get(0)),
-              toFloat(paddingData.get(1)),
-              toFloat(paddingData.get(2)),
-              toFloat(paddingData.get(3)));
+          toFloat(paddingData.get(0)),
+          toFloat(paddingData.get(1)),
+          toFloat(paddingData.get(2)),
+          toFloat(paddingData.get(3)));
     }
     final Object rotateGesturesEnabled = data.get("rotateGesturesEnabled");
     if (rotateGesturesEnabled != null) {
