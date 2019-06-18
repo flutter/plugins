@@ -17,7 +17,7 @@
 
 @implementation FLTConnectivityPlugin {
   FlutterEventSink _eventSink;
-}
+}-
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FLTConnectivityPlugin* instance = [[FLTConnectivityPlugin alloc] init];
@@ -93,7 +93,7 @@
     case ReachableViaWiFi:
       return @"wifi";
     case ReachableViaWWAN:
-      CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
+        CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
         NSString * carrierType = netinfo.currentRadioAccessTechnology;
         if ([carrierType isEqualToString:CTRadioAccessTechnologyGPRS]) {
              return @"2G";
@@ -118,7 +118,7 @@
         } else if ([carrierType isEqualToString:CTRadioAccessTechnologyLTE]) {
              return @"4G";
         }
-      return @"none";
+        return @"none";
   }
 }
 
