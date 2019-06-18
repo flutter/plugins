@@ -12,10 +12,10 @@ import 'package:meta/meta.dart' show visibleForTesting;
 class Share {
   /// [MethodChannel] used to communicate with the platform side.
   @visibleForTesting
-  static const MethodChannel channel =
-      MethodChannel('plugins.flutter.io/share');
+  static const MethodChannel channel = MethodChannel('plugins.flutter.io/share');
 
-  /// Summons the platform's share sheet to share text.
+  /// Summons the platform's share sheet to share text. Adding an optional subject
+  /// in case customer selects email.
   ///
   /// Wraps the platform's native share dialog. Can share a text and/or a URL.
   /// It uses the ACTION_SEND Intent on Android and UIActivityViewController
@@ -27,12 +27,10 @@ class Share {
   ///
   /// May throw [PlatformException] or [FormatException]
   /// from [MethodChannel].
-  static Future<void> share(String text, {Rect sharePositionOrigin}) {
+  static Future<void> share(String text, {String subject, Rect sharePositionOrigin}) {
     assert(text != null);
     assert(text.isNotEmpty);
-    final Map<String, dynamic> params = <String, dynamic>{
-      'text': text,
-    };
+    final Map<String, dynamic> params = <String, dynamic>{'text': text, 'subject': subject};
 
     if (sharePositionOrigin != null) {
       params['originX'] = sharePositionOrigin.left;
