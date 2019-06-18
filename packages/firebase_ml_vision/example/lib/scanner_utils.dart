@@ -10,7 +10,9 @@ import 'package:camera/camera.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/foundation.dart';
 
-class BarcodeScannerUtils {
+class ScannerUtils {
+  ScannerUtils._();
+
   static Future<CameraDescription> getCamera(CameraLensDirection dir) async {
     return await availableCameras().then(
       (List<CameraDescription> cameras) => cameras.firstWhere(
@@ -21,7 +23,7 @@ class BarcodeScannerUtils {
 
   static Future<dynamic> detect({
     @required CameraImage image,
-    @required Function(FirebaseVisionImage image) detectInImage,
+    @required Future<dynamic> Function(FirebaseVisionImage image) detectInImage,
     @required int imageRotation,
   }) async {
     return detectInImage(
