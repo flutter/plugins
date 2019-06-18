@@ -1,3 +1,7 @@
+## 0.11.0
+
+* Android: gain audio focus when playing a video
+
 ## 0.10.1+3
 
 * Add missing template type parameter to `invokeMethod` calls.
