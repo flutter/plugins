@@ -1,3 +1,7 @@
+## 0.0.4+6
+
+* Fix Android exception message so it include the dart exception message.
+
 ## 0.0.4+5
 
 * Fix parsing stacktrace.
