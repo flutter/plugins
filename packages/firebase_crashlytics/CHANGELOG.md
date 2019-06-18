@@ -1,6 +1,6 @@
 ## 0.0.4+6
 
-* Update Android exception message to include the Dart exception message.
+* On Android, use actual the Dart exception name instead of "Dart error."
 
 ## 0.0.4+5
 
