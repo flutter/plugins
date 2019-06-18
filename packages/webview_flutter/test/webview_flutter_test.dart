@@ -678,14 +678,17 @@ void main() {
       final List<NavigationRequest> navigationRequests = <NavigationRequest>[];
 
       await tester.pumpWidget(WebView(
-          initialUrl: 'https://youtube.com',
-          navigationDelegate: (NavigationRequest request) {
-            navigationRequests.add(request);
-            // Only allow navigating to https://flutter.dev
-            return request.url == 'https://flutter.dev'
-                ? NavigationDecision.navigate
-                : NavigationDecision.prevent;
-          }));
+        initialUrl: 'https://youtube.com',
+        navigationDelegate: (NavigationRequest request) {
+          navigationRequests.add(request);
+          if(request.url == 'https://flutter.dev') {
+            return NavigationDecision.navigate;
+          } else if(request.url == 'custom://applink') {
+            return NavigationDecision.navigateWithoutTryingAppLink;
+          }
+          return NavigationDecision.prevent;
+        },
+      ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView;
@@ -701,6 +704,36 @@ void main() {
       expect(navigationRequests[0].isForMainFrame, true);
 
       platformWebView.fakeNavigate('https://flutter.dev');
+      await tester.pump();
+      expect(platformWebView.currentUrl, 'https://flutter.dev');
+
+      platformWebView.fakeNavigate('custom://applink');
+      await tester.pump();
+      expect(platformWebView.currentUrl, 'custom://applink');
+    });
+
+
+    testWidgets('App link navigation', (WidgetTester tester) async {
+      final List<NavigationRequest> navigationRequests = <NavigationRequest>[];
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        navigationDelegate: (NavigationRequest request) {
+          navigationRequests.add(request);
+          return NavigationDecision.navigate;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      expect(platformWebView.hasNavigationDelegate, true);
+
+      platformWebView.fakeNavigate('https://flutter.dev');
+      await tester.pump();
+      expect(platformWebView.currentUrl, 'https://flutter.dev');
+
+      platformWebView.fakeNavigate('custom://applink');
       await tester.pump();
       expect(platformWebView.currentUrl, 'https://flutter.dev');
     });
@@ -912,7 +945,7 @@ class FakePlatformWebView {
         .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
     // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
     // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
+      // ignore: deprecated_member_use
     BinaryMessages.handlePlatformMessage(
         channel.name, data, (ByteData data) {});
   }
@@ -936,9 +969,19 @@ class FakePlatformWebView {
     // https://github.com/flutter/flutter/issues/33446
     // ignore: deprecated_member_use
     BinaryMessages.handlePlatformMessage(channel.name, data, (ByteData data) {
-      final bool allow = codec.decodeEnvelope(data);
-      if (allow) {
-        _loadUrl(url);
+      final int result = codec.decodeEnvelope(data);
+      switch (result) {
+        case 0: // cancel
+          break;
+        case 1: // navigate
+          if (url.startsWith('custom://')) {
+            break;
+          }
+          _loadUrl(url);
+          break;
+        case 2: // navigateWithoutTryingAppLink
+          _loadUrl(url);
+          break;
       }
     });
   }
