@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 
 import 'camera_preview_scanner.dart';
+import 'material_barcode_scanner.dart';
 import 'picture_scanner.dart';
 
 void main() {
@@ -15,6 +16,8 @@ void main() {
         '/$PictureScanner': (BuildContext context) => PictureScanner(),
         '/$CameraPreviewScanner': (BuildContext context) =>
             CameraPreviewScanner(),
+        '/$MaterialBarcodeScanner': (BuildContext context) =>
+            const MaterialBarcodeScanner(),
       },
     ),
   );
@@ -29,6 +32,7 @@ class _ExampleListState extends State<_ExampleList> {
   static final List<String> _exampleWidgetNames = <String>[
     '$PictureScanner',
     '$CameraPreviewScanner',
+    '$MaterialBarcodeScanner',
   ];
 
   @override
