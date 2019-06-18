@@ -1,3 +1,7 @@
+## 0.3.10
+
+* Added support for preventing universal app links in iOS from opening in the relevant app and continue navigation inside the WebView.
+
 ## 0.3.9+2
 
 * Update Dart code to conform to current Dart formatter.
