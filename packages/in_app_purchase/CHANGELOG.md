@@ -1,3 +1,7 @@
+## 0.2.0+1
+
+* Fixed code error in `README.md` and adjusted links to work on Pub.
+
 ## 0.2.0
 
 * [Breaking Change] Rename 'PurchaseError' to 'IAPError'.
