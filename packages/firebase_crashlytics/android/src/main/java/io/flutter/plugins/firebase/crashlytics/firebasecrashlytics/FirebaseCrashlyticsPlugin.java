@@ -58,7 +58,7 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
 
       // Report crash.
       String dartExceptionMessage = (String) call.argument("exception");
-      Exception exception = new Exception("Dart Error: " + dartExceptionMessage);
+      Exception exception = new Exception(dartExceptionMessage);
       List<Map<String, String>> errorElements = call.argument("stackTraceElements");
       List<StackTraceElement> elements = new ArrayList<>();
       for (Map<String, String> errorElement : errorElements) {
