@@ -59,6 +59,7 @@ class _CameraPreviewScannerState extends State<CameraPreviewScanner> {
         imageRotation: description.sensorOrientation,
       ).then(
         (dynamic results) {
+          if (_currentDetector == null) return;
           setState(() {
             _scanResults = results;
           });
@@ -222,6 +223,8 @@ class _CameraPreviewScannerState extends State<CameraPreviewScanner> {
       _cloudImageLabeler.close();
       _recognizer.close();
     });
+
+    _currentDetector = null;
     super.dispose();
   }
 }

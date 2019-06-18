@@ -47,7 +47,9 @@ class _ExampleListState extends State<_ExampleList> {
           final String widgetName = _exampleWidgetNames[index];
 
           return Container(
-            decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.grey)),
+            ),
             child: ListTile(
               title: Text(widgetName),
               onTap: () => Navigator.pushNamed(context, '/$widgetName'),
