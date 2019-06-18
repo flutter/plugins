@@ -23,7 +23,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   static const MethodChannel _cookieManagerChannel =
       MethodChannel('plugins.flutter.io/cookie_manager');
 
-  Future<bool> _onMethodCall(MethodCall call) async {
+  Future<dynamic> _onMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'javascriptChannelMessage':
         final String channel = call.arguments['channel'];
@@ -34,7 +34,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         return _platformCallbacksHandler.onNavigationRequest(
           url: call.arguments['url'],
           isForMainFrame: call.arguments['isForMainFrame'],
-        );
+        ).index;
       case 'onPageFinished':
         _platformCallbacksHandler.onPageFinished(call.arguments['url']);
         return null;

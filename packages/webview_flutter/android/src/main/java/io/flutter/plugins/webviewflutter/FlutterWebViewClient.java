@@ -146,9 +146,14 @@ class FlutterWebViewClient {
 
     @Override
     public void success(Object shouldLoad) {
-      Boolean typedShouldLoad = (Boolean) shouldLoad;
-      if (typedShouldLoad) {
-        loadUrl();
+      Number typedShouldLoad = (Number) shouldLoad;
+      switch(typedShouldLoad.intValue()){
+        case 0: // cancel
+          break;
+        case 1: // navigate
+        case 2: // navigateWithoutAppLink
+          loadUrl();
+          break;
       }
     }
 

@@ -19,9 +19,7 @@ abstract class WebViewPlatformCallbacksHandler {
   void onJavaScriptChannelMessage(String channel, String message);
 
   /// Invoked by [WebViewPlatformController] when a navigation request is pending.
-  ///
-  /// If true is returned the navigation is allowed, otherwise it is blocked.
-  bool onNavigationRequest({String url, bool isForMainFrame});
+  NavigationDecision onNavigationRequest({String url, bool isForMainFrame});
 
   /// Invoked by [WebViewPlatformController] when a page has finished loading.
   void onPageFinished(String url);

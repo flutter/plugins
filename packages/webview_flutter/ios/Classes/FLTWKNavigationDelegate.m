@@ -44,15 +44,30 @@
                             return;
                           }
                           if (![result isKindOfClass:[NSNumber class]]) {
-                            NSLog(@"navigationRequest unexpectedly returned a non boolean value: "
+                            NSLog(@"navigationRequest unexpectedly returned a non numeric value: "
                                   @"%@, allowing navigation.",
                                   result);
                             decisionHandler(WKNavigationActionPolicyAllow);
                             return;
                           }
                           NSNumber* typedResult = result;
-                          decisionHandler([typedResult boolValue] ? WKNavigationActionPolicyAllow
-                                                                  : WKNavigationActionPolicyCancel);
+                            switch ([typedResult intValue]) {
+                                case 0:
+                                    decisionHandler(WKNavigationActionPolicyCancel);
+                                    break;
+                                case 1:
+                                    decisionHandler(WKNavigationActionPolicyAllow);
+                                    break;
+                                case 2:
+                                    decisionHandler((WKNavigationActionPolicy)(WKNavigationActionPolicyAllow + 2));
+                                    break;
+                                default:
+                                    NSLog(@"navigationRequest unexpectedly returned a invalid value: "
+                                          @"%@, allowing navigation.",
+                                          result);
+                                    decisionHandler(WKNavigationActionPolicyAllow);
+                                    break;
+                            }
                         }];
 }
 

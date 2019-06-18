@@ -59,6 +59,9 @@ enum NavigationDecision {
 
   /// Allow the navigation to take place.
   navigate,
+
+  /// Allow the navigation to take place but without trying App Link on iOS.
+  navigateWithoutTryingAppLink,
 }
 
 /// Decides how to handle a specific navigation request.
@@ -382,12 +385,10 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   }
 
   @override
-  bool onNavigationRequest({String url, bool isForMainFrame}) {
+  NavigationDecision onNavigationRequest({String url, bool isForMainFrame}) {
     final NavigationRequest request =
         NavigationRequest._(url: url, isForMainFrame: isForMainFrame);
-    final bool allowNavigation = _widget.navigationDelegate == null ||
-        _widget.navigationDelegate(request) == NavigationDecision.navigate;
-    return allowNavigation;
+    return _widget?.navigationDelegate?.call(request) ?? NavigationDecision.navigate;
   }
 
   @override
