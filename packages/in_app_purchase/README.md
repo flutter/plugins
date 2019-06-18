@@ -33,7 +33,7 @@ Once you've configured your in app purchases in their respective stores, you're
 able to start using the plugin. There's two basic options available to you to
 use.
 
-1. [in_app_purchase.dart](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/lib/in_app_purchase.dart),
+1. [in_app_purchase.dart](https://github.com/flutter/plugins/tree/master/packages/in_app_purchase/lib/src/in_app_purchase),
    the generic idiommatic Flutter API. This exposes the most basic IAP-related
    functionality. The goal is that Flutter apps should be able to use this API
    surface on its own for the vast majority of cases. If you use this you should
@@ -42,8 +42,8 @@ use.
    below.
 
 2. Dart APIs exposing the underlying platform APIs as directly as possible:
-   [store_kit_wrappers.dart](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/lib/store_kit_wrappers.dart) and
-   [billing_client_wrappers.dart](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/lib/billing_client_wrappers.dart). These
+   [store_kit_wrappers.dart](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/lib/src/store_kit_wrappers) and
+   [billing_client_wrappers.dart](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/lib/src/billing_client_wrappers). These
    API surfaces should expose all the platform-specific behavior and allow for
    more fine-tuned control when needed. However if you use this you'll need to
    code your purchase handling logic significantly differently depending on
