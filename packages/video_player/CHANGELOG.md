@@ -1,7 +1,7 @@
 ## 0.11.0
 
 * **Breaking change**. Android: gain audio focus when playing a video. Stop mixing audio from 
-  3rd party video players/music players when a video is played.
+  3rd party video/music players when a video is played.
 
 ## 0.10.1+3
 
