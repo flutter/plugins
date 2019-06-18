@@ -1,3 +1,7 @@
+## 0.10.1+4
+
+* Android: Upgrade ExoPlayer to 2.10.1.
+
 ## 0.10.1+3
 
 * Add missing template type parameter to `invokeMethod` calls.
