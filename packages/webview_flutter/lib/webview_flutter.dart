@@ -60,7 +60,8 @@ enum NavigationDecision {
   /// Allow the navigation to take place.
   navigate,
 
-  /// Allow the navigation to take place but without trying App Link on iOS.
+  /// Allow the navigation to take place but without trying App Link on iOS
+  /// This works the same as [navigate] on Android.
   navigateWithoutTryingAppLink,
 }
 
