@@ -210,6 +210,7 @@ static NSMutableDictionary<NSNumber *, id<Detector>> *detectors;
                                                  CVPixelBufferGetHeight(pixelBufferRef))];
 
   UIImage *uiImage = [UIImage imageWithCGImage:videoImage];
+  CVPixelBufferRelease(pixelBufferRef);
   CGImageRelease(videoImage);
   return [[FIRVisionImage alloc] initWithImage:uiImage];
 }
