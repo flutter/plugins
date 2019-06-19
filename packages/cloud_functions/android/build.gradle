@@ -11,7 +11,7 @@ gradle.buildFinished { buildResult ->
     }
 }
 
-group 'io.flutter.plugins.firebase.cloudfunctions.cloudfunctions'
+group 'io.flutter.plugins.firebase.cloudfunctions'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -46,6 +46,9 @@ android {
     }
     dependencies {
         api 'com.google.firebase:firebase-functions:17.0.0'
+        implementation 'com.google.firebase:firebase-common:16.1.0'
         implementation 'androidx.annotation:annotation:1.0.0'
     }
 }
+
+apply from: file("./user-agent.gradle")
