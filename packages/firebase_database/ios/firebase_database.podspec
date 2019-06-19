@@ -27,6 +27,6 @@ Firebase Database plugin for Flutter.
    s.prepare_command = <<-CMD
       echo // Generated file, do not edit > Classes/UserAgent.h
       echo "#define LIBRARY_VERSION @\\"#{libraryVersion}\\"" >> Classes/UserAgent.h
-      echo "#define LIBRARY_NAME @\\"flutter-fire-rc\\"" >> Classes/UserAgent.h
+      echo "#define LIBRARY_NAME @\\"flutter-fire-rtdb\\"" >> Classes/UserAgent.h
     CMD
 end

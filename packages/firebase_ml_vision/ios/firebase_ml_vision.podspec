@@ -29,6 +29,6 @@ An SDK that brings Google's machine learning expertise to Android and iOS apps i
   s.prepare_command = <<-CMD
       echo // Generated file, do not edit > Classes/UserAgent.h
       echo "#define LIBRARY_VERSION @\\"#{libraryVersion}\\"" >> Classes/UserAgent.h
-      echo "#define LIBRARY_NAME @\\"flutter-fire-rc\\"" >> Classes/UserAgent.h
+      echo "#define LIBRARY_NAME @\\"flutter-fire-ml-vis\\"" >> Classes/UserAgent.h
     CMD
 end
