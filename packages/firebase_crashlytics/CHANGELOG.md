@@ -1,3 +1,11 @@
+## 0.0.4+7
+
+* Fixed an issue where `Crashlytics#setUserIdentifier` incorrectly called `setUserEmail` on iOS.
+
+## 0.0.4+6
+
+* On Android, use actual the Dart exception name instead of "Dart error."
+
 ## 0.0.4+5
 
 * Fix parsing stacktrace.

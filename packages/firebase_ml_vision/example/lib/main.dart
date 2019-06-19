@@ -4,6 +4,8 @@
 
 import 'package:flutter/material.dart';
 
+import 'camera_preview_scanner.dart';
+import 'material_barcode_scanner.dart';
 import 'picture_scanner.dart';
 
 void main() {
@@ -12,6 +14,10 @@ void main() {
       routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => _ExampleList(),
         '/$PictureScanner': (BuildContext context) => PictureScanner(),
+        '/$CameraPreviewScanner': (BuildContext context) =>
+            CameraPreviewScanner(),
+        '/$MaterialBarcodeScanner': (BuildContext context) =>
+            const MaterialBarcodeScanner(),
       },
     ),
   );
@@ -23,7 +29,11 @@ class _ExampleList extends StatefulWidget {
 }
 
 class _ExampleListState extends State<_ExampleList> {
-  static final List<String> _exampleWidgetNames = <String>['$PictureScanner'];
+  static final List<String> _exampleWidgetNames = <String>[
+    '$PictureScanner',
+    '$CameraPreviewScanner',
+    '$MaterialBarcodeScanner',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +47,9 @@ class _ExampleListState extends State<_ExampleList> {
           final String widgetName = _exampleWidgetNames[index];
 
           return Container(
-            decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.grey)),
+            ),
             child: ListTile(
               title: Text(widgetName),
               onTap: () => Navigator.pushNamed(context, '/$widgetName'),
