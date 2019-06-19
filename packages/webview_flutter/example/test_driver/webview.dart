@@ -14,7 +14,7 @@ void main() {
   enableFlutterDriverExtension(handler: (_) => allTestsCompleter.future);
   tearDownAll(() => allTestsCompleter.complete(null));
 
-  test('initalUrl', () async {
+  test('initialUrl', () async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
     await pumpWidget(
