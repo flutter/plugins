@@ -74,7 +74,7 @@
     [[Crashlytics sharedInstance] setUserName:call.arguments[@"name"]];
     result(nil);
   } else if ([@"Crashlytics#setUserIdentifier" isEqualToString:call.method]) {
-    [[Crashlytics sharedInstance] setUserEmail:call.arguments[@"identifier"]];
+    [[Crashlytics sharedInstance] setUserIdentifier:call.arguments[@"identifier"]];
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);
