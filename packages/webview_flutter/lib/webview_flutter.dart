@@ -389,7 +389,8 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   NavigationDecision onNavigationRequest({String url, bool isForMainFrame}) {
     final NavigationRequest request =
         NavigationRequest._(url: url, isForMainFrame: isForMainFrame);
-    return _widget?.navigationDelegate?.call(request) ?? NavigationDecision.navigate;
+    return _widget?.navigationDelegate?.call(request) ??
+        NavigationDecision.navigate;
   }
 
   @override

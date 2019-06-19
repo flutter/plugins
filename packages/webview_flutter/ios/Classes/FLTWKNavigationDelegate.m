@@ -27,7 +27,8 @@
     @"url" : navigationAction.request.URL.absoluteString,
     @"isForMainFrame" : @(navigationAction.targetFrame.isMainFrame)
   };
-  [_methodChannel invokeMethod:@"navigationRequest"
+  [_methodChannel
+    invokeMethod:@"navigationRequest"
      arguments:arguments
         result:^(id _Nullable result) {
           if ([result isKindOfClass:[FlutterError class]]) {
@@ -51,24 +52,24 @@
             return;
           }
           NSNumber* typedResult = result;
-            switch ([typedResult intValue]) {
-                case 0:
-                    decisionHandler(WKNavigationActionPolicyCancel);
-                    break;
-                case 1:
-                    decisionHandler(WKNavigationActionPolicyAllow);
-                    break;
-                case 2:
-                    decisionHandler((WKNavigationActionPolicy)(WKNavigationActionPolicyAllow + 2));
-                    break;
-                default:
-                    NSLog(@"navigationRequest unexpectedly returned a invalid value: "
-                          @"%@, allowing navigation.",
-                          result);
-                    decisionHandler(WKNavigationActionPolicyAllow);
-                    break;
-            }
-        }];
+          switch ([typedResult intValue]) {
+            case 0:
+                decisionHandler(WKNavigationActionPolicyCancel);
+                break;
+            case 1:
+                decisionHandler(WKNavigationActionPolicyAllow);
+                break;
+            case 2:
+                decisionHandler((WKNavigationActionPolicy)(WKNavigationActionPolicyAllow + 2));
+                break;
+            default:
+                NSLog(@"navigationRequest unexpectedly returned a invalid value: "
+                      @"%@, allowing navigation.",
+                      result);
+                decisionHandler(WKNavigationActionPolicyAllow);
+                break;
+        }
+      }];
 }
 
 - (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation {
