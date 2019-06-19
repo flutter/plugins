@@ -1,3 +1,11 @@
+## 0.12.5+2
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.12.5+1
+* Added support for combining any of `Query.startAtDocument` and `Query.startAfterDocument`
+  with any of `Query.endAtDocument` and `Query.endBeforeDocument`.
+
 ## 0.12.5
 
 * Makes `startAtDocument`, `startAfterDocument`, `endAtDocument` and `endBeforeDocument` work

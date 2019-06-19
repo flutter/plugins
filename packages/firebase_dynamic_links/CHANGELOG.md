@@ -1,3 +1,7 @@
+## 0.4.0+3
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
 ## 0.4.0+2
 
 * Add missing template type parameter to `invokeMethod` calls.

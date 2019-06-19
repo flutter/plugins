@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import "CloudFunctionsPlugin.h"
+#import "UserAgent.h"
 
-#import "FIRFunctions+Internal.h"
 #import "Firebase/Firebase.h"
 
 @interface CloudFunctionsPlugin ()
@@ -19,6 +19,11 @@
                                   binaryMessenger:[registrar messenger]];
   CloudFunctionsPlugin *instance = [[CloudFunctionsPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)init {

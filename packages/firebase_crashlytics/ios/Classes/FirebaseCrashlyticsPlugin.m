@@ -1,4 +1,5 @@
 #import "FirebaseCrashlyticsPlugin.h"
+#import "UserAgent.h"
 
 #import <Firebase/Firebase.h>
 
@@ -15,6 +16,11 @@
   [registrar addMethodCallDelegate:instance channel:channel];
 
   [Fabric with:@[ [Crashlytics self] ]];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)init {
@@ -74,7 +80,7 @@
     [[Crashlytics sharedInstance] setUserName:call.arguments[@"name"]];
     result(nil);
   } else if ([@"Crashlytics#setUserIdentifier" isEqualToString:call.method]) {
-    [[Crashlytics sharedInstance] setUserEmail:call.arguments[@"identifier"]];
+    [[Crashlytics sharedInstance] setUserIdentifier:call.arguments[@"identifier"]];
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);
