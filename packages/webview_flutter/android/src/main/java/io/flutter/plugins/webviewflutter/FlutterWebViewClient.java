@@ -147,7 +147,7 @@ class FlutterWebViewClient {
     @Override
     public void success(Object shouldLoad) {
       Number typedShouldLoad = (Number) shouldLoad;
-      switch(typedShouldLoad.intValue()){
+      switch (typedShouldLoad.intValue()) {
         case 0: // cancel
           break;
         case 1: // navigate

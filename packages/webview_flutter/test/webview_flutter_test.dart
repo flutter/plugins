@@ -681,9 +681,9 @@ void main() {
         initialUrl: 'https://youtube.com',
         navigationDelegate: (NavigationRequest request) {
           navigationRequests.add(request);
-          if(request.url == 'https://flutter.dev') {
+          if (request.url == 'https://flutter.dev') {
             return NavigationDecision.navigate;
-          } else if(request.url == 'custom://applink') {
+          } else if (request.url == 'custom://applink') {
             return NavigationDecision.navigateWithoutTryingAppLink;
           }
           return NavigationDecision.prevent;
@@ -711,7 +711,6 @@ void main() {
       await tester.pump();
       expect(platformWebView.currentUrl, 'custom://applink');
     });
-
 
     testWidgets('App link navigation', (WidgetTester tester) async {
       final List<NavigationRequest> navigationRequests = <NavigationRequest>[];
@@ -945,7 +944,7 @@ class FakePlatformWebView {
         .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
     // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
     // https://github.com/flutter/flutter/issues/33446
-      // ignore: deprecated_member_use
+    // ignore: deprecated_member_use
     BinaryMessages.handlePlatformMessage(
         channel.name, data, (ByteData data) {});
   }
