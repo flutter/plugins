@@ -1,6 +1,11 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
+
+require 'yaml'
+pubspec = YAML.load_file(File.join('..', 'pubspec.yaml'))
+libraryVersion = pubspec['version'].gsub('+', '-')
+
 Pod::Spec.new do |s|
   s.name             = 'firebase_auth'
   s.version          = '0.0.1'
@@ -19,4 +24,10 @@ Firebase Auth plugin for Flutter.
   s.dependency 'Firebase/Auth', '~> 6.0'
   s.dependency 'Firebase/Core'
   s.static_framework = true
+
+  s.prepare_command = <<-CMD
+      echo // Generated file, do not edit > Classes/UserAgent.h
+      echo "#define LIBRARY_VERSION @\\"#{libraryVersion}\\"" >> Classes/UserAgent.h
+      echo "#define LIBRARY_NAME @\\"flutter-fire-auth\\"" >> Classes/UserAgent.h
+    CMD
 end
