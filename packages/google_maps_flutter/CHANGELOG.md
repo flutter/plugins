@@ -1,3 +1,7 @@
+## 0.5.18
+
+* Fixed build issue on iOS.
+
 ## 0.5.17
 
 * Add support for Padding.
