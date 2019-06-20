@@ -25,7 +25,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/test_face.jpg
+    - assets/test_face.jpeg
     - assets/test_barcode.jpg
     - assets/test_contact_barcode.png
     - assets/test_text.png

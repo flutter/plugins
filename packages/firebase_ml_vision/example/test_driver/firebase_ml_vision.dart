@@ -31,16 +31,20 @@ void main() {
   });
 }
 
-int nextHandle = 0;
+Map<String, String> imageTempFilenames = <String, String>{};
 
 // Since there is no way to get the full asset filename, this method loads the
 // image into a temporary file.
 Future<String> _loadImage(String assetFilename) async {
+  if (imageTempFilenames.containsKey(assetFilename)) {
+    return imageTempFilenames[assetFilename];
+  }
+
   final Directory directory = await getTemporaryDirectory();
 
   final String tmpFilename = path.join(
     directory.path,
-    "tmp${nextHandle++}.jpg",
+    assetFilename.split('/').last,
   );
 
   final ByteData data = await rootBundle.load(assetFilename);
@@ -51,5 +55,6 @@ Future<String> _loadImage(String assetFilename) async {
 
   await File(tmpFilename).writeAsBytes(bytes);
 
+  imageTempFilenames[assetFilename] = tmpFilename;
   return tmpFilename;
 }

@@ -9,7 +9,7 @@ void faceDetectorTests() {
     final FaceDetector detector = FirebaseVision.instance.faceDetector();
 
     test('processImage', () async {
-      final String tmpFilename = await _loadImage('assets/test_face.jpg');
+      final String tmpFilename = await _loadImage('assets/test_face.jpeg');
       final FirebaseVisionImage visionImage =
           FirebaseVisionImage.fromFilePath(tmpFilename);
 
