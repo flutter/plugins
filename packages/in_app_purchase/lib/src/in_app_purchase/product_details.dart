@@ -84,5 +84,5 @@ class ProductDetailsResponse {
   ///
   /// It's possible for this to be null but for there still to be notFoundIds in cases where the request itself was a success but the
   /// requested IDs could not be found.
-  final PurchaseError error;
+  final IAPError error;
 }

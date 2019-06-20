@@ -30,6 +30,9 @@ class GoogleMap extends StatefulWidget {
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
+
+    /// If no padding is specified default padding will be 0.
+    this.padding = const EdgeInsets.all(0),
     this.markers,
     this.polygons,
     this.polylines,
@@ -73,6 +76,9 @@ class GoogleMap extends StatefulWidget {
 
   /// True if the map view should respond to tilt gestures.
   final bool tiltGesturesEnabled;
+
+  /// Padding to be set on map. See https://developers.google.com/maps/documentation/android-sdk/map#map_padding for more details.
+  final EdgeInsets padding;
 
   /// Markers to be placed on the map.
   final Set<Marker> markers;
@@ -358,6 +364,7 @@ class _GoogleMapOptions {
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
     this.myLocationButtonEnabled,
+    this.padding,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -373,6 +380,7 @@ class _GoogleMapOptions {
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
+      padding: map.padding,
     );
   }
 
@@ -398,6 +406,8 @@ class _GoogleMapOptions {
 
   final bool myLocationButtonEnabled;
 
+  final EdgeInsets padding;
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -418,7 +428,12 @@ class _GoogleMapOptions {
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
-
+    addIfNonNull('padding', <double>[
+      padding?.top,
+      padding?.left,
+      padding?.bottom,
+      padding?.right,
+    ]);
     return optionsMap;
   }
 
