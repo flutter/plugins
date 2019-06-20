@@ -16,8 +16,8 @@ class ScannerUtils {
   static Future<CameraDescription> getCamera(CameraLensDirection dir) async {
     return await availableCameras().then(
       (List<CameraDescription> cameras) => cameras.firstWhere(
-        (CameraDescription camera) => camera.lensDirection == dir,
-      ),
+            (CameraDescription camera) => camera.lensDirection == dir,
+          ),
     );
   }
 

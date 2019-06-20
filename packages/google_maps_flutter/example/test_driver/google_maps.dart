@@ -15,7 +15,8 @@ import 'google_map_inspector.dart';
 import 'test_widgets.dart';
 
 const LatLng _kInitialMapCenter = LatLng(0, 0);
-const CameraPosition _kInitialCameraPosition = CameraPosition(target: _kInitialMapCenter);
+const CameraPosition _kInitialCameraPosition =
+    CameraPosition(target: _kInitialMapCenter);
 
 void main() {
   final Completer<String> allTestsCompleter = Completer<String>();
@@ -25,7 +26,8 @@ void main() {
 
   test('testCompassToggle', () async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapInspector> inspectorCompleter = Completer<GoogleMapInspector>();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -64,7 +66,8 @@ void main() {
 
   test('updateMinMaxZoomLevels', () async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapInspector> inspectorCompleter = Completer<GoogleMapInspector>();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
 
     const MinMaxZoomPreference initialZoomLevel = MinMaxZoomPreference(2, 4);
     const MinMaxZoomPreference finalZoomLevel = MinMaxZoomPreference(3, 8);
@@ -106,7 +109,8 @@ void main() {
 
   test('testZoomGesturesEnabled', () async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapInspector> inspectorCompleter = Completer<GoogleMapInspector>();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -145,7 +149,8 @@ void main() {
 
   test('testRotateGesturesEnabled', () async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapInspector> inspectorCompleter = Completer<GoogleMapInspector>();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -184,7 +189,8 @@ void main() {
 
   test('testTiltGesturesEnabled', () async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapInspector> inspectorCompleter = Completer<GoogleMapInspector>();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -223,7 +229,8 @@ void main() {
 
   test('testScrollGesturesEnabled', () async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapInspector> inspectorCompleter = Completer<GoogleMapInspector>();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -262,9 +269,11 @@ void main() {
 
   test('testGetVisibleRegion', () async {
     final Key key = GlobalKey();
-    final LatLngBounds zeroLatLngBounds = LatLngBounds(southwest: const LatLng(0, 0), northeast: const LatLng(0, 0));
+    final LatLngBounds zeroLatLngBounds = LatLngBounds(
+        southwest: const LatLng(0, 0), northeast: const LatLng(0, 0));
 
-    final Completer<GoogleMapController> mapControllerCompleter = Completer<GoogleMapController>();
+    final Completer<GoogleMapController> mapControllerCompleter =
+        Completer<GoogleMapController>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -276,7 +285,8 @@ void main() {
         },
       ),
     ));
-    final GoogleMapController mapController = await mapControllerCompleter.future;
+    final GoogleMapController mapController =
+        await mapControllerCompleter.future;
 
     // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
     // initialization. https://github.com/flutter/flutter/issues/24806
@@ -286,7 +296,8 @@ void main() {
     // https://github.com/flutter/flutter/issues/27550
     await Future<dynamic>.delayed(const Duration(seconds: 3));
 
-    final LatLngBounds firstVisibleRegion = await mapController.getVisibleRegion();
+    final LatLngBounds firstVisibleRegion =
+        await mapController.getVisibleRegion();
 
     expect(firstVisibleRegion, isNotNull);
     expect(firstVisibleRegion.southwest, isNotNull);
@@ -304,14 +315,17 @@ void main() {
     expect(firstVisibleRegion.contains(northEast), isFalse);
     expect(firstVisibleRegion.contains(southWest), isFalse);
 
-    final LatLngBounds latLngBounds = LatLngBounds(southwest: southWest, northeast: northEast);
+    final LatLngBounds latLngBounds =
+        LatLngBounds(southwest: southWest, northeast: northEast);
 
     // TODO(iskakaushik): non-zero padding is needed for some device configurations
     // https://github.com/flutter/flutter/issues/30575
     final double padding = 0;
-    await mapController.moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, padding));
+    await mapController
+        .moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, padding));
 
-    final LatLngBounds secondVisibleRegion = await mapController.getVisibleRegion();
+    final LatLngBounds secondVisibleRegion =
+        await mapController.getVisibleRegion();
 
     expect(secondVisibleRegion, isNotNull);
     expect(secondVisibleRegion.southwest, isNotNull);
@@ -324,7 +338,8 @@ void main() {
 
   test('testMyLocationButtonToggle', () async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapInspector> inspectorCompleter = Completer<GoogleMapInspector>();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -365,7 +380,8 @@ void main() {
 
   test('testMyLocationButton initial value false', () async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapInspector> inspectorCompleter = Completer<GoogleMapInspector>();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -384,13 +400,15 @@ void main() {
     ));
 
     final GoogleMapInspector inspector = await inspectorCompleter.future;
-    final bool myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
+    final bool myLocationButtonEnabled =
+        await inspector.isMyLocationButtonEnabled();
     expect(myLocationButtonEnabled, false);
   });
 
   test('testMyLocationButton initial value true', () async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapInspector> inspectorCompleter = Completer<GoogleMapInspector>();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -409,13 +427,15 @@ void main() {
     ));
 
     final GoogleMapInspector inspector = await inspectorCompleter.future;
-    final bool myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
+    final bool myLocationButtonEnabled =
+        await inspector.isMyLocationButtonEnabled();
     expect(myLocationButtonEnabled, true);
   });
 
   test('testSetMapStyle valid Json String', () async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapController> controllerCompleter = Completer<GoogleMapController>();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -429,13 +449,15 @@ void main() {
     ));
 
     final GoogleMapController controller = await controllerCompleter.future;
-    final String mapStyle = '[{"elementType":"geometry","stylers":[{"color":"#242f3e"}]}]';
+    final String mapStyle =
+        '[{"elementType":"geometry","stylers":[{"color":"#242f3e"}]}]';
     await controller.setMapStyle(mapStyle);
   });
 
   test('testSetMapStyle invalid Json String', () async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapController> controllerCompleter = Completer<GoogleMapController>();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -454,13 +476,15 @@ void main() {
       await controller.setMapStyle('invalid_value');
       fail('expected MapStyleException');
     } on MapStyleException catch (e) {
-      expect(e.cause, 'The data couldn’t be read because it isn’t in the correct format.');
+      expect(e.cause,
+          'The data couldn’t be read because it isn’t in the correct format.');
     }
   });
 
   test('testSetMapStyle null string', () async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapController> controllerCompleter = Completer<GoogleMapController>();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
 
     await pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -479,7 +503,8 @@ void main() {
 
   test('testSnapshot', () async {
     final GlobalKey key = GlobalKey();
-    final Completer<GoogleMapController> controllerCompleter = Completer<GoogleMapController>();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
     final Completer<Uint8List> snapshotCompleter = Completer<Uint8List>();
 
     await pumpWidget(Directionality(

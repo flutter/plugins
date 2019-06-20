@@ -180,27 +180,27 @@ class _CameraPreviewScannerState extends State<CameraPreviewScanner> {
               _currentDetector = result;
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
-              const PopupMenuItem<Detector>(
-                child: Text('Detect Barcode'),
-                value: Detector.barcode,
-              ),
-              const PopupMenuItem<Detector>(
-                child: Text('Detect Face'),
-                value: Detector.face,
-              ),
-              const PopupMenuItem<Detector>(
-                child: Text('Detect Label'),
-                value: Detector.label,
-              ),
-              const PopupMenuItem<Detector>(
-                child: Text('Detect Cloud Label'),
-                value: Detector.cloudLabel,
-              ),
-              const PopupMenuItem<Detector>(
-                child: Text('Detect Text'),
-                value: Detector.text,
-              ),
-            ],
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Barcode'),
+                    value: Detector.barcode,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Face'),
+                    value: Detector.face,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Label'),
+                    value: Detector.label,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Cloud Label'),
+                    value: Detector.cloudLabel,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Text'),
+                    value: Detector.text,
+                  ),
+                ],
           ),
         ],
       ),
