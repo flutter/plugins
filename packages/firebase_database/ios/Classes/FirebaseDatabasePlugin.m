@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FirebaseDatabasePlugin.h"
+#import "UserAgent.h"
 
 #import <Firebase/Firebase.h>
 
@@ -144,6 +145,11 @@ id roundDoubles(id value) {
   FLTFirebaseDatabasePlugin *instance = [[FLTFirebaseDatabasePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)init {

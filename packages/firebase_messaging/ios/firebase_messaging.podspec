@@ -1,6 +1,11 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
+
+require 'yaml'
+pubspec = YAML.load_file(File.join('..', 'pubspec.yaml'))
+libraryVersion = pubspec['version'].gsub('+', '-')
+
 Pod::Spec.new do |s|
   s.name             = 'firebase_messaging'
   s.version          = '0.0.1'
@@ -19,4 +24,10 @@ Firebase Cloud Messaging plugin for Flutter.
   s.dependency 'Firebase/Messaging'
   s.static_framework = true
   s.ios.deployment_target = '8.0'
+
+  s.prepare_command = <<-CMD
+      echo // Generated file, do not edit > Classes/UserAgent.h
+      echo "#define LIBRARY_VERSION @\\"#{libraryVersion}\\"" >> Classes/UserAgent.h
+      echo "#define LIBRARY_NAME @\\"flutter-fire-fcm\\"" >> Classes/UserAgent.h
+    CMD
 end
