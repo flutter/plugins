@@ -1,7 +1,14 @@
-## 0.5.16+2
+## 0.5.18
+
+* Fixed build issue on iOS.
+
+## 0.5.17
+
+* Add support for Padding.
+
+## 0.5.16+1
 
 * Update Dart code to conform to current Dart formatter.
-* Fixed build issue on iOS.
 
 ## 0.5.16
 
