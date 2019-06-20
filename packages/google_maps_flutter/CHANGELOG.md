@@ -1,3 +1,7 @@
+## 0.5.17+1
+
+* Allow BitmapDescriptor scaling override
+
 ## 0.5.17
 
 * Add support for Padding.
