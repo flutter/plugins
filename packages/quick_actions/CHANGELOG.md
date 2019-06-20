@@ -1,6 +1,6 @@
 ## 0.3.1
 
-* Added support for unit tests
+* Added unit tests.
 
 ## 0.3.0+2
 
