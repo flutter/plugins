@@ -131,7 +131,7 @@ class FaceDetector implements Detector {
         new FirebaseVisionFaceDetectorOptions.Builder()
             .setClassificationMode(classification)
             .setLandmarkMode(landmark)
-            .setMinFaceSize(1.0)
+            .setMinFaceSize((float) ((double) options.get("minFaceSize")))
             .setPerformanceMode(mode);
 
     if ((boolean) options.get("enableTracking")) {
