@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FirebaseMessagingPlugin.h"
+#import "UserAgent.h"
 
 #import "Firebase/Firebase.h"
 
@@ -25,6 +26,11 @@
       [[FLTFirebaseMessagingPlugin alloc] initWithChannel:channel];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)initWithChannel:(FlutterMethodChannel *)channel {

@@ -1,3 +1,7 @@
+## 0.3.0+1
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
 ## 0.3.0
 
 * **Breaking Change** Removed `Trace.incrementCounter`. Please use `Trace.incrementMetric`.
