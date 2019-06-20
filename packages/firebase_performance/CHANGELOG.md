@@ -1,6 +1,6 @@
 ## 0.3.0+2
 
-* Fix bug preventing this plugin to work with hot restart.
+* Fix bug preventing this plugin from working with hot restart.
 
 ## 0.3.0+1
 
