@@ -1,3 +1,7 @@
+## 0.3.0+2
+
+* Fix bug preventing this plugin from working with hot restart.
+
 ## 0.3.0+1
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.
