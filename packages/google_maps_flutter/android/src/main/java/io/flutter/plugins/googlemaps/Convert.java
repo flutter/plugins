@@ -308,6 +308,10 @@ class Convert {
     if (myLocationButtonEnabled != null) {
       sink.setMyLocationButtonEnabled(toBoolean(myLocationButtonEnabled));
     }
+    final Object indoorEnabled = data.get("indoorEnabled");
+    if (indoorEnabled != null) {
+      sink.setIndoorEnabled(toBoolean(indoorEnabled));
+    }
   }
 
   /** Returns the dartMarkerId of the interpreted marker. */
