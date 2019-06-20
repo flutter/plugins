@@ -1,6 +1,10 @@
-## 0.5.18
+## 0.5.19
 
 * Add support for holes in Polygons
+
+## 0.5.18
+
+* Fixed build issue on iOS.
 
 ## 0.5.17
 

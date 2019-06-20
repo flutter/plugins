@@ -1,3 +1,7 @@
+## 0.6.0+10
+
+* iOS: support picking GIF from gallery.
+
 ## 0.6.0+9
 
 * Add missing template type parameter to `invokeMethod` calls.
