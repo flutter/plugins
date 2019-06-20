@@ -24,7 +24,7 @@ class SkProductResponseWrapper {
   ///
   /// This method should only be used with `map` values returned by [SKRequestMaker.startProductRequest].
   /// The `map` parameter must not be null.
-  factory SkProductResponseWrapper.fromJson(Map map) {
+  factory SkProductResponseWrapper.fromJson(Map<String, dynamic> map) {
     assert(map != null, 'Map must not be null.');
     return _$SkProductResponseWrapperFromJson(map);
   }

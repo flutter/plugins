@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FirebasePerformancePlugin+Internal.h"
+#import "UserAgent.h"
 
 @implementation FLTFirebasePerformancePlugin
 static NSMutableDictionary<NSNumber *, id<MethodCallHandler>> *methodHandlers;
@@ -16,6 +17,11 @@ static NSMutableDictionary<NSNumber *, id<MethodCallHandler>> *methodHandlers;
 
   FLTFirebasePerformancePlugin *instance = [FLTFirebasePerformancePlugin new];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)init {

@@ -226,6 +226,14 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isMyLocationButtonEnabled"]) {
     NSNumber* isMyLocationButtonEnabled = @(_mapView.settings.myLocationButton);
     result(isMyLocationButtonEnabled);
+  } else if ([call.method isEqualToString:@"map#setStyle"]) {
+    NSString* mapStyle = [call arguments];
+    NSString* error = [self setMapStyle:mapStyle];
+    if (error == nil) {
+      result(@[ @(YES) ]);
+    } else {
+      result(@[ @(NO), error ]);
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -279,6 +287,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   [_mapView setMinZoom:minZoom maxZoom:maxZoom];
 }
 
+- (void)setPaddingTop:(float)top left:(float)left bottom:(float)bottom right:(float)right {
+  _mapView.padding = UIEdgeInsetsMake(top, left, bottom, right);
+}
+
 - (void)setRotateGesturesEnabled:(BOOL)enabled {
   _mapView.settings.rotateGestures = enabled;
 }
@@ -306,6 +318,21 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)setMyLocationButtonEnabled:(BOOL)enabled {
   _mapView.settings.myLocationButton = enabled;
+}
+
+- (NSString*)setMapStyle:(NSString*)mapStyle {
+  if (mapStyle == (id)[NSNull null] || mapStyle.length == 0) {
+    _mapView.mapStyle = nil;
+    return nil;
+  }
+  NSError* error;
+  GMSMapStyle* style = [GMSMapStyle styleWithJSONString:mapStyle error:&error];
+  if (!style) {
+    return [error localizedDescription];
+  } else {
+    _mapView.mapStyle = style;
+    return nil;
+  }
 }
 
 #pragma mark - GMSMapViewDelegate methods
@@ -476,6 +503,15 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
     float maxZoom = (zoomData[1] == [NSNull null]) ? kGMSMaxZoomLevel : ToFloat(zoomData[1]);
     [sink setMinZoom:minZoom maxZoom:maxZoom];
   }
+  NSArray* paddingData = data[@"padding"];
+  if (paddingData) {
+    float top = (paddingData[0] == [NSNull null]) ? 0 : ToFloat(paddingData[0]);
+    float left = (paddingData[1] == [NSNull null]) ? 0 : ToFloat(paddingData[1]);
+    float bottom = (paddingData[2] == [NSNull null]) ? 0 : ToFloat(paddingData[2]);
+    float right = (paddingData[3] == [NSNull null]) ? 0 : ToFloat(paddingData[3]);
+    [sink setPaddingTop:top left:left bottom:bottom right:right];
+  }
+
   NSNumber* rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
   if (rotateGesturesEnabled) {
     [sink setRotateGesturesEnabled:ToBool(rotateGesturesEnabled)];

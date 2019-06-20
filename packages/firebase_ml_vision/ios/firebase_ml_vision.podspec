@@ -1,6 +1,11 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
+
+require 'yaml'
+pubspec = YAML.load_file(File.join('..', 'pubspec.yaml'))
+libraryVersion = pubspec['version'].gsub('+', '-')
+
 Pod::Spec.new do |s|
   s.name             = 'firebase_ml_vision'
   s.version          = '0.1.1'
@@ -20,4 +25,10 @@ An SDK that brings Google's machine learning expertise to Android and iOS apps i
   s.dependency 'Firebase/MLVision'
   s.ios.deployment_target = '9.0'
   s.static_framework = true
+
+  s.prepare_command = <<-CMD
+      echo // Generated file, do not edit > Classes/UserAgent.h
+      echo "#define LIBRARY_VERSION @\\"#{libraryVersion}\\"" >> Classes/UserAgent.h
+      echo "#define LIBRARY_NAME @\\"flutter-fire-ml-vis\\"" >> Classes/UserAgent.h
+    CMD
 end

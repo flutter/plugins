@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
@@ -317,6 +318,24 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isMyLocationButtonEnabled());
           break;
         }
+      case "map#setStyle":
+        {
+          String mapStyle = (String) call.arguments;
+          boolean mapStyleSet;
+          if (mapStyle == null) {
+            mapStyleSet = googleMap.setMapStyle(null);
+          } else {
+            mapStyleSet = googleMap.setMapStyle(new MapStyleOptions(mapStyle));
+          }
+          ArrayList<Object> mapStyleResult = new ArrayList<>(2);
+          mapStyleResult.add(mapStyleSet);
+          if (!mapStyleSet) {
+            mapStyleResult.add(
+                "Unable to set the map style. Please check console logs for errors.");
+          }
+          result.success(mapStyleResult);
+          break;
+        }
       default:
         result.notImplemented();
     }
@@ -496,6 +515,17 @@ final class GoogleMapController
     }
     if (max != null) {
       googleMap.setMaxZoomPreference(max);
+    }
+  }
+
+  @Override
+  public void setPadding(float top, float left, float bottom, float right) {
+    if (googleMap != null) {
+      googleMap.setPadding(
+          (int) (left * density),
+          (int) (top * density),
+          (int) (right * density),
+          (int) (bottom * density));
     }
   }
 

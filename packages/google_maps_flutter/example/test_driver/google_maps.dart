@@ -429,4 +429,73 @@ void main() {
         await inspector.isMyLocationButtonEnabled();
     expect(myLocationButtonEnabled, true);
   });
+
+  test('testSetMapStyle valid Json String', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+    final String mapStyle =
+        '[{"elementType":"geometry","stylers":[{"color":"#242f3e"}]}]';
+    await controller.setMapStyle(mapStyle);
+  });
+
+  test('testSetMapStyle invalid Json String', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+
+    try {
+      await controller.setMapStyle('invalid_value');
+      fail('expected MapStyleException');
+    } on MapStyleException catch (e) {
+      expect(e.cause,
+          'The data couldn’t be read because it isn’t in the correct format.');
+    }
+  });
+
+  test('testSetMapStyle null string', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+    await controller.setMapStyle(null);
+  });
 }

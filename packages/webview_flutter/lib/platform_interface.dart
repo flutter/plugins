@@ -10,20 +10,20 @@ import 'package:flutter/widgets.dart';
 
 import 'webview_flutter.dart';
 
-/// Interface for callbacks made by [WebViewPlatform].
+/// Interface for callbacks made by [WebViewPlatformController].
 ///
-/// The webview plugin implements this class, and passes an instance to the [WebViewPlatform].
-/// [WebViewPlatform] is notifying this handler on events that happened on the platform's webview.
+/// The webview plugin implements this class, and passes an instance to the [WebViewPlatformController].
+/// [WebViewPlatformController] is notifying this handler on events that happened on the platform's webview.
 abstract class WebViewPlatformCallbacksHandler {
-  /// Invoked by [WebViewPlatform] when a JavaScript channel message is received.
+  /// Invoked by [WebViewPlatformController] when a JavaScript channel message is received.
   void onJavaScriptChannelMessage(String channel, String message);
 
-  /// Invoked by [WebViewPlatform] when a navigation request is pending.
+  /// Invoked by [WebViewPlatformController] when a navigation request is pending.
   ///
   /// If true is returned the navigation is allowed, otherwise it is blocked.
   bool onNavigationRequest({String url, bool isForMainFrame});
 
-  /// Invoked by [WebViewPlatform] when a page has finished loading.
+  /// Invoked by [WebViewPlatformController] when a page has finished loading.
   void onPageFinished(String url);
 }
 
@@ -31,13 +31,13 @@ abstract class WebViewPlatformCallbacksHandler {
 ///
 /// An instance implementing this interface is passed to the `onWebViewPlatformCreated` callback that is
 /// passed to [WebViewPlatformBuilder#onWebViewPlatformCreated].
-abstract class WebViewPlatform {
+abstract class WebViewPlatformController {
   /// Creates a new WebViewPlatform.
   ///
   /// Callbacks made by the WebView will be delegated to `handler`.
   ///
   /// The `handler` parameter must not be null.
-  WebViewPlatform(WebViewPlatformCallbacksHandler handler);
+  WebViewPlatformController(WebViewPlatformCallbacksHandler handler);
 
   /// Loads the specified URL.
   ///
@@ -182,7 +182,7 @@ class WebSettings {
   }
 }
 
-/// Configuration to use when creating a new [WebViewPlatform].
+/// Configuration to use when creating a new [WebViewPlatformController].
 class CreationParams {
   CreationParams(
       {this.initialUrl, this.webSettings, this.javascriptChannelNames});
@@ -194,7 +194,7 @@ class CreationParams {
 
   /// The initial [WebSettings] for the new webview.
   ///
-  /// This can later be updated with [WebViewPlatform.updateSettings].
+  /// This can later be updated with [WebViewPlatformController.updateSettings].
   final WebSettings webSettings;
 
   /// The initial set of JavaScript channels that are configured for this webview.
@@ -217,14 +217,14 @@ class CreationParams {
 }
 
 typedef WebViewPlatformCreatedCallback = void Function(
-    WebViewPlatform webViewPlatform);
+    WebViewPlatformController webViewPlatformController);
 
-/// Interface building a platform WebView implementation.
+/// Interface for a platform implementation of a WebView.
 ///
-/// [WebView#platformBuilder] controls the builder that is used by [WebView].
+/// [WebView.platform] controls the builder that is used by [WebView].
 /// [AndroidWebViewPlatform] and [CupertinoWebViewPlatform] are the default implementations
 /// for Android and iOS respectively.
-abstract class WebViewBuilder {
+abstract class WebViewPlatform {
   /// Builds a new WebView.
   ///
   /// Returns a Widget tree that embeds the created webview.
@@ -232,10 +232,10 @@ abstract class WebViewBuilder {
   /// `creationParams` are the initial parameters used to setup the webview.
   ///
   /// `webViewPlatformHandler` will be used for handling callbacks that are made by the created
-  /// [WebViewPlatform].
+  /// [WebViewPlatformController].
   ///
-  /// `onWebViewPlatformCreated` will be invoked after the platform specific [WebViewPlatform]
-  /// implementation is created with the [WebViewPlatform] instance as a parameter.
+  /// `onWebViewPlatformCreated` will be invoked after the platform specific [WebViewPlatformController]
+  /// implementation is created with the [WebViewPlatformController] instance as a parameter.
   ///
   /// `gestureRecognizers` specifies which gestures should be consumed by the web view.
   /// It is possible for other gesture recognizers to be competing with the web view on pointer
@@ -256,4 +256,12 @@ abstract class WebViewBuilder {
     WebViewPlatformCreatedCallback onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   });
+
+  /// Clears all cookies for all [WebView] instances.
+  ///
+  /// Returns true if cookies were present before clearing, else false.
+  Future<bool> clearCookies() {
+    throw UnimplementedError(
+        "WebView clearCookies is not implemented on the current platform");
+  }
 }

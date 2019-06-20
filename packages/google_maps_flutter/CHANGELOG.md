@@ -1,3 +1,25 @@
+## 0.5.18
+
+* Fixed build issue on iOS.
+
+## 0.5.17
+
+* Add support for Padding.
+
+## 0.5.16+1
+
+* Update Dart code to conform to current Dart formatter.
+
+## 0.5.16
+
+* Add support for custom map styling.
+
+## 0.5.15+1
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
 ## 0.5.15
 
 * Add support for Polygons.
