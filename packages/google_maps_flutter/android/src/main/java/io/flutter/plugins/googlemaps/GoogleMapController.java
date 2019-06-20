@@ -226,6 +226,7 @@ final class GoogleMapController
       case "map#snapshot":
         {
           googleMap.snapshot(this);
+          result.success(null);
           break;
         }
       case "camera#move":
