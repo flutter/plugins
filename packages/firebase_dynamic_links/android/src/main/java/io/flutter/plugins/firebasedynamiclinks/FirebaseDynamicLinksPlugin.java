@@ -41,6 +41,9 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   }
 
   public static void registerWith(Registrar registrar) {
+    if (registrar.activity() == null) {
+      return;
+    }
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_dynamic_links");
     channel.setMethodCallHandler(new FirebaseDynamicLinksPlugin(registrar));
