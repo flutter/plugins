@@ -1,6 +1,14 @@
-## 0.5.19
+## 0.5.20
 
 * Add support for holes in Polygons
+
+## 0.5.19
+
+
+* Adds support for toggling Indoor View on or off.
+
+* Allow BitmapDescriptor scaling override
+
 
 ## 0.5.18
 
