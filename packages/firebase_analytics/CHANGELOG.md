@@ -1,3 +1,7 @@
+## 3.0.3
+
+* Refactor unit tests to use `setMockMethodCallHandler`.
+
 ## 3.0.2
 
 * Bump minimum Flutter version to 1.5.0.
