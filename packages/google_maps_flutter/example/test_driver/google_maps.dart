@@ -522,16 +522,12 @@ void main() {
     ));
 
     final GoogleMapController controller = await controllerCompleter.future;
-    try {
-      await controller.snapshot();
-      final Uint8List data = await snapshotCompleter.future;
-      final ui.Codec codec = await ui.instantiateImageCodec(data);
-      final ui.FrameInfo frame = await codec.getNextFrame();
-      final ui.Image img = frame.image;
-      final RenderBox box = key.currentContext.findRenderObject();
-      expect(ui.window.devicePixelRatio * box.size.height, img.height);
-    } catch (error) {
-      fail('snapshot exception ' + error.toString());
-    }
+    await controller.snapshot();
+    final Uint8List data = await snapshotCompleter.future;
+    final ui.Codec codec = await ui.instantiateImageCodec(data);
+    final ui.FrameInfo frame = await codec.getNextFrame();
+    final ui.Image img = frame.image;
+    final RenderBox box = key.currentContext.findRenderObject();
+    expect(ui.window.devicePixelRatio * box.size.height, img.height);
   });
 }
