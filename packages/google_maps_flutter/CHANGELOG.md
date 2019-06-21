@@ -1,3 +1,7 @@
+## 0.5.19
+
+* Adds support for toggling Indoor View on or off.
+
 ## 0.5.18
 
 * Fixed build issue on iOS.
