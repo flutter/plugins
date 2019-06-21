@@ -215,7 +215,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     NSNumber* isZoomGesturesEnabled = @(_mapView.settings.zoomGestures);
     result(isZoomGesturesEnabled);
   } else if ([call.method isEqualToString:@"map#isZoomControlsEnabled"]) {
-    NSNumber* isZoomControlsEnabled = @(false);
+    NSNumber* isZoomControlsEnabled = [NSNumber numberWithBool:NO];
     result(isZoomControlsEnabled);
   } else if ([call.method isEqualToString:@"map#isTiltGesturesEnabled"]) {
     NSNumber* isTiltGesturesEnabled = @(_mapView.settings.tiltGestures);
