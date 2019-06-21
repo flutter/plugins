@@ -1,3 +1,7 @@
+## 0.4.0+4
+
+* Fixed bug on Android when a headless plugin tries to register this plugin causing a crash due no activity from the registrar.
+
 ## 0.4.0+3
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.
