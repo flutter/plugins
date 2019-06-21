@@ -145,6 +145,46 @@ void main() {
     expect(zoomGesturesEnabled, true);
   });
 
+  test('testZoomControlsEnabled', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        zoomControlsEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    bool zoomControlsEnabled = await inspector.isZoomControlsEnabled();
+    expect(zoomControlsEnabled, false);
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        zoomControlsEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
+
+    zoomControlsEnabled = await inspector.isZoomControlsEnabled();
+    expect(zoomControlsEnabled, true);
+  });
+
   test('testRotateGesturesEnabled', () async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
