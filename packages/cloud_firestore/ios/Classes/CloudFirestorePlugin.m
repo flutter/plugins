@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 #import "CloudFirestorePlugin.h"
+#import "UserAgent.h"
 
 #import <Firebase/Firebase.h>
-
-#define LIBRARY_NAME @"flutter-firebase_cloud_firestore"
-#define LIBRARY_VERSION @"0.12.5"
 
 static FlutterError *getFlutterError(NSError *error) {
   if (error == nil) return nil;
@@ -98,11 +96,16 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
     query = [query queryStartingAtValues:startAtValues];
   }
   id startAtDocument = parameters[@"startAtDocument"];
-  if (startAtDocument) {
+  id startAfterDocument = parameters[@"startAfterDocument"];
+  id endAtDocument = parameters[@"endAtDocument"];
+  id endBeforeDocument = parameters[@"endBeforeDocument"];
+  if (startAtDocument || startAfterDocument || endAtDocument || endBeforeDocument) {
     NSArray *orderByParameters = [orderBy lastObject];
     NSNumber *descending = orderByParameters[1];
     query = [query queryOrderedByFieldPath:FIRFieldPath.documentID
                                 descending:[descending boolValue]];
+  }
+  if (startAtDocument) {
     query = [query
         queryStartingAtValues:getDocumentValues(startAtDocument, orderBy, isCollectionGroup)];
   }
@@ -111,12 +114,7 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
     NSArray *startAfterValues = startAfter;
     query = [query queryStartingAfterValues:startAfterValues];
   }
-  id startAfterDocument = parameters[@"startAfterDocument"];
   if (startAfterDocument) {
-    NSArray *orderByParameters = [orderBy lastObject];
-    NSNumber *descending = orderByParameters[1];
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID
-                                descending:[descending boolValue]];
     query = [query
         queryStartingAfterValues:getDocumentValues(startAfterDocument, orderBy, isCollectionGroup)];
   }
@@ -125,12 +123,7 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
     NSArray *endAtValues = endAt;
     query = [query queryEndingAtValues:endAtValues];
   }
-  id endAtDocument = parameters[@"endAtDocument"];
   if (endAtDocument) {
-    NSArray *orderByParameters = [orderBy lastObject];
-    NSNumber *descending = orderByParameters[1];
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID
-                                descending:[descending boolValue]];
     query =
         [query queryEndingAtValues:getDocumentValues(endAtDocument, orderBy, isCollectionGroup)];
   }
@@ -139,12 +132,7 @@ static FIRQuery *getQuery(NSDictionary *arguments) {
     NSArray *endBeforeValues = endBefore;
     query = [query queryEndingBeforeValues:endBeforeValues];
   }
-  id endBeforeDocument = parameters[@"endBeforeDocument"];
   if (endBeforeDocument) {
-    NSArray *orderByParameters = [orderBy lastObject];
-    NSNumber *descending = orderByParameters[1];
-    query = [query queryOrderedByFieldPath:FIRFieldPath.documentID
-                                descending:[descending boolValue]];
     query = [query
         queryEndingBeforeValues:getDocumentValues(endBeforeDocument, orderBy, isCollectionGroup)];
   }
