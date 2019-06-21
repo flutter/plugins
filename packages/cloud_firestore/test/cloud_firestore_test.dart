@@ -17,6 +17,7 @@ void main() {
     Firestore firestore;
     final List<MethodCall> log = <MethodCall>[];
     CollectionReference collectionReference;
+    Query collectionGroupQuery;
     Transaction transaction;
     const Map<String, dynamic> kMockDocumentSnapshotData = <String, dynamic>{
       '1': 2
@@ -25,7 +26,6 @@ void main() {
       "hasPendingWrites": false,
       "isFromCache": false,
     };
-
     setUp(() async {
       mockHandleId = 0;
       // Required for FirebaseApp.configure
@@ -41,6 +41,7 @@ void main() {
       );
       firestore = Firestore(app: app);
       collectionReference = firestore.collection('foo');
+      collectionGroupQuery = firestore.collectionGroup('bar');
       transaction = Transaction(0, firestore);
       Firestore.channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
@@ -50,6 +51,9 @@ void main() {
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
             Future<void>.delayed(Duration.zero).then<void>((_) {
+              // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+              // https://github.com/flutter/flutter/issues/33446
+              // ignore: deprecated_member_use
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -79,6 +83,9 @@ void main() {
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
             Future<void>.delayed(Duration.zero).then<void>((_) {
+              // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+              // https://github.com/flutter/flutter/issues/33446
+              // ignore: deprecated_member_use
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -163,6 +170,28 @@ void main() {
       expect(firestore, equals(Firestore(app: app)));
     });
 
+    test('settings', () async {
+      final FirebaseApp app = const FirebaseApp(name: "testApp2");
+      final Firestore firestoreWithSettings = Firestore(app: app);
+      await firestoreWithSettings.settings(
+        persistenceEnabled: true,
+        host: null,
+        sslEnabled: true,
+        timestampsInSnapshotsEnabled: true,
+        cacheSizeBytes: 500000,
+      );
+      expect(log, <Matcher>[
+        isMethodCall('Firestore#settings', arguments: <String, dynamic>{
+          'app': firestoreWithSettings.app.name,
+          'persistenceEnabled': true,
+          'host': null,
+          'sslEnabled': true,
+          'timestampsInSnapshotsEnabled': true,
+          'cacheSizeBytes': 500000,
+        }),
+      ]);
+    });
+
     group('Transaction', () {
       test('runTransaction', () async {
         final Map<String, dynamic> result = await firestore.runTransaction(
@@ -231,6 +260,7 @@ void main() {
           isMethodCall('DocumentReference#get', arguments: <String, dynamic>{
             'app': app.name,
             'path': 'foo/bar',
+            'source': 'default',
           }),
           isMethodCall('Transaction#set', arguments: <String, dynamic>{
             'app': app.name,
@@ -252,6 +282,7 @@ void main() {
           isMethodCall('DocumentReference#get', arguments: <String, dynamic>{
             'app': app.name,
             'path': 'foo/bar',
+            'source': 'default',
           }),
           isMethodCall('Transaction#set', arguments: <String, dynamic>{
             'app': app.name,
@@ -283,14 +314,18 @@ void main() {
         expect(a.hashCode == b.hashCode, isFalse);
       });
     });
+
     group('CollectionsReference', () {
       test('id', () async {
         expect(collectionReference.id, equals('foo'));
-        expect(collectionReference.parent().id, isNull);
+      });
+      test('parent', () async {
+        final DocumentReference docRef = collectionReference.document('bar');
+        expect(docRef.parent().id, equals('foo'));
+        expect(collectionReference.parent(), isNull);
       });
       test('path', () async {
         expect(collectionReference.path, equals('foo'));
-        expect(collectionReference.parent().path, equals(''));
       });
       test('listen', () async {
         final QuerySnapshot snapshot =
@@ -307,6 +342,7 @@ void main() {
             arguments: <String, dynamic>{
               'app': app.name,
               'path': 'foo',
+              'isCollectionGroup': false,
               'parameters': <String, dynamic>{
                 'where': <List<dynamic>>[],
                 'orderBy': <List<dynamic>>[],
@@ -335,6 +371,7 @@ void main() {
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'foo',
+                'isCollectionGroup': false,
                 'parameters': <String, dynamic>{
                   'where': <List<dynamic>>[
                     <dynamic>['createdAt', '<', 100],
@@ -366,6 +403,7 @@ void main() {
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'foo',
+                'isCollectionGroup': false,
                 'parameters': <String, dynamic>{
                   'where': <List<dynamic>>[
                     <dynamic>['profile', '==', null],
@@ -397,6 +435,7 @@ void main() {
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'foo',
+                'isCollectionGroup': false,
                 'parameters': <String, dynamic>{
                   'where': <List<dynamic>>[],
                   'orderBy': <List<dynamic>>[
@@ -513,7 +552,7 @@ void main() {
       });
       test('get', () async {
         final DocumentSnapshot snapshot =
-            await collectionReference.document('bar').get();
+            await collectionReference.document('bar').get(source: Source.cache);
         expect(snapshot.reference.firestore, firestore);
         expect(
           log,
@@ -523,19 +562,35 @@ void main() {
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'foo/bar',
+                'source': 'cache',
               },
             ),
           ]),
         );
+        log.clear();
         expect(snapshot.reference.path, equals('foo/bar'));
         expect(snapshot.data.containsKey('key1'), equals(true));
         expect(snapshot.data['key1'], equals('val1'));
         expect(snapshot.exists, isTrue);
 
-        final DocumentSnapshot snapshot2 =
-            await collectionReference.document('notExists').get();
+        final DocumentSnapshot snapshot2 = await collectionReference
+            .document('notExists')
+            .get(source: Source.serverAndCache);
         expect(snapshot2.data, isNull);
         expect(snapshot2.exists, isFalse);
+        expect(
+          log,
+          equals(<Matcher>[
+            isMethodCall(
+              'DocumentReference#get',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'path': 'foo/notExists',
+                'source': 'default',
+              },
+            ),
+          ]),
+        );
 
         try {
           await collectionReference.document('baz').get();
@@ -546,13 +601,19 @@ void main() {
       test('collection', () async {
         final CollectionReference colRef =
             collectionReference.document('bar').collection('baz');
-        expect(colRef.path, 'foo/bar/baz');
+        expect(colRef.path, equals('foo/bar/baz'));
+      });
+      test('parent', () async {
+        final CollectionReference colRef =
+            collectionReference.document('bar').collection('baz');
+        expect(colRef.parent().documentID, equals('bar'));
       });
     });
 
     group('Query', () {
-      test('getDocuments', () async {
-        QuerySnapshot snapshot = await collectionReference.getDocuments();
+      test('getDocumentsFromCollection', () async {
+        QuerySnapshot snapshot =
+            await collectionReference.getDocuments(source: Source.server);
         DocumentSnapshot document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
@@ -592,6 +653,16 @@ void main() {
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
 
+        // startAtDocument - endAtDocument
+        snapshot = await collectionReference
+            .startAtDocument(document)
+            .endAtDocument(document)
+            .getDocuments();
+        document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
         expect(
           log,
           equals(
@@ -601,6 +672,8 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'isCollectionGroup': false,
+                  'source': 'server',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
@@ -612,11 +685,14 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'isCollectionGroup': false,
+                  'source': 'default',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
                     'startAtDocument': <String, dynamic>{
                       'id': '0',
+                      'path': 'foo/0',
                       'data': kMockDocumentSnapshotData,
                     },
                   },
@@ -627,11 +703,14 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'isCollectionGroup': false,
+                  'source': 'default',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
                     'startAfterDocument': <String, dynamic>{
                       'id': '0',
+                      'path': 'foo/0',
                       'data': kMockDocumentSnapshotData,
                     },
                   },
@@ -642,11 +721,14 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'isCollectionGroup': false,
+                  'source': 'default',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
                     'endAtDocument': <String, dynamic>{
                       'id': '0',
+                      'path': 'foo/0',
                       'data': kMockDocumentSnapshotData,
                     },
                   },
@@ -657,14 +739,209 @@ void main() {
                 arguments: <String, dynamic>{
                   'app': app.name,
                   'path': 'foo',
+                  'isCollectionGroup': false,
+                  'source': 'default',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
                     'orderBy': <List<dynamic>>[],
                     'endBeforeDocument': <String, dynamic>{
                       'id': '0',
+                      'path': 'foo/0',
                       'data': kMockDocumentSnapshotData,
                     },
                   },
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'foo',
+                  'isCollectionGroup': false,
+                  'source': 'default',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'startAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'path': 'foo/0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                    'endAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'path': 'foo/0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                  },
+                },
+              ),
+            ],
+          ),
+        );
+      });
+      test('getDocumentsFromCollectionGroup', () async {
+        QuerySnapshot snapshot = await collectionGroupQuery.getDocuments();
+        DocumentSnapshot document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('bar/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
+        // startAtDocument
+        snapshot =
+            await collectionGroupQuery.startAtDocument(document).getDocuments();
+        document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('bar/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
+        // startAfterDocument
+        snapshot = await collectionGroupQuery
+            .startAfterDocument(document)
+            .getDocuments();
+        document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('bar/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
+        // endAtDocument
+        snapshot =
+            await collectionGroupQuery.endAtDocument(document).getDocuments();
+        document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('bar/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
+        // endBeforeDocument
+        snapshot = await collectionGroupQuery
+            .endBeforeDocument(document)
+            .getDocuments();
+        document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('bar/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
+        // startAtDocument - endAtDocument
+        snapshot = await collectionGroupQuery
+            .startAtDocument(document)
+            .endAtDocument(document)
+            .getDocuments();
+        document = snapshot.documents.first;
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('bar/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+
+        expect(
+          log,
+          equals(
+            <Matcher>[
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'bar',
+                  'isCollectionGroup': true,
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                  },
+                  'source': 'default',
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'bar',
+                  'isCollectionGroup': true,
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'startAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'path': 'bar/0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                  },
+                  'source': 'default',
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'bar',
+                  'isCollectionGroup': true,
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'startAfterDocument': <String, dynamic>{
+                      'id': '0',
+                      'path': 'bar/0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                  },
+                  'source': 'default',
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'bar',
+                  'isCollectionGroup': true,
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'endAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'path': 'bar/0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                  },
+                  'source': 'default',
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'bar',
+                  'isCollectionGroup': true,
+                  'source': 'default',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'endBeforeDocument': <String, dynamic>{
+                      'id': '0',
+                      'path': 'bar/0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                  },
+                  'source': 'default',
+                },
+              ),
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'app': app.name,
+                  'path': 'bar',
+                  'isCollectionGroup': true,
+                  'source': 'default',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                    'startAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'path': 'bar/0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                    'endAtDocument': <String, dynamic>{
+                      'id': '0',
+                      'path': 'bar/0',
+                      'data': kMockDocumentSnapshotData,
+                    },
+                  },
+                  'source': 'default',
                 },
               ),
             ],

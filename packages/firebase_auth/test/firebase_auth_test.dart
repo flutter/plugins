@@ -51,6 +51,7 @@ void main() {
           case "sendLinkToEmail":
           case "sendPasswordResetEmail":
           case "updateEmail":
+          case "updatePhoneNumberCredential":
           case "updatePassword":
           case "updateProfile":
             return null;
@@ -945,6 +946,32 @@ void main() {
       ]);
     });
 
+    test('updatePhoneNumberCredential', () async {
+      final FirebaseUser user = await auth.currentUser();
+      final AuthCredential credentials = PhoneAuthProvider.getCredential(
+        verificationId: kMockVerificationId,
+        smsCode: kMockSmsCode,
+      );
+      await user.updatePhoneNumberCredential(credentials);
+      expect(log, <Matcher>[
+        isMethodCall(
+          'currentUser',
+          arguments: <String, String>{'app': auth.app.name},
+        ),
+        isMethodCall(
+          'updatePhoneNumberCredential',
+          arguments: <String, dynamic>{
+            'app': auth.app.name,
+            'provider': 'phone',
+            'data': <String, String>{
+              'verificationId': kMockVerificationId,
+              'smsCode': kMockSmsCode,
+            },
+          },
+        ),
+      ]);
+    });
+
     test('updatePassword', () async {
       final FirebaseUser user = await auth.currentUser();
       await user.updatePassword(kMockPassword);
@@ -1113,6 +1140,9 @@ void main() {
       mockHandleId = 42;
 
       Future<void> simulateEvent(Map<String, dynamic> user) async {
+        // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+        // https://github.com/flutter/flutter/issues/33446
+        // ignore: deprecated_member_use
         await BinaryMessages.handlePlatformMessage(
           FirebaseAuth.channel.name,
           FirebaseAuth.channel.codec.encodeMethodCall(

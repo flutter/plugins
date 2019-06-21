@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
-import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'sk_product_wrapper.dart';
 import 'sk_payment_queue_wrapper.dart';
@@ -117,22 +116,6 @@ class SKPaymentTransactionWrapper {
       return null;
     }
     return _$SKPaymentTransactionWrapperFromJson(map);
-  }
-
-  /// Generate a [PurchaseDetails] object based on this transaction.
-  PurchaseDetails toPurchaseDetails(String base64EncodedReceipt) {
-    return PurchaseDetails(
-      purchaseID: transactionIdentifier,
-      productID: payment.productIdentifier,
-      verificationData: PurchaseVerificationData(
-          localVerificationData: base64EncodedReceipt,
-          serverVerificationData: base64EncodedReceipt,
-          source: PurchaseSource.AppStore),
-      transactionDate: transactionTimeStamp != null
-          ? (transactionTimeStamp * 1000).toInt().toString()
-          : null,
-      skPaymentTransaction: this,
-    );
   }
 
   /// Current transaction state.

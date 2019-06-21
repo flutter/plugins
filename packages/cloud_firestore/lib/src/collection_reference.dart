@@ -14,14 +14,14 @@ class CollectionReference extends Query {
   /// ID of the referenced collection.
   String get id => _pathComponents.isEmpty ? null : _pathComponents.last;
 
-  /// For subcollections, parent returns the containing DocumentReference.
+  /// For subcollections, parent returns the containing [DocumentReference].
   ///
   /// For root collections, null is returned.
-  CollectionReference parent() {
-    if (_pathComponents.isEmpty) {
+  DocumentReference parent() {
+    if (_pathComponents.length < 2) {
       return null;
     }
-    return CollectionReference._(
+    return DocumentReference._(
       firestore,
       (List<String>.from(_pathComponents)..removeLast()),
     );

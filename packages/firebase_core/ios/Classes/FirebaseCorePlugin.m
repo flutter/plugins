@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FirebaseCorePlugin.h"
+#import "UserAgent.h"
 
 #import <Firebase/Firebase.h>
 
@@ -39,6 +40,11 @@ static NSDictionary *getDictionaryFromFIRApp(FIRApp *app) {
                                   binaryMessenger:[registrar messenger]];
   FLTFirebaseCorePlugin *instance = [[FLTFirebaseCorePlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
