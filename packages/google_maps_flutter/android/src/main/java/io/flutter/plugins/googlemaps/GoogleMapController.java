@@ -299,6 +299,11 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
           break;
         }
+      case "map#isZoomControlsEnabled":
+        {
+          result.success(googleMap.getUiSettings().isZoomControlsEnabled());
+          break;
+        }
       case "map#isScrollGesturesEnabled":
         {
           result.success(googleMap.getUiSettings().isScrollGesturesEnabled());
