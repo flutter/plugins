@@ -35,6 +35,7 @@ class GoogleMap extends StatefulWidget {
     /// If no padding is specified default padding will be 0.
     this.padding = const EdgeInsets.all(0),
     this.indoorViewEnabled = false,
+    this.trafficEnabled = false,
     this.markers,
     this.polygons,
     this.polylines,
@@ -163,6 +164,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Enables or disables the indoor view from the map
   final bool indoorViewEnabled;
+
+  /// Enables or disables the traffic layer of the map
+  final bool trafficEnabled;
 
   /// Which gestures should be consumed by the map.
   ///
@@ -372,6 +376,7 @@ class _GoogleMapOptions {
     this.myLocationButtonEnabled,
     this.padding,
     this.indoorViewEnabled,
+    this.trafficEnabled,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -390,6 +395,7 @@ class _GoogleMapOptions {
       myLocationButtonEnabled: map.myLocationButtonEnabled,
       padding: map.padding,
       indoorViewEnabled: map.indoorViewEnabled,
+      trafficEnabled: map.trafficEnabled,
     );
   }
 
@@ -421,6 +427,8 @@ class _GoogleMapOptions {
 
   final bool indoorViewEnabled;
 
+  final bool trafficEnabled;
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -449,6 +457,7 @@ class _GoogleMapOptions {
       padding?.right,
     ]);
     addIfNonNull('indoorEnabled', indoorViewEnabled);
+    addIfNonNull('trafficEnabled', trafficEnabled);
     return optionsMap;
   }
 
