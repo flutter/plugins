@@ -1,3 +1,15 @@
+## 0.5.19
+
+
+* Adds support for toggling Indoor View on or off.
+
+* Allow BitmapDescriptor scaling override
+
+
+## 0.5.18
+
+* Fixed build issue on iOS.
+
 ## 0.5.17
 
 * Add support for Padding.
