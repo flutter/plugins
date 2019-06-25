@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef enum : NSUInteger {
   FLTImagePickerMIMETypePNG,
   FLTImagePickerMIMETypeJPEG,
+  FLTImagePickerMIMETypeGIF,
   FLTImagePickerMIMETypeOther,
 } FLTImagePickerMIMEType;
 
