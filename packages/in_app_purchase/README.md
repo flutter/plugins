@@ -102,7 +102,7 @@ final QueryPurchaseDetailsResponse response = await InAppPurchaseConnection.inst
 if (response.error != null) {
     // Handle the error.
 }
-for (PurchaseDetails purchase : repsonse.pastPurchases) {
+for (PurchaseDetails purchase : response.pastPurchases) {
     _verifyPurchase(purchase);  // Verify the purchase following the best practices for each storefront.
     _deliverPurchase(purchase); // Deliver the purchase to the user in your app.
     if (Platform.isIOS) {
