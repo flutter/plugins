@@ -1,6 +1,6 @@
 ## 5.0.5
 
-* Fix crash when call deleteInstanceID.
+* Fix app will be crashed when call deleteInstanceID.
 
 ## 5.0.4
 
