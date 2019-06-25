@@ -9,8 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -150,20 +148,24 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
                 public void run() {
                   try {
                     FirebaseInstanceId.getInstance().deleteInstanceId();
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                      @Override
-                      public void run() {
-                        result.success(true);
-                      }
-                    });
+                    if (registrar.activity() != null) {
+                      registrar.activity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                          result.success(true);
+                        }
+                      });
+                    }
                   } catch (IOException ex) {
                     Log.e(TAG, "deleteInstanceID, error:", ex);
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                      @Override
-                      public void run() {
-                        result.success(false);
-                      }
-                    });
+                    if (registrar.activity() != null) {
+                      registrar.activity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                          result.success(false);
+                        }
+                      });
+                    }
                   }
                 }
               })

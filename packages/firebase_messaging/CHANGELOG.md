@@ -1,3 +1,7 @@
+## 5.0.5
+
+* Fix crash when call deleteInstanceID.
+
 ## 5.0.4
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.
