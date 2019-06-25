@@ -6,28 +6,28 @@ part of 'firebase_ml_vision.dart';
 
 void faceDetectorTests() {
   group('$FaceDetector', () {
-    final FaceDetector detector = FirebaseVision.instance.faceDetector();
-
-    test('processImage', () async {
-      final String tmpFilename = await _loadImage('assets/test_face.jpeg');
-      final FirebaseVisionImage visionImage =
-          FirebaseVisionImage.fromFilePath(tmpFilename);
-
-      expectLater(detector.processImage(visionImage), completes);
-    });
+    final FaceDetector sharedDetector = FirebaseVision.instance.faceDetector();
 
     test('processImage 1 face', () async {
       final String tmpFilename = await _loadImage('assets/test_face.jpeg');
       final FirebaseVisionImage visionImage =
           FirebaseVisionImage.fromFilePath(tmpFilename);
 
-      final List<Face> faces = await detector.processImage(visionImage);
+      final List<Face> faces = await sharedDetector.processImage(visionImage);
 
       expect(faces, hasLength(1));
     });
 
+    test('close', () async {
+      await expectLater(sharedDetector.close(), completes);
+    });
+
     group('$FaceDetectorOptions', () {
       test('processImage default $FaceDetectorOptions', () async {
+        final FaceDetector detector = FirebaseVision.instance.faceDetector(
+          const FaceDetectorOptions(),
+        );
+
         final String tmpFilename = await _loadImage('assets/test_face.jpeg');
         final FirebaseVisionImage visionImage =
             FirebaseVisionImage.fromFilePath(tmpFilename);
@@ -45,7 +45,7 @@ void faceDetectorTests() {
         expect(face.trackingId, isNull);
       });
 
-      test('processImage enableClassification', () async {
+      test('enableClassification', () async {
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
           const FaceDetectorOptions(enableClassification: true),
         );
@@ -60,9 +60,11 @@ void faceDetectorTests() {
         expect(face.smilingProbability, isNotNull);
         expect(face.leftEyeOpenProbability, isNotNull);
         expect(face.rightEyeOpenProbability, isNotNull);
+
+        detector.close();
       });
 
-      test('processImage enableLandmarks', () async {
+      test('enableLandmarks', () async {
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
           const FaceDetectorOptions(enableLandmarks: true),
         );
@@ -80,9 +82,11 @@ void faceDetectorTests() {
         );
 
         expect(landmarks, anyElement(isNotNull));
+
+        detector.close();
       });
 
-      test('processImage enableTracking', () async {
+      test('enableTracking', () async {
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
           const FaceDetectorOptions(enableTracking: true),
         );
@@ -95,26 +99,33 @@ void faceDetectorTests() {
         final Face face = faces[0];
 
         expect(face.trackingId, 0);
+
+        detector.close();
       });
 
-      test('processImage minFaceSize', () async {
-        final FaceDetector detector = FirebaseVision.instance.faceDetector(
-          const FaceDetectorOptions(minFaceSize: 0.9),
+      test('minFaceSize', () async {
+        final String tmpFilename = await _loadImage(
+          'assets/test_face_small.png',
         );
 
-        final String tmpFilename = await _loadImage(
-          'assets/test_face_small.jpg',
-        );
         final FirebaseVisionImage visionImage =
             FirebaseVisionImage.fromFilePath(tmpFilename);
 
-        final List<Face> faces = await detector.processImage(visionImage);
+        FaceDetector detector = FirebaseVision.instance.faceDetector(
+          const FaceDetectorOptions(),
+        );
 
-        expect(faces, isEmpty);
-      });
+        await expectLater(await detector.processImage(visionImage), isNotEmpty);
 
-      test('close', () {
-        expect(detector.close(), completes);
+        detector.close();
+
+        detector = FirebaseVision.instance.faceDetector(
+          const FaceDetectorOptions(minFaceSize: 0.9),
+        );
+
+        await expectLater(await detector.processImage(visionImage), isEmpty);
+
+        detector.close();
       });
     });
   });
