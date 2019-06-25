@@ -34,6 +34,8 @@ interface GoogleMapOptionsSink {
 
   void setMyLocationButtonEnabled(boolean myLocationButtonEnabled);
 
+  void setIndoorEnabled(boolean indoorEnabled);
+
   void setInitialMarkers(Object initialMarkers);
 
   void setInitialPolygons(Object initialPolygons);

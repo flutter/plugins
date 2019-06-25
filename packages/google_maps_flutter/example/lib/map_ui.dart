@@ -49,6 +49,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _tiltGesturesEnabled = true;
   bool _zoomControlsEnabled = false;
   bool _zoomGesturesEnabled = true;
+  bool _indoorViewEnabled = true;
   bool _myLocationEnabled = true;
   bool _myLocationButtonEnabled = true;
   GoogleMapController _controller;
@@ -176,9 +177,21 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Widget _indoorViewToggler() {
+    return FlatButton(
+      child: Text('${_indoorViewEnabled ? 'disable' : 'enable'} indoor'),
+      onPressed: () {
+        setState(() {
+          _indoorViewEnabled = !_indoorViewEnabled;
+        });
+      },
+    );
+  }
+
   Widget _myLocationToggler() {
     return FlatButton(
-      child: Text('${_myLocationEnabled ? 'disable' : 'enable'} my location'),
+      child: Text(
+          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
       onPressed: () {
         setState(() {
           _myLocationEnabled = !_myLocationEnabled;
@@ -242,6 +255,7 @@ class MapUiBodyState extends State<MapUiBody> {
       scrollGesturesEnabled: _scrollGesturesEnabled,
       tiltGesturesEnabled: _tiltGesturesEnabled,
       zoomGesturesEnabled: _zoomGesturesEnabled,
+      indoorViewEnabled: _indoorViewEnabled,
       myLocationEnabled: _myLocationEnabled,
       myLocationButtonEnabled: _myLocationButtonEnabled,
       onCameraMove: _updateCameraPosition,
@@ -281,6 +295,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _tiltToggler(),
               _zoomToggler(),
               _zoomControlsToggler(),
+              _indoorViewToggler(),
               _myLocationToggler(),
               _myLocationButtonToggler(),
               _nightModeToggler(),
