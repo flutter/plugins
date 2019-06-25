@@ -1,3 +1,7 @@
+## 0.0.4+8
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
 ## 0.0.4+7
 
 * Fixed an issue where `Crashlytics#setUserIdentifier` incorrectly called `setUserEmail` on iOS.

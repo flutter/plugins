@@ -5,6 +5,8 @@
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
 
+#import "FLTImagePickerImageUtil.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FLTImagePickerPhotoAssetUtil : NSObject
@@ -12,7 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (PHAsset *)getAssetFromImagePickerInfo:(NSDictionary *)info;
 
 // Save image with correct meta data and extention copied from the original asset.
-+ (NSString *)saveImageWithOriginalImageData:(NSData *)originalImageData image:(UIImage *)image;
+// maxWidth and maxHeight are used only for GIF images.
++ (NSString *)saveImageWithOriginalImageData:(NSData *)originalImageData
+                                       image:(UIImage *)image
+                                    maxWidth:(nullable NSNumber *)maxWidth
+                                   maxHeight:(nullable NSNumber *)maxHeight;
 
 // Save image with correct meta data and extention copied from image picker result info.
 + (NSString *)saveImageWithPickerInfo:(nullable NSDictionary *)info image:(UIImage *)image;
