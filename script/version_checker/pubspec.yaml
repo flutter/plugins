@@ -1,9 +1,11 @@
 name: version_checker
-version: 1.2.3
+version: 0.1.0
 description: >-
   Used by flutter plugins ci to ensure that we are
   updating the version number incrementally.
 environment:
   sdk: '>=2.2.0 <3.0.0'
 dependencies:
+  args: ^1.5.2
   git: ^1.0.0
+  pub_semver: ^1.4.2
