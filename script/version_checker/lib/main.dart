@@ -18,7 +18,7 @@ bool isPubspec(String file) {
 
 Future<List<String>> getChangedPubSpecs(GitDir baseGitDir) async {
   final ProcessResult changedFilesCommand = await baseGitDir
-      .runCommand(<String>['diff', '--name-only', 'master..HEAD']);
+      .runCommand(<String>['diff', '--name-only', 'upstream/master..HEAD']);
   final List<String> changedFiles =
       changedFilesCommand.stdout.toString().split('\n');
   return changedFiles.where(isPubspec).toList();
