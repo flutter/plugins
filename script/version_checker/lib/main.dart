@@ -11,14 +11,16 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
 const String kRootDirOption = 'root_dir';
+const String kBaseSha = 'base_sha';
 
 bool isPubspec(String file) {
   return file.endsWith('pubspec.yaml');
 }
 
-Future<List<String>> getChangedPubSpecs(GitDir baseGitDir) async {
-  final ProcessResult changedFilesCommand = await baseGitDir
-      .runCommand(<String>['diff', '--name-only', 'upstream/master..HEAD']);
+Future<List<String>> getChangedPubSpecs(
+    GitDir baseGitDir, String baseSha) async {
+  final ProcessResult changedFilesCommand =
+      await baseGitDir.runCommand(<String>['diff', '--name-only', '$baseSha']);
   final List<String> changedFiles =
       changedFilesCommand.stdout.toString().split('\n');
   return changedFiles.where(isPubspec).toList();
@@ -36,14 +38,17 @@ Future<Version> getPackageVersion(
 Future<void> main(List<String> args) async {
   final ArgParser parser = ArgParser();
   parser.addOption(kRootDirOption);
+  parser.addOption(kBaseSha);
 
   final ArgResults results = parser.parse(args);
   final String rootDir = results[kRootDirOption];
+  final String baseSha = results[kBaseSha];
   int exitCode = 0;
 
   if (await GitDir.isGitDir(rootDir)) {
     final GitDir baseGitDir = await GitDir.fromExisting(rootDir);
-    final List<String> changedPubspecs = await getChangedPubSpecs(baseGitDir);
+    final List<String> changedPubspecs =
+        await getChangedPubSpecs(baseGitDir, baseSha);
     for (final String pubspecPath in changedPubspecs) {
       try {
         final Version masterVersion =
