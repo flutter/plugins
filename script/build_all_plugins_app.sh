@@ -12,6 +12,7 @@ check_changed_packages > /dev/null
 
 cd $REPO_DIR/examples/all_plugins
 flutter clean > /dev/null
+(cd "$REPO_DIR" && pub global run flutter_plugin_tools gen-pubspec)
 
 function error() {
   echo "$@" 1>&2
