@@ -52,7 +52,7 @@ Future<void> main(List<String> args) async {
     for (final String pubspecPath in changedPubspecs) {
       try {
         final Version masterVersion =
-            await getPackageVersion(baseGitDir, pubspecPath, 'master');
+            await getPackageVersion(baseGitDir, pubspecPath, baseSha);
         final Version headVersion =
             await getPackageVersion(baseGitDir, pubspecPath, 'HEAD');
         final Map<Version, String> allowedNextVersions = <Version, String>{
