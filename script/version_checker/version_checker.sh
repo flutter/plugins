@@ -9,6 +9,6 @@ readonly BASE_DIR=$(dirname "$0")
 pushd $BASE_DIR
 
 pub get
-pub run lib/main.dart "$@"
+pub run lib/main.dart --root_dir "$@"
 
 popd
