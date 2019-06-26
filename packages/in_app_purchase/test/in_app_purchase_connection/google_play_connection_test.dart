@@ -306,7 +306,7 @@ void main() {
       expect(result.purchaseID, isNull);
     });
 
-    test('tes purchase updated type assertion', () async {
+    test('test purchase updated type assertion', () async {
       final BillingResponse sentCode = BillingResponse.error;
 
       MethodCall call = MethodCall(kOnPurchasesUpdated, {
