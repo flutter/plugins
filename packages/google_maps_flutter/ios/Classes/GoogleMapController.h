@@ -13,8 +13,10 @@
 @protocol FLTGoogleMapOptionsSink
 - (void)setCameraTargetBounds:(GMSCoordinateBounds *)bounds;
 - (void)setCompassEnabled:(BOOL)enabled;
+- (void)setIndoorEnabled:(BOOL)enabled;
 - (void)setMapType:(GMSMapViewType)type;
 - (void)setMinZoom:(float)minZoom maxZoom:(float)maxZoom;
+- (void)setPaddingTop:(float)top left:(float)left bottom:(float)bottom right:(float)right;
 - (void)setRotateGesturesEnabled:(BOOL)enabled;
 - (void)setScrollGesturesEnabled:(BOOL)enabled;
 - (void)setTiltGesturesEnabled:(BOOL)enabled;

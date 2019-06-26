@@ -58,7 +58,7 @@ void main() {
           .queryProductDetails(<String>['123', '456', '789'].toSet());
       expect(response.productDetails, []);
       expect(response.notFoundIDs, ['123', '456', '789']);
-      expect(response.error.source, PurchaseSource.AppStore);
+      expect(response.error.source, IAPSource.AppStore);
       expect(response.error.code, 'error_code');
       expect(response.error.message, 'error_message');
       expect(response.error.details, {'info': 'error_info'});
@@ -105,7 +105,7 @@ void main() {
       QueryPurchaseDetailsResponse response =
           await AppStoreConnection.instance.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
-      expect(response.error.source, PurchaseSource.AppStore);
+      expect(response.error.source, IAPSource.AppStore);
       expect(response.error.message, 'error_test');
       expect(response.error.details, {'message': 'errorMessage'});
     });
@@ -128,7 +128,7 @@ void main() {
     test('should refresh receipt data', () async {
       PurchaseVerificationData receiptData =
           await AppStoreConnection.instance.refreshPurchaseVerificationData();
-      expect(receiptData.source, PurchaseSource.AppStore);
+      expect(receiptData.source, IAPSource.AppStore);
       expect(receiptData.localVerificationData, 'refreshed receipt data');
       expect(receiptData.serverVerificationData, 'refreshed receipt data');
     });
@@ -203,7 +203,7 @@ void main() {
       fakeIOSPlatform.testTransactionFail = true;
       List<PurchaseDetails> details = [];
       Completer completer = Completer();
-      PurchaseError error;
+      IAPError error;
 
       Stream<List<PurchaseDetails>> stream =
           AppStoreConnection.instance.purchaseUpdatedStream;
@@ -224,9 +224,9 @@ void main() {
       await AppStoreConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
 
-      PurchaseError completerError = await completer.future;
+      IAPError completerError = await completer.future;
       expect(completerError.code, kPurchaseErrorCode);
-      expect(completerError.source, PurchaseSource.AppStore);
+      expect(completerError.source, IAPSource.AppStore);
       expect(completerError.message, 'ios_domain');
       expect(completerError.details, {'message': 'an error message'});
     });

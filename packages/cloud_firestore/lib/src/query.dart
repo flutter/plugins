@@ -177,7 +177,8 @@ class Query {
   /// this query.
   ///
   /// Cannot be used in combination with [startAtDocument], [startAt], or
-  /// [startAfter].
+  /// [startAfter], but can be used in combination with [endAt],
+  /// [endBefore], [endAtDocument] and [endBeforeDocument].
   ///
   /// See also:
   ///  * [endAfterDocument] for a query that ends after a document.
@@ -204,7 +205,8 @@ class Query {
   /// this query.
   ///
   /// Cannot be used in combination with [startAfterDocument], [startAfter], or
-  /// [startAt].
+  /// [startAt], but can be used in combination with [endAt],
+  /// [endBefore], [endAtDocument] and [endBeforeDocument].
   ///
   /// See also:
   ///  * [startAfterDocument] for a query that starts after a document.
@@ -231,7 +233,8 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Cannot be used in combination with [startAt], [startAfterDocument], or
-  /// [startAtDocument].
+  /// [startAtDocument], but can be used in combination with [endAt],
+  /// [endBefore], [endAtDocument] and [endBeforeDocument].
   Query startAfter(List<dynamic> values) {
     assert(values != null);
     assert(!_parameters.containsKey('startAfter'));
@@ -247,7 +250,8 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Cannot be used in combination with [startAfter], [startAfterDocument],
-  /// or [startAtDocument].
+  /// or [startAtDocument], but can be used in combination with [endAt],
+  /// [endBefore], [endAtDocument] and [endBeforeDocument].
   Query startAt(List<dynamic> values) {
     assert(values != null);
     assert(!_parameters.containsKey('startAfter'));
@@ -263,7 +267,8 @@ class Query {
   /// this query.
   ///
   /// Cannot be used in combination with [endBefore], [endBeforeDocument], or
-  /// [endAt].
+  /// [endAt], but can be used in combination with [startAt],
+  /// [startAfter], [startAtDocument] and [startAfterDocument].
   ///
   /// See also:
   ///  * [startAfterDocument] for a query that starts after a document.
@@ -290,7 +295,8 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Cannot be used in combination with [endBefore], [endBeforeDocument], or
-  /// [endAtDocument].
+  /// [endAtDocument], but can be used in combination with [startAt],
+  /// [startAfter], [startAtDocument] and [startAfterDocument].
   Query endAt(List<dynamic> values) {
     assert(values != null);
     assert(!_parameters.containsKey('endBefore'));
@@ -306,7 +312,8 @@ class Query {
   /// this query.
   ///
   /// Cannot be used in combination with [endAt], [endBefore], or
-  /// [endAtDocument].
+  /// [endAtDocument], but can be used in combination with [startAt],
+  /// [startAfter], [startAtDocument] and [startAfterDocument].
   ///
   /// See also:
   ///  * [startAfterDocument] for a query that starts after document.
@@ -333,7 +340,8 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Cannot be used in combination with [endAt], [endBeforeDocument], or
-  /// [endBeforeDocument]
+  /// [endBeforeDocument], but can be used in combination with [startAt],
+  /// [startAfter], [startAtDocument] and [startAfterDocument].
   Query endBefore(List<dynamic> values) {
     assert(values != null);
     assert(!_parameters.containsKey('endBefore'));

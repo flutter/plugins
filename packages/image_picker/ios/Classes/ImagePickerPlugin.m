@@ -9,6 +9,7 @@
 #import <Photos/Photos.h>
 #import <UIKit/UIKit.h>
 
+#import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
 
@@ -249,7 +250,7 @@ static const int SOURCE_GALLERY = 1;
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-      image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+      image = [FLTImagePickerImageUtil scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
     }
 
     PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
@@ -263,7 +264,11 @@ static const int SOURCE_GALLERY = 1;
                            options:nil
                      resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
                                      UIImageOrientation orientation, NSDictionary *_Nullable info) {
-                       [weakSelf saveImageWithOriginalImageData:imageData image:image];
+                       // maxWidth and maxHeight are used only for GIF images.
+                       [weakSelf saveImageWithOriginalImageData:imageData
+                                                          image:image
+                                                       maxWidth:maxWidth
+                                                      maxHeight:maxHeight];
                      }];
     }
   }
@@ -278,59 +283,15 @@ static const int SOURCE_GALLERY = 1;
   _arguments = nil;
 }
 
-- (UIImage *)scaledImage:(UIImage *)image
-                maxWidth:(NSNumber *)maxWidth
-               maxHeight:(NSNumber *)maxHeight {
-  double originalWidth = image.size.width;
-  double originalHeight = image.size.height;
-
-  bool hasMaxWidth = maxWidth != (id)[NSNull null];
-  bool hasMaxHeight = maxHeight != (id)[NSNull null];
-
-  double width = hasMaxWidth ? MIN([maxWidth doubleValue], originalWidth) : originalWidth;
-  double height = hasMaxHeight ? MIN([maxHeight doubleValue], originalHeight) : originalHeight;
-
-  bool shouldDownscaleWidth = hasMaxWidth && [maxWidth doubleValue] < originalWidth;
-  bool shouldDownscaleHeight = hasMaxHeight && [maxHeight doubleValue] < originalHeight;
-  bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
-
-  if (shouldDownscale) {
-    double downscaledWidth = floor((height / originalHeight) * originalWidth);
-    double downscaledHeight = floor((width / originalWidth) * originalHeight);
-
-    if (width < height) {
-      if (!hasMaxWidth) {
-        width = downscaledWidth;
-      } else {
-        height = downscaledHeight;
-      }
-    } else if (height < width) {
-      if (!hasMaxHeight) {
-        height = downscaledHeight;
-      } else {
-        width = downscaledWidth;
-      }
-    } else {
-      if (originalWidth < originalHeight) {
-        width = downscaledWidth;
-      } else if (originalHeight < originalWidth) {
-        height = downscaledHeight;
-      }
-    }
-  }
-
-  UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
-  [image drawInRect:CGRectMake(0, 0, width, height)];
-
-  UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-
-  return scaledImage;
-}
-
-- (void)saveImageWithOriginalImageData:(NSData *)originalImageData image:(UIImage *)image {
+- (void)saveImageWithOriginalImageData:(NSData *)originalImageData
+                                 image:(UIImage *)image
+                              maxWidth:(NSNumber *)maxWidth
+                             maxHeight:(NSNumber *)maxHeight {
   NSString *savedPath =
-      [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:originalImageData image:image];
+      [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:originalImageData
+                                                             image:image
+                                                          maxWidth:maxWidth
+                                                         maxHeight:maxHeight];
   [self handleSavedPath:savedPath];
 }
 

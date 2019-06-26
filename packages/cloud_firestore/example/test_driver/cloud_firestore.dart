@@ -184,6 +184,28 @@ void main() {
       expect(results.length, 1);
       expect(results[0].data['message'], 'pagination testing1');
 
+      // startAtDocument - endAtDocument
+      snapshot = await messages
+          .orderBy('created_at')
+          .where('test_run', isEqualTo: testRun)
+          .startAtDocument(snapshot1)
+          .endAtDocument(snapshot2)
+          .getDocuments();
+      results = snapshot.documents;
+      expect(results.length, 2);
+      expect(results[0].data['message'], 'pagination testing1');
+      expect(results[1].data['message'], 'pagination testing2');
+
+      // startAfterDocument - endBeforeDocument
+      snapshot = await messages
+          .orderBy('created_at')
+          .where('test_run', isEqualTo: testRun)
+          .startAfterDocument(snapshot1)
+          .endBeforeDocument(snapshot2)
+          .getDocuments();
+      results = snapshot.documents;
+      expect(results.length, 0);
+
       // Clean up
       await doc1.delete();
       await doc2.delete();
