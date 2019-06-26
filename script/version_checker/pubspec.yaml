@@ -7,5 +7,7 @@ environment:
   sdk: '>=2.2.0 <3.0.0'
 dependencies:
   args: ^1.5.2
+  colorize: ^2.0.0
   git: ^1.0.0
   pub_semver: ^1.4.2
+  yaml: ^2.1.16
