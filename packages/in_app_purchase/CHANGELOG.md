@@ -1,3 +1,7 @@
+## 0.2.0+1
+
+* Fix an issue the type is not casted before passing to `PurchasesResultWrapper.fromJson`.
+
 ## 0.2.0
 
 * [Breaking Change] Rename 'PurchaseError' to 'IAPError'.

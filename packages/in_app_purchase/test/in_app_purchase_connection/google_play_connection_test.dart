@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import 'package:test/test.dart';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart' hide TypeMatcher;
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/in_app_purchase/google_play_connection.dart';
@@ -304,6 +304,17 @@ void main() {
       expect(result.error.source, IAPSource.GooglePlay);
       expect(result.status, PurchaseStatus.error);
       expect(result.purchaseID, isNull);
+    });
+
+    test('test purchase updated type assertion', () async {
+      final BillingResponse sentCode = BillingResponse.error;
+
+      MethodCall call = MethodCall(kOnPurchasesUpdated, {
+        1: BillingResponseConverter().toJson(sentCode),
+        'purchasesList': []
+      });
+      expect(() => connection.billingClient.callHandler(call),
+          throwsA(TypeMatcher<AssertionError>()));
     });
 
     test('buy consumable with auto consume, serializes and deserializes data',
