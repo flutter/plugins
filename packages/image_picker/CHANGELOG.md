@@ -1,3 +1,7 @@
+## 0.6.0+11
+
+* Android: throw exception when permissions denied
+
 ## 0.6.0+10
 
 * iOS: support picking GIF from gallery.
