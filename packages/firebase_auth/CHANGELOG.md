@@ -1,3 +1,7 @@
+## 0.11.1+7
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
 ## 0.11.1+6
 
 * Add documentation of support email requirement to README.

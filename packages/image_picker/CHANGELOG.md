@@ -1,6 +1,6 @@
 ## 0.6.0+10
 
-* Android: Finish with error when user denies permissions
+* iOS: support picking GIF from gallery.
 
 ## 0.6.0+9
 

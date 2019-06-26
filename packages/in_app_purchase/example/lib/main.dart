@@ -340,7 +340,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void handleError(PurchaseError error) {
+  void handleError(IAPError error) {
     setState(() {
       _purchasePending = false;
     });

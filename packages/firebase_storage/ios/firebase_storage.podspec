@@ -1,6 +1,11 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
+
+require 'yaml'
+pubspec = YAML.load_file(File.join('..', 'pubspec.yaml'))
+libraryVersion = pubspec['version'].gsub('+', '-')
+
 Pod::Spec.new do |s|
   s.name             = 'firebase_storage'
   s.version          = '0.0.1'
@@ -18,4 +23,10 @@ Firebase Storage plugin for Flutter.
   s.dependency 'Flutter'
   s.dependency 'Firebase/Storage'
   s.static_framework = true
+
+  s.prepare_command = <<-CMD
+      echo // Generated file, do not edit > Classes/UserAgent.h
+      echo "#define LIBRARY_VERSION @\\"#{libraryVersion}\\"" >> Classes/UserAgent.h
+      echo "#define LIBRARY_NAME @\\"flutter-fire-gcs\\"" >> Classes/UserAgent.h
+    CMD
 end

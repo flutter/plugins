@@ -11,7 +11,7 @@ gradle.buildFinished { buildResult ->
     }
 }
 
-group 'io.flutter.plugins.firebase.firestore'
+group 'io.flutter.plugins.firebase.cloudfirestore'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -52,3 +52,5 @@ android {
         implementation 'androidx.annotation:annotation:1.0.0'
     }
 }
+
+apply from: file("./user-agent.gradle")
