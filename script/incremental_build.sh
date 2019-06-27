@@ -25,7 +25,6 @@ else
   else
     (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING)
     echo "Running version check for changed packages"
-    local branch_base_sha="$(get_branch_base_sha)"
-    (cd "$REPO_DIR" && pub global run flutter_plugin_tools version-check --base_sha="$branch_base_sha")
+    (cd "$REPO_DIR" && pub global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
   fi
 fi
