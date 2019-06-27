@@ -1,6 +1,15 @@
+## 0.5.19+1
+
+* Fix polyline width according to device density
+
+
 ## 0.5.19
 
-* Add support for holes in Polygons
+
+* Adds support for toggling Indoor View on or off.
+
+* Allow BitmapDescriptor scaling override
+
 
 ## 0.5.18
 
