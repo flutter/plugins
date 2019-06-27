@@ -33,10 +33,7 @@ class Battery {
 
   /// Returns the current battery level in percent.
   Future<int> get batteryLevel => _methodChannel
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      .invokeMethod('getBatteryLevel')
+      .invokeMethod<int>('getBatteryLevel')
       .then<int>((dynamic result) => result);
 
   /// Fires whenever the battery state changes.

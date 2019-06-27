@@ -39,6 +39,7 @@
     NSObject *parameters = call.arguments[@"parameters"];
     NSString *appName = call.arguments[@"app"];
     NSString *region = call.arguments[@"region"];
+    NSNumber *timeoutMicroseconds = call.arguments[@"timeoutMicroseconds"];
     FIRApp *app = [FIRApp appNamed:appName];
     FIRFunctions *functions;
     if (region != nil && region != (id)[NSNull null]) {
@@ -47,6 +48,9 @@
       functions = [FIRFunctions functionsForApp:app];
     }
     FIRHTTPSCallable *function = [functions HTTPSCallableWithName:functionName];
+    if (timeoutMicroseconds != nil && timeoutMicroseconds != [NSNull null]) {
+      [function setTimeoutInterval:(NSTimeInterval)timeoutMicroseconds.doubleValue / 1000000];
+    }
     [function callWithObject:parameters
                   completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
                     if (error) {

@@ -19,6 +19,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /** CloudFunctionsPlugin */
 public class CloudFunctionsPlugin implements MethodCallHandler {
@@ -44,6 +45,10 @@ public class CloudFunctionsPlugin implements MethodCallHandler {
           functions = FirebaseFunctions.getInstance(app);
         }
         HttpsCallableReference httpsCallableReference = functions.getHttpsCallable(functionName);
+        Number timeoutMilliseconds = call.argument("timeoutMilliseconds");
+        if (timeoutMilliseconds != null) {
+          httpsCallableReference.setTimeout(timeoutMilliseconds.longValue(), TimeUnit.MILLISECONDS);
+        }
         httpsCallableReference
             .call(parameters)
             .addOnCompleteListener(

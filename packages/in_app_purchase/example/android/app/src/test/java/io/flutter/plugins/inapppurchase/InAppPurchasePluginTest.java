@@ -1,5 +1,6 @@
 package io.flutter.plugins.inapppurchase;
 
+import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.CONSUME_PURCHASE_ASYNC;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.END_CONNECTION;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.IS_READY;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.LAUNCH_BILLING_FLOW;
@@ -33,6 +34,7 @@ import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.android.billingclient.api.BillingClient.SkuType;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
@@ -377,6 +379,29 @@ public class InAppPurchasePluginTest {
     HashMap<String, Object> resultData = resultCaptor.getValue();
     assertEquals(responseCode, resultData.get("responseCode"));
     assertEquals(fromPurchasesList(purchasesList), resultData.get("purchasesList"));
+  }
+
+  @Test
+  public void consumeAsync() {
+    establishConnectedBillingClient(null, null);
+    ArgumentCaptor<BillingResponse> resultCaptor = ArgumentCaptor.forClass(BillingResponse.class);
+    int responseCode = BillingResponse.OK;
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("purchaseToken", "mockToken");
+    ArgumentCaptor<ConsumeResponseListener> listenerCaptor =
+        ArgumentCaptor.forClass(ConsumeResponseListener.class);
+
+    plugin.onMethodCall(new MethodCall(CONSUME_PURCHASE_ASYNC, arguments), result);
+
+    // Verify we pass the data to result
+    verify(mockBillingClient).consumeAsync(eq("mockToken"), listenerCaptor.capture());
+
+    listenerCaptor.getValue().onConsumeResponse(responseCode, "mockToken");
+    verify(result).success(resultCaptor.capture());
+
+    // Verify we pass the response code to result
+    verify(result, never()).error(any(), any(), any());
+    verify(result, times(1)).success(responseCode);
   }
 
   private void establishConnectedBillingClient(

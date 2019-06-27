@@ -4,12 +4,10 @@
 
 import 'dart:async';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/services.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-
-import 'package:flutter/services.dart';
-
-import 'package:firebase_analytics/firebase_analytics.dart';
 
 void main() {
   group('filterOutNulls', () {
@@ -232,6 +230,12 @@ void main() {
             ));
 
     smokeTest('login', () => analytics.logLogin());
+
+    smokeTest(
+        'login',
+        () => analytics.logLogin(
+              loginMethod: 'email',
+            ));
 
     smokeTest(
         'post_score',

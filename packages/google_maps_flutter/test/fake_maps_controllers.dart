@@ -16,6 +16,7 @@ class FakePlatformGoogleMap {
     channel.setMockMethodCallHandler(onMethodCall);
     updateOptions(params['options']);
     updateMarkers(params);
+    updatePolylines(params);
   }
 
   MethodChannel channel;
@@ -42,11 +43,19 @@ class FakePlatformGoogleMap {
 
   bool myLocationEnabled;
 
+  bool myLocationButtonEnabled;
+
   Set<MarkerId> markerIdsToRemove;
 
   Set<Marker> markersToAdd;
 
   Set<Marker> markersToChange;
+
+  Set<PolylineId> polylineIdsToRemove;
+
+  Set<Polyline> polylinesToAdd;
+
+  Set<Polyline> polylinesToChange;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -55,6 +64,9 @@ class FakePlatformGoogleMap {
         return Future<void>.sync(() {});
       case 'markers#update':
         updateMarkers(call.arguments);
+        return Future<void>.sync(() {});
+      case 'polylines#update':
+        updatePolylines(call.arguments);
         return Future<void>.sync(() {});
       default:
         return Future<void>.sync(() {});
@@ -119,6 +131,56 @@ class FakePlatformGoogleMap {
     return result;
   }
 
+  void updatePolylines(Map<dynamic, dynamic> polylineUpdates) {
+    if (polylineUpdates == null) {
+      return;
+    }
+    polylinesToAdd = _deserializePolylines(polylineUpdates['polylinesToAdd']);
+    polylineIdsToRemove =
+        _deserializePolylineIds(polylineUpdates['polylineIdsToRemove']);
+    polylinesToChange =
+        _deserializePolylines(polylineUpdates['polylinesToChange']);
+  }
+
+  Set<PolylineId> _deserializePolylineIds(List<dynamic> polylineIds) {
+    if (polylineIds == null) {
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
+      // ignore: prefer_collection_literals
+      return Set<PolylineId>();
+    }
+    return polylineIds
+        .map((dynamic polylineId) => PolylineId(polylineId))
+        .toSet();
+  }
+
+  Set<Polyline> _deserializePolylines(dynamic polylines) {
+    if (polylines == null) {
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
+      // ignore: prefer_collection_literals
+      return Set<Polyline>();
+    }
+    final List<dynamic> polylinesData = polylines;
+    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+    // https://github.com/flutter/flutter/issues/28312
+    // ignore: prefer_collection_literals
+    final Set<Polyline> result = Set<Polyline>();
+    for (Map<dynamic, dynamic> polylineData in polylinesData) {
+      final String polylineId = polylineData['polylineId'];
+      final bool visible = polylineData['visible'];
+      final bool geodesic = polylineData['geodesic'];
+
+      result.add(Polyline(
+        polylineId: PolylineId(polylineId),
+        visible: visible,
+        geodesic: geodesic,
+      ));
+    }
+
+    return result;
+  }
+
   void updateOptions(Map<dynamic, dynamic> options) {
     if (options.containsKey('compassEnabled')) {
       compassEnabled = options['compassEnabled'];
@@ -154,6 +216,9 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('myLocationEnabled')) {
       myLocationEnabled = options['myLocationEnabled'];
+    }
+    if (options.containsKey('myLocationButtonEnabled')) {
+      myLocationButtonEnabled = options['myLocationButtonEnabled'];
     }
   }
 }

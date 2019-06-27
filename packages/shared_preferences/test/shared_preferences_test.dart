@@ -125,6 +125,15 @@ void main() {
           ));
     });
 
+    test('containsKey', () async {
+      const String key = 'testKey';
+
+      expect(false, preferences.containsKey(key));
+
+      preferences.setString(key, 'test');
+      expect(true, preferences.containsKey(key));
+    });
+
     test('clearing', () async {
       await preferences.clear();
       expect(preferences.getString('String'), null);

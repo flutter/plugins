@@ -15,6 +15,8 @@ void main() {
             return 'wifi';
           case 'wifiName':
             return '1337wifi';
+          case 'wifiBSSID':
+            return 'c0:ff:33:c0:d3:55';
           case 'wifiIPAddress':
             return '127.0.0.1';
           default:
@@ -53,6 +55,20 @@ void main() {
         <Matcher>[
           isMethodCall(
             'wifiName',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
+    test('getWifiBSSID', () async {
+      final String result = await Connectivity().getWifiBSSID();
+      expect(result, 'c0:ff:33:c0:d3:55');
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'wifiBSSID',
             arguments: null,
           ),
         ],

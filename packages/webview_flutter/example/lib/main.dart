@@ -24,7 +24,12 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
-class WebViewExample extends StatelessWidget {
+class WebViewExample extends StatefulWidget {
+  @override
+  _WebViewExampleState createState() => _WebViewExampleState();
+}
+
+class _WebViewExampleState extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
 

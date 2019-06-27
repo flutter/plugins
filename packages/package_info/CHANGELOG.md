@@ -1,3 +1,7 @@
+## 0.4.0+3
+
+* Add integration test.
+
 ## 0.4.0+2
 
 * Android: Using new method for BuildNumber in new android versions

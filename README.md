@@ -65,6 +65,7 @@ These are the available plugins in this repository.
 | [firebase_analytics](./packages/firebase_analytics/) | [![pub package](https://img.shields.io/pub/v/firebase_analytics.svg)](https://pub.dartlang.org/packages/firebase_analytics) |
 | [firebase_auth](./packages/firebase_auth/) | [![pub package](https://img.shields.io/pub/v/firebase_auth.svg)](https://pub.dartlang.org/packages/firebase_auth) |
 | [firebase_core](./packages/firebase_core/) | [![pub package](https://img.shields.io/pub/v/firebase_core.svg)](https://pub.dartlang.org/packages/firebase_core) |
+| [firebase_crashlytics](./packages/firebase_crashlytics/) | [![pub package](https://img.shields.io/pub/v/firebase_crashlytics.svg)](https://pub.dartlang.org/packages/firebase_crashlytics) |
 | [firebase_database](./packages/firebase_database/) | [![pub package](https://img.shields.io/pub/v/firebase_database.svg)](https://pub.dartlang.org/packages/firebase_database) |
 | [firebase_dynamic_links](./packages/firebase_dynamic_links/) | [![pub package](https://img.shields.io/pub/v/firebase_dynamic_links.svg)](https://pub.dartlang.org/packages/firebase_dynamic_links) |
 | [firebase_messaging](./packages/firebase_messaging/) | [![pub package](https://img.shields.io/pub/v/firebase_messaging.svg)](https://pub.dartlang.org/packages/firebase_messaging) |

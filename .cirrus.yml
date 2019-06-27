@@ -27,6 +27,7 @@ task:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+        MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       create_device_script:
         echo no | avdmanager -v create avd -n test -k "system-images;android-21;default;armeabi-v7a"
       start_emulator_background_script:
@@ -63,6 +64,7 @@ task:
       PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
       PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
       PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+    SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
   setup_script:
     - brew update
     - brew install libimobiledevice

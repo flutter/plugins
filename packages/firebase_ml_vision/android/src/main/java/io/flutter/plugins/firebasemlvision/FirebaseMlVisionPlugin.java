@@ -51,11 +51,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       case "FaceDetector#processImage":
         FaceDetector.instance.handleDetection(image, options, result);
         break;
-      case "LabelDetector#detectInImage":
-        LabelDetector.instance.handleDetection(image, options, result);
-        break;
-      case "CloudLabelDetector#detectInImage":
-        CloudLabelDetector.instance.handleDetection(image, options, result);
+      case "ImageLabeler#processImage":
+        ImageLabeler.instance.handleDetection(image, options, result);
         break;
       case "TextRecognizer#processImage":
         TextRecognizer.instance.handleDetection(image, options, result);

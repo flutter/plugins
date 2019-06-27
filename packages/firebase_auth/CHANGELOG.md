@@ -1,6 +1,39 @@
+## 0.8.4+5
+
+* Increase Firebase/Auth CocoaPod dependency to '~> 5.19'.
+
+## 0.8.4+4
+
+* Update FirebaseAuth CocoaPod dependency to ensure availability of `FIRAuthErrorUserInfoNameKey`.
+
+## 0.8.4+3
+
+* Updated deprecated API usage on iOS to use non-deprecated versions.
+* Updated FirebaseAuth CocoaPod dependency to ensure a minimum version of 5.0.
+
+## 0.8.4+2
+
+* Fixes an error in the documentation of createUserWithEmailAndPassword.
+
+## 0.8.4+1
+
+* Adds credential for email authentication with link.
+
+## 0.8.4
+
+* Adds support for email link authentication.
+
+## 0.8.3
+
+* Make providerId 'const String' to use in 'case' statement.
+
+## 0.8.2+1
+
+* Fixed bug where `PhoneCodeAutoRetrievalTimeout` callback was never called.
+
 ## 0.8.2
 
- * Fixed `linkWithCredential` on Android.
+* Fixed `linkWithCredential` on Android.
 
 ## 0.8.1+5
 

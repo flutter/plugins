@@ -11,6 +11,13 @@ dependencies:
   uuid: "^1.0.0"
   http: ^0.12.0
 
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  test: any
+
 flutter:
   uses-material-design: true
 

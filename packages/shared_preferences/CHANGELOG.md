@@ -1,3 +1,7 @@
+## 0.5.2
+
+* Add containsKey method.
+
 ## 0.5.1+2
 
 * Add a driver test

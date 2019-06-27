@@ -8,5 +8,10 @@ dependencies:
     path: ../
   firebase_core: ^0.3.0
 
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  test: any
+
 flutter:
   uses-material-design: true

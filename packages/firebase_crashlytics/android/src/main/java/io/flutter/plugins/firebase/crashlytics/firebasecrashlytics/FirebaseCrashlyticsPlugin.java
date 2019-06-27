@@ -22,6 +22,10 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_crashlytics");
     channel.setMethodCallHandler(new FirebaseCrashlyticsPlugin());
+
+    if (!Fabric.isInitialized()) {
+      Fabric.with(registrar.context(), new Crashlytics());
+    }
   }
 
   @Override
