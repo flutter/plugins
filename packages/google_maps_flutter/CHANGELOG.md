@@ -1,3 +1,7 @@
+## 0.5.20
+
+* Add support for holes in Polygons
+
 ## 0.5.19+1
 
 * Fix polyline width according to device density
