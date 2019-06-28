@@ -1,6 +1,8 @@
-## 0.12.5+3
+## 0.12.6
 
-* Add an integration test for rapidly incrementing field value.
+* Methods of `Transaction` no longer require `await`.
+* Added documentation to methods of `Transaction`.
+* Added an integration test for rapidly incrementing field value.
 
 ## 0.12.5+2
 

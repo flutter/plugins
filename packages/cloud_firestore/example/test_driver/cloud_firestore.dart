@@ -117,7 +117,7 @@ void main() {
           final Map<String, dynamic> updatedData =
               Map<String, dynamic>.from(snapshot.data);
           updatedData['message'] = 'testing2';
-          await tx.update(ref, updatedData);
+          tx.update(ref, updatedData);  // calling await here is now optional
           return updatedData;
         },
       );
