@@ -90,6 +90,16 @@ void main() {
       });
       snapshot = await ref.get();
       expect(snapshot.data['message'], 42.1);
+
+      // Call several times without awaiting the result
+      await Future.wait(new List.generate(
+        100,
+        (i) => ref.updateData(<String, dynamic>{
+          'message': FieldValue.increment(i),
+        }),
+      ));
+      snapshot = await ref.get();
+      expect(snapshot.data['message'], 4992.1);
       await ref.delete();
     });
 
