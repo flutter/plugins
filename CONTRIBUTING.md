@@ -113,6 +113,8 @@ organization's) name and contact info to the [AUTHORS](AUTHORS) file.
 
 ### The review process
 
+* This is a new process we are currently experimenting with, feedback on the process is welcomed at the Gitter contributors channel. *
+
 Reviewing PRs often requires a non trivial amount of time. We prioritize issues, not PRs, so that we use our maintainers' time in the most impactful way. Issues pertaining to this repository are managed in the [flutter/flutter issue tracker and are labeled with "plugin"](https://github.com/flutter/flutter/issues?q=is%3Aopen+is%3Aissue+label%3Aplugin+sort%3Areactions-%2B1-desc). Non trivial PRs should have an associated issue that will be used for prioritization. See the [prioritization section](https://github.com/flutter/flutter/wiki/Issue-hygiene#prioritization) in the Flutter wiki to understand how issues are prioritized.
 
 Newly opened PRs first go through initial triage which results in one of:
