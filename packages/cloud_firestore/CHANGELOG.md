@@ -1,3 +1,7 @@
+## 0.12.5+3
+
+* Add an integration test for rapidly incrementing field value.
+
 ## 0.12.5+2
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.
