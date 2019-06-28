@@ -1,3 +1,7 @@
+## 0.5.19+2
+
+* dummy
+
 ## 0.5.19+1
 
 * Fix polyline width according to device density
