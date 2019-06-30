@@ -1,4 +1,4 @@
-## 0.12.6+1
+## 0.12.5+3
 
 * Support for `orderBy` on map fields (e.g. `orderBy('cake.flavor')`) for
   `startAtDocument`, `startAfterDocument`, `endAtDocument`, and `endBeforeDocument` added.
