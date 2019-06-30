@@ -210,5 +210,45 @@ void main() {
       await doc1.delete();
       await doc2.delete();
     });
+
+    test('pagination with map', () async {
+      // Populate the database with two test documents.
+      final CollectionReference messages = firestore.collection('messages');
+      final DocumentReference doc1 = await messages.add(<String, dynamic> {
+        'cake': <String, dynamic>{
+          'flavor': <String, dynamic>{
+            'type': 1,
+            'name': 'test'
+          }
+        }
+      });
+      final DocumentSnapshot snapshot1 = await doc1.get();
+      final DocumentReference doc2 = await messages.add(<String, dynamic>{
+        'cake': <String, dynamic>{
+          'flavor': <String, dynamic>{
+            'type': 2,
+            'name': 'test'
+          }
+        }
+      });
+
+      QuerySnapshot snapshot;
+      List<DocumentSnapshot> results;
+
+      // startAtDocument - one is enough as all of the pagination methods use the same method to get data internally
+      snapshot = await messages
+          .orderBy('cake.flavor.type')
+          .startAtDocument(snapshot1)
+          .getDocuments();
+      results = snapshot.documents;
+
+      // Clean up - before expect in case the test fails
+      await doc1.delete();
+      await doc2.delete();
+
+      expect(results.length, 2);
+      expect(results[0].data['cake']['flavor']['type'], 1);
+      expect(results[1].data['cake']['flavor']['type'], 2);
+    });
   });
 }

@@ -129,6 +129,14 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     if (orderBy != null) {
       for (List<Object> order : orderBy) {
         String orderByFieldName = (String) order.get(0);
+        if (orderByFieldName.contains(".")) {
+          String[] fieldNameParts = orderByFieldName.split("\\.");
+          Map<String, Object> current = (Map<String, Object>) documentData.get(fieldNameParts[0]);
+          for (int i = 1; i < fieldNameParts.length - 1; i++) {
+            current = (Map<String, Object>) current.get(fieldNameParts[i]);
+          }
+          orderByFieldName = fieldNameParts[fieldNameParts.length - 1];
+        }
         data.add(documentData.get(orderByFieldName));
       }
     }
