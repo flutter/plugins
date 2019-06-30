@@ -214,21 +214,15 @@ void main() {
     test('pagination with map', () async {
       // Populate the database with two test documents.
       final CollectionReference messages = firestore.collection('messages');
-      final DocumentReference doc1 = await messages.add(<String, dynamic> {
+      final DocumentReference doc1 = await messages.add(<String, dynamic>{
         'cake': <String, dynamic>{
-          'flavor': <String, dynamic>{
-            'type': 1,
-            'name': 'test'
-          }
+          'flavor': <String, dynamic>{'type': 1, 'name': 'test'}
         }
       });
       final DocumentSnapshot snapshot1 = await doc1.get();
       final DocumentReference doc2 = await messages.add(<String, dynamic>{
         'cake': <String, dynamic>{
-          'flavor': <String, dynamic>{
-            'type': 2,
-            'name': 'test'
-          }
+          'flavor': <String, dynamic>{'type': 2, 'name': 'test'}
         }
       });
 
