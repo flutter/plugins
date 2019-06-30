@@ -38,10 +38,11 @@ static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy,
         for (int i = 1; i < [fieldNameParts count] - 1; i++) {
           currentMap = [currentMap objectForKey:[fieldNameParts objectAtIndex:i]];
         }
-        fieldName =
-            [currentMap objectForKey:[fieldNameParts objectAtIndex:[fieldNameParts count] - 1]];
+        [values addObject:[currentMap
+            objectForKey:[fieldNameParts objectAtIndex:[fieldNameParts count] - 1]]];
+      } else {
+        [values addObject:[documentData objectForKey:fieldName]];
       }
-      [values addObject:[documentData objectForKey:fieldName]];
     }
   }
   if (isCollectionGroup) {

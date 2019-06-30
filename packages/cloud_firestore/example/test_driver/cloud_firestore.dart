@@ -214,35 +214,40 @@ void main() {
     test('pagination with map', () async {
       // Populate the database with two test documents.
       final CollectionReference messages = firestore.collection('messages');
-      final DocumentReference doc1 = await messages.add(<String, dynamic>{
+      final DocumentReference doc1 = messages.document();
+      // Use document ID as a unique identifier to ensure that we don't
+      // collide with other tests running against this database.
+      final String testRun = doc1.documentID;
+      await doc1.setData(<String, dynamic>{
         'cake': <String, dynamic>{
-          'flavor': <String, dynamic>{'type': 1, 'name': 'test'}
+          'flavor': <String, dynamic>{'type': 1, 'test_run': testRun}
         }
       });
+
       final DocumentSnapshot snapshot1 = await doc1.get();
       final DocumentReference doc2 = await messages.add(<String, dynamic>{
         'cake': <String, dynamic>{
-          'flavor': <String, dynamic>{'type': 2, 'name': 'test'}
+          'flavor': <String, dynamic>{'type': 2, 'test_run': testRun}
         }
       });
 
       QuerySnapshot snapshot;
       List<DocumentSnapshot> results;
 
-      // startAtDocument - one is enough as all of the pagination methods use the same method to get data internally
+      // One pagination call is enough as all of the pagination methods use the same method to get data internally.
       snapshot = await messages
           .orderBy('cake.flavor.type')
+          .where('cake.flavor.test_run', isEqualTo: testRun)
           .startAtDocument(snapshot1)
           .getDocuments();
       results = snapshot.documents;
 
-      // Clean up - before expect in case the test fails
-      await doc1.delete();
-      await doc2.delete();
-
       expect(results.length, 2);
       expect(results[0].data['cake']['flavor']['type'], 1);
       expect(results[1].data['cake']['flavor']['type'], 2);
+
+      await doc1.delete();
+      await doc2.delete();
     });
   });
 }
