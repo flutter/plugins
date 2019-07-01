@@ -331,10 +331,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             return;
           }
           final Duration newPosition = await position;
+          final Duration newDuration = await duration;
           if (_isDisposed) {
             return;
           }
-          value = value.copyWith(position: newPosition);
+          value = value.copyWith(position: newPosition, duration: newDuration);
         },
       );
     } else {
@@ -364,6 +365,19 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     return Duration(
       milliseconds: await _channel.invokeMethod<int>(
         'position',
+        <String, dynamic>{'textureId': _textureId},
+      ),
+    );
+  }
+
+  /// The duration in the current video.
+  Future<Duration> get duration async {
+    if (_isDisposed) {
+      return null;
+    }
+    return Duration(
+      milliseconds: await _channel.invokeMethod<int>(
+        'duration',
         <String, dynamic>{'textureId': _textureId},
       ),
     );
