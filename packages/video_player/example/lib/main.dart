@@ -390,7 +390,8 @@ void main() {
                     Container(
                       padding: const EdgeInsets.all(20),
                       child: NetworkPlayerLifeCycle(
-                        'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
+                        'https://cbsnewshd-lh.akamaihd.net/i/CBSNHD_7@199302/master.m3u8',
+                        // 'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
                         (BuildContext context,
                                 VideoPlayerController controller) =>
                             AspectRatioVideo(controller),

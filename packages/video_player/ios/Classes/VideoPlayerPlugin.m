@@ -331,6 +331,17 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (int64_t)duration {
+  if(CMTIME_IS_INDEFINITE([[_player currentItem] duration])) {
+    int64_t maxBuffering = 0;
+    for (NSValue* rangeValue in [_player currentItem].loadedTimeRanges) {
+        CMTimeRange range = [rangeValue CMTimeRangeValue];
+        int64_t start = FLTCMTimeToMillis(range.start);
+        if (start > maxBuffering) {
+            maxBuffering = start + FLTCMTimeToMillis(range.duration);
+        }
+    }
+    return maxBuffering;
+  }
   return FLTCMTimeToMillis([[_player currentItem] duration]);
 }
 
@@ -494,6 +505,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       result(nil);
     } else if ([@"position" isEqualToString:call.method]) {
       result(@([player position]));
+    } else if ([@"duration" isEqualToString:call.method]) {
+      result(@([player duration]));
     } else if ([@"seekTo" isEqualToString:call.method]) {
       [player seekTo:[argsMap[@"location"] intValue]];
       result(nil);
