@@ -218,7 +218,6 @@ class BillingClient {
       case kOnPurchasesUpdated:
         // The purchases updated listener is a singleton.
         assert(_callbacks[kOnPurchasesUpdated].length == 1);
-        assert(call.arguments is Map<String, dynamic>);
         final PurchasesUpdatedListener listener =
             _callbacks[kOnPurchasesUpdated].first;
         listener(PurchasesResultWrapper.fromJson(
