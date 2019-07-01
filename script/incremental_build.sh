@@ -24,8 +24,7 @@ else
     echo "No changes detected in packages."
   else
     (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING)
-    # Disabled temporarily see: https://github.com/flutter/flutter/issues/35412
-    # echo "Running version check for changed packages"
-    # (cd "$REPO_DIR" && pub global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
+    echo "Running version check for changed packages"
+    (cd "$REPO_DIR" && pub global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
   fi
 fi
