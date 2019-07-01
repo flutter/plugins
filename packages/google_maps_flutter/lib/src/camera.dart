@@ -97,7 +97,7 @@ class CameraUpdate {
   /// Returns a camera update that moves the camera to the specified position.
   static CameraUpdate newCameraPosition(CameraPosition cameraPosition) {
     return CameraUpdate._(
-      <dynamic>['newCameraPosition', cameraPosition._toMap()],
+      <dynamic>['newCameraPosition', cameraPosition.toMap()],
     );
   }
 
