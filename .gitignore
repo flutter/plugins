@@ -18,6 +18,7 @@ Pods/
 **/Flutter/flutter_assets/
 ServiceDefinitions.json
 xcuserdata/
+*.xcworkspace
 
 local.properties
 keystore.properties
@@ -32,4 +33,3 @@ GeneratedPluginRegistrant.m
 GeneratedPluginRegistrant.java
 build/
 .flutter-plugins
-
