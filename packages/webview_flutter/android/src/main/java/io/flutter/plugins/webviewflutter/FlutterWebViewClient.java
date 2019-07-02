@@ -5,6 +5,7 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
 import android.webkit.WebResourceError;
@@ -99,6 +100,12 @@ class FlutterWebViewClient {
     methodChannel.invokeMethod("onPageReceiveError", args);
   }
 
+  private void onPageStarted(WebView view, String url) {
+    Map<String, Object> args = new HashMap<>();
+    args.put("url", url);
+    methodChannel.invokeMethod("onPageStarted", args);
+  }
+
   // This method attempts to avoid using WebViewClientCompat due to bug
   // https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
   // https://github.com/flutter/flutter/issues/29446.
@@ -143,8 +150,10 @@ class FlutterWebViewClient {
         FlutterWebViewClient.this.onReceiveError(view, errorCode, description, failingUrl);
       }
 
-
-
+      @Override
+      public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        FlutterWebViewClient.this.onPageStarted(view, url);
+      }
     };
   }
 
@@ -183,6 +192,11 @@ class FlutterWebViewClient {
       @Override
       public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
         FlutterWebViewClient.this.onReceiveError(view, errorCode, description, failingUrl);
+      }
+
+      @Override
+      public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        FlutterWebViewClient.this.onPageStarted(view, url);
       }
     };
   }

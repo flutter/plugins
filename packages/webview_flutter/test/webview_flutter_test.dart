@@ -874,6 +874,61 @@ void main() {
       expect("description", returnedDescription);
     });
   });
+
+  group('$PageStartedCallback', () {
+    testWidgets('onPageStarted is not null', (WidgetTester tester) async {
+      String returnedUrl;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: (String url) {
+          returnedUrl = url;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      platformWebView.fakeOnPageStartedCallback();
+
+      expect(platformWebView.currentUrl, returnedUrl);
+    });
+
+    testWidgets('onPageStarted is null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: null,
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      platformWebView.fakeOnPageStartedCallback();
+    });
+
+    testWidgets('onPageStarted changed', (WidgetTester tester) async {
+      String returnedUrl;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: (String url) {},
+      ));
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: (String url) {
+          returnedUrl = url;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      platformWebView.fakeOnPageStartedCallback();
+
+      expect(platformWebView.currentUrl, returnedUrl);
+    });
+  });
 }
 
 class FakePlatformWebView {
@@ -1038,6 +1093,24 @@ class FakePlatformWebView {
         'code': code,
         'description': description
       },
+    ));
+
+    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+    // https://github.com/flutter/flutter/issues/33446
+    // ignore: deprecated_member_use
+    BinaryMessages.handlePlatformMessage(
+      channel.name,
+      data,
+          (ByteData data) {},
+    );
+  }
+
+  void fakeOnPageStartedCallback() {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+
+    final ByteData data = codec.encodeMethodCall(MethodCall(
+      'onPageStarted',
+      <dynamic, dynamic>{'url': currentUrl},
     ));
 
     // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
