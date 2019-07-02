@@ -73,7 +73,8 @@ typedef NavigationDecision NavigationDelegate(NavigationRequest navigation);
 typedef void PageFinishedCallback(String url);
 
 /// Signature for when a [WebView] receive error.
-/// Code must be NSURLErrorDomain code or const from WebViewClient.
+/// Code may be NSURLErrorDomain code or const from Android WebViewClient or http status code.
+/// Description is optional
 typedef void PageReceiveErrorCallback(String url, int code, String description);
 
 final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
