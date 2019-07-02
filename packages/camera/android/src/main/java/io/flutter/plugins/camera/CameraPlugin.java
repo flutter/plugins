@@ -693,6 +693,7 @@ public class CameraPlugin implements MethodCallHandler {
 
       try {
         recordingVideo = false;
+        closeCaptureSession();
         mediaRecorder.stop();
         mediaRecorder.reset();
         startPreview();
