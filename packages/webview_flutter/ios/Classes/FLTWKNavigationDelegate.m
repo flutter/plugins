@@ -59,4 +59,37 @@
 - (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation {
   [_methodChannel invokeMethod:@"onPageFinished" arguments:@{@"url" : webView.URL.absoluteString}];
 }
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    [_methodChannel invokeMethod:@"onPageReceiveError"
+                       arguments:@{@"url" : webView.URL.absoluteString,
+                                   @"code" : [NSNumber numberWithLong: error.code],
+                                   @"description" : [error localizedDescription],
+                                   }];
+}
+
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    [_methodChannel invokeMethod:@"onPageReceiveError"
+                       arguments:@{@"url" : error.userInfo[NSURLErrorFailingURLStringErrorKey],
+                                   @"code" : [NSNumber numberWithLong: error.code],
+                                   @"description" : [error localizedDescription],
+                                   }];
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
+    if ([navigationResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse *response = (NSHTTPURLResponse *)navigationResponse.response;
+        if (response.statusCode >= 400 && response.statusCode < 600) {
+//            @throw([NSException exceptionWithName: @"e" reason:@"E" userInfo:nil]);
+            [_methodChannel invokeMethod:@"onPageReceiveError"
+                               arguments:@{@"url" : response.URL.absoluteString,
+                                           @"code" : [NSNumber numberWithLong: response.statusCode],
+                                           @"description" : [NSHTTPURLResponse localizedStringForStatusCode:response.statusCode],
+                                           }];
+        }
+    }
+    
+    decisionHandler(WKNavigationResponsePolicyAllow);
+}
+
 @end
