@@ -7,12 +7,12 @@ import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.CameraPlugin;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class FlutterCameraManager implements MethodChannel.MethodCallHandler {
@@ -24,7 +24,7 @@ public class FlutterCameraManager implements MethodChannel.MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    switch(call.method) {
+    switch (call.method) {
       case "CameraManager#getCameraCharacteristics":
         getCameraCharacteristics(call, result);
         break;
@@ -54,7 +54,7 @@ public class FlutterCameraManager implements MethodChannel.MethodCallHandler {
     data.put("id", cameraId);
     data.put("sensorOrientation", characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION));
 
-    switch(characteristics.get(CameraCharacteristics.LENS_FACING)) {
+    switch (characteristics.get(CameraCharacteristics.LENS_FACING)) {
       case CameraCharacteristics.LENS_FACING_FRONT:
         data.put("lensFacing", "LensFacing.front");
         break;
@@ -83,59 +83,62 @@ public class FlutterCameraManager implements MethodChannel.MethodCallHandler {
 
     final String stateClassName = "CameraDeviceState";
     try {
-      manager.openCamera(cameraId, new CameraDevice.StateCallback() {
+      manager.openCamera(
+          cameraId,
+          new CameraDevice.StateCallback() {
 
-        @Override
-        public void onOpened(@NonNull CameraDevice camera) {
-          addHandler(camera);
+            @Override
+            public void onOpened(@NonNull CameraDevice camera) {
+              addHandler(camera);
 
-          final Map<String, Object> stateData = new HashMap<>();
-          stateData.put("handle", cameraHandle);
-          stateData.put(stateClassName, stateClassName + ".opened");
+              final Map<String, Object> stateData = new HashMap<>();
+              stateData.put("handle", cameraHandle);
+              stateData.put(stateClassName, stateClassName + ".opened");
 
-          CameraPlugin.sendCallback(stateData);
-        }
+              CameraPlugin.sendCallback(stateData);
+            }
 
-        @Override
-        public void onDisconnected(@NonNull CameraDevice camera) {
-          addHandler(camera);
+            @Override
+            public void onDisconnected(@NonNull CameraDevice camera) {
+              addHandler(camera);
 
-          final Map<String, Object> stateData = new HashMap<>();
-          stateData.put("handle", cameraHandle);
-          stateData.put(stateClassName, stateClassName + ".disconnected");
+              final Map<String, Object> stateData = new HashMap<>();
+              stateData.put("handle", cameraHandle);
+              stateData.put(stateClassName, stateClassName + ".disconnected");
 
-          CameraPlugin.sendCallback(stateData);
-        }
+              CameraPlugin.sendCallback(stateData);
+            }
 
-        @Override
-        public void onError(@NonNull CameraDevice camera, int error) {
-          addHandler(camera);
+            @Override
+            public void onError(@NonNull CameraDevice camera, int error) {
+              addHandler(camera);
 
-          final Map<String, Object> stateData = new HashMap<>();
-          stateData.put("handle", cameraHandle);
-          stateData.put(stateClassName, stateClassName + ".error");
+              final Map<String, Object> stateData = new HashMap<>();
+              stateData.put("handle", cameraHandle);
+              stateData.put(stateClassName, stateClassName + ".error");
 
-          CameraPlugin.sendCallback(stateData);
-        }
+              CameraPlugin.sendCallback(stateData);
+            }
 
-        @Override
-        public void onClosed(@NonNull CameraDevice camera) {
-          addHandler(camera);
+            @Override
+            public void onClosed(@NonNull CameraDevice camera) {
+              addHandler(camera);
 
-          final Map<String, Object> stateData = new HashMap<>();
-          stateData.put("handle", cameraHandle);
-          stateData.put(stateClassName, stateClassName + ".closed");
+              final Map<String, Object> stateData = new HashMap<>();
+              stateData.put("handle", cameraHandle);
+              stateData.put(stateClassName, stateClassName + ".closed");
 
-          CameraPlugin.sendCallback(stateData);
-        }
+              CameraPlugin.sendCallback(stateData);
+            }
 
-        private void addHandler(@NonNull CameraDevice camera) {
-          if (CameraPlugin.getHandler(cameraHandle) == null) {
-            CameraPlugin.addHandler(
-                cameraHandle, new FlutterCameraDevice(camera, cameraHandle));
-          }
-        }
-      }, null);
+            private void addHandler(@NonNull CameraDevice camera) {
+              if (CameraPlugin.getHandler(cameraHandle) == null) {
+                CameraPlugin.addHandler(
+                    cameraHandle, new FlutterCameraDevice(camera, cameraHandle));
+              }
+            }
+          },
+          null);
 
       result.success(null);
     } catch (CameraAccessException e) {

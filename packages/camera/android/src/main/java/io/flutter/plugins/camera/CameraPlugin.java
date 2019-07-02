@@ -60,7 +60,7 @@ public class CameraPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    switch(call.method) {
+    switch (call.method) {
       case "NativeTexture#allocate":
         allocateTexture(call, result);
         break;
@@ -101,10 +101,9 @@ public class CameraPlugin implements MethodCallHandler {
       addHandler(managerHandle, new FlutterCameraManager(manager));
       result.success(null);
     } else {
-      final String message = String.format(
-          Locale.getDefault(),
-          "Can't use CameraManager for android version: %d",
-          buildVersion);
+      final String message =
+          String.format(
+              Locale.getDefault(), "Can't use CameraManager for android version: %d", buildVersion);
       throw new IllegalAccessError(message);
     }
   }

@@ -36,15 +36,15 @@
       mediaType = AVMediaTypeVideo;
     }
 
-    AVCaptureDeviceDiscoverySession *session = [AVCaptureDeviceDiscoverySession
-                    discoverySessionWithDeviceTypes:types
-                                          mediaType:mediaType
-                                           position:position];
+    AVCaptureDeviceDiscoverySession *session =
+        [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:types
+                                                               mediaType:mediaType
+                                                                position:position];
 
     NSArray<AVCaptureDevice *> *devices = session.devices;
 
     NSMutableArray<NSDictionary<NSString *, NSObject *> *> *deviceData =
-                          [[NSMutableArray alloc] initWithCapacity:devices.count];
+        [[NSMutableArray alloc] initWithCapacity:devices.count];
 
     for (AVCaptureDevice *device in devices) {
       [deviceData addObject:[FLTCaptureDevice serialize:device]];
@@ -56,7 +56,7 @@
   return nil;
 }
 
-+ (void) validateVersion {
++ (void)validateVersion {
   if (@available(iOS 10.0, *)) {
     return;
   } else {

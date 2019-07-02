@@ -35,7 +35,7 @@ public class SupportAndroidCamera implements MethodChannel.MethodCallHandler {
 
     final Map<String, Object> data = new HashMap<>();
 
-    switch(info.facing) {
+    switch (info.facing) {
       case Camera.CameraInfo.CAMERA_FACING_FRONT:
         data.put("facing", "Facing.front");
         break;
@@ -52,7 +52,7 @@ public class SupportAndroidCamera implements MethodChannel.MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    switch(call.method) {
+    switch (call.method) {
       case "SupportAndroidCamera#previewTexture":
         previewTexture(call, result);
         break;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "CameraPlugin+Internal.h"
 #import <libkern/OSAtomic.h>
+#import "CameraPlugin+Internal.h"
 
 @interface NativeTexture ()
 @property CVPixelBufferRef volatile latestPixelBuffer;

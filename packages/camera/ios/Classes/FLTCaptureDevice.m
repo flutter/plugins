@@ -23,7 +23,7 @@
   }
 
   NSMutableArray<NSDictionary<NSString *, NSObject *> *> *deviceData =
-  [[NSMutableArray alloc] initWithCapacity:devices.count];
+      [[NSMutableArray alloc] initWithCapacity:devices.count];
 
   for (AVCaptureDevice *device in devices) {
     [deviceData addObject:[FLTCaptureDevice serialize:device]];
@@ -52,8 +52,8 @@
   }
 
   return @{
-    @"uniqueId": [device uniqueID],
-    @"position": retPositionStr,
+    @"uniqueId" : [device uniqueID],
+    @"position" : retPositionStr,
   };
 }
 
@@ -67,7 +67,7 @@
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall * _Nonnull)call result:(FlutterResult _Nonnull)result {
+- (void)handleMethodCall:(FlutterMethodCall *_Nonnull)call result:(FlutterResult _Nonnull)result {
   result(FlutterMethodNotImplemented);
 }
 @end

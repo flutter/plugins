@@ -21,24 +21,26 @@
 + (NSArray<NSDictionary *> *_Nonnull)devices:(FlutterMethodCall *_Nonnull)call;
 @end
 
-@interface FLTCaptureSession : NSObject<MethodCallHandler>
-+ (void)startRunning:(FlutterMethodCall * _Nonnull)call result:(FlutterResult _Nonnull)result;
-+ (void)stopRunning:(FlutterMethodCall * _Nonnull)call result:(FlutterResult _Nonnull)result;
+@interface FLTCaptureSession : NSObject <MethodCallHandler>
++ (void)startRunning:(FlutterMethodCall *_Nonnull)call result:(FlutterResult _Nonnull)result;
++ (void)stopRunning:(FlutterMethodCall *_Nonnull)call result:(FlutterResult _Nonnull)result;
 @end
 
-@interface NativeTexture : NSObject<MethodCallHandler, FlutterTexture>
+@interface NativeTexture : NSObject <MethodCallHandler, FlutterTexture>
 @property(readonly) int64_t textureId;
-- (instancetype _Nonnull)initWithTextureRegistry:(NSObject<FlutterTextureRegistry> *_Nonnull)registry
+- (instancetype _Nonnull)initWithTextureRegistry:
+                             (NSObject<FlutterTextureRegistry> *_Nonnull)registry
                                           handle:(NSNumber *_Nonnull)handle;
 - (void)updatePixelBuffer:(CVPixelBufferRef _Nullable)pixelBuffer;
 @end
 
-@interface FLTCaptureVideoDataOutputSampleBufferDelegate : NSObject<AVCaptureVideoDataOutputSampleBufferDelegate, MethodCallHandler>
+@interface FLTCaptureVideoDataOutputSampleBufferDelegate
+    : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate, MethodCallHandler>
 - (instancetype _Nonnull)initWithPlatformTexture:(NativeTexture *_Nullable)texture
                                           handle:(NSNumber *_Nonnull)handle;
 @end
 
-@interface FLTCaptureDevice : NSObject<MethodCallHandler>
+@interface FLTCaptureDevice : NSObject <MethodCallHandler>
 + (NSArray<NSDictionary *> *_Nonnull)getDevices:(FlutterMethodCall *_Nonnull)call;
 - (instancetype _Nonnull)initWithCaptureDevice:(AVCaptureDevice *_Nonnull)device
                                         handle:(NSNumber *_Nonnull)handle;

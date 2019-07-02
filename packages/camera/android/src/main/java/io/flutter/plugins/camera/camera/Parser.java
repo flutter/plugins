@@ -7,19 +7,19 @@ import android.hardware.camera2.CaptureRequest;
 import android.os.Build;
 import android.view.Surface;
 import androidx.annotation.RequiresApi;
+import io.flutter.plugins.camera.CameraPlugin;
+import io.flutter.plugins.camera.common.NativeTexture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import io.flutter.plugins.camera.CameraPlugin;
-import io.flutter.plugins.camera.common.NativeTexture;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 class Parser {
   private Parser() {}
 
-  static CaptureRequest parseCaptureRequest(int deviceHandle, Map<String, Object> data) throws CameraAccessException {
-    final FlutterCameraDevice device =
-        (FlutterCameraDevice) CameraPlugin.getHandler(deviceHandle);
+  static CaptureRequest parseCaptureRequest(int deviceHandle, Map<String, Object> data)
+      throws CameraAccessException {
+    final FlutterCameraDevice device = (FlutterCameraDevice) CameraPlugin.getHandler(deviceHandle);
 
     final int requestTemplate;
     switch ((String) data.get("template")) {
@@ -38,7 +38,7 @@ class Parser {
     }
 
     final List<Map<String, Object>> targetData = (List<Map<String, Object>>) data.get("targets");
-    for(Surface target : parseSurfaces(targetData)) {
+    for (Surface target : parseSurfaces(targetData)) {
       builder.addTarget(target);
     }
 
@@ -52,7 +52,8 @@ class Parser {
       final String surfaceClass = (String) outputData.get("surfaceClass");
 
       if (surfaceClass.equals("PreviewTexture")) {
-        final Map<String, Object> textureData = (Map<String, Object>) outputData.get("nativeTexture");
+        final Map<String, Object> textureData =
+            (Map<String, Object>) outputData.get("nativeTexture");
         final Integer textureHandle = (Integer) textureData.get("handle");
         final NativeTexture texture = (NativeTexture) CameraPlugin.getHandler(textureHandle);
 

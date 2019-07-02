@@ -7,12 +7,12 @@ import android.os.Build;
 import android.view.Surface;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.CameraPlugin;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class FlutterCameraDevice implements MethodChannel.MethodCallHandler {
@@ -26,7 +26,7 @@ public class FlutterCameraDevice implements MethodChannel.MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    switch(call.method) {
+    switch (call.method) {
       case "CameraDevice#close":
         close(result);
         break;
@@ -45,47 +45,50 @@ public class FlutterCameraDevice implements MethodChannel.MethodCallHandler {
 
     final String stateClassName = "CameraCaptureSessionState";
     try {
-      device.createCaptureSession(outputs, new CameraCaptureSession.StateCallback() {
-        @Override
-        public void onConfigured(@NonNull CameraCaptureSession session) {
-          addHandler(session);
+      device.createCaptureSession(
+          outputs,
+          new CameraCaptureSession.StateCallback() {
+            @Override
+            public void onConfigured(@NonNull CameraCaptureSession session) {
+              addHandler(session);
 
-          final Map<String, Object> stateData = new HashMap<>();
-          stateData.put("handle", sessionHandle);
-          stateData.put(stateClassName, stateClassName + ".configured");
+              final Map<String, Object> stateData = new HashMap<>();
+              stateData.put("handle", sessionHandle);
+              stateData.put(stateClassName, stateClassName + ".configured");
 
-          CameraPlugin.sendCallback(stateData);
-        }
+              CameraPlugin.sendCallback(stateData);
+            }
 
-        @Override
-        public void onConfigureFailed(@NonNull CameraCaptureSession session) {
-          addHandler(session);
+            @Override
+            public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+              addHandler(session);
 
-          final Map<String, Object> stateData = new HashMap<>();
-          stateData.put("handle", sessionHandle);
-          stateData.put(stateClassName, stateClassName + ".configureFailed");
+              final Map<String, Object> stateData = new HashMap<>();
+              stateData.put("handle", sessionHandle);
+              stateData.put(stateClassName, stateClassName + ".configureFailed");
 
-          CameraPlugin.sendCallback(stateData);
-        }
+              CameraPlugin.sendCallback(stateData);
+            }
 
-        @Override
-        public void onClosed(@NonNull CameraCaptureSession session) {
-          addHandler(session);
+            @Override
+            public void onClosed(@NonNull CameraCaptureSession session) {
+              addHandler(session);
 
-          final Map<String, Object> stateData = new HashMap<>();
-          stateData.put("handle", sessionHandle);
-          stateData.put(stateClassName, stateClassName + ".closed");
+              final Map<String, Object> stateData = new HashMap<>();
+              stateData.put("handle", sessionHandle);
+              stateData.put(stateClassName, stateClassName + ".closed");
 
-          CameraPlugin.sendCallback(stateData);
-        }
+              CameraPlugin.sendCallback(stateData);
+            }
 
-        private void addHandler(@NonNull CameraCaptureSession session) {
-          if (CameraPlugin.getHandler(sessionHandle) == null) {
-            CameraPlugin.addHandler(
-                sessionHandle, new FlutterCameraCaptureSession(session, sessionHandle));
-          }
-        }
-      }, null);
+            private void addHandler(@NonNull CameraCaptureSession session) {
+              if (CameraPlugin.getHandler(sessionHandle) == null) {
+                CameraPlugin.addHandler(
+                    sessionHandle, new FlutterCameraCaptureSession(session, sessionHandle));
+              }
+            }
+          },
+          null);
 
       result.success(null);
     } catch (CameraAccessException e) {

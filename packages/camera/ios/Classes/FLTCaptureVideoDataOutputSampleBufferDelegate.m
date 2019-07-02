@@ -17,13 +17,13 @@
     _texture = texture;
     self.handle = handle;
   }
-  
+
   return self;
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
-didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-       fromConnection:(AVCaptureConnection *)connection {
+    didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+           fromConnection:(AVCaptureConnection *)connection {
   CVPixelBufferRef newBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
 
   if (_texture) {
@@ -31,7 +31,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
   }
 }
 
-- (void)handleMethodCall:(FlutterMethodCall * _Nonnull)call result:(FlutterResult _Nonnull)result {
+- (void)handleMethodCall:(FlutterMethodCall *_Nonnull)call result:(FlutterResult _Nonnull)result {
   result(FlutterMethodNotImplemented);
 }
 @end

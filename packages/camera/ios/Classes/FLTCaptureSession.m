@@ -27,7 +27,7 @@
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall * _Nonnull)call result:(FlutterResult _Nonnull)result {
+- (void)handleMethodCall:(FlutterMethodCall *_Nonnull)call result:(FlutterResult _Nonnull)result {
   if ([@"CaptureSession#addOutput" isEqualToString:call.method]) {
     [self addOutput:call result:result];
   } else if ([@"CaptureSession#removeOutput" isEqualToString:call.method]) {
@@ -44,10 +44,11 @@
   }
 }
 
-+ (void)startRunning:(FlutterMethodCall * _Nonnull)call result:(FlutterResult _Nonnull)result {
++ (void)startRunning:(FlutterMethodCall *_Nonnull)call result:(FlutterResult _Nonnull)result {
   AVCaptureSession *session = [AVCaptureSession new];
   NSNumber *sessionHandle = call.arguments[@"sessionHandle"];
-  FLTCaptureSession *fltSession = [[FLTCaptureSession alloc] initWithSession:session handle:sessionHandle];
+  FLTCaptureSession *fltSession = [[FLTCaptureSession alloc] initWithSession:session
+                                                                      handle:sessionHandle];
 
   NSArray<NSDictionary *> *inputs = call.arguments[@"inputs"];
   for (NSDictionary *inputData in inputs) {
@@ -58,7 +59,7 @@
       NSDictionary *deviceData = inputData[@"device"];
       AVCaptureDevice *device = [FLTCaptureDevice deserialize:deviceData];
       input = [AVCaptureDeviceInput deviceInputWithDevice:device error:nil];
-      
+
       NSNumber *handle = deviceData[@"handle"];
       FLTCaptureDevice *fltDevice = [[FLTCaptureDevice alloc] initWithCaptureDevice:device
                                                                              handle:handle];
@@ -98,13 +99,13 @@
 
         NativeTexture *texture = nil;
         if (textureHandle) {
-          texture = (NativeTexture *) [CameraPlugin getHandler:textureHandle];
+          texture = (NativeTexture *)[CameraPlugin getHandler:textureHandle];
         }
 
         NSNumber *handle = outputData[@"handle"];
-        FLTCaptureVideoDataOutputSampleBufferDelegate *delegate =   [[FLTCaptureVideoDataOutputSampleBufferDelegate alloc]
-           initWithPlatformTexture:texture
-           handle:handle];
+        FLTCaptureVideoDataOutputSampleBufferDelegate *delegate =
+            [[FLTCaptureVideoDataOutputSampleBufferDelegate alloc] initWithPlatformTexture:texture
+                                                                                    handle:handle];
 
         [dataOutput setSampleBufferDelegate:delegate queue:dispatch_get_main_queue()];
 
@@ -128,7 +129,7 @@
   result(nil);
 }
 
-+ (void)stopRunning:(FlutterMethodCall * _Nonnull)call result:(FlutterResult _Nonnull)result {
++ (void)stopRunning:(FlutterMethodCall *_Nonnull)call result:(FlutterResult _Nonnull)result {
   NSNumber *handle = call.arguments[@"handle"];
   id<MethodCallHandler> handler = [CameraPlugin getHandler:handle];
 
@@ -150,18 +151,14 @@
 }
 
 - (void)addOutput:(FlutterMethodCall *_Nonnull)call result:(FlutterResult _Nonnull)result {
-  
 }
 
 - (void)removeOutput:(FlutterMethodCall *_Nonnull)call result:(FlutterResult _Nonnull)result {
-  
 }
 
 - (void)addInput:(FlutterMethodCall *_Nonnull)call result:(FlutterResult _Nonnull)result {
-  
 }
 
 - (void)removeInput:(FlutterMethodCall *_Nonnull)call result:(FlutterResult _Nonnull)result {
-  
 }
 @end

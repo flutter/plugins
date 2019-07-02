@@ -5,10 +5,10 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CaptureRequest;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
-import java.util.Map;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.CameraPlugin;
+import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class FlutterCameraCaptureSession implements MethodChannel.MethodCallHandler {
@@ -22,7 +22,7 @@ public class FlutterCameraCaptureSession implements MethodChannel.MethodCallHand
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    switch(call.method) {
+    switch (call.method) {
       case "CameraCaptureSession#setRepeatingRequest":
         setRepeatingRequest(call, result);
         break;

@@ -17,20 +17,19 @@ static FlutterMethodChannel *channel;
   return self;
 }
 
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   methodHandlers = [NSMutableDictionary new];
-  channel = [FlutterMethodChannel
-      methodChannelWithName:@"dev.plugins/super_camera"
-            binaryMessenger:[registrar messenger]];
+  channel = [FlutterMethodChannel methodChannelWithName:@"dev.plugins/super_camera"
+                                        binaryMessenger:[registrar messenger]];
 
-  CameraPlugin* instance = [[CameraPlugin alloc] initWithRegistrar:registrar];
+  CameraPlugin *instance = [[CameraPlugin alloc] initWithRegistrar:registrar];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
 + (void)addMethodHandler:(NSNumber *)handle methodHandler:(id<MethodCallHandler>)handler {
   if (methodHandlers[handle]) {
     NSString *reason =
-    [[NSString alloc] initWithFormat:@"Object for handle already exists: %d", handle.intValue];
+        [[NSString alloc] initWithFormat:@"Object for handle already exists: %d", handle.intValue];
     @throw [[NSException alloc] initWithName:NSInvalidArgumentException reason:reason userInfo:nil];
   }
 
@@ -46,7 +45,7 @@ static FlutterMethodChannel *channel;
   return methodHandlers[handle];
 }
 
-- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"CaptureDiscoverySession#devices" isEqualToString:call.method]) {
     result([FLTCaptureDiscoverySession devices:call]);
   } else if ([@"CaptureSession#startRunning" isEqualToString:call.method]) {
@@ -62,15 +61,16 @@ static FlutterMethodChannel *channel;
   }
 }
 
-- (void)allocateTexture:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)allocateTexture:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *handle = call.arguments[@"textureHandle"];
-  NativeTexture *texture = [[NativeTexture alloc] initWithTextureRegistry:_registrar.textures handle:handle];
+  NativeTexture *texture = [[NativeTexture alloc] initWithTextureRegistry:_registrar.textures
+                                                                   handle:handle];
 
   [CameraPlugin addMethodHandler:handle methodHandler:texture];
   result(@(texture.textureId));
 }
 
-- (void)dispatchToHandler:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)dispatchToHandler:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *handle = call.arguments[@"handle"];
   id<MethodCallHandler> handler = [CameraPlugin getHandler:handle];
 
