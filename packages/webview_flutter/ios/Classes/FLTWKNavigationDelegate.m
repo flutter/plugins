@@ -61,35 +61,44 @@
 }
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-    [_methodChannel invokeMethod:@"onPageReceiveError"
-                       arguments:@{@"url" : webView.URL.absoluteString,
-                                   @"code" : [NSNumber numberWithLong: error.code],
-                                   @"description" : [error localizedDescription],
-                                   }];
+    NSDictionary* arguments = @{
+                                @"url" : webView.URL.absoluteString ?: [NSNull null],
+                                @"code" : [NSNumber numberWithLong: error.code],
+                                @"description" : [error localizedDescription],
+                                };
+    
+    [_methodChannel invokeMethod:@"onPageReceiveError" arguments: arguments];
 }
 
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-    [_methodChannel invokeMethod:@"onPageReceiveError"
-                       arguments:@{@"url" : error.userInfo[NSURLErrorFailingURLStringErrorKey],
-                                   @"code" : [NSNumber numberWithLong: error.code],
-                                   @"description" : [error localizedDescription],
-                                   }];
+    NSDictionary* arguments = @{
+                                @"url" : error.userInfo[NSURLErrorFailingURLStringErrorKey],
+                                @"code" : [NSNumber numberWithLong: error.code],
+                                @"description" : [error localizedDescription],
+                                };
+    
+    [_methodChannel invokeMethod:@"onPageReceiveError" arguments:arguments];
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
     if ([navigationResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
         NSHTTPURLResponse *response = (NSHTTPURLResponse *)navigationResponse.response;
         if (response.statusCode >= 400 && response.statusCode < 600) {
-//            @throw([NSException exceptionWithName: @"e" reason:@"E" userInfo:nil]);
-            [_methodChannel invokeMethod:@"onPageReceiveError"
-                               arguments:@{@"url" : response.URL.absoluteString,
-                                           @"code" : [NSNumber numberWithLong: response.statusCode],
-                                           @"description" : [NSHTTPURLResponse localizedStringForStatusCode:response.statusCode],
-                                           }];
+            NSDictionary* arguments = @{
+                                        @"url" : response.URL.absoluteString ?: [NSNull null],
+                                        @"code" : [NSNumber numberWithLong: response.statusCode],
+                                        @"description" : [NSHTTPURLResponse localizedStringForStatusCode:response.statusCode],
+                                        };
+            
+            [_methodChannel invokeMethod:@"onPageReceiveError" arguments: arguments];
         }
     }
     
     decisionHandler(WKNavigationResponsePolicyAllow);
+}
+
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
+  [_methodChannel invokeMethod:@"onPageStarted" arguments:@{@"url" : webView.URL.absoluteString ?: [NSNull null],}];
 }
 
 @end

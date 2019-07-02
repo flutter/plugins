@@ -72,10 +72,13 @@ typedef NavigationDecision NavigationDelegate(NavigationRequest navigation);
 /// Signature for when a [WebView] has finished loading a page.
 typedef void PageFinishedCallback(String url);
 
-/// Signature for when a [WebView] receive error.
+/// Signature for when a [WebView] receive a error.
 /// Code may be NSURLErrorDomain code or const from Android WebViewClient or http status code.
 /// Description is optional
 typedef void PageReceiveErrorCallback(String url, int code, String description);
+
+/// Signature for when a [WebView] has started loading a page.
+typedef void PageStartedCallback(String url);
 
 final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
 
@@ -126,7 +129,8 @@ class WebView extends StatefulWidget {
     this.gestureRecognizers,
     this.onPageFinished,
     this.debuggingEnabled = false,
-    this.onPageReceiveError
+    this.onPageReceiveError,
+    this.onPageStarted,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -262,6 +266,8 @@ class WebView extends StatefulWidget {
   final bool debuggingEnabled;
 
   final PageReceiveErrorCallback onPageReceiveError;
+
+  final PageStartedCallback onPageStarted;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -409,6 +415,13 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   void onPageReceiveError({String url, int code, String description}) {
     if (_widget.onPageReceiveError != null) {
       _widget.onPageReceiveError(url, code, description);
+    }
+  }
+
+  @override
+  void onPageStarted(String url) {
+    if (_widget.onPageStarted != null) {
+      _widget.onPageStarted(url);
     }
   }
 
