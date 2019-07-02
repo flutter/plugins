@@ -1101,7 +1101,7 @@ class FakePlatformWebView {
     BinaryMessages.handlePlatformMessage(
       channel.name,
       data,
-          (ByteData data) {},
+      (ByteData data) {},
     );
   }
 
@@ -1119,7 +1119,7 @@ class FakePlatformWebView {
     BinaryMessages.handlePlatformMessage(
       channel.name,
       data,
-          (ByteData data) {},
+      (ByteData data) {},
     );
   }
 
