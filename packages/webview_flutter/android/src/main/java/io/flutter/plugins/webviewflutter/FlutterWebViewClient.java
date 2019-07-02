@@ -9,6 +9,7 @@ import android.os.Build;
 import android.util.Log;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -130,10 +131,20 @@ class FlutterWebViewClient {
         FlutterWebViewClient.this.onReceiveError(view, error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
       }
 
+      @TargetApi(Build.VERSION_CODES.M)
+      @Override
+      public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+        FlutterWebViewClient.this.onReceiveError(view, errorResponse.getStatusCode(), null, request.getUrl().toString());
+      }
+
+      @SuppressWarnings("deprecation")
       @Override
       public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
         FlutterWebViewClient.this.onReceiveError(view, errorCode, description, failingUrl);
       }
+
+
+
     };
   }
 
@@ -157,11 +168,18 @@ class FlutterWebViewClient {
 
       @TargetApi(Build.VERSION_CODES.LOLLIPOP)
       @Override
+      public void onReceivedHttpError(@NonNull WebView view, @NonNull WebResourceRequest request, @NonNull WebResourceResponse errorResponse) {
+        FlutterWebViewClient.this.onReceiveError(view, errorResponse.getStatusCode(), null, request.getUrl().toString());
+      }
+
+      @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+      @Override
       public void onReceivedError(@NonNull WebView view, @NonNull WebResourceRequest request, @NonNull WebResourceErrorCompat error) {
         //TODO: is really need to check WebViewFeature.isFeatureSupported() and api version.
         FlutterWebViewClient.this.onReceiveError(view, error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
       }
 
+      @SuppressWarnings("deprecation")
       @Override
       public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
         FlutterWebViewClient.this.onReceiveError(view, errorCode, description, failingUrl);

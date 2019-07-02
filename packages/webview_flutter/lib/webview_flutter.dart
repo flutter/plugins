@@ -404,6 +404,13 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     }
   }
 
+  @override
+  void onPageReceiveError({String url, int code, String description}) {
+    if (_widget.onPageReceiveError != null) {
+      _widget.onPageReceiveError(url, code, description);
+    }
+  }
+
   void _updateJavascriptChannelsFromSet(Set<JavascriptChannel> channels) {
     _javascriptChannels.clear();
     if (channels == null) {
