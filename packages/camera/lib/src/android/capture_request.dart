@@ -20,7 +20,7 @@ class CaptureRequest with CameraMappable {
     return CaptureRequest._(
       template: template,
       jpegQuality: map['jpeqQuality'],
-      targets: List.unmodifiable(<Surface>[]),
+      targets: List<Surface>.unmodifiable(<Surface>[]),
     );
   }
 

@@ -6,6 +6,8 @@ library support_android_camera;
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+
 import 'src/common/camera_abstraction.dart';
 import 'src/common/camera_channel.dart';
 import 'src/common/camera_mixins.dart';

@@ -4,14 +4,14 @@
 
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+//import 'package:flutter/foundation.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:camera/camera.dart';
-import 'package:camera/android_camera.dart';
-import 'package:camera/ios_camera.dart';
-import 'package:camera/support_android_camera.dart';
+//import 'package:permission_handler/permission_handler.dart';
+//import 'package:camera/camera.dart';
+//import 'package:camera/android_camera.dart';
+//import 'package:camera/ios_camera.dart';
+//import 'package:camera/support_android_camera.dart';
 
 void main() {
   final Completer<String> completer = Completer<String>();
@@ -360,6 +360,7 @@ void main() {
   */
 }
 
+/*
 Future<bool> _getCameraPermission() async {
   final PermissionStatus permission =
       await PermissionHandler().checkPermissionStatus(
@@ -377,3 +378,4 @@ Future<bool> _getCameraPermission() async {
 
   return permissions[PermissionGroup.camera] == PermissionStatus.granted;
 }
+*/

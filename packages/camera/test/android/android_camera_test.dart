@@ -57,7 +57,7 @@ void main() {
 
     group('$CameraManager', () {
       test('instance', () {
-        CameraManager.instance;
+        final CameraManager manager = CameraManager.instance;
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -65,6 +65,8 @@ void main() {
             arguments: <String, dynamic>{'managerHandle': 0},
           )
         ]);
+
+        manager.getCameraIdList();
       });
 
       test('getCameraCharacteristics', () async {

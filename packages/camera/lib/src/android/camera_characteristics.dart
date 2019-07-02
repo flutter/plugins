@@ -26,6 +26,7 @@ class CameraCharacteristics implements CameraDescription {
     );
   }
 
+  @override
   final String id;
   final LensFacing lensFacing;
   final int sensorOrientation;

@@ -3,8 +3,11 @@ part of support_android_camera;
 enum Facing { back, front }
 
 class CameraInfo implements CameraDescription {
-  const CameraInfo._({this.id, this.facing, this.orientation})
-      : assert(id != null),
+  const CameraInfo._({
+    @required this.id,
+    @required this.facing,
+    @required this.orientation,
+  })  : assert(id != null),
         assert(facing != null),
         assert(orientation != null);
 
@@ -18,6 +21,7 @@ class CameraInfo implements CameraDescription {
     );
   }
 
+  @override
   final int id;
   final Facing facing;
   final int orientation;

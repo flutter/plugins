@@ -76,7 +76,9 @@ class CaptureSession with NativeMethodCallHandler, CameraMappable {
     try {
       return CameraChannel.channel.invokeMethod<void>(
         '$CaptureSession#startRunning',
-        <String, dynamic>{'sessionHandle': handle, ...asMap()},
+        <String, dynamic>{
+          'sessionHandle': handle,
+        }..addAll(asMap()),
       );
     } on PlatformException {
       _running = false;
