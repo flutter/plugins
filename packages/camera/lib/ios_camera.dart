@@ -9,7 +9,6 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
 
 import 'src/common/camera_abstraction.dart';
 import 'src/common/camera_channel.dart';
