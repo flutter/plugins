@@ -12,7 +12,6 @@ check_changed_packages > /dev/null
 
 cd $REPO_DIR/examples/all_plugins
 flutter clean > /dev/null
-(cd "$REPO_DIR" && pub global run flutter_plugin_tools gen-pubspec)
 
 function error() {
   echo "$@" 1>&2
@@ -21,7 +20,7 @@ function error() {
 failures=0
 
 for version in "debug" "release"; do
-  (flutter build $@ --$version)
+  (flutter build $@ --$version) > /dev/null
 
   if [ $? -eq 0 ]; then
     echo "Successfully built $version all_plugins app."
