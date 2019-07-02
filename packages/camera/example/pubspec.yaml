@@ -9,6 +9,8 @@ dependencies:
   flutter:
     sdk: flutter
   video_player: ^0.10.0
+  permission_handler: ^3.0.0
+  sensors: ^0.4.0+1
 
 dev_dependencies:
   flutter_test:
