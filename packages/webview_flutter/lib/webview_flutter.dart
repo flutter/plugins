@@ -72,6 +72,10 @@ typedef NavigationDecision NavigationDelegate(NavigationRequest navigation);
 /// Signature for when a [WebView] has finished loading a page.
 typedef void PageFinishedCallback(String url);
 
+/// Signature for when a [WebView] receive error.
+/// Code must be NSURLErrorDomain code or const from WebViewClient.
+typedef void PageReceiveErrorCallback(String url, int code, String description);
+
 final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
 
 /// A named channel for receiving messaged from JavaScript code running inside a web view.
@@ -121,6 +125,7 @@ class WebView extends StatefulWidget {
     this.gestureRecognizers,
     this.onPageFinished,
     this.debuggingEnabled = false,
+    this.onPageReceiveError
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -254,6 +259,8 @@ class WebView extends StatefulWidget {
   ///
   /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
+
+  final PageReceiveErrorCallback onPageReceiveError;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
