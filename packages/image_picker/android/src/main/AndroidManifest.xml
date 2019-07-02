@@ -2,7 +2,7 @@
   package="io.flutter.plugins.imagepicker">
    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
+   <uses-sdk android:minSdkVersion="16" />
     <application>
         <provider
             android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"

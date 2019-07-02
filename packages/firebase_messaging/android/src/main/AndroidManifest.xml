@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="io.flutter.plugins.firebasemessaging">
-
+  <uses-sdk android:minSdkVersion="16" />
   <application>
     <service android:name=".FlutterFirebaseMessagingService">
       <intent-filter>
