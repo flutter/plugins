@@ -1,3 +1,7 @@
+## 0.3.1+1
+
+* Fix Gradle version.
+
 ## 0.3.1
 
 * Add a new componentName parameter to help the intent resolution.
