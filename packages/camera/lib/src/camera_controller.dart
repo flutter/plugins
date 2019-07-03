@@ -4,15 +4,10 @@
 
 import 'dart:async';
 
-import 'package:device_info/device_info.dart';
 import 'package:flutter/foundation.dart';
 
-import '../android_camera.dart';
-import '../ios_camera.dart';
 import '../support_android_camera.dart';
-import 'android_camera_configurator.dart';
 import 'common/camera_abstraction.dart';
-import 'ios_camera_configuator.dart';
 import 'support_android_camera_configurator.dart';
 
 class CameraController {
@@ -51,38 +46,10 @@ class CameraController {
   static Future<List<CameraDescription>> availableCameras() async {
     final List<CameraDescription> devices = <CameraDescription>[];
 
-    final DeviceInfoPlugin infoPlugin = DeviceInfoPlugin();
     if (defaultTargetPlatform == TargetPlatform.android) {
-      final AndroidDeviceInfo info = await infoPlugin.androidInfo;
-      if (info.version.sdkInt < 21) {
-        final int numCameras = await SupportAndroidCamera.getNumberOfCameras();
-        for (int i = 0; i < numCameras; i++) {
-          devices.add(await SupportAndroidCamera.getCameraInfo(i));
-        }
-      } else {
-        final List<String> cameraIds =
-            await CameraManager.instance.getCameraIdList();
-        for (String id in cameraIds) {
-          devices.add(
-            await CameraManager.instance.getCameraCharacteristics(id),
-          );
-        }
-      }
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      final IosDeviceInfo info = await infoPlugin.iosInfo;
-      final double version = double.tryParse(info.systemVersion) ?? 8.0;
-      if (version >= 10) {
-        final CaptureDiscoverySession session = CaptureDiscoverySession(
-          deviceTypes: <CaptureDeviceType>[
-            CaptureDeviceType.builtInWideAngleCamera
-          ],
-          position: CaptureDevicePosition.unspecified,
-          mediaType: MediaType.video,
-        );
-
-        devices.addAll(await session.devices);
-      } else {
-        devices.addAll(await CaptureDevice.getDevices(MediaType.video));
+      final int numCameras = await SupportAndroidCamera.getNumberOfCameras();
+      for (int i = 0; i < numCameras; i++) {
+        devices.add(await SupportAndroidCamera.getCameraInfo(i));
       }
     } else {
       throw UnimplementedError('$defaultTargetPlatform not supported');
@@ -101,9 +68,9 @@ class CameraController {
     final CameraApi api = _getCameraApi(description);
     switch (api) {
       case CameraApi.android:
-        return AndroidCameraConfigurator(description);
+        throw UnimplementedError();
       case CameraApi.iOS:
-        return IOSCameraConfigurator(description);
+        throw UnimplementedError();
       case CameraApi.supportAndroid:
         return SupportAndroidCameraConfigurator(description);
     }
@@ -114,10 +81,6 @@ class CameraController {
   static CameraApi _getCameraApi(CameraDescription description) {
     if (description is CameraInfo) {
       return CameraApi.supportAndroid;
-    } else if (description is CameraCharacteristics) {
-      return CameraApi.android;
-    } else if (description is CaptureDevice) {
-      return CameraApi.iOS;
     }
 
     throw ArgumentError.value(
