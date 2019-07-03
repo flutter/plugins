@@ -144,7 +144,9 @@ API_AVAILABLE(ios(9.0))
 }
 
 - (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
-  NSURL *url = [NSURL URLWithString:urlString];
+  // fix @"http://storage.jz1666.com/ScGradeExcel/候潮公寓6号楼综合评测.xls"
+  NSString *urlStr = [urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+  NSURL *url = [NSURL URLWithString: urlStr];
   self.currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
   __weak typeof(self) weakSelf = self;
   self.currentSession.didFinish = ^(void) {
