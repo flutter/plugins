@@ -12,8 +12,6 @@ class MyApp extends StatelessWidget {
   static FirebaseAnalyticsObserver observer =
       FirebaseAnalyticsObserver(analytics: analytics);
 
-  showSnackBar(BuildContext context, String text) {}
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -51,15 +49,14 @@ class ProgrammaticTriggersExample extends StatelessWidget {
                 fontSize: 18,
               ),
             ),
-            SizedBox(height: 8),
-            Text("Manually trigger events programmatically "),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
+            const Text("Manually trigger events programmatically "),
+            const SizedBox(height: 8),
             RaisedButton(
               onPressed: () async {
                 await FirebaseInAppMessaging.triggerEvent('chicken_event');
-                const text = "Triggering event: chicken_event";
-                Scaffold.of(context)
-                    .showSnackBar(SnackBar(content: Text(text)));
+                Scaffold.of(context).showSnackBar(SnackBar(
+                    content: const Text("Triggering event: chicken_event")));
               },
               color: Colors.blue,
               child: Text(
@@ -96,15 +93,15 @@ class AnalyticsEventExample extends StatelessWidget {
                 fontSize: 18,
               ),
             ),
-            SizedBox(height: 8),
-            Text("Trigger an analytics event"),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
+            const Text("Trigger an analytics event"),
+            const SizedBox(height: 8),
             RaisedButton(
               onPressed: () {
                 _sendAnalyticsEvent();
-                const text = "Firing analytics event: awesome_event";
-                Scaffold.of(context)
-                    .showSnackBar(SnackBar(content: Text(text)));
+                Scaffold.of(context).showSnackBar(SnackBar(
+                    content:
+                        const Text("Firing analytics event: awesome_event")));
               },
               color: Colors.blue,
               child: Text(
