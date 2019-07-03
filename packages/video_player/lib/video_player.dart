@@ -149,7 +149,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// If the asset's path doesn't have a file extension, you can provide the [mimeType]
   /// argument to specify the asset's mime type.The default value is 'video/mp4'.
-  VideoPlayerController.asset(this.dataSource, {this.package, this.mimeType = 'video/mp4'})
+  VideoPlayerController.asset(this.dataSource,
+      {this.package, this.mimeType = 'video/mp4'})
       : dataSourceType = DataSourceType.asset,
         super(VideoPlayerValue(duration: null));
 

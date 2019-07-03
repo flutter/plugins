@@ -41,7 +41,9 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater mimeType:(NSString*)mimeType;
+- (instancetype)initWithURL:(NSURL*)url
+               frameUpdater:(FLTFrameUpdater*)frameUpdater
+                   mimeType:(NSString*)mimeType;
 - (void)play;
 - (void)pause;
 - (void)setIsLooping:(bool)isLooping;
@@ -55,9 +57,13 @@ static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 @implementation FLTVideoPlayer
-- (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater mimeType:(NSString*)mimeType {
+- (instancetype)initWithAsset:(NSString*)asset
+                 frameUpdater:(FLTFrameUpdater*)frameUpdater
+                     mimeType:(NSString*)mimeType {
   NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
-  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater mimeType:mimeType];
+  return [self initWithURL:[NSURL fileURLWithPath:path]
+              frameUpdater:frameUpdater
+                  mimeType:mimeType];
 }
 
 - (void)addObservers:(AVPlayerItem*)item {
@@ -155,11 +161,14 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _displayLink.paused = YES;
 }
 
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater mimeType:(NSString*)mimeType {
+- (instancetype)initWithURL:(NSURL*)url
+               frameUpdater:(FLTFrameUpdater*)frameUpdater
+                   mimeType:(NSString*)mimeType {
   NSString* fileExtention = [[url absoluteString] pathExtension];
   AVURLAsset* asset;
   if ([fileExtention length] == 0) {
-    asset = [[AVURLAsset alloc] initWithURL:url options:@{@"AVURLAssetOutOfBandMIMETypeKey": mimeType}];
+    asset = [[AVURLAsset alloc] initWithURL:url
+                                    options:@{@"AVURLAssetOutOfBandMIMETypeKey" : mimeType}];
   } else {
     asset = [[AVURLAsset alloc] initWithURL:url options:nil];
   }
@@ -476,11 +485,14 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       } else {
         assetPath = [_registrar lookupKeyForAsset:assetArg];
       }
-      player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater mimeType:mimeType];
+      player = [[FLTVideoPlayer alloc] initWithAsset:assetPath
+                                        frameUpdater:frameUpdater
+                                            mimeType:mimeType];
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else if (uriArg) {
       player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
-                                      frameUpdater:frameUpdater mimeType:mimeType];
+                                      frameUpdater:frameUpdater
+                                          mimeType:mimeType];
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else {
       result(FlutterMethodNotImplemented);
