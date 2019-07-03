@@ -13,7 +13,7 @@ As that mechanism is currently in a developers preview, this plugin should also 
 considered a developers preview.
 
 **_Warning:_**
-evaluateJavaScript() function only supports SDK of 19 or greater for evaluating javascript.
+evaluateJavaScript() function only supports SDK of 19 or greater for evaluating JavaScript.
 
 Known issues are tagged with the [platform-views](https://github.com/flutter/flutter/labels/a%3A%20platform-views) and/or [webview](https://github.com/flutter/flutter/labels/p%3A%20webview) labels.
 
