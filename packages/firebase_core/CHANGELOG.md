@@ -1,3 +1,7 @@
+## 0.4.0+6
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
 ## 0.4.0+5
 
 * Rollback of automatic plugin version retrieval.

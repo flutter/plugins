@@ -1,6 +1,14 @@
-## 0.2.0+1
+## 0.2.0+3
 
 * Fixed code error in `README.md` and adjusted links to work on Pub.
+
+## 0.2.0+2
+
+* Fix a google_play_connection purchase update listener regression introduced in 0.2.0+1.
+
+## 0.2.0+1
+
+* Fix an issue the type is not casted before passing to `PurchasesResultWrapper.fromJson`.
 
 ## 0.2.0
 
