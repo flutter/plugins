@@ -146,7 +146,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// The name of the asset is given by the [dataSource] argument and must not be
   /// null. The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
-  VideoPlayerController.asset(this.dataSource, {this.package})
+  ///
+  /// If the asset's path doesn't have a file extension, you can provide the [mimeType]
+  /// argument to specify the asset's mime type.The default value is 'video/mp4'.
+  VideoPlayerController.asset(this.dataSource, {this.package, this.mimeType = 'video/mp4'})
       : dataSourceType = DataSourceType.asset,
         super(VideoPlayerValue(duration: null));
 
@@ -155,7 +158,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// The URI for the video is given by the [dataSource] argument and must not be
   /// null.
-  VideoPlayerController.network(this.dataSource)
+  ///
+  /// If the url doesn't have a file extension, you can provide the [mimeType]
+  /// argument to specify the asset's mime type.The default value is 'video/mp4'.
+  VideoPlayerController.network(this.dataSource, {this.mimeType = 'video/mp4'})
       : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: null));
@@ -164,7 +170,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
-  VideoPlayerController.file(File file)
+  ///
+  /// If the file's path doesn't have a file extension, you can provide the [mimeType]
+  /// argument to specify the asset's mime type.The default value is 'video/mp4'.
+  VideoPlayerController.file(File file, {this.mimeType = 'video/mp4'})
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
@@ -178,6 +187,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   final DataSourceType dataSourceType;
 
   final String package;
+  final String mimeType;
   Timer _timer;
   bool _isDisposed = false;
   Completer<void> _creatingCompleter;
@@ -196,14 +206,21 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       case DataSourceType.asset:
         dataSourceDescription = <String, dynamic>{
           'asset': dataSource,
-          'package': package
+          'package': package,
+          'mimeType': mimeType
         };
         break;
       case DataSourceType.network:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource};
+        dataSourceDescription = <String, dynamic>{
+          'uri': dataSource,
+          'mimeType': mimeType
+        };
         break;
       case DataSourceType.file:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource};
+        dataSourceDescription = <String, dynamic>{
+          'uri': dataSource,
+          'mimeType': mimeType
+        };
     }
     final Map<String, dynamic> response =
         await _channel.invokeMapMethod<String, dynamic>(
