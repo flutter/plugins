@@ -223,6 +223,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     void eventListener(dynamic event) {
+      if (_isDisposed) {
+        return;
+      }
       final Map<dynamic, dynamic> map = event;
       switch (map['event']) {
         case 'initialized':
@@ -625,6 +628,10 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
     if (controller.value.initialized) {
       final int duration = controller.value.duration.inMilliseconds;
       final int position = controller.value.position.inMilliseconds;
+
+      if (duration.isNaN || position.isNaN || duration == 0 || position == 0) {
+        return const SizedBox();
+      }
 
       int maxBuffering = 0;
       for (DurationRange range in controller.value.buffered) {

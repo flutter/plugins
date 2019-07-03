@@ -1,7 +1,7 @@
 ## 0.10.2
 
 * iOS: Revert the changes made in version `0.10.1` that made live streams not able to initialize due to the lack of duration.
-
+* Fix race condition while disposing the VideoController.
 
 ## 0.10.1+3
 
