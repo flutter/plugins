@@ -13,15 +13,12 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
 import androidx.annotation.NonNull;
 import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
-
+import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
 import java.util.Map;
-
-import io.flutter.plugin.common.MethodChannel;
 
 // We need to use WebViewClientCompat to get
 // shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
@@ -134,19 +131,27 @@ class FlutterWebViewClient {
 
       @TargetApi(Build.VERSION_CODES.M)
       @Override
-      public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-        FlutterWebViewClient.this.onReceiveError(view, error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
+      public void onReceivedError(
+          WebView view, WebResourceRequest request, WebResourceError error) {
+        FlutterWebViewClient.this.onReceiveError(
+            view,
+            error.getErrorCode(),
+            error.getDescription().toString(),
+            request.getUrl().toString());
       }
 
       @TargetApi(Build.VERSION_CODES.M)
       @Override
-      public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
-        FlutterWebViewClient.this.onReceiveError(view, errorResponse.getStatusCode(), null, request.getUrl().toString());
+      public void onReceivedHttpError(
+          WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+        FlutterWebViewClient.this.onReceiveError(
+            view, errorResponse.getStatusCode(), null, request.getUrl().toString());
       }
 
       @SuppressWarnings("deprecation")
       @Override
-      public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+      public void onReceivedError(
+          WebView view, int errorCode, String description, String failingUrl) {
         FlutterWebViewClient.this.onReceiveError(view, errorCode, description, failingUrl);
       }
 
@@ -177,20 +182,32 @@ class FlutterWebViewClient {
 
       @TargetApi(Build.VERSION_CODES.LOLLIPOP)
       @Override
-      public void onReceivedHttpError(@NonNull WebView view, @NonNull WebResourceRequest request, @NonNull WebResourceResponse errorResponse) {
-        FlutterWebViewClient.this.onReceiveError(view, errorResponse.getStatusCode(), null, request.getUrl().toString());
+      public void onReceivedHttpError(
+          @NonNull WebView view,
+          @NonNull WebResourceRequest request,
+          @NonNull WebResourceResponse errorResponse) {
+        FlutterWebViewClient.this.onReceiveError(
+            view, errorResponse.getStatusCode(), null, request.getUrl().toString());
       }
 
       @TargetApi(Build.VERSION_CODES.LOLLIPOP)
       @Override
-      public void onReceivedError(@NonNull WebView view, @NonNull WebResourceRequest request, @NonNull WebResourceErrorCompat error) {
+      public void onReceivedError(
+          @NonNull WebView view,
+          @NonNull WebResourceRequest request,
+          @NonNull WebResourceErrorCompat error) {
         //TODO: is really need to check WebViewFeature.isFeatureSupported() and api version.
-        FlutterWebViewClient.this.onReceiveError(view, error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
+        FlutterWebViewClient.this.onReceiveError(
+            view,
+            error.getErrorCode(),
+            error.getDescription().toString(),
+            request.getUrl().toString());
       }
 
       @SuppressWarnings("deprecation")
       @Override
-      public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+      public void onReceivedError(
+          WebView view, int errorCode, String description, String failingUrl) {
         FlutterWebViewClient.this.onReceiveError(view, errorCode, description, failingUrl);
       }
 
