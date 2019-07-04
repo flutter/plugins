@@ -15,6 +15,7 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.0.5
+  shared_preferences: ^0.5.3+1
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
