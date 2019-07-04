@@ -156,6 +156,7 @@ class Crashlytics {
       } else if (value is bool) {
         crashlyticsKey['type'] = 'boolean';
       }
+      crashlyticsKeys.add(crashlyticsKey);
     }
 
     return crashlyticsKeys;
