@@ -208,14 +208,28 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
   AVAsset* asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
-    if ([asset statusOfValueForKey:@"tracks" error:nil] == AVKeyValueStatusLoaded) {
+    
+    // Error may occur during loading the tracks.
+    NSError* loadTracksError;
+    AVKeyValueStatus tracksValueStatus = [asset statusOfValueForKey:@"tracks" error:&loadTracksError];
+    if (![loadTracksError isEqual:[NSNull null]]) {
+      NSLog(@"Failed to load tracks : %@", [loadTracksError localizedDescription]);
+    } else if (tracksValueStatus == AVKeyValueStatusLoaded) {
       NSArray* tracks = [asset tracksWithMediaType:AVMediaTypeVideo];
       if ([tracks count] > 0) {
         AVAssetTrack* videoTrack = tracks[0];
         void (^trackCompletionHandler)(void) = ^{
           if (self->_disposed) return;
-          if ([videoTrack statusOfValueForKey:@"preferredTransform"
-                                        error:nil] == AVKeyValueStatusLoaded) {
+          
+          // Error may occur during loading the preferredTransform.
+          NSError* loadPreferredTransformError;
+          AVKeyValueStatus preferredTransformValueState = [videoTrack
+                                                           statusOfValueForKey:@"preferredTransform"
+                                                           error:&loadPreferredTransformError];
+          if (![loadPreferredTransformError isEqual:[NSNull null]]) {
+            NSLog(@"Failed to load preferredTransform : %@",
+                  [loadPreferredTransformError localizedDescription]);
+          } else if (preferredTransformValueState == AVKeyValueStatusLoaded) {
             // Rotate the video by using a videoComposition and the preferredTransform
             self->_preferredTransform = [self fixTransform:videoTrack];
             // Note:
