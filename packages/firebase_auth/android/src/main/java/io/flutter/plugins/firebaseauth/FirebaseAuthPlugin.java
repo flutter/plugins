@@ -139,6 +139,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "updateEmail":
         handleUpdateEmail(call, result, getAuth(call));
         break;
+      case "updatePhoneNumberCredential":
+        handleUpdatePhoneNumber(call, result, getAuth(call));
+        break;
       case "updatePassword":
         handleUpdatePassword(call, result, getAuth(call));
         break;
@@ -556,6 +559,16 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     final String email = arguments.get("email");
 
     currentUser.updateEmail(email).addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleUpdatePhoneNumber(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    @SuppressWarnings("unchecked")
+    AuthCredential credential = getCredential((Map<String, Object>) call.arguments);
+
+    firebaseAuth
+        .getCurrentUser()
+        .updatePhoneNumber((PhoneAuthCredential) credential)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
   private void handleUpdatePassword(MethodCall call, Result result, FirebaseAuth firebaseAuth) {

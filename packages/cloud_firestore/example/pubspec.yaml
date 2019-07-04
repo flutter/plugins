@@ -6,7 +6,7 @@ dependencies:
     sdk: flutter
   cloud_firestore:
     path: ../
-  firebase_core: "^0.3.2"
+  firebase_core: "^0.4.0"
 
 dev_dependencies:
   flutter_driver:

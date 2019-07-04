@@ -81,14 +81,18 @@ abstract class InAppPurchaseConnection {
   /// You always need to restore all the non consumable products for user when
   /// they switch their phones.
   ///
-  /// This method does not return anything. Instead, after triggering this
-  /// method, purchase updates will be sent to [purchaseUpdatedStream]. You
-  /// should [Stream.listen] to [purchaseUpdatedStream] to get [PurchaseDetails]
-  /// objects in different [PurchaseDetails.status] and update your UI
-  /// accordingly. When the [PurchaseDetails.status] is
-  /// [PurchaseStatus.purchased] or [PurchaseStatus.error], you should deliver
-  /// the content or handle the error. On iOS, you also need to call
-  /// [completePurchase] to finish the purchasing process.
+  /// This method does not return the result of the purchase. Instead, after
+  /// triggering this method, purchase updates will be sent to
+  /// [purchaseUpdatedStream]. You should [Stream.listen] to
+  /// [purchaseUpdatedStream] to get [PurchaseDetails] objects in different
+  /// [PurchaseDetails.status] and update your UI accordingly. When the
+  /// [PurchaseDetails.status] is [PurchaseStatus.purchased] or
+  /// [PurchaseStatus.error], you should deliver the content or handle the
+  /// error. On iOS, you also need to call [completePurchase] to finish the
+  /// purchasing process.
+  ///
+  /// This method does return whether or not the purchase request was initially
+  /// sent succesfully.
   ///
   /// Consumable items are defined differently by the different underlying
   /// payment platforms, and there's no way to query for whether or not the
@@ -109,7 +113,7 @@ abstract class InAppPurchaseConnection {
   ///  * [queryPastPurchases], for restoring non consumable products.
   ///
   /// Calling this method for consumable items will cause unwanted behaviors!
-  void buyNonConsumable({@required PurchaseParam purchaseParam});
+  Future<bool> buyNonConsumable({@required PurchaseParam purchaseParam});
 
   /// Buy a consumable product.
   ///
@@ -140,14 +144,17 @@ abstract class InAppPurchaseConnection {
   /// will cause user never be able to buy the same item again. Manually setting
   /// this to `false` on iOS will throw an `Exception`.
   ///
-  /// This method does not return anything. Instead, after triggering this
-  /// method, purchase updates will be sent to [purchaseUpdatedStream]. You
-  /// should [Stream.listen] to [purchaseUpdatedStream] to get [PurchaseDetails]
-  /// objects in different [PurchaseDetails.status] and update your UI
-  /// accordingly. When the [PurchaseDetails.status] is
-  /// [PurchaseStatus.purchased] or [PurchaseStatus.error], you should deliver
-  /// the content or handle the error, then call [completePurchase] to finish
-  /// the purchasing process.
+  /// This method does not return the result of the purchase. Instead, after
+  /// triggering this method, purchase updates will be sent to
+  /// [purchaseUpdatedStream]. You should [Stream.listen] to
+  /// [purchaseUpdatedStream] to get [PurchaseDetails] objects in different
+  /// [PurchaseDetails.status] and update your UI accordingly. When the
+  /// [PurchaseDetails.status] is [PurchaseStatus.purchased] or
+  /// [PurchaseStatus.error], you should deliver the content or handle the
+  /// error, then call [completePurchase] to finish the purchasing process.
+  ///
+  /// This method does return whether or not the purchase request was initially
+  /// sent succesfully.
   ///
   /// See also:
   ///
@@ -158,7 +165,7 @@ abstract class InAppPurchaseConnection {
   ///
   /// Calling this method for non consumable items will cause unwanted
   /// behaviors!
-  void buyConsumable(
+  Future<bool> buyConsumable(
       {@required PurchaseParam purchaseParam, bool autoConsume = true});
 
   /// (App Store only) Mark that purchased content has been delivered to the
@@ -225,4 +232,34 @@ abstract class InAppPurchaseConnection {
 
     return _instance;
   }
+}
+
+/// Which platform the request is on.
+enum IAPSource { GooglePlay, AppStore }
+
+/// Captures an error from the underlying purchase platform.
+///
+/// The error can happen during the purchase, restoring a purchase, or querying product.
+/// Errors from restoring a purchase are not indicative of any errors during the original purchase.
+/// See also:
+/// * [ProductDetailsResponse] for error when querying product details.
+/// * [PurchaseDetails] for error happened in purchase.
+class IAPError {
+  IAPError(
+      {@required this.source,
+      @required this.code,
+      @required this.message,
+      this.details = null});
+
+  /// Which source is the error on.
+  final IAPSource source;
+
+  /// The error code.
+  final String code;
+
+  /// A human-readable error message, possibly null.
+  final String message;
+
+  /// Error details, possibly null.
+  final dynamic details;
 }

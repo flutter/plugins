@@ -5,6 +5,7 @@
 package io.flutter.plugins.googlemaps;
 
 import android.content.Context;
+import android.graphics.Rect;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -16,10 +17,13 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
+  private boolean indoorEnabled = true;
   private Object initialMarkers;
   private float markersAnimationDuration = -1;
+  private Object initialPolygons;
   private Object initialPolylines;
   private Object initialCircles;
+  private Rect padding = new Rect(0, 0, 0, 0);
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
@@ -28,10 +32,13 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.init();
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
+    controller.setIndoorEnabled(indoorEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
     controller.setInitialMarkers(initialMarkers);
+    controller.setInitialPolygons(initialPolygons);
     controller.setInitialPolylines(initialPolylines);
     controller.setInitialCircles(initialCircles);
+    controller.setPadding(padding.top, padding.left, padding.bottom, padding.right);
     return controller;
   }
 
@@ -65,6 +72,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
+  public void setPadding(float top, float left, float bottom, float right) {
+    this.padding = new Rect((int) left, (int) top, (int) right, (int) bottom);
+  }
+
+  @Override
   public void setTrackCameraPosition(boolean trackCameraPosition) {
     this.trackCameraPosition = trackCameraPosition;
   }
@@ -90,6 +102,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
+  public void setIndoorEnabled(boolean indoorEnabled) {
+    this.indoorEnabled = indoorEnabled;
+  }
+
+  @Override
   public void setMyLocationEnabled(boolean myLocationEnabled) {
     this.myLocationEnabled = myLocationEnabled;
   }
@@ -106,6 +123,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
 
   public void setMarkersAnimationDuration(float durationInMs) {
     this.markersAnimationDuration = durationInMs;
+  }
+
+  @Override
+  public void setInitialPolygons(Object initialPolygons) {
+    this.initialPolygons = initialPolygons;
   }
 
   @Override

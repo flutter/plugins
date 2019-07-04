@@ -1,3 +1,18 @@
+## 1.1.1
+
+* Cast error codes as longs in iOS error strings to ensure compatibility
+  between arm32 and arm64.
+
+## 1.1.0
+
+* Added `getApplicationSupportDirectory`.
+* Updated documentation for `getApplicationDocumentsDirectory` to suggest
+  using `getApplicationSupportDirectory` on iOS and
+  `getExternalStorageDirectory` on Android.
+* Updated documentation for `getTemporaryDirectory` to suggest using it
+  for caches of files that do not need to be backed up.
+* Updated integration tests and example to reflect the above changes.
+
 ## 1.0.0
 
 * Added integration tests.

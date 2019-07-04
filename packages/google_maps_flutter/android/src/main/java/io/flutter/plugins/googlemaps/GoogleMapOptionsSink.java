@@ -16,6 +16,8 @@ interface GoogleMapOptionsSink {
 
   void setMinMaxZoomPreference(Float min, Float max);
 
+  void setPadding(float top, float left, float bottom, float right);
+
   void setRotateGesturesEnabled(boolean rotateGesturesEnabled);
 
   void setScrollGesturesEnabled(boolean scrollGesturesEnabled);
@@ -30,9 +32,15 @@ interface GoogleMapOptionsSink {
 
   void setMyLocationButtonEnabled(boolean myLocationButtonEnabled);
 
+  void setIndoorEnabled(boolean indoorEnabled);
+
   void setInitialMarkers(Object initialMarkers);
 
+<<<<<<< HEAD
   void setMarkersAnimationDuration(float durationInMs);
+=======
+  void setInitialPolygons(Object initialPolygons);
+>>>>>>> 6b87cc29ef724c5e45f5a47a40263a3f3386bb71
 
   void setInitialPolylines(Object initialPolylines);
 

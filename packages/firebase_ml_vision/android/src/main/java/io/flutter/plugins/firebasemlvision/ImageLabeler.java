@@ -17,43 +17,22 @@ import java.util.List;
 import java.util.Map;
 
 class ImageLabeler implements Detector {
-  static final ImageLabeler instance = new ImageLabeler();
+  private final FirebaseVisionImageLabeler labeler;
 
-  private ImageLabeler() {}
-
-  private FirebaseVisionImageLabeler labeler;
-  private Map<String, Object> lastOptions;
+  ImageLabeler(FirebaseVision vision, Map<String, Object> options) {
+    final String modelType = (String) options.get("modelType");
+    if (modelType.equals("onDevice")) {
+      labeler = vision.getOnDeviceImageLabeler(parseOptions(options));
+    } else if (modelType.equals("cloud")) {
+      labeler = vision.getCloudImageLabeler(parseCloudOptions(options));
+    } else {
+      final String message = String.format("No model for type: %s", modelType);
+      throw new IllegalArgumentException(message);
+    }
+  }
 
   @Override
-  public void handleDetection(
-      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-
-    // Use instantiated labeler if the options are the same. Otherwise, close and instantiate new
-    // options.
-
-    if (labeler != null && !options.equals(lastOptions)) {
-      try {
-        labeler.close();
-      } catch (IOException e) {
-        result.error("labelDetectorIOError", e.getLocalizedMessage(), null);
-        return;
-      }
-
-      labeler = null;
-      lastOptions = null;
-    }
-
-    if (labeler == null) {
-      lastOptions = options;
-
-      final String modelType = (String) options.get("modelType");
-      if (modelType.equals("onDevice")) {
-        labeler = FirebaseVision.getInstance().getOnDeviceImageLabeler(parseOptions(lastOptions));
-      } else if (modelType.equals("cloud")) {
-        labeler = FirebaseVision.getInstance().getCloudImageLabeler(parseCloudOptions(lastOptions));
-      }
-    }
-
+  public void handleDetection(final FirebaseVisionImage image, final MethodChannel.Result result) {
     labeler
         .processImage(image)
         .addOnSuccessListener(
@@ -95,5 +74,10 @@ class ImageLabeler implements Detector {
     return new FirebaseVisionCloudImageLabelerOptions.Builder()
         .setConfidenceThreshold(conf)
         .build();
+  }
+
+  @Override
+  public void close() throws IOException {
+    labeler.close();
   }
 }
