@@ -208,7 +208,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
   AVAsset* asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
-    
     // Error may occur during loading the tracks.
     NSError* loadTracksError;
     AVKeyValueStatus tracksValueStatus = [asset statusOfValueForKey:@"tracks"
@@ -221,7 +220,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         AVAssetTrack* videoTrack = tracks[0];
         void (^trackCompletionHandler)(void) = ^{
           if (self->_disposed) return;
-          
           // Error may occur during loading the preferredTransform.
           NSError* loadPreferredTransformError;
           AVKeyValueStatus preferredTransformValueState =
