@@ -50,7 +50,7 @@ class QuickActions {
       handler(call.arguments);
     });
 
-    final action = await _getActionFromSharedPreferences();
+    final String action = await _getActionFromSharedPreferences();
     if (action != null) {
       handler(action);
       _removeActionFromSharedPreferences();
@@ -58,12 +58,12 @@ class QuickActions {
   }
 
   Future<String> _getActionFromSharedPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(_actionSharedPrefsKey);
   }
 
   Future<void> _removeActionFromSharedPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString(_actionSharedPrefsKey, null);
   }
 

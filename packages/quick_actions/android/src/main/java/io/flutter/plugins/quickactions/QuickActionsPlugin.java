@@ -14,16 +14,14 @@ import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /** QuickActionsPlugin */
 @SuppressWarnings("unchecked")
@@ -132,22 +130,23 @@ public class QuickActionsPlugin implements MethodCallHandler {
     }
 
     /**
-     * Returns Intent to launch the MainActivity. Used to start the app, if one of quick actions
-     * was called from the background.
+     * Returns Intent to launch the MainActivity. Used to start the app, if one of quick actions was
+     * called from the background.
      */
     private Intent getIntentToOpenMainActivity(Context context) {
-      return context.getPackageManager()
+      return context
+          .getPackageManager()
           .getLaunchIntentForPackage(context.getApplicationContext().getPackageName());
     }
 
     /**
-     * Saving action name to shared preferences to run requested quick action later,
-     * after app launch
+     * Saving action name to shared preferences to run requested quick action later, after app
+     * launch
      */
     private void setActionToSharedPreferences(String type) {
-      SharedPreferences prefs = this.getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE);
-      prefs.edit().putString(sharedPreferencesKeyPrefix
-          + sharedPreferencesActionKey, type).apply();
+      SharedPreferences prefs =
+          this.getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE);
+      prefs.edit().putString(sharedPreferencesKeyPrefix + sharedPreferencesActionKey, type).apply();
     }
   }
 }
