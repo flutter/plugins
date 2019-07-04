@@ -1,3 +1,7 @@
+## 0.3.0+3
+
+* Fixing the quick actions launch on Android when the app is killed. 
+
 ## 0.3.0+2
 
 * Add missing template type parameter to `invokeMethod` calls.
