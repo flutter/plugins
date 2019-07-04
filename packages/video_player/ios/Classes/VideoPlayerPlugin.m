@@ -212,7 +212,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     NSError* loadTracksError;
     AVKeyValueStatus tracksValueStatus = [asset statusOfValueForKey:@"tracks"
                                                               error:&loadTracksError];
-    if (![loadTracksError isEqual:[NSNull null]]) {
+    if (![loadTracksError isEqual:[NSNull null]] && loadTracksError != nil) {
       NSLog(@"Failed to load tracks : %@", [loadTracksError localizedDescription]);
     } else if (tracksValueStatus == AVKeyValueStatusLoaded) {
       NSArray* tracks = [asset tracksWithMediaType:AVMediaTypeVideo];
@@ -225,7 +225,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
           AVKeyValueStatus preferredTransformValueState =
               [videoTrack statusOfValueForKey:@"preferredTransform"
                                         error:&loadPreferredTransformError];
-          if (![loadPreferredTransformError isEqual:[NSNull null]]) {
+          if (![loadPreferredTransformError isEqual:[NSNull null]] &&
+              loadPreferredTransformError != nil) {
             NSLog(@"Failed to load preferredTransform : %@",
                   [loadPreferredTransformError localizedDescription]);
           } else if (preferredTransformValueState == AVKeyValueStatusLoaded) {
