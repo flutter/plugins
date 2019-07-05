@@ -129,7 +129,16 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     if (orderBy != null) {
       for (List<Object> order : orderBy) {
         String orderByFieldName = (String) order.get(0);
-        data.add(documentData.get(orderByFieldName));
+        if (orderByFieldName.contains(".")) {
+          String[] fieldNameParts = orderByFieldName.split("\\.");
+          Map<String, Object> current = (Map<String, Object>) documentData.get(fieldNameParts[0]);
+          for (int i = 1; i < fieldNameParts.length - 1; i++) {
+            current = (Map<String, Object>) current.get(fieldNameParts[i]);
+          }
+          data.add(current.get(fieldNameParts[fieldNameParts.length - 1]));
+        } else {
+          data.add(documentData.get(orderByFieldName));
+        }
       }
     }
     data.add((boolean) arguments.get("isCollectionGroup") ? document.get("path") : documentId);

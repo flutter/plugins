@@ -4,11 +4,16 @@ function error() {
   echo "$@" 1>&2
 }
 
+function get_branch_base_sha() {
+  local branch_base_sha="$(git merge-base --fork-point FETCH_HEAD HEAD || git merge-base FETCH_HEAD HEAD)"
+  echo "$branch_base_sha"
+}
+
 function check_changed_packages() {
   # Try get a merge base for the branch and calculate affected packages.
   # We need this check because some CIs can do a single branch clones with a limited history of commits.
   local packages
-  local branch_base_sha="$(git merge-base --fork-point FETCH_HEAD HEAD || git merge-base FETCH_HEAD HEAD)"
+  local branch_base_sha="$(get_branch_base_sha)"
   if [[ "$?" == 0 ]]; then
     echo "Checking for changed packages from $branch_base_sha"
     IFS=$'\n' packages=( $(git diff --name-only "$branch_base_sha" HEAD | grep -o "packages/[^/]*" | sed -e "s/packages\///g" | sort | uniq) )
