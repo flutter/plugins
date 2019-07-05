@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -13,7 +15,12 @@ void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
     Crashlytics.instance.onError(details);
   };
-  runApp(MyApp());
+
+  runZoned<Future<void>>(() async {
+    runApp(MyApp());
+  }, onError: (dynamic error, dynamic stack) async {
+    await Crashlytics.instance.onRuntimeException(error, stack);
+  });
 }
 
 class MyApp extends StatefulWidget {
@@ -60,6 +67,17 @@ class _MyAppState extends State<MyApp> {
                     // Example of thrown error, it will be caught and sent to
                     // Crashlytics.
                     throw StateError('Uncaught error thrown by app.');
+                  }),
+              FlatButton(
+                  child: const Text('Async out of bounds'),
+                  onPressed: () {
+                    // Example of an exception that does not get catched
+                    // by `Flutter.onError` but the `onError` handler of
+                    // `runZoned`.
+                    Future<void>.delayed(Duration(seconds: 2), () {
+                      final List<int> list = <int>[];
+                      print(list[100]);
+                    });
                   }),
             ],
           ),
