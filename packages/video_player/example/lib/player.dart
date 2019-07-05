@@ -85,7 +85,10 @@ class _PlayerState extends State<Player> {
   @override
   Widget build(BuildContext context) {
     if (!initialized) {
-      return const SizedBox();
+      return const AspectRatio(
+        aspectRatio: 16.0 / 9.0,
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
 
     final List<Widget> children = <Widget>[
@@ -101,7 +104,7 @@ class _PlayerState extends State<Player> {
     }
 
     if (controller.value.isBuffering) {
-      children.add(Center(child: const CircularProgressIndicator()));
+      children.add(const Center(child: CircularProgressIndicator()));
     }
 
     return Container(
