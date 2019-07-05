@@ -66,6 +66,18 @@ void main() {
       expect(log[0].arguments['keys'][3]['type'], 'string');
     });
 
+    test('onRuntimeException', () async {
+      crashlytics.enableInDevMode = true;
+      crashlytics.log('foo');
+      await crashlytics.onRuntimeException('foo exception', StackTrace.current);
+      expect(log[0].method, 'Crashlytics#onError');
+      expect(log[0].arguments['exception'], 'foo exception');
+      expect(log[0].arguments['context'], 'onRuntimeException');
+      expect(log[0].arguments['logs'], isNotEmpty);
+      expect(log[0].arguments['logs'], contains('foo'));
+      expect(log[0].arguments['keys'], isEmpty);
+    });
+
     test('isDebuggable', () async {
       expect(await crashlytics.isDebuggable(), true);
       expect(

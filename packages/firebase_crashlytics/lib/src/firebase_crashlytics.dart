@@ -55,6 +55,34 @@ class Crashlytics {
     }
   }
 
+  Future<void> onRuntimeException(dynamic exception, dynamic stack) async {
+    print('Runtime Exception caught by Crashlytics plugin:');
+
+    bool inDebugMode = false;
+    if (!enableInDevMode) {
+      assert(inDebugMode = true);
+    }
+
+    if (inDebugMode && !enableInDevMode) {
+      print(Trace.format(stack));
+    } else {
+      // Report error
+      final List<String> stackTraceLines =
+          Trace.format(stack).trimRight().split('\n');
+      final List<Map<String, String>> stackTraceElements =
+          getStackTraceElements(stackTraceLines);
+      final dynamic result = await channel
+          .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
+        'exception': "${exception.toString()}",
+        'context': 'onRuntimeException',
+        'stackTraceElements': stackTraceElements,
+        'logs': _logs.toList(),
+        'keys': _prepareKeys(),
+      });
+      print(result);
+    }
+  }
+
   void crash() {
     throw StateError('Error thrown by Crashlytics plugin');
   }
