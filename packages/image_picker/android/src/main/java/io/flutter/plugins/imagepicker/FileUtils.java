@@ -172,14 +172,14 @@ class FileUtils {
     String extension = null;
 
     try {
-        extension = MimeTypeMap.getFileExtensionFromUrl(uriImage.getPath());
+      extension = MimeTypeMap.getFileExtensionFromUrl(uriImage.getPath());
     } catch (Exception e) {
-         extension = null;
+      extension = null;
     }
 
     if (extension == null) {
-        //default extension for matches the previous behavior of the plugin
-         extension = "jpg";
+      //default extension for matches the previous behavior of the plugin
+      extension = "jpg";
     }
     return "." + extension;
   }
