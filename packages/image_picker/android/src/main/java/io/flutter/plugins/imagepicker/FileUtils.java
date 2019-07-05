@@ -141,7 +141,7 @@ class FileUtils {
     OutputStream outputStream = null;
     boolean success = false;
     try {
-      String extension = getImageExtension(context, uri);
+      String extension = getImageExtension(uri);
       inputStream = context.getContentResolver().openInputStream(uri);
       file = File.createTempFile("image_picker", extension, context.getCacheDir());
       outputStream = new FileOutputStream(file);
@@ -168,31 +168,18 @@ class FileUtils {
   }
 
   /** @return extension of image with dot, or default .jpg if it none. */
-  private static String getImageExtension(Context context, Uri uriImage) {
+  private static String getImageExtension(Uri uriImage) {
     String extension = null;
-    Cursor cursor = null;
-
     try {
-      cursor =
-          context
-              .getContentResolver()
-              .query(uriImage, new String[] {MediaStore.MediaColumns.MIME_TYPE}, null, null, null);
-
-      if (cursor != null && cursor.moveToNext()) {
-        String mimeType = cursor.getString(0);
-
-        extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
-      }
-    } finally {
-      if (cursor != null) {
-        cursor.close();
-      }
+        extension = MimeTypeMap.getFileExtensionFromUrl(uriImage.getPath());
+    } catch (Exception e) {
+        extension = null;
     }
 
     if (extension == null) {
-      //default extension for matches the previous behavior of the plugin
-      extension = "jpg";
-    }
+        //default extension for matches the previous behavior of the plugin
+        extension = "jpg";
+    }      
     return "." + extension;
   }
 
