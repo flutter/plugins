@@ -66,10 +66,13 @@ class _VideoProviderState extends State<VideoControllerProvider> {
       default:
         throw Exception('Could not create the VideoPlayerController.');
     }
+
+    controller?.setVolume(1.0);
   }
 
   @override
   void dispose() {
+    controller?.setVolume(0.0);
     controller?.dispose();
     super.dispose();
   }
