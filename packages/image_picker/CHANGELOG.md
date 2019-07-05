@@ -1,3 +1,7 @@
+## 0.6.0+11
+
+* Don't use module imports.
+
 ## 0.6.0+10
 
 * iOS: support picking GIF from gallery.
