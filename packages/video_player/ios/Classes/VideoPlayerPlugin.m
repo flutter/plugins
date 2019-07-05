@@ -331,7 +331,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (int64_t)duration {
-  if(CMTIME_IS_INDEFINITE([[_player currentItem] duration])) {
+  if (CMTIME_IS_INDEFINITE([[_player currentItem] duration])) {
     int64_t maxBuffering = 0;
     for (NSValue* rangeValue in [_player currentItem].loadedTimeRanges) {
         CMTimeRange range = [rangeValue CMTimeRangeValue];
