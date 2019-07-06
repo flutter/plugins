@@ -26,6 +26,8 @@ class FakePlatformGoogleMap {
   CameraPosition cameraPosition;
 
   bool compassEnabled;
+  
+  bool mapToolbarEnabled;
 
   CameraTargetBounds cameraTargetBounds;
 
@@ -300,6 +302,9 @@ class FakePlatformGoogleMap {
   void updateOptions(Map<dynamic, dynamic> options) {
     if (options.containsKey('compassEnabled')) {
       compassEnabled = options['compassEnabled'];
+    }
+    if (options.containsKey('mapToolbarEnabled')) {
+      mapToolbarEnabled = options['mapToolbarEnabled'];
     }
     if (options.containsKey('cameraTargetBounds')) {
       final List<dynamic> boundsList = options['cameraTargetBounds'];
