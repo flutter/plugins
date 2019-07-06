@@ -1,3 +1,7 @@
+## 0.5.19+3
+
+* Fix some confusions with my location and my location button
+
 ## 0.5.19+2
 
 * Fix polygons for iOS
