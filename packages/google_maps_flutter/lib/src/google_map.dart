@@ -386,7 +386,7 @@ class _GoogleMapOptions {
   }
 
   final bool compassEnabled;
-  
+
   final bool mapToolbarEnabled;
 
   final CameraTargetBounds cameraTargetBounds;

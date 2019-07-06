@@ -26,7 +26,7 @@ class FakePlatformGoogleMap {
   CameraPosition cameraPosition;
 
   bool compassEnabled;
-  
+
   bool mapToolbarEnabled;
 
   CameraTargetBounds cameraTargetBounds;
