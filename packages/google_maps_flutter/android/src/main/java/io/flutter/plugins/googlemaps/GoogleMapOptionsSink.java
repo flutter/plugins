@@ -28,6 +28,8 @@ interface GoogleMapOptionsSink {
 
   void setZoomGesturesEnabled(boolean zoomGesturesEnabled);
 
+  void setMapToolbarEnabled(boolean mapToolbarEnabled);
+
   void setMyLocationEnabled(boolean myLocationEnabled);
 
   void setMyLocationButtonEnabled(boolean myLocationButtonEnabled);

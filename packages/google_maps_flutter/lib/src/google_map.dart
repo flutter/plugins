@@ -119,6 +119,9 @@ class GoogleMap extends StatefulWidget {
   /// Called every time a [GoogleMap] is long pressed.
   final ArgumentCallback<LatLng> onLongPress;
 
+  // True if the map toolbar (Directions, Open in Maps) is enabled.
+  final bool mapToolbarEnabled;
+
   /// True if a "My Location" layer should be shown on the map.
   ///
   /// This layer includes a location indicator at the current device location,
@@ -355,6 +358,7 @@ class _GoogleMapOptions {
     this.tiltGesturesEnabled,
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
+    this.mapToolbarEnabled,
     this.myLocationEnabled,
     this.myLocationButtonEnabled,
     this.padding,
@@ -372,6 +376,7 @@ class _GoogleMapOptions {
       tiltGesturesEnabled: map.tiltGesturesEnabled,
       trackCameraPosition: map.onCameraMove != null,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
+      mapToolbarEnabled: change.mapToolbarEnabled ?? mapToolbarEnabled,
       myLocationEnabled: map.myLocationEnabled,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
       padding: map.padding,
@@ -423,6 +428,7 @@ class _GoogleMapOptions {
     addIfNonNull('tiltGesturesEnabled', tiltGesturesEnabled);
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
+    addIfNonNull('mapToolbarEnabled', mapToolbarEnabled);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
     addIfNonNull('padding', <double>[

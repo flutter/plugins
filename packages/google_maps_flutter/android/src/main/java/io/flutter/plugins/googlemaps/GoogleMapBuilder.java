@@ -106,8 +106,18 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
+  public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
+    googleMap.getUiSettings().setMapToolbarEnabled(mapToolbarEnabled);
+  }
+
+  @Override
   public void setMyLocationEnabled(boolean myLocationEnabled) {
     this.myLocationEnabled = myLocationEnabled;
+  }
+
+  @Override
+  public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
+    options.mapToolbarEnabled(mapToolbarEnabled);
   }
 
   @Override

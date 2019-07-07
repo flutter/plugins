@@ -300,6 +300,10 @@ class Convert {
     if (zoomGesturesEnabled != null) {
       sink.setZoomGesturesEnabled(toBoolean(zoomGesturesEnabled));
     }
+    final Object mapToolbarEnabled = data.get("mapToolbarEnabled");
+    if (mapToolbarEnabled != null) {
+      sink.setMapToolbarEnabled(toBoolean(mapToolbarEnabled));
+    }
     final Object myLocationEnabled = data.get("myLocationEnabled");
     if (myLocationEnabled != null) {
       sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
