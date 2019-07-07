@@ -28,6 +28,7 @@ class GoogleMap extends StatefulWidget {
     this.scrollGesturesEnabled = true,
     this.zoomGesturesEnabled = true,
     this.tiltGesturesEnabled = true,
+    this.mapToolbarEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
 
@@ -376,7 +377,7 @@ class _GoogleMapOptions {
       tiltGesturesEnabled: map.tiltGesturesEnabled,
       trackCameraPosition: map.onCameraMove != null,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
-      mapToolbarEnabled: change.mapToolbarEnabled ?? mapToolbarEnabled,
+      mapToolbarEnabled: map.mapToolbarEnabled,
       myLocationEnabled: map.myLocationEnabled,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
       padding: map.padding,
@@ -401,6 +402,8 @@ class _GoogleMapOptions {
   final bool trackCameraPosition;
 
   final bool zoomGesturesEnabled;
+
+  final bool mapToolbarEnabled;
 
   final bool myLocationEnabled;
 

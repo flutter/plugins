@@ -43,6 +43,8 @@ class FakePlatformGoogleMap {
 
   bool trackCameraPosition;
 
+  bool mapToolbarEnabled;
+
   bool myLocationEnabled;
 
   bool myLocationButtonEnabled;
@@ -329,6 +331,9 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('zoomGesturesEnabled')) {
       zoomGesturesEnabled = options['zoomGesturesEnabled'];
+    }
+    if (options.containsKey('mapToolbarEnabled')) {
+      mapToolbarEnabled = options['mapToolbarEnabled'];
     }
     if (options.containsKey('myLocationEnabled')) {
       myLocationEnabled = options['myLocationEnabled'];
