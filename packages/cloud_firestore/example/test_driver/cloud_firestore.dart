@@ -93,13 +93,13 @@ void main() {
 
       // Call several times without awaiting the result
       await Future.wait<void>(List<Future<void>>.generate(
-        100,
+        3,
         (int i) => ref.updateData(<String, dynamic>{
           'message': FieldValue.increment(i),
         }),
       ));
       snapshot = await ref.get();
-      expect(snapshot.data['message'], 4992.1);
+      expect(snapshot.data['message'], 45.1);
       await ref.delete();
     });
 
@@ -117,7 +117,7 @@ void main() {
           final Map<String, dynamic> updatedData =
               Map<String, dynamic>.from(snapshot.data);
           updatedData['message'] = 'testing2';
-          tx.update(ref, updatedData);  // calling await here is now optional
+          tx.update(ref, updatedData);  // calling await here is optional
           return updatedData;
         },
       );
