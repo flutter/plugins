@@ -1,4 +1,4 @@
-## 5.0.4+1
+## 5.0.5
 
 * Additional integration tests.
 
