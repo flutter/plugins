@@ -93,8 +93,8 @@ await localAuth.authenticateWithBiometrics(
 
 ### Exceptions
 
-There are 4 types of exceptions: PasscodeNotSet, NotEnrolled, NotAvailable and
-OtherOperatingSystem. They are wrapped in LocalAuthenticationError class. You can
+There are 6 types of exceptions: PasscodeNotSet, NotEnrolled, NotAvailable, OtherOperatingSystem, LockedOut and PermanentlyLockedOut.
+They are wrapped in LocalAuthenticationError class. You can
 catch the exception and handle them by different types. For example:
 
 ```dart
@@ -126,6 +126,11 @@ app has not been updated to use TouchID.
 
 
 ## Android Integration
+
+Note that local_auth plugin requires the use of a FragmentActivity as
+opposed to Activity. This can be easily done by switching to use
+`FlutterFragmentActivity` as opposed to `FlutterActivity` in your
+manifest (or your own Activity class if you are extending the base class).
 
 Update your project's `AndroidManifest.xml` file to include the
 `USE_FINGERPRINT` permissions:

@@ -1,3 +1,11 @@
+## 0.3.0+5
+
+* Fix Gradle version.
+
+## 0.3.0+4
+
+* Update Dart code to conform to current Dart formatter.
+
 ## 0.3.0+3
 
 * Fix `batteryLevel` usage example in README

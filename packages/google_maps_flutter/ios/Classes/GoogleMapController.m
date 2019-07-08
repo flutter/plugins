@@ -54,6 +54,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   // https://github.com/flutter/flutter/issues/27550
   BOOL _cameraDidInitialSetup;
   FLTMarkersController* _markersController;
+  FLTPolygonsController* _polygonsController;
   FLTPolylinesController* _polylinesController;
   FLTCirclesController* _circlesController;
 }
@@ -86,6 +87,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _markersController = [[FLTMarkersController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar];
+    _polygonsController = [[FLTPolygonsController alloc] init:_channel
+                                                      mapView:_mapView
+                                                    registrar:registrar];
     _polylinesController = [[FLTPolylinesController alloc] init:_channel
                                                         mapView:_mapView
                                                       registrar:registrar];
@@ -95,6 +99,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
+    }
+    id polygonsToAdd = args[@"polygonsToAdd"];
+    if ([polygonsToAdd isKindOfClass:[NSArray class]]) {
+      [_polygonsController addPolygons:polygonsToAdd];
     }
     id polylinesToAdd = args[@"polylinesToAdd"];
     if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
@@ -155,6 +163,20 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       [_markersController removeMarkerIds:markerIdsToRemove];
     }
     result(nil);
+  } else if ([call.method isEqualToString:@"polygons#update"]) {
+    id polygonsToAdd = call.arguments[@"polygonsToAdd"];
+    if ([polygonsToAdd isKindOfClass:[NSArray class]]) {
+      [_polygonsController addPolygons:polygonsToAdd];
+    }
+    id polygonsToChange = call.arguments[@"polygonsToChange"];
+    if ([polygonsToChange isKindOfClass:[NSArray class]]) {
+      [_polygonsController changePolygons:polygonsToChange];
+    }
+    id polygonIdsToRemove = call.arguments[@"polygonIdsToRemove"];
+    if ([polygonIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_polygonsController removePolygonIds:polygonIdsToRemove];
+    }
+    result(nil);
   } else if ([call.method isEqualToString:@"polylines#update"]) {
     id polylinesToAdd = call.arguments[@"polylinesToAdd"];
     if ([polylinesToAdd isKindOfClass:[NSArray class]]) {
@@ -204,6 +226,14 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isMyLocationButtonEnabled"]) {
     NSNumber* isMyLocationButtonEnabled = @(_mapView.settings.myLocationButton);
     result(isMyLocationButtonEnabled);
+  } else if ([call.method isEqualToString:@"map#setStyle"]) {
+    NSString* mapStyle = [call arguments];
+    NSString* error = [self setMapStyle:mapStyle];
+    if (error == nil) {
+      result(@[ @(YES) ]);
+    } else {
+      result(@[ @(NO), error ]);
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -249,12 +279,20 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   _mapView.settings.compassButton = enabled;
 }
 
+- (void)setIndoorEnabled:(BOOL)enabled {
+  _mapView.indoorEnabled = enabled;
+}
+
 - (void)setMapType:(GMSMapViewType)mapType {
   _mapView.mapType = mapType;
 }
 
 - (void)setMinZoom:(float)minZoom maxZoom:(float)maxZoom {
   [_mapView setMinZoom:minZoom maxZoom:maxZoom];
+}
+
+- (void)setPaddingTop:(float)top left:(float)left bottom:(float)bottom right:(float)right {
+  _mapView.padding = UIEdgeInsetsMake(top, left, bottom, right);
 }
 
 - (void)setRotateGesturesEnabled:(BOOL)enabled {
@@ -284,6 +322,21 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)setMyLocationButtonEnabled:(BOOL)enabled {
   _mapView.settings.myLocationButton = enabled;
+}
+
+- (NSString*)setMapStyle:(NSString*)mapStyle {
+  if (mapStyle == (id)[NSNull null] || mapStyle.length == 0) {
+    _mapView.mapStyle = nil;
+    return nil;
+  }
+  NSError* error;
+  GMSMapStyle* style = [GMSMapStyle styleWithJSONString:mapStyle error:&error];
+  if (!style) {
+    return [error localizedDescription];
+  } else {
+    _mapView.mapStyle = style;
+    return nil;
+  }
 }
 
 #pragma mark - GMSMapViewDelegate methods
@@ -325,6 +378,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   NSString* overlayId = overlay.userData[0];
   if ([_polylinesController hasPolylineWithId:overlayId]) {
     [_polylinesController onPolylineTap:overlayId];
+  } else if ([_polygonsController hasPolygonWithId:overlayId]) {
+    [_polygonsController onPolygonTap:overlayId];
   } else if ([_circlesController hasCircleWithId:overlayId]) {
     [_circlesController onCircleTap:overlayId];
   }
@@ -332,6 +387,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)mapView:(GMSMapView*)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
   [_channel invokeMethod:@"map#onTap" arguments:@{@"position" : LocationToJson(coordinate)}];
+}
+
+- (void)mapView:(GMSMapView*)mapView didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate {
+  [_channel invokeMethod:@"map#onLongPress" arguments:@{@"position" : LocationToJson(coordinate)}];
 }
 
 @end
@@ -438,7 +497,11 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   if (compassEnabled) {
     [sink setCompassEnabled:ToBool(compassEnabled)];
   }
-  NSNumber* mapType = data[@"mapType"];
+  id indoorEnabled = data[@"indoorEnabled"];
+  if (indoorEnabled) {
+    [sink setIndoorEnabled:ToBool(indoorEnabled)];
+  }
+  id mapType = data[@"mapType"];
   if (mapType) {
     [sink setMapType:ToMapViewType(mapType)];
   }
@@ -448,6 +511,15 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
     float maxZoom = (zoomData[1] == [NSNull null]) ? kGMSMaxZoomLevel : ToFloat(zoomData[1]);
     [sink setMinZoom:minZoom maxZoom:maxZoom];
   }
+  NSArray* paddingData = data[@"padding"];
+  if (paddingData) {
+    float top = (paddingData[0] == [NSNull null]) ? 0 : ToFloat(paddingData[0]);
+    float left = (paddingData[1] == [NSNull null]) ? 0 : ToFloat(paddingData[1]);
+    float bottom = (paddingData[2] == [NSNull null]) ? 0 : ToFloat(paddingData[2]);
+    float right = (paddingData[3] == [NSNull null]) ? 0 : ToFloat(paddingData[3]);
+    [sink setPaddingTop:top left:left bottom:bottom right:right];
+  }
+
   NSNumber* rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
   if (rotateGesturesEnabled) {
     [sink setRotateGesturesEnabled:ToBool(rotateGesturesEnabled)];

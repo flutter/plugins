@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FirebaseAuthPlugin.h"
+#import "UserAgent.h"
 
 #import "Firebase/Firebase.h"
 
@@ -43,6 +44,11 @@ int nextHandle = 0;
   instance.channel = channel;
   instance.authStateChangeListeners = [[NSMutableDictionary alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)init {
@@ -206,13 +212,8 @@ int nextHandle = 0;
                                                              error:error];
                                                 }];
   } else if ([@"updatePhoneNumberCredential" isEqualToString:call.method]) {
-    NSString *verificationId = call.arguments[@"verificationId"];
-    NSString *smsCode = call.arguments[@"smsCode"];
-
     FIRPhoneAuthCredential *credential =
-        [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
-                                                     verificationCode:smsCode];
-
+        (FIRPhoneAuthCredential *)[self getCredential:call.arguments];
     [[self getAuth:call.arguments].currentUser
         updatePhoneNumberCredential:credential
                          completion:^(NSError *_Nullable error) {

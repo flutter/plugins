@@ -38,4 +38,7 @@ android {
 
 dependencies {
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
+    implementation 'com.google.firebase:firebase-common:16.1.0'
 }
+
+apply from: file("./user-agent.gradle")

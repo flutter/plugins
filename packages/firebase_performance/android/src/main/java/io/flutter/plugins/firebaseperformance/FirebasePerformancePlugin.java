@@ -23,6 +23,7 @@ public class FirebasePerformancePlugin implements MethodChannel.MethodCallHandle
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     if (call.method.equals("FirebasePerformance#instance")) {
+      handlers.clear();
       FlutterFirebasePerformance.getInstance(call, result);
     } else {
       final MethodChannel.MethodCallHandler handler = getHandler(call);

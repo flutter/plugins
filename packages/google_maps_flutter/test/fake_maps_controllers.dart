@@ -16,6 +16,7 @@ class FakePlatformGoogleMap {
     channel.setMockMethodCallHandler(onMethodCall);
     updateOptions(params['options']);
     updateMarkers(params);
+    updatePolygons(params);
     updatePolylines(params);
     updateCircles(params);
   }
@@ -46,11 +47,19 @@ class FakePlatformGoogleMap {
 
   bool myLocationButtonEnabled;
 
+  List<dynamic> padding;
+
   Set<MarkerId> markerIdsToRemove;
 
   Set<Marker> markersToAdd;
 
   Set<Marker> markersToChange;
+
+  Set<PolygonId> polygonIdsToRemove;
+
+  Set<Polygon> polygonsToAdd;
+
+  Set<Polygon> polygonsToChange;
 
   Set<PolylineId> polylineIdsToRemove;
 
@@ -71,6 +80,9 @@ class FakePlatformGoogleMap {
         return Future<void>.sync(() {});
       case 'markers#update':
         updateMarkers(call.arguments);
+        return Future<void>.sync(() {});
+      case 'polygons#update':
+        updatePolygons(call.arguments);
         return Future<void>.sync(() {});
       case 'polylines#update':
         updatePolylines(call.arguments);
@@ -135,6 +147,53 @@ class FakePlatformGoogleMap {
         draggable: draggable,
         visible: visible,
         infoWindow: infoWindow,
+      ));
+    }
+
+    return result;
+  }
+
+  void updatePolygons(Map<dynamic, dynamic> polygonUpdates) {
+    if (polygonUpdates == null) {
+      return;
+    }
+    polygonsToAdd = _deserializePolygons(polygonUpdates['polygonsToAdd']);
+    polygonIdsToRemove =
+        _deserializePolygonIds(polygonUpdates['polygonIdsToRemove']);
+    polygonsToChange = _deserializePolygons(polygonUpdates['polygonsToChange']);
+  }
+
+  Set<PolygonId> _deserializePolygonIds(List<dynamic> polygonIds) {
+    if (polygonIds == null) {
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
+      // ignore: prefer_collection_literals
+      return Set<PolygonId>();
+    }
+    return polygonIds.map((dynamic polygonId) => PolygonId(polygonId)).toSet();
+  }
+
+  Set<Polygon> _deserializePolygons(dynamic polygons) {
+    if (polygons == null) {
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
+      // ignore: prefer_collection_literals
+      return Set<Polygon>();
+    }
+    final List<dynamic> polygonsData = polygons;
+    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+    // https://github.com/flutter/flutter/issues/28312
+    // ignore: prefer_collection_literals
+    final Set<Polygon> result = Set<Polygon>();
+    for (Map<dynamic, dynamic> polygonData in polygonsData) {
+      final String polygonId = polygonData['polygonId'];
+      final bool visible = polygonData['visible'];
+      final bool geodesic = polygonData['geodesic'];
+
+      result.add(Polygon(
+        polygonId: PolygonId(polygonId),
+        visible: visible,
+        geodesic: geodesic,
       ));
     }
 
@@ -276,6 +335,9 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('myLocationButtonEnabled')) {
       myLocationButtonEnabled = options['myLocationButtonEnabled'];
+    }
+    if (options.containsKey('padding')) {
+      padding = options['padding'];
     }
   }
 }
