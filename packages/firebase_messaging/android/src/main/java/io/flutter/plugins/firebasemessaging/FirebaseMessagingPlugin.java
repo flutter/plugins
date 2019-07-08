@@ -149,27 +149,33 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
                   try {
                     FirebaseInstanceId.getInstance().deleteInstanceId();
                     if (registrar.activity() != null) {
-                      registrar.activity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                          result.success(true);
-                        }
-                      });
+                      registrar
+                          .activity()
+                          .runOnUiThread(
+                              new Runnable() {
+                                @Override
+                                public void run() {
+                                  result.success(true);
+                                }
+                              });
                     }
                   } catch (IOException ex) {
                     Log.e(TAG, "deleteInstanceID, error:", ex);
                     if (registrar.activity() != null) {
-                      registrar.activity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                          result.success(false);
-                        }
-                      });
+                      registrar
+                          .activity()
+                          .runOnUiThread(
+                              new Runnable() {
+                                @Override
+                                public void run() {
+                                  result.success(false);
+                                }
+                              });
                     }
                   }
                 }
               })
-              .start();
+          .start();
     } else if ("autoInitEnabled".equals(call.method)) {
       result.success(FirebaseMessaging.getInstance().isAutoInitEnabled());
     } else if ("setAutoInitEnabled".equals(call.method)) {
