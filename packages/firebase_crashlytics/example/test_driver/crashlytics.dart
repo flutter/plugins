@@ -16,10 +16,15 @@ void main() {
 
   test('onError', () async {
     // This is currently only testing that we can log errors without crashing.
-    await Crashlytics.instance.setUserName('testing');
-    await Crashlytics.instance.setUserIdentifier('hello');
+    final Crashlytics crashlytics = Crashlytics.instance;
+    await crashlytics.setUserName('testing');
+    await crashlytics.setUserIdentifier('hello');
+    crashlytics.setBool('testBool', true);
+    crashlytics.setInt('testInt', 42);
+    crashlytics.setDouble('testDouble', 42.0);
+    crashlytics.setString('testString', 'bar');
     Crashlytics.instance.log('testing');
-    await Crashlytics.instance.onError(
+    await crashlytics.onError(
       FlutterErrorDetails(
         exception: 'testing',
         stack: StackTrace.fromString(''),

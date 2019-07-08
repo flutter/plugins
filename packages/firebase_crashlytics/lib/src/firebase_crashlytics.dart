@@ -41,7 +41,7 @@ class Crashlytics {
           Trace.format(details.stack).trimRight().split('\n');
       final List<Map<String, String>> stackTraceElements =
           getStackTraceElements(stackTraceLines);
-      final dynamic result = await channel
+      await channel
           .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
         'exception': details.exceptionAsString(),
         // FlutterErrorDetails.context has been migrated from a String to a
@@ -52,7 +52,6 @@ class Crashlytics {
         'logs': _logs.toList(),
         'keys': _prepareKeys(),
       });
-      print(result);
     }
   }
 
@@ -156,6 +155,7 @@ class Crashlytics {
       } else if (value is bool) {
         crashlyticsKey['type'] = 'boolean';
       }
+      crashlyticsKeys.add(crashlyticsKey);
     }
 
     return crashlyticsKeys;
