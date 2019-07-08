@@ -1,6 +1,8 @@
 ## 3.0.4
 
-* Fix transactions on 
+* Updated transactions implementation on Android for compatibility with
+  newer versions of Flutter engine that require channel calls be made
+  on the UI thread.
 
 ## 3.0.3
 
