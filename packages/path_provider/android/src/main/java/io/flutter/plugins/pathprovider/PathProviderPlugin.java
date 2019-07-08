@@ -52,6 +52,6 @@ public class PathProviderPlugin implements MethodCallHandler {
   }
 
   private String getPathProviderStorageDirectory() {
-    return Environment.getExternalStorageDirectory().getAbsolutePath();
+    return mRegistrar.context().getExternalFilesDir(null).getAbsolutePath();
   }
 }
