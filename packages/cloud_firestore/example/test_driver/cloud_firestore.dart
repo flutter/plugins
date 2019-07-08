@@ -92,9 +92,9 @@ void main() {
       expect(snapshot.data['message'], 42.1);
 
       // Call several times without awaiting the result
-      await Future.wait(new List.generate(
+      await Future.wait<void>(List<Future<void>>.generate(
         100,
-        (i) => ref.updateData(<String, dynamic>{
+        (int i) => ref.updateData(<String, dynamic>{
           'message': FieldValue.increment(i),
         }),
       ));

@@ -12,7 +12,7 @@ class Transaction {
 
   int _transactionId;
   Firestore _firestore;
-  List<Future<dynamic>> _pendingResults = [];
+  List<Future<dynamic>> _pendingResults = <Future<dynamic>>[];
   Future<void> _finish() => Future.wait<void>(_pendingResults);
 
   /// Reads the document referenced by the provided DocumentReference.
