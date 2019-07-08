@@ -346,41 +346,41 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
                   // Return snapshot to Dart side for update.
                   activity.runOnUiThread(
-                    new Runnable() {
-                      @Override
-                      public void run() {
-                        channel.invokeMethod(
-                                "DoTransaction",
-                                doTransactionMap,
-                                new MethodChannel.Result() {
-                                  @Override
-                                  @SuppressWarnings("unchecked")
-                                  public void success(Object result) {
-                                    updateMutableDataTCS.setResult((Map<String, Object>) result);
-                                  }
+                      new Runnable() {
+                        @Override
+                        public void run() {
+                          channel.invokeMethod(
+                              "DoTransaction",
+                              doTransactionMap,
+                              new MethodChannel.Result() {
+                                @Override
+                                @SuppressWarnings("unchecked")
+                                public void success(Object result) {
+                                  updateMutableDataTCS.setResult((Map<String, Object>) result);
+                                }
 
-                                  @Override
-                                  public void error(
-                                          String errorCode, String errorMessage, Object errorDetails) {
-                                    String exceptionMessage =
-                                            "Error code: "
-                                                    + errorCode
-                                                    + "\nError message: "
-                                                    + errorMessage
-                                                    + "\nError details: "
-                                                    + errorDetails;
-                                    updateMutableDataTCS.setException(new Exception(exceptionMessage));
-                                  }
+                                @Override
+                                public void error(
+                                    String errorCode, String errorMessage, Object errorDetails) {
+                                  String exceptionMessage =
+                                      "Error code: "
+                                          + errorCode
+                                          + "\nError message: "
+                                          + errorMessage
+                                          + "\nError details: "
+                                          + errorDetails;
+                                  updateMutableDataTCS.setException(
+                                      new Exception(exceptionMessage));
+                                }
 
-                                  @Override
-                                  public void notImplemented() {
-                                    updateMutableDataTCS.setException(
-                                            new Exception("DoTransaction not implemented on Dart side."));
-                                  }
-                                });
-                      }
-                    }
-                  );
+                                @Override
+                                public void notImplemented() {
+                                  updateMutableDataTCS.setException(
+                                      new Exception("DoTransaction not implemented on Dart side."));
+                                }
+                              });
+                        }
+                      });
 
                   try {
                     // Wait for updated snapshot from the Dart side.
@@ -419,12 +419,11 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
                   // Invoke transaction completion on the Dart side.
                   activity.runOnUiThread(
-                    new Runnable() {
-                      public void run() {
-                        result.success(completionMap);
-                      }
-                    }
-                  );
+                      new Runnable() {
+                        public void run() {
+                          result.success(completionMap);
+                        }
+                      });
                 }
               });
           break;

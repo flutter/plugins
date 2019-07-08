@@ -54,42 +54,18 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    // Demonstrates configuring to the database using a file
+    print('connecting');
     _counterRef = FirebaseDatabase.instance.reference().child('counter');
-    // Demonstrates configuring the database directly
-    final FirebaseDatabase database = FirebaseDatabase(app: widget.app);
-    _messagesRef = database.reference().child('messages');
-    database.reference().child('counter').once().then((DataSnapshot snapshot) {
-      print('Connected to second database and read ${snapshot.value}');
-    });
-    database.setPersistenceEnabled(true);
-    database.setPersistenceCacheSizeBytes(10000000);
-    _counterRef.keepSynced(true);
-    _counterSubscription = _counterRef.onValue.listen((Event event) {
-      setState(() {
-        _error = null;
-        _counter = event.snapshot.value ?? 0;
-      });
-    }, onError: (Object o) {
-      final DatabaseError error = o;
-      setState(() {
-        _error = error;
-      });
-    });
-    _messagesSubscription =
-        _messagesRef.limitToLast(10).onChildAdded.listen((Event event) {
-      print('Child added: ${event.snapshot.value}');
-    }, onError: (Object o) {
-      final DatabaseError error = o;
-      print('Error: ${error.code} ${error.message}');
+    FirebaseDatabase.instance.reference().once().then((DataSnapshot snapshot) {
+      print('Connected to database and read ${snapshot.value}');
     });
   }
 
   @override
   void dispose() {
     super.dispose();
-    _messagesSubscription.cancel();
-    _counterSubscription.cancel();
+//    _messagesSubscription.cancel();
+//    _counterSubscription.cancel();
   }
 
   Future<void> _increment() async {
@@ -143,27 +119,22 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             title: const Text('Anchor to bottom'),
           ),
-          Flexible(
-            child: FirebaseAnimatedList(
-              key: ValueKey<bool>(_anchorToBottom),
-              query: _messagesRef,
-              reverse: _anchorToBottom,
-              sort: _anchorToBottom
-                  ? (DataSnapshot a, DataSnapshot b) => b.key.compareTo(a.key)
-                  : null,
-              itemBuilder: (BuildContext context, DataSnapshot snapshot,
-                  Animation<double> animation, int index) {
-                return SizeTransition(
-                  sizeFactor: animation,
-                  child: Text("$index: ${snapshot.value.toString()}"),
-                );
-              },
-            ),
-          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _increment,
+        onPressed: () async {
+          final DatabaseReference ref =
+              FirebaseDatabase.instance.reference().child('counter');
+          final DataSnapshot snapshot = await ref.once();
+          final int value = snapshot.value ?? 0;
+          final TransactionResult transactionResult =
+              await ref.runTransaction((MutableData mutableData) async {
+            mutableData.value = (mutableData.value ?? 0) + 1;
+            return mutableData;
+          });
+          assert(transactionResult.committed, true);
+          assert(transactionResult.dataSnapshot.value > value, true);
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
