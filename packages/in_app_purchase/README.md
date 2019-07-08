@@ -87,7 +87,7 @@ if (!available) {
 ### Loading products for sale
 
 ```dart
-// Set literals require Dart 2.2. Alternatively, remove `const` and use `<String>['product1', 'product2'].toSet()`.
+// Set literals require Dart 2.2. Alternatively, use `Set<String> _kIds = <String>['product1', 'product2'].toSet()`.
 const Set<String> _kIds = {'product1', 'product2'};
 final ProductDetailsResponse response = await InAppPurchaseConnection.instance.queryProductDetails(_kIds);
 if (!response.notFoundIds.isEmpty()) {
