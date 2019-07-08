@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 class FirebaseInAppMessaging {
   @visibleForTesting
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/firebase_inappmessaging');
+  MethodChannel('plugins.flutter.io/firebase_inappmessaging');
 
   static FirebaseInAppMessaging _instance = FirebaseInAppMessaging();
 
@@ -15,17 +15,19 @@ class FirebaseInAppMessaging {
 
   /// Triggers an analytics event from the [FirebaseInAppMessaging] instance
   Future<void> triggerEvent(String eventName) async {
-    await channel.invokeMethod('triggerEvent', {'eventName': eventName});
+    await channel.invokeMethod<void>(
+        'triggerEvent', <String, String>{'eventName': eventName});
   }
 
   /// Suppress message displays for the [FirebaseInAppMessaging] instance
   Future<void> setMessagesSuppressed(bool suppress) async {
-    await channel.invokeMethod('setMessagesSuppressed', {suppress: suppress});
+    await channel.invokeMethod<void>(
+        'setMessagesSuppressed', <bool, bool>{suppress: suppress});
   }
 
   /// Disable data collection for the app.
   Future<void> setDataCollectionEnabled(bool dataCollectionEnabled) async {
-    await channel.invokeMethod('dataCollectionEnabled',
-        {dataCollectionEnabled: dataCollectionEnabled});
+    await channel.invokeMethod<void>('dataCollectionEnabled',
+        <bool, bool>{dataCollectionEnabled: dataCollectionEnabled});
   }
 }

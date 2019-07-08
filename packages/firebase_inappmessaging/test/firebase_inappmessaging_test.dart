@@ -16,7 +16,7 @@ void main() {
     });
 
     test('triggerEvent', () async {
-      final FirebaseInAppMessaging fiam = new FirebaseInAppMessaging();
+      final FirebaseInAppMessaging fiam = FirebaseInAppMessaging();
       fiam.triggerEvent('someEvent');
       expect(log, <Matcher>[
         isMethodCall('triggerEvent', arguments: {"eventName": "someEvent"}),
@@ -24,7 +24,7 @@ void main() {
     });
 
     test('setMessagesSuppressed', () async {
-      final FirebaseInAppMessaging fiam = new FirebaseInAppMessaging();
+      final FirebaseInAppMessaging fiam = FirebaseInAppMessaging();
       fiam.setMessagesSuppressed(true);
       expect(log, <Matcher>[
         isMethodCall('setMessagesSuppressed', arguments: {true: true}),
@@ -38,7 +38,7 @@ void main() {
     });
 
     test('setDataCollectionEnabled', () async {
-      final FirebaseInAppMessaging fiam = new FirebaseInAppMessaging();
+      final FirebaseInAppMessaging fiam = FirebaseInAppMessaging();
       fiam.setDataCollectionEnabled(true);
       expect(log, <Matcher>[
         isMethodCall('dataCollectionEnabled', arguments: {true: true}),
