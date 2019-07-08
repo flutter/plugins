@@ -3,19 +3,57 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_inappmessaging/firebase_inappmessaging.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('firebase_inappmessaging');
+  group('$FirebaseInAppMessaging', () {
+    final List<MethodCall> log = <MethodCall>[];
 
-  setUp(() {
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return '42';
+    setUp(() {
+      log.clear();
+      FirebaseInAppMessaging.channel.setMockMethodCallHandler((MethodCall methodcall) async {
+        log.add(methodcall);
+        return true;
+      });
     });
-  });
 
-  tearDown(() {
-    channel.setMockMethodCallHandler(null);
-  });
+    test('triggerEvent', () async {
+      final FirebaseInAppMessaging fiam = new FirebaseInAppMessaging();
+      fiam.triggerEvent('someEvent');
+      expect(log,
+      <Matcher>[
+        isMethodCall('triggerEvent', arguments: { "eventName": "someEvent" }),
+      ]);
+    });
 
-  test('getPlatformVersion', () async {
-    expect(await FirebaseInappmessaging.platformVersion, '42');
+    test('setMessagesSuppressed', () async {
+      final FirebaseInAppMessaging fiam = new FirebaseInAppMessaging();
+      fiam.setMessagesSuppressed(true);
+      expect(log,
+          <Matcher>[
+            isMethodCall('setMessagesSuppressed', arguments: { true: true }),
+          ]);
+
+      fiam.setMessagesSuppressed(false);
+      expect(log,
+          <Matcher>[
+            isMethodCall('setMessagesSuppressed', arguments: { true: true }),
+            isMethodCall('setMessagesSuppressed', arguments: { false: false }),
+          ]);
+    });
+
+    test('setDataCollectionEnabled', () async {
+      final FirebaseInAppMessaging fiam = new FirebaseInAppMessaging();
+      fiam.setDataCollectionEnabled(true);
+      expect(log,
+          <Matcher>[
+            isMethodCall('dataCollectionEnabled', arguments: { true: true }),
+          ]);
+
+      fiam.setDataCollectionEnabled(false);
+      expect(log,
+          <Matcher>[
+            isMethodCall('dataCollectionEnabled', arguments: { true: true }),
+            isMethodCall('dataCollectionEnabled', arguments: { false: false }),
+          ]);
+    });
+
   });
 }
