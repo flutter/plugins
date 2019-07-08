@@ -1,9 +1,8 @@
 ## 3.0.1
 
-* Ensure that all channel calls to the Dart side from the Java side are done
-  on the UI thread. This change allows transactions to work with upcoming
-  engine changes, which require channel calls be made on the UI thread.
-  **Note** this is an Android only change, the iOS implementation was not impacted.
+* Updated transactions implementation on Android for compatibility with
+  newer versions of Flutter engine that require channel calls be made
+  on the UI thread.
 
 ## 3.0.0
 
