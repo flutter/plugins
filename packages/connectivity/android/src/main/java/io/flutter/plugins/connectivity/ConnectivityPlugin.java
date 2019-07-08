@@ -63,7 +63,22 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
     receiver = null;
   }
 
-  private static String getNetworkType(int type, int subType) {
+  private static String getNetworkSubType(int type, int subType) {
+    switch (type) {
+      case ConnectivityManager.TYPE_ETHERNET:
+      case ConnectivityManager.TYPE_WIFI:
+      case ConnectivityManager.TYPE_WIMAX:
+        return "wifi";
+      case ConnectivityManager.TYPE_MOBILE:
+      case ConnectivityManager.TYPE_MOBILE_DUN:
+      case ConnectivityManager.TYPE_MOBILE_HIPRI:
+        return "mobile";
+      default:
+        return "none";
+    }
+  }
+  
+  private static String getNetworkSubType(int type, int subType) {
     switch (type) {
       case ConnectivityManager.TYPE_ETHERNET:
       case ConnectivityManager.TYPE_WIFI:
@@ -132,16 +147,28 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
       case "wifiIPAddress":
         handleWifiIPAddress(call, result);
         break;
+      case "getMobileConnectionType"
+        handleMobileConnectionType(call, result);
+        break;
       default:
         result.notImplemented();
         break;
     }
   }
 
+  private void handleMobileConnectionType(MethodCall call, final Result result) {
+    NetworkInfo info = manager.getActiveNetworkInfo();
+    if (info != null && info.isConnected()) {
+      result.success(getNetworkSubType(info.getType(), info.getSubtype()));
+    } else {
+      result.success("none");
+    }
+  }
+  
   private void handleCheck(MethodCall call, final Result result) {
     NetworkInfo info = manager.getActiveNetworkInfo();
     if (info != null && info.isConnected()) {
-      result.success(getNetworkType(info.getType(), info.getSubtype()));
+      result.success(getNetworkType(info.getType()));
     } else {
       result.success("none");
     }
