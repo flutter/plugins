@@ -90,6 +90,16 @@ void main() {
       });
       snapshot = await ref.get();
       expect(snapshot.data['message'], 42.1);
+
+      // Call several times without awaiting the result
+      await Future.wait<void>(List<Future<void>>.generate(
+        3,
+        (int i) => ref.updateData(<String, dynamic>{
+          'message': FieldValue.increment(i),
+        }),
+      ));
+      snapshot = await ref.get();
+      expect(snapshot.data['message'], 45.1);
       await ref.delete();
     });
 
@@ -107,11 +117,12 @@ void main() {
           final Map<String, dynamic> updatedData =
               Map<String, dynamic>.from(snapshot.data);
           updatedData['message'] = 'testing2';
-          await tx.update(ref, updatedData);
+          tx.update(ref, updatedData); // calling await here is optional
           return updatedData;
         },
       );
       expect(result['message'], 'testing2');
+
       await ref.delete();
       final DocumentSnapshot nonexistentSnapshot = await ref.get();
       expect(nonexistentSnapshot.data, null);

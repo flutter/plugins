@@ -1,3 +1,10 @@
+## 0.12.7
+
+* Methods of `Transaction` no longer require `await`.
+* Added documentation to methods of `Transaction`.
+* Removed an unnecessary log on Android.
+* Added an integration test for rapidly incrementing field value.
+
 ## 0.12.6
 
 * Support for `orderBy` on map fields (e.g. `orderBy('cake.flavor')`) for
