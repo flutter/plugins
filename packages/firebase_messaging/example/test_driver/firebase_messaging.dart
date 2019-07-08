@@ -11,12 +11,6 @@ void main() {
   group('$FirebaseMessaging', () {
     final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
 
-    test('getToken', () async {
-      await firebaseMessaging.getToken();
-      // Token is sometimes null in simulators
-      // expect(token, isNotNull);
-    });
-
     test('autoInitEnabled', () async {
       await firebaseMessaging.setAutoInitEnabled(false);
       expect(await firebaseMessaging.autoInitEnabled(), false);
