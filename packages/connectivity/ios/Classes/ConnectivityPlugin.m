@@ -86,7 +86,7 @@
   return address;
 }
 
-- (NSString*)statusFromReachability:(Reachability*)reachability {
+- (NSString*)getMobileConnectionType:(Reachability*)reachability {
   NetworkStatus status = [reachability currentReachabilityStatus];
   switch (status) {
     case NotReachable:
@@ -123,6 +123,18 @@
   }
 }
 
+- (NSString*)statusFromReachability:(Reachability*)reachability {
+  NetworkStatus status = [reachability currentReachabilityStatus];
+  switch (status) {
+    case NotReachable:
+      return @"none";
+    case ReachableViaWiFi:
+      return @"wifi";
+    case ReachableViaWWAN:
+      return @"mobile";
+  }
+}
+
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"check"]) {
     // This is supposed to be quick. Another way of doing this would be to
@@ -137,6 +149,8 @@
     result([self getBSSID]);
   } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
     result([self getWifiIP]);
+  } else if ([call.method isEqualToString:@"getMobileConnectionType"]) {
+    result([self getMobileConnectionType]);
   } else {
     result(FlutterMethodNotImplemented);
   }
