@@ -94,7 +94,6 @@ static FlutterError *getFlutterError(NSError *error) {
                                         completion:^(NSError *error) {
                                           result(getFlutterError(error));
                                         }];
-    result(nil);
   } else if ([@"getToken" isEqualToString:method]) {
     [[FIRInstanceID instanceID]
         instanceIDWithHandler:^(FIRInstanceIDResult *_Nullable instanceIDResult,
