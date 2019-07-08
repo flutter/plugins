@@ -16,7 +16,6 @@
 ## 3.0.1
 
 * Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
->>>>>>> origin/master
 
 ## 3.0.0
 
