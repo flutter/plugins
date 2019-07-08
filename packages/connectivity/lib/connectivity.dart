@@ -93,6 +93,10 @@ class Connectivity {
   Future<String> getWifiIP() async {
     return await methodChannel.invokeMethod<String>('wifiIPAddress');
   }
+  
+  Future<String> getMobileConnectionType() async {
+    return await methodChannel.invokeMethod<String>('getMobileConnectionType');
+  }
 }
 
 ConnectivityResult _parseConnectivityResult(String state) {
