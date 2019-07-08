@@ -6,7 +6,7 @@
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 
-@import MobileCoreServices;
+#import <MobileCoreServices/MobileCoreServices.h>;
 
 @implementation FLTImagePickerPhotoAssetUtil
 
