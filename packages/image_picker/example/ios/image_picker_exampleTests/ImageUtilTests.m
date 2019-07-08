@@ -31,7 +31,7 @@
   // gif image that frame size is 3 and the duration is 1 second.
   NSData *data = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"gifImage"
                                                                           ofType:@"gif"]];
-  GIFInfo info = [FLTImagePickerImageUtil scaledGIFImage:data maxWidth:@3 maxHeight:@2];
+  GIFInfo *info = [FLTImagePickerImageUtil scaledGIFImage:data maxWidth:@3 maxHeight:@2];
 
   NSArray<UIImage *> *images = info.images;
   NSTimeInterval duration = info.interval;
