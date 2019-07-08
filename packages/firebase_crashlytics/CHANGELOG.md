@@ -1,3 +1,9 @@
+## 0.0.4+9
+
+* Fixed custom keys implementation.
+* Added tests for custom keys implementation.
+* Removed a print statement.
+
 ## 0.0.4+8
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.
