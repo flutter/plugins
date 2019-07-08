@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 class FirebaseInAppMessaging {
   @visibleForTesting
   static const MethodChannel channel =
-  MethodChannel('plugins.flutter.io/firebase_inappmessaging');
+      MethodChannel('plugins.flutter.io/firebase_inappmessaging');
 
   static FirebaseInAppMessaging _instance = FirebaseInAppMessaging();
 

@@ -19,7 +19,8 @@ void main() {
       final FirebaseInAppMessaging fiam = FirebaseInAppMessaging();
       fiam.triggerEvent('someEvent');
       expect(log, <Matcher>[
-        isMethodCall('triggerEvent', arguments: {"eventName": "someEvent"}),
+        isMethodCall('triggerEvent',
+            arguments: <String, String>{"eventName": "someEvent"}),
       ]);
     });
 
@@ -27,13 +28,16 @@ void main() {
       final FirebaseInAppMessaging fiam = FirebaseInAppMessaging();
       fiam.setMessagesSuppressed(true);
       expect(log, <Matcher>[
-        isMethodCall('setMessagesSuppressed', arguments: {true: true}),
+        isMethodCall(
+            'setMessagesSuppressed', arguments: <bool, bool>{true: true}),
       ]);
 
       fiam.setMessagesSuppressed(false);
       expect(log, <Matcher>[
-        isMethodCall('setMessagesSuppressed', arguments: {true: true}),
-        isMethodCall('setMessagesSuppressed', arguments: {false: false}),
+        isMethodCall(
+            'setMessagesSuppressed', arguments: <bool, bool>{true: true}),
+        isMethodCall(
+            'setMessagesSuppressed', arguments: <bool, bool>{false: false}),
       ]);
     });
 
@@ -41,13 +45,16 @@ void main() {
       final FirebaseInAppMessaging fiam = FirebaseInAppMessaging();
       fiam.setDataCollectionEnabled(true);
       expect(log, <Matcher>[
-        isMethodCall('dataCollectionEnabled', arguments: {true: true}),
+        isMethodCall(
+            'dataCollectionEnabled', arguments: <bool, bool>{true: true}),
       ]);
 
       fiam.setDataCollectionEnabled(false);
       expect(log, <Matcher>[
-        isMethodCall('dataCollectionEnabled', arguments: {true: true}),
-        isMethodCall('dataCollectionEnabled', arguments: {false: false}),
+        isMethodCall(
+            'dataCollectionEnabled', arguments: <bool, bool>{true: true}),
+        isMethodCall(
+            'dataCollectionEnabled', arguments: <bool, bool>{false: false}),
       ]);
     });
   });
