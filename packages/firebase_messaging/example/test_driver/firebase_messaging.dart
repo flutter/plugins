@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:async';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +12,7 @@ void main() {
     final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
 
     test('getToken', () async {
-      final String token = await firebaseMessaging.getToken();
+      await firebaseMessaging.getToken();
       // Token is sometimes null in simulators
       // expect(token, isNotNull);
     });
@@ -34,7 +33,7 @@ void main() {
     });
 
     test('deleteInstanceID', () async {
-      bool result = await firebaseMessaging.deleteInstanceID();
+      final bool result = await firebaseMessaging.deleteInstanceID();
       expect(result, isTrue);
     });
   });
