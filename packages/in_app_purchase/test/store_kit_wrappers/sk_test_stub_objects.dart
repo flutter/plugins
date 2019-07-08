@@ -54,11 +54,8 @@ final SKProductWrapper dummyProductWrapper = SKProductWrapper(
   localizedTitle: 'title',
   localizedDescription: 'description',
   priceLocale: dummyLocale,
-  downloadContentVersion: 'version',
   subscriptionGroupIdentifier: 'com.group',
   price: '1.0',
-  downloadable: true,
-  downloadContentLengths: <int>[1, 2],
   subscriptionPeriod: dummySubscription,
   introductoryPrice: dummyDiscount,
 );
@@ -99,11 +96,8 @@ Map<String, dynamic> buildProductMap(SKProductWrapper product) {
     'localizedTitle': product.localizedTitle,
     'localizedDescription': product.localizedDescription,
     'priceLocale': buildLocaleMap(product.priceLocale),
-    'downloadContentVersion': product.downloadContentVersion,
     'subscriptionGroupIdentifier': product.subscriptionGroupIdentifier,
     'price': product.price,
-    'downloadable': product.downloadable,
-    'downloadContentLengths': product.downloadContentLengths,
     'subscriptionPeriod':
         buildSubscriptionPeriodMap(product.subscriptionPeriod),
     'introductoryPrice': buildDiscountMap(product.introductoryPrice),

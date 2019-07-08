@@ -10,6 +10,7 @@ import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
@@ -34,6 +35,7 @@ import java.util.Map;
 
 /** Wraps a {@link BillingClient} instance and responds to Dart calls for it. */
 public class InAppPurchasePlugin implements MethodCallHandler {
+  private static final String TAG = "InAppPurchasePlugin";
   private @Nullable BillingClient billingClient;
   private final Activity activity;
   private final Context context;
@@ -126,8 +128,15 @@ public class InAppPurchasePlugin implements MethodCallHandler {
 
     billingClient.startConnection(
         new BillingClientStateListener() {
+          private boolean alreadyFinished = false;
+
           @Override
           public void onBillingSetupFinished(int responseCode) {
+            if (alreadyFinished) {
+              Log.d(TAG, "Tried to call onBilllingSetupFinished multiple times.");
+              return;
+            }
+            alreadyFinished = true;
             // Consider the fact that we've finished a success, leave it to the Dart side to validate the responseCode.
             result.success(responseCode);
           }

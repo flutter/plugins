@@ -1,3 +1,12 @@
+## 0.9.0+1
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+
+## 0.9.0
+
+* Update Android dependencies to latest.
+
 ## 0.8.0+4
 
 * Update documentation to add AdMob App ID in Info.plist

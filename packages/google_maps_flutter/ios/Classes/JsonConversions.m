@@ -37,11 +37,11 @@
 }
 
 + (UIColor*)toColor:(NSNumber*)numberColor {
-  long value = [numberColor longValue];
+  unsigned long value = [numberColor unsignedLongValue];
   return [UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
                          green:((float)((value & 0xFF00) >> 8)) / 255.0
                           blue:((float)(value & 0xFF)) / 255.0
-                         alpha:1.0];
+                         alpha:((float)((value & 0xFF000000) >> 24)) / 255.0];
 }
 
 + (NSArray<CLLocation*>*)toPoints:(NSArray*)data {

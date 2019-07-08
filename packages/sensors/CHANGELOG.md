@@ -1,3 +1,7 @@
+## 0.4.0+2
+
+* Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
+
 ## 0.4.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX

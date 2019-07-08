@@ -44,6 +44,7 @@ void main() {
       final String url = await ref.getDownloadURL();
       final http.Response downloadData = await http.get(url);
       expect(downloadData.body, kTestString);
+      expect(downloadData.headers['content-type'], 'text/plain');
       final File tempFile = File('${systemTempDir.path}/tmp$uuid.txt');
       if (tempFile.existsSync()) {
         await tempFile.delete();

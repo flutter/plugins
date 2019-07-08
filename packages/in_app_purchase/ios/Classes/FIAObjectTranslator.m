@@ -16,10 +16,7 @@
     @"localizedDescription" : product.localizedDescription ?: [NSNull null],
     @"localizedTitle" : product.localizedTitle ?: [NSNull null],
     @"productIdentifier" : product.productIdentifier ?: [NSNull null],
-    @"downloadable" : @(product.downloadable),
-    @"price" : product.price.description ?: [NSNull null],
-    @"downloadContentLengths" : product.downloadContentLengths ?: [NSNull null],
-    @"downloadContentVersion" : product.downloadContentVersion ?: [NSNull null]
+    @"price" : product.price.description ?: [NSNull null]
 
   }];
   // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this
@@ -148,35 +145,7 @@
     @"transactionIdentifier" : transaction.transactionIdentifier ?: [NSNull null],
     @"transactionState" : @(transaction.transactionState)
   }];
-  NSMutableArray *downloads = [NSMutableArray new];
-  for (SKDownload *download in transaction.downloads) {
-    [downloads addObject:[FIAObjectTranslator getMapFromSKDownload:download]];
-  }
-  [map setObject:downloads forKey:@"downloads"];
 
-  return map;
-}
-
-+ (NSDictionary *)getMapFromSKDownload:(SKDownload *)download {
-  if (!download) {
-    return nil;
-  }
-  NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
-    @"contentLength" : @(download.contentLength),
-    @"contentIdentifier" : download.contentIdentifier ?: [NSNull null],
-    @"contentURL" : download.contentURL.absoluteString ?: [NSNull null],
-    @"contentVersion" : download.contentVersion ?: [NSNull null],
-    @"error" : [FIAObjectTranslator getMapFromNSError:download.error] ?: @{},
-    @"progress" : @(download.progress),
-    @"timeRemaining" : @(download.timeRemaining),
-    @"downloadTimeUnKnown" : @(download.timeRemaining == SKDownloadTimeRemainingUnknown),
-    @"transactionID" : download.transaction.transactionIdentifier ?: [NSNull null]
-  }];
-  if (@available(iOS 12.0, *)) {
-    [map setObject:@(download.state) forKey:@"state"];
-  } else {
-    [map setObject:@(download.downloadState) forKey:@"state"];
-  }
   return map;
 }
 

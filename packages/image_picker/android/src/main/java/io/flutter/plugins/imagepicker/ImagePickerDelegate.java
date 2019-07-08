@@ -69,9 +69,11 @@ public class ImagePickerDelegate
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
   @VisibleForTesting static final int REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION = 2344;
+  @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
   @VisibleForTesting static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION = 2354;
+  @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
 
   @VisibleForTesting final String fileProviderName;
 
@@ -87,6 +89,8 @@ public class ImagePickerDelegate
     boolean isPermissionGranted(String permissionName);
 
     void askForPermission(String permissionName, int requestCode);
+
+    boolean needRequestCameraPermission();
   }
 
   interface IntentResolver {
@@ -125,6 +129,11 @@ public class ImagePickerDelegate
           @Override
           public void askForPermission(String permissionName, int requestCode) {
             ActivityCompat.requestPermissions(activity, new String[] {permissionName}, requestCode);
+          }
+
+          @Override
+          public boolean needRequestCameraPermission() {
+            return ImagePickerUtils.needRequestCameraPermission(activity);
           }
         },
         new IntentResolver() {
@@ -240,6 +249,13 @@ public class ImagePickerDelegate
       return;
     }
 
+    if (needRequestCameraPermission()
+        && !permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
+      permissionManager.askForPermission(
+          Manifest.permission.CAMERA, REQUEST_CAMERA_VIDEO_PERMISSION);
+      return;
+    }
+
     launchTakeVideoWithCameraIntent();
   }
 
@@ -290,7 +306,21 @@ public class ImagePickerDelegate
       return;
     }
 
+    if (needRequestCameraPermission()
+        && !permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
+      permissionManager.askForPermission(
+          Manifest.permission.CAMERA, REQUEST_CAMERA_IMAGE_PERMISSION);
+      return;
+    }
+
     launchTakeImageWithCameraIntent();
+  }
+
+  private boolean needRequestCameraPermission() {
+    if (permissionManager == null) {
+      return false;
+    }
+    return permissionManager.needRequestCameraPermission();
   }
 
   private void launchTakeImageWithCameraIntent() {
@@ -361,6 +391,16 @@ public class ImagePickerDelegate
       case REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION:
         if (permissionGranted) {
           launchPickVideoFromGalleryIntent();
+        }
+        break;
+      case REQUEST_CAMERA_IMAGE_PERMISSION:
+        if (permissionGranted) {
+          launchTakeImageWithCameraIntent();
+        }
+        break;
+      case REQUEST_CAMERA_VIDEO_PERMISSION:
+        if (permissionGranted) {
+          launchTakeVideoWithCameraIntent();
         }
         break;
       default:

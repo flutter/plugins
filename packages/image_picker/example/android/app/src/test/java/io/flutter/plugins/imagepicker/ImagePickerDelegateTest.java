@@ -129,6 +129,60 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
+  public void takeImageWithCamera_WhenHasNoCameraPermission_RequestsForPermission() {
+    when(mockPermissionManager.isPermissionGranted(Manifest.permission.CAMERA)).thenReturn(false);
+    when(mockPermissionManager.needRequestCameraPermission()).thenReturn(true);
+
+    ImagePickerDelegate delegate = createDelegate();
+    delegate.takeImageWithCamera(mockMethodCall, mockResult);
+
+    verify(mockPermissionManager)
+        .askForPermission(
+            Manifest.permission.CAMERA, ImagePickerDelegate.REQUEST_CAMERA_IMAGE_PERMISSION);
+  }
+
+  @Test
+  public void takeImageWithCamera_WhenCameraPermissionNotPresent_RequestsForPermission() {
+    when(mockPermissionManager.needRequestCameraPermission()).thenReturn(false);
+    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
+
+    ImagePickerDelegate delegate = createDelegate();
+    delegate.takeImageWithCamera(mockMethodCall, mockResult);
+
+    verify(mockActivity)
+        .startActivityForResult(
+            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA));
+  }
+
+  @Test
+  public void
+      takeImageWithCamera_WhenHasCameraPermission_AndAnActivityCanHandleCameraIntent_LaunchesTakeWithCameraIntent() {
+    when(mockPermissionManager.isPermissionGranted(Manifest.permission.CAMERA)).thenReturn(true);
+    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
+
+    ImagePickerDelegate delegate = createDelegate();
+    delegate.takeImageWithCamera(mockMethodCall, mockResult);
+
+    verify(mockActivity)
+        .startActivityForResult(
+            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA));
+  }
+
+  @Test
+  public void
+      takeImageWithCamera_WhenHasCameraPermission_AndNoActivityToHandleCameraIntent_FinishesWithNoCamerasAvailableError() {
+    when(mockPermissionManager.isPermissionGranted(Manifest.permission.CAMERA)).thenReturn(true);
+    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(false);
+
+    ImagePickerDelegate delegate = createDelegate();
+    delegate.takeImageWithCamera(mockMethodCall, mockResult);
+
+    verify(mockResult)
+        .error("no_available_camera", "No cameras available for taking pictures.", null);
+    verifyNoMoreInteractions(mockResult);
+  }
+
+  @Test
   public void
       onRequestPermissionsResult_WhenReadExternalStoragePermissionDenied_FinishesWithNull() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
@@ -170,6 +224,51 @@ public class ImagePickerDelegateTest {
     verify(mockActivity)
         .startActivityForResult(
             any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY));
+  }
+
+  @Test
+  public void onRequestPermissionsResult_WhenCameraPermissionDenied_FinishesWithNull() {
+    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+
+    delegate.onRequestPermissionsResult(
+        ImagePickerDelegate.REQUEST_CAMERA_IMAGE_PERMISSION,
+        new String[] {Manifest.permission.CAMERA},
+        new int[] {PackageManager.PERMISSION_DENIED});
+
+    verify(mockResult).success(null);
+    verifyNoMoreInteractions(mockResult);
+  }
+
+  @Test
+  public void
+      onRequestTakeVideoPermissionsResult_WhenCameraPermissionGranted_LaunchesTakeVideoWithCameraIntent() {
+    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
+
+    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+    delegate.onRequestPermissionsResult(
+        ImagePickerDelegate.REQUEST_CAMERA_VIDEO_PERMISSION,
+        new String[] {Manifest.permission.CAMERA},
+        new int[] {PackageManager.PERMISSION_GRANTED});
+
+    verify(mockActivity)
+        .startActivityForResult(
+            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA));
+  }
+
+  @Test
+  public void
+      onRequestTakeImagePermissionsResult_WhenCameraPermissionGranted_LaunchesTakeWithCameraIntent() {
+    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
+
+    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+    delegate.onRequestPermissionsResult(
+        ImagePickerDelegate.REQUEST_CAMERA_IMAGE_PERMISSION,
+        new String[] {Manifest.permission.CAMERA},
+        new int[] {PackageManager.PERMISSION_GRANTED});
+
+    verify(mockActivity)
+        .startActivityForResult(
+            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA));
   }
 
   @Test

@@ -10,8 +10,9 @@ SKError _$SKErrorFromJson(Map json) {
   return SKError(
       code: json['code'] as int,
       domain: json['domain'] as String,
-      userInfo:
-          (json['userInfo'] as Map)?.map((k, e) => MapEntry(k as String, e)));
+      userInfo: (json['userInfo'] as Map)?.map(
+        (k, e) => MapEntry(k as String, e),
+      ));
 }
 
 Map<String, dynamic> _$SKErrorToJson(SKError instance) => <String, dynamic>{

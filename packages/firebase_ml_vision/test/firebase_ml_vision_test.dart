@@ -31,6 +31,7 @@ void main() {
         }
       });
       log.clear();
+      FirebaseVision.nextHandle = 0;
     });
 
     group('$FirebaseVisionImageMetadata', () {
@@ -65,6 +66,7 @@ void main() {
           isMethodCall(
             'TextRecognizer#processImage',
             arguments: <String, dynamic>{
+              'handle': 0,
               'type': 'bytes',
               'path': null,
               'bytes': Uint8List(0),
@@ -123,6 +125,7 @@ void main() {
           isMethodCall(
             'BarcodeDetector#detectInImage',
             arguments: <String, dynamic>{
+              'handle': 0,
               'type': 'file',
               'path': 'empty',
               'bytes': null,
@@ -136,6 +139,8 @@ void main() {
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.unknown);
+        // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+        // ignore: prefer_const_constructors
         expect(barcode.boundingBox, Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
         expect(barcode.rawValue, 'hello:raw');
         expect(barcode.displayValue, 'hello:display');
@@ -546,6 +551,7 @@ void main() {
           isMethodCall(
             'FaceDetector#processImage',
             arguments: <String, dynamic>{
+              'handle': 0,
               'type': 'file',
               'path': 'empty',
               'bytes': null,
@@ -562,6 +568,8 @@ void main() {
         ]);
 
         final Face face = faces[0];
+        // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+        // ignore: prefer_const_constructors
         expect(face.boundingBox, Rect.fromLTWH(0.0, 1.0, 2.0, 3.0));
         expect(face.headEulerAngleY, 4.0);
         expect(face.headEulerAngleZ, 5.0);
@@ -622,13 +630,13 @@ void main() {
     });
 
     group('$TextRecognizer', () {
-      final TextRecognizer recognizer =
-          FirebaseVision.instance.textRecognizer();
+      TextRecognizer recognizer;
       final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
         'empty',
       );
 
       setUp(() {
+        recognizer = FirebaseVision.instance.textRecognizer();
         final List<dynamic> elements = <dynamic>[
           <dynamic, dynamic>{
             'text': 'hello',
@@ -756,6 +764,8 @@ void main() {
           expect(text.blocks, hasLength(2));
 
           TextBlock block = text.blocks[0];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
           expect(block.boundingBox, Rect.fromLTWH(13.0, 14.0, 15.0, 16.0));
           expect(block.text, 'friend');
           expect(block.cornerPoints, const <Offset>[
@@ -768,6 +778,9 @@ void main() {
           expect(block.confidence, 0.5);
 
           block = text.blocks[1];
+          // ignore: prefer_const_constructors
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
           expect(block.boundingBox, Rect.fromLTWH(14.0, 13.0, 16.0, 15.0));
           expect(block.text, 'hello');
           expect(block.cornerPoints, const <Offset>[
@@ -783,6 +796,8 @@ void main() {
           final VisionText text = await recognizer.processImage(image);
 
           TextLine line = text.blocks[0].lines[0];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
           expect(line.boundingBox, Rect.fromLTWH(5, 6, 7, 8));
           expect(line.text, 'friend');
           expect(line.cornerPoints, const <Offset>[
@@ -795,6 +810,8 @@ void main() {
           expect(line.confidence, 0.3);
 
           line = text.blocks[0].lines[1];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
           expect(line.boundingBox, Rect.fromLTWH(8.0, 7.0, 4.0, 5.0));
           expect(line.text, 'how');
           expect(line.cornerPoints, const <Offset>[
@@ -810,6 +827,7 @@ void main() {
           final VisionText text = await recognizer.processImage(image);
 
           TextElement element = text.blocks[0].lines[0].elements[0];
+          // ignore: prefer_const_constructors
           expect(element.boundingBox, Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
           expect(element.text, 'hello');
           expect(element.cornerPoints, const <Offset>[
@@ -822,6 +840,8 @@ void main() {
           expect(element.confidence, 0.1);
 
           element = text.blocks[0].lines[0].elements[1];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
           expect(element.boundingBox, Rect.fromLTWH(4.0, 3.0, 2.0, 1.0));
           expect(element.text, 'my');
           expect(element.cornerPoints, const <Offset>[
@@ -840,6 +860,7 @@ void main() {
           isMethodCall(
             'TextRecognizer#processImage',
             arguments: <String, dynamic>{
+              'handle': 0,
               'type': 'file',
               'path': 'empty',
               'bytes': null,

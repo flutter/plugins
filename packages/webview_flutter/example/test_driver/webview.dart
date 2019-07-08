@@ -55,9 +55,12 @@ void main() {
     expect(currentUrl, 'https://www.google.com/');
   });
 
+  // enable this once https://github.com/flutter/flutter/issues/31510
+  // is resolved.
   test('loadUrl with headers', () async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
+    final StreamController<String> pageLoads = StreamController<String>();
     await pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -68,6 +71,9 @@ void main() {
             controllerCompleter.complete(controller);
           },
           javascriptMode: JavascriptMode.unrestricted,
+          onPageFinished: (String url) {
+            pageLoads.add(url);
+          },
         ),
       ),
     );
@@ -80,12 +86,51 @@ void main() {
     final String currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
 
-    // wait for the web page to load.
-    await Future<dynamic>.delayed(const Duration(seconds: 5));
-
+    await pageLoads.stream.firstWhere((String url) => url == currentUrl);
     final String content = await controller
         .evaluateJavascript('document.documentElement.innerText');
     expect(content.contains('flutter_test_header'), isTrue);
+  });
+
+  test('JavaScriptChannel', () async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    final Completer<void> pageLoaded = Completer<void>();
+    final List<String> messagesReceived = <String>[];
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          // This is the data URL for: '<!DOCTYPE html>'
+          initialUrl:
+              'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          javascriptMode: JavascriptMode.unrestricted,
+          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+          // ignore: prefer_collection_literals
+          javascriptChannels: <JavascriptChannel>[
+            JavascriptChannel(
+              name: 'Echo',
+              onMessageReceived: (JavascriptMessage message) {
+                messagesReceived.add(message.message);
+              },
+            ),
+          ].toSet(),
+          onPageFinished: (String url) {
+            pageLoaded.complete(null);
+          },
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    await pageLoaded.future;
+
+    expect(messagesReceived, isEmpty);
+    await controller.evaluateJavascript('Echo.postMessage("hello");');
+    expect(messagesReceived, equals(<String>['hello']));
   });
 }
 

@@ -106,14 +106,9 @@ SKProductWrapper _$SKProductWrapperFromJson(Map json) {
       priceLocale: json['priceLocale'] == null
           ? null
           : SKPriceLocaleWrapper.fromJson(json['priceLocale'] as Map),
-      downloadContentVersion: json['downloadContentVersion'] as String,
       subscriptionGroupIdentifier:
           json['subscriptionGroupIdentifier'] as String,
       price: json['price'] as String,
-      downloadable: json['downloadable'] as bool,
-      downloadContentLengths: (json['downloadContentLengths'] as List)
-          ?.map((e) => e as int)
-          ?.toList(),
       subscriptionPeriod: json['subscriptionPeriod'] == null
           ? null
           : SKProductSubscriptionPeriodWrapper.fromJson(
@@ -130,11 +125,8 @@ Map<String, dynamic> _$SKProductWrapperToJson(SKProductWrapper instance) =>
       'localizedTitle': instance.localizedTitle,
       'localizedDescription': instance.localizedDescription,
       'priceLocale': instance.priceLocale,
-      'downloadContentVersion': instance.downloadContentVersion,
       'subscriptionGroupIdentifier': instance.subscriptionGroupIdentifier,
       'price': instance.price,
-      'downloadable': instance.downloadable,
-      'downloadContentLengths': instance.downloadContentLengths,
       'subscriptionPeriod': instance.subscriptionPeriod,
       'introductoryPrice': instance.introductoryPrice
     };
