@@ -19,11 +19,11 @@ void main() {
     });
 
     test('subscribeToTopic', () async {
-      firebaseMessaging.subscribeToTopic('foo');
+      await firebaseMessaging.subscribeToTopic('foo');
     });
 
     test('unsubscribeFromTopic', () async {
-      firebaseMessaging.unsubscribeFromTopic('foo');
+      await firebaseMessaging.unsubscribeFromTopic('foo');
     });
 
     test('deleteInstanceID', () async {
