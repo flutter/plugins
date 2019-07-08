@@ -1,3 +1,7 @@
+## 0.2.0+1
+
+* Corrected a typo in the README.
+
 ## 0.2.0
 
 * [Breaking Change] Rename 'PurchaseError' to 'IAPError'.
