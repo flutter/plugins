@@ -3,6 +3,8 @@
 * Updated transactions implementation on Android for compatibility with
   newer versions of Flutter engine that require channel calls be made
   on the UI thread.
+* Updated unit test to use `defaultBinaryMessenger` instead of
+  `BinaryMessages.handlePlatformMessage`.
 
 ## 3.0.0
 

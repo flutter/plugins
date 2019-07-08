@@ -38,7 +38,7 @@ void main() {
             Map<String, dynamic> updatedValue;
             Future<void> simulateEvent(
                 int transactionKey, final MutableData mutableData) async {
-              await BinaryMessages.handlePlatformMessage(
+              await defaultBinaryMessenger.handlePlatformMessage(
                 channel.name,
                 channel.codec.encodeMethodCall(
                   MethodCall(
@@ -455,7 +455,7 @@ void main() {
         const String errorDetails = 'Some details';
         final Query query = database.reference().child('some path');
         Future<void> simulateError(String errorMessage) async {
-          await BinaryMessages.handlePlatformMessage(
+          await defaultBinaryMessenger.handlePlatformMessage(
             channel.name,
             channel.codec.encodeMethodCall(
               MethodCall('Error', <String, dynamic>{
@@ -496,7 +496,7 @@ void main() {
         final String path = 'foo';
         final Query query = database.reference().child(path);
         Future<void> simulateEvent(String value) async {
-          await BinaryMessages.handlePlatformMessage(
+          await defaultBinaryMessenger.handlePlatformMessage(
             channel.name,
             channel.codec.encodeMethodCall(
               MethodCall('Event', <String, dynamic>{
