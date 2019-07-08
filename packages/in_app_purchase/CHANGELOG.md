@@ -1,3 +1,7 @@
+## 0.2.0+3
+
+* Update the `README.md` so that the code samples compile with the latest Flutter/Dart version.
+
 ## 0.2.0+2
 
 * Fix a google_play_connection purchase update listener regression introduced in 0.2.0+1.
