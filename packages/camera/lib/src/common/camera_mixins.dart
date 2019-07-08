@@ -9,6 +9,9 @@ mixin NativeMethodCallHandler {
 }
 
 mixin CameraMappable {
+  /// Creates a description of the object compatible with [PlatformChannel]s.
+  ///
+  /// Only used as an internal method and for debugging.
   Map<String, dynamic> asMap();
 }
 

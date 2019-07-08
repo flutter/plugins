@@ -8,6 +8,10 @@ import '../support_android_camera.dart';
 import 'camera_controller.dart';
 import 'common/camera_interface.dart';
 
+/// Uses a [CameraController] to create and orient a camera preview widget.
+///
+/// This will automatically rotate the camera to match the rotation of the
+/// device.
 class CameraPreview extends StatefulWidget {
   CameraPreview(this.controller) : assert(controller != null);
 

@@ -9,6 +9,12 @@ import 'package:flutter/foundation.dart';
 import 'camera_channel.dart';
 import 'camera_mixins.dart';
 
+/// Used to allocate a buffer for displaying a preview camera texture.
+///
+/// See [CameraConfigurator.addPreviewTexture] or
+/// [SupportAndroidCamera.previewTexture].
+///
+/// The [textureId] can be passed to a [Texture] widget.
 class NativeTexture with CameraClosable, CameraMappable {
   NativeTexture._({@required int handle, @required this.textureId})
       : _handle = handle,
@@ -16,6 +22,8 @@ class NativeTexture with CameraClosable, CameraMappable {
         assert(textureId != null);
 
   final int _handle;
+
+  /// Id that can be passed to a [Texture] widget.
   final int textureId;
 
   static Future<NativeTexture> allocate() async {
@@ -29,6 +37,7 @@ class NativeTexture with CameraClosable, CameraMappable {
     return NativeTexture._(handle: handle, textureId: textureId);
   }
 
+  /// Deallocate this texture.
   Future<void> release() {
     if (isClosed) return Future<void>.value();
 

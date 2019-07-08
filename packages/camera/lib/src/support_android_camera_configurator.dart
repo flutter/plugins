@@ -9,6 +9,7 @@ import 'common/camera_interface.dart';
 import 'common/camera_mixins.dart';
 import 'common/native_texture.dart';
 
+/// Default configurator for the [CameraAPI.supportAndroid].
 class SupportAndroidCameraConfigurator
     with CameraClosable
     implements CameraConfigurator {
