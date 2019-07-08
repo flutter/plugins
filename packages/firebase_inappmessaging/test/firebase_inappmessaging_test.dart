@@ -8,7 +8,8 @@ void main() {
 
     setUp(() {
       log.clear();
-      FirebaseInAppMessaging.channel.setMockMethodCallHandler((MethodCall methodcall) async {
+      FirebaseInAppMessaging.channel.setMockMethodCallHandler((
+          MethodCall methodcall) async {
         log.add(methodcall);
         return true;
       });
@@ -18,9 +19,10 @@ void main() {
       final FirebaseInAppMessaging fiam = new FirebaseInAppMessaging();
       fiam.triggerEvent('someEvent');
       expect(log,
-      <Matcher>[
-        isMethodCall('triggerEvent', arguments: { "eventName": "someEvent" }),
-      ]);
+          <Matcher>[
+            isMethodCall(
+                'triggerEvent', arguments: { "eventName": "someEvent"}),
+          ]);
     });
 
     test('setMessagesSuppressed', () async {
@@ -28,14 +30,14 @@ void main() {
       fiam.setMessagesSuppressed(true);
       expect(log,
           <Matcher>[
-            isMethodCall('setMessagesSuppressed', arguments: { true: true }),
+            isMethodCall('setMessagesSuppressed', arguments: { true: true}),
           ]);
 
       fiam.setMessagesSuppressed(false);
       expect(log,
           <Matcher>[
-            isMethodCall('setMessagesSuppressed', arguments: { true: true }),
-            isMethodCall('setMessagesSuppressed', arguments: { false: false }),
+            isMethodCall('setMessagesSuppressed', arguments: { true: true}),
+            isMethodCall('setMessagesSuppressed', arguments: { false: false}),
           ]);
     });
 
@@ -44,16 +46,15 @@ void main() {
       fiam.setDataCollectionEnabled(true);
       expect(log,
           <Matcher>[
-            isMethodCall('dataCollectionEnabled', arguments: { true: true }),
+            isMethodCall('dataCollectionEnabled', arguments: { true: true}),
           ]);
 
       fiam.setDataCollectionEnabled(false);
       expect(log,
           <Matcher>[
-            isMethodCall('dataCollectionEnabled', arguments: { true: true }),
-            isMethodCall('dataCollectionEnabled', arguments: { false: false }),
+            isMethodCall('dataCollectionEnabled', arguments: { true: true}),
+            isMethodCall('dataCollectionEnabled', arguments: { false: false}),
           ]);
     });
-
   });
 }
