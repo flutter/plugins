@@ -95,13 +95,14 @@ void main() {
 
 ## Result
 
-If an error is catched correctly, you should see this log:
+If an error is caught, you should see the following messages in your logs:
 ```
 flutter: Error caught by Crashlytics plugin:
+...
 flutter: Error reported to Crashlytics.
 ```
 
-*Note:* It will takes a while (up to 24h) before you will be able to see your logs in your firebase console.
+*Note:* It may take awhile (up to 24 hours) before you will be able to see the logs appear in your Firebase console.
 
 ## Example
 
