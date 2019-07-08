@@ -528,7 +528,6 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                   new Runnable() {
                     @Override
                     public void run() {
-                      Log.d(TAG, "sending set success");
                       result.success(null);
                     }
                   });
