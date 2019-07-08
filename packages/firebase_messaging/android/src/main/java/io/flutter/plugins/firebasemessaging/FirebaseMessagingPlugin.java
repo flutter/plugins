@@ -121,9 +121,9 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
       String topic = call.arguments();
       FirebaseMessaging.getInstance().subscribeToTopic(topic)
         .addOnCompleteListener(
-          new OnCompleteListener<InstanceIdResult>() {
+          new OnCompleteListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+            public void onComplete(@NonNull Task<Void> task) {
               if (!task.isSuccessful()) {
                 Exception e = task.getException();
                 Log.w(TAG, "subscribeToTopic error", e);
@@ -132,14 +132,15 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
               }
               result.success(null);
             }
+          }
         );
     } else if ("unsubscribeFromTopic".equals(call.method)) {
       String topic = call.arguments();
       FirebaseMessaging.getInstance().unsubscribeFromTopic(topic)
         .addOnCompleteListener(
-          new OnCompleteListener<InstanceIdResult>() {
+          new OnCompleteListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+            public void onComplete(@NonNull Task<Void> task) {
               if (!task.isSuccessful()) {
                 Exception e = task.getException();
                 Log.w(TAG, "unsubscribeFromTopic error", e);
@@ -148,6 +149,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
               }
               result.success(null);
             }
+          }
         );
     } else if ("getToken".equals(call.method)) {
       FirebaseInstanceId.getInstance()
