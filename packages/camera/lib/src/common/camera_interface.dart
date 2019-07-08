@@ -6,13 +6,13 @@ import 'dart:async';
 
 /// Available APIs compatible with [CameraController].
 enum CameraApi {
-  /// (Camera2)[https://developer.android.com/reference/android/hardware/camera2/package-summary]
+  /// [Camera2](https://developer.android.com/reference/android/hardware/camera2/package-summary)
   android,
 
-  /// (AVFoundation)[https://developer.apple.com/av-foundation/]
+  /// [AVFoundation](https://developer.apple.com/av-foundation/)
   iOS,
 
-  /// (Camera)[https://developer.android.com/reference/android/hardware/Camera]
+  /// [Camera](https://developer.android.com/reference/android/hardware/Camera)
   supportAndroid,
 }
 
