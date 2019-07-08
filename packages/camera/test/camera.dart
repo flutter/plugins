@@ -33,16 +33,18 @@ void main() {
       CameraTesting.nextHandle = 0;
     });
 
-    test('createPlatformTexture', () async {
-      final NativeTexture texture = await NativeTexture.allocate();
+    group('$NativeTexture', () {
+      test('allocate', () async {
+        final NativeTexture texture = await NativeTexture.allocate();
 
-      expect(texture.textureId, 15);
-      expect(log, <Matcher>[
-        isMethodCall(
-          '$NativeTexture#allocate',
-          arguments: <String, dynamic>{'textureHandle': 0},
-        )
-      ]);
+        expect(texture.textureId, 15);
+        expect(log, <Matcher>[
+          isMethodCall(
+            '$NativeTexture#allocate',
+            arguments: <String, dynamic>{'textureHandle': 0},
+          )
+        ]);
+      });
     });
   });
 }
