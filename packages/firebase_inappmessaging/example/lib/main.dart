@@ -11,6 +11,7 @@ class MyApp extends StatelessWidget {
   static FirebaseAnalytics analytics = FirebaseAnalytics();
   static FirebaseAnalyticsObserver observer =
       FirebaseAnalyticsObserver(analytics: analytics);
+  static FirebaseInAppMessaging fiam = FirebaseInAppMessaging();
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               AnalyticsEventExample(),
-              ProgrammaticTriggersExample(),
+              ProgrammaticTriggersExample(fiam),
             ],
           ),
         );
@@ -35,6 +36,10 @@ class MyApp extends StatelessWidget {
 }
 
 class ProgrammaticTriggersExample extends StatelessWidget {
+  const ProgrammaticTriggersExample(this.fiam);
+
+  final FirebaseInAppMessaging fiam;
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -54,7 +59,7 @@ class ProgrammaticTriggersExample extends StatelessWidget {
             const SizedBox(height: 8),
             RaisedButton(
               onPressed: () async {
-                await FirebaseInAppMessaging.triggerEvent('chicken_event');
+                await fiam.triggerEvent('chicken_event');
                 Scaffold.of(context).showSnackBar(SnackBar(
                     content: const Text("Triggering event: chicken_event")));
               },
