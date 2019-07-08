@@ -42,13 +42,28 @@ void main() {
       );
       crashlytics.enableInDevMode = true;
       crashlytics.log('foo');
+      crashlytics.setBool('testBool', true);
+      crashlytics.setInt('testInt', 42);
+      crashlytics.setDouble('testDouble', 42.0);
+      crashlytics.setString('testString', 'bar');
       await crashlytics.onError(details);
       expect(log[0].method, 'Crashlytics#onError');
       expect(log[0].arguments['exception'], 'foo exception');
       expect(log[0].arguments['context'], 'foo context');
       expect(log[0].arguments['logs'], isNotEmpty);
       expect(log[0].arguments['logs'], contains('foo'));
-      expect(log[0].arguments['keys'], isEmpty);
+      expect(log[0].arguments['keys'][0]['key'], 'testBool');
+      expect(log[0].arguments['keys'][0]['value'], isTrue);
+      expect(log[0].arguments['keys'][0]['type'], 'boolean');
+      expect(log[0].arguments['keys'][1]['key'], 'testInt');
+      expect(log[0].arguments['keys'][1]['value'], 42);
+      expect(log[0].arguments['keys'][1]['type'], 'int');
+      expect(log[0].arguments['keys'][2]['key'], 'testDouble');
+      expect(log[0].arguments['keys'][2]['value'], 42.0);
+      expect(log[0].arguments['keys'][2]['type'], 'double');
+      expect(log[0].arguments['keys'][3]['key'], 'testString');
+      expect(log[0].arguments['keys'][3]['value'], 'bar');
+      expect(log[0].arguments['keys'][3]['type'], 'string');
     });
 
     test('isDebuggable', () async {

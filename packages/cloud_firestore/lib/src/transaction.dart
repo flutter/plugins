@@ -12,8 +12,17 @@ class Transaction {
 
   int _transactionId;
   Firestore _firestore;
+  List<Future<dynamic>> _pendingResults = <Future<dynamic>>[];
+  Future<void> _finish() => Future.wait<void>(_pendingResults);
 
-  Future<DocumentSnapshot> get(DocumentReference documentReference) async {
+  /// Reads the document referenced by the provided DocumentReference.
+  Future<DocumentSnapshot> get(DocumentReference documentReference) {
+    final Future<DocumentSnapshot> result = _get(documentReference);
+    _pendingResults.add(result);
+    return result;
+  }
+
+  Future<DocumentSnapshot> _get(DocumentReference documentReference) async {
     final Map<String, dynamic> result = await Firestore.channel
         .invokeMapMethod<String, dynamic>('Transaction#get', <String, dynamic>{
       'app': _firestore.app.name,
@@ -32,7 +41,17 @@ class Transaction {
     }
   }
 
-  Future<void> delete(DocumentReference documentReference) async {
+  /// Deletes the document referred to by the provided [documentReference].
+  ///
+  /// Awaiting the returned [Future] is optional and will be done automatically
+  /// when the transaction handler completes.
+  Future<void> delete(DocumentReference documentReference) {
+    final Future<void> result = _delete(documentReference);
+    _pendingResults.add(result);
+    return result;
+  }
+
+  Future<void> _delete(DocumentReference documentReference) async {
     return Firestore.channel
         .invokeMethod<void>('Transaction#delete', <String, dynamic>{
       'app': _firestore.app.name,
@@ -41,7 +60,19 @@ class Transaction {
     });
   }
 
+  /// Updates fields in the document referred to by [documentReference].
+  /// The update will fail if applied to a document that does not exist.
+  ///
+  /// Awaiting the returned [Future] is optional and will be done automatically
+  /// when the transaction handler completes.
   Future<void> update(
+      DocumentReference documentReference, Map<String, dynamic> data) async {
+    final Future<void> result = _update(documentReference, data);
+    _pendingResults.add(result);
+    return result;
+  }
+
+  Future<void> _update(
       DocumentReference documentReference, Map<String, dynamic> data) async {
     return Firestore.channel
         .invokeMethod<void>('Transaction#update', <String, dynamic>{
@@ -52,7 +83,20 @@ class Transaction {
     });
   }
 
+  /// Writes to the document referred to by the provided [DocumentReference].
+  /// If the document does not exist yet, it will be created. If you pass
+  /// SetOptions, the provided data can be merged into the existing document.
+  ///
+  /// Awaiting the returned [Future] is optional and will be done automatically
+  /// when the transaction handler completes.
   Future<void> set(
+      DocumentReference documentReference, Map<String, dynamic> data) {
+    final Future<void> result = _set(documentReference, data);
+    _pendingResults.add(result);
+    return result;
+  }
+
+  Future<void> _set(
       DocumentReference documentReference, Map<String, dynamic> data) async {
     return Firestore.channel
         .invokeMethod<void>('Transaction#set', <String, dynamic>{
