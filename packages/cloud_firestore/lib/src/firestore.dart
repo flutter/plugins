@@ -26,7 +26,8 @@ class Firestore {
       } else if (call.method == 'DoTransaction') {
         final int transactionId = call.arguments['transactionId'];
         final Transaction transaction = Transaction(transactionId, this);
-        final dynamic result = await _transactionHandlers[transactionId](transaction);
+        final dynamic result =
+            await _transactionHandlers[transactionId](transaction);
         await transaction._finish();
         return result;
       }

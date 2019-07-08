@@ -117,11 +117,12 @@ void main() {
           final Map<String, dynamic> updatedData =
               Map<String, dynamic>.from(snapshot.data);
           updatedData['message'] = 'testing2';
-          tx.update(ref, updatedData);  // calling await here is optional
+          tx.update(ref, updatedData); // calling await here is optional
           return updatedData;
         },
       );
       expect(result['message'], 'testing2');
+
       await ref.delete();
       final DocumentSnapshot nonexistentSnapshot = await ref.get();
       expect(nonexistentSnapshot.data, null);
