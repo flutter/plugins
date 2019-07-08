@@ -22,13 +22,9 @@ dev_dependencies:
   mockito: ^3.0.0
   flutter_test:
     sdk: flutter
-<<<<<<< HEAD
-  firebase_core: ^0.3.0
+  firebase_core: ^0.4.0
   flutter_driver:
     sdk: flutter
-=======
-  firebase_core: ^0.4.0
->>>>>>> origin/master
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
