@@ -4,10 +4,9 @@ import 'package:meta/meta.dart';
 import 'package:flutter/services.dart';
 
 class FirebaseInAppMessaging {
-
   @visibleForTesting
   static const MethodChannel channel =
-    const MethodChannel('plugins.flutter.io/firebase_inappmessaging');
+      const MethodChannel('plugins.flutter.io/firebase_inappmessaging');
 
   static FirebaseInAppMessaging _instance = FirebaseInAppMessaging();
 
@@ -26,6 +25,7 @@ class FirebaseInAppMessaging {
 
   /// Disable data collection for the app.
   Future<void> setDataCollectionEnabled(bool dataCollectionEnabled) async {
-    await channel.invokeMethod('dataCollectionEnabled', {dataCollectionEnabled: dataCollectionEnabled});
+    await channel.invokeMethod('dataCollectionEnabled',
+        {dataCollectionEnabled: dataCollectionEnabled});
   }
 }

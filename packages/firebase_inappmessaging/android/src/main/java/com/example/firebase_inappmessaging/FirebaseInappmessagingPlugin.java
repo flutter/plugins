@@ -13,8 +13,8 @@ public class FirebaseInappmessagingPlugin implements MethodCallHandler {
 
   public static void registerWith(Registrar registrar) {
 
-    final MethodChannel channel = new MethodChannel(registrar.messenger(),
-          "plugins.flutter.io/firebase_inappmessaging");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_inappmessaging");
     channel.setMethodCallHandler(new FirebaseInappmessagingPlugin());
   }
 
@@ -25,28 +25,32 @@ public class FirebaseInappmessagingPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
-      case "triggerEvent": {
-        String eventName = call.argument("eventName");
-        instance.triggerEvent(eventName);
-        result.success(null);
-        break;
-      }
-      case "setMessagesSuppressed": {
-        boolean suppress = call.argument("suppress");
-        instance.setMessagesSuppressed(suppress);
-        result.success(null);
-        break;
-      }
-      case "dataCollectionEnabled": {
-        boolean dataCollectionEnabled = call.argument("dataCollectionEnabled");
-        instance.setAutomaticDataCollectionEnabled(dataCollectionEnabled);
-        result.success(null);
-        break;
-      }
-      default: {
-        result.notImplemented();
-        break;
-      }
+      case "triggerEvent":
+        {
+          String eventName = call.argument("eventName");
+          instance.triggerEvent(eventName);
+          result.success(null);
+          break;
+        }
+      case "setMessagesSuppressed":
+        {
+          boolean suppress = call.argument("suppress");
+          instance.setMessagesSuppressed(suppress);
+          result.success(null);
+          break;
+        }
+      case "dataCollectionEnabled":
+        {
+          boolean dataCollectionEnabled = call.argument("dataCollectionEnabled");
+          instance.setAutomaticDataCollectionEnabled(dataCollectionEnabled);
+          result.success(null);
+          break;
+        }
+      default:
+        {
+          result.notImplemented();
+          break;
+        }
     }
   }
 }
