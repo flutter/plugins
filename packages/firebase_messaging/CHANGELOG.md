@@ -31,7 +31,6 @@
 ## 4.0.0+4
 
 * Remove obsolete `use_frameworks!` instruction.
->>>>>>> origin/master
 
 ## 4.0.0+3
 
