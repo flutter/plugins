@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../support_android_camera.dart';
-import 'common/camera_abstraction.dart';
+import 'common/camera_interface.dart';
 import 'support_android_camera_configurator.dart';
 
 class CameraController {

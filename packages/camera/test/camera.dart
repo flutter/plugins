@@ -8,7 +8,7 @@ import 'package:camera/src/camera_testing.dart';
 import 'package:camera/src/common/native_texture.dart';
 
 void main() {
-  group('SuperCamera', () {
+  group('Camera', () {
     final List<MethodCall> log = <MethodCall>[];
 
     setUpAll(() {

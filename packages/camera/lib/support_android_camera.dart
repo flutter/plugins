@@ -8,7 +8,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
-import 'src/common/camera_abstraction.dart';
+import 'src/common/camera_interface.dart';
 import 'src/common/camera_channel.dart';
 import 'src/common/camera_mixins.dart';
 import 'src/common/native_texture.dart';

@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import '../support_android_camera.dart';
-import 'common/camera_abstraction.dart';
+import 'common/camera_interface.dart';
 import 'common/camera_mixins.dart';
 import 'common/native_texture.dart';
 
