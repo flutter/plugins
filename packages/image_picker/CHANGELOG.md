@@ -1,3 +1,7 @@
+## 0.6.0+12
+
+* Use class instead of struct for `GIFInfo` in iOS implementation.
+
 ## 0.6.0+11
 
 * Don't use module imports.

@@ -1,6 +1,10 @@
-## 5.0.5
+## 5.0.6
 
 * Additional integration tests.
+
+## 5.0.5
+
+* On Android, fix crash when calling `deleteInstanceID` with latest Flutter engine.
 
 ## 5.0.4
 

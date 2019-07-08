@@ -398,7 +398,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                                         String errorMessage,
                                         Object errorDetails) {
                                       transactionTCS.trySetException(
-                                          new Exception("Do transaction failed."));
+                                          new Exception("DoTransaction failed: " + errorMessage));
                                     }
 
                                     @Override
@@ -528,7 +528,6 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                   new Runnable() {
                     @Override
                     public void run() {
-                      Log.d(TAG, "sending set success");
                       result.success(null);
                     }
                   });
