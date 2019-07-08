@@ -52,7 +52,6 @@ class Crashlytics {
         'logs': _logs.toList(),
         'keys': _prepareKeys(),
       });
-      print(result);
     }
   }
 
