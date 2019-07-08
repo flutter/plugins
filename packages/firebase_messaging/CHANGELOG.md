@@ -1,6 +1,6 @@
 ## 5.0.5
 
-* Fix app will be crashed when call deleteInstanceID.
+* On Android, fix crash when calling `deleteInstanceID` with latest Flutter engine.
 
 ## 5.0.4
 
