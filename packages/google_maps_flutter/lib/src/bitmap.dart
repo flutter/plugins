@@ -35,13 +35,10 @@ class BitmapDescriptor {
 
   /// Creates a BitmapDescriptor using the name of a bitmap image in the assets
   /// directory.
-<<<<<<< .merge_file_epdpxb
   ///
   /// Use [fromAssetImage]. This method does not respect the screen dpi when
   /// picking an asset image.
   @Deprecated("Use fromAssetImage instead")
-=======
->>>>>>> .merge_file_lQpCNF
   static BitmapDescriptor fromAsset(String assetName, {String package}) {
     if (package == null) {
       return BitmapDescriptor._(<dynamic>['fromAsset', assetName]);
@@ -50,7 +47,6 @@ class BitmapDescriptor {
     }
   }
 
-<<<<<<< .merge_file_epdpxb
   /// Creates a [BitmapDescriptor] from an asset image.
   ///
   /// Asset images in flutter are stored per:
@@ -87,8 +83,6 @@ class BitmapDescriptor {
     return BitmapDescriptor._(<dynamic>['fromBytes', byteData]);
   }
 
-=======
->>>>>>> .merge_file_lQpCNF
   final dynamic _json;
 
   dynamic _toJson() => _json;

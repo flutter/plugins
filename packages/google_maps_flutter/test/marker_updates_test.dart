@@ -172,7 +172,6 @@ void main() {
     expect(platformGoogleMap.markersToAdd.first, equals(m1));
     expect(platformGoogleMap.markerIdsToRemove.first, equals(m3.markerId));
   });
-<<<<<<< .merge_file_KMfKL5
 
   testWidgets(
     "Partial Update",
@@ -199,6 +198,4 @@ void main() {
     // TODO(amirh): enable this test when the issue is fixed.
     skip: true,
   );
-=======
->>>>>>> .merge_file_IGaSWF
 }

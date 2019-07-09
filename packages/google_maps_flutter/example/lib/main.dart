@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'animate_camera.dart';
-<<<<<<< .merge_file_qLOzFK
 import 'map_click.dart';
 import 'map_coordinates.dart';
 import 'map_ui.dart';
@@ -16,17 +15,10 @@ import 'place_circle.dart';
 import 'place_marker.dart';
 import 'place_polygon.dart';
 import 'place_polyline.dart';
-=======
-import 'map_ui.dart';
-import 'move_camera.dart';
-import 'page.dart';
-import 'place_marker.dart';
->>>>>>> .merge_file_Qkoi7x
 import 'scrolling_map.dart';
 
 final List<Page> _allPages = <Page>[
   MapUiPage(),
-<<<<<<< .merge_file_qLOzFK
   MapCoordinatesPage(),
   MapClickPage(),
   AnimateCameraPage(),
@@ -38,12 +30,6 @@ final List<Page> _allPages = <Page>[
   PlacePolygonPage(),
   PlaceCirclePage(),
   PaddingPage(),
-=======
-  AnimateCameraPage(),
-  MoveCameraPage(),
-  PlaceMarkerPage(),
-  ScrollingMapPage(),
->>>>>>> .merge_file_Qkoi7x
 ];
 
 class MapsDemo extends StatelessWidget {
@@ -62,17 +48,10 @@ class MapsDemo extends StatelessWidget {
       body: ListView.builder(
         itemCount: _allPages.length,
         itemBuilder: (_, int index) => ListTile(
-<<<<<<< .merge_file_qLOzFK
           leading: _allPages[index].leading,
           title: Text(_allPages[index].title),
           onTap: () => _pushPage(context, _allPages[index]),
         ),
-=======
-              leading: _allPages[index].leading,
-              title: Text(_allPages[index].title),
-              onTap: () => _pushPage(context, _allPages[index]),
-            ),
->>>>>>> .merge_file_Qkoi7x
       ),
     );
   }

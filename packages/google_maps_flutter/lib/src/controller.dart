@@ -7,20 +7,11 @@ part of google_maps_flutter;
 /// Controller for a single GoogleMap instance running on the host platform.
 class GoogleMapController {
   GoogleMapController._(
-<<<<<<< .merge_file_lUrGED
     this.channel,
     CameraPosition initialCameraPosition,
     this._googleMapState,
   ) : assert(channel != null) {
     channel.setMethodCallHandler(_handleMethodCall);
-=======
-    MethodChannel channel,
-    CameraPosition initialCameraPosition,
-    this._googleMapState,
-  )   : assert(channel != null),
-        _channel = channel {
-    _channel.setMethodCallHandler(_handleMethodCall);
->>>>>>> .merge_file_mz0XLq
   }
 
   static Future<GoogleMapController> init(
@@ -31,14 +22,7 @@ class GoogleMapController {
     assert(id != null);
     final MethodChannel channel =
         MethodChannel('plugins.flutter.io/google_maps_$id');
-<<<<<<< .merge_file_lUrGED
     await channel.invokeMethod<void>('map#waitForMap');
-=======
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod('map#waitForMap');
->>>>>>> .merge_file_mz0XLq
     return GoogleMapController._(
       channel,
       initialCameraPosition,
@@ -46,12 +30,8 @@ class GoogleMapController {
     );
   }
 
-<<<<<<< .merge_file_lUrGED
   @visibleForTesting
   final MethodChannel channel;
-=======
-  final MethodChannel _channel;
->>>>>>> .merge_file_mz0XLq
 
   final _GoogleMapState _googleMapState;
 
@@ -82,7 +62,6 @@ class GoogleMapController {
       case 'infoWindow#onTap':
         _googleMapState.onInfoWindowTap(call.arguments['markerId']);
         break;
-<<<<<<< .merge_file_lUrGED
       case 'polyline#onTap':
         _googleMapState.onPolylineTap(call.arguments['polylineId']);
         break;
@@ -99,8 +78,6 @@ class GoogleMapController {
         _googleMapState
             .onLongPress(LatLng._fromJson(call.arguments['position']));
         break;
-=======
->>>>>>> .merge_file_mz0XLq
       default:
         throw MissingPluginException();
     }
@@ -114,14 +91,7 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) async {
     assert(optionsUpdate != null);
-<<<<<<< .merge_file_lUrGED
     await channel.invokeMethod<void>(
-=======
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod(
->>>>>>> .merge_file_mz0XLq
       'map#update',
       <String, dynamic>{
         'options': optionsUpdate,
@@ -137,20 +107,12 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMarkers(_MarkerUpdates markerUpdates) async {
     assert(markerUpdates != null);
-<<<<<<< .merge_file_lUrGED
     await channel.invokeMethod<void>(
-=======
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod(
->>>>>>> .merge_file_mz0XLq
       'markers#update',
       markerUpdates._toMap(),
     );
   }
 
-<<<<<<< .merge_file_lUrGED
   /// Updates polygon configuration.
   ///
   /// Change listeners are notified once the update has been made on the
@@ -180,27 +142,30 @@ class GoogleMapController {
   }
 
   /// Updates circle configuration.
-=======
-  /// Updates route configuration.
->>>>>>> .merge_file_mz0XLq
   ///
   /// Change listeners are notified once the update has been made on the
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-<<<<<<< .merge_file_lUrGED
   Future<void> _updateCircles(_CircleUpdates circleUpdates) async {
     assert(circleUpdates != null);
     await channel.invokeMethod<void>(
       'circles#update',
       circleUpdates._toMap(),
-=======
+    );
+  }
+
+  /// Updates route configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMarkerRoutes(_MarkerRouteUpdates routeUpdates) async {
     assert(routeUpdates != null);
-    await _channel.invokeMethod(
+    await channel.invokeMethod<void>(
       'routes#update',
       routeUpdates._toMap(),
->>>>>>> .merge_file_mz0XLq
     );
   }
 
@@ -209,14 +174,7 @@ class GoogleMapController {
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
   Future<void> animateCamera(CameraUpdate cameraUpdate) async {
-<<<<<<< .merge_file_lUrGED
     await channel.invokeMethod<void>('camera#animate', <String, dynamic>{
-=======
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('camera#animate', <String, dynamic>{
->>>>>>> .merge_file_mz0XLq
       'cameraUpdate': cameraUpdate._toJson(),
     });
   }
@@ -226,7 +184,6 @@ class GoogleMapController {
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
   Future<void> moveCamera(CameraUpdate cameraUpdate) async {
-<<<<<<< .merge_file_lUrGED
     await channel.invokeMethod<void>('camera#move', <String, dynamic>{
       'cameraUpdate': cameraUpdate._toJson(),
     });
@@ -263,13 +220,4 @@ class GoogleMapController {
 
     return LatLngBounds(northeast: northeast, southwest: southwest);
   }
-=======
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('camera#move', <String, dynamic>{
-      'cameraUpdate': cameraUpdate._toJson(),
-    });
-  }
->>>>>>> .merge_file_mz0XLq
 }

@@ -129,7 +129,6 @@ class MapBounds {
   String toString() {
     return 'MapBounds(southwest: $southwest, northeast: $northeast)';
   }
-<<<<<<< .merge_file_UQoYdA
 }
 
 /// Exception when a map style is invalid or was unable to be set.
@@ -141,6 +140,3 @@ class MapStyleException implements Exception {
 
   final String cause;
 }
-=======
-}
->>>>>>> .merge_file_AydqBi

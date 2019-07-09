@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-<<<<<<< .merge_file_Q1k6Ln
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
-=======
-import 'dart:math';
->>>>>>> .merge_file_XTbaHY
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -35,10 +31,6 @@ typedef Marker MarkerUpdateAction(Marker marker);
 
 class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   PlaceMarkerBodyState();
-<<<<<<< .merge_file_Q1k6Ln
-=======
-
->>>>>>> .merge_file_XTbaHY
   static final LatLng center = const LatLng(-33.86711, 151.1947171);
 
   GoogleMapController controller;
@@ -221,7 +213,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-<<<<<<< .merge_file_Q1k6Ln
 // A breaking change to the ImageStreamListener API affects this sample.
 // I've updates the sample to use the new API, but as we cannot use the new
 // API before it makes it to stable I'm commenting out this sample for now
@@ -259,8 +250,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
 //    return await bitmapIcon.future;
 //  }
 
-=======
->>>>>>> .merge_file_XTbaHY
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -345,7 +334,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                           child: const Text('change zIndex'),
                           onPressed: _changeZIndex,
                         ),
-<<<<<<< .merge_file_Q1k6Ln
                         // A breaking change to the ImageStreamListener API affects this sample.
                         // I've updates the sample to use the new API, but as we cannot use the new
                         // API before it makes it to stable I'm commenting out this sample for now
@@ -362,8 +350,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                         //     );
                         //   },
                         // ),
-=======
->>>>>>> .merge_file_XTbaHY
                       ],
                     ),
                   ],

@@ -16,12 +16,9 @@ class FakePlatformGoogleMap {
     channel.setMockMethodCallHandler(onMethodCall);
     updateOptions(params['options']);
     updateMarkers(params);
-<<<<<<< .merge_file_9qMNoW
     updatePolygons(params);
     updatePolylines(params);
     updateCircles(params);
-=======
->>>>>>> .merge_file_AoLdHz
   }
 
   MethodChannel channel;
@@ -48,20 +45,16 @@ class FakePlatformGoogleMap {
 
   bool myLocationEnabled;
 
-<<<<<<< .merge_file_9qMNoW
   bool myLocationButtonEnabled;
 
   List<dynamic> padding;
 
-=======
->>>>>>> .merge_file_AoLdHz
   Set<MarkerId> markerIdsToRemove;
 
   Set<Marker> markersToAdd;
 
   Set<Marker> markersToChange;
 
-<<<<<<< .merge_file_9qMNoW
   Set<PolygonId> polygonIdsToRemove;
 
   Set<Polygon> polygonsToAdd;
@@ -80,8 +73,6 @@ class FakePlatformGoogleMap {
 
   Set<Circle> circlesToChange;
 
-=======
->>>>>>> .merge_file_AoLdHz
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'map#update':
@@ -90,7 +81,6 @@ class FakePlatformGoogleMap {
       case 'markers#update':
         updateMarkers(call.arguments);
         return Future<void>.sync(() {});
-<<<<<<< .merge_file_9qMNoW
       case 'polygons#update':
         updatePolygons(call.arguments);
         return Future<void>.sync(() {});
@@ -100,8 +90,6 @@ class FakePlatformGoogleMap {
       case 'circles#update':
         updateCircles(call.arguments);
         return Future<void>.sync(() {});
-=======
->>>>>>> .merge_file_AoLdHz
       default:
         return Future<void>.sync(() {});
     }
@@ -165,7 +153,6 @@ class FakePlatformGoogleMap {
     return result;
   }
 
-<<<<<<< .merge_file_9qMNoW
   void updatePolygons(Map<dynamic, dynamic> polygonUpdates) {
     if (polygonUpdates == null) {
       return;
@@ -310,8 +297,6 @@ class FakePlatformGoogleMap {
     return result;
   }
 
-=======
->>>>>>> .merge_file_AoLdHz
   void updateOptions(Map<dynamic, dynamic> options) {
     if (options.containsKey('compassEnabled')) {
       compassEnabled = options['compassEnabled'];
@@ -348,15 +333,12 @@ class FakePlatformGoogleMap {
     if (options.containsKey('myLocationEnabled')) {
       myLocationEnabled = options['myLocationEnabled'];
     }
-<<<<<<< .merge_file_9qMNoW
     if (options.containsKey('myLocationButtonEnabled')) {
       myLocationButtonEnabled = options['myLocationButtonEnabled'];
     }
     if (options.containsKey('padding')) {
       padding = options['padding'];
     }
-=======
->>>>>>> .merge_file_AoLdHz
   }
 }
 
