@@ -1,3 +1,7 @@
+## 0.6.0+13
+
+* Bugfix Android: Fix a crash occurs in some scenarios when user picks up image from gallery.
+
 ## 0.6.0+12
 
 * Use class instead of struct for `GIFInfo` in iOS implementation.
