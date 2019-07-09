@@ -40,10 +40,13 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+<<<<<<< .merge_file_w7BVje
     defaultConfig {
         manifestPlaceholders = [mapsApiKey: "$System.env.MAPS_API_KEY"]
     }
 
+=======
+>>>>>>> .merge_file_YaNRhm
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

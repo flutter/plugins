@@ -304,6 +304,10 @@ class Convert {
     if (myLocationEnabled != null) {
       sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
     }
+    final Object useRoutes = data.get("useRoutes");
+    if (useRoutes != null) {
+      sink.setUseRoutes(toBoolean(useRoutes));
+    }
     final Object markersAnimationDuration = data.get("markersAnimationDuration");
     if (markersAnimationDuration != null) {
       sink.setMarkersAnimationDuration(toFloat(markersAnimationDuration));
@@ -315,6 +319,10 @@ class Convert {
     final Object indoorEnabled = data.get("indoorEnabled");
     if (indoorEnabled != null) {
       sink.setIndoorEnabled(toBoolean(indoorEnabled));
+    }
+    final Object rotateThenTranslate = data.get("rotateThenTranslate");
+    if (rotateThenTranslate != null) {
+      sink.setRotateThenTranslate(toBoolean(rotateThenTranslate));
     }
   }
 

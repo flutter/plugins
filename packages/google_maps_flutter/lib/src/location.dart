@@ -77,6 +77,7 @@ class LatLngBounds {
     return <dynamic>[southwest._toJson(), northeast._toJson()];
   }
 
+<<<<<<< .merge_file_YHbpGO
   /// Returns whether this rectangle contains the given [LatLng].
   bool contains(LatLng point) {
     return _containsLatitude(point.latitude) &&
@@ -95,6 +96,8 @@ class LatLngBounds {
     }
   }
 
+=======
+>>>>>>> .merge_file_2elUtB
   @visibleForTesting
   static LatLngBounds fromList(dynamic json) {
     if (json == null) {

@@ -383,6 +383,7 @@ void main() {
 
     expect(platformGoogleMap.myLocationEnabled, true);
   });
+<<<<<<< .merge_file_6sbiY5
 
   testWidgets('Can update myLocationButtonEnabled',
       (WidgetTester tester) async {
@@ -469,4 +470,6 @@ void main() {
 
     expect(platformGoogleMap.padding, <double>[60, 50, 80, 70]);
   });
+=======
+>>>>>>> .merge_file_qpy1d5
 }

@@ -4,7 +4,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+<<<<<<< .merge_file_t2nRDJ
 import 'package:flutter/services.dart' show rootBundle;
+=======
+>>>>>>> .merge_file_5ACG8I
 
 import 'page.dart';
 
@@ -48,12 +51,17 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _scrollGesturesEnabled = true;
   bool _tiltGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
+<<<<<<< .merge_file_t2nRDJ
   bool _indoorViewEnabled = true;
   bool _myLocationEnabled = true;
   double _markersAnimationDuration = -1;
   bool _myLocationButtonEnabled = true;
   GoogleMapController _controller;
   bool _nightMode = false;
+=======
+  bool _myLocationEnabled = true;
+  double _markersAnimationDuration = -1;
+>>>>>>> .merge_file_5ACG8I
 
   @override
   void initState() {
@@ -165,6 +173,7 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+<<<<<<< .merge_file_t2nRDJ
   Widget _indoorViewToggler() {
     return FlatButton(
       child: Text('${_indoorViewEnabled ? 'disable' : 'enable'} indoor'),
@@ -180,6 +189,11 @@ class MapUiBodyState extends State<MapUiBody> {
     return FlatButton(
       child: Text(
           '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
+=======
+  Widget _myLocationToggler() {
+    return FlatButton(
+      child: Text('${_myLocationEnabled ? 'disable' : 'enable'} my location'),
+>>>>>>> .merge_file_5ACG8I
       onPressed: () {
         setState(() {
           _myLocationEnabled = !_myLocationEnabled;
@@ -188,6 +202,7 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+<<<<<<< .merge_file_t2nRDJ
   Widget _myLocationButtonToggler() {
     return FlatButton(
       child: Text(
@@ -230,6 +245,8 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+=======
+>>>>>>> .merge_file_5ACG8I
   @override
   Widget build(BuildContext context) {
     final GoogleMap googleMap = GoogleMap(
@@ -243,10 +260,15 @@ class MapUiBodyState extends State<MapUiBody> {
       scrollGesturesEnabled: _scrollGesturesEnabled,
       tiltGesturesEnabled: _tiltGesturesEnabled,
       zoomGesturesEnabled: _zoomGesturesEnabled,
+<<<<<<< .merge_file_t2nRDJ
       indoorViewEnabled: _indoorViewEnabled,
       myLocationEnabled: _myLocationEnabled,
       markersAnimationDuration: _markersAnimationDuration,
       myLocationButtonEnabled: _myLocationButtonEnabled,
+=======
+      myLocationEnabled: _myLocationEnabled,
+      markersAnimationDuration: _markersAnimationDuration,
+>>>>>>> .merge_file_5ACG8I
       onCameraMove: _updateCameraPosition,
     );
 
@@ -283,10 +305,14 @@ class MapUiBodyState extends State<MapUiBody> {
               _scrollToggler(),
               _tiltToggler(),
               _zoomToggler(),
+<<<<<<< .merge_file_t2nRDJ
               _indoorViewToggler(),
               _myLocationToggler(),
               _myLocationButtonToggler(),
               _nightModeToggler(),
+=======
+              _myLocationToggler(),
+>>>>>>> .merge_file_5ACG8I
             ],
           ),
         ),
@@ -307,7 +333,10 @@ class MapUiBodyState extends State<MapUiBody> {
 
   void onMapCreated(GoogleMapController controller) {
     setState(() {
+<<<<<<< .merge_file_t2nRDJ
       _controller = controller;
+=======
+>>>>>>> .merge_file_5ACG8I
       _isMapCreated = true;
     });
   }

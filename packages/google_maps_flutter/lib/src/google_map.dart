@@ -24,7 +24,10 @@ typedef void MapBoundsCallback(MapBounds bounds);
 
 class GoogleMap extends StatefulWidget {
   const GoogleMap({
+<<<<<<< .merge_file_HnVMjP
     Key key,
+=======
+>>>>>>> .merge_file_LF8UmU
     @required this.initialCameraPosition,
     this.onMapCreated,
     this.gestureRecognizers,
@@ -37,6 +40,7 @@ class GoogleMap extends StatefulWidget {
     this.zoomGesturesEnabled = true,
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
+<<<<<<< .merge_file_HnVMjP
     this.myLocationButtonEnabled = true,
 
     /// If no padding is specified default padding will be 0.
@@ -54,6 +58,17 @@ class GoogleMap extends StatefulWidget {
     this.onLongPress,
   })  : assert(initialCameraPosition != null),
         super(key: key);
+=======
+    this.markers,
+    this.routes,
+    this.useRoutes = false,
+    this.markersAnimationDuration = -1,
+    this.rotateThenTranslate = true,
+    this.onCameraMoveStarted,
+    this.onCameraMove,
+    this.onCameraIdle,
+  }) : assert(initialCameraPosition != null);
+>>>>>>> .merge_file_LF8UmU
 
   final MapCreatedCallback onMapCreated;
 
@@ -86,6 +101,7 @@ class GoogleMap extends StatefulWidget {
   /// True if the map view should respond to tilt gestures.
   final bool tiltGesturesEnabled;
 
+<<<<<<< .merge_file_HnVMjP
   /// Padding to be set on map. See https://developers.google.com/maps/documentation/android-sdk/map#map_padding for more details.
   final EdgeInsets padding;
 
@@ -103,6 +119,22 @@ class GoogleMap extends StatefulWidget {
 
   /// Circles to be placed on the map.
   final Set<Circle> circles;
+=======
+  /// Markers to be placed on the map.
+  final Set<Marker> markers;
+
+  /// MarkerRoutes to be placed on the map.
+  final Set<MarkerRoute> routes;
+
+  /// True if use routes instead of markers
+  final bool useRoutes;
+
+  /// Markers animation duration length.
+  final double markersAnimationDuration;
+
+  /// True if markers animation rotate first then translate.
+  final bool rotateThenTranslate;
+>>>>>>> .merge_file_LF8UmU
 
   /// Called when the camera starts moving.
   ///
@@ -125,12 +157,15 @@ class GoogleMap extends StatefulWidget {
   /// animations and the user has stopped interacting with the map.
   final MapBoundsCallback onCameraIdle;
 
+<<<<<<< .merge_file_HnVMjP
   /// Called every time a [GoogleMap] is tapped.
   final ArgumentCallback<LatLng> onTap;
 
   /// Called every time a [GoogleMap] is long pressed.
   final ArgumentCallback<LatLng> onLongPress;
 
+=======
+>>>>>>> .merge_file_LF8UmU
   /// True if a "My Location" layer should be shown on the map.
   ///
   /// This layer includes a location indicator at the current device location,
@@ -156,6 +191,7 @@ class GoogleMap extends StatefulWidget {
   /// when the map tries to turn on the My Location layer.
   final bool myLocationEnabled;
 
+<<<<<<< .merge_file_HnVMjP
   /// Enables or disables the my-location button.
   ///
   /// The my-location button causes the camera to move such that the user's
@@ -172,6 +208,8 @@ class GoogleMap extends StatefulWidget {
   /// Enables or disables the indoor view from the map
   final bool indoorViewEnabled;
 
+=======
+>>>>>>> .merge_file_LF8UmU
   /// Which gestures should be consumed by the map.
   ///
   /// It is possible for other gesture recognizers to be competing with the map on pointer
@@ -192,13 +230,18 @@ class _GoogleMapState extends State<GoogleMap> {
       Completer<GoogleMapController>();
 
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
+<<<<<<< .merge_file_HnVMjP
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
+=======
+  Map<MarkerRouteId, MarkerRoute> _routes = <MarkerRouteId, MarkerRoute>{};
+>>>>>>> .merge_file_LF8UmU
   _GoogleMapOptions _googleMapOptions;
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< .merge_file_HnVMjP
     final Map<String, dynamic> creationParams = <String, dynamic>{
       'initialCameraPosition': widget.initialCameraPosition?._toMap(),
       'options': _googleMapOptions.toMap(),
@@ -207,6 +250,20 @@ class _GoogleMapState extends State<GoogleMap> {
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'circlesToAdd': _serializeCircleSet(widget.circles),
     };
+=======
+    final Map<String, dynamic> creationParams = widget.useRoutes ?
+    <String, dynamic>{
+      'initialCameraPosition': widget.initialCameraPosition?._toMap(),
+      'options': _googleMapOptions.toMap(),
+      'markersToAdd': _serializeMarkerSet(widget.markers),
+    } :
+    <String, dynamic>{
+      'initialCameraPosition': widget.initialCameraPosition?._toMap(),
+      'options': _googleMapOptions.toMap(),
+      'routesToAdd': _serializeMarkerRouteSet(widget.routes),
+    }
+    ;
+>>>>>>> .merge_file_LF8UmU
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
         viewType: 'plugins.flutter.io/google_maps',
@@ -234,19 +291,28 @@ class _GoogleMapState extends State<GoogleMap> {
     super.initState();
     _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
     _markers = _keyByMarkerId(widget.markers);
+<<<<<<< .merge_file_HnVMjP
     _polygons = _keyByPolygonId(widget.polygons);
     _polylines = _keyByPolylineId(widget.polylines);
     _circles = _keyByCircleId(widget.circles);
+=======
+    _routes = _keyByMarkerRouteId(widget.routes);
+>>>>>>> .merge_file_LF8UmU
   }
 
   @override
   void didUpdateWidget(GoogleMap oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updateOptions();
+<<<<<<< .merge_file_HnVMjP
     _updateMarkers();
     _updatePolygons();
     _updatePolylines();
     _updateCircles();
+=======
+    if (oldWidget.useRoutes) _updateMarkerRoutes();
+    else _updateMarkers();
+>>>>>>> .merge_file_LF8UmU
   }
 
   void _updateOptions() async {
@@ -268,6 +334,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _markers = _keyByMarkerId(widget.markers);
   }
 
+<<<<<<< .merge_file_HnVMjP
   void _updatePolygons() async {
     final GoogleMapController controller = await _controller.future;
     controller._updatePolygons(
@@ -287,6 +354,13 @@ class _GoogleMapState extends State<GoogleMap> {
     controller._updateCircles(
         _CircleUpdates.from(_circles.values.toSet(), widget.circles));
     _circles = _keyByCircleId(widget.circles);
+=======
+  void _updateMarkerRoutes() async {
+    final GoogleMapController controller = await _controller.future;
+    controller._updateMarkerRoutes(
+        _MarkerRouteUpdates.from(_routes.values.toSet(), widget.routes));
+    _routes = _keyByMarkerRouteId(widget.routes);
+>>>>>>> .merge_file_LF8UmU
   }
 
   Future<void> onPlatformViewCreated(int id) async {
@@ -304,6 +378,7 @@ class _GoogleMapState extends State<GoogleMap> {
   void onMarkerTap(String markerIdParam) {
     assert(markerIdParam != null);
     final MarkerId markerId = MarkerId(markerIdParam);
+<<<<<<< .merge_file_HnVMjP
     if (_markers[markerId]?.onTap != null) {
       _markers[markerId].onTap();
     }
@@ -327,11 +402,15 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(circleIdParam != null);
     final CircleId circleId = CircleId(circleIdParam);
     _circles[circleId].onTap();
+=======
+    _markers[markerId].onTap();
+>>>>>>> .merge_file_LF8UmU
   }
 
   void onInfoWindowTap(String markerIdParam) {
     assert(markerIdParam != null);
     final MarkerId markerId = MarkerId(markerIdParam);
+<<<<<<< .merge_file_HnVMjP
     if (_markers[markerId]?.infoWindow?.onTap != null) {
       _markers[markerId].infoWindow.onTap();
     }
@@ -349,6 +428,9 @@ class _GoogleMapState extends State<GoogleMap> {
     if (widget.onLongPress != null) {
       widget.onLongPress(position);
     }
+=======
+    _markers[markerId].infoWindow.onTap();
+>>>>>>> .merge_file_LF8UmU
   }
 }
 
@@ -368,10 +450,16 @@ class _GoogleMapOptions {
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
+<<<<<<< .merge_file_HnVMjP
     this.markersAnimationDuration,
     this.myLocationButtonEnabled,
     this.padding,
     this.indoorViewEnabled,
+=======
+    this.useRoutes,
+    this.markersAnimationDuration,
+    this.rotateThenTranslate,
+>>>>>>> .merge_file_LF8UmU
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -386,10 +474,16 @@ class _GoogleMapOptions {
       trackCameraPosition: map.onCameraMove != null,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
+<<<<<<< .merge_file_HnVMjP
       markersAnimationDuration: map.markersAnimationDuration,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
       padding: map.padding,
       indoorViewEnabled: map.indoorViewEnabled,
+=======
+      useRoutes: map.useRoutes,
+      markersAnimationDuration: map.markersAnimationDuration,
+      rotateThenTranslate: map.rotateThenTranslate,
+>>>>>>> .merge_file_LF8UmU
     );
   }
 
@@ -412,6 +506,7 @@ class _GoogleMapOptions {
   final bool zoomGesturesEnabled;
 
   final bool myLocationEnabled;
+<<<<<<< .merge_file_HnVMjP
   
   final double markersAnimationDuration;
 
@@ -420,6 +515,14 @@ class _GoogleMapOptions {
   final EdgeInsets padding;
 
   final bool indoorViewEnabled;
+=======
+
+  final bool useRoutes;
+  
+  final double markersAnimationDuration;
+
+  final bool rotateThenTranslate;
+>>>>>>> .merge_file_LF8UmU
 
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
@@ -440,6 +543,7 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
+<<<<<<< .merge_file_HnVMjP
     addIfNonNull('markersAnimationDuration', markersAnimationDuration);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
     addIfNonNull('padding', <double>[
@@ -449,6 +553,12 @@ class _GoogleMapOptions {
       padding?.right,
     ]);
     addIfNonNull('indoorEnabled', indoorViewEnabled);
+=======
+    addIfNonNull('useRoutes', useRoutes);
+    addIfNonNull('markersAnimationDuration', markersAnimationDuration);
+    addIfNonNull('rotateThenTranslate', rotateThenTranslate);
+
+>>>>>>> .merge_file_LF8UmU
     return optionsMap;
   }
 

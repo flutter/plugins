@@ -34,13 +34,19 @@ interface GoogleMapOptionsSink {
 
   void setIndoorEnabled(boolean indoorEnabled);
 
-  void setInitialMarkers(Object initialMarkers);
-
-  void setMarkersAnimationDuration(float durationInMs);
-
   void setInitialPolygons(Object initialPolygons);
 
   void setInitialPolylines(Object initialPolylines);
 
   void setInitialCircles(Object initialCircles);
+
+  void setInitialMarkers(Object initialMarkers);
+
+  void setInitialRoutes(Object initialRoutes);
+
+  void setUseRoutes(boolean useRoutes);
+
+  void setMarkersAnimationDuration(float durationInMs);
+
+  void setRotateThenTranslate(boolean rotateThenTranslate);
 }

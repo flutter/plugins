@@ -18,17 +18,20 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
   private boolean indoorEnabled = true;
-  private Object initialMarkers;
-  private float markersAnimationDuration = -1;
   private Object initialPolygons;
   private Object initialPolylines;
   private Object initialCircles;
   private Rect padding = new Rect(0, 0, 0, 0);
+  private Object initialMarkers;
+  private Object initialRoutes;
+  private boolean useRoutes = false;
+  private float markersAnimationDuration = -1;
+  private boolean rotateThenTranslate = true;
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
     final GoogleMapController controller =
-        new GoogleMapController(id, context, state, registrar, options, markersAnimationDuration);
+        new GoogleMapController(id, context, state, registrar, options, useRoutes, markersAnimationDuration, rotateThenTranslate);
     controller.init();
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
@@ -39,6 +42,8 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.setInitialPolylines(initialPolylines);
     controller.setInitialCircles(initialCircles);
     controller.setPadding(padding.top, padding.left, padding.bottom, padding.right);
+    if (useRoutes) controller.setInitialRoutes(initialRoutes);
+    else controller.setInitialMarkers(initialMarkers);
     return controller;
   }
 
@@ -121,10 +126,6 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     this.initialMarkers = initialMarkers;
   }
 
-  public void setMarkersAnimationDuration(float durationInMs) {
-    this.markersAnimationDuration = durationInMs;
-  }
-
   @Override
   public void setInitialPolygons(Object initialPolygons) {
     this.initialPolygons = initialPolygons;
@@ -138,5 +139,25 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setInitialCircles(Object initialCircles) {
     this.initialCircles = initialCircles;
+  }
+
+  @Override
+  public void setInitialRoutes(Object initialRoutes) {
+    this.initialRoutes = initialRoutes;
+  }
+
+  @Override
+  public void setUseRoutes(boolean useRoutes) {
+    this.useRoutes = useRoutes;
+  }
+
+  @Override
+  public void setMarkersAnimationDuration(float durationInMs) {
+    this.markersAnimationDuration = durationInMs;
+  }
+
+  @Override
+  public void setRotateThenTranslate(boolean rotateThenTranslate) {
+    this.rotateThenTranslate = rotateThenTranslate;
   }
 }

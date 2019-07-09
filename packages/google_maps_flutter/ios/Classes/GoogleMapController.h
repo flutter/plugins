@@ -26,6 +26,7 @@
 - (void)setMarkerAnimationDuration:(float)durationInMs;
 - (void)setMyLocationButtonEnabled:(BOOL)enabled;
 - (NSString *)setMapStyle:(NSString *)mapStyle;
+- (void)setRotateThenTranslate:(BOOL)enabled;
 @end
 
 // Defines map overlay controllable from Flutter.

@@ -82,11 +82,15 @@ final class GoogleMapController
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
   private final CirclesController circlesController;
-  private List<Object> initialMarkers;
-  private float markersAnimationDuration = -1;
   private List<Object> initialPolygons;
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
+  private final RoutesController routesController;
+  private List<Object> initialMarkers;
+  private List<Object> initialRoutes;
+  private boolean useRoutes = false;
+  private float markersAnimationDuration = -1;
+  private boolean rotateThenTranslate = true;
 
   GoogleMapController(
       int id,
@@ -94,7 +98,9 @@ final class GoogleMapController
       AtomicInteger activityState,
       PluginRegistry.Registrar registrar,
       GoogleMapOptions options,
-      float durationInMs) {
+      boolean useRoutes,
+      float durationInMs,
+      boolean rotateThenTranslate) {
     this.id = id;
     this.context = context;
     this.activityState = activityState;
@@ -105,11 +111,20 @@ final class GoogleMapController
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_maps_" + id);
     methodChannel.setMethodCallHandler(this);
     this.registrarActivityHashCode = registrar.activity().hashCode();
-    this.markersController = new MarkersController(methodChannel);
-    this.markersAnimationDuration = durationInMs;
     this.polygonsController = new PolygonsController(methodChannel);
     this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel);
+    if (useRoutes) {
+      this.routesController = new RoutesController(methodChannel);
+      this.markersController = null;
+    }
+    else {
+      this.routesController = null;
+      this.markersController = new MarkersController(methodChannel);
+    }
+    this.useRoutes = useRoutes;
+    this.markersAnimationDuration = durationInMs;
+    this.rotateThenTranslate = rotateThenTranslate;
   }
 
   @Override
@@ -187,14 +202,20 @@ final class GoogleMapController
     googleMap.setOnMapClickListener(this);
     googleMap.setOnMapLongClickListener(this);
     updateMyLocationSettings();
-    markersController.setGoogleMap(googleMap);
     polygonsController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     circlesController.setGoogleMap(googleMap);
-    updateInitialMarkers();
     updateInitialPolygons();
     updateInitialPolylines();
     updateInitialCircles();
+    if (this.useRoutes) {
+      updateInitialRoutes();
+      routesController.setGoogleMap(googleMap);
+    }
+    else {
+      updateInitialMarkers();
+      markersController.setGoogleMap(googleMap);
+    }
   }
 
   @Override
@@ -247,10 +268,19 @@ final class GoogleMapController
           Object markersToAdd = call.argument("markersToAdd");
           markersController.addMarkers((List<Object>) markersToAdd);
           Object markersToChange = call.argument("markersToChange");
-          markersController.changeMarkers((List<Object>) markersToChange, this.markersAnimationDuration);
+          markersController.changeMarkers((List<Object>) markersToChange, this.markersAnimationDuration, this.rotateThenTranslate);
           Object markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers((List<Object>) markerIdsToRemove);
-          result.success(null);
+          break;
+        }
+      case "routes#update":
+        {
+          Object routesToAdd = call.argument("routesToAdd");
+          routesController.addRoutes((List<Object>) routesToAdd, this.markersAnimationDuration, this.rotateThenTranslate);
+          Object routesToChange = call.argument("routesToChange");
+          routesController.changeRoutes((List<Object>) routesToChange, this.markersAnimationDuration, this.rotateThenTranslate);
+          Object routeIdsToRemove = call.argument("routeIdsToRemove");
+          routesController.removeRoutes((List<Object>) routeIdsToRemove);
           break;
         }
       case "polygons#update":
@@ -340,8 +370,7 @@ final class GoogleMapController
                 "Unable to set the map style. Please check console logs for errors.");
           }
           result.success(mapStyleResult);
-          break;
-        }
+        } 
       default:
         result.notImplemented();
     }
@@ -371,7 +400,8 @@ final class GoogleMapController
 
   @Override
   public void onInfoWindowClick(Marker marker) {
-    markersController.onInfoWindowTap(marker.getId());
+    if (useRoutes) routesController.onInfoWindowTap(marker.getId());
+    else markersController.onInfoWindowTap(marker.getId());
   }
 
   @Override
@@ -386,12 +416,15 @@ final class GoogleMapController
 
   @Override
   public void onCameraIdle() {
-    methodChannel.invokeMethod("camera#onIdle", Collections.singletonMap("map", id));
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("bounds", Convert.toJson(googleMap.getProjection().getVisibleRegion().latLngBounds));
+    methodChannel.invokeMethod("camera#onIdle", arguments);
+    //methodChannel.invokeMethod("camera#onIdle", Collections.singletonMap("map", id));
   }
 
   @Override
   public boolean onMarkerClick(Marker marker) {
-    return markersController.onMarkerTap(marker.getId());
+    return useRoutes ? routesController.onRouteTap(marker.getId()) : markersController.onMarkerTap(marker.getId());
   }
 
   @Override
@@ -574,8 +607,31 @@ final class GoogleMapController
     markersController.addMarkers(initialMarkers);
   }
 
+  @Override
+  public void setInitialRoutes(Object initialRoutes) {
+    this.initialRoutes = (List<Object>) initialRoutes;
+    if (googleMap != null) {
+      updateInitialRoutes();
+    }
+  }
+
+  private void updateInitialRoutes() {
+    routesController.addRoutes(initialRoutes, markersAnimationDuration, rotateThenTranslate);
+  }
+
+  @Override
+  public void setUseRoutes(boolean useRoutes) {
+    this.useRoutes = useRoutes;
+  }
+
+  @Override
   public void setMarkersAnimationDuration(float durationInMs) {
     this.markersAnimationDuration = durationInMs;
+  }
+
+  @Override
+  public void setRotateThenTranslate(boolean rotateThenTranslate) {
+    this.rotateThenTranslate = rotateThenTranslate;
   }
 
   @Override

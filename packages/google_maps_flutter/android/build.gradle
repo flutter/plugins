@@ -21,7 +21,11 @@ buildscript {
     }
 
     dependencies {
+<<<<<<< .merge_file_UP7ZgJ
         classpath 'com.android.tools.build:gradle:3.3.2'
+=======
+        classpath 'com.android.tools.build:gradle:3.3.0'
+>>>>>>> .merge_file_JUsteV
     }
 }
 
