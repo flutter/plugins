@@ -1,3 +1,7 @@
+## 0.4.0+5
+
+* Add IOS-specific warning to README.md.
+
 ## 0.4.0+4
 
 * Add missing template type parameter to `invokeMethod` calls.
