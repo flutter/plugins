@@ -1,3 +1,7 @@
+## 5.0.5
+
+* Fix `launch` to open `intent:` URL scheme on Android.
+
 ## 5.0.4
 
 * Update Dart code to conform to current Dart formatter.
