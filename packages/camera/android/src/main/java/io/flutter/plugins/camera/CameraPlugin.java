@@ -133,68 +133,68 @@ public class CameraPlugin implements MethodCallHandler {
         }
         break;
       case "initialize":
-      {
-        String cameraName = call.argument("cameraName");
-        String resolutionPreset = call.argument("resolutionPreset");
-        boolean enableAudio = call.argument("enableAudio");
-        if (camera != null) {
-          camera.close();
+        {
+          String cameraName = call.argument("cameraName");
+          String resolutionPreset = call.argument("resolutionPreset");
+          boolean enableAudio = call.argument("enableAudio");
+          if (camera != null) {
+            camera.close();
+          }
+          camera = new Camera(cameraName, resolutionPreset, result, enableAudio);
+          orientationEventListener.enable();
+          break;
         }
-        camera = new Camera(cameraName, resolutionPreset, result, enableAudio);
-        orientationEventListener.enable();
-        break;
-      }
       case "takePicture":
-      {
-        camera.takePicture((String) call.argument("path"), result);
-        break;
-      }
+        {
+          camera.takePicture((String) call.argument("path"), result);
+          break;
+        }
       case "prepareForVideoRecording":
-      {
-        // This optimization is not required for Android.
-        result.success(null);
-        break;
-      }
+        {
+          // This optimization is not required for Android.
+          result.success(null);
+          break;
+        }
       case "startVideoRecording":
-      {
-        final String filePath = call.argument("filePath");
-        camera.startVideoRecording(filePath, result);
-        break;
-      }
+        {
+          final String filePath = call.argument("filePath");
+          camera.startVideoRecording(filePath, result);
+          break;
+        }
       case "stopVideoRecording":
-      {
-        camera.stopVideoRecording(result);
-        break;
-      }
+        {
+          camera.stopVideoRecording(result);
+          break;
+        }
       case "startImageStream":
-      {
-        try {
-          camera.startPreviewWithImageStream();
-          result.success(null);
-        } catch (Exception e) {
-          handleException(e, result);
+        {
+          try {
+            camera.startPreviewWithImageStream();
+            result.success(null);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
         }
-        break;
-      }
       case "stopImageStream":
-      {
-        try {
-          camera.startPreview();
-          result.success(null);
-        } catch (Exception e) {
-          handleException(e, result);
+        {
+          try {
+            camera.startPreview();
+            result.success(null);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
         }
-        break;
-      }
       case "dispose":
-      {
-        if (camera != null) {
-          camera.dispose();
+        {
+          if (camera != null) {
+            camera.dispose();
+          }
+          orientationEventListener.disable();
+          result.success(null);
+          break;
         }
-        orientationEventListener.disable();
-        result.success(null);
-        break;
-      }
       default:
         result.notImplemented();
         break;
@@ -338,7 +338,7 @@ public class CameraPlugin implements MethodCallHandler {
 
     private void registerEventChannel() {
       new EventChannel(
-          registrar.messenger(), "flutter.io/cameraPlugin/cameraEvents" + textureEntry.id())
+              registrar.messenger(), "flutter.io/cameraPlugin/cameraEvents" + textureEntry.id())
           .setStreamHandler(
               new EventChannel.StreamHandler() {
                 @Override
@@ -361,7 +361,7 @@ public class CameraPlugin implements MethodCallHandler {
 
       return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
           || activity.checkSelfPermission(Manifest.permission.CAMERA)
-          == PackageManager.PERMISSION_GRANTED;
+              == PackageManager.PERMISSION_GRANTED;
     }
 
     private boolean hasAudioPermission() {
@@ -372,7 +372,7 @@ public class CameraPlugin implements MethodCallHandler {
 
       return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
           || activity.checkSelfPermission(Manifest.permission.RECORD_AUDIO)
-          == PackageManager.PERMISSION_GRANTED;
+              == PackageManager.PERMISSION_GRANTED;
     }
 
     private void computeBestPreviewAndRecordingSize(
