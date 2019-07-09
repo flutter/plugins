@@ -21,6 +21,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.net.URISyntaxException;
 
 /** UrlLauncherPlugin */
 public class UrlLauncherPlugin implements MethodCallHandler {
@@ -52,8 +53,19 @@ public class UrlLauncherPlugin implements MethodCallHandler {
   }
 
   private void canLaunch(String url, Result result) {
-    Intent launchIntent = new Intent(Intent.ACTION_VIEW);
-    launchIntent.setData(Uri.parse(url));
+    Intent launchIntent;
+    Uri uri = Uri.parse(url);
+    if (uri.getScheme().equals("intent")) {
+      try {
+        launchIntent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+      } catch (URISyntaxException e) {
+        result.error("ILLEGAL_URL", "Can't parse the URL " + url, e);
+        return;
+      }
+    } else {
+      launchIntent = new Intent(Intent.ACTION_VIEW);
+      launchIntent.setData(uri);
+    }
     ComponentName componentName =
         launchIntent.resolveActivity(mRegistrar.context().getPackageManager());
 
@@ -78,8 +90,18 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       launchIntent.putExtra("url", url);
       launchIntent.putExtra("enableJavaScript", enableJavaScript);
     } else {
-      launchIntent = new Intent(Intent.ACTION_VIEW);
-      launchIntent.setData(Uri.parse(url));
+      Uri uri = Uri.parse(url);
+      if (uri.getScheme().equals("intent")) {
+        try {
+          launchIntent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+        } catch (URISyntaxException e) {
+          result.error("ILLEGAL_URL", "Can't parse the URL " + url, e);
+          return;
+        }
+      } else {
+        launchIntent = new Intent(Intent.ACTION_VIEW);
+        launchIntent.setData(uri);
+      }
     }
     activity.startActivity(launchIntent);
     result.success(true);
