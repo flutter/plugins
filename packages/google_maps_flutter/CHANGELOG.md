@@ -1,3 +1,7 @@
+## 0.5.19+3
+
+* Breaking change fix for BitmapDescriptor scaling override
+
 ## 0.5.19+2
 
 * Fix polygons for iOS

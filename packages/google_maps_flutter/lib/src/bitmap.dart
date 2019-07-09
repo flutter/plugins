@@ -58,8 +58,9 @@ class BitmapDescriptor {
     String assetName, {
     AssetBundle bundle,
     String package,
+    bool mipmaps = true,
   }) async {
-    if (configuration.devicePixelRatio != null) {
+    if (!mipmaps && configuration.devicePixelRatio != null) {
       return BitmapDescriptor._(<dynamic>[
         'fromAssetImage',
         assetName,
