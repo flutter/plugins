@@ -12,7 +12,7 @@ dependencies:
 
 dev_dependencies:
   flutter_driver:
-    sdk: flutterg
+    sdk: flutter
 
 flutter:
   uses-material-design: true
