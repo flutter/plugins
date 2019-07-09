@@ -52,12 +52,12 @@ class QuickActions {
   Future<void> setShortcutItems(List<ShortcutItem> items) async {
     final List<Map<String, String>> itemsList =
         items.map(_serializeItem).toList();
-    await _kChannel.invokeMethod('setShortcutItems', itemsList);
+    await _kChannel.invokeMethod<void>('setShortcutItems', itemsList);
   }
 
   /// Removes all [ShortcutItem]s registered for the app.
   Future<void> clearShortcutItems() =>
-      _kChannel.invokeMethod('clearShortcutItems');
+      _kChannel.invokeMethod<void>('clearShortcutItems');
 
   Map<String, String> _serializeItem(ShortcutItem item) {
     return <String, String>{

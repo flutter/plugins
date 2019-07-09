@@ -18,8 +18,10 @@ Pods/
 **/Flutter/flutter_assets/
 ServiceDefinitions.json
 xcuserdata/
+*.xcworkspace
 
 local.properties
+keystore.properties
 .gradle/
 gradlew
 gradlew.bat

@@ -58,7 +58,7 @@ class FirebaseStorage {
   StorageReference ref() => StorageReference._(const <String>[], this);
 
   Future<int> getMaxDownloadRetryTimeMillis() async {
-    return await channel.invokeMethod(
+    return await channel.invokeMethod<int>(
         "FirebaseStorage#getMaxDownloadRetryTime", <String, dynamic>{
       'app': app?.name,
       'bucket': storageBucket,
@@ -66,7 +66,7 @@ class FirebaseStorage {
   }
 
   Future<int> getMaxUploadRetryTimeMillis() async {
-    return await channel.invokeMethod(
+    return await channel.invokeMethod<int>(
         "FirebaseStorage#getMaxUploadRetryTime", <String, dynamic>{
       'app': app?.name,
       'bucket': storageBucket,
@@ -74,7 +74,7 @@ class FirebaseStorage {
   }
 
   Future<int> getMaxOperationRetryTimeMillis() async {
-    return await channel.invokeMethod(
+    return await channel.invokeMethod<int>(
         "FirebaseStorage#getMaxOperationRetryTime", <String, dynamic>{
       'app': app?.name,
       'bucket': storageBucket,
@@ -82,7 +82,7 @@ class FirebaseStorage {
   }
 
   Future<void> setMaxDownloadRetryTimeMillis(int time) {
-    return channel.invokeMethod(
+    return channel.invokeMethod<void>(
         "FirebaseStorage#setMaxDownloadRetryTime", <String, dynamic>{
       'app': app?.name,
       'bucket': storageBucket,
@@ -91,7 +91,7 @@ class FirebaseStorage {
   }
 
   Future<void> setMaxUploadRetryTimeMillis(int time) {
-    return channel.invokeMethod(
+    return channel.invokeMethod<void>(
         "FirebaseStorage#setMaxUploadRetryTime", <String, dynamic>{
       'app': app?.name,
       'bucket': storageBucket,
@@ -100,12 +100,28 @@ class FirebaseStorage {
   }
 
   Future<void> setMaxOperationRetryTimeMillis(int time) {
-    return channel.invokeMethod(
+    return channel.invokeMethod<void>(
         "FirebaseStorage#setMaxOperationRetryTime", <String, dynamic>{
       'app': app?.name,
       'bucket': storageBucket,
       'time': time,
     });
+  }
+
+  /// Creates a [StorageReference] given a gs:// or // URL pointing to a Firebase
+  /// Storage location.
+  Future<StorageReference> getReferenceFromUrl(String fullUrl) async {
+    final String path = await channel.invokeMethod<String>(
+        "FirebaseStorage#getReferenceFromUrl", <String, dynamic>{
+      'app': app?.name,
+      'bucket': storageBucket,
+      'fullUrl': fullUrl
+    });
+    if (path != null) {
+      return ref().child(path);
+    } else {
+      return null;
+    }
   }
 }
 
@@ -118,7 +134,7 @@ class StorageFileDownloadTask {
   final File _file;
 
   Future<void> _start() async {
-    final int totalByteCount = await FirebaseStorage.channel.invokeMethod(
+    final int totalByteCount = await FirebaseStorage.channel.invokeMethod<int>(
       "StorageReference#writeToFile",
       <String, dynamic>{
         'app': _firebaseStorage.app?.name,

@@ -1,3 +1,42 @@
+## 0.2.0+3
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.2.0+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.2.0+1
+
+* Minor internal code cleanup in Java implementation.
+
+## 0.2.0
+
+* Update Android dependencies to latest.
+
+## 0.1.0+3
+
+* Initial integration tests.
+
+## 0.1.0+2
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.1.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.1.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
 ## 0.0.6+1
 
 * Bump Android dependencies to latest.

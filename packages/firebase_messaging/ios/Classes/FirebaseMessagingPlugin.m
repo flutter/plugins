@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FirebaseMessagingPlugin.h"
+#import "UserAgent.h"
 
 #import "Firebase/Firebase.h"
 
@@ -10,6 +11,13 @@
 @interface FLTFirebaseMessagingPlugin () <FIRMessagingDelegate>
 @end
 #endif
+
+static FlutterError *getFlutterError(NSError *error) {
+  if (error == nil) return nil;
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
+}
 
 @implementation FLTFirebaseMessagingPlugin {
   FlutterMethodChannel *_channel;
@@ -25,6 +33,11 @@
       [[FLTFirebaseMessagingPlugin alloc] initWithChannel:channel];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
@@ -33,8 +46,10 @@
   if (self) {
     _channel = channel;
     _resumingFromBackground = NO;
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
     [FIRMessaging messaging].delegate = self;
   }
@@ -61,6 +76,7 @@
 
     result(nil);
   } else if ([@"configure" isEqualToString:method]) {
+    [FIRMessaging messaging].shouldEstablishDirectChannel = true;
     [[UIApplication sharedApplication] registerForRemoteNotifications];
     if (_launchNotification != nil) {
       [_channel invokeMethod:@"onLaunch" arguments:_launchNotification];
@@ -68,12 +84,16 @@
     result(nil);
   } else if ([@"subscribeToTopic" isEqualToString:method]) {
     NSString *topic = call.arguments;
-    [[FIRMessaging messaging] subscribeToTopic:topic];
-    result(nil);
+    [[FIRMessaging messaging] subscribeToTopic:topic
+                                    completion:^(NSError *error) {
+                                      result(getFlutterError(error));
+                                    }];
   } else if ([@"unsubscribeFromTopic" isEqualToString:method]) {
     NSString *topic = call.arguments;
-    [[FIRMessaging messaging] unsubscribeFromTopic:topic];
-    result(nil);
+    [[FIRMessaging messaging] unsubscribeFromTopic:topic
+                                        completion:^(NSError *error) {
+                                          result(getFlutterError(error));
+                                        }];
   } else if ([@"getToken" isEqualToString:method]) {
     [[FIRInstanceID instanceID]
         instanceIDWithHandler:^(FIRInstanceIDResult *_Nullable instanceIDResult,
@@ -96,7 +116,7 @@
       }
     }];
   } else if ([@"autoInitEnabled" isEqualToString:method]) {
-    BOOL *value = [[FIRMessaging messaging] isAutoInitEnabled];
+    BOOL value = [[FIRMessaging messaging] isAutoInitEnabled];
     result([NSNumber numberWithBool:value]);
   } else if ([@"setAutoInitEnabled" isEqualToString:method]) {
     NSNumber *value = call.arguments;
@@ -171,7 +191,7 @@
   [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeProd];
 #endif
 
-  [_channel invokeMethod:@"onToken" arguments:[[FIRInstanceID instanceID] token]];
+  [_channel invokeMethod:@"onToken" arguments:[FIRMessaging messaging].FCMToken];
 }
 
 - (void)application:(UIApplication *)application
@@ -187,6 +207,11 @@
 - (void)messaging:(nonnull FIRMessaging *)messaging
     didReceiveRegistrationToken:(nonnull NSString *)fcmToken {
   [_channel invokeMethod:@"onToken" arguments:fcmToken];
+}
+
+- (void)messaging:(FIRMessaging *)messaging
+    didReceiveMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+  [_channel invokeMethod:@"onMessage" arguments:remoteMessage.appData];
 }
 
 @end

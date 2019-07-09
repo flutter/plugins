@@ -56,6 +56,9 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
       case "setUserProperty":
         handleSetUserProperty(call, result);
         break;
+      case "resetAnalyticsData":
+        handleResetAnalyticsData(call, result);
+        break;
       default:
         result.notImplemented();
         break;
@@ -120,6 +123,11 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
     final String value = (String) arguments.get("value");
 
     firebaseAnalytics.setUserProperty(name, value);
+    result.success(null);
+  }
+
+  private void handleResetAnalyticsData(MethodCall call, Result result) {
+    firebaseAnalytics.resetAnalyticsData();
     result.success(null);
   }
 

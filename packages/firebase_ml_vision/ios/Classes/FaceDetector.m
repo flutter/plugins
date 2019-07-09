@@ -1,15 +1,20 @@
 #import "FirebaseMlVisionPlugin.h"
 
+@interface FaceDetector ()
+@property FIRVisionFaceDetector *detector;
+@end
+
 @implementation FaceDetector
-static FIRVisionFaceDetector *faceDetector;
+- (instancetype)initWithVision:(FIRVision *)vision options:(NSDictionary *)options {
+  self = [super init];
+  if (self) {
+    _detector = [vision faceDetectorWithOptions:[FaceDetector parseOptions:options]];
+  }
+  return self;
+}
 
-+ (void)handleDetection:(FIRVisionImage *)image
-                options:(NSDictionary *)options
-                 result:(FlutterResult)result {
-  FIRVision *vision = [FIRVision vision];
-  faceDetector = [vision faceDetectorWithOptions:[FaceDetector parseOptions:options]];
-
-  [faceDetector
+- (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
+  [_detector
       processImage:image
         completion:^(NSArray<FIRVisionFace *> *_Nullable faces, NSError *_Nullable error) {
           if (error) {
@@ -29,10 +34,10 @@ static FIRVisionFaceDetector *faceDetector;
                 face.hasRightEyeOpenProbability ? @(face.rightEyeOpenProbability) : [NSNull null];
 
             NSDictionary *data = @{
-              @"left" : @((int)face.frame.origin.x),
-              @"top" : @((int)face.frame.origin.y),
-              @"width" : @((int)face.frame.size.width),
-              @"height" : @((int)face.frame.size.height),
+              @"left" : @(face.frame.origin.x),
+              @"top" : @(face.frame.origin.y),
+              @"width" : @(face.frame.size.width),
+              @"height" : @(face.frame.size.height),
               @"headEulerAngleY" : face.hasHeadEulerAngleY ? @(face.headEulerAngleY)
                                                            : [NSNull null],
               @"headEulerAngleZ" : face.hasHeadEulerAngleZ ? @(face.headEulerAngleZ)

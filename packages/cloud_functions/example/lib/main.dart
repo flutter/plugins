@@ -18,6 +18,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final HttpsCallable callable = CloudFunctions.instance
+        .getHttpsCallable(functionName: 'repeat')
+          ..timeout = const Duration(seconds: 30);
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -33,17 +36,16 @@ class _MyAppState extends State<MyApp> {
                   child: const Text('SEND REQUEST'),
                   onPressed: () async {
                     try {
-                      final dynamic resp = await CloudFunctions.instance.call(
-                        functionName: 'repeat',
-                        parameters: <String, dynamic>{
+                      final HttpsCallableResult result = await callable.call(
+                        <String, dynamic>{
                           'message': 'hello world!',
                           'count': _responseCount,
                         },
                       );
-                      print(resp);
+                      print(result.data);
                       setState(() {
-                        _response = resp['repeat_message'];
-                        _responseCount = resp['repeat_count'];
+                        _response = result.data['repeat_message'];
+                        _responseCount = result.data['repeat_count'];
                       });
                     } on CloudFunctionsException catch (e) {
                       print('caught firebase functions exception');

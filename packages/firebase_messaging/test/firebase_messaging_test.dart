@@ -22,14 +22,14 @@ void main() {
 
   test('requestNotificationPermissions on ios with default permissions', () {
     firebaseMessaging.requestNotificationPermissions();
-    verify(mockChannel.invokeMethod('requestNotificationPermissions',
+    verify(mockChannel.invokeMethod<void>('requestNotificationPermissions',
         <String, bool>{'sound': true, 'badge': true, 'alert': true}));
   });
 
   test('requestNotificationPermissions on ios with custom permissions', () {
     firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(sound: false));
-    verify(mockChannel.invokeMethod('requestNotificationPermissions',
+    verify(mockChannel.invokeMethod<void>('requestNotificationPermissions',
         <String, bool>{'sound': false, 'badge': true, 'alert': true}));
   });
 
@@ -52,7 +52,7 @@ void main() {
   test('configure', () {
     firebaseMessaging.configure();
     verify(mockChannel.setMethodCallHandler(any));
-    verify(mockChannel.invokeMethod('configure'));
+    verify(mockChannel.invokeMethod<void>('configure'));
   });
 
   test('incoming token', () async {
@@ -123,29 +123,29 @@ void main() {
 
   const String myTopic = 'Flutter';
 
-  test('subscribe to topic', () {
-    firebaseMessaging.subscribeToTopic(myTopic);
-    verify(mockChannel.invokeMethod('subscribeToTopic', myTopic));
+  test('subscribe to topic', () async {
+    await firebaseMessaging.subscribeToTopic(myTopic);
+    verify(mockChannel.invokeMethod<void>('subscribeToTopic', myTopic));
   });
 
-  test('unsubscribe from topic', () {
-    firebaseMessaging.unsubscribeFromTopic(myTopic);
-    verify(mockChannel.invokeMethod('unsubscribeFromTopic', myTopic));
+  test('unsubscribe from topic', () async {
+    await firebaseMessaging.unsubscribeFromTopic(myTopic);
+    verify(mockChannel.invokeMethod<void>('unsubscribeFromTopic', myTopic));
   });
 
   test('getToken', () {
     firebaseMessaging.getToken();
-    verify(mockChannel.invokeMethod('getToken'));
+    verify(mockChannel.invokeMethod<String>('getToken'));
   });
 
   test('deleteInstanceID', () {
     firebaseMessaging.deleteInstanceID();
-    verify(mockChannel.invokeMethod('deleteInstanceID'));
+    verify(mockChannel.invokeMethod<bool>('deleteInstanceID'));
   });
 
   test('autoInitEnabled', () {
     firebaseMessaging.autoInitEnabled();
-    verify(mockChannel.invokeMethod('autoInitEnabled'));
+    verify(mockChannel.invokeMethod<bool>('autoInitEnabled'));
   });
 
   test('setAutoInitEnabled', () {
@@ -154,16 +154,14 @@ void main() {
 
     firebaseMessaging.setAutoInitEnabled(true);
 
-    // assert we called the method with enabled = true
-    verify(mockChannel.invokeMethod('setAutoInitEnabled', true));
+    verify(mockChannel.invokeMethod<void>('setAutoInitEnabled', true));
 
     // assert that enabled = false was not yet called
     verifyNever(firebaseMessaging.setAutoInitEnabled(false));
 
     firebaseMessaging.setAutoInitEnabled(false);
 
-    // assert call with enabled = false was properly done
-    verify(mockChannel.invokeMethod('setAutoInitEnabled', false));
+    verify(mockChannel.invokeMethod<void>('setAutoInitEnabled', false));
   });
 }
 

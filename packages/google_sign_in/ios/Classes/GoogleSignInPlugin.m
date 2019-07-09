@@ -15,25 +15,19 @@ static NSString *const kErrorReasonSignInRequired = @"sign_in_required";
 static NSString *const kErrorReasonSignInCanceled = @"sign_in_canceled";
 static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@end
-
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
+static FlutterError *getFlutterError(NSError *error) {
   NSString *errorCode;
-  if (self.code == kGIDSignInErrorCodeHasNoAuthInKeychain) {
+  if (error.code == kGIDSignInErrorCodeHasNoAuthInKeychain) {
     errorCode = kErrorReasonSignInRequired;
-  } else if (self.code == kGIDSignInErrorCodeCanceled) {
+  } else if (error.code == kGIDSignInErrorCodeCanceled) {
     errorCode = kErrorReasonSignInCanceled;
   } else {
     errorCode = kErrorReasonSignInFailed;
   }
   return [FlutterError errorWithCode:errorCode
-                             message:self.domain
-                             details:self.localizedDescription];
+                             message:error.domain
+                             details:error.localizedDescription];
 }
-@end
 
 @interface FLTGoogleSignInPlugin () <GIDSignInDelegate, GIDSignInUIDelegate>
 @end
@@ -96,13 +90,18 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
     result(@([[GIDSignIn sharedInstance] hasAuthInKeychain]));
   } else if ([call.method isEqualToString:@"signIn"]) {
     if ([self setAccountRequest:result]) {
-      [[GIDSignIn sharedInstance] signIn];
+      @try {
+        [[GIDSignIn sharedInstance] signIn];
+      } @catch (NSException *e) {
+        result([FlutterError errorWithCode:@"google_sign_in" message:e.reason details:e.name]);
+        [e raise];
+      }
     }
   } else if ([call.method isEqualToString:@"getTokens"]) {
     GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
     GIDAuthentication *auth = currentUser.authentication;
     [auth getTokensWithHandler:^void(GIDAuthentication *authentication, NSError *error) {
-      result(error != nil ? error.flutterError : @{
+      result(error != nil ? getFlutterError(error) : @{
         @"idToken" : authentication.idToken,
         @"accessToken" : authentication.accessToken,
       });
@@ -190,7 +189,7 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
 - (void)respondWithAccount:(id)account error:(NSError *)error {
   FlutterResult result = _accountRequest;
   _accountRequest = nil;
-  result(error != nil ? error.flutterError : account);
+  result(error != nil ? getFlutterError(error) : account);
 }
 
 @end

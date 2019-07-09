@@ -4,12 +4,10 @@
 
 import 'dart:async';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/services.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-
-import 'package:flutter/services.dart';
-
-import 'package:firebase_analytics/firebase_analytics.dart';
 
 void main() {
   group('filterOutNulls', () {
@@ -39,7 +37,7 @@ void main() {
       invokedMethod = null;
       arguments = null;
 
-      when(mockChannel.invokeMethod(any, any))
+      when(mockChannel.invokeMethod<void>(any, any))
           .thenAnswer((Invocation invocation) {
         invokedMethod = invocation.positionalArguments[0];
         arguments = invocation.positionalArguments[1];
@@ -95,7 +93,7 @@ void main() {
     });
 
     test('setAnalyticsCollectionEnabled', () async {
-      await analytics.android.setAnalyticsCollectionEnabled(false);
+      await analytics.setAnalyticsCollectionEnabled(false);
       expect(invokedMethod, 'setAnalyticsCollectionEnabled');
       expect(arguments, false);
     });
@@ -111,6 +109,11 @@ void main() {
       expect(invokedMethod, 'setSessionTimeoutDuration');
       expect(arguments, 234);
     });
+
+    test('resetAnalyticsData', () async {
+      await analytics.resetAnalyticsData();
+      expect(invokedMethod, 'resetAnalyticsData');
+    });
   });
 
   group('$FirebaseAnalytics analytics events', () {
@@ -125,7 +128,7 @@ void main() {
       name = null;
       parameters = null;
 
-      when(mockChannel.invokeMethod('logEvent', any))
+      when(mockChannel.invokeMethod<void>('logEvent', any))
           .thenAnswer((Invocation invocation) {
         final Map<String, dynamic> args = invocation.positionalArguments[1];
         name = args['name'];
@@ -134,7 +137,7 @@ void main() {
         return Future<void>.value();
       });
 
-      when(mockChannel.invokeMethod(argThat(isNot('logEvent')), any))
+      when(mockChannel.invokeMethod<void>(argThat(isNot('logEvent')), any))
           .thenThrow(ArgumentError('Only logEvent invocations expected'));
 
       analytics = FirebaseAnalytics.private(mockChannel);
@@ -218,6 +221,12 @@ void main() {
             ));
 
     smokeTest('login', () => analytics.logLogin());
+
+    smokeTest(
+        'login',
+        () => analytics.logLogin(
+              loginMethod: 'email',
+            ));
 
     smokeTest(
         'post_score',

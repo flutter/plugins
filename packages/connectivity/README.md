@@ -30,14 +30,20 @@ exposed by connectivity plugin:
 ```dart
 import 'package:connectivity/connectivity.dart';
 
+@override
 initState() {
+  super.initState();
+
   subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
     // Got a new connectivity status!
   })
 }
 
 // Be sure to cancel subscription after you are done
+@override
 dispose() {
+  super.dispose();
+
   subscription.cancel();
 }
 ```

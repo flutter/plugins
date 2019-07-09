@@ -1,3 +1,72 @@
+## 0.10.1+3
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.10.1+2
+
+* Example: Fixed tab display and added scroll view
+
+## 0.10.1+1
+
+* iOS: Avoid deprecated `seekToTime` API
+
+## 0.10.1
+
+* iOS: Consider a player only `initialized` once duration is determined.
+
+## 0.10.0+8
+
+* iOS: Fix an issue where the player sends initialization message incorrectly.
+
+* Fix a few other IDE warnings.
+
+
+## 0.10.0+7
+
+* Android: Fix issue where buffering status in percentage instead of milliseconds
+
+* Android: Update buffering status everytime we notify for position change
+
+## 0.10.0+6
+
+* Android: Fix missing call to `event.put("event", "completed");` which makes it possible to detect when the video is over.
+
+## 0.10.0+5
+
+* Fixed iOS build warnings about implicit retains.
+
+## 0.10.0+4
+
+* Android: Upgrade ExoPlayer to 2.9.6.
+
+## 0.10.0+3
+
+* Fix divide by zero bug on iOS.
+
+## 0.10.0+2
+
+* Added supported format documentation in README.
+
+## 0.10.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.10.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.9.0
+
+* Fixed the aspect ratio and orientation of videos. Videos are now properly displayed when recorded
+ in portrait mode both in iOS and Android.
+
 ## 0.8.0
 
 * Android: Upgrade ExoPlayer to 2.9.1
@@ -40,7 +109,7 @@
 
 ## 0.6.1
 
-* iOS: add missing observer removals to prevent crashes on deallocation. 
+* iOS: add missing observer removals to prevent crashes on deallocation.
 
 ## 0.6.0
 

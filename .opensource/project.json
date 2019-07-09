@@ -12,6 +12,7 @@
     "packages/firebase_analytics/README.md": "Analytics",
     "packages/firebase_auth/README.md": "Authentication",
     "packages/firebase_core/README.md": "Core",
+    "packages/firebase_crashlytics/README.md": "Crashlytics",
     "packages/firebase_database/README.md": "Realtime Database",
     "packages/firebase_dynamic_links/README.md": "Dynamic Links",
     "packages/firebase_messaging/README.md": "Cloud Messaging",

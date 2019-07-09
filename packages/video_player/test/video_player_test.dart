@@ -47,7 +47,7 @@ void main() {
 
     controller.textureId = 123;
     controller.value = controller.value.copyWith(
-      duration: Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 100),
     );
 
     await tester.pump();

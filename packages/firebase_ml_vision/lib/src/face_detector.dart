@@ -26,25 +26,36 @@ enum FaceLandmarkType {
 
 /// Detector for detecting faces in an input image.
 ///
-/// A face detector is created via faceDetector(FaceDetectorOptions options)
-/// in [FirebaseVision]:
+/// A face detector is created via
+/// `faceDetector([FaceDetectorOptions options])` in [FirebaseVision]:
 ///
 /// ```dart
-/// FaceDetector faceDetector = FirebaseVision.instance.faceDetector(options);
+/// final FirebaseVisionImage image =
+///     FirebaseVisionImage.fromFilePath('path/to/file');
+///
+/// final FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
+///
+/// final List<Faces> faces = await faceDetector.processImage(image);
 /// ```
-class FaceDetector extends FirebaseVisionDetector {
-  FaceDetector._(this.options) : assert(options != null);
+class FaceDetector {
+  FaceDetector._(this.options, this._handle) : assert(options != null);
 
   /// The options for the face detector.
   final FaceDetectorOptions options;
+  final int _handle;
+  bool _hasBeenOpened = false;
+  bool _isClosed = false;
 
   /// Detects faces in the input image.
-  @override
-  Future<List<Face>> detectInImage(FirebaseVisionImage visionImage) async {
-    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
-      'FaceDetector#detectInImage',
+  Future<List<Face>> processImage(FirebaseVisionImage visionImage) async {
+    assert(!_isClosed);
+
+    _hasBeenOpened = true;
+    final List<dynamic> reply =
+        await FirebaseVision.channel.invokeListMethod<dynamic>(
+      'FaceDetector#processImage',
       <String, dynamic>{
-        'path': visionImage.imageFile.path,
+        'handle': _handle,
         'options': <String, dynamic>{
           'enableClassification': options.enableClassification,
           'enableLandmarks': options.enableLandmarks,
@@ -52,7 +63,7 @@ class FaceDetector extends FirebaseVisionDetector {
           'minFaceSize': options.minFaceSize,
           'mode': _enumToString(options.mode),
         },
-      },
+      }..addAll(visionImage._serialize()),
     );
 
     final List<Face> faces = <Face>[];
@@ -61,6 +72,18 @@ class FaceDetector extends FirebaseVisionDetector {
     }
 
     return faces;
+  }
+
+  /// Release resources used by this detector.
+  Future<void> close() {
+    if (!_hasBeenOpened) _isClosed = true;
+    if (_isClosed) return Future<void>.value(null);
+
+    _isClosed = true;
+    return FirebaseVision.channel.invokeMethod<void>(
+      'FaceDetector#close',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 }
 
@@ -109,7 +132,7 @@ class FaceDetectorOptions {
 /// Represents a face detected by [FaceDetector].
 class Face {
   Face._(dynamic data)
-      : boundingBox = Rectangle<int>(
+      : boundingBox = Rect.fromLTWH(
           data['left'],
           data['top'],
           data['width'],
@@ -129,7 +152,7 @@ class Face {
               ? null
               : FaceLandmark._(
                   type,
-                  Point<double>(pos[0], pos[1]),
+                  Offset(pos[0], pos[1]),
                 );
         }));
 
@@ -138,7 +161,7 @@ class Face {
   /// The axis-aligned bounding rectangle of the detected face.
   ///
   /// The point (0, 0) is defined as the upper-left corner of the image.
-  final Rectangle<int> boundingBox;
+  final Rect boundingBox;
 
   /// The rotation of the face about the vertical axis of the image.
   ///
@@ -203,5 +226,5 @@ class FaceLandmark {
   /// Gets a 2D point for landmark position.
   ///
   /// The point (0, 0) is defined as the upper-left corner of the image.
-  final Point<double> position;
+  final Offset position;
 }
