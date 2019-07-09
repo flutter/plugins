@@ -78,7 +78,7 @@ task:
     - name: build_all_plugins_ipa
       script:
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
-        - ./script/build_all_plugins_app.sh ios --no-codesign --simulator
+        - ./script/build_all_plugins_app.sh ios --no-codesign
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin

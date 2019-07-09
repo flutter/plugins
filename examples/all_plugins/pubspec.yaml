@@ -40,8 +40,6 @@ dependencies:
     path: /Users/bmparr/Work/plugins/packages/firebase_dynamic_links
   firebase_messaging: 
     path: /Users/bmparr/Work/plugins/packages/firebase_messaging
-  firebase_ml_vision: 
-    path: /Users/bmparr/Work/plugins/packages/firebase_ml_vision
   firebase_performance: 
     path: /Users/bmparr/Work/plugins/packages/firebase_performance
   firebase_remote_config: 
