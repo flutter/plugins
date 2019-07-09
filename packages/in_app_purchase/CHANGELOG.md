@@ -1,3 +1,7 @@
+## 0.2.0+4
+
+* Fixed code error in `README.md` and adjusted links to work on Pub.
+
 ## 0.2.0+3
 
 * Update the `README.md` so that the code samples compile with the latest Flutter/Dart version.
