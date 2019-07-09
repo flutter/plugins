@@ -164,11 +164,7 @@
       userInfo[key] = value;
     }
   }
-  return @{
-    @"code" : @(error.code),
-    @"domain" : error.domain ?: @"",
-    @"userInfo" : userInfo
-  };
+  return @{@"code" : @(error.code), @"domain" : error.domain ?: @"", @"userInfo" : userInfo};
 }
 
 @end
