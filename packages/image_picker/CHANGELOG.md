@@ -1,3 +1,6 @@
+## 0.6.0+14
+* Example Fix: Update the example LostDataResponse type.
+
 ## 0.6.0+13
 
 * Bugfix Android: Fix a crash occurs in some scenarios when user picks up image from gallery.
