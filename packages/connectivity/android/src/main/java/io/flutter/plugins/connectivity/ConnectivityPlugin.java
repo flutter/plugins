@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.connectivity;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -68,7 +67,8 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   }
 
   private NetworkInfo getNetworkInfo(Context context){
-    ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    ConnectivityManager cm =
+            (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     return cm.getActiveNetworkInfo();
   }
 
@@ -78,14 +78,14 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
       Network network = manager.getActiveNetwork();
       NetworkCapabilities capabilities = manager.getNetworkCapabilities(network);
       if (capabilities != null) {
-          if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-                  || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-              return "wifi";
-          }
+        if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+            || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+          return "wifi";
+        }
 
-          if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-              return "mobile";
-          }
+        if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+          return "mobile";
+        }
       }
 
       return "none";
@@ -129,7 +129,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   private void handleCheck(MethodCall call, final Result result) {
     NetworkInfo info = manager.getActiveNetworkInfo();
     if (info != null && info.isConnected()) {
-        result.success(getNetworkType(info.getType()));
+      result.success(getNetworkType(info.getType()));
     } else {
       result.success("none");
     }
