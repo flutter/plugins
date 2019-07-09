@@ -1,3 +1,8 @@
+## 0.4.3+4
+
+* Added Android API 29 support for check().
+* Added lint suppress for "using deprecated api".
+
 ## 0.4.3+3
 
 * Support for TYPE_MOBILE_HIPRI on Android.
