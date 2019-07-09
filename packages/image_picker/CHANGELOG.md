@@ -1,3 +1,7 @@
+## 0.6.0+15
+
+* Android: throws an exception when permissions denied instead of ignoring.
+
 ## 0.6.0+14
 
 * Fix typo in README.
