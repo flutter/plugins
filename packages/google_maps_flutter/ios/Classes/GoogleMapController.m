@@ -58,6 +58,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   FLTPolygonsController* _polygonsController;
   FLTPolylinesController* _polylinesController;
   FLTCirclesController* _circlesController;
+  BOOL _rotateThenTranslate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -72,6 +73,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _mapView.accessibilityElementsHidden = NO;
     _trackCameraPosition = NO;
     _markerAnimationDuration = -1;
+    _rotateThenTranslate = true;
     
     InterpretMapOptions(args[@"options"], self);
     NSString* channelName =
@@ -90,7 +92,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _markersController = [[FLTMarkersController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar
-                                    markerAnimationDuration:_markerAnimationDuration];
     _polygonsController = [[FLTPolygonsController alloc] init:_channel
                                                       mapView:_mapView
                                                     registrar:registrar];
@@ -100,6 +101,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _circlesController = [[FLTCirclesController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar];
+                                    markerAnimationDuration:_markerAnimationDuration
+                                        rotateThenTranslate:_rotateThenTranslate];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
@@ -345,6 +348,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _mapView.mapStyle = style;
     return nil;
   }
+- (void)setRotateThenTranslate:(BOOL)enabled {
+  _rotateThenTranslate = enabled;
 }
 
 #pragma mark - GMSMapViewDelegate methods
@@ -561,5 +566,9 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   NSNumber* myLocationButtonEnabled = data[@"myLocationButtonEnabled"];
   if (myLocationButtonEnabled) {
     [sink setMyLocationButtonEnabled:ToBool(myLocationButtonEnabled)];
+  }
+  NSNumber* rotateThenTranslate = data[@"rotateThenTranslate"];
+  if (rotateThenTranslate) {
+    [sink setRotateThenTranslate:ToBool(rotateThenTranslate)];
   }
 }

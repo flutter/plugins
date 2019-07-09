@@ -57,7 +57,7 @@ class MarkersController {
     return (Map<?, ?>) o;
   }
 
-  void changeMarkers(List<Object> markersToChange, float durationInMs) {
+  void changeMarkers(List<Object> markersToChange, float durationInMs, boolean rotateThenTranslate) {
     if (markersToChange != null) {
       for (Object markerToChange : markersToChange) {
         if (markerToChange == null) continue;
@@ -70,13 +70,13 @@ class MarkersController {
           MarkerController markerController = markerIdToController.get(markerId);
           LatLngInterpolator interpolator = new LatLngInterpolator.Linear();
           if (BuildConfig.VERSION_CODE == Build.VERSION_CODES.HONEYCOMB) {
-            MarkerAnimation.animateMarkerToHC(markerController.getMarker(), toLatLng(position), interpolator, durationInMs);
+            MarkerAnimation.animateMarkerToHC(markerController.getMarker(), toLatLng(position), interpolator, durationInMs, rotateThenTranslate);
           }
           else if (BuildConfig.VERSION_CODE == Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            MarkerAnimation.animateMarkerToICS(markerController.getMarker(), toLatLng(position), interpolator, durationInMs);
+            MarkerAnimation.animateMarkerToICS(markerController.getMarker(), toLatLng(position), interpolator, durationInMs, rotateThenTranslate);
           }
           else {
-            MarkerAnimation.animateMarkerToGB(markerController.getMarker(), toLatLng(position), interpolator, durationInMs);
+            MarkerAnimation.animateMarkerToGB(markerController.getMarker(), toLatLng(position), interpolator, durationInMs, rotateThenTranslate);
           }
         }
       }

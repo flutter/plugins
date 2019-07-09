@@ -229,11 +229,13 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
   NSObject<FlutterPluginRegistrar>* _registrar;
   GMSMapView* _mapView;
   float _markerAnimationDuration;
+  BOOL _rotateThenTranslate;
 }
 - (instancetype)init:(FlutterMethodChannel*)methodChannel
              mapView:(GMSMapView*)mapView
            registrar:(NSObject<FlutterPluginRegistrar>*)registrar
-markerAnimationDuration:(float)markerAnimationDuration {
+markerAnimationDuration:(float)markerAnimationDuration
+    rotateThenTranslate:(BOOL)rotateThenTranslate {
   self = [super init];
   if (self) {
     _methodChannel = methodChannel;
@@ -241,6 +243,7 @@ markerAnimationDuration:(float)markerAnimationDuration {
     _markerIdToController = [NSMutableDictionary dictionaryWithCapacity:1];
     _registrar = registrar;
     _markerAnimationDuration = markerAnimationDuration;
+    _rotateThenTranslate = rotateThenTranslate;
   }
   return self;
 }
@@ -291,17 +294,24 @@ markerAnimationDuration:(float)markerAnimationDuration {
       [newMarker addEntriesFromDictionary:oldMarker];
       [newMarker setObject:@(bearing) forKey:@"rotation"];
       
-      [CATransaction begin];
-      [CATransaction setAnimationDuration:_markerAnimationDuration * fraction / 1000];
-      [controller setRotation:bearing];
-      [CATransaction commit];
-      dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_markerAnimationDuration * fraction / 1000 * NSEC_PER_SEC));
-      dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+      if (_rotateThenTranslate) {
         [CATransaction begin];
-        [CATransaction setAnimationDuration:_markerAnimationDuration * (1 - fraction) / 1000];
+        [CATransaction setAnimationDuration:_markerAnimationDuration * fraction / 1000];
+        [controller setRotation:bearing];
+        [CATransaction commit];
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_markerAnimationDuration * fraction / 1000 * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+          [CATransaction begin];
+          [CATransaction setAnimationDuration:_markerAnimationDuration * (1 - fraction) / 1000];
+          InterpretMarkerOptions(newMarker, controller, _registrar);
+          [CATransaction commit];
+        });
+      } else {
+        [CATransaction begin];
+        [CATransaction setAnimationDuration:_markerAnimationDuration / 1000];
         InterpretMarkerOptions(newMarker, controller, _registrar);
         [CATransaction commit];
-      });
+      }
     }
   }
 }

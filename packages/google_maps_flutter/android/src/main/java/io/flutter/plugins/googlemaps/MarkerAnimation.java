@@ -11,7 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Property;
-import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.Interpolator;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -49,7 +49,7 @@ public class MarkerAnimation {
         return degree + 360;
     }
 
-    static void animateMarkerToGB(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, final float durationInMs) {
+    static void animateMarkerToGB(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, final float durationInMs, boolean rotateThenTranslate) {
         //System.out.println("GB:durationInMs " + Float.toString(durationInMs));
         final LatLng startPosition = marker.getPosition();
         final double startRotation = marker.getRotation();
@@ -57,56 +57,79 @@ public class MarkerAnimation {
         final double angle = getAngleDiff(startRotation, bearing);
         final double turn = getRotateDir(startRotation, bearing);
         final long start = SystemClock.uptimeMillis();
-        final Interpolator interpolator = new AccelerateDecelerateInterpolator();
-        final Interpolator interpolator2 = new AccelerateDecelerateInterpolator();
+        final Interpolator interpolator = new LinearInterpolator();
         final Handler handler = new Handler();
         final float fraction = 0.3f; // determine fraction of time for rotation -> (fraction) and translation -> (1 - fraction)
 
-        handler.post(new Runnable() {
-            long elapsed;
-            float t;
-            float v;
+        if (rotateThenTranslate) {
+            handler.post(new Runnable() {
+                long elapsed;
+                float t;
+                float v;
 
-            @Override
-            public void run() {
-                // Calculate progress using interpolator
-                elapsed = SystemClock.uptimeMillis() - start;
-                t = elapsed / durationInMs / fraction;
-                v = interpolator.getInterpolation(t);
+                @Override
+                public void run() {
+                    // Calculate progress using interpolator
+                    elapsed = SystemClock.uptimeMillis() - start;
+                    t = elapsed / durationInMs / fraction;
+                    v = interpolator.getInterpolation(t);
 
-                // Repeat till progress is complete.
-                if (t < 1) {
-                    // Post again 16ms later.
-                    marker.setRotation((float)(startRotation + turn * v * angle));
-                    handler.postDelayed(this, 16);
+                    // Repeat till progress is complete.
+                    if (t < 1) {
+                        // Post again 16ms later.
+                        marker.setRotation((float)(startRotation + turn * v * angle));
+                        handler.postDelayed(this, 16);
+                    }
                 }
-            }
-        });
+            });
 
-        handler.postDelayed(new Runnable() {
-            long elapsed;
-            float t;
-            float v;
+            handler.postDelayed(new Runnable() {
+                long elapsed;
+                float t;
+                float v;
 
-            @Override
-            public void run() {
-                // Calculate progress using interpolator
-                elapsed = SystemClock.uptimeMillis() - start - (long)(durationInMs * fraction);
-                t = elapsed / durationInMs / (1 - fraction);
-                v = interpolator.getInterpolation(t);
+                @Override
+                public void run() {
+                    // Calculate progress using interpolator
+                    elapsed = SystemClock.uptimeMillis() - start - (long)(durationInMs * fraction);
+                    t = elapsed / durationInMs / (1 - fraction);
+                    v = interpolator.getInterpolation(t);
 
-                // Repeat till progress is complete.
-                if (t < 1) {
-                    // Post again 16ms later.
-                    marker.setPosition(latLngInterpolator.interpolate(v, startPosition, finalPosition));
-                    handler.postDelayed(this, 16);
+                    // Repeat till progress is complete.
+                    if (t < 1) {
+                        // Post again 16ms later.
+                        marker.setPosition(latLngInterpolator.interpolate(v, startPosition, finalPosition));
+                        handler.postDelayed(this, 16);
+                    }
                 }
-            }
-        }, (long)(durationInMs*fraction));
+            }, (long)(durationInMs*fraction));
+        } else {
+            handler.post(new Runnable() {
+                long elapsed;
+                float t;
+                float v;
+
+                @Override
+                public void run() {
+                    // Calculate progress using interpolator
+                    elapsed = SystemClock.uptimeMillis() - start;
+                    t = elapsed / durationInMs;
+                    v = interpolator.getInterpolation(t);
+
+                    // Repeat till progress is complete.
+                    if (t < 1) {
+                        // Post again 16ms later.
+                        marker.setRotation((float)(startRotation + turn * v * angle));
+                        marker.setPosition(latLngInterpolator.interpolate(v, startPosition, finalPosition));
+                        handler.postDelayed(this, 16);
+                    }
+                }
+            });
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    static void animateMarkerToHC(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, final float durationInMs) {
+    static void animateMarkerToHC(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, final float durationInMs, boolean rotateThenTranslate) {
         //System.out.println("HC:durationInMs " + Float.toString(durationInMs));
         final LatLng startPosition = marker.getPosition();
         final double startRotation = marker.getRotation();
@@ -130,7 +153,7 @@ public class MarkerAnimation {
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    static void animateMarkerToICS(Marker marker, LatLng finalPosition, final LatLngInterpolator latLngInterpolator, final float durationInMs) {
+    static void animateMarkerToICS(Marker marker, LatLng finalPosition, final LatLngInterpolator latLngInterpolator, final float durationInMs, boolean rotateThenTranslate) {
         //System.out.println("ICS:durationInMs " + Float.toString(durationInMs));
         TypeEvaluator<LatLng> typeEvaluator = new TypeEvaluator<LatLng>() {
             @Override

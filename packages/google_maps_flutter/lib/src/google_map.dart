@@ -52,8 +52,10 @@ class GoogleMap extends StatefulWidget {
     this.onCameraIdle,
     this.onTap,
     this.onLongPress,
-  })  : assert(initialCameraPosition != null),
-        super(key: key);
+    this.routes,
+    this.useRoutes = false,
+    this.rotateThenTranslate = true,
+  }) : assert(initialCameraPosition != null);
 
   final MapCreatedCallback onMapCreated;
 
@@ -103,6 +105,15 @@ class GoogleMap extends StatefulWidget {
 
   /// Circles to be placed on the map.
   final Set<Circle> circles;
+
+  /// MarkerRoutes to be placed on the map.
+  final Set<MarkerRoute> routes;
+
+  /// True if use routes instead of markers
+  final bool useRoutes;
+
+  /// True if markers animation rotate first then translate.
+  final bool rotateThenTranslate;
 
   /// Called when the camera starts moving.
   ///
@@ -195,18 +206,29 @@ class _GoogleMapState extends State<GoogleMap> {
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
+  Map<MarkerRouteId, MarkerRoute> _routes = <MarkerRouteId, MarkerRoute>{};
   _GoogleMapOptions _googleMapOptions;
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> creationParams = <String, dynamic>{
+    final Map<String, dynamic> creationParams = widget.useRoutes ?
+    <String, dynamic>{
       'initialCameraPosition': widget.initialCameraPosition?._toMap(),
       'options': _googleMapOptions.toMap(),
       'markersToAdd': _serializeMarkerSet(widget.markers),
       'polygonsToAdd': _serializePolygonSet(widget.polygons),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'circlesToAdd': _serializeCircleSet(widget.circles),
-    };
+    } :
+    <String, dynamic>{
+      'initialCameraPosition': widget.initialCameraPosition?._toMap(),
+      'options': _googleMapOptions.toMap(),
+      'routesToAdd': _serializeMarkerRouteSet(widget.routes),
+      'polygonsToAdd': _serializePolygonSet(widget.polygons),
+      'polylinesToAdd': _serializePolylineSet(widget.polylines),
+      'circlesToAdd': _serializeCircleSet(widget.circles),
+    }
+    ;
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
         viewType: 'plugins.flutter.io/google_maps',
@@ -237,13 +259,15 @@ class _GoogleMapState extends State<GoogleMap> {
     _polygons = _keyByPolygonId(widget.polygons);
     _polylines = _keyByPolylineId(widget.polylines);
     _circles = _keyByCircleId(widget.circles);
+    _routes = _keyByMarkerRouteId(widget.routes);
   }
 
   @override
   void didUpdateWidget(GoogleMap oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updateOptions();
-    _updateMarkers();
+    if (oldWidget.useRoutes) _updateMarkerRoutes();
+    else _updateMarkers();
     _updatePolygons();
     _updatePolylines();
     _updateCircles();
@@ -287,6 +311,13 @@ class _GoogleMapState extends State<GoogleMap> {
     controller._updateCircles(
         _CircleUpdates.from(_circles.values.toSet(), widget.circles));
     _circles = _keyByCircleId(widget.circles);
+  }
+  
+  void _updateMarkerRoutes() async {
+    final GoogleMapController controller = await _controller.future;
+    controller._updateMarkerRoutes(
+        _MarkerRouteUpdates.from(_routes.values.toSet(), widget.routes));
+    _routes = _keyByMarkerRouteId(widget.routes);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
@@ -368,10 +399,12 @@ class _GoogleMapOptions {
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
-    this.markersAnimationDuration,
     this.myLocationButtonEnabled,
     this.padding,
     this.indoorViewEnabled,
+    this.useRoutes,
+    this.markersAnimationDuration,
+    this.rotateThenTranslate,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -386,10 +419,12 @@ class _GoogleMapOptions {
       trackCameraPosition: map.onCameraMove != null,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
-      markersAnimationDuration: map.markersAnimationDuration,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
       padding: map.padding,
       indoorViewEnabled: map.indoorViewEnabled,
+      useRoutes: map.useRoutes,
+      markersAnimationDuration: map.markersAnimationDuration,
+      rotateThenTranslate: map.rotateThenTranslate,
     );
   }
 
@@ -412,14 +447,18 @@ class _GoogleMapOptions {
   final bool zoomGesturesEnabled;
 
   final bool myLocationEnabled;
-  
-  final double markersAnimationDuration;
 
   final bool myLocationButtonEnabled;
 
   final EdgeInsets padding;
 
   final bool indoorViewEnabled;
+
+  final bool useRoutes;
+  
+  final double markersAnimationDuration;
+
+  final bool rotateThenTranslate;
 
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
@@ -440,7 +479,6 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
-    addIfNonNull('markersAnimationDuration', markersAnimationDuration);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
     addIfNonNull('padding', <double>[
       padding?.top,
@@ -449,6 +487,10 @@ class _GoogleMapOptions {
       padding?.right,
     ]);
     addIfNonNull('indoorEnabled', indoorViewEnabled);
+    addIfNonNull('useRoutes', useRoutes);
+    addIfNonNull('markersAnimationDuration', markersAnimationDuration);
+    addIfNonNull('rotateThenTranslate', rotateThenTranslate);
+
     return optionsMap;
   }
 

@@ -30,4 +30,6 @@ part 'src/polyline.dart';
 part 'src/polyline_updates.dart';
 part 'src/circle.dart';
 part 'src/circle_updates.dart';
+part 'src/route.dart';
+part 'src/route_updates.dart';
 part 'src/ui.dart';

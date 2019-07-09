@@ -1,6 +1,7 @@
 ## 0.5.19+1
 
 * Fix polyline width according to device density
+* Add animation divided evenly between points along a route in android library
 
 
 ## 0.5.19

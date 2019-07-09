@@ -54,6 +54,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _myLocationButtonEnabled = true;
   GoogleMapController _controller;
   bool _nightMode = false;
+  double _markersAnimationDuration = -1;
 
   @override
   void initState() {
@@ -247,6 +248,7 @@ class MapUiBodyState extends State<MapUiBody> {
       myLocationEnabled: _myLocationEnabled,
       markersAnimationDuration: _markersAnimationDuration,
       myLocationButtonEnabled: _myLocationButtonEnabled,
+      markersAnimationDuration: _markersAnimationDuration,
       onCameraMove: _updateCameraPosition,
     );
 

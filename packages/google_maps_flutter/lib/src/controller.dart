@@ -155,6 +155,20 @@ class GoogleMapController {
     );
   }
 
+  /// Updates route configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updateMarkerRoutes(_MarkerRouteUpdates routeUpdates) async {
+    assert(routeUpdates != null);
+    await channel.invokeMethod<void>(
+      'routes#update',
+      routeUpdates._toMap(),
+    );
+  }
+
   /// Starts an animated change of the map camera position.
   ///
   /// The returned [Future] completes after the change has been started on the

@@ -36,7 +36,8 @@
 - (instancetype)init:(FlutterMethodChannel*)methodChannel
              mapView:(GMSMapView*)mapView
            registrar:(NSObject<FlutterPluginRegistrar>*)registrar
-markerAnimationDuration:(float)markerAnimationDuration;
+markerAnimationDuration:(float)markerAnimationDuration
+    rotateThenTranslate:(bool)rotateThenTranslate
 - (void)addMarkers:(NSArray*)markersToAdd;
 - (void)changeMarkers:(NSArray*)markersToChange;
 - (void)removeMarkerIds:(NSArray*)markerIdsToRemove;
