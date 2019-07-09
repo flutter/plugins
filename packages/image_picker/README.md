@@ -71,7 +71,7 @@ Android system -- although very rarely -- sometimes kills the MainActivity after
 
 ```dart
 Future<void> retrieveLostData() async {
-  final RetrieveLostDataResponse response =
+  final LostDataResponse response =
       await ImagePicker.retrieveLostData();
   if (response == null) {
     return;
