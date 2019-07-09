@@ -30,7 +30,7 @@ abstract class CameraDescription {
 
 /// Abstract class used to create a common interface across APIs. See [SupportAndroidCameraConfigurator].
 abstract class CameraConfigurator {
-  /// Id that can be used with a [Texture] widget.
+  /// Texture id that can be used to send camera frames to a [Texture] widget.
   ///
   /// You must call [addPreviewTexture] first or this will only return null.
   int get previewTextureId;
@@ -46,8 +46,6 @@ abstract class CameraConfigurator {
   /// Dispose all resources and disables further use of this configurator.
   Future<void> dispose();
 
-  /// Adds a preview texture to be used with a [Texture] widget.
-  ///
-  /// Id of this texture can be retrieved with [previewTextureId].
-  Future<void> addPreviewTexture();
+  /// Retrieves a valid texture Id to be used with a [Texture] widget.
+  Future<int> addPreviewTexture();
 }
