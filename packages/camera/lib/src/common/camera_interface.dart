@@ -19,16 +19,18 @@ enum CameraApi {
 /// Location of the camera on the device.
 enum LensDirection { front, back, external }
 
-/// Abstract class that describes a camera. See [CameraInfo].
+/// Abstract class that describes a camera.
 abstract class CameraDescription {
   /// Location of the camera on the device.
   LensDirection get direction;
 
-  /// Identifier or name for this camera. This will be either an [int] or a [String].
+  /// Identifier or name for this camera.
+  ///
+  /// This will be either an [int] or a [String].
   dynamic get id;
 }
 
-/// Abstract class used to create a common interface across APIs. See [SupportAndroidCameraConfigurator].
+/// Abstract class used to create a common interface across platform APIs.
 abstract class CameraConfigurator {
   /// Texture id that can be used to send camera frames to a [Texture] widget.
   ///

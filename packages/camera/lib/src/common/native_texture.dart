@@ -11,9 +11,6 @@ import 'camera_mixins.dart';
 
 /// Used to allocate a buffer for displaying a preview camera texture.
 ///
-/// See [CameraConfigurator.addPreviewTexture] or
-/// [SupportAndroidCamera.previewTexture].
-///
 /// The [textureId] can be passed to a [Texture] widget.
 class NativeTexture with CameraClosable, CameraMappable {
   NativeTexture._({@required int handle, @required this.textureId})

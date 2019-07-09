@@ -6,11 +6,12 @@ import 'package:flutter/services.dart';
 
 typedef CameraCallback = void Function(dynamic result);
 
+// Non exported class
 class CameraChannel {
   static final Map<int, dynamic> callbacks = <int, CameraCallback>{};
 
   static final MethodChannel channel = MethodChannel(
-    'dev.plugins/super_camera',
+    'flutter.plugins.io/camera',
   )..setMethodCallHandler(
       (MethodCall call) async {
         assert(call.method == 'handleCallback');

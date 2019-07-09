@@ -12,8 +12,7 @@ import 'common/camera_interface.dart';
 ///
 /// Use [CameraController.availableCameras] to get a list of available cameras.
 ///
-/// This class is used as a simple interface that works for Android and iOS. To
-/// access device/API specific features see [SupportAndroidCamera].
+/// This class is used as a simple interface that works for Android and iOS.
 ///
 /// Depending on device/API, you may only be able to open one CameraController
 /// at a time. Make sure to call [dispose] when access to the camera is no
@@ -54,10 +53,10 @@ class CameraController {
   /// Details for the camera this controller accesses.
   final CameraDescription description;
 
-  /// The configurator used to control the camera.
+  /// Configurator used to control the camera.
   final CameraConfigurator configurator;
 
-  /// The api used for this camera.
+  /// Api used by the [configurator].
   final CameraApi api;
 
   /// Retrieves a list of available cameras for the current device.
@@ -73,7 +72,7 @@ class CameraController {
   /// Stops all processing for the camera.
   Future<void> stop() => configurator.stop();
 
-  /// Deallocate all resources and disables further use of the camera.
+  /// Deallocate all resources and disables further use of the controller.
   Future<void> dispose() => configurator.dispose();
 
   static CameraConfigurator _createDefaultConfigurator(
