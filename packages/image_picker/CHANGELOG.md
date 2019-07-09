@@ -1,7 +1,10 @@
+## 0.6.0+14
+
+* Android: throw exception when permissions denied
 
 ## 0.6.0+13
 
-* Android: throw exception when permissions denied
+* Bugfix Android: Fix a crash occurs in some scenarios when user picks up image from gallery.
 
 ## 0.6.0+12
 
