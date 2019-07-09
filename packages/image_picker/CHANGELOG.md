@@ -1,6 +1,6 @@
 ## 0.6.0+14
 
-* Fix typo in README
+* Fix typo in README.
 
 ## 0.6.0+13
 
