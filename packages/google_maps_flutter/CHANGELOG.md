@@ -1,6 +1,16 @@
-## 0.5.19+1
+## 0.5.19+3
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.5.19+2
+
+* Fix polygons for iOS
+
+## 0.5.19+1
+
+* Fix polyline width according to device density
+
+## 0.5.19
 
 ## 0.5.19
 

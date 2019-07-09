@@ -1,6 +1,14 @@
-## 0.6.0+11
+## 0.6.0+13
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.6.0+12
+
+* Use class instead of struct for `GIFInfo` in iOS implementation.
+
+## 0.6.0+11
+
+* Don't use module imports.
 
 ## 0.6.0+10
 

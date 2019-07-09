@@ -1,6 +1,12 @@
-## 3.0.3+1
+## 3.0.4+1
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 3.0.4
+
+* Updated transactions implementation on Android for compatibility with
+  newer versions of Flutter engine that require channel calls be made
+  on the UI thread.
 
 ## 3.0.3
 

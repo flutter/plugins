@@ -1,6 +1,10 @@
-## 0.5.3+2
+## 0.5.3+3
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.5.3+2
+
+* Fix Gradle version.
 
 ## 0.5.3+1
 

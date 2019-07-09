@@ -1,6 +1,10 @@
-## 1.1.1+1
+## 1.1.2+1
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 1.1.2
+
+* `getExternalStorageDirectory` now uses `getExternalFilesDir` on Android.
 
 ## 1.1.1
 

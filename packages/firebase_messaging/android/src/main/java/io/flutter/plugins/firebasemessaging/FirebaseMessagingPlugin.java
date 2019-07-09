@@ -119,12 +119,38 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
       result.success(null);
     } else if ("subscribeToTopic".equals(call.method)) {
       String topic = call.arguments();
-      FirebaseMessaging.getInstance().subscribeToTopic(topic);
-      result.success(null);
+      FirebaseMessaging.getInstance()
+          .subscribeToTopic(topic)
+          .addOnCompleteListener(
+              new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                  if (!task.isSuccessful()) {
+                    Exception e = task.getException();
+                    Log.w(TAG, "subscribeToTopic error", e);
+                    result.error("subscribeToTopic", e.getMessage(), null);
+                    return;
+                  }
+                  result.success(null);
+                }
+              });
     } else if ("unsubscribeFromTopic".equals(call.method)) {
       String topic = call.arguments();
-      FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
-      result.success(null);
+      FirebaseMessaging.getInstance()
+          .unsubscribeFromTopic(topic)
+          .addOnCompleteListener(
+              new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                  if (!task.isSuccessful()) {
+                    Exception e = task.getException();
+                    Log.w(TAG, "unsubscribeFromTopic error", e);
+                    result.error("unsubscribeFromTopic", e.getMessage(), null);
+                    return;
+                  }
+                  result.success(null);
+                }
+              });
     } else if ("getToken".equals(call.method)) {
       FirebaseInstanceId.getInstance()
           .getInstanceId()
@@ -148,10 +174,30 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
                 public void run() {
                   try {
                     FirebaseInstanceId.getInstance().deleteInstanceId();
-                    result.success(true);
+                    if (registrar.activity() != null) {
+                      registrar
+                          .activity()
+                          .runOnUiThread(
+                              new Runnable() {
+                                @Override
+                                public void run() {
+                                  result.success(true);
+                                }
+                              });
+                    }
                   } catch (IOException ex) {
                     Log.e(TAG, "deleteInstanceID, error:", ex);
-                    result.success(false);
+                    if (registrar.activity() != null) {
+                      registrar
+                          .activity()
+                          .runOnUiThread(
+                              new Runnable() {
+                                @Override
+                                public void run() {
+                                  result.success(false);
+                                }
+                              });
+                    }
                   }
                 }
               })

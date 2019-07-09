@@ -1,6 +1,10 @@
-## 0.5.2+3
+## 0.5.2+4
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.5.2+3
+
+* Update documentation to clarify the need for FragmentActivity.
 
 ## 0.5.2+2
 
