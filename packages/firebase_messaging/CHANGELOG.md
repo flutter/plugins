@@ -1,3 +1,8 @@
+## 5.1.0
+
+* Changed the return type of `subscribeToTopic` and `unsubscribeFromTopic` to
+  `Future<void>`.
+
 ## 5.0.6
 
 * Additional integration tests.

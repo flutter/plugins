@@ -12,6 +12,13 @@
 @end
 #endif
 
+static FlutterError *getFlutterError(NSError *error) {
+  if (error == nil) return nil;
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
+}
+
 @implementation FLTFirebaseMessagingPlugin {
   FlutterMethodChannel *_channel;
   NSDictionary *_launchNotification;
@@ -77,12 +84,16 @@
     result(nil);
   } else if ([@"subscribeToTopic" isEqualToString:method]) {
     NSString *topic = call.arguments;
-    [[FIRMessaging messaging] subscribeToTopic:topic];
-    result(nil);
+    [[FIRMessaging messaging] subscribeToTopic:topic
+                                    completion:^(NSError *error) {
+                                      result(getFlutterError(error));
+                                    }];
   } else if ([@"unsubscribeFromTopic" isEqualToString:method]) {
     NSString *topic = call.arguments;
-    [[FIRMessaging messaging] unsubscribeFromTopic:topic];
-    result(nil);
+    [[FIRMessaging messaging] unsubscribeFromTopic:topic
+                                        completion:^(NSError *error) {
+                                          result(getFlutterError(error));
+                                        }];
   } else if ([@"getToken" isEqualToString:method]) {
     [[FIRInstanceID instanceID]
         instanceIDWithHandler:^(FIRInstanceIDResult *_Nullable instanceIDResult,

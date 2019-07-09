@@ -86,13 +86,13 @@ class FirebaseMessaging {
   ///
   /// [topic] must match the following regular expression:
   /// "[a-zA-Z0-9-_.~%]{1,900}".
-  void subscribeToTopic(String topic) {
-    _channel.invokeMethod<void>('subscribeToTopic', topic);
+  Future<void> subscribeToTopic(String topic) {
+    return _channel.invokeMethod<void>('subscribeToTopic', topic);
   }
 
   /// Unsubscribe from topic in background.
-  void unsubscribeFromTopic(String topic) {
-    _channel.invokeMethod<void>('unsubscribeFromTopic', topic);
+  Future<void> unsubscribeFromTopic(String topic) {
+    return _channel.invokeMethod<void>('unsubscribeFromTopic', topic);
   }
 
   /// Resets Instance ID and revokes all tokens. In iOS, it also unregisters from remote notifications.
