@@ -4,7 +4,6 @@
 
 import 'package:flutter/widgets.dart';
 
-import '../support_android_camera.dart';
 import 'camera_controller.dart';
 import 'common/camera_interface.dart';
 
@@ -23,18 +22,8 @@ class CameraPreview extends StatefulWidget {
 
 class _CameraPreviewState extends State<CameraPreview> {
   RotatedBox _buildPreviewWidget(int textureId) {
-    final CameraController controller = widget.controller;
-    int rotation = 0;
-    if (controller.api == CameraApi.supportAndroid) {
-      final CameraInfo info = controller.description;
-      rotation = info.orientation;
-      if (widget.controller.description.direction == LensDirection.front) {
-        rotation = (rotation + 180) % 360;
-      }
-    }
-
     return RotatedBox(
-      quarterTurns: (rotation / 90).floor(),
+      quarterTurns: 0,
       child: Texture(textureId: textureId),
     );
   }

@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sensors/sensors.dart';
 import 'package:camera/camera.dart';
 
 void main() {
@@ -27,42 +25,13 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   CameraController _controller;
-  double _deviceRotation = 0;
-  StreamSubscription<AccelerometerEvent> _accelerometerSubscription;
   LensDirection _lensDirection = LensDirection.back;
 
   @override
   void initState() {
     super.initState();
-    _setupAccelerometer();
     _getCameraPermission().then((bool success) {
       if (success) _setupCamera();
-    });
-  }
-
-  void _setupAccelerometer() {
-    _accelerometerSubscription =
-        accelerometerEvents.listen((AccelerometerEvent event) {
-      final double maxAcceleration = 9.81 * .75;
-
-      double newDeviceRotation;
-      if (event.x > maxAcceleration) {
-        newDeviceRotation = pi / 2.0;
-      } else if (event.y > maxAcceleration) {
-        newDeviceRotation = 0;
-      } else if (event.x < -maxAcceleration) {
-        newDeviceRotation = -pi / 2.0;
-      } else if (event.y < -maxAcceleration) {
-        newDeviceRotation = pi;
-      } else {
-        return;
-      }
-
-      if (_deviceRotation != newDeviceRotation) {
-        setState(() {
-          _deviceRotation = newDeviceRotation;
-        });
-      }
     });
   }
 
@@ -165,7 +134,7 @@ class _MyAppState extends State<MyApp> {
                   margin: const EdgeInsets.only(top: 10),
                   alignment: Alignment.centerLeft,
                   child: Transform.rotate(
-                    angle: _deviceRotation,
+                    angle: 0,
                     child: IconButton(
                       icon: Icon(
                         Icons.switch_camera,
@@ -191,7 +160,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    _accelerometerSubscription.cancel();
     _controller?.dispose();
     super.dispose();
   }
