@@ -180,7 +180,7 @@ class RoutesController {
     if (routeId == null) {
       return false;
     }
-    methodChannel.invokeMethod("marker#onTap", Convert.toJson(routeId));
+    methodChannel.invokeMethod("marker#onTap", Convert.markerIdToJson(routeId));
     RouteController routeController = routeIdToController.get(routeId);
     MarkerController markerController = routeController.getMarkerController();
     if (markerController != null) {
@@ -194,7 +194,7 @@ class RoutesController {
     if (routeId == null) {
       return;
     }
-    methodChannel.invokeMethod("infoWindow#onTap", Convert.toJson(routeId));
+    methodChannel.invokeMethod("infoWindow#onTap", Convert.markerIdToJson(routeId));
   }
 
   @SuppressWarnings("unchecked")

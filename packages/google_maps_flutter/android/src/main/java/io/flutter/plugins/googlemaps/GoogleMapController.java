@@ -417,7 +417,7 @@ final class GoogleMapController
   @Override
   public void onCameraIdle() {
     final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("bounds", Convert.toJson(googleMap.getProjection().getVisibleRegion().latLngBounds));
+    arguments.put("bounds", Convert.latlngBoundsToJson(googleMap.getProjection().getVisibleRegion().latLngBounds));
     methodChannel.invokeMethod("camera#onIdle", arguments);
     //methodChannel.invokeMethod("camera#onIdle", Collections.singletonMap("map", id));
   }
