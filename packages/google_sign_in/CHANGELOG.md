@@ -1,3 +1,8 @@
+## 4.0.3
+
+* Update guava to `27.0.1-android`.
+* Add correct @NonNull annotations to reduce compiler warnings.
+
 ## 4.0.2
 
 * Add missing template type parameter to `invokeMethod` calls.
