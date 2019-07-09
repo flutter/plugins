@@ -4,14 +4,19 @@
 
 package io.flutter.plugins.connectivity;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
+
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.EventChannel.EventSink;
 import io.flutter.plugin.common.EventChannel.StreamHandler;
@@ -62,7 +67,30 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
     receiver = null;
   }
 
-  private static String getNetworkType(int type) {
+  private NetworkInfo getNetworkInfo(Context context){
+    ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    return cm.getActiveNetworkInfo();
+  }
+
+  @SuppressWarnings("deprecated")
+  private String getNetworkType(int type) {
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      Network network = manager.getActiveNetwork();
+      NetworkCapabilities capabilities = manager.getNetworkCapabilities(network);
+      if (capabilities != null) {
+          if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                  || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+              return "wifi";
+          }
+
+          if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+              return "mobile";
+          }
+      }
+
+      return "none";
+    }
+
     switch (type) {
       case ConnectivityManager.TYPE_ETHERNET:
       case ConnectivityManager.TYPE_WIFI:
@@ -101,7 +129,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   private void handleCheck(MethodCall call, final Result result) {
     NetworkInfo info = manager.getActiveNetworkInfo();
     if (info != null && info.isConnected()) {
-      result.success(getNetworkType(info.getType()));
+        result.success(getNetworkType(info.getType()));
     } else {
       result.success("none");
     }
