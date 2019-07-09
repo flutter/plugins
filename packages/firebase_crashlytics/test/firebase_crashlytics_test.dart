@@ -72,7 +72,7 @@ void main() {
       await crashlytics.onRuntimeException('foo exception', StackTrace.current);
       expect(log[0].method, 'Crashlytics#onError');
       expect(log[0].arguments['exception'], 'foo exception');
-      expect(log[0].arguments['context'], 'onRuntimeException');
+      expect(log[0].arguments['context'], null);
       expect(log[0].arguments['logs'], isNotEmpty);
       expect(log[0].arguments['logs'], contains('foo'));
       expect(log[0].arguments['keys'][0]['key'], 'testBool');

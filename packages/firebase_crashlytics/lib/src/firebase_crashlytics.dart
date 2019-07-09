@@ -74,7 +74,6 @@ class Crashlytics {
       final dynamic result = await channel
           .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
         'exception': "${exception.toString()}",
-        'context': 'onRuntimeException',
         'stackTraceElements': stackTraceElements,
         'logs': _logs.toList(),
         'keys': _prepareKeys(),
