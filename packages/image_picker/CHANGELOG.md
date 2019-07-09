@@ -1,5 +1,6 @@
 ## 0.6.0+14
-* Example Fix: Update the example LostDataResponse type.
+
+* Fix typo in README
 
 ## 0.6.0+13
 
