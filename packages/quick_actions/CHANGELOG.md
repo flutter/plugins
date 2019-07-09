@@ -1,6 +1,12 @@
-## 0.3.0+2
+## 0.3.0+3
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.3.0+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
 
 ## 0.3.0+1
 

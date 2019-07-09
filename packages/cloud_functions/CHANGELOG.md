@@ -1,6 +1,22 @@
-## 0.3.0+1
+## 0.4.0+3
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.4.0+2
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.4.0+1
+
+* Remove reference to unused header file.
+
+## 0.4.0
+
+* Removed unused `parameters` param from `getHttpsCallable`.
+
+## 0.3.0+1
+
+* Update iOS dependencies to latest.
 
 ## 0.3.0
 

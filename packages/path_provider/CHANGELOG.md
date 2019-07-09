@@ -1,6 +1,11 @@
-## 1.1.0+1
+## 1.1.1+1
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 1.1.1
+
+* Cast error codes as longs in iOS error strings to ensure compatibility
+  between arm32 and arm64.
 
 ## 1.1.0
 

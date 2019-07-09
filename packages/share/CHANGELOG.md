@@ -1,6 +1,10 @@
-## 0.6.1+2
+## 0.6.1+3
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.6.1+2
+
+* Update Dart code to conform to current Dart formatter.
 
 ## 0.6.1+1
 

@@ -93,8 +93,8 @@ await localAuth.authenticateWithBiometrics(
 
 ### Exceptions
 
-There are 4 types of exceptions: PasscodeNotSet, NotEnrolled, NotAvailable and
-OtherOperatingSystem. They are wrapped in LocalAuthenticationError class. You can
+There are 6 types of exceptions: PasscodeNotSet, NotEnrolled, NotAvailable, OtherOperatingSystem, LockedOut and PermanentlyLockedOut.
+They are wrapped in LocalAuthenticationError class. You can
 catch the exception and handle them by different types. For example:
 
 ```dart

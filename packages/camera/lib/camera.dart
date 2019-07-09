@@ -203,11 +203,17 @@ class CameraValue {
 ///
 /// To show the camera preview on the screen use a [CameraPreview] widget.
 class CameraController extends ValueNotifier<CameraValue> {
-  CameraController(this.description, this.resolutionPreset)
-      : super(const CameraValue.uninitialized());
+  CameraController(
+    this.description,
+    this.resolutionPreset, {
+    this.enableAudio = true,
+  }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
   final ResolutionPreset resolutionPreset;
+
+  /// Whether to include audio when recording a video.
+  final bool enableAudio;
 
   int _textureId;
   bool _isDisposed = false;
@@ -230,6 +236,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         <String, dynamic>{
           'cameraName': description.name,
           'resolutionPreset': serializeResolutionPreset(resolutionPreset),
+          'enableAudio': enableAudio,
         },
       );
       _textureId = reply['textureId'];

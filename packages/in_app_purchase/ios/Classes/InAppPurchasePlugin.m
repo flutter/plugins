@@ -118,12 +118,9 @@
   [handler startProductRequestWithCompletionHandler:^(SKProductsResponse *_Nullable response,
                                                       NSError *_Nullable error) {
     if (error) {
-      NSString *details = [NSString stringWithFormat:@"Reason:%@\nRecoverSuggestion:%@",
-                                                     error.localizedFailureReason,
-                                                     error.localizedRecoverySuggestion];
       result([FlutterError errorWithCode:@"storekit_getproductrequest_platform_error"
-                                 message:error.description
-                                 details:details]);
+                                 message:error.localizedDescription
+                                 details:error.description]);
       return;
     }
     if (!response) {
@@ -255,8 +252,8 @@
                                                       NSError *_Nullable error) {
     if (error) {
       result([FlutterError errorWithCode:@"storekit_refreshreceiptrequest_platform_error"
-                                 message:error.description
-                                 details:error.userInfo]);
+                                 message:error.localizedDescription
+                                 details:error.description]);
       return;
     }
     result(nil);

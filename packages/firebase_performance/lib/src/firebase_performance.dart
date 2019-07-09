@@ -11,59 +11,82 @@ enum HttpMethod { Connect, Delete, Get, Head, Options, Patch, Post, Put, Trace }
 ///
 /// You can get an instance by calling [FirebasePerformance.instance].
 class FirebasePerformance {
-  FirebasePerformance._();
+  FirebasePerformance._(this._handle) {
+    channel.invokeMethod<bool>(
+      'FirebasePerformance#instance',
+      <String, dynamic>{'handle': _handle},
+    );
+  }
 
-  static int _traceCount = 0;
-  static int _httpMetricCount = 0;
+  static int _nextHandle = 0;
+
+  final int _handle;
 
   @visibleForTesting
   static const MethodChannel channel =
       MethodChannel('plugins.flutter.io/firebase_performance');
 
   /// Singleton of [FirebasePerformance].
-  static final FirebasePerformance instance = FirebasePerformance._();
+  static final FirebasePerformance instance =
+      FirebasePerformance._(_nextHandle++);
 
   /// Determines whether performance monitoring is enabled or disabled.
   ///
   /// True if performance monitoring is enabled and false if performance
   /// monitoring is disabled. This is for dynamic enable/disable state. This
   /// does not reflect whether instrumentation is enabled/disabled.
-  Future<bool> isPerformanceCollectionEnabled() async {
-    final bool isEnabled = await channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('FirebasePerformance#isPerformanceCollectionEnabled');
-    return isEnabled;
+  Future<bool> isPerformanceCollectionEnabled() {
+    return channel.invokeMethod<bool>(
+      '$FirebasePerformance#isPerformanceCollectionEnabled',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 
   /// Enables or disables performance monitoring.
   ///
   /// This setting is persisted and applied on future invocations of your
   /// application. By default, performance monitoring is enabled.
-  Future<void> setPerformanceCollectionEnabled(bool enable) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod(
-        'FirebasePerformance#setPerformanceCollectionEnabled', enable);
+  Future<void> setPerformanceCollectionEnabled(bool enable) {
+    return channel.invokeMethod<void>(
+      '$FirebasePerformance#setPerformanceCollectionEnabled',
+      <String, dynamic>{'handle': _handle, 'enable': enable},
+    );
   }
 
   /// Creates a [Trace] object with given [name].
   ///
   /// The [name] requires no leading or trailing whitespace, no leading
-  /// underscore _ character, max length of [Trace.maxTraceNameLength]
+  /// underscore _ character, and max length of [Trace.maxTraceNameLength]
   /// characters.
   Trace newTrace(String name) {
-    return Trace._(_traceCount++, name);
+    final int handle = _nextHandle++;
+
+    FirebasePerformance.channel.invokeMethod<void>(
+      '$FirebasePerformance#newTrace',
+      <String, dynamic>{'handle': _handle, 'traceHandle': handle, 'name': name},
+    );
+
+    return Trace._(handle, name);
   }
 
   /// Creates [HttpMetric] for collecting performance for one request/response.
   HttpMetric newHttpMetric(String url, HttpMethod httpMethod) {
-    return HttpMetric._(_httpMetricCount++, url, httpMethod);
+    final int handle = _nextHandle++;
+
+    FirebasePerformance.channel.invokeMethod<void>(
+      '$FirebasePerformance#newHttpMetric',
+      <String, dynamic>{
+        'handle': _handle,
+        'httpMetricHandle': handle,
+        'url': url,
+        'httpMethod': httpMethod.toString(),
+      },
+    );
+
+    return HttpMetric._(handle, url, httpMethod);
   }
 
-  /// Creates a [Trace] object with given [name] and start the trace.
+  /// Creates a [Trace] object with given [name] and starts the trace.
   ///
   /// The [name] requires no leading or trailing whitespace, no leading
   /// underscore _ character, max length of [Trace.maxTraceNameLength]

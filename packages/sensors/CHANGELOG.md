@@ -1,6 +1,10 @@
-## 0.4.0+2
+## 0.4.0+3
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.4.0+2
+
+* Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
 
 ## 0.4.0+1
 

@@ -42,7 +42,7 @@ class SKPaymentQueueWrapper {
 
   /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
   static Future<bool> canMakePayments() async =>
-      await channel.invokeMethod('-[SKPaymentQueue canMakePayments:]');
+      await channel.invokeMethod<bool>('-[SKPaymentQueue canMakePayments:]');
 
   /// Sets an observer to listen to all incoming transaction events.
   ///
@@ -78,7 +78,7 @@ class SKPaymentQueueWrapper {
     assert(_observer != null,
         '[in_app_purchase]: Trying to add a payment without an observer. One must be set using `SkPaymentQueueWrapper.setTransactionObserver` before the app launches.');
     Map requestMap = payment.toMap();
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
       '-[InAppPurchasePlugin addPayment:result:]',
       requestMap,
     );
@@ -97,7 +97,7 @@ class SKPaymentQueueWrapper {
   /// finishTransaction:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506003-finishtransaction?language=objc).
   Future<void> finishTransaction(
       SKPaymentTransactionWrapper transaction) async {
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
         '-[InAppPurchasePlugin finishTransaction:result:]',
         transaction.transactionIdentifier);
   }
@@ -122,7 +122,7 @@ class SKPaymentQueueWrapper {
   /// or [`-[SKPayment restoreCompletedTransactionsWithApplicationUsername:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1505992-restorecompletedtransactionswith?language=objc)
   /// depending on whether the `applicationUserName` is set.
   Future<void> restoreTransactions({String applicationUserName}) async {
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
         '-[InAppPurchasePlugin restoreTransactions:result:]',
         applicationUserName);
   }

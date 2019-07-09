@@ -1,6 +1,15 @@
-## 3.0.1+1
+## 3.0.3+1
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 3.0.3
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 3.0.2
+
+* Bump minimum Flutter version to 1.5.0.
+* Add missing template type parameter to `invokeMethod` calls.
 
 ## 3.0.1
 

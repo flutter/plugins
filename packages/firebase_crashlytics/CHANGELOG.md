@@ -1,6 +1,27 @@
-## 0.0.4+4
+## 0.0.4+9
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.0.4+8
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.0.4+7
+
+* Fixed an issue where `Crashlytics#setUserIdentifier` incorrectly called `setUserEmail` on iOS.
+
+## 0.0.4+6
+
+* On Android, use actual the Dart exception name instead of "Dart error."
+
+## 0.0.4+5
+
+* Fix parsing stacktrace.
+
+## 0.0.4+4
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
 
 ## 0.0.4+3
 

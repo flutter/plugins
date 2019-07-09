@@ -1,6 +1,10 @@
-## 0.3.0+3
+## 0.3.1+1
 
 * Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.3.1
+
+* Add a new componentName parameter to help the intent resolution.
 
 ## 0.3.0+2
 
