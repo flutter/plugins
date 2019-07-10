@@ -17,13 +17,15 @@ import 'camera_mixins.dart';
 /// camera instances.
 ///
 /// The [textureId] can be passed to a [Texture] widget.
-class NativeTexture with CameraClosable, CameraMappable {
+class NativeTexture with CameraMappable {
   NativeTexture._({@required int handle, @required this.textureId})
       : _handle = handle,
         assert(handle != null),
         assert(textureId != null);
 
   final int _handle;
+
+  bool _isClosed = false;
 
   /// Id that can be passed to a [Texture] widget.
   final int textureId;
@@ -41,9 +43,9 @@ class NativeTexture with CameraClosable, CameraMappable {
 
   /// Deallocate this texture.
   Future<void> release() {
-    if (isClosed) return Future<void>.value();
+    if (_isClosed) return Future<void>.value();
 
-    isClosed = true;
+    _isClosed = true;
     return CameraChannel.channel.invokeMethod<void>(
       '$NativeTexture#release',
       <String, dynamic>{'handle': _handle},
