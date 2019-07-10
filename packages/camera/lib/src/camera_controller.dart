@@ -75,10 +75,10 @@ class CameraController {
     throw UnimplementedError('$defaultTargetPlatform not supported');
   }
 
-  /// Starts processing for the camera.
+  /// Begins the flow of data between the inputs and outputs connected the camera instance.
   Future<void> start() => configurator.start();
 
-  /// Stops all processing for the camera.
+  /// Stops the flow of data between the inputs and outputs connected the camera instance.
   Future<void> stop() => configurator.stop();
 
   /// Deallocate all resources and disables further use of the controller.

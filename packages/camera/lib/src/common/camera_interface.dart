@@ -17,9 +17,12 @@ enum CameraApi {
 }
 
 /// Location of the camera on the device.
-enum LensDirection { front, back, external }
+enum LensDirection { front, back, unknown }
 
-/// Abstract class that describes a camera.
+/// Abstract class used to create a common interface to describe a camera from different platform APIs.
+///
+/// This provides information such as the [name] of the camera and [direction]
+/// the lens face.
 abstract class CameraDescription {
   /// Location of the camera on the device.
   LensDirection get direction;
@@ -35,12 +38,12 @@ abstract class CameraConfigurator {
   /// You must call [addPreviewTexture] first or this will only return null.
   int get previewTextureId;
 
-  /// Begin processing for the camera this configurator controls.
+  /// Begins the flow of data between the inputs and outputs connected the camera instance.
   ///
   /// This will start updating the texture with id: [previewTextureId].
   Future<void> start();
 
-  /// Stop all processing for the camera this configurator controls.
+  /// Stops the flow of data between the inputs and outputs connected the camera instance.
   Future<void> stop();
 
   /// Dispose all resources and disables further use of this configurator.
