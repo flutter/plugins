@@ -97,7 +97,7 @@ class CameraController {
         throw UnimplementedError();
     }
 
-    return null;
+    return null; // Unreachable code
   }
 
   static CameraApi _getCameraApi(CameraDescription description) {
