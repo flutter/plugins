@@ -1,3 +1,12 @@
+## 0.10.2+1
+
+* Refactor the example app.
+* Add the Live Stream tab to the example app.
+
+## 0.10.2
+
+* iOS: Revert the changes made in version `0.10.1` that made live streams not able to initialize on the absence of `duration`.
+
 ## 0.10.1+3
 
 * Add missing template type parameter to `invokeMethod` calls.
