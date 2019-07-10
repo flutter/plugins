@@ -5,6 +5,9 @@
 import 'camera_channel.dart';
 
 mixin NativeMethodCallHandler {
+  /// Identifier for an object on the native side of the plugin.
+  ///
+  /// Only used internally and for debugging.
   final int handle = CameraChannel.nextHandle++;
 }
 
@@ -13,8 +16,4 @@ mixin CameraMappable {
   ///
   /// Only used as an internal method and for debugging.
   Map<String, dynamic> asMap();
-}
-
-mixin CameraClosable {
-  bool isClosed = false;
 }
