@@ -1,3 +1,11 @@
+## 0.6.0
+
+* **Breaking Changes**
+* `availableCameras()` -> `CameraController.availableCameras()`
+* `enum CameraLensDirection` -> `enum LensDirection`
+* `CameraController` constructor no longer takes a `ResolutionPreset`. `CameraController({CameraDescription description, ResolutionPreset preset})` -> CameraController({CameraDescription description}).g
+* Removal of `ValueNotifier` from CameraController.
+
 ## 0.5.2+1
 
 * Fix bug that prevented video recording with audio.

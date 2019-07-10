@@ -24,10 +24,8 @@ abstract class CameraDescription {
   /// Location of the camera on the device.
   LensDirection get direction;
 
-  /// Identifier or name for this camera.
-  ///
-  /// This will be either an [int] or a [String].
-  dynamic get id;
+  /// Identifier for this camera.
+  String get name;
 }
 
 /// Abstract class used to create a common interface across platform APIs.
