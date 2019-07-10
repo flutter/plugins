@@ -104,7 +104,7 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
       String methodName = errorElement.get("method");
 
       return new StackTraceElement(
-          className == null ? "" : className, methodName, fileName, Integer.parseInt(lineNumber));
+          className ?? "", methodName, fileName, Integer.parseInt(lineNumber));
     } catch (Exception e) {
       Log.e(TAG, "Unable to generate stack trace element from Dart side error.");
       return null;
