@@ -1,3 +1,7 @@
+## 0.2.0+6
+
+* Add missing `hashCode` implementations.
+
 ## 0.2.0+5
 
 * iOS: Support unsupported UserInfo value types on NSError.
