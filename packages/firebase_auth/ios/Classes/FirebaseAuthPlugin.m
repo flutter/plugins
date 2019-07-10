@@ -70,11 +70,11 @@ int nextHandle = 0;
 }
 
 - (bool)application:(UIApplication *)application
-    didReceiveRemoteNotification:(NSDictionary *)userInfo
+    didReceiveRemoteNotification:(NSDictionary *)notification
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
   if ([[FIRAuth auth] canHandleNotification:notification]) {
     completionHandler(UIBackgroundFetchResultNoData);
-    return;
+    return YES;
   }
   return NO;
 }
