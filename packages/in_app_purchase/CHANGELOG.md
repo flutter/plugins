@@ -1,3 +1,7 @@
+## 0.2.0+5
+
+* iOS: Support unsupported UserInfo value types on NSError.
+
 ## 0.2.0+4
 
 * Fixed code error in `README.md` and adjusted links to work on Pub.
