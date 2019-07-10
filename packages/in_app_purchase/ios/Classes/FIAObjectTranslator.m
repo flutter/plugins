@@ -153,11 +153,18 @@
   if (!error) {
     return nil;
   }
-  return @{
-    @"code" : @(error.code),
-    @"domain" : error.domain ?: @"",
-    @"userInfo" : error.userInfo ?: @{}
-  };
+  NSMutableDictionary *userInfo = [NSMutableDictionary new];
+  for (NSErrorUserInfoKey key in error.userInfo) {
+    id value = error.userInfo[key];
+    if ([value isKindOfClass:[NSError class]]) {
+      userInfo[key] = [FIAObjectTranslator getMapFromNSError:value];
+    } else if ([value isKindOfClass:[NSURL class]]) {
+      userInfo[key] = [value absoluteString];
+    } else {
+      userInfo[key] = value;
+    }
+  }
+  return @{@"code" : @(error.code), @"domain" : error.domain ?: @"", @"userInfo" : userInfo};
 }
 
 @end
