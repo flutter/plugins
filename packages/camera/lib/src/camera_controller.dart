@@ -14,11 +14,17 @@ import 'common/camera_interface.dart';
 ///
 /// This class is used as a simple interface that works for Android and iOS.
 ///
-/// Depending on device/API, you may only be able to open one CameraController
-/// at a time. Make sure to call [dispose] when access to the camera is no
-/// longer needed.
+/// When using iOS, simultaneously calling [start] on two [CameraController]s
+/// will throw a [PlatformException].
+///
+/// When using Android, simultaneously calling [start] on two
+/// [CameraController]s may throw a [PlatformException] depending on the
+/// hardware resources of the device.
 class CameraController {
   /// Default constructor.
+  ///
+  /// Use [CameraController.availableCameras] to get a list of available
+  /// cameras.
   ///
   /// This will choose the best [CameraConfigurator] for the current device.
   factory CameraController({@required CameraDescription description}) {
@@ -39,6 +45,9 @@ class CameraController {
         assert(api != null);
 
   /// Constructor for defining your own [CameraConfigurator].
+  ///
+  /// Use [CameraController.availableCameras] to get a list of available
+  /// cameras.
   factory CameraController.customConfigurator({
     @required CameraDescription description,
     @required CameraConfigurator configurator,
