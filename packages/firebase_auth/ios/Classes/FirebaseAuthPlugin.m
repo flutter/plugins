@@ -82,9 +82,9 @@ int nextHandle = 0;
 - (void)application:(UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 #ifdef DEBUG
-  [[FIRAuth auth] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeSandbox];
+  [[FIRAuth auth] setAPNSToken:deviceToken type:FIRAuthAPNSTokenTypeSandbox];
 #else
-  [[FIRAuth auth] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeProd];
+  [[FIRAuth auth] setAPNSToken:deviceToken type:FIRAuthAPNSTokenTypeProd];
 #endif
 }
 
