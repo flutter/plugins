@@ -306,17 +306,6 @@ void main() {
       expect(result.purchaseID, isNull);
     });
 
-    test('test purchase updated type assertion', () async {
-      final BillingResponse sentCode = BillingResponse.error;
-
-      MethodCall call = MethodCall(kOnPurchasesUpdated, {
-        1: BillingResponseConverter().toJson(sentCode),
-        'purchasesList': []
-      });
-      expect(() => connection.billingClient.callHandler(call),
-          throwsA(TypeMatcher<AssertionError>()));
-    });
-
     test('buy consumable with auto consume, serializes and deserializes data',
         () async {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
