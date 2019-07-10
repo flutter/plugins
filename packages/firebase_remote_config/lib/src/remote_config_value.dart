@@ -12,9 +12,7 @@ class RemoteConfigValue {
   ValueSource _source;
 
   /// Indicates at which source this value came from.
-  ValueSource get source => _source == ValueSource.valueDefault
-      ? ValueSource.valueDefault
-      : ValueSource.valueRemote;
+  ValueSource get source => _source ?? ValueSource.valueRemote;
 
   /// Decode value to string.
   String asString() {

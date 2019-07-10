@@ -58,8 +58,10 @@ class RemoteConfig extends ChangeNotifier {
         <String, RemoteConfigValue>{};
     parameters.forEach((dynamic key, dynamic value) {
       final ValueSource valueSource = _parseValueSource(value['source']);
+      final List<int> origValue =
+          value['value'] == null ? null : value['value'].cast<int>();
       final RemoteConfigValue remoteConfigValue =
-          RemoteConfigValue._(value['value'].cast<int>(), valueSource);
+          RemoteConfigValue._(origValue, valueSource);
       parsedParameters[key] = remoteConfigValue;
     });
     return parsedParameters;
@@ -67,11 +69,11 @@ class RemoteConfig extends ChangeNotifier {
 
   static ValueSource _parseValueSource(String sourceStr) {
     switch (sourceStr) {
-      case 'valueStatic':
+      case 'static':
         return ValueSource.valueStatic;
-      case 'valueDefault':
+      case 'default':
         return ValueSource.valueDefault;
-      case 'valueRemote':
+      case 'remote':
         return ValueSource.valueRemote;
       default:
         return ValueSource.valueStatic;
@@ -226,5 +228,12 @@ class RemoteConfig extends ChangeNotifier {
     } else {
       return RemoteConfigValue._(null, ValueSource.valueStatic);
     }
+  }
+
+  /// Gets all [RemoteConfigValue].
+  ///
+  /// This includes all remote and default values
+  Map<String, RemoteConfigValue> getAll() {
+    return Map<String, RemoteConfigValue>.unmodifiable(_parameters);
   }
 }

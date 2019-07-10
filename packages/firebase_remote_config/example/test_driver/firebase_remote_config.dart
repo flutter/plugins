@@ -29,6 +29,14 @@ void main() {
       await remoteConfig.activateFetched();
       expect(remoteConfig.getString('welcome'), 'Earth, welcome! Hello!');
       expect(remoteConfig.getString('hello'), 'default hello');
+      expect(remoteConfig.getInt('nonexisting'), 0);
+
+      expect(remoteConfig.getValue('welcome').source, ValueSource.valueRemote);
+      expect(remoteConfig.getValue('hello').source, ValueSource.valueDefault);
+      expect(
+        remoteConfig.getValue('nonexisting').source,
+        ValueSource.valueStatic,
+      );
     });
   });
 }
