@@ -271,6 +271,7 @@ final class GoogleMapController
           markersController.changeMarkers((List<Object>) markersToChange, this.markersAnimationDuration, this.rotateThenTranslate);
           Object markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers((List<Object>) markerIdsToRemove);
+          result.success(null);
           break;
         }
       case "routes#update":
@@ -281,6 +282,7 @@ final class GoogleMapController
           routesController.changeRoutes((List<Object>) routesToChange, this.markersAnimationDuration, this.rotateThenTranslate);
           Object routeIdsToRemove = call.argument("routeIdsToRemove");
           routesController.removeRoutes((List<Object>) routeIdsToRemove);
+          result.success(null);
           break;
         }
       case "polygons#update":
@@ -370,6 +372,7 @@ final class GoogleMapController
                 "Unable to set the map style. Please check console logs for errors.");
           }
           result.success(mapStyleResult);
+          break;
         } 
       default:
         result.notImplemented();
