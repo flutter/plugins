@@ -10,7 +10,7 @@ typedef CameraCallback = void Function(dynamic result);
 class CameraChannel {
   static final Map<int, dynamic> callbacks = <int, CameraCallback>{};
 
-  static final MethodChannel channel = MethodChannel(
+  static final MethodChannel channel = const MethodChannel(
     'flutter.plugins.io/camera',
   )..setMethodCallHandler(
       (MethodCall call) async {
