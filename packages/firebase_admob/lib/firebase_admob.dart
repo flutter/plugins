@@ -518,13 +518,6 @@ class FirebaseAdMob {
   }
 }
 
-// Future<bool> _invokeBooleanMethod(String method, [dynamic arguments]) async {
-//   final bool result = await FirebaseAdMob.instance._channel.invokeMethod<bool>(
-//     method,
-//     arguments,
-//   );
-//   return result;
-// }
 Future<bool> _invokeBooleanMethod(String method, [dynamic arguments]) async {
   bool result = false;
   try {
@@ -532,11 +525,12 @@ Future<bool> _invokeBooleanMethod(String method, [dynamic arguments]) async {
       method,
       arguments,
     );
-  } catch (e) {
-    // In case of "no_ad_for_id" error return result as false. Don't expect app code
-    // to deal with the exception condition because app code does not know about
-    // platform implementation.
-    result = false;
+  } on PlatformException catch (e) {
+    if (e.code == "no_ad_for_id") {
+      result = false;
+      return result;
+    }
+    rethrow;
   }
 
   return result;
