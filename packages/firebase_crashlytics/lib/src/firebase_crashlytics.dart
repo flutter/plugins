@@ -172,7 +172,7 @@ class Crashlytics {
             ? lineParts[1].substring(0, lineParts[1].indexOf(":")).trim()
             : lineParts[1];
 
-        final Map<String, String> element = {
+        final Map<String, String> element = <String, String>{
           'file': fileName,
           'line': lineNumber,
         };
