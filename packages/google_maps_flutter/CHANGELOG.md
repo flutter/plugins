@@ -1,3 +1,11 @@
+## 0.5.19+2
+
+* Fix polygons for iOS
+
+## 0.5.19+1
+
+* Fix polyline width according to device density
+
 ## 0.5.19
 
 
