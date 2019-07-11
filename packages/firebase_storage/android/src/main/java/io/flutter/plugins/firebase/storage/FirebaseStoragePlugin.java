@@ -6,9 +6,8 @@ package io.flutter.plugins.firebase.storage;
 
 import android.net.Uri;
 import android.util.SparseArray;
-
+import android.webkit.MimeTypeMap;
 import androidx.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -22,20 +21,16 @@ import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * FirebaseStoragePlugin
- */
+/** FirebaseStoragePlugin */
 public class FirebaseStoragePlugin implements MethodCallHandler {
   private FirebaseStorage firebaseStorage;
   private final MethodChannel channel;
@@ -264,18 +259,17 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
   private void putFile(MethodCall call, Result result) {
     String filename = call.argument("filename");
     String path = call.argument("path");
-    Map<String, Object> metadata = call.argument("metadata");
     File file = new File(filename);
+    final Uri fileUri = Uri.fromFile(file);
+    Map<String, Object> metadata = call.argument("metadata");
+    metadata = ensureMimeType(metadata, fileUri);
+
     StorageReference ref = firebaseStorage.getReference().child(path);
-    UploadTask uploadTask;
-    if (metadata == null) {
-      uploadTask = ref.putFile(Uri.fromFile(file));
-    } else {
-      uploadTask = ref.putFile(Uri.fromFile(file), buildMetadataFromMap(metadata));
-    }
+    final UploadTask uploadTask = ref.putFile(fileUri, buildMetadataFromMap(metadata));
     final int handle = addUploadListeners(uploadTask);
     result.success(handle);
   }
+
 
   private void putData(MethodCall call, Result result) {
     byte[] bytes = call.argument("data");
@@ -400,7 +394,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     }
   }
 
-  private void resumeUploadTask(MethodCall call, final Result result) {
+  private void resumeUploadTask(MethodCall call,@NonNull final Result result) {
     int handle = call.argument("handle");
     UploadTask task = uploadTasks.get(handle);
     if (task != null) {
@@ -492,5 +486,26 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
       map.put("storageMetadata", buildMapFromMetadata(snapshot.getMetadata()));
     }
     return map;
+  }
+
+  private Map<String, Object> ensureMimeType(Map<String, Object> metadata, Uri file) {
+    if (metadata == null) {
+      metadata = new HashMap<>();
+    }
+
+    if (metadata.get("contentType") == null) {
+      metadata.put("contentType", getMimeType(file));
+    }
+
+    return metadata;
+  }
+
+  private static String getMimeType(Uri file) {
+    String type = null;
+    String extension = MimeTypeMap.getFileExtensionFromUrl(file.toString());
+    if (extension != null) {
+      type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+    }
+    return type;
   }
 }
