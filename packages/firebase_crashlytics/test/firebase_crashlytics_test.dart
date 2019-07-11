@@ -142,5 +142,19 @@ void main() {
         'line': '3825',
       });
     });
+
+    test('getStackTraceElements without class', () async {
+      final List<String> lines = <String>[
+        'package:firebase_crashlytics/test/main.dart 12  main'
+      ];
+      final List<Map<String, String>> elements =
+          crashlytics.getStackTraceElements(lines);
+      expect(elements.length, 1);
+      expect(elements.first, <String, String>{
+        'method': 'main',
+        'file': 'package:firebase_crashlytics/test/main.dart',
+        'line': '12',
+      });
+    });
   });
 }
