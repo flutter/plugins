@@ -171,17 +171,25 @@ class Crashlytics {
         final String lineNumber = lineParts[1].contains(":")
             ? lineParts[1].substring(0, lineParts[1].indexOf(":")).trim()
             : lineParts[1];
-        final String className =
-            lineParts[2].substring(0, lineParts[2].indexOf(".")).trim();
-        final String methodName =
-            lineParts[2].substring(lineParts[2].indexOf(".") + 1).trim();
 
-        elements.add(<String, String>{
-          'class': className,
-          'method': methodName,
+        final Map<String, String> element = <String, String>{
           'file': fileName,
           'line': lineNumber,
-        });
+        };
+
+        if (lineParts[2].contains(".")) {
+          final String className =
+              lineParts[2].substring(0, lineParts[2].indexOf(".")).trim();
+          final String methodName =
+              lineParts[2].substring(lineParts[2].indexOf(".") + 1).trim();
+
+          element['class'] = className;
+          element['method'] = methodName;
+        } else {
+          element['method'] = lineParts[2];
+        }
+
+        elements.add(element);
       } catch (e) {
         print(e.toString());
       }
