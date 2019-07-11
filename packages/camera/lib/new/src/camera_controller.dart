@@ -88,6 +88,10 @@ class CameraController {
   ///
   /// You must call [dispose] when you are done using the camera, otherwise it
   /// will remain locked and be unavailable to other applications.
+  ///
+  /// Only one instance of [CameraController] can be active at a time. If you
+  /// call [initialize] on a [CameraController] while another is active, the old
+  /// controller will be disposed before initializing the new controller.
   Future<void> initialize() {
     if (_instance == this) {
       return Future<void>.value();
