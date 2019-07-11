@@ -12,14 +12,21 @@ import 'common/camera_interface.dart';
 ///
 /// Use [CameraController.availableCameras] to get a list of available cameras.
 ///
-/// This class is used as a simple interface that works for Android and iOS.
+/// This class is used as a simple interface to control a camera on Android or
+/// iOS.
 ///
-/// When using iOS, simultaneously calling [start] on two [CameraController]s
-/// will throw a [PlatformException].
+/// Only one instance of [CameraController] can be active at a time. If you call
+/// [initialize] on a [CameraController] while another is active, the old
+/// controller will be disposed before initializing the new controller.
 ///
-/// When using Android, simultaneously calling [start] on two
-/// [CameraController]s may throw a [PlatformException] depending on the
-/// hardware resources of the device.
+/// Example using [CameraController]:
+///
+/// ```dart
+/// final List<CameraDescription> cameras = async CameraController.availableCameras();
+/// final CameraController controller = CameraController(description: cameras[0]);
+/// controller.initialize();
+/// controller.start();
+/// ```
 class CameraController {
   /// Default constructor.
   ///
@@ -28,7 +35,6 @@ class CameraController {
   ///
   /// This will choose the best [CameraConfigurator] for the current device.
   factory CameraController({@required CameraDescription description}) {
-    assert(description != null);
     return CameraController._(
       description: description,
       configurator: _createDefaultConfigurator(description),
@@ -59,6 +65,9 @@ class CameraController {
     );
   }
 
+  // Keep only one active instance of CameraController.
+  static CameraController _instance;
+
   /// Details for the camera this controller accesses.
   final CameraDescription description;
 
@@ -75,14 +84,28 @@ class CameraController {
     throw UnimplementedError('$defaultTargetPlatform not supported');
   }
 
-  /// Begins the flow of data between the inputs and outputs connected the camera instance.
+  /// Initializes the camera on the device.
+  ///
+  /// You must call [dispose] when you are done using the camera, otherwise it
+  /// will remain locked and be unavailable to other applications.
+  Future<void> initialize() {
+    if (_instance != this) _instance?.dispose();
+    _instance = this;
+
+    return configurator.initialize();
+  }
+
+  /// Begins the flow of data between the inputs and outputs connected to the camera instance.
   Future<void> start() => configurator.start();
 
-  /// Stops the flow of data between the inputs and outputs connected the camera instance.
+  /// Stops the flow of data between the inputs and outputs connected to the camera instance.
   Future<void> stop() => configurator.stop();
 
   /// Deallocate all resources and disables further use of the controller.
-  Future<void> dispose() => configurator.dispose();
+  Future<void> dispose() {
+    _instance = null;
+    return configurator.dispose();
+  }
 
   static CameraConfigurator _createDefaultConfigurator(
     CameraDescription description,
