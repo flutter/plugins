@@ -289,8 +289,8 @@ public class CameraPlugin implements MethodCallHandler {
         isFrontFacing =
             characteristics.get(CameraCharacteristics.LENS_FACING)
                 == CameraMetadata.LENS_FACING_FRONT;
-        computeBestSize(streamConfigurationMap, minHeight,
-                computeMaximumSize(streamConfigurationMap));
+        computeBestSize(
+            streamConfigurationMap, minHeight, computeMaximumSize(streamConfigurationMap));
 
         if (cameraPermissionContinuation != null) {
           result.error("cameraPermission", "Camera permission request ongoing", null);
@@ -434,10 +434,9 @@ public class CameraPlugin implements MethodCallHandler {
 
     private Size computeMaximumSize(StreamConfigurationMap streamConfigurationMap) {
       // Determine the largest available size. We use for aspect ratio matching.
-      return
-          Collections.max(
-              Arrays.asList(streamConfigurationMap.getOutputSizes(ImageFormat.JPEG)),
-              new CompareSizesByArea());
+      return Collections.max(
+          Arrays.asList(streamConfigurationMap.getOutputSizes(ImageFormat.JPEG)),
+          new CompareSizesByArea());
     }
 
     private void prepareMediaRecorder(String outputFilePath) throws IOException {
