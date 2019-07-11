@@ -289,8 +289,8 @@ public class CameraPlugin implements MethodCallHandler {
         isFrontFacing =
             characteristics.get(CameraCharacteristics.LENS_FACING)
                 == CameraMetadata.LENS_FACING_FRONT;
-        computeBestCaptureSize(streamConfigurationMap);
-        computeBestPreviewAndRecordingSize(streamConfigurationMap, minHeight, captureSize);
+        computeBestSize(streamConfigurationMap, minHeight,
+                computeMaximumSize(streamConfigurationMap));
 
         if (cameraPermissionContinuation != null) {
           result.error("cameraPermission", "Camera permission request ongoing", null);
@@ -375,8 +375,8 @@ public class CameraPlugin implements MethodCallHandler {
               == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void computeBestPreviewAndRecordingSize(
-        StreamConfigurationMap streamConfigurationMap, int minHeight, Size captureSize) {
+    private void computeBestSize(
+        StreamConfigurationMap streamConfigurationMap, int minHeight, Size maximumSize) {
       Size[] sizes = streamConfigurationMap.getOutputSizes(SurfaceTexture.class);
 
       // Preview size and video size should not be greater than screen resolution or 1080.
@@ -410,11 +410,11 @@ public class CameraPlugin implements MethodCallHandler {
         previewSize = sizes[0];
         videoSize = sizes[0];
       } else {
-        float captureSizeRatio = (float) captureSize.getWidth() / captureSize.getHeight();
+        float maximumSizeRatio = (float) maximumSize.getWidth() / maximumSize.getHeight();
 
         previewSize = goodEnough.get(0);
         for (Size s : goodEnough) {
-          if ((float) s.getWidth() / s.getHeight() == captureSizeRatio) {
+          if ((float) s.getWidth() / s.getHeight() == maximumSizeRatio) {
             previewSize = s;
             break;
           }
@@ -423,17 +423,18 @@ public class CameraPlugin implements MethodCallHandler {
         Collections.reverse(goodEnough);
         videoSize = goodEnough.get(0);
         for (Size s : goodEnough) {
-          if ((float) s.getWidth() / s.getHeight() == captureSizeRatio) {
+          if ((float) s.getWidth() / s.getHeight() == maximumSizeRatio) {
             videoSize = s;
             break;
           }
         }
       }
+      captureSize = previewSize;
     }
 
-    private void computeBestCaptureSize(StreamConfigurationMap streamConfigurationMap) {
-      // For still image captures, we use the largest available size.
-      captureSize =
+    private Size computeMaximumSize(StreamConfigurationMap streamConfigurationMap) {
+      // Determine the largest available size. We use for aspect ratio matching.
+      return
           Collections.max(
               Arrays.asList(streamConfigurationMap.getOutputSizes(ImageFormat.JPEG)),
               new CompareSizesByArea());
