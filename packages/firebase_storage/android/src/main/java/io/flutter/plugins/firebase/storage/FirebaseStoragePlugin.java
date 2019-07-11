@@ -270,7 +270,6 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     result.success(handle);
   }
 
-
   private void putData(MethodCall call, Result result) {
     byte[] bytes = call.argument("data");
     String path = call.argument("path");
@@ -394,7 +393,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     }
   }
 
-  private void resumeUploadTask(MethodCall call,@NonNull final Result result) {
+  private void resumeUploadTask(MethodCall call, @NonNull final Result result) {
     int handle = call.argument("handle");
     UploadTask task = uploadTasks.get(handle);
     if (task != null) {
