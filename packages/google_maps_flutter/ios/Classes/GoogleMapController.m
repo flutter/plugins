@@ -54,10 +54,12 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   // https://github.com/flutter/flutter/issues/27550
   BOOL _cameraDidInitialSetup;
   FLTMarkersController* _markersController;
+  FLTRoutesController* _routesController;
   float _markerAnimationDuration;
   FLTPolygonsController* _polygonsController;
   FLTPolylinesController* _polylinesController;
   FLTCirclesController* _circlesController;
+  BOOL _useRoutes;
   BOOL _rotateThenTranslate;
 }
 
@@ -72,6 +74,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _mapView = [GMSMapView mapWithFrame:frame camera:camera];
     _mapView.accessibilityElementsHidden = NO;
     _trackCameraPosition = NO;
+    _useRoutes = false;
     _markerAnimationDuration = -1;
     _rotateThenTranslate = true;
     
@@ -89,9 +92,30 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _mapView.delegate = weakSelf;
     _registrar = registrar;
     _cameraDidInitialSetup = NO;
-    _markersController = [[FLTMarkersController alloc] init:_channel
+    if (_useRoutes) {
+      _markersController = nil;
+      _routesController = [[FLTRoutesController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar
+                                    markerAnimationDuration:_markerAnimationDuration
+                                        rotateThenTranslate:_rotateThenTranslate];
+      id routesToAdd = args[@"routesToAdd"];
+      if ([routesToAdd isKindOfClass:[NSArray class]]) {
+        [_routesController addRoutes:routesToAdd];
+      }
+    }
+    else {
+      _routesController = nil;
+      _markersController = [[FLTMarkersController alloc] init:_channel
+                                                      mapView:_mapView
+                                                    registrar:registrar
+                                      markerAnimationDuration:_markerAnimationDuration
+                                          rotateThenTranslate:_rotateThenTranslate];
+      id markersToAdd = args[@"markersToAdd"];
+      if ([markersToAdd isKindOfClass:[NSArray class]]) {
+        [_markersController addMarkers:markersToAdd];
+      }
+    }
     _polygonsController = [[FLTPolygonsController alloc] init:_channel
                                                       mapView:_mapView
                                                     registrar:registrar];
@@ -101,12 +125,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _circlesController = [[FLTCirclesController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar];
-                                    markerAnimationDuration:_markerAnimationDuration
-                                        rotateThenTranslate:_rotateThenTranslate];
-    id markersToAdd = args[@"markersToAdd"];
-    if ([markersToAdd isKindOfClass:[NSArray class]]) {
-      [_markersController addMarkers:markersToAdd];
-    }
     id polygonsToAdd = args[@"polygonToAdd"];
     if ([polygonsToAdd isKindOfClass:[NSArray class]]) {
       [_polygonsController addPolygons:polygonsToAdd];
@@ -168,6 +186,20 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     id markerIdsToRemove = call.arguments[@"markerIdsToRemove"];
     if ([markerIdsToRemove isKindOfClass:[NSArray class]]) {
       [_markersController removeMarkerIds:markerIdsToRemove];
+    }
+    result(nil);
+  } else if ([call.method isEqualToString:@"routes#update"]) {
+    id routesToAdd = call.arguments[@"routesToAdd"];
+    if ([routesToAdd isKindOfClass:[NSArray class]]) {
+      [_routesController addRoutes:routesToAdd];
+    }
+    id routesToChange = call.arguments[@"routesToChange"];
+    if ([routesToChange isKindOfClass:[NSArray class]]) {
+      [_routesController changeRoutes:routesToChange];
+    }
+    id routeIdsToRemove = call.arguments[@"routeIdsToRemove"];
+    if ([routeIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_routesController removeRouteIds:routeIdsToRemove];
     }
     result(nil);
   } else if ([call.method isEqualToString:@"polygons#update"]) {
@@ -327,6 +359,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   _mapView.settings.myLocationButton = enabled;
 }
 
+- (void)setUseRoutes:(BOOL)enabled {
+  _useRoutes = enabled;
+}
+
 - (void)setMarkerAnimationDuration:(float)durationInMs {
   _markerAnimationDuration = durationInMs;
 }
@@ -348,6 +384,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _mapView.mapStyle = style;
     return nil;
   }
+}
+
 - (void)setRotateThenTranslate:(BOOL)enabled {
   _rotateThenTranslate = enabled;
 }
@@ -382,12 +420,13 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (BOOL)mapView:(GMSMapView*)mapView didTapMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
-  return [_markersController onMarkerTap:markerId];
+  return _useRoutes ? [_routesController onMarkerTap:markerId] : [_markersController onMarkerTap:markerId];
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
-  [_markersController onInfoWindowTap:markerId];
+  if (_useRoutes) [_routesController onInfoWindowTap:markerId];
+  else [_markersController onInfoWindowTap:markerId];
 }
 - (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
   NSString* overlayId = overlay.userData[0];
@@ -558,6 +597,10 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   NSNumber* myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
     [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
+  }
+  NSNumber* useRoutes = data[@"useRoutes"];
+  if (useRoutes) {
+    [sink setUseRoutes:ToBool(useRoutes)];
   }
   NSNumber* durationInMs = data[@"markersAnimationDuration"];
   if (durationInMs) {
