@@ -134,6 +134,9 @@ class AndroidAlarmManager {
   /// The repeating timer is uniquely identified by `id`. Calling this function
   /// again with the same `id` will cancel and replace the existing timer.
   ///
+  /// If `startAt` is passed, the timer will first go off at that time and
+  /// subsequently run with period `duration`.
+  ///
   /// If `exact` is passed as `true`, the timer will be created with Android's
   /// `AlarmManager.setRepeating`. When `exact` is `false` (the default), the
   /// timer will be created with `AlarmManager.setInexactRepeating`.
@@ -152,13 +155,15 @@ class AndroidAlarmManager {
     Duration duration,
     int id,
     dynamic Function() callback, {
+    DateTime startAt,
     bool exact = false,
     bool wakeup = false,
     bool rescheduleOnReboot = false,
   }) async {
     final int now = DateTime.now().millisecondsSinceEpoch;
     final int period = duration.inMilliseconds;
-    final int first = now + period;
+    final int first =
+        startAt != null ? startAt.millisecondsSinceEpoch : now + period;
     final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
     if (handle == null) {
       return false;
