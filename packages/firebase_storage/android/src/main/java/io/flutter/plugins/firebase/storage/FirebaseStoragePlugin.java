@@ -6,7 +6,9 @@ package io.flutter.plugins.firebase.storage;
 
 import android.net.Uri;
 import android.util.SparseArray;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,16 +22,20 @@ import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-/** FirebaseStoragePlugin */
+/**
+ * FirebaseStoragePlugin
+ */
 public class FirebaseStoragePlugin implements MethodCallHandler {
   private FirebaseStorage firebaseStorage;
   private final MethodChannel channel;
@@ -49,7 +55,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
   }
 
   @Override
-  public void onMethodCall(MethodCall call, final Result result) {
+  public void onMethodCall(@NonNull MethodCall call, @NonNull final Result result) {
     String app = call.argument("app");
     String storageBucket = call.argument("bucket");
     if (app == null && storageBucket == null) {
