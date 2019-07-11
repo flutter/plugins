@@ -89,9 +89,12 @@ class CameraController {
   /// You must call [dispose] when you are done using the camera, otherwise it
   /// will remain locked and be unavailable to other applications.
   Future<void> initialize() {
-    if (_instance != this) _instance?.dispose();
-    _instance = this;
+    if (_instance == this) {
+      return Future<void>.value();
+    }
 
+    _instance?.dispose();
+    _instance = this;
     return configurator.initialize();
   }
 
