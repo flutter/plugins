@@ -1,4 +1,4 @@
-## 0.5.19+3
+## 0.5.20
 
 * Add map toolbar support
 
