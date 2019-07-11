@@ -1,6 +1,7 @@
-## 0.4.4
+## 0.4.3+4
 
-* Return type of mobile connection based on speed (2G, 3G or 4G)
+* [Android] Updated logic to retrieve network info.
+
 
 ## 0.4.3+3
 

@@ -63,7 +63,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
     receiver = null;
   }
 
-  private static String getNetworkSubType(int type, int subType) {
+  private static String getNetworkType(int type) {
     switch (type) {
       case ConnectivityManager.TYPE_ETHERNET:
       case ConnectivityManager.TYPE_WIFI:
@@ -166,11 +166,15 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   }
   
   private void handleCheck(MethodCall call, final Result result) {
+    result.success(checkNetworkType());
+  }
+
+  private String checkNetworkType() {
     NetworkInfo info = manager.getActiveNetworkInfo();
     if (info != null && info.isConnected()) {
-      result.success(getNetworkType(info.getType()));
+      return getNetworkType(info.getType());
     } else {
-      result.success("none");
+      return "none";
     }
   }
 
@@ -231,7 +235,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
         TelephonyManager mTelephonyManager =
             (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         int subType = mTelephonyManager.getNetworkType();
-        events.success(getNetworkType(type, subType));
+        events.success(checkNetworkType());
       }
     };
   }

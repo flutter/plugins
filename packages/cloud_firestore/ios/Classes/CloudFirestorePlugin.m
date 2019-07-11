@@ -32,7 +32,17 @@ static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy,
     for (id item in orderBy) {
       NSArray *orderByParameters = item;
       NSString *fieldName = orderByParameters[0];
-      [values addObject:[documentData objectForKey:fieldName]];
+      if ([fieldName rangeOfString:@"."].location != NSNotFound) {
+        NSArray *fieldNameParts = [fieldName componentsSeparatedByString:@"."];
+        NSDictionary *currentMap = [documentData objectForKey:[fieldNameParts objectAtIndex:0]];
+        for (int i = 1; i < [fieldNameParts count] - 1; i++) {
+          currentMap = [currentMap objectForKey:[fieldNameParts objectAtIndex:i]];
+        }
+        [values addObject:[currentMap objectForKey:[fieldNameParts
+                                                       objectAtIndex:[fieldNameParts count] - 1]]];
+      } else {
+        [values addObject:[documentData objectForKey:fieldName]];
+      }
     }
   }
   if (isCollectionGroup) {

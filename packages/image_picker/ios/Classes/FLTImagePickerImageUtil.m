@@ -5,6 +5,27 @@
 #import "FLTImagePickerImageUtil.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 
+@interface GIFInfo ()
+
+@property(strong, nonatomic, readwrite) NSArray<UIImage *> *images;
+@property(assign, nonatomic, readwrite) NSTimeInterval interval;
+
+@end
+
+@implementation GIFInfo
+
+- (instancetype)initWithImages:(NSArray<UIImage *> *)images interval:(NSTimeInterval)interval;
+{
+  self = [super init];
+  if (self) {
+    self.images = images;
+    self.interval = interval;
+  }
+  return self;
+}
+
+@end
+
 @implementation FLTImagePickerImageUtil : NSObject
 
 + (UIImage *)scaledImage:(UIImage *)image
@@ -57,9 +78,9 @@
   return scaledImage;
 }
 
-+ (GIFInfo)scaledGIFImage:(NSData *)data
-                 maxWidth:(NSNumber *)maxWidth
-                maxHeight:(NSNumber *)maxHeight {
++ (GIFInfo *)scaledGIFImage:(NSData *)data
+                   maxWidth:(NSNumber *)maxWidth
+                  maxHeight:(NSNumber *)maxHeight {
   NSMutableDictionary<NSString *, id> *options = [NSMutableDictionary dictionary];
   options[(NSString *)kCGImageSourceShouldCache] = @(YES);
   options[(NSString *)kCGImageSourceTypeIdentifierHint] = (NSString *)kUTTypeGIF;
@@ -98,9 +119,7 @@
 
   CFRelease(imageSource);
 
-  GIFInfo info;
-  info.images = images;
-  info.interval = interval;
+  GIFInfo *info = [[GIFInfo alloc] initWithImages:images interval:interval];
 
   return info;
 }
