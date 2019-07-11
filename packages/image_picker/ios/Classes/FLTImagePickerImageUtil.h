@@ -7,11 +7,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef struct GIFInfo {
-  // frames of animation
-  NSArray<UIImage *> *images;
-  NSTimeInterval interval;
-} GIFInfo;
+@interface GIFInfo : NSObject
+
+@property(strong, nonatomic, readonly) NSArray<UIImage *> *images;
+@property(assign, nonatomic, readonly) NSTimeInterval interval;
+
+- (instancetype)initWithImages:(NSArray<UIImage *> *)images interval:(NSTimeInterval)interval;
+
+@end
 
 @interface FLTImagePickerImageUtil : NSObject
 
@@ -20,9 +23,9 @@ typedef struct GIFInfo {
                maxHeight:(NSNumber *)maxHeight;
 
 // Resize all gif animation frames.
-+ (GIFInfo)scaledGIFImage:(NSData *)data
-                 maxWidth:(NSNumber *)maxWidth
-                maxHeight:(NSNumber *)maxHeight;
++ (GIFInfo *)scaledGIFImage:(NSData *)data
+                   maxWidth:(NSNumber *)maxWidth
+                  maxHeight:(NSNumber *)maxHeight;
 
 @end
 
