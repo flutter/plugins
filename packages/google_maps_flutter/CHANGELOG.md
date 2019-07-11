@@ -1,6 +1,10 @@
-## 0.5.20
+## 0.5.21
 
 * Add support for holes in Polygons
+
+## 0.5.20
+
+* Add map toolbar support
 
 ## 0.5.19+2
 

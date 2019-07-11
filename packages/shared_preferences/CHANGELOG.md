@@ -1,3 +1,7 @@
+## 0.5.3+2
+
+* Fix Gradle version.
+
 ## 0.5.3+1
 
 * Add missing template type parameter to `invokeMethod` calls.

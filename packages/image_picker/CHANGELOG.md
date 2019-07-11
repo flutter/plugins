@@ -1,3 +1,23 @@
+## 0.6.0+15
+
+* Android: throws an exception when permissions denied instead of ignoring.
+
+## 0.6.0+14
+
+* Fix typo in README.
+
+## 0.6.0+13
+
+* Bugfix Android: Fix a crash occurs in some scenarios when user picks up image from gallery.
+
+## 0.6.0+12
+
+* Use class instead of struct for `GIFInfo` in iOS implementation.
+
+## 0.6.0+11
+
+* Don't use module imports.
+
 ## 0.6.0+10
 
 * iOS: support picking GIF from gallery.
