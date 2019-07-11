@@ -8,6 +8,8 @@
 .dart_tool/
 pubspec.lock
 
+examples/all_plugins/pubspec.yaml
+
 Podfile
 Podfile.lock
 Pods/

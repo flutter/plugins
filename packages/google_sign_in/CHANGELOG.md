@@ -1,7 +1,11 @@
-## 4.0.3
+## 4.0.4
 
-* Update guava to `27.0.1-android`.
-* Add correct @NonNull annotations to reduce compiler warnings.
+* Revert changes in 4.0.3.
+
+## 4.0.3	
+
+* Update guava to `27.0.1-android`.	
+* Add correct @NonNull annotations to reduce compiler warnings.	
 
 ## 4.0.2
 

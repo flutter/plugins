@@ -4,7 +4,7 @@
 # sure all first party plugins can be compiled together.
 
 # So that users can run this script from anywhere and it will work as expected.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
@@ -12,6 +12,7 @@ check_changed_packages > /dev/null
 
 cd $REPO_DIR/examples/all_plugins
 flutter clean > /dev/null
+(cd "$REPO_DIR" && pub global run flutter_plugin_tools gen-pubspec --exclude firebase_core,firebase_ml_vision)
 
 function error() {
   echo "$@" 1>&2
@@ -20,7 +21,7 @@ function error() {
 failures=0
 
 for version in "debug" "release"; do
-  (flutter build $@ --$version) > /dev/null
+  (flutter build $@ --$version > /dev/null)
 
   if [ $? -eq 0 ]; then
     echo "Successfully built $version all_plugins app."

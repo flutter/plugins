@@ -7,8 +7,6 @@ package io.flutter.plugins.googlesignin;
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.Intent;
-import android.text.TextUtils;
-import androidx.annotation.NonNull;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -22,6 +20,8 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.google.android.gms.tasks.Task;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -107,7 +107,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
   /**
    * A delegate interface that exposes all of the sign-in functionality for other plugins to use.
-   * The below {@link Delegate} implementation should be used by any clients unless they need to
+   * The below {@link #Delegate} implementation should be used by any clients unless they need to
    * override some of these functions, such as for testing.
    */
   public interface IDelegate {
@@ -243,7 +243,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
         }
-        if (!TextUtils.isEmpty(hostedDomain)) {
+        if (!Strings.isNullOrEmpty(hostedDomain)) {
           optionsBuilder.setHostedDomain(hostedDomain);
         }
 
@@ -270,7 +270,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         task.addOnCompleteListener(
             new OnCompleteListener<GoogleSignInAccount>() {
               @Override
-              public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+              public void onComplete(Task<GoogleSignInAccount> task) {
                 onSignInResult(task);
               }
             });
@@ -305,7 +305,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           .addOnCompleteListener(
               new OnCompleteListener<Void>() {
                 @Override
-                public void onComplete(@NonNull Task<Void> task) {
+                public void onComplete(Task<Void> task) {
                   if (task.isSuccessful()) {
                     finishWithSuccess(null);
                   } else {
@@ -325,7 +325,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           .addOnCompleteListener(
               new OnCompleteListener<Void>() {
                 @Override
-                public void onComplete(@NonNull Task<Void> task) {
+                public void onComplete(Task<Void> task) {
                   if (task.isSuccessful()) {
                     finishWithSuccess(null);
                   } else {
@@ -448,7 +448,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
             @Override
             public String call() throws Exception {
               Account account = new Account(email, "com.google");
-              String scopesStr = "oauth2:" + TextUtils.join(" ", requestedScopes);
+              String scopesStr = "oauth2:" + Joiner.on(' ').join(requestedScopes);
               return GoogleAuthUtil.getToken(registrar.context(), account, scopesStr);
             }
           };
