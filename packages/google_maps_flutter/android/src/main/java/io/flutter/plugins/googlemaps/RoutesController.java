@@ -49,7 +49,10 @@ class RoutesController {
     return (Map<?, ?>) o;
   }
 
-  void routeAnimation(RouteController routeController, float durationInMs, boolean rotateThenTranslate) {  
+  void routeAnimation(RouteController routeController, float durationInMs, boolean rotateThenTranslate) {
+      if (routeController == null) {
+        return;
+      }
       List<LatLng> route = routeController.getRoute();
       MarkerController markerController = routeController.getMarkerController();
       Marker marker = markerController.getMarker();
@@ -73,7 +76,6 @@ class RoutesController {
       if (routeToAdd == null) continue;
       RouteController routeController = null;
       final Map<?, ?> data = toMap(routeToAdd);
-      final String routeId = data.get("routeId").toString();
       final List<?> markersToAdd = toList(data.get("markers"));
       for (Object markerToAdd : markersToAdd) {
           if (markerToAdd != null) {

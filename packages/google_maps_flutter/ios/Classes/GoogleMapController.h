@@ -6,6 +6,7 @@
 #import <GoogleMaps/GoogleMaps.h>
 #import "GoogleMapCircleController.h"
 #import "GoogleMapMarkerController.h"
+#import "GoogleMapRouteController.h"
 #import "GoogleMapPolygonController.h"
 #import "GoogleMapPolylineController.h"
 
@@ -23,6 +24,7 @@
 - (void)setTrackCameraPosition:(BOOL)enabled;
 - (void)setZoomGesturesEnabled:(BOOL)enabled;
 - (void)setMyLocationEnabled:(BOOL)enabled;
+- (void)setUseRoutes:(BOOL)enabled;
 - (void)setMarkerAnimationDuration:(float)durationInMs;
 - (void)setMyLocationButtonEnabled:(BOOL)enabled;
 - (NSString *)setMapStyle:(NSString *)mapStyle;

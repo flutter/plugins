@@ -30,6 +30,7 @@
                                mapView:(GMSMapView*)mapView;
 - (BOOL)consumeTapEvents;
 - (void)removeMarker;
+- (CLLocationCoordinate2D)getPosition;
 @end
 
 @interface FLTMarkersController : NSObject
@@ -37,10 +38,11 @@
              mapView:(GMSMapView*)mapView
            registrar:(NSObject<FlutterPluginRegistrar>*)registrar
 markerAnimationDuration:(float)markerAnimationDuration
-    rotateThenTranslate:(bool)rotateThenTranslate
+ rotateThenTranslate:(bool)rotateThenTranslate;
 - (void)addMarkers:(NSArray*)markersToAdd;
 - (void)changeMarkers:(NSArray*)markersToChange;
 - (void)removeMarkerIds:(NSArray*)markerIdsToRemove;
 - (BOOL)onMarkerTap:(NSString*)markerId;
 - (void)onInfoWindowTap:(NSString*)markerId;
++ (CLLocationCoordinate2D)getPosition:(NSDictionary*)marker;
 @end

@@ -1,81 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2019 The HKTaxiApp Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "GoogleMapMarkerController.h"
+#import "GoogleMapRouteController.h"
 #import "JsonConversions.h"
 
 static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray* icon);
 static void InterpretInfoWindow(id<FLTGoogleMapMarkerOptionsSink> sink, NSDictionary* data);
-
-@implementation FLTGoogleMapMarkerController {
-  GMSMarker* _marker;
-  GMSMapView* _mapView;
-  BOOL _consumeTapEvents;
-}
-- (instancetype)initMarkerWithPosition:(CLLocationCoordinate2D)position
-                              markerId:(NSString*)markerId
-                               mapView:(GMSMapView*)mapView {
-  self = [super init];
-  if (self) {
-    _marker = [GMSMarker markerWithPosition:position];
-    _mapView = mapView;
-    _markerId = markerId;
-    _marker.userData = @[ _markerId ];
-    _consumeTapEvents = NO;
-  }
-  return self;
-}
-- (BOOL)consumeTapEvents {
-  return _consumeTapEvents;
-}
-- (void)removeMarker {
-  _marker.map = nil;
-}
-- (CLLocationCoordinate2D)getPosition {
-  return _marker.position;
-}
-
-#pragma mark - FLTGoogleMapMarkerOptionsSink methods
-
-- (void)setAlpha:(float)alpha {
-  _marker.opacity = alpha;
-}
-- (void)setAnchor:(CGPoint)anchor {
-  _marker.groundAnchor = anchor;
-}
-- (void)setConsumeTapEvents:(BOOL)consumes {
-  _consumeTapEvents = consumes;
-}
-- (void)setDraggable:(BOOL)draggable {
-  _marker.draggable = draggable;
-}
-- (void)setFlat:(BOOL)flat {
-  _marker.flat = flat;
-}
-- (void)setIcon:(UIImage*)icon {
-  _marker.icon = icon;
-}
-- (void)setInfoWindowAnchor:(CGPoint)anchor {
-  _marker.infoWindowAnchor = anchor;
-}
-- (void)setInfoWindowTitle:(NSString*)title snippet:(NSString*)snippet {
-  _marker.title = title;
-  _marker.snippet = snippet;
-}
-- (void)setPosition:(CLLocationCoordinate2D)position {
-  _marker.position = position;
-}
-- (void)setRotation:(CLLocationDegrees)rotation {
-  _marker.rotation = rotation;
-}
-- (void)setVisible:(BOOL)visible {
-  _marker.map = visible ? _mapView : nil;
-}
-- (void)setZIndex:(int)zIndex {
-  _marker.zIndex = zIndex;
-}
-@end
 
 static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
 
@@ -219,8 +150,38 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
   return image;
 }
 
-@implementation FLTMarkersController {
-  NSMutableDictionary* _markerIdToController;
+@implementation FLTGoogleMapRouteController {
+  NSMutableArray<NSDictionary*>* _routes;
+  FLTGoogleMapMarkerController* _markerController;
+}
+- (instancetype)initWithMarkerController:(FLTGoogleMapMarkerController*)markerController {
+  self = [super init];
+  if (self) {
+    _routes = [[NSMutableArray alloc] init];
+    _markerController = markerController;
+  }
+  return self;
+}
+- (void)remove {
+  [_markerController removeMarker];
+  [_routes removeAllObjects];
+}
+- (void)addMarker:(NSDictionary*)marker {
+  [_routes addObject:marker];
+}
+- (void)clearMarkers {
+  [_routes removeAllObjects];
+}
+- (NSMutableArray<NSDictionary*>*)getRoutes {
+  return _routes;
+}
+- (FLTGoogleMapMarkerController*)getMarkerController {
+  return _markerController;
+}
+@end
+
+@implementation FLTRoutesController {
+  NSMutableDictionary* _routeIdToController;
   FlutterMethodChannel* _methodChannel;
   NSObject<FlutterPluginRegistrar>* _registrar;
   GMSMapView* _mapView;
@@ -236,7 +197,7 @@ markerAnimationDuration:(float)markerAnimationDuration
   if (self) {
     _methodChannel = methodChannel;
     _mapView = mapView;
-    _markerIdToController = [NSMutableDictionary dictionaryWithCapacity:1];
+    _routeIdToController = [NSMutableDictionary dictionaryWithCapacity:1];
     _registrar = registrar;
     _markerAnimationDuration = markerAnimationDuration;
     _rotateThenTranslate = rotateThenTranslate;
@@ -260,92 +221,150 @@ markerAnimationDuration:(float)markerAnimationDuration
     }
     return degree+360;
 }
-- (void)addMarkers:(NSArray*)markersToAdd {
-  for (NSDictionary* marker in markersToAdd) {
-    CLLocationCoordinate2D position = [FLTMarkersController getPosition:marker];
-    NSString* markerId = [FLTMarkersController getMarkerId:marker];
-    FLTGoogleMapMarkerController* controller =
-        [[FLTGoogleMapMarkerController alloc] initMarkerWithPosition:position
-                                                            markerId:markerId
-                                                             mapView:_mapView];
-    InterpretMarkerOptions(marker, controller, _registrar);
-    _markerIdToController[markerId] = controller;
-  }
-}
-- (void)changeMarkers:(NSArray*)markersToChange {
+- (void)routeAnimation:(FLTGoogleMapRouteController*)routeController {
   float fraction = 0.3;
-  for (NSDictionary* marker in markersToChange) {
-    NSString* markerId = [FLTMarkersController getMarkerId:marker];
-    FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
-    if (!controller) {
-      continue;
-    }
-    if (_markerAnimationDuration < 0) InterpretMarkerOptions(marker, controller, _registrar);
+  NSMutableArray<NSDictionary*>* routes = [routeController getRoutes];
+  FLTGoogleMapMarkerController* markerController = [routeController getMarkerController];
+  if (routes && markerController) {
+    if (_markerAnimationDuration < 0) InterpretMarkerOptions([routes lastObject], markerController, _registrar);
     else {
-      CLLocationCoordinate2D startPosition = [controller getPosition];
-      CLLocationCoordinate2D finalPosition = [FLTMarkersController getPosition:marker];
-      float bearing = [self getBearing:startPosition andSecond:finalPosition];
-      NSMutableDictionary *newMarker = [[NSMutableDictionary alloc] init];
-      NSDictionary *oldMarker = (NSDictionary *)[marker mutableCopy];
-      [newMarker addEntriesFromDictionary:oldMarker];
-      [newMarker setObject:@(bearing) forKey:@"rotation"];
+      NSUInteger numberOfPositions = [routes count];
+      float animationWithinRoute = _markerAnimationDuration / numberOfPositions;
+      float delayInSeconds = 0.0f;
+      CLLocationCoordinate2D startPosition = [markerController getPosition];
+      for (NSDictionary* marker in routes) {
+        CLLocationCoordinate2D finalPosition = [FLTMarkersController getPosition:marker];
+        float bearing = [self getBearing:startPosition andSecond:finalPosition];
+        NSMutableDictionary *newMarker = [[NSMutableDictionary alloc] init];
+        NSDictionary *oldMarker = (NSDictionary *)[marker mutableCopy];
+        [newMarker addEntriesFromDictionary:oldMarker];
+        [newMarker setObject:@(bearing) forKey:@"rotation"];
       
-      if (_rotateThenTranslate) {
-        [CATransaction begin];
-        [CATransaction setAnimationDuration:_markerAnimationDuration * fraction / 1000];
-        [controller setRotation:bearing];
-        [CATransaction commit];
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_markerAnimationDuration * fraction / 1000 * NSEC_PER_SEC));
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
-          [CATransaction begin];
-          [CATransaction setAnimationDuration:_markerAnimationDuration * (1 - fraction) / 1000];
-          InterpretMarkerOptions(newMarker, controller, _registrar);
-          [CATransaction commit];
+
+        dispatch_time_t popTime1 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime1, dispatch_get_main_queue(), ^(void) {
+          if (_rotateThenTranslate) {
+            [CATransaction begin];
+            [CATransaction setAnimationDuration:animationWithinRoute * fraction / 1000];
+            [markerController setRotation:bearing];
+            [CATransaction commit];
+            dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(animationWithinRoute * fraction / 1000 * NSEC_PER_SEC));
+            dispatch_after(popTime2, dispatch_get_main_queue(), ^(void) {
+              [CATransaction begin];
+              [CATransaction setAnimationDuration:animationWithinRoute * (1 - fraction) / 1000];
+              InterpretMarkerOptions(newMarker, markerController, _registrar);
+              [CATransaction commit];
+            });
+          } else {
+            [CATransaction begin];
+            [CATransaction setAnimationDuration:animationWithinRoute / 1000];
+            InterpretMarkerOptions(newMarker, markerController, _registrar);
+            [CATransaction commit];
+          }
         });
-      } else {
-        [CATransaction begin];
-        [CATransaction setAnimationDuration:_markerAnimationDuration / 1000];
-        InterpretMarkerOptions(newMarker, controller, _registrar);
-        [CATransaction commit];
+
+        startPosition = finalPosition;
+        delayInSeconds += animationWithinRoute / 1000;
       }
     }
   }
 }
-- (void)removeMarkerIds:(NSArray*)markerIdsToRemove {
-  for (NSString* markerId in markerIdsToRemove) {
-    if (!markerId) {
+- (void)addRoutes:(NSArray*)routesToAdd {
+  for (NSDictionary* route in routesToAdd) {
+    if (!route) {
       continue;
     }
-    FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
-    if (!controller) {
+    NSString* routeId = [self getRouteId:route];
+    NSArray* markersToAdd = [self getMarkers:route];
+    if (!markersToAdd) {
       continue;
     }
-    [controller removeMarker];
-    [_markerIdToController removeObjectForKey:markerId];
+    FLTGoogleMapRouteController* routeController = nil;
+    for (NSDictionary* markerToAdd in markersToAdd) {
+      if (markerToAdd && routeController) {
+        [routeController addMarker:markerToAdd];
+      }
+      else if (markerToAdd) {
+        CLLocationCoordinate2D position = [FLTMarkersController getPosition:markerToAdd];
+        FLTGoogleMapMarkerController* markerController =
+        [[FLTGoogleMapMarkerController alloc] initMarkerWithPosition:position
+                                                            markerId:routeId
+                                                             mapView:_mapView];
+        InterpretMarkerOptions(markerToAdd, markerController, _registrar);
+        routeController = [[FLTGoogleMapRouteController alloc] initWithMarkerController:markerController];
+        _routeIdToController[routeId] = routeController;
+      }
+    }
+    if (routeController) {
+      [self routeAnimation:routeController];
+    }
+  }
+}
+- (void)changeRoutes:(NSArray*)routesToChange {
+  for (NSDictionary* route in routesToChange) {
+    NSString* routeId = [self getRouteId:route];
+    FLTGoogleMapRouteController* routeController = _routeIdToController[routeId];
+    if (!routeController) {
+      continue;
+    }
+    [routeController clearMarkers];
+    NSArray* markers = [self getMarkers:route];
+    if (!markers) {
+      continue;
+    }
+    FLTGoogleMapMarkerController* markerController = [routeController getMarkerController];
+    if (!markerController) {
+      NSArray* routesToAdd = @[route];
+      [self addRoutes:routesToAdd];
+    }
+    else {
+      for (NSDictionary* marker in markers) {
+        [routeController addMarker:marker];
+      }
+      [self routeAnimation:routeController];
+    }
+  }
+}
+- (void)removeRouteIds:(NSArray*)routeIdsToRemove {
+  for (NSString* routeId in routeIdsToRemove) {
+    if (!routeId) {
+      continue;
+    }
+    FLTGoogleMapRouteController* routeController = _routeIdToController[routeId];
+    if (!routeController) {
+      continue;
+    }
+    [routeController remove];
+    [_routeIdToController removeObjectForKey:routeId];
   }
 }
 - (BOOL)onMarkerTap:(NSString*)markerId {
   if (!markerId) {
     return NO;
   }
-  FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
-  if (!controller) {
+  FLTGoogleMapRouteController* routeController = _routeIdToController[markerId];
+  if (!routeController) {
+    return NO;
+  }
+  FLTGoogleMapMarkerController* markerController = [routeController getMarkerController];
+  if (!markerController) {
     return NO;
   }
   [_methodChannel invokeMethod:@"marker#onTap" arguments:@{@"markerId" : markerId}];
-  return controller.consumeTapEvents;
+  return markerController.consumeTapEvents;
 }
 - (void)onInfoWindowTap:(NSString*)markerId {
-  if (markerId && _markerIdToController[markerId]) {
-    [_methodChannel invokeMethod:@"infoWindow#onTap" arguments:@{@"markerId" : markerId}];
+  if (markerId) {
+    FLTGoogleMapRouteController* routeController = _routeIdToController[markerId];
+    if (routeController && [routeController getMarkerController]) {
+      [_methodChannel invokeMethod:@"infoWindow#onTap" arguments:@{@"markerId" : markerId}];
+    }
   }
 }
-
-+ (CLLocationCoordinate2D)getPosition:(NSDictionary*)marker {
-  NSArray* position = marker[@"position"];
-  return ToLocation(position);
+- (NSString*)getRouteId:(NSDictionary*)route {
+  return route[@"routeId"];
 }
-+ (NSString*)getMarkerId:(NSDictionary*)marker {
-  return marker[@"markerId"];
+- (NSArray*)getMarkers:(NSDictionary*)route {
+  return route[@"markers"];
 }
 @end

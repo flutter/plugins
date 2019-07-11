@@ -190,7 +190,6 @@
            final float durationWithinRoute = durationInMs / numberOfPositions;
 
            final long now = SystemClock.uptimeMillis();
-           final Interpolator interpolator = new LinearInterpolator();
            final float fraction = 0.3f; // determine fraction of time for rotation -> (fraction) and translation -> (1 - fraction)
 
            LatLng prevPosition = marker.getPosition();
@@ -205,12 +204,15 @@
                 if (rotateThenTranslate) {
                     Handler handler1 = new Handler();
                     Handler handler2 = new Handler();
-                    RotationRunnable rr = new RotationRunnable(marker, handler1, start, durationWithinRoute, interpolator, fraction, prevRotation, turn, angle);
-                    TranslationRunnable tr = new TranslationRunnable(marker, latLngInterpolator, handler2, start+(long)(durationWithinRoute*i), durationWithinRoute, interpolator, fraction, prevPosition, curPosition);
+                    Interpolator interpolator1 = new LinearInterpolator();
+                    Interpolator interpolator2 = new LinearInterpolator();
+                    RotationRunnable rr = new RotationRunnable(marker, handler1, start, durationWithinRoute, interpolator1, fraction, prevRotation, turn, angle);
+                    TranslationRunnable tr = new TranslationRunnable(marker, latLngInterpolator, handler2, start+(long)(durationWithinRoute*i), durationWithinRoute, interpolator2, fraction, prevPosition, curPosition);
                     handler1.postDelayed(rr, (long)(durationWithinRoute*i));
                     handler2.postDelayed(tr, (long)(durationWithinRoute*i+durationWithinRoute*fraction));
                 } else {
                     Handler handler = new Handler();
+                    Interpolator interpolator = new LinearInterpolator();
                     RotationAndTranslationRunnable ratr = new RotationAndTranslationRunnable(marker, latLngInterpolator, handler, start, durationWithinRoute, interpolator, prevPosition, curPosition, prevRotation, turn, angle);
                     handler.postDelayed(ratr, (long)(durationWithinRoute*i));
                 }

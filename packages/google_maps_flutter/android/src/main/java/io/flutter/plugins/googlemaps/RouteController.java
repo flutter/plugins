@@ -20,15 +20,18 @@ class RouteController {
   }
 
   void remove() {
+    if (this.markerController == null) return;
     this.markerController.remove();
   }
 
   void addPosition(LatLng position) {
+    if (this.route == null) this.route = new ArrayList<LatLng>();
     this.route.add(position);
   }
 
   void clearPosition() {
-    this.route.clear();
+    if (this.route == null) this.route = new ArrayList<LatLng>();
+    else this.route.clear();
   }
 
   List<LatLng> getRoute() {
