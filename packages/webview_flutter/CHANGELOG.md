@@ -1,3 +1,7 @@
+## 0.3.9+3
+
+* Add partial fix for webview keyboard input on Android versions prior to N.
+
 ## 0.3.9+2
 
 * Update Dart code to conform to current Dart formatter.
