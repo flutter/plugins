@@ -62,13 +62,14 @@ task:
     image: mojave-xcode-10.2-flutter
   setup_script:
     - pod repo update
-    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-12-1 | xargs xcrun simctl boot
   switch_channel_script:
     - flutter channel master
     - flutter upgrade
     - flutter doctor
   activate_script:
     - pub global activate flutter_plugin_tools
+  create_simulator_script:
+    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-12-1 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
       script: ./script/build_all_plugins_app.sh ios --no-codesign
