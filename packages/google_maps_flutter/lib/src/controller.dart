@@ -165,15 +165,19 @@ class GoogleMapController {
     });
   }
 
-  Future<double> computeArea(List<LatLng> points, { MeasurementUnit measurementUnit = MeasurementUnit.Meters }) async {
+  Future<double> computeArea(List<LatLng> points,
+      {MeasurementUnit measurementUnit = MeasurementUnit.Meters}) async {
     assert(points != null);
-    assert(points.length > 2, 'Area cannot be computed without 3 or more points.');
+    assert(
+        points.length > 2, 'Area cannot be computed without 3 or more points.');
 
     final double areaInMeters = await channel.invokeMethod(
       'map#computeAreaInMeters',
       <String, dynamic>{
         'options': <String, dynamic>{
-          'points': (points ?? <LatLng>[]).map<dynamic>((LatLng point) => point._toJson()).toList(),
+          'points': (points ?? <LatLng>[])
+              .map<dynamic>((LatLng point) => point._toJson())
+              .toList(),
         },
       },
     );
@@ -182,15 +186,20 @@ class GoogleMapController {
 
     switch (measurementUnit) {
       case MeasurementUnit.Meters:
-        area = areaInMeters; break;
+        area = areaInMeters;
+        break;
       case MeasurementUnit.Miles:
-        area = areaInMeters * 0.00062137; break;
+        area = areaInMeters * 0.00062137;
+        break;
       case MeasurementUnit.Acres:
-        area = areaInMeters * 0.00024711; break;
+        area = areaInMeters * 0.00024711;
+        break;
       case MeasurementUnit.Kilometers:
-        area = areaInMeters * 0.001; break;
+        area = areaInMeters * 0.001;
+        break;
       case MeasurementUnit.Feet:
-        area = areaInMeters * 3.2808; break;
+        area = areaInMeters * 3.2808;
+        break;
     }
 
     return area;
