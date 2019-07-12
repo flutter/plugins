@@ -85,8 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _updateConnectionStatus(NetworkInfo result) async {
-    DataSaving dataSavingResult = result.dataSaving;
-    ConnectivityResult connectivityResult = result.connectivityResult;
+    final DataSaving dataSavingResult = result.dataSaving;
+    final ConnectivityResult connectivityResult = result.connectivityResult;
     switch (connectivityResult) {
       case ConnectivityResult.wifi:
         String wifiName, wifiBSSID, wifiIP;
@@ -123,8 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case ConnectivityResult.mobile:
       case ConnectivityResult.none:
         setState(() {
-            _connectionStatus =
-              '${connectivityResult.toString()}\n'
+          _connectionStatus = '${connectivityResult.toString()}\n'
               'Data Saving: ${dataSavingResult.toString().split('.').last}';
         });
         break;

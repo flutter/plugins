@@ -33,7 +33,8 @@ void main() {
             // ignore: deprecated_member_use
             await BinaryMessages.handlePlatformMessage(
               Connectivity.eventChannel.name,
-              Connectivity.eventChannel.codec.encodeSuccessEnvelope('wifi/metered'),
+              Connectivity.eventChannel.codec
+                  .encodeSuccessEnvelope('wifi/metered'),
               (_) {},
             );
             break;
@@ -46,7 +47,7 @@ void main() {
 
     test('onConnectivityChanged', () async {
       final NetworkInfo result =
-      await Connectivity().onConnectivityChanged.first;
+          await Connectivity().onConnectivityChanged.first;
       expect(result.connectivityResult, ConnectivityResult.wifi);
       expect(result.dataSaving, DataSaving.metered);
     });
@@ -94,8 +95,7 @@ void main() {
     });
 
     test('checkConnectivity', () async {
-      final NetworkInfo result =
-      await Connectivity().checkConnectivity();
+      final NetworkInfo result = await Connectivity().checkConnectivity();
       expect(result.connectivityResult, ConnectivityResult.wifi);
       expect(result.dataSaving, DataSaving.metered);
       expect(

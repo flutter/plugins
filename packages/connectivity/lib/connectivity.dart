@@ -18,7 +18,12 @@ enum ConnectivityResult { wifi, mobile, none }
 /// BlockedBackgroundData: DataSaver is active and the app can't use background data (Android only)
 /// WhitelistedBackgroundData: DataSaver is active but the app is whitelisted can use background data (Android only)
 /// None: No DataSaver is active, default value on iOS
-enum DataSaving { metered, blockedBackgroundData, whitelistedBackgroundData, none }
+enum DataSaving {
+  metered,
+  blockedBackgroundData,
+  whitelistedBackgroundData,
+  none
+}
 
 class NetworkInfo {
   NetworkInfo(this.connectivityResult, this.dataSaving);
@@ -109,7 +114,7 @@ class Connectivity {
 }
 
 NetworkInfo _parseConnectivityResult(String state) {
-  List<String> statuses = state.split("/");
+  final List<String> statuses = state.split("/");
   ConnectivityResult connectivity;
   DataSaving dataSaving = DataSaving.none;
   // first the general casese
@@ -119,7 +124,7 @@ NetworkInfo _parseConnectivityResult(String state) {
       connectivity = ConnectivityResult.wifi;
       break;
     case 'mobile':
-      connectivity =  ConnectivityResult.mobile;
+      connectivity = ConnectivityResult.mobile;
       break;
     case 'none':
     default:

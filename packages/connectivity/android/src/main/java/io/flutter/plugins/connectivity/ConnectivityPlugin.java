@@ -4,6 +4,10 @@
 
 package io.flutter.plugins.connectivity;
 
+import static android.net.ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED;
+import static android.net.ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED;
+import static android.net.ConnectivityManager.RESTRICT_BACKGROUND_STATUS_WHITELISTED;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +17,6 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.EventChannel.EventSink;
 import io.flutter.plugin.common.EventChannel.StreamHandler;
@@ -22,10 +25,6 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-
-import static android.net.ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED;
-import static android.net.ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED;
-import static android.net.ConnectivityManager.RESTRICT_BACKGROUND_STATUS_WHITELISTED;
 
 /** ConnectivityPlugin */
 public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
@@ -62,9 +61,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
       filter.addAction(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED);
     }
     filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-    registrar
-        .context()
-        .registerReceiver(receiver, filter);
+    registrar.context().registerReceiver(receiver, filter);
   }
 
   @Override

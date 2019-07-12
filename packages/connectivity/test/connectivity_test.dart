@@ -94,8 +94,7 @@ void main() {
     });
 
     test('checkConnectivity', () async {
-      final NetworkInfo result =
-          await Connectivity().checkConnectivity();
+      final NetworkInfo result = await Connectivity().checkConnectivity();
       expect(result.connectivityResult, ConnectivityResult.wifi);
       expect(result.dataSaving, DataSaving.none);
       expect(
