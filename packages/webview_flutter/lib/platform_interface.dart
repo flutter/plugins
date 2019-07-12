@@ -163,10 +163,14 @@ class WebSettings {
     this.javascriptMode,
     this.hasNavigationDelegate,
     this.debuggingEnabled,
+    this.domStorageMode,
   });
 
   /// The JavaScript execution mode to be used by the webview.
   final JavascriptMode javascriptMode;
+
+  /// The DOM Stroage mode to be used by Android webview.
+  final DOMStorageMode domStorageMode;
 
   /// Whether the [WebView] has a [NavigationDelegate] set.
   final bool hasNavigationDelegate;
@@ -178,7 +182,7 @@ class WebSettings {
 
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, domStorageMode: $domStorageMode)';
   }
 }
 

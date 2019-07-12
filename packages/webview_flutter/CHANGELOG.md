@@ -1,3 +1,7 @@
+## 0.3.10
+
+* Add `domStorageMode` property.
+
 ## 0.3.9+2
 
 * Update Dart code to conform to current Dart formatter.

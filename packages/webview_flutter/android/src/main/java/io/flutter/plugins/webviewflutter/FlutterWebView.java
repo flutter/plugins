@@ -194,6 +194,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "jsMode":
           updateJsMode((Integer) settings.get(key));
           break;
+        case "domStorageMode":
+          updateDomStorageMode((Integer) settings.get(key));
+          break;
         case "hasNavigationDelegate":
           final boolean hasNavigationDelegate = (boolean) settings.get(key);
 
@@ -223,6 +226,19 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         break;
       default:
         throw new IllegalArgumentException("Trying to set unknown JavaScript mode: " + mode);
+    }
+  }
+
+  private void updateDomStorageMode(int mode) {
+    switch (mode) {
+      case 0: //disabled
+        webView.getSettings().setDomStorageEnabled(false);
+        break;
+      case 1: // enabled
+        webView.getSettings().setDomStorageEnabled(true);
+        break;
+      default:
+        throw new IllegalArgumentException("Trying to set unknown DOM Storage mode: " + mode);
     }
   }
 

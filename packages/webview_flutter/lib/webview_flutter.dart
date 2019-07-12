@@ -22,6 +22,14 @@ enum JavascriptMode {
   unrestricted,
 }
 
+enum DOMStorageMode {
+  /// DOM Storage is disabled.
+  disabled,
+
+  /// DOM Storage is enabled.
+  enabled,
+}
+
 /// A message that was sent by JavaScript code running in a [WebView].
 class JavascriptMessage {
   /// Constructs a JavaScript message object.
@@ -111,17 +119,20 @@ class WebView extends StatefulWidget {
   /// `onWebViewCreated` callback once the web view is created.
   ///
   /// The `javascriptMode` parameter must not be null.
+  /// The `domStorageMode` parameter must not be null.
   const WebView({
     Key key,
     this.onWebViewCreated,
     this.initialUrl,
     this.javascriptMode = JavascriptMode.disabled,
+    this.domStorageMode = DOMStorageMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
     this.gestureRecognizers,
     this.onPageFinished,
     this.debuggingEnabled = false,
   })  : assert(javascriptMode != null),
+        assert(domStorageMode != null),
         super(key: key);
 
   static WebViewPlatform _platform;
@@ -176,6 +187,9 @@ class WebView extends StatefulWidget {
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
+
+  /// Whether DOM Storage is enabled;
+  final DOMStorageMode domStorageMode;
 
   /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
   ///
@@ -323,6 +337,7 @@ CreationParams _creationParamsfromWidget(WebView widget) {
 WebSettings _webSettingsFromWidget(WebView widget) {
   return WebSettings(
     javascriptMode: widget.javascriptMode,
+    domStorageMode: widget.domStorageMode,
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
   );
@@ -332,16 +347,22 @@ WebSettings _webSettingsFromWidget(WebView widget) {
 WebSettings _clearUnchangedWebSettings(
     WebSettings currentValue, WebSettings newValue) {
   assert(currentValue.javascriptMode != null);
+  assert(currentValue.domStorageMode != null);
   assert(currentValue.hasNavigationDelegate != null);
   assert(currentValue.debuggingEnabled != null);
   assert(newValue.javascriptMode != null);
+  assert(newValue.domStorageMode != null);
   assert(newValue.hasNavigationDelegate != null);
   assert(newValue.debuggingEnabled != null);
   JavascriptMode javascriptMode;
+  DOMStorageMode domStorageMode;
   bool hasNavigationDelegate;
   bool debuggingEnabled;
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
+  }
+  if (currentValue.domStorageMode != newValue.domStorageMode) {
+    domStorageMode = newValue.domStorageMode;
   }
   if (currentValue.hasNavigationDelegate != newValue.hasNavigationDelegate) {
     hasNavigationDelegate = newValue.hasNavigationDelegate;
@@ -352,6 +373,7 @@ WebSettings _clearUnchangedWebSettings(
 
   return WebSettings(
       javascriptMode: javascriptMode,
+      domStorageMode: domStorageMode,
       hasNavigationDelegate: hasNavigationDelegate,
       debuggingEnabled: debuggingEnabled);
 }
