@@ -1,3 +1,7 @@
+## 0.11.1+9
+
+* Update README to clarify importance of filling out all fields for OAuth consent screen.
+
 ## 0.11.1+8
 
 * Automatically register for iOS notifications, ensuring that phone authentication
