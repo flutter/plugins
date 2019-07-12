@@ -26,6 +26,7 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
 
   private static final int SOURCE_CAMERA = 0;
   private static final int SOURCE_GALLERY = 1;
+  private static final int SOURCE_SELFIE = 2;
 
   private final PluginRegistry.Registrar registrar;
   private ImagePickerDelegate delegate;
@@ -157,7 +158,8 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
             delegate.chooseImageFromGallery(call, result);
             break;
           case SOURCE_CAMERA:
-            delegate.takeImageWithCamera(call, result);
+          case SOURCE_SELFIE:
+            delegate.takeImageWithCamera(call, result, imageSource == SOURCE_SELFIE);
             break;
           default:
             throw new IllegalArgumentException("Invalid image source: " + imageSource);
@@ -170,6 +172,7 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
             delegate.chooseVideoFromGallery(call, result);
             break;
           case SOURCE_CAMERA:
+          case SOURCE_SELFIE:
             delegate.takeVideoWithCamera(call, result);
             break;
           default:

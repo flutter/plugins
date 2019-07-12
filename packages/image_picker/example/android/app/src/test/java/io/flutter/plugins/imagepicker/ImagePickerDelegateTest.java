@@ -122,7 +122,7 @@ public class ImagePickerDelegateTest {
   public void takeImageWithCamera_WhenPendingResultExists_FinishesWithAlreadyActiveError() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
-    delegate.takeImageWithCamera(mockMethodCall, mockResult);
+    delegate.takeImageWithCamera(mockMethodCall, mockResult, false);
 
     verifyFinishedWithAlreadyActiveError();
     verifyNoMoreInteractions(mockResult);
@@ -134,7 +134,7 @@ public class ImagePickerDelegateTest {
     when(mockPermissionManager.needRequestCameraPermission()).thenReturn(true);
 
     ImagePickerDelegate delegate = createDelegate();
-    delegate.takeImageWithCamera(mockMethodCall, mockResult);
+    delegate.takeImageWithCamera(mockMethodCall, mockResult, false);
 
     verify(mockPermissionManager)
         .askForPermission(
@@ -147,7 +147,7 @@ public class ImagePickerDelegateTest {
     when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
 
     ImagePickerDelegate delegate = createDelegate();
-    delegate.takeImageWithCamera(mockMethodCall, mockResult);
+    delegate.takeImageWithCamera(mockMethodCall, mockResult, false);
 
     verify(mockActivity)
         .startActivityForResult(
@@ -161,7 +161,7 @@ public class ImagePickerDelegateTest {
     when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
 
     ImagePickerDelegate delegate = createDelegate();
-    delegate.takeImageWithCamera(mockMethodCall, mockResult);
+    delegate.takeImageWithCamera(mockMethodCall, mockResult, false);
 
     verify(mockActivity)
         .startActivityForResult(
@@ -175,7 +175,7 @@ public class ImagePickerDelegateTest {
     when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(false);
 
     ImagePickerDelegate delegate = createDelegate();
-    delegate.takeImageWithCamera(mockMethodCall, mockResult);
+    delegate.takeImageWithCamera(mockMethodCall, mockResult, false);
 
     verify(mockResult)
         .error("no_available_camera", "No cameras available for taking pictures.", null);

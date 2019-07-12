@@ -94,7 +94,7 @@ public class ImagePickerPluginTest {
 
     plugin.onMethodCall(call, mockResult);
 
-    verify(mockImagePickerDelegate).takeImageWithCamera(eq(call), any());
+    verify(mockImagePickerDelegate).takeImageWithCamera(eq(call), any(), any());
     verifyZeroInteractions(mockResult);
   }
 

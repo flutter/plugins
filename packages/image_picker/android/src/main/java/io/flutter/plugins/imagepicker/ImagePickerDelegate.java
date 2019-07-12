@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
@@ -300,7 +301,7 @@ public class ImagePickerDelegate
     activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
   }
 
-  public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
+  public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result, boolean useFrontCamera) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
       finishWithAlreadyActiveError(result);
       return;
@@ -313,7 +314,7 @@ public class ImagePickerDelegate
       return;
     }
 
-    launchTakeImageWithCameraIntent();
+    launchTakeImageWithCameraIntent(useFrontCamera);
   }
 
   private boolean needRequestCameraPermission() {
@@ -323,7 +324,7 @@ public class ImagePickerDelegate
     return permissionManager.needRequestCameraPermission();
   }
 
-  private void launchTakeImageWithCameraIntent() {
+  private void launchTakeImageWithCameraIntent(boolean useFrontCamera) {
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     boolean canTakePhotos = intentResolver.resolveActivity(intent);
 
@@ -337,6 +338,13 @@ public class ImagePickerDelegate
 
     Uri imageUri = fileUriResolver.resolveFileProviderUriForFile(fileProviderName, imageFile);
     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+    if (useFrontCamera) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+        intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+      } else {
+        intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+      }
+    }
     grantUriPermissions(intent, imageUri);
 
     activity.startActivityForResult(intent, REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA);

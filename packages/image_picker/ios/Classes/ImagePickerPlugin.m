@@ -21,6 +21,7 @@
 
 static const int SOURCE_CAMERA = 0;
 static const int SOURCE_GALLERY = 1;
+static const int SOURCE_SELFIE = 2;
 
 @implementation FLTImagePickerPlugin {
   NSDictionary *_arguments;
@@ -70,6 +71,9 @@ static const int SOURCE_GALLERY = 1;
       case SOURCE_CAMERA:
         [self checkCameraAuthorization];
         break;
+      case SOURCE_SELFIE:
+        [self checkSelfieCameraAuthorization];
+        break;
       case SOURCE_GALLERY:
         [self checkPhotoAuthorization];
         break;
@@ -96,6 +100,7 @@ static const int SOURCE_GALLERY = 1;
 
     switch (imageSource) {
       case SOURCE_CAMERA:
+      case SOURCE_SELFIE:
         [self checkCameraAuthorization];
         break;
       case SOURCE_GALLERY:
@@ -119,7 +124,30 @@ static const int SOURCE_GALLERY = 1;
     }
   }
   // Camera is not available on simulators
-  if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+  if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] &&
+      [UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]) {
+    _imagePickerController.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+    _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+    [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
+  } else {
+    [[[UIAlertView alloc] initWithTitle:@"Error"
+                                message:@"Camera not available."
+                               delegate:nil
+                      cancelButtonTitle:@"OK"
+                      otherButtonTitles:nil] show];
+  }
+}
+
+- (void)showSelfieCamera {
+  @synchronized(self) {
+    if (_imagePickerController.beingPresented) {
+      return;
+    }
+  }
+  // Camera is not available on simulators
+  if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] &&
+      [UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
+    _imagePickerController.cameraDevice = UIImagePickerControllerCameraDeviceFront;
     _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
     [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
   } else {
@@ -145,6 +173,37 @@ static const int SOURCE_GALLERY = 1;
                                    dispatch_async(dispatch_get_main_queue(), ^{
                                      if (granted) {
                                        [self showCamera];
+                                     }
+                                   });
+                                 } else {
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                     [self errorNoCameraAccess:AVAuthorizationStatusDenied];
+                                   });
+                                 }
+                               }];
+    }; break;
+    case AVAuthorizationStatusDenied:
+    case AVAuthorizationStatusRestricted:
+    default:
+      [self errorNoCameraAccess:status];
+      break;
+  }
+}
+
+- (void)checkSelfieCameraAuthorization {
+  AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+
+  switch (status) {
+    case AVAuthorizationStatusAuthorized:
+      [self showSelfieCamera];
+      break;
+    case AVAuthorizationStatusNotDetermined: {
+      [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
+                               completionHandler:^(BOOL granted) {
+                                 if (granted) {
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                     if (granted) {
+                                       [self showSelfieCamera];
                                      }
                                    });
                                  } else {
