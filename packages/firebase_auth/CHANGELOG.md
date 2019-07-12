@@ -1,3 +1,8 @@
+## 0.11.1+8
+
+* Automatically register for iOS notifications, ensuring that phone authentication
+  will work even if Firebase method swizzling is disabled.
+
 ## 0.11.1+7
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.
