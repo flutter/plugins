@@ -14,18 +14,18 @@ import java.util.Map;
 
 public final class WebViewFactory extends PlatformViewFactory {
   private final BinaryMessenger messenger;
-  private final View flutterView;
+  private final View containerView;
 
-  WebViewFactory(BinaryMessenger messenger, View flutterView) {
+  WebViewFactory(BinaryMessenger messenger, View containerView) {
     super(StandardMessageCodec.INSTANCE);
     this.messenger = messenger;
-    this.flutterView = flutterView;
+    this.containerView = containerView;
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public PlatformView create(Context context, int id, Object args) {
     Map<String, Object> params = (Map<String, Object>) args;
-    return new FlutterWebView(context, messenger, id, params, flutterView);
+    return new FlutterWebView(context, messenger, id, params, containerView);
   }
 }

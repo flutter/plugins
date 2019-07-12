@@ -4,19 +4,12 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import static android.content.Context.INPUT_METHOD_SERVICE;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputConnection;
-import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebStorage;
-import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -34,93 +27,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
-  private final View flutterView;
-
-  private static class InputAwareWebView extends WebView {
-    private static final String TAG = "InputAwareWebView";
-    private final View flutterView;
-
-    InputAwareWebView(Context context, View flutterView) {
-      super(context);
-      this.flutterView = flutterView;
-    }
-
-    private View threadedInputConnectionProxyView;
-
-    private ThreadedInputConnectionProxyAdapterView proxyAdapterView;
-
-    @Override
-    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-      if (proxyAdapterView == null) {
-        // No proxy adapter set, so we use the default implementation.
-        return super.onCreateInputConnection(outAttrs);
-      }
-
-      if (!proxyAdapterView.isTriggerDelayed()) {
-        // Currently on the IME thread. Delegate to the superclass.
-        return super.onCreateInputConnection(outAttrs);
-      }
-
-      InputConnection result = super.onCreateInputConnection(outAttrs);
-      if (result != null) {
-        // This should never happen.
-        Log.wtf(TAG, "Failed unexpectedly creating a webview input connection.");
-      }
-
-      final InputMethodManager imm =
-          (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
-      proxyAdapterView.requestFocus();
-      final View containerView = this;
-
-      // This is the crucial trick that gets the InputConnection creation to happen on the correct
-      // thread. https://cs.chromium.org/chromium/src/content/public/android/java/src/org/chromium/content/browser/input/ThreadedInputConnectionFactory.java?l=169.
-      this.post(
-          new Runnable() {
-            @Override
-            public void run() {
-              // This is a hack to make InputMethodManager believe that the proxy view now has a focus.
-              // As a result, InputMethodManager will think that mProxyView is focused, and will call
-              // getHandler() of the view when creating input connection.
-
-              // Step 1: Set proxyAdapterView as InputMethodManager#mNextServedView. This does not
-              // affect the real window focus.
-              proxyAdapterView.onWindowFocusChanged(true);
-
-              // Step 2: Have InputMethodManager focus in on containerView. As a result, IMM will call
-              // onCreateInputConnection() on proxyAdapterView on the same thread as
-              // proxyAdapterView.getHandler(). It will also call subsequent InputConnection methods on
-              // this IME thread.
-              imm.isActive(containerView);
-            }
-          });
-      return null;
-    }
-
-    @Override
-    public boolean checkInputConnectionProxy(final View view) {
-      View previousProxy = threadedInputConnectionProxyView;
-      threadedInputConnectionProxyView = view;
-      if (previousProxy != view) {
-        proxyAdapterView =
-            new ThreadedInputConnectionProxyAdapterView(
-                /*containerView=*/ flutterView,
-                /*targetView=*/ view,
-                /*imeHandler=*/ view.getHandler());
-        final View container = this;
-        proxyAdapterView.requestFocus();
-        post(
-            new Runnable() {
-              @Override
-              public void run() {
-                InputMethodManager imm =
-                    (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
-                imm.restartInput(container);
-              }
-            });
-      }
-      return super.checkInputConnectionProxy(view);
-    }
-  }
 
   @SuppressWarnings("unchecked")
   FlutterWebView(
@@ -128,9 +34,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       BinaryMessenger messenger,
       int id,
       Map<String, Object> params,
-      final View flutterView) {
-    this.flutterView = flutterView;
-    webView = new InputAwareWebView(context, flutterView);
+      final View containerView) {
+    webView = new InputAwareWebView(context, containerView);
 
     platformThreadHandler = new Handler(context.getMainLooper());
     // Allow local storage.
@@ -164,14 +69,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   // of Flutter but used as an override anyway wherever it's actually defined.
   // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to stable.
   public void onInputConnectionUnlocked() {
-    if (webView.proxyAdapterView == null) {
-      return;
-    }
-
-    webView.proxyAdapterView.setLocked(false);
-    InputMethodManager imm =
-        (InputMethodManager) flutterView.getContext().getSystemService(INPUT_METHOD_SERVICE);
-    imm.restartInput(flutterView);
+    webView.unlockInputConnection();
   }
 
   // @Override
@@ -181,11 +79,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   // of Flutter but used as an override anyway wherever it's actually defined.
   // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to stable.
   public void onInputConnectionLocked() {
-    if (webView.proxyAdapterView == null) {
-      return;
-    }
-
-    webView.proxyAdapterView.setLocked(true);
+    webView.lockInputConnection();
   }
 
   @Override
