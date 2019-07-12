@@ -236,7 +236,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       result(@[ @(NO), error ]);
     }
   } else if ([call.method isEqualToString:@"map#computeAreaInMeters"]) {
-    NSDecimalNumber* area = [self computeAreaInMeters:toPath(call.arguments[@"points"])];
+    NSDictionary* options = call.arguments[@"options"];
+    NSDecimalNumber* area = [self computeAreaInMeters:toPath(options[@"points"])];
     result(area);
   } else {
     result(FlutterMethodNotImplemented);
