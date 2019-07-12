@@ -275,7 +275,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (NSDecimalNumber*)computeAreaInMeters:(GMSPath*)path {
   double dbl = GMSGeometryArea(path);
-  return [[NSDecimalNumber alloc] initWithDouble: dbl];
+  return [[NSDecimalNumber alloc] initWithDouble:dbl];
 }
 
 #pragma mark - FLTGoogleMapOptionsSink methods
@@ -451,7 +451,7 @@ static GMSPath* toPath(id json) {
   GMSMutablePath* path = [GMSMutablePath path];
   for (id object in data) {
     NSArray* d = object;
-      [path addCoordinate:CLLocationCoordinate2DMake(ToDouble(d[0]), ToDouble(d[1]))];
+    [path addCoordinate:CLLocationCoordinate2DMake(ToDouble(d[0]), ToDouble(d[1]))];
   }
   return path;
 }
