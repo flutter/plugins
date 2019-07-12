@@ -95,6 +95,35 @@ void main() {
     expect(platformGoogleMap.compassEnabled, true);
   });
 
+  testWidgets('Can update mapToolbarEnabled', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          mapToolbarEnabled: false,
+        ),
+      ),
+    );
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.mapToolbarEnabled, false);
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          mapToolbarEnabled: true,
+        ),
+      ),
+    );
+
+    expect(platformGoogleMap.mapToolbarEnabled, true);
+  });
+
   testWidgets('Can update cameraTargetBounds', (WidgetTester tester) async {
     await tester.pumpWidget(
       Directionality(

@@ -1,6 +1,10 @@
-## 0.5.19+3
+## 0.5.20+1
 
 * Fix some confusions with my location and my location button
+
+## 0.5.20
+
+* Add map toolbar support
 
 ## 0.5.19+2
 

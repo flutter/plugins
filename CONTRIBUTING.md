@@ -1,19 +1,19 @@
-Contributing to Flutter Plugins
-===============================
+# Contributing to Flutter Plugins
+
 
 [![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/master)
 
 _See also: [Flutter's code of conduct](https://flutter.io/design-principles/#code-of-conduct)_
 
-Things you will need
---------------------
+## Things you will need
+
 
  * Linux, Mac OS X, or Windows.
  * git (used for source version control).
  * An ssh client (used to authenticate with GitHub).
 
-Getting the code and configuring your environment
--------------------------------------------------
+## Getting the code and configuring your environment
+
 
  * Ensure all the dependencies described in the previous section are installed.
  * Fork `https://github.com/flutter/plugins` into your own GitHub account. If
@@ -29,8 +29,8 @@ Getting the code and configuring your environment
    fetch from the master repository, not your clone, when running `git fetch`
    et al.)
 
-Running the examples
---------------------
+## Running the examples
+
 
 To run an example with a prebuilt binary from the cloud, switch to that
 example's directory, run `pub get` to make sure its dependencies have been
@@ -40,8 +40,7 @@ USB and debugging enabled on that device.
  * `cd packages/battery/example`
  * `flutter run`
 
-Running the tests
------------------
+## Running the tests
 
 Flutter plugins have both unit tests of their Dart API and integration tests that run on a virtual or actual device.
 
@@ -58,8 +57,7 @@ cd example
 flutter drive test/<name_of_plugin>.dart
 ```
 
-Contributing code
------------------
+## Contributing code
 
 We gladly accept contributions via GitHub pull requests.
 
@@ -112,3 +110,20 @@ You must complete the
 You can do this online, and it only takes a minute.
 If you've never submitted code before, you must add your (or your
 organization's) name and contact info to the [AUTHORS](AUTHORS) file.
+
+### The review process
+
+* This is a new process we are currently experimenting with, feedback on the process is welcomed at the Gitter contributors channel. *
+
+Reviewing PRs often requires a non trivial amount of time. We prioritize issues, not PRs, so that we use our maintainers' time in the most impactful way. Issues pertaining to this repository are managed in the [flutter/flutter issue tracker and are labeled with "plugin"](https://github.com/flutter/flutter/issues?q=is%3Aopen+is%3Aissue+label%3Aplugin+sort%3Areactions-%2B1-desc). Non trivial PRs should have an associated issue that will be used for prioritization. See the [prioritization section](https://github.com/flutter/flutter/wiki/Issue-hygiene#prioritization) in the Flutter wiki to understand how issues are prioritized.
+
+Newly opened PRs first go through initial triage which results in one of:
+  * **Merging the PR** - if the PR can be quickly reviewed and looks good.
+  * **Closing the PR** - if the PR maintainer decides that the PR should not be merged.
+  * **Moving the PR to the backlog** - if the review requires non trivial effort and the issue isn't a priority; in this case the maintainer will:
+    * Make sure that the PR has an associated issue labeled with "plugin".
+    * Add the "backlog" label to the issue.
+    * Leave a comment on the PR explaining that the review is not trivial and that the issue will be looked at according to priority order.
+  * **Starting a non trivial review** - if the review requires non trivial effort and the issue is a priority; in this case the maintainer will:
+    * Add the "in review" label to the issue.
+    * Self assign the PR.

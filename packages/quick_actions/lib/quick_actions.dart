@@ -36,13 +36,21 @@ class ShortcutItem {
 
 /// Quick actions plugin.
 class QuickActions {
-  const QuickActions();
+  factory QuickActions() => _instance;
+
+  @visibleForTesting
+  QuickActions.withMethodChannel(this.channel);
+
+  static final QuickActions _instance =
+      QuickActions.withMethodChannel(_kChannel);
+
+  final MethodChannel channel;
 
   /// Initializes this plugin.
   ///
   /// Call this once before any further interaction with the the plugin.
   void initialize(QuickActionHandler handler) {
-    _kChannel.setMethodCallHandler((MethodCall call) async {
+    channel.setMethodCallHandler((MethodCall call) async {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
@@ -52,12 +60,12 @@ class QuickActions {
   Future<void> setShortcutItems(List<ShortcutItem> items) async {
     final List<Map<String, String>> itemsList =
         items.map(_serializeItem).toList();
-    await _kChannel.invokeMethod<void>('setShortcutItems', itemsList);
+    await channel.invokeMethod<void>('setShortcutItems', itemsList);
   }
 
   /// Removes all [ShortcutItem]s registered for the app.
   Future<void> clearShortcutItems() =>
-      _kChannel.invokeMethod<void>('clearShortcutItems');
+      channel.invokeMethod<void>('clearShortcutItems');
 
   Map<String, String> _serializeItem(ShortcutItem item) {
     return <String, String>{
