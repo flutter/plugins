@@ -535,6 +535,17 @@ class Convert {
     return points;
   }
 
+  static List<LatLng> extractPointsFromArguments(Object o) {
+    final Map<?, ?> data = toMap(o);
+
+    final Object points = data.get("points");
+    if (points != null) {
+      return toPoints(points);
+    } else {
+      return new ArrayList<>(0);
+    }
+  }
+
   private static List<PatternItem> toPattern(Object o) {
     final List<?> data = toList(o);
 

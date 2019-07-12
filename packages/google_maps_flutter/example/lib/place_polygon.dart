@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 
 import 'page.dart';
 
@@ -100,6 +101,41 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
         geodesicParam: !polygon.geodesic,
       );
     });
+  }
+
+  void _calculateArea() async {
+    final List<LatLng> points = polygons[selectedPolygon].points;
+    final double meters = await controller.computeArea(points, measurementUnit: MeasurementUnit.Meters);
+    final double feet = await controller.computeArea(points, measurementUnit: MeasurementUnit.Feet);
+    final double acres = await controller.computeArea(points, measurementUnit: MeasurementUnit.Acres);
+    final double kilometers = await controller.computeArea(points, measurementUnit: MeasurementUnit.Kilometers);
+    final double miles = await controller.computeArea(points, measurementUnit: MeasurementUnit.Miles);
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Area'),
+          actions: <Widget>[
+            FlatButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.of(context).pop(),
+            )
+          ],
+          content: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Column(mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text('${NumberFormat.decimalPattern().format(meters)} meters²'),
+                Text('${NumberFormat.decimalPattern().format(feet)} feet²'),
+                Text('${NumberFormat.decimalPattern().format(acres)} acres²'),
+                Text('${NumberFormat.decimalPattern().format(kilometers)} kilometers²'),
+                Text('${NumberFormat.decimalPattern().format(miles)} miles²'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _toggleVisible() {
@@ -206,6 +242,12 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
                           onPressed: (selectedPolygon == null)
                               ? null
                               : _changeFillColor,
+                        ),
+                        FlatButton(
+                          child: const Text('calculate area'),
+                          onPressed: (selectedPolygon == null)
+                              ? null
+                              : _calculateArea,
                         ),
                       ],
                     )
