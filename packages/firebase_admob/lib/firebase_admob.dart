@@ -233,11 +233,7 @@ abstract class MobileAd {
   /// Disposing a banner ad that's been shown removes it from the screen.
   /// Interstitial ads can't be programmatically removed from view.
   Future<bool> dispose() {
-    // When dispose is called, following assert prevents graceful cleanup of resources
-    // and occationally causes exception in the plugin which results in dangling
-    // BannerAd in the app. Hence commenting it for now till better way of handling is
-    // added by the plugin maintainer.
-    // assert(_allAds[id] != null);
+    if (_allAds[id] == null) return Future<bool>.value(true);
     _allAds[id] = null;
     return _invokeBooleanMethod("disposeAd", <String, dynamic>{'id': id});
   }
