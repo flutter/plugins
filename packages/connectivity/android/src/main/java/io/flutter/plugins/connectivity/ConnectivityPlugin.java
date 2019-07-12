@@ -66,29 +66,21 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
     receiver = null;
   }
 
-  private NetworkInfo getNetworkInfo(Context context){
-    ConnectivityManager cm =
-            (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-    return cm.getActiveNetworkInfo();
-  }
-
   @SuppressWarnings("deprecated")
   private String getNetworkType(int type) {
     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       Network network = manager.getActiveNetwork();
       NetworkCapabilities capabilities = manager.getNetworkCapabilities(network);
-      if (capabilities != null) {
-        if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-            || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-          return "wifi";
-        }
-
-        if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-          return "mobile";
-        }
+      if (capabilities == null) {
+        return "none";
       }
-
-      return "none";
+      if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+           || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+        return "wifi";
+      }
+      if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+        return "mobile";
+      }
     }
 
     switch (type) {
