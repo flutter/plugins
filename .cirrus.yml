@@ -61,7 +61,6 @@ task:
   osx_instance:
     image: mojave-xcode-10.2-flutter
   setup_script:
-    - brew update
     - pod repo update
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-12-1 | xargs xcrun simctl boot
   switch_channel_script:
