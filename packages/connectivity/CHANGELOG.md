@@ -1,3 +1,14 @@
+## 0.5.0
+
+* Added `DataSaving` class which indicates whether any 
+data saving measures are active in [Android],
+ defaults to `DataSaving.none` on other platform 
+ and updates in real time in [Android].
+ 
+* Now `NetworkInfo` is returned instead of `ConnectivityResult`.  
+`NetworkInfo` contains both `ConnectivityResult` and `DataSaving` classes.
+
+
 ## 0.4.3+4
 
 * [Android] Updated logic to retrieve network info.
