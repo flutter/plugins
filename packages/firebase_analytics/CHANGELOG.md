@@ -1,3 +1,89 @@
+## 3.0.3
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 3.0.2
+
+* Bump minimum Flutter version to 1.5.0.
+* Add missing template type parameter to `invokeMethod` calls.
+
+## 3.0.1
+
+* Switch to using the `FIRAnalytics` version of `setAnalyticsCollectionEnabled` for
+  compatibility with Firebase Analytics iOS CocoaPod version 6.0.
+* Update podspec to ensure availability of `setAnalyticsCollectionEnabled`.
+
+## 3.0.0
+
+* Update Android dependencies to latest.
+
+## 2.1.1+3
+
+* Added an initial integration test.
+
+## 2.1.1+2
+
+* Fixed errors in code sample for `FirebaseAnalyticsObserver`.
+
+## 2.1.1+1
+
+* Added hyperlinks to example app reference in README.md.
+
+## 2.1.1
+
+* Added screen_view tracking of Navigator.pushReplacement
+
+## 2.1.0
+
+* Add Login event support
+
+## 2.0.3
+
+* Add resetAnalyticsData method
+
+## 2.0.2+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 2.0.2
+
+* Enable setAnalyticsCollectionEnabled support for iOS
+
+## 2.0.1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 2.0.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+  This was originally incorrectly pushed in the `1.2.0` update.
+
+## 1.2.0+1
+
+* **Revert the breaking 1.2.0 update**. 1.2.0 was known to be breaking and
+  should have incremented the major version number instead of the minor. This
+  revert is in and of itself breaking for anyone that has already migrated
+  however. Anyone who has already migrated their app to AndroidX should
+  immediately update to `2.0.0` instead. That's the correctly versioned new push
+  of `1.2.0`.
+
+## 1.2.0
+
+* **BAD**. This was a breaking change that was incorrectly published on a minor
+  version upgrade, should never have happened. Reverted by 1.2.0+1.
+
+  "**Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library."
+
 ## 1.1.0
 
 * Allow user to handle `PlatformException`s caught by `FirebaseAnalyticsObserver._sendScreenView()`.

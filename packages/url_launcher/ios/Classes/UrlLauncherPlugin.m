@@ -6,52 +6,68 @@
 
 #import "UrlLauncherPlugin.h"
 
+API_AVAILABLE(ios(9.0))
 @interface FLTUrlLaunchSession : NSObject <SFSafariViewControllerDelegate>
-@property(strong) SFSafariViewController *safari;
+
+@property(copy, nonatomic) FlutterResult flutterResult;
+@property(strong, nonatomic) NSURL *url;
+@property(strong, nonatomic) SFSafariViewController *safari;
+@property(nonatomic, copy) void (^didFinish)(void);
+
 @end
 
-@implementation FLTUrlLaunchSession {
-  NSURL *_url;
-  FlutterResult _flutterResult;
-}
+@implementation FLTUrlLaunchSession
 
 - (instancetype)initWithUrl:url withFlutterResult:result {
   self = [super init];
   if (self) {
-    _url = url;
-    _flutterResult = result;
-    _safari = [[SFSafariViewController alloc] initWithURL:url];
-    _safari.delegate = self;
+    self.url = url;
+    self.flutterResult = result;
+    if (@available(iOS 9.0, *)) {
+      self.safari = [[SFSafariViewController alloc] initWithURL:url];
+      self.safari.delegate = self;
+    }
   }
   return self;
 }
 
 - (void)safariViewController:(SFSafariViewController *)controller
-      didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
+      didCompleteInitialLoad:(BOOL)didLoadSuccessfully API_AVAILABLE(ios(9.0)) {
   if (didLoadSuccessfully) {
-    _flutterResult(nil);
+    self.flutterResult(nil);
   } else {
-    _flutterResult([FlutterError
+    self.flutterResult([FlutterError
         errorWithCode:@"Error"
-              message:[NSString stringWithFormat:@"Error while launching %@", _url]
+              message:[NSString stringWithFormat:@"Error while launching %@", self.url]
               details:nil]);
   }
 }
 
-- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller API_AVAILABLE(ios(9.0)) {
   [controller dismissViewControllerAnimated:YES completion:nil];
+  self.didFinish();
 }
 
 - (void)close {
-  [self safariViewControllerDidFinish:_safari];
+  [self safariViewControllerDidFinish:self.safari];
 }
 
 @end
 
-@implementation FLTUrlLauncherPlugin {
-  UIViewController *_viewController;
-  FLTUrlLaunchSession *_currentSession;
-}
+API_AVAILABLE(ios(9.0))
+@interface FLTUrlLauncherPlugin ()
+
+@property(strong, nonatomic) FLTUrlLaunchSession *currentSession;
+
+@end
+
+@interface FLTUrlLauncherPlugin ()
+
+@property(strong, nonatomic) UIViewController *viewController;
+
+@end
+
+@implementation FLTUrlLauncherPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -67,7 +83,7 @@
 - (instancetype)initWithViewController:(UIViewController *)viewController {
   self = [super init];
   if (self) {
-    _viewController = viewController;
+    self.viewController = viewController;
   }
   return self;
 }
@@ -79,12 +95,23 @@
   } else if ([@"launch" isEqualToString:call.method]) {
     NSNumber *useSafariVC = call.arguments[@"useSafariVC"];
     if (useSafariVC.boolValue) {
-      [self launchURLInVC:url result:result];
+      if (@available(iOS 9.0, *)) {
+        [self launchURLInVC:url result:result];
+      } else {
+        [self launchURL:url call:call result:result];
+      }
     } else {
       [self launchURL:url call:call result:result];
     }
   } else if ([@"closeWebView" isEqualToString:call.method]) {
-    [self closeWebView:url result:result];
+    if (@available(iOS 9.0, *)) {
+      [self closeWebViewWithResult:result];
+    } else {
+      result([FlutterError
+          errorWithCode:@"API_NOT_AVAILABLE"
+                message:@"SafariViewController related api is not availabe for version <= IOS9"
+                details:nil]);
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -116,19 +143,21 @@
   }
 }
 
-- (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result {
+- (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
   NSURL *url = [NSURL URLWithString:urlString];
-  _currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
-  [_viewController presentViewController:_currentSession.safari
-                                animated:YES
-                              completion:^void() {
-                                self->_currentSession = nil;
-                              }];
+  self.currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
+  __weak typeof(self) weakSelf = self;
+  self.currentSession.didFinish = ^(void) {
+    weakSelf.currentSession = nil;
+  };
+  [self.viewController presentViewController:self.currentSession.safari
+                                    animated:YES
+                                  completion:nil];
 }
 
-- (void)closeWebView:(NSString *)urlString result:(FlutterResult)result {
-  if (_currentSession != nil) {
-    [_currentSession close];
+- (void)closeWebViewWithResult:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
+  if (self.currentSession != nil) {
+    [self.currentSession close];
   }
   result(nil);
 }

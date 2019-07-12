@@ -1,3 +1,88 @@
+## 0.5.2+1
+
+* Fix bug that prevented video recording with audio.
+
+## 0.5.2
+
+* Added capability to disable audio for the `CameraController`. (e.g. `CameraController(_, _,
+ enableAudio: false);`)
+
+## 0.5.1
+
+* Can now be compiled with earlier Android sdks below 21 when
+`<uses-sdk tools:overrideLibrary="io.flutter.plugins.camera"/>` has been added to the project
+`AndroidManifest.xml`. For sdks below 21, the plugin won't be registered and calls to it will throw
+a `MissingPluginException.`
+
+## 0.5.0
+
+* **Breaking Change** This plugin no longer handles closing and opening the camera on Android
+  lifecycle changes. Please use `WidgetsBindingObserver` to control camera resources on lifecycle
+  changes. See example project for example using `WidgetsBindingObserver`.
+
+## 0.4.3+2
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
+## 0.4.3+1
+
+* Catch additional `Exception`s from Android and throw as `CameraException`s.
+
+## 0.4.3
+
+* Add capability to prepare the capture session for video recording on iOS.
+
+## 0.4.2
+
+* Add sensor orientation value to `CameraDescription`.
+
+## 0.4.1
+
+* Camera methods are ran in a background thread on iOS.
+
+## 0.4.0+3
+
+* Fixed a crash when the plugin is registered by a background FlutterView.
+
+## 0.4.0+2
+
+* Fix orientation of captured photos when camera is used for the first time on Android.
+
+## 0.4.0+1
+
+* Remove categories.
+
+## 0.4.0
+
+* **Breaking Change** Change iOS image stream format to `ImageFormatGroup.bgra8888` from
+  `ImageFormatGroup.yuv420`.
+
+## 0.3.0+4
+
+* Fixed bug causing black screen on some Android devices.
+
+## 0.3.0+3
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.3.0+2
+
+* Fix issue with calculating iOS image orientation in certain edge cases.
+
+## 0.3.0+1
+
+* Remove initial method call invocation from static camera method.
+
+## 0.3.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
 ## 0.2.9+1
 
 * Fix a crash when failing to start preview.

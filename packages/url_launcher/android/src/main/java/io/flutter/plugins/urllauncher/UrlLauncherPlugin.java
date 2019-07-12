@@ -43,28 +43,9 @@ public class UrlLauncherPlugin implements MethodCallHandler {
     if (call.method.equals("canLaunch")) {
       canLaunch(url, result);
     } else if (call.method.equals("launch")) {
-      Intent launchIntent;
-      boolean useWebView = call.argument("useWebView");
-      boolean enableJavaScript = call.argument("enableJavaScript");
-      Activity activity = mRegistrar.activity();
-      if (activity == null) {
-        result.error("NO_ACTIVITY", "Launching a URL requires a foreground activity.", null);
-        return;
-      }
-      if (useWebView) {
-        launchIntent = new Intent(activity, WebViewActivity.class);
-        launchIntent.putExtra("url", url);
-        launchIntent.putExtra("enableJavaScript", enableJavaScript);
-      } else {
-        launchIntent = new Intent(Intent.ACTION_VIEW);
-        launchIntent.setData(Uri.parse(url));
-      }
-      activity.startActivity(launchIntent);
-      result.success(true);
+      launch(call, result, url);
     } else if (call.method.equals("closeWebView")) {
-      Intent intent = new Intent("close");
-      mRegistrar.context().sendBroadcast(intent);
-      result.success(null);
+      closeWebView(result);
     } else {
       result.notImplemented();
     }
@@ -83,6 +64,35 @@ public class UrlLauncherPlugin implements MethodCallHandler {
     result.success(canLaunch);
   }
 
+  private void launch(MethodCall call, Result result, String url) {
+    Intent launchIntent;
+    boolean useWebView = call.argument("useWebView");
+    boolean enableJavaScript = call.argument("enableJavaScript");
+    boolean enableDomStorage = call.argument("enableDomStorage");
+    Activity activity = mRegistrar.activity();
+    if (activity == null) {
+      result.error("NO_ACTIVITY", "Launching a URL requires a foreground activity.", null);
+      return;
+    }
+    if (useWebView) {
+      launchIntent = new Intent(activity, WebViewActivity.class);
+      launchIntent.putExtra("url", url);
+      launchIntent.putExtra("enableJavaScript", enableJavaScript);
+      launchIntent.putExtra("enableDomStorage", enableDomStorage);
+    } else {
+      launchIntent = new Intent(Intent.ACTION_VIEW);
+      launchIntent.setData(Uri.parse(url));
+    }
+    activity.startActivity(launchIntent);
+    result.success(true);
+  }
+
+  private void closeWebView(Result result) {
+    Intent intent = new Intent("close");
+    mRegistrar.context().sendBroadcast(intent);
+    result.success(null);
+  }
+
   /*  Launches WebView activity */
   public static class WebViewActivity extends Activity {
     private WebView webview;
@@ -97,9 +107,13 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       Intent intent = getIntent();
       String url = intent.getStringExtra("url");
       Boolean enableJavaScript = intent.getBooleanExtra("enableJavaScript", false);
+      Boolean enableDomStorage = intent.getBooleanExtra("enableDomStorage", false);
       webview.loadUrl(url);
       if (enableJavaScript) {
         webview.getSettings().setJavaScriptEnabled(enableJavaScript);
+      }
+      if (enableDomStorage) {
+        webview.getSettings().setDomStorageEnabled(enableDomStorage);
       }
       // Open new urls inside the webview itself.
       webview.setWebViewClient(

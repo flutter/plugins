@@ -21,12 +21,16 @@ try {
 }
 
 project.ext {
-    // TODO(YOU): Set this to match your package ID in the Play Developer Console (see example/README.md).
-    APP_ID = "io.flutter.plugins.inapppurchaseexample.DEFAULT_DO_NOT_USE"
+    // TODO(YOU): Create release keys and a `keystore.properties` file. See
+    // `example/README.md` for more info and `keystore.example.properties` for an
+    // example.
+    APP_ID = configured ? keystoreProperties['appId'] : "io.flutter.plugins.inapppurchaseexample.DEFAULT_DO_NOT_USE"
     KEYSTORE_STORE_FILE = configured ? rootProject.file(keystoreProperties['storeFile']) : null
     KEYSTORE_STORE_PASSWORD = keystoreProperties['storePassword']
     KEYSTORE_KEY_ALIAS = keystoreProperties['keyAlias']
     KEYSTORE_KEY_PASSWORD = keystoreProperties['keyPassword']
+    VERSION_CODE = configured ? keystoreProperties['versionCode'].toInteger() : 1
+    VERSION_NAME = configured ? keystoreProperties['versionName'] : "0.0.1"
 }
 
 if (project.APP_ID == "io.flutter.plugins.inapppurchaseexample.DEFAULT_DO_NOT_USE") {
@@ -46,16 +50,6 @@ if (flutterRoot == null) {
     throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
 }
 
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
 apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
@@ -69,7 +63,7 @@ android {
         }
     }
 
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     lintOptions {
         disable 'InvalidPackage'
@@ -78,10 +72,10 @@ android {
     defaultConfig {
         applicationId project.APP_ID
         minSdkVersion 16
-        targetSdkVersion 27
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        targetSdkVersion 28
+        versionCode project.VERSION_CODE
+        versionName project.VERSION_NAME
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -101,6 +95,10 @@ android {
             }
         }
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 flutter {
@@ -111,6 +109,7 @@ dependencies {
     implementation 'com.android.billingclient:billing:1.2'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.17.0'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    testImplementation 'org.json:json:20180813'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 }

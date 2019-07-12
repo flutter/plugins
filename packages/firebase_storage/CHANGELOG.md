@@ -1,3 +1,85 @@
+## 3.0.3
+
+* Fix inconsistency of `getPath`, on Android the path returned started with a `/` but on iOS it did not
+* Fix content-type auto-detection on Android
+
+## 3.0.2
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 3.0.1
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 3.0.0
+
+* Update Android dependencies to latest.
+
+## 2.1.1+2
+
+* On iOS, use `putFile` instead of `putData` appropriately to detect `Content-Type`.
+
+## 2.1.1+1
+
+* On iOS, gracefully handle the case of uploading a nonexistent file without crashing.
+
+## 2.1.1
+
+* Added integration tests.
+
+## 2.1.0+1
+
+* Reverting error.code casting/formatting to what it was until version 2.0.1.
+
+## 2.1.0
+
+* Added support for getReferenceFromUrl.
+
+## 2.0.1+2
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 2.0.1+1
+
+* Remove categories.
+
+## 2.0.1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 2.0.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+  This was originally incorrectly pushed in the `1.1.0` update.
+
+## 1.1.0+1
+
+* **Revert the breaking 1.1.0 update**. 1.1.0 was known to be breaking and
+  should have incremented the major version number instead of the minor. This
+  revert is in and of itself breaking for anyone that has already migrated
+  however. Anyone who has already migrated their app to AndroidX should
+  immediately update to `2.0.0` instead. That's the correctly versioned new push
+  of `1.1.0`.
+
+## 1.1.0
+
+* **BAD**. This was a breaking change that was incorrectly published on a minor
+  version upgrade, should never have happened. Reverted by 1.1.0+1.
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
 ## 1.0.4
 
 * Bump Android dependencies to latest.

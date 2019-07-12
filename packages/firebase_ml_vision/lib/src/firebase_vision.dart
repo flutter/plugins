@@ -11,6 +11,9 @@ enum _ImageType { file, bytes }
 /// Rotation is counter-clockwise.
 enum ImageRotation { rotation0, rotation90, rotation180, rotation270 }
 
+/// Indicates whether a model is ran on device or in the cloud.
+enum ModelType { onDevice, cloud }
+
 /// The Firebase machine learning vision API.
 ///
 /// You can get an instance by calling [FirebaseVision.instance] and then get
@@ -26,6 +29,9 @@ class FirebaseVision {
   static const MethodChannel channel =
       MethodChannel('plugins.flutter.io/firebase_ml_vision');
 
+  @visibleForTesting
+  static int nextHandle = 0;
+
   /// Singleton of [FirebaseVision].
   ///
   /// Use this get an instance of a detector:
@@ -37,25 +43,39 @@ class FirebaseVision {
 
   /// Creates an instance of [BarcodeDetector].
   BarcodeDetector barcodeDetector([BarcodeDetectorOptions options]) {
-    return BarcodeDetector._(options ?? const BarcodeDetectorOptions());
+    return BarcodeDetector._(
+      options ?? const BarcodeDetectorOptions(),
+      nextHandle++,
+    );
   }
 
   /// Creates an instance of [FaceDetector].
   FaceDetector faceDetector([FaceDetectorOptions options]) {
-    return FaceDetector._(options ?? const FaceDetectorOptions());
+    return FaceDetector._(
+      options ?? const FaceDetectorOptions(),
+      nextHandle++,
+    );
   }
 
-  /// Creates an instance of [LabelDetector].
-  LabelDetector labelDetector([LabelDetectorOptions options]) {
-    return LabelDetector._(options ?? const LabelDetectorOptions());
+  /// Creates an on device instance of [ImageLabeler].
+  ImageLabeler imageLabeler([ImageLabelerOptions options]) {
+    return ImageLabeler._(
+      options: options ?? const ImageLabelerOptions(),
+      modelType: ModelType.onDevice,
+      handle: nextHandle++,
+    );
   }
 
   /// Creates an instance of [TextRecognizer].
-  TextRecognizer textRecognizer() => TextRecognizer._();
+  TextRecognizer textRecognizer() => TextRecognizer._(nextHandle++);
 
-  /// Creates an instance of [CloudLabelDetector].
-  CloudLabelDetector cloudLabelDetector([CloudDetectorOptions options]) {
-    return CloudLabelDetector._(options ?? const CloudDetectorOptions());
+  /// Creates a cloud instance of [ImageLabeler].
+  ImageLabeler cloudImageLabeler([CloudImageLabelerOptions options]) {
+    return ImageLabeler._(
+      options: options ?? const CloudImageLabelerOptions(),
+      modelType: ModelType.cloud,
+      handle: nextHandle++,
+    );
   }
 }
 
@@ -93,12 +113,12 @@ class FirebaseVisionImage {
 
   /// Construct a [FirebaseVisionImage] from a list of bytes.
   ///
-  /// Expects `android.graphics.ImageFormat.NV21` format on Android. Note:
+  /// On Android, expects `android.graphics.ImageFormat.NV21` format. Note:
   /// Concatenating the planes of `android.graphics.ImageFormat.YUV_420_888`
   /// into a single plane, converts it to `android.graphics.ImageFormat.NV21`.
   ///
-  /// Expects `kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange` or any other
-  /// planar format on iOS.
+  /// On iOS, expects `kCVPixelFormatType_32BGRA` format. However, this should
+  /// work with most formats from `kCVPixelFormatType_*`.
   factory FirebaseVisionImage.fromBytes(
     Uint8List bytes,
     FirebaseVisionImageMetadata metadata,
@@ -178,6 +198,9 @@ class FirebaseVisionImageMetadata {
             : true),
         assert(defaultTargetPlatform == TargetPlatform.iOS
             ? planeData != null
+            : true),
+        assert(defaultTargetPlatform == TargetPlatform.iOS
+            ? planeData.isNotEmpty
             : true);
 
   /// Size of the image in pixels.
@@ -227,12 +250,6 @@ class FirebaseVisionImageMetadata {
             .map((FirebaseVisionImagePlaneMetadata plane) => plane._serialize())
             .toList(),
       };
-}
-
-/// Abstract class for detectors in [FirebaseVision] API.
-abstract class FirebaseVisionDetector {
-  /// Uses machine learning model to detect objects of interest in an image.
-  Future<dynamic> detectInImage(FirebaseVisionImage visionImage);
 }
 
 String _enumToString(dynamic enumValue) {

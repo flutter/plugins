@@ -9,22 +9,32 @@ part of firebase_ml_vision;
 /// A text recognizer is created via `textRecognizer()` in [FirebaseVision]:
 ///
 /// ```dart
-/// TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
+/// final FirebaseVisionImage image =
+///     FirebaseVisionImage.fromFilePath('path/to/file');
+///
+/// final TextRecognizer textRecognizer =
+///     FirebaseVision.instance.textRecognizer();
+///
+/// final List<VisionText> recognizedText =
+///     await textRecognizer.processImage(image);
 /// ```
-class TextRecognizer implements FirebaseVisionDetector {
-  TextRecognizer._();
+class TextRecognizer {
+  TextRecognizer._(this._handle);
+
+  final int _handle;
+  bool _hasBeenOpened = false;
+  bool _isClosed = false;
 
   /// Detects [VisionText] from a [FirebaseVisionImage].
-  ///
-  /// The OCR is performed asynchronously.
   Future<VisionText> processImage(FirebaseVisionImage visionImage) async {
-    final Map<dynamic, dynamic> reply =
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await FirebaseVision.channel.invokeMethod(
+    assert(!_isClosed);
+
+    _hasBeenOpened = true;
+    final Map<String, dynamic> reply =
+        await FirebaseVision.channel.invokeMapMethod<String, dynamic>(
       'TextRecognizer#processImage',
       <String, dynamic>{
+        'handle': _handle,
         'options': <String, dynamic>{},
       }..addAll(visionImage._serialize()),
     );
@@ -32,19 +42,22 @@ class TextRecognizer implements FirebaseVisionDetector {
     return VisionText._(reply);
   }
 
-  /// Detects [VisionText] from a [FirebaseVisionImage].
-  ///
-  /// The OCR is performed asynchronously.
-  @Deprecated('Please use `processImage`')
-  @override
-  Future<VisionText> detectInImage(FirebaseVisionImage visionImage) async {
-    return processImage(visionImage);
+  /// Release resources used by this recognizer.
+  Future<void> close() {
+    if (!_hasBeenOpened) _isClosed = true;
+    if (_isClosed) return Future<void>.value(null);
+
+    _isClosed = true;
+    return FirebaseVision.channel.invokeMethod<void>(
+      'TextRecognizer#close',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 }
 
 /// Recognized text in an image.
 class VisionText {
-  VisionText._(Map<dynamic, dynamic> data)
+  VisionText._(Map<String, dynamic> data)
       : text = data['text'],
         blocks = List<TextBlock>.unmodifiable(data['blocks']
             .map<TextBlock>((dynamic block) => TextBlock._(block)));
@@ -69,7 +82,7 @@ class RecognizedLanguage {
 abstract class TextContainer {
   TextContainer._(Map<dynamic, dynamic> data)
       : boundingBox = data['left'] != null
-            ? Rectangle<int>(
+            ? Rect.fromLTWH(
                 data['left'],
                 data['top'],
                 data['width'],
@@ -77,8 +90,8 @@ abstract class TextContainer {
               )
             : null,
         confidence = data['confidence'],
-        cornerPoints = List<Point<int>>.unmodifiable(
-            data['points'].map<Point<int>>((dynamic point) => Point<int>(
+        cornerPoints = List<Offset>.unmodifiable(
+            data['points'].map<Offset>((dynamic point) => Offset(
                   point[0],
                   point[1],
                 ))),
@@ -92,7 +105,7 @@ abstract class TextContainer {
   /// The point (0, 0) is defined as the upper-left corner of the image.
   ///
   /// Could be null even if text is found.
-  final Rectangle<int> boundingBox;
+  final Rect boundingBox;
 
   /// The confidence of the recognized text block.
   ///
@@ -106,7 +119,7 @@ abstract class TextContainer {
   /// rectangle. Parts of the region could be outside of the image.
   ///
   /// Could be empty even if text is found.
-  final List<Point<int>> cornerPoints;
+  final List<Offset> cornerPoints;
 
   /// All detected languages from recognized text.
   ///

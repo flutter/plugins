@@ -1,3 +1,148 @@
+## 0.11.1+8
+
+* Automatically register for iOS notifications, ensuring that phone authentication
+  will work even if Firebase method swizzling is disabled.
+
+## 0.11.1+7
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.11.1+6
+
+* Add documentation of support email requirement to README.
+
+## 0.11.1+5
+
+* Fix `updatePhoneNumberCredential` on Android.
+
+## 0.11.1+4
+
+* Fix `updatePhoneNumberCredential` on iOS.
+
+## 0.11.1+3
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+* FirebaseUser private constructor takes `Map<String, dynamic>` instead of `Map<dynamic, dynamic>`.
+
+## 0.11.1+2
+
+* Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
+
+## 0.11.1+1
+
+* Updated the error code documentation for `linkWithCredential`.
+
+## 0.11.1
+
+* Support for `updatePhoneNumberCredential`.
+
+## 0.11.0
+
+* **Breaking change**: `linkWithCredential` is now a function of `FirebaseUser`instead of
+  `FirebaseAuth`.
+* Added test for newer `linkWithCredential` function.
+
+## 0.10.0+1
+
+* Increase Firebase/Auth CocoaPod dependency to '~> 6.0'.
+
+## 0.10.0
+
+* Update firebase_dynamic_links dependency.
+* Update Android dependencies to latest.
+
+## 0.9.0
+
+* **Breaking change**: `PhoneVerificationCompleted` now provides an `AuthCredential` that can
+  be used with `signInWithCredential` or `linkWithCredential` instead of signing in automatically.
+* **Breaking change**: Remove internal counter `nextHandle` from public API.
+
+## 0.8.4+5
+
+* Increase Firebase/Auth CocoaPod dependency to '~> 5.19'.
+
+## 0.8.4+4
+
+* Update FirebaseAuth CocoaPod dependency to ensure availability of `FIRAuthErrorUserInfoNameKey`.
+
+## 0.8.4+3
+
+* Updated deprecated API usage on iOS to use non-deprecated versions.
+* Updated FirebaseAuth CocoaPod dependency to ensure a minimum version of 5.0.
+
+## 0.8.4+2
+
+* Fixes an error in the documentation of createUserWithEmailAndPassword.
+
+## 0.8.4+1
+
+* Adds credential for email authentication with link.
+
+## 0.8.4
+
+* Adds support for email link authentication.
+
+## 0.8.3
+
+* Make providerId 'const String' to use in 'case' statement.
+
+## 0.8.2+1
+
+* Fixed bug where `PhoneCodeAutoRetrievalTimeout` callback was never called.
+
+## 0.8.2
+
+* Fixed `linkWithCredential` on Android.
+
+## 0.8.1+5
+
+* Added a driver test.
+
+## 0.8.1+4
+
+* Update README.
+* Update the example app with separate pages for registration and sign-in.
+
+## 0.8.1+3
+
+* Reduce compiler warnings in Android plugin
+* Raise errors early when accessing methods that require a Firebase User
+
+## 0.8.1+2
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.8.1+1
+
+* Remove categories.
+
+## 0.8.1
+
+* Fixes Firebase auth phone sign-in for Android.
+
+## 0.8.0+3
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.8.0+2
+
+* Update Google sign-in example in the README.
+
+## 0.8.0+1
+
+* Update a broken dependency.
+
+## 0.8.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
 ## 0.7.0
 
 * Introduce third-party auth provider classes that generate `AuthCredential`s

@@ -1,3 +1,41 @@
+## 0.5.2+3
+* Update documentation to clarify the need for FragmentActivity.
+
+## 0.5.2+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.5.2+1
+* Use post instead of postDelayed to show the dialog onResume.
+
+## 0.5.2
+* Executor thread needs to be UI thread.
+
+## 0.5.1
+* Fix crash on Android versions earlier than 28.
+* [`authenticateWithBiometrics`](https://pub.dev/documentation/local_auth/latest/local_auth/LocalAuthentication/authenticateWithBiometrics.html) will not return result unless Biometric Dialog is closed.
+* Added two more error codes `LockedOut` and `PermanentlyLockedOut`.
+
+## 0.5.0
+ * **Breaking change**. Update the Android API to use androidx Biometric package. This gives
+   the prompt the updated Material look. However, it also requires the activity to be a
+   FragmentActivity. Users can switch to FlutterFragmentActivity in their main app to migrate.
+
+## 0.4.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.4.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
 ## 0.3.1
 * Fix crash on Android versions earlier than 24.
 

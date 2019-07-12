@@ -1,3 +1,30 @@
+## 0.4.0+4
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.4.0+3
+
+* Add integration test.
+
+## 0.4.0+2
+
+* Android: Using new method for BuildNumber in new android versions
+
+## 0.4.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.4.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
 ## 0.3.2+1
 
 * Fixed a crash on IOS when some of the package infos are not available.

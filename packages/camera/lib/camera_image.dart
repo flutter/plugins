@@ -38,6 +38,7 @@ class Plane {
   final int width;
 }
 
+// TODO:(bmparr) Turn [ImageFormatGroup] to a class with int values.
 /// Group of image formats that are comparable across Android and iOS platforms.
 enum ImageFormatGroup {
   /// The image format does not fit into any specific group.
@@ -55,6 +56,12 @@ enum ImageFormatGroup {
   /// On iOS, this is `kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange`. See
   /// https://developer.apple.com/documentation/corevideo/1563591-pixel_format_identifiers/kcvpixelformattype_420ypcbcr8biplanarvideorange?language=objc
   yuv420,
+
+  /// 32-bit BGRA.
+  ///
+  /// On iOS, this is `kCVPixelFormatType_32BGRA`. See
+  /// https://developer.apple.com/documentation/corevideo/1563591-pixel_format_identifiers/kcvpixelformattype_32bgra?language=objc
+  bgra8888,
 }
 
 /// Describes how pixels are represented in an image.
@@ -75,11 +82,25 @@ class ImageFormat {
 }
 
 ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
-  if (rawFormat == 35 || rawFormat == 875704438) {
-    return ImageFormatGroup.yuv420;
-  } else {
-    return ImageFormatGroup.unknown;
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    // android.graphics.ImageFormat.YUV_420_888
+    if (rawFormat == 35) {
+      return ImageFormatGroup.yuv420;
+    }
   }
+
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    switch (rawFormat) {
+      // kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+      case 875704438:
+        return ImageFormatGroup.yuv420;
+      // kCVPixelFormatType_32BGRA
+      case 1111970369:
+        return ImageFormatGroup.bgra8888;
+    }
+  }
+
+  return ImageFormatGroup.unknown;
 }
 
 /// A single complete image buffer from the platform camera.
