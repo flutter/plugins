@@ -72,7 +72,9 @@ class Connectivity {
     return _onConnectivityChanged;
   }
 
-  /// Checks the connection status of the device.
+  /// Checks the connection status of the device and get the active data saving
+  /// measures which are in place
+  /// (Android only, returns [DataSaving.none] on other platforms).
   ///
   /// Do not use the result of this function to decide whether you can reliably
   /// make a network request. It only gives you the radio status.
