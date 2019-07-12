@@ -36,7 +36,7 @@ void main() {
     });
 
     group('$CameraController', () {
-      test('Initializing a second controller closes the first', () {
+      test('Initializing a second controller closes the first', () async {
         final MockCameraDescription description = MockCameraDescription();
         final MockCameraConfigurator configurator = MockCameraConfigurator();
 
@@ -57,7 +57,7 @@ void main() {
         controller2.initialize();
 
         expect(
-          () => controller1.start(),
+            () async => await controller1.start(),
           throwsA(const TypeMatcher<AssertionError>()),
         );
       });
