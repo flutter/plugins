@@ -1,3 +1,7 @@
+## 0.5.19+3
+
+* Allow (de-)serialization of CameraPosition
+
 ## 0.5.19+2
 
 * Fix polygons for iOS
