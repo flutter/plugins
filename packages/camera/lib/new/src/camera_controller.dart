@@ -65,8 +65,13 @@ class CameraController {
     );
   }
 
+  static const String _isNotInitializedMessage = 'Initialize was not called.';
+  static const String _isDisposedMessage = 'This controller has been disposed.';
+
   // Keep only one active instance of CameraController.
   static CameraController _instance;
+
+  bool _isDisposed = false;
 
   /// Details for the camera this controller accesses.
   final CameraDescription description;
@@ -76,6 +81,8 @@ class CameraController {
 
   /// Api used by the [configurator].
   final CameraApi api;
+
+  bool get isDisposed => _isDisposed;
 
   /// Retrieves a list of available cameras for the current device.
   ///
@@ -93,11 +100,11 @@ class CameraController {
   /// call [initialize] on a [CameraController] while another is active, the old
   /// controller will be disposed before initializing the new controller.
   Future<void> initialize() {
-    final Completer<void> completer = Completer<void>();
-
     if (_instance == this) {
       return Future<void>.value();
     }
+
+    final Completer<void> completer = Completer<void>();
 
     if (_instance != null) {
       _instance
@@ -111,14 +118,25 @@ class CameraController {
   }
 
   /// Begins the flow of data between the inputs and outputs connected to the camera instance.
-  Future<void> start() => configurator.start();
+  Future<void> start() {
+    assert(!_isDisposed, _isDisposedMessage);
+    assert(_instance != this, _isNotInitializedMessage);
+
+    return configurator.start();
+  }
 
   /// Stops the flow of data between the inputs and outputs connected to the camera instance.
-  Future<void> stop() => configurator.stop();
+  Future<void> stop() {
+    assert(!_isDisposed, _isDisposedMessage);
+    assert(_instance != this, _isNotInitializedMessage);
+
+    return configurator.stop();
+  }
 
   /// Deallocate all resources and disables further use of the controller.
   Future<void> dispose() {
     _instance = null;
+    _isDisposed = true;
     return configurator.dispose();
   }
 
