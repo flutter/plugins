@@ -93,13 +93,21 @@ class CameraController {
   /// call [initialize] on a [CameraController] while another is active, the old
   /// controller will be disposed before initializing the new controller.
   Future<void> initialize() {
+    final Completer<void> completer = Completer<void>();
+
     if (_instance == this) {
       return Future<void>.value();
     }
 
-    _instance?.dispose();
+    if (_instance != null) {
+      _instance
+          .dispose()
+          .then((_) => configurator.initialize())
+          .then((_) => completer.complete());
+    }
     _instance = this;
-    return configurator.initialize();
+
+    return completer.future;
   }
 
   /// Begins the flow of data between the inputs and outputs connected to the camera instance.
