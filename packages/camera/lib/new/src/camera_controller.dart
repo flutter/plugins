@@ -157,10 +157,15 @@ class CameraController {
   }
 
   static CameraApi _getCameraApi(CameraDescription description) {
+    return CameraApi.iOS;
+
+    // TODO(bparrishMines): Uncomment this when platform specific code is added.
+    /*
     throw ArgumentError.value(
       description.runtimeType,
       'description.runtimeType',
       'Failed to get $CameraApi from',
     );
+    */
   }
 }
