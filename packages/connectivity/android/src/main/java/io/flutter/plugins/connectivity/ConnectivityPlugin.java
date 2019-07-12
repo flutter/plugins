@@ -15,7 +15,6 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.EventChannel.EventSink;
 import io.flutter.plugin.common.EventChannel.StreamHandler;
@@ -75,7 +74,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
         return "none";
       }
       if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-           || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+          || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
         return "wifi";
       }
       if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
