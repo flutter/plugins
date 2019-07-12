@@ -38,7 +38,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _connectionStatus = 'Unknown';
   final Connectivity _connectivity = Connectivity();
-  StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  StreamSubscription<NetworkInfo> _connectivitySubscription;
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initConnectivity() async {
-    ConnectivityResult result;
+    NetworkInfo result;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       result = await _connectivity.checkConnectivity();
@@ -84,8 +84,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    switch (result) {
+  Future<void> _updateConnectionStatus(NetworkInfo result) async {
+    DataSaving dataSavingResult = result.dataSaving;
+    ConnectivityResult connectivityResult = result.connectivityResult;
+    switch (connectivityResult) {
       case ConnectivityResult.wifi:
         String wifiName, wifiBSSID, wifiIP;
 
@@ -111,15 +113,20 @@ class _MyHomePageState extends State<MyHomePage> {
         }
 
         setState(() {
-          _connectionStatus = '$result\n'
+          _connectionStatus = '$connectivityResult\n'
               'Wifi Name: $wifiName\n'
               'Wifi BSSID: $wifiBSSID\n'
-              'Wifi IP: $wifiIP\n';
+              'Wifi IP: $wifiIP\n'
+              'Data Saving: ${dataSavingResult.toString().split('.').last}';
         });
         break;
       case ConnectivityResult.mobile:
       case ConnectivityResult.none:
-        setState(() => _connectionStatus = result.toString());
+        setState(() {
+            _connectionStatus =
+              '${connectivityResult.toString()}\n'
+              'Data Saving: ${dataSavingResult.toString().split('.').last}';
+        });
         break;
       default:
         setState(() => _connectionStatus = 'Failed to get connectivity.');

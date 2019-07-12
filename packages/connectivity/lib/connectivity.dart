@@ -14,6 +14,19 @@ import 'package:meta/meta.dart';
 /// None: Device not connected to any network
 enum ConnectivityResult { wifi, mobile, none }
 
+/// Metered: Device connected via metered Wi-Fi (Android only)
+/// BlockedBackgroundData: DataSaver is active and the app can't use background data (Android only)
+/// WhitelistedBackgroundData: DataSaver is active but the app is whitelisted can use background data (Android only)
+/// None: No DataSaver is active, default value on iOS
+enum DataSaving { metered, blockedBackgroundData, whitelistedBackgroundData, none }
+
+class NetworkInfo {
+  NetworkInfo(this.connectivityResult, this.dataSaving);
+
+  final ConnectivityResult connectivityResult;
+  final DataSaving dataSaving;
+}
+
 class Connectivity {
   /// Constructs a singleton instance of [Connectivity].
   ///
@@ -32,7 +45,7 @@ class Connectivity {
 
   static Connectivity _singleton;
 
-  Stream<ConnectivityResult> _onConnectivityChanged;
+  Stream<NetworkInfo> _onConnectivityChanged;
 
   @visibleForTesting
   static const MethodChannel methodChannel = MethodChannel(
@@ -45,7 +58,7 @@ class Connectivity {
   );
 
   /// Fires whenever the connectivity state changes.
-  Stream<ConnectivityResult> get onConnectivityChanged {
+  Stream<NetworkInfo> get onConnectivityChanged {
     if (_onConnectivityChanged == null) {
       _onConnectivityChanged = eventChannel
           .receiveBroadcastStream()
@@ -60,7 +73,7 @@ class Connectivity {
   /// make a network request. It only gives you the radio status.
   ///
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
-  Future<ConnectivityResult> checkConnectivity() async {
+  Future<NetworkInfo> checkConnectivity() async {
     final String result = await methodChannel.invokeMethod<String>('check');
     return _parseConnectivityResult(result);
   }
@@ -95,14 +108,38 @@ class Connectivity {
   }
 }
 
-ConnectivityResult _parseConnectivityResult(String state) {
-  switch (state) {
+NetworkInfo _parseConnectivityResult(String state) {
+  List<String> statuses = state.split("/");
+  ConnectivityResult connectivity;
+  DataSaving dataSaving = DataSaving.none;
+  // first the general casese
+  switch (statuses[0]) {
+    // general cases
     case 'wifi':
-      return ConnectivityResult.wifi;
+      connectivity = ConnectivityResult.wifi;
+      break;
     case 'mobile':
-      return ConnectivityResult.mobile;
+      connectivity =  ConnectivityResult.mobile;
+      break;
     case 'none':
     default:
-      return ConnectivityResult.none;
+      connectivity = ConnectivityResult.none;
+      break;
   }
+  if (statuses.length > 1) {
+    // Android cases
+    switch (statuses[1]) {
+      case 'metered':
+        dataSaving = DataSaving.metered;
+        break;
+      case 'blockedBackgroundData':
+        dataSaving = DataSaving.blockedBackgroundData;
+        break;
+      case 'whitelistedBackgroundData':
+        dataSaving = DataSaving.whitelistedBackgroundData;
+        break;
+    }
+  }
+
+  return NetworkInfo(connectivity, dataSaving);
 }

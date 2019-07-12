@@ -12,6 +12,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
+
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.EventChannel.EventSink;
 import io.flutter.plugin.common.EventChannel.StreamHandler;
@@ -20,6 +22,10 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+
+import static android.net.ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED;
+import static android.net.ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED;
+import static android.net.ConnectivityManager.RESTRICT_BACKGROUND_STATUS_WHITELISTED;
 
 /** ConnectivityPlugin */
 public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
@@ -51,9 +57,14 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   @Override
   public void onListen(Object arguments, EventSink events) {
     receiver = createReceiver(events);
+    IntentFilter filter = new IntentFilter();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      filter.addAction(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED);
+    }
+    filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
     registrar
         .context()
-        .registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        .registerReceiver(receiver, filter);
   }
 
   @Override
@@ -103,12 +114,44 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   }
 
   private String checkNetworkType() {
+    String networkType = "";
     NetworkInfo info = manager.getActiveNetworkInfo();
     if (info != null && info.isConnected()) {
-      return getNetworkType(info.getType());
+      networkType = getNetworkType(info.getType());
     } else {
-      return "none";
+      networkType = "none";
     }
+    networkType += "/";
+    // Checks if the device is on a metered network
+    if (manager.isActiveNetworkMetered()) {
+      // Checks user’s Data Saver settings.
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        switch (manager.getRestrictBackgroundStatus()) {
+          case RESTRICT_BACKGROUND_STATUS_ENABLED:
+            // Background data usage is blocked for this app. Wherever possible,
+            // the app should also use less data in the foreground.
+            networkType += "blockedBackgroundData";
+            break;
+
+          case RESTRICT_BACKGROUND_STATUS_WHITELISTED:
+            // The app is whitelisted. Wherever possible,
+            // the app should use less data in the foreground and background.
+            networkType += "whitelistedBackgroundData";
+            break;
+          case RESTRICT_BACKGROUND_STATUS_DISABLED:
+            // Data Saver is disabled. Since the device is connected to a
+            // metered network, the app should use less data wherever possible.
+
+            networkType += "metered";
+            break;
+        }
+      }
+    } else {
+      // The device is not on a metered network.
+      // Use data as required to perform syncs, downloads, and updates.
+      networkType += "";
+    }
+    return networkType;
   }
 
   private WifiInfo getWifiInfo() {

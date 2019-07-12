@@ -16,9 +16,13 @@ void main() {
     });
 
     test('test connectivity result', () async {
-      final ConnectivityResult result = await _connectivity.checkConnectivity();
+      final NetworkInfo result = await _connectivity.checkConnectivity();
       expect(result, isNotNull);
-      switch (result) {
+
+      final ConnectivityResult connectivityResult = result.connectivityResult;
+      expect(connectivityResult, isNotNull);
+
+      switch (connectivityResult) {
         case ConnectivityResult.wifi:
           expect(_connectivity.getWifiName(), completes);
           expect(_connectivity.getWifiBSSID(), completes);
@@ -27,6 +31,9 @@ void main() {
         default:
           break;
       }
+
+      final DataSaving dataSavingResult = result.dataSaving;
+      expect(dataSavingResult, isNotNull);
     });
   });
 }
