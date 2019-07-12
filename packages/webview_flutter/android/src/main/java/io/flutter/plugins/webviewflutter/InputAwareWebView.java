@@ -9,9 +9,11 @@ import android.webkit.WebView;
 
 /**
  * A WebView subclass that mirrors the same implementation hacks that the system WebView does in
- * Android versions below N in order to correctly create an InputConnection on the IME thread.
+ * order to correctly create an InputConnection.
  *
- * <p>The majority of this proxying logic is in {@link #checkInputConnectionProxy}.
+ * <p>These hacks are only needed in Android versions below N and exist to create an InputConnection
+ * on the WebView's dedicated input, or IME, thread. The majority of this proxying logic is in
+ * {@link #checkInputConnectionProxy}.
  *
  * <p>See also {@link ThreadedInputConnectionProxyAdapterView}.
  */
@@ -70,7 +72,7 @@ final class InputAwareWebView extends WebView {
     View previousProxy = threadedInputConnectionProxyView;
     threadedInputConnectionProxyView = view;
     if (previousProxy == view) {
-      // This isn't ThreadedInputConnectionProxyView. Ignore it.
+      // This isn't a new ThreadedInputConnectionProxyView. Ignore it.
       return super.checkInputConnectionProxy(view);
     }
 
