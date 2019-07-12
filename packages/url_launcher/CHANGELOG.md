@@ -1,3 +1,7 @@
+## 5.0.5
+
+* Add `enableDomStorage` field to `launch` to enable DOM storage in Android WebView.
+
 ## 5.0.4
 
 * Update Dart code to conform to current Dart formatter.

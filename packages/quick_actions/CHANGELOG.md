@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Added unit tests.
+
 ## 0.3.0+2
 
 * Add missing template type parameter to `invokeMethod` calls.
