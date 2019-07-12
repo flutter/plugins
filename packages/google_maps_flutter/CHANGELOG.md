@@ -1,3 +1,7 @@
+## 0.5.20
+
+* Add support for calculating area
+
 ## 0.5.19+2
 
 * Fix polygons for iOS
