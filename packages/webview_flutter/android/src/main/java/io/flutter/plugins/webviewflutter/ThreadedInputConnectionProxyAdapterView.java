@@ -17,6 +17,12 @@ import android.view.inputmethod.InputConnection;
  * https://cs.chromium.org/chromium/src/content/public/android/java/src/org/chromium/content/browser/input/ThreadedInputConnectionProxyView.java).
  * WebView itself bounces its InputConnection around several different threads. We follow its logic
  * here to get the same working connection.
+ *
+ * <p>This exists solely to forward input creation to WebView's ThreadedInputConnectionProxyView on
+ * the IME thread. The way that this is created in {@link
+ * InputAwareWebView#checkInputConnectionProxy} guarantees that we have a handle to
+ * ThreadedInputConnectionProxyView and {@link #onCreateInputConnection} is always called on the IME
+ * thread. We delegate to ThreadedInputConnectionProxyView there to get WebView's input connection.
  */
 final class ThreadedInputConnectionProxyAdapterView extends View {
   final Handler imeHandler;
@@ -51,6 +57,12 @@ final class ThreadedInputConnectionProxyAdapterView extends View {
     isLocked = locked;
   }
 
+  /**
+   * This is expected to be called on the IME thread. See the setup required for this in {@link
+   * InputAwareWebView#checkInputConnectionProxy(View)}.
+   *
+   * <p>Delegates to ThreadedInputConnectionProxyView to get WebView's input connection.
+   */
   @Override
   public InputConnection onCreateInputConnection(final EditorInfo outAttrs) {
     triggerDelayed = false;

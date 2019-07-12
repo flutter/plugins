@@ -1,6 +1,6 @@
-## 0.3.9+3
+## 0.3.10
 
-* Add partial fix for webview keyboard input on Android versions prior to N.
+* Add partial WebView keyboard support for Android versions prior to N.
 
 ## 0.3.9+2
 

@@ -9,7 +9,7 @@ import android.webkit.WebView;
 
 /**
  * A WebView subclass that mirrors the same implementation hacks that the system WebView does in
- * order to correctly create an InputConnection.
+ * Android versions below N in order to correctly create an InputConnection on the IME thread.
  *
  * <p>The majority of this proxying logic is in {@link #checkInputConnectionProxy}.
  *
@@ -41,11 +41,9 @@ final class InputAwareWebView extends WebView {
 
   /** Sets the proxy adapter view back to its default behavior. */
   void unlockInputConnection() {
-    if (proxyAdapterView == null) {
-      return;
+    if (proxyAdapterView != null) {
+      proxyAdapterView.setLocked(false);
     }
-
-    proxyAdapterView.setLocked(false);
 
     // Restart the input connection to avoid ViewRootImpl assuming an incorrect window state.
     InputMethodManager imm =
@@ -53,15 +51,32 @@ final class InputAwareWebView extends WebView {
     imm.restartInput(containerView);
   }
 
-  /** Creates an InputConnection from the IME thread when needed. */
+  /**
+   * Creates an InputConnection from the IME thread when needed.
+   *
+   * <p>We only need to create a {@link ThreadedInputConnectionProxy} and create an
+   * InputConnectionProxy on the IME thread when WebView is doing the same thing. So we rely on the
+   * system calling this method for WebView's proxy view in order to know when we need to create our
+   * own.
+   *
+   * <p>This method would normally be called for any View that used the InputMethodManager. We rely
+   * on flutter/engine filtering the calls we receive down to the ones in our hierarchy and the
+   * system WebView in order to know whether or not the system WebView expects an InputConnection on
+   * the IME thread.
+   */
   @Override
   public boolean checkInputConnectionProxy(final View view) {
+    // Check to see if the view param is WebView's ThreadedInputConnectionProxyView.
     View previousProxy = threadedInputConnectionProxyView;
     threadedInputConnectionProxyView = view;
     if (previousProxy == view) {
+      // This isn't ThreadedInputConnectionProxyView. Ignore it.
       return super.checkInputConnectionProxy(view);
     }
 
+    // We've never seen this before, so we make the assumption that this is WebView's
+    // ThreadedInputConnectionProxyView. We are making the assumption that the only view that could
+    // possibly be interacting the the IMM here is WebView's ThreadedInputConnectionProxyView.
     proxyAdapterView =
         new ThreadedInputConnectionProxyAdapterView(
             /*containerView=*/ containerView,
@@ -94,9 +109,5 @@ final class InputAwareWebView extends WebView {
           }
         });
     return super.checkInputConnectionProxy(view);
-  }
-
-  protected ThreadedInputConnectionProxyAdapterView getProxyAdapterView() {
-    return proxyAdapterView;
   }
 }
