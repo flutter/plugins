@@ -1,3 +1,7 @@
+## 0.9.0+4
+
+* Add support for cloud text recognizer.
+
 ## 0.9.0+3
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.
