@@ -24,7 +24,12 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
-class WebViewExample extends StatelessWidget {
+class WebViewExample extends StatefulWidget {
+  @override
+  _WebViewExampleState createState() => _WebViewExampleState();
+}
+
+class _WebViewExampleState extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
 
@@ -150,36 +155,36 @@ class SampleMenu extends StatelessWidget {
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
-                PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.showUserAgent,
-                  child: const Text('Show user agent'),
-                  enabled: controller.hasData,
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.listCookies,
-                  child: Text('List cookies'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.clearCookies,
-                  child: Text('Clear cookies'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.addToCache,
-                  child: Text('Add to cache'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.listCache,
-                  child: Text('List cache'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.clearCache,
-                  child: Text('Clear cache'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.navigationDelegate,
-                  child: Text('Navigation Delegate example'),
-                ),
-              ],
+            PopupMenuItem<MenuOptions>(
+              value: MenuOptions.showUserAgent,
+              child: const Text('Show user agent'),
+              enabled: controller.hasData,
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.listCookies,
+              child: Text('List cookies'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.clearCookies,
+              child: Text('Clear cookies'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.addToCache,
+              child: Text('Add to cache'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.listCache,
+              child: Text('List cache'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.clearCache,
+              child: Text('Clear cache'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.navigationDelegate,
+              child: Text('Navigation Delegate example'),
+            ),
+          ],
         );
       },
     );

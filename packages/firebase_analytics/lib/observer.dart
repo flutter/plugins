@@ -28,13 +28,13 @@ String defaultNameExtractor(RouteSettings settings) => settings.name;
 /// ```dart
 /// Navigator.pushNamed(context, '/contact/123');
 ///
-/// Navigator.push(context, MaterialPageRoute(
-///   settings: RouteSettings(name: '/contact/123',
-///   builder: ContactDetail(123)))),
+/// Navigator.push<void>(context, MaterialPageRoute(
+///   settings: RouteSettings(name: '/contact/123'),
+///   builder: (_) => ContactDetail(123)));
 ///
-/// Navigator.pushReplacement(context, MaterialPageRoute(
-///   settings: RouteSettings(name: '/contact/123',
-///   builder: ContactDetail(123)))),
+/// Navigator.pushReplacement<void>(context, MaterialPageRoute(
+///   settings: RouteSettings(name: '/contact/123'),
+///   builder: (_) => ContactDetail(123)));
 ///
 /// Navigator.pop(context);
 /// ```

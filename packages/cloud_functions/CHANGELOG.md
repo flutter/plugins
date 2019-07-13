@@ -1,3 +1,33 @@
+## 0.4.0+2
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.4.0+1
+
+* Remove reference to unused header file.
+
+## 0.4.0
+
+* Removed unused `parameters` param from `getHttpsCallable`.
+
+## 0.3.0+1
+
+* Update iOS dependencies to latest.
+
+## 0.3.0
+
+* Update Android dependencies to latest.
+
+## 0.2.0+1
+
+* Removed flaky timeout test.
+
+## 0.2.0
+
+* **Breaking change**. Updated Dart API to replace `call` with `getHttpsCallable`.
+* Added support for timeouts.
+* Additional integration testing.
+
 ## 0.1.2+1
 
 * Added a driver test.

@@ -26,9 +26,13 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.Polyline;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -48,10 +52,14 @@ final class GoogleMapController
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnPolygonClickListener,
+        GoogleMap.OnPolylineClickListener,
+        GoogleMap.OnCircleClickListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener,
         PlatformView {
 
   private static final String TAG = "GoogleMapController";
@@ -63,13 +71,21 @@ final class GoogleMapController
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
+  private boolean myLocationButtonEnabled = false;
+  private boolean indoorEnabled = true;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
   private final int registrarActivityHashCode;
   private final Context context;
   private final MarkersController markersController;
+  private final PolygonsController polygonsController;
+  private final PolylinesController polylinesController;
+  private final CirclesController circlesController;
   private List<Object> initialMarkers;
+  private List<Object> initialPolygons;
+  private List<Object> initialPolylines;
+  private List<Object> initialCircles;
 
   GoogleMapController(
       int id,
@@ -88,6 +104,9 @@ final class GoogleMapController
     methodChannel.setMethodCallHandler(this);
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
+    this.polygonsController = new PolygonsController(methodChannel);
+    this.polylinesController = new PolylinesController(methodChannel, density);
+    this.circlesController = new CirclesController(methodChannel);
   }
 
   @Override
@@ -148,6 +167,7 @@ final class GoogleMapController
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
+    this.googleMap.setIndoorEnabled(this.indoorEnabled);
     googleMap.setOnInfoWindowClickListener(this);
     if (mapReadyResult != null) {
       mapReadyResult.success(null);
@@ -157,10 +177,20 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
+    googleMap.setOnPolygonClickListener(this);
+    googleMap.setOnPolylineClickListener(this);
+    googleMap.setOnCircleClickListener(this);
     googleMap.setOnMapClickListener(this);
-    updateMyLocationEnabled();
+    googleMap.setOnMapLongClickListener(this);
+    updateMyLocationSettings();
     markersController.setGoogleMap(googleMap);
+    polygonsController.setGoogleMap(googleMap);
+    polylinesController.setGoogleMap(googleMap);
+    circlesController.setGoogleMap(googleMap);
     updateInitialMarkers();
+    updateInitialPolygons();
+    updateInitialPolylines();
+    updateInitialCircles();
   }
 
   @Override
@@ -176,14 +206,14 @@ final class GoogleMapController
       case "map#update":
         {
           Convert.interpretGoogleMapOptions(call.argument("options"), this);
-          result.success(Convert.toJson(getCameraPosition()));
+          result.success(Convert.cameraPositionToJson(getCameraPosition()));
           break;
         }
       case "map#getVisibleRegion":
         {
           if (googleMap != null) {
             LatLngBounds latLngBounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
-            result.success(Convert.toJson(latLngBounds));
+            result.success(Convert.latlngBoundsToJson(latLngBounds));
           } else {
             result.error(
                 "GoogleMap uninitialized",
@@ -219,9 +249,47 @@ final class GoogleMapController
           result.success(null);
           break;
         }
+      case "polygons#update":
+        {
+          Object polygonsToAdd = call.argument("polygonsToAdd");
+          polygonsController.addPolygons((List<Object>) polygonsToAdd);
+          Object polygonsToChange = call.argument("polygonsToChange");
+          polygonsController.changePolygons((List<Object>) polygonsToChange);
+          Object polygonIdsToRemove = call.argument("polygonIdsToRemove");
+          polygonsController.removePolygons((List<Object>) polygonIdsToRemove);
+          result.success(null);
+          break;
+        }
+      case "polylines#update":
+        {
+          Object polylinesToAdd = call.argument("polylinesToAdd");
+          polylinesController.addPolylines((List<Object>) polylinesToAdd);
+          Object polylinesToChange = call.argument("polylinesToChange");
+          polylinesController.changePolylines((List<Object>) polylinesToChange);
+          Object polylineIdsToRemove = call.argument("polylineIdsToRemove");
+          polylinesController.removePolylines((List<Object>) polylineIdsToRemove);
+          result.success(null);
+          break;
+        }
+      case "circles#update":
+        {
+          Object circlesToAdd = call.argument("circlesToAdd");
+          circlesController.addCircles((List<Object>) circlesToAdd);
+          Object circlesToChange = call.argument("circlesToChange");
+          circlesController.changeCircles((List<Object>) circlesToChange);
+          Object circleIdsToRemove = call.argument("circleIdsToRemove");
+          circlesController.removeCircles((List<Object>) circleIdsToRemove);
+          result.success(null);
+          break;
+        }
       case "map#isCompassEnabled":
         {
           result.success(googleMap.getUiSettings().isCompassEnabled());
+          break;
+        }
+      case "map#isMapToolbarEnabled":
+        {
+          result.success(googleMap.getUiSettings().isMapToolbarEnabled());
           break;
         }
       case "map#getMinMaxZoomLevels":
@@ -252,6 +320,29 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isRotateGesturesEnabled());
           break;
         }
+      case "map#isMyLocationButtonEnabled":
+        {
+          result.success(googleMap.getUiSettings().isMyLocationButtonEnabled());
+          break;
+        }
+      case "map#setStyle":
+        {
+          String mapStyle = (String) call.arguments;
+          boolean mapStyleSet;
+          if (mapStyle == null) {
+            mapStyleSet = googleMap.setMapStyle(null);
+          } else {
+            mapStyleSet = googleMap.setMapStyle(new MapStyleOptions(mapStyle));
+          }
+          ArrayList<Object> mapStyleResult = new ArrayList<>(2);
+          mapStyleResult.add(mapStyleSet);
+          if (!mapStyleSet) {
+            mapStyleResult.add(
+                "Unable to set the map style. Please check console logs for errors.");
+          }
+          result.success(mapStyleResult);
+          break;
+        }
       default:
         result.notImplemented();
     }
@@ -260,8 +351,15 @@ final class GoogleMapController
   @Override
   public void onMapClick(LatLng latLng) {
     final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("position", Convert.toJson(latLng));
+    arguments.put("position", Convert.latLngToJson(latLng));
     methodChannel.invokeMethod("map#onTap", arguments);
+  }
+
+  @Override
+  public void onMapLongClick(LatLng latLng) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("position", Convert.latLngToJson(latLng));
+    methodChannel.invokeMethod("map#onLongPress", arguments);
   }
 
   @Override
@@ -283,7 +381,7 @@ final class GoogleMapController
       return;
     }
     final Map<String, Object> arguments = new HashMap<>(2);
-    arguments.put("position", Convert.toJson(googleMap.getCameraPosition()));
+    arguments.put("position", Convert.cameraPositionToJson(googleMap.getCameraPosition()));
     methodChannel.invokeMethod("camera#onMove", arguments);
   }
 
@@ -295,6 +393,21 @@ final class GoogleMapController
   @Override
   public boolean onMarkerClick(Marker marker) {
     return markersController.onMarkerTap(marker.getId());
+  }
+
+  @Override
+  public void onPolygonClick(Polygon polygon) {
+    polygonsController.onPolygonTap(polygon.getId());
+  }
+
+  @Override
+  public void onPolylineClick(Polyline polyline) {
+    polylinesController.onPolylineTap(polyline.getId());
+  }
+
+  @Override
+  public void onCircleClick(Circle circle) {
+    circlesController.onCircleTap(circle.getId());
   }
 
   @Override
@@ -377,6 +490,11 @@ final class GoogleMapController
   }
 
   @Override
+  public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
+    googleMap.getUiSettings().setMapToolbarEnabled(mapToolbarEnabled);
+  }
+
+  @Override
   public void setMapType(int mapType) {
     googleMap.setMapType(mapType);
   }
@@ -413,6 +531,17 @@ final class GoogleMapController
   }
 
   @Override
+  public void setPadding(float top, float left, float bottom, float right) {
+    if (googleMap != null) {
+      googleMap.setPadding(
+          (int) (left * density),
+          (int) (top * density),
+          (int) (right * density),
+          (int) (bottom * density));
+    }
+  }
+
+  @Override
   public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
     googleMap.getUiSettings().setZoomGesturesEnabled(zoomGesturesEnabled);
   }
@@ -424,7 +553,18 @@ final class GoogleMapController
     }
     this.myLocationEnabled = myLocationEnabled;
     if (googleMap != null) {
-      updateMyLocationEnabled();
+      updateMyLocationSettings();
+    }
+  }
+
+  @Override
+  public void setMyLocationButtonEnabled(boolean myLocationButtonEnabled) {
+    if (this.myLocationButtonEnabled == myLocationButtonEnabled) {
+      return;
+    }
+    this.myLocationButtonEnabled = myLocationButtonEnabled;
+    if (googleMap != null) {
+      updateMyLocationSettings();
     }
   }
 
@@ -440,8 +580,44 @@ final class GoogleMapController
     markersController.addMarkers(initialMarkers);
   }
 
+  @Override
+  public void setInitialPolygons(Object initialPolygons) {
+    this.initialPolygons = (List<Object>) initialPolygons;
+    if (googleMap != null) {
+      updateInitialPolygons();
+    }
+  }
+
+  private void updateInitialPolygons() {
+    polygonsController.addPolygons(initialPolygons);
+  }
+
+  @Override
+  public void setInitialPolylines(Object initialPolylines) {
+    this.initialPolylines = (List<Object>) initialPolylines;
+    if (googleMap != null) {
+      updateInitialPolylines();
+    }
+  }
+
+  private void updateInitialPolylines() {
+    polylinesController.addPolylines(initialPolylines);
+  }
+
+  @Override
+  public void setInitialCircles(Object initialCircles) {
+    this.initialCircles = (List<Object>) initialCircles;
+    if (googleMap != null) {
+      updateInitialCircles();
+    }
+  }
+
+  private void updateInitialCircles() {
+    circlesController.addCircles(initialCircles);
+  }
+
   @SuppressLint("MissingPermission")
-  private void updateMyLocationEnabled() {
+  private void updateMyLocationSettings() {
     if (hasLocationPermission()) {
       // The plugin doesn't add the location permission by default so that apps that don't need
       // the feature won't require the permission.
@@ -449,6 +625,7 @@ final class GoogleMapController
       // fail the build if the permission is missing. The following disables the Gradle lint.
       //noinspection ResourceType
       googleMap.setMyLocationEnabled(myLocationEnabled);
+      googleMap.getUiSettings().setMyLocationButtonEnabled(myLocationButtonEnabled);
     } else {
       // TODO(amirh): Make the options update fail.
       // https://github.com/flutter/flutter/issues/24327
@@ -469,5 +646,9 @@ final class GoogleMapController
     }
     return context.checkPermission(
         permission, android.os.Process.myPid(), android.os.Process.myUid());
+  }
+
+  public void setIndoorEnabled(boolean indoorEnabled) {
+    this.indoorEnabled = indoorEnabled;
   }
 }

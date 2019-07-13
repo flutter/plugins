@@ -1,3 +1,23 @@
+## 0.4.3+4
+
+* [Android] Updated logic to retrieve network info.
+
+## 0.4.3+3
+
+* Support for TYPE_MOBILE_HIPRI on Android.
+
+## 0.4.3+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+
+## 0.4.3+1
+
+* Fixes lint error by using `getApplicationContext()` when accessing the Wifi Service.
+
+## 0.4.3
+
+* Add getWifiBSSID to obtain current wifi network's BSSID.
+
 ## 0.4.2+2
 
 * Add integration test.

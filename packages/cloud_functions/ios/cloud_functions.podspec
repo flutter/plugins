@@ -1,6 +1,11 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
+
+require 'yaml'
+pubspec = YAML.load_file(File.join('..', 'pubspec.yaml'))
+libraryVersion = pubspec['version'].gsub('+', '-')
+
 Pod::Spec.new do |s|
   s.name             = 'cloud_functions'
   s.version          = '0.0.1'
@@ -17,7 +22,13 @@ A new flutter plugin project.
   s.ios.deployment_target = '8.0'
   s.dependency 'Flutter'
   s.dependency 'Firebase/Core'
-  s.dependency 'Firebase/Functions', '~> 5.18'
+  s.dependency 'Firebase/Functions', '~> 6.0'
   s.static_framework = true
+
+  s.prepare_command = <<-CMD
+      echo // Generated file, do not edit > Classes/UserAgent.h
+      echo "#define LIBRARY_VERSION @\\"#{libraryVersion}\\"" >> Classes/UserAgent.h
+      echo "#define LIBRARY_NAME @\\"flutter-fire-fn\\"" >> Classes/UserAgent.h
+    CMD
 end
 

@@ -11,7 +11,7 @@ gradle.buildFinished { buildResult ->
     }
 }
 
-group 'io.flutter.plugins.firebase.firestore'
+group 'io.flutter.plugins.firebase.cloudfirestore'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -47,7 +47,10 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-firestore:18.2.0'
+        api 'com.google.firebase:firebase-firestore:19.0.0'
+        implementation 'com.google.firebase:firebase-common:16.1.0'
         implementation 'androidx.annotation:annotation:1.0.0'
     }
 }
+
+apply from: file("./user-agent.gradle")
