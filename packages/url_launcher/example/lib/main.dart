@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _launchInBrowser(String url) async {
     if (await canLaunch(url)) {
-      await launch(url, forceSafariVC: false, forceWebView: false, headers: {
+      await launch(url, forceSafariVC: false, forceWebView: false, headers: <String, String>{
         'my_header_key': 'my_header_value'
       });
     } else {
@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _launchInWebViewOrVC(String url) async {
     if (await canLaunch(url)) {
-      await launch(url, forceSafariVC: true, forceWebView: true, headers: {
+      await launch(url, forceSafariVC: true, forceWebView: true, headers: <String, String>{
         'my_header_key': 'my_header_value'
       });
     } else {

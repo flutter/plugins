@@ -1,3 +1,7 @@
+## 5.0.6
+
+* Add `headers` field to enable headers in the Android implementation.
+
 ## 5.0.5
 
 * Add `enableDomStorage` field to `launch` to enable DOM storage in Android WebView.
