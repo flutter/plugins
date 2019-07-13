@@ -6,12 +6,9 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 const MethodChannel _kChannel =
     MethodChannel('plugins.flutter.io/quick_actions');
-
-const String _actionSharedPrefsKey = "action";
 
 /// Handler for a quick action launch event.
 ///
@@ -58,21 +55,10 @@ class QuickActions {
       handler(call.arguments);
     });
 
-    final String action = await _getActionFromSharedPreferences();
+    final String action = await channel.invokeMethod<String>('getPassedIntent');
     if (action != null) {
       handler(action);
-      _removeActionFromSharedPreferences();
     }
-  }
-
-  Future<String> _getActionFromSharedPreferences() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_actionSharedPrefsKey);
-  }
-
-  Future<void> _removeActionFromSharedPreferences() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.setString(_actionSharedPrefsKey, null);
   }
 
   /// Sets the [ShortcutItem]s to become the app's quick actions.

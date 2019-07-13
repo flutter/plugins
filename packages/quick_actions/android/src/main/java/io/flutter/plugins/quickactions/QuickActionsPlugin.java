@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
@@ -27,6 +26,8 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class QuickActionsPlugin implements MethodCallHandler {
   private final Registrar registrar;
+  private static final String intentExtraAction = "action";
+  private static String passedAction = null;
 
   // Channel is a static field because it needs to be accessible to the
   // {@link ShortcutHandlerActivity} which has to be a static class with
@@ -46,6 +47,7 @@ public class QuickActionsPlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/quick_actions");
     channel.setMethodCallHandler(new QuickActionsPlugin(registrar));
+    passedAction = registrar.activity().getIntent().getStringExtra(intentExtraAction);
   }
 
   @Override
@@ -69,6 +71,10 @@ public class QuickActionsPlugin implements MethodCallHandler {
       case "clearShortcutItems":
         shortcutManager.removeAllDynamicShortcuts();
         break;
+      case "getPassedIntent":
+        result.success(passedAction);
+        passedAction = null;
+        return;
       default:
         result.notImplemented();
         return;
@@ -110,10 +116,6 @@ public class QuickActionsPlugin implements MethodCallHandler {
    */
   public static class ShortcutHandlerActivity extends Activity {
 
-    private final String sharedPreferencesName = "FlutterSharedPreferences";
-    private final String sharedPreferencesKeyPrefix = "flutter.";
-    private final String sharedPreferencesActionKey = "action";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -123,8 +125,7 @@ public class QuickActionsPlugin implements MethodCallHandler {
       if (channel != null) {
         channel.invokeMethod("launch", type);
       } else {
-        setActionToSharedPreferences(type);
-        startActivity(getIntentToOpenMainActivity(this));
+        startActivity(getIntentToOpenMainActivity(this, type));
       }
       finish();
     }
@@ -133,20 +134,17 @@ public class QuickActionsPlugin implements MethodCallHandler {
      * Returns Intent to launch the MainActivity. Used to start the app, if one of quick actions was
      * called from the background.
      */
-    private Intent getIntentToOpenMainActivity(Context context) {
-      return context
-          .getPackageManager()
-          .getLaunchIntentForPackage(context.getApplicationContext().getPackageName());
-    }
-
-    /**
-     * Saving action name to shared preferences to run requested quick action later, after app
-     * launch
-     */
-    private void setActionToSharedPreferences(String type) {
-      SharedPreferences prefs =
-          this.getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE);
-      prefs.edit().putString(sharedPreferencesKeyPrefix + sharedPreferencesActionKey, type).apply();
+    private Intent getIntentToOpenMainActivity(Context context, String type) {
+      Intent launchIntentForPackage =
+          context
+              .getPackageManager()
+              .getLaunchIntentForPackage(context.getApplicationContext().getPackageName());
+      if (launchIntentForPackage == null) {
+        return null;
+      } else {
+        launchIntentForPackage.putExtra(intentExtraAction, type);
+        return launchIntentForPackage;
+      }
     }
   }
 }
