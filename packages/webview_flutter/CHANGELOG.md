@@ -1,3 +1,12 @@
+## 0.3.10
+
+* Add partial WebView keyboard support for Android versions prior to N. Support
+  for UIs that also have Flutter `TextInput` fields is still pending. This basic
+  support currently only works with Flutter `master`. The keyboard will still
+  appear when it previously did not when run with older versions of Flutter. But
+  if the WebView is resized while showing the keyboard the text field will need
+  to be focused multiple times for any input to be registered.
+
 ## 0.3.9+2
 
 * Update Dart code to conform to current Dart formatter.
