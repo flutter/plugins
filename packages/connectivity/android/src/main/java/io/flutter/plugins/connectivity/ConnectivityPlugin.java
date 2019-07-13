@@ -81,7 +81,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
       }
     }
 
-    getNetworkTypeLegacy(type);
+    return getNetworkTypeLegacy(type);
   }
 
   @SuppressWarnings("deprecated")
