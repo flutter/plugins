@@ -61,6 +61,7 @@ Future<bool> launch(
   bool enableJavaScript,
   bool enableDomStorage,
   bool universalLinksOnly,
+  Map<String, String> headers,
   Brightness statusBarBrightness,
 }) async {
   assert(urlString != null);
@@ -91,6 +92,7 @@ Future<bool> launch(
       'enableJavaScript': enableJavaScript ?? false,
       'enableDomStorage': enableDomStorage ?? false,
       'universalLinksOnly': universalLinksOnly ?? false,
+      'headers': headers ?? <String, String>{},
     },
   );
   if (statusBarBrightness != null) {
