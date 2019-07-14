@@ -54,5 +54,17 @@ void main() {
         isMethodCall('clearShortcutItems', arguments: null),
       ],
     );
+    log.clear();
+  });
+
+  test('runLaunchAction', () {
+    quickActions.runLaunchAction(null);
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('runLaunchAction', arguments: null),
+      ],
+    );
+    log.clear();
   });
 }

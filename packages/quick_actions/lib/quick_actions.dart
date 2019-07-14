@@ -54,8 +54,11 @@ class QuickActions {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
+    runLaunchAction(handler);
+  }
 
-    final String action = await channel.invokeMethod<String>('getPassedIntent');
+  void runLaunchAction(QuickActionHandler handler) async {
+    final String action = await channel.invokeMethod<String>('getLaunchAction');
     if (action != null) {
       handler(action);
     }

@@ -27,7 +27,7 @@ import java.util.Map;
 public class QuickActionsPlugin implements MethodCallHandler {
   private final Registrar registrar;
   private static final String intentExtraAction = "action";
-  private static String passedAction = null;
+  private static String launchAction = null;
 
   // Channel is a static field because it needs to be accessible to the
   // {@link ShortcutHandlerActivity} which has to be a static class with
@@ -47,7 +47,7 @@ public class QuickActionsPlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/quick_actions");
     channel.setMethodCallHandler(new QuickActionsPlugin(registrar));
-    passedAction = registrar.activity().getIntent().getStringExtra(intentExtraAction);
+    launchAction = registrar.activity().getIntent().getStringExtra(intentExtraAction);
   }
 
   @Override
@@ -71,9 +71,9 @@ public class QuickActionsPlugin implements MethodCallHandler {
       case "clearShortcutItems":
         shortcutManager.removeAllDynamicShortcuts();
         break;
-      case "getPassedIntent":
-        result.success(passedAction);
-        passedAction = null;
+      case "getLaunchAction":
+        result.success(launchAction);
+        launchAction = null;
         return;
       default:
         result.notImplemented();
