@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
-import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'sk_product_wrapper.dart';
 import 'sk_payment_queue_wrapper.dart';
@@ -119,22 +119,6 @@ class SKPaymentTransactionWrapper {
     return _$SKPaymentTransactionWrapperFromJson(map);
   }
 
-  /// Generate a [PurchaseDetails] object based on this transaction.
-  PurchaseDetails toPurchaseDetails(String base64EncodedReceipt) {
-    return PurchaseDetails(
-      purchaseID: transactionIdentifier,
-      productID: payment.productIdentifier,
-      verificationData: PurchaseVerificationData(
-          localVerificationData: base64EncodedReceipt,
-          serverVerificationData: base64EncodedReceipt,
-          source: PurchaseSource.AppStore),
-      transactionDate: transactionTimeStamp != null
-          ? (transactionTimeStamp * 1000).toInt().toString()
-          : null,
-      skPaymentTransaction: this,
-    );
-  }
-
   /// Current transaction state.
   @SKTransactionStatusConverter()
   final SKPaymentTransactionStateWrapper transactionState;
@@ -189,6 +173,15 @@ class SKPaymentTransactionWrapper {
         typedOther.transactionIdentifier == transactionIdentifier &&
         typedOther.error == error;
   }
+
+  @override
+  int get hashCode => hashValues(
+      this.payment,
+      this.transactionState,
+      this.originalTransaction,
+      this.transactionTimeStamp,
+      this.transactionIdentifier,
+      this.error);
 
   @override
   String toString() => _$SKPaymentTransactionWrapperToJson(this).toString();

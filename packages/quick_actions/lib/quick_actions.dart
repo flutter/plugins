@@ -36,13 +36,21 @@ class ShortcutItem {
 
 /// Quick actions plugin.
 class QuickActions {
-  const QuickActions();
+  factory QuickActions() => _instance;
+
+  @visibleForTesting
+  QuickActions.withMethodChannel(this.channel);
+
+  static final QuickActions _instance =
+      QuickActions.withMethodChannel(_kChannel);
+
+  final MethodChannel channel;
 
   /// Initializes this plugin.
   ///
   /// Call this once before any further interaction with the the plugin.
   void initialize(QuickActionHandler handler) {
-    _kChannel.setMethodCallHandler((MethodCall call) async {
+    channel.setMethodCallHandler((MethodCall call) async {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
@@ -52,18 +60,12 @@ class QuickActions {
   Future<void> setShortcutItems(List<ShortcutItem> items) async {
     final List<Map<String, String>> itemsList =
         items.map(_serializeItem).toList();
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _kChannel.invokeMethod('setShortcutItems', itemsList);
+    await channel.invokeMethod<void>('setShortcutItems', itemsList);
   }
 
   /// Removes all [ShortcutItem]s registered for the app.
   Future<void> clearShortcutItems() =>
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      _kChannel.invokeMethod('clearShortcutItems');
+      channel.invokeMethod<void>('clearShortcutItems');
 
   Map<String, String> _serializeItem(ShortcutItem item) {
     return <String, String>{

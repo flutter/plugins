@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.webkit.WebStorage;
-import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -24,14 +23,20 @@ import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
-  private final WebView webView;
+  private final InputAwareWebView webView;
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
 
   @SuppressWarnings("unchecked")
-  FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
-    webView = new WebView(context);
+  FlutterWebView(
+      Context context,
+      BinaryMessenger messenger,
+      int id,
+      Map<String, Object> params,
+      final View containerView) {
+    webView = new InputAwareWebView(context, containerView);
+
     platformThreadHandler = new Handler(context.getMainLooper());
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
@@ -55,6 +60,26 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @Override
   public View getView() {
     return webView;
+  }
+
+  // @Override
+  // This is overriding a method that hasn't rolled into stable Flutter yet. Including the
+  // annotation would cause compile time failures in versions of Flutter too old to include the new
+  // method. However leaving it raw like this means that the method will be ignored in old versions
+  // of Flutter but used as an override anyway wherever it's actually defined.
+  // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to stable.
+  public void onInputConnectionUnlocked() {
+    webView.unlockInputConnection();
+  }
+
+  // @Override
+  // This is overriding a method that hasn't rolled into stable Flutter yet. Including the
+  // annotation would cause compile time failures in versions of Flutter too old to include the new
+  // method. However leaving it raw like this means that the method will be ignored in old versions
+  // of Flutter but used as an override anyway wherever it's actually defined.
+  // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to stable.
+  public void onInputConnectionLocked() {
+    webView.lockInputConnection();
   }
 
   @Override

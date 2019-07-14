@@ -9,10 +9,10 @@ Check the `packages` directory for all plugins.
 
 Flutter plugins enable access to platform-specific APIs. For more information
 about plugins, and how to use them, see
-[https://flutter.io/platform-plugins/](https://flutter.io/platform-plugins/).
+[https://flutter.dev/platform-plugins/](https://flutter.dev/platform-plugins/).
 
 These plugins are also available on
-[pub](https://pub.dev/flutter/plugins).
+[pub](https://pub.dev/flutter/packages).
 
 ## Issues
 
@@ -22,11 +22,11 @@ repo](https://github.com/flutter/flutter/issues/new).
 ## Contributing
 
 If you wish to contribute a new plugin to the Flutter ecosystem, please
-see the documentation for [developing packages](https://flutter.io/developing-packages/) and
-[platform channels](https://flutter.io/platform-channels/). You can store
+see the documentation for [developing packages](https://flutter.dev/developing-packages/) and
+[platform channels](https://flutter.dev/platform-channels/). You can store
 your plugin source code in any GitHub repository (the present repo is only
 intended for plugins developed by the core Flutter team). Once your plugin
-is ready you can [publish](https://flutter.io/developing-packages/#publish)
+is ready you can [publish](https://flutter.dev/developing-packages/#publish)
 to the [pub repository](https://pub.dev/).
 
 If you wish to contribute a change to any of the existing plugins in this repo,

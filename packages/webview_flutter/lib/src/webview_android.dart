@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
@@ -12,17 +14,19 @@ import 'webview_method_channel.dart';
 
 /// Builds an Android webview.
 ///
-/// This is used as the default implementation for [WebView.platformBuilder] on Android. It uses
+/// This is used as the default implementation for [WebView.platform] on Android. It uses
 /// an [AndroidView] to embed the webview in the widget hierarchy, and uses a method channel to
 /// communicate with the platform code.
-class AndroidWebViewBuilder implements WebViewBuilder {
+class AndroidWebView implements WebViewPlatform {
   @override
   Widget build({
     BuildContext context,
-    Map<String, dynamic> creationParams,
+    CreationParams creationParams,
+    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
     WebViewPlatformCreatedCallback onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   }) {
+    assert(webViewPlatformCallbacksHandler != null);
     return GestureDetector(
       // We prevent text selection by intercepting the long press event.
       // This is a temporary stop gap due to issues with text selection on Android:
@@ -39,16 +43,21 @@ class AndroidWebViewBuilder implements WebViewBuilder {
           if (onWebViewPlatformCreated == null) {
             return;
           }
-          onWebViewPlatformCreated(MethodChannelWebViewPlatform(id));
+          onWebViewPlatformCreated(MethodChannelWebViewPlatform(
+              id, webViewPlatformCallbacksHandler));
         },
         gestureRecognizers: gestureRecognizers,
         // WebView content is not affected by the Android view's layout direction,
         // we explicitly set it here so that the widget doesn't require an ambient
         // directionality.
         layoutDirection: TextDirection.rtl,
-        creationParams: creationParams,
+        creationParams:
+            MethodChannelWebViewPlatform.creationParamsToMap(creationParams),
         creationParamsCodec: const StandardMessageCodec(),
       ),
     );
   }
+
+  @override
+  Future<bool> clearCookies() => MethodChannelWebViewPlatform.clearCookies();
 }

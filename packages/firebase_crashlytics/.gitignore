@@ -6,3 +6,6 @@
 pubspec.lock
 
 build/
+
+ios/Classes/UserAgent.h
+
