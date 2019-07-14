@@ -229,6 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await analytics.logShare(
       contentType: 'test content type',
       itemId: 'test item id',
+      method: 'facebook'
     );
     await analytics.logSignUp(
       signUpMethod: 'test sign up method',

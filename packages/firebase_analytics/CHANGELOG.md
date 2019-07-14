@@ -1,3 +1,14 @@
+## 3.1.0
+
+* Include missing tracking events:
+ - `logLevelStart`
+ - `logLevelEnd`
+ - `logRemoveFromCart`
+ - `logSetCheckoutOption`
+
+* Update the list of reserved event names.
+* Add new required parameter to `logShare` event tracking.
+
 ## 3.0.3
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.
