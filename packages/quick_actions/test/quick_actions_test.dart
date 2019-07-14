@@ -62,7 +62,7 @@ void main() {
     expect(
       log,
       <Matcher>[
-        isMethodCall('runLaunchAction', arguments: null),
+        isMethodCall('getLaunchAction', arguments: null),
       ],
     );
     log.clear();
