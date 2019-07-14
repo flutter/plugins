@@ -49,8 +49,10 @@ void main() {
   });
 
   test('launch with headers', () async {
-    await launch('http://example.com/',
-      headers: <String, String>{ 'key': 'value' },);
+    await launch(
+      'http://example.com/',
+      headers: <String, String>{'key': 'value'},
+    );
     expect(
       log,
       <Matcher>[
@@ -61,7 +63,7 @@ void main() {
           'enableJavaScript': false,
           'enableDomStorage': false,
           'universalLinksOnly': false,
-          'headers': <String, String>{ 'key': 'value' },
+          'headers': <String, String>{'key': 'value'},
         })
       ],
     );
