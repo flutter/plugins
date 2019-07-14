@@ -32,7 +32,6 @@ public class RebootBroadcastReceiver extends BroadcastReceiver {
    */
   @Override
   public void onReceive(Context context, Intent intent) {
-
     if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
       Log.i("AlarmService", "Rescheduling after boot!");
       AlarmService.reschedulePersistentAlarms(context);
