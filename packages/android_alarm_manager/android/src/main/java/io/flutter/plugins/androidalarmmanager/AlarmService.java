@@ -9,7 +9,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import androidx.core.app.AlarmManagerCompat;
@@ -407,12 +406,7 @@ public class AlarmService extends JobIntentService {
               false,
               callbackHandle);
         } catch (JSONException e) {
-          Log.e(
-              TAG,
-              "Data for alarm request code "
-                  + requestCode
-                  + " is invalid: "
-                  + json);
+          Log.e(TAG, "Data for alarm request code " + requestCode + " is invalid: " + json);
         }
       }
     }
