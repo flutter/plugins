@@ -18,13 +18,13 @@ import android.view.KeyEvent;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import java.util.HashMap;
-import java.util.Map;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.util.HashMap;
+import java.util.Map;
 
 /** UrlLauncherPlugin */
 public class UrlLauncherPlugin implements MethodCallHandler {
@@ -125,10 +125,8 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       // Get the Intent that started this activity and extract the string
       final Intent intent = getIntent();
       final String url = intent.getStringExtra("url");
-      final boolean enableJavaScript =
-        intent.getBooleanExtra("enableJavaScript", false);
-      final boolean enableDomStorage =
-        intent.getBooleanExtra("enableDomStorage", false);
+      final boolean enableJavaScript = intent.getBooleanExtra("enableJavaScript", false);
+      final boolean enableDomStorage = intent.getBooleanExtra("enableDomStorage", false);
       final Bundle headersBundle = intent.getBundleExtra(Browser.EXTRA_HEADERS);
 
       final Map<String, String> headersMap = extractHeaders(headersBundle);
@@ -139,38 +137,38 @@ public class UrlLauncherPlugin implements MethodCallHandler {
 
       // Open new urls inside the webview itself.
       webview.setWebViewClient(
-        new WebViewClient() {
+          new WebViewClient() {
 
-          @Override
-          @SuppressWarnings("deprecation")
-          public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-              view.loadUrl(url);
+            @Override
+            @SuppressWarnings("deprecation")
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+              if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                view.loadUrl(url);
+                return false;
+              }
+              return super.shouldOverrideUrlLoading(view, url);
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                view.loadUrl(request.getUrl().toString());
+              }
               return false;
             }
-            return super.shouldOverrideUrlLoading(view, url);
-          }
-
-          @Override
-          public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-              view.loadUrl(request.getUrl().toString());
-            }
-            return false;
-          }
-        });
+          });
 
       // Set broadcast receiver to handle calls to close the web view
       broadcastReceiver =
-        new BroadcastReceiver() {
-          @Override
-          public void onReceive(Context arg0, Intent intent) {
-            String action = intent.getAction();
-            if ("close".equals(action)) {
-              finish();
+          new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context arg0, Intent intent) {
+              String action = intent.getAction();
+              if ("close".equals(action)) {
+                finish();
+              }
             }
-          }
-        };
+          };
       registerReceiver(broadcastReceiver, new IntentFilter("close"));
     }
 
