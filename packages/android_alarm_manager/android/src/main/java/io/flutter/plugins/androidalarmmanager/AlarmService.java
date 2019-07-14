@@ -9,8 +9,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.JobIntentService;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
@@ -253,7 +255,7 @@ public class AlarmService extends JobIntentService {
       if (repeating) {
         manager.setRepeating(clock, startMillis, intervalMillis, pendingIntent);
       } else {
-        manager.setExact(clock, startMillis, pendingIntent);
+        AlarmManagerCompat.setExact(manager, clock, startMillis, pendingIntent);
       }
     } else {
       if (repeating) {
@@ -346,7 +348,7 @@ public class AlarmService extends JobIntentService {
           .edit()
           .putString(key, obj.toString())
           .putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms)
-          .commit();
+          .apply();
     }
   }
 
@@ -359,7 +361,7 @@ public class AlarmService extends JobIntentService {
       }
       persistentAlarms.remove(requestCode);
       String key = getPersistentAlarmKey(requestCode);
-      p.edit().remove(key).putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms).commit();
+      p.edit().remove(key).putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms).apply();
 
       if (persistentAlarms.isEmpty()) {
         RebootBroadcastReceiver.disableRescheduleOnReboot(context);
@@ -408,7 +410,7 @@ public class AlarmService extends JobIntentService {
           Log.e(
               TAG,
               "Data for alarm request code "
-                  + Integer.toString(requestCode)
+                  + requestCode
                   + " is invalid: "
                   + json);
         }
@@ -416,15 +418,12 @@ public class AlarmService extends JobIntentService {
     }
   }
 
-  private String mAppBundlePath;
-
   @Override
   public void onCreate() {
     super.onCreate();
 
     Context context = getApplicationContext();
     FlutterMain.ensureInitializationComplete(context, null);
-    mAppBundlePath = FlutterMain.findAppBundlePath(context);
 
     if (!sIsIsolateRunning.get()) {
       SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
