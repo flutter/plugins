@@ -450,7 +450,7 @@ class FirebaseAnalytics {
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#LEVEL_START
   Future<void> logLevelStart({
-    @required int levelName,
+    @required String levelName,
   }) {
     return logEvent(
       name: 'level_start',
@@ -464,8 +464,8 @@ class FirebaseAnalytics {
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#LEVEL_END
   Future<void> logLevelEnd({
-    @required int levelName,
-    String success,
+    @required String levelName,
+    int success,
   }) {
     return logEvent(
       name: 'level_end',
@@ -610,7 +610,6 @@ class FirebaseAnalytics {
       }),
     );
   }
-
 
   /// Logs the standard `search` event.
   ///
@@ -1069,8 +1068,6 @@ const String _SUCCESS = 'success';
 
 /// Location.
 const String _LOCATION = 'location';
-
-
 
 /// `CAMPAIGN_DETAILS` medium; used to identify a medium such as email or
 /// cost-per-click (cpc).

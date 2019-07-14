@@ -220,6 +220,19 @@ void main() {
               level: 56,
             ));
 
+    smokeTest(
+        'level_start',
+        () => analytics.logLevelStart(
+              levelName: 'level-name',
+            ));
+
+    smokeTest(
+        'level_end',
+        () => analytics.logLevelEnd(
+              levelName: 'level-name',
+              success: 1,
+            ));
+
     smokeTest('login', () => analytics.logLogin());
 
     smokeTest(
@@ -263,6 +276,7 @@ void main() {
         () => analytics.logShare(
               contentType: 'test content type',
               itemId: 'test item id',
+              method: 'test method',
             ));
 
     smokeTest(
@@ -331,6 +345,16 @@ void main() {
       );
     });
 
+    testRequiresValueAndCurrencyTogether('logRemoveFromCart', () {
+      return analytics.logRemoveFromCart(
+        itemId: 'test-id',
+        itemName: 'test-name',
+        itemCategory: 'test-category',
+        quantity: 5,
+        value: 123.90,
+      );
+    });
+
     testRequiresValueAndCurrencyTogether('logAddToWishlist', () {
       return analytics.logAddToWishlist(
         itemId: 'test-id',
@@ -339,6 +363,11 @@ void main() {
         quantity: 5,
         value: 123.90,
       );
+    });
+
+    testRequiresValueAndCurrencyTogether('logSetCheckoutOption', () {
+      return analytics.logSetCheckoutOption(
+          checkoutOption: 'some option', checkoutStep: 1);
     });
 
     testRequiresValueAndCurrencyTogether('logBeginCheckout', () {
