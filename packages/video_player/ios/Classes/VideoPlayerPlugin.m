@@ -82,6 +82,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
 
+  // Add an observer that will respond to itemDidPlayToEndTime
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(itemDidPlayToEndTime:)
                                                name:AVPlayerItemDidPlayToEndTimeNotification
@@ -91,21 +92,11 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 - (void)itemDidPlayToEndTime:(NSNotification*)note {
   AVPlayerItem* p = [note object];
   if (self->_isLooping) {
-    [p seekToTime:CMTIMERANGE_IS_VALID(self->_range) ? self->_range.start : kCMTimeZero
-          toleranceBefore:kCMTimeZero
-           toleranceAfter:kCMTimeZero
-        completionHandler:nil];
+    AVPlayerItem* p = [note object];
+    [p seekToTime:kCMTimeZero completionHandler:nil];
   } else {
-    [self pause];
     if (self->_eventSink) {
-      self->_eventSink(@{
-        @"event" : @"completed",
-        @"position" :
-            [NSNumber numberWithLongLong:FLTCMTimeToMillis(
-                                             CMTIMERANGE_IS_VALID(self->_range)
-                                                 ? CMTimeSubtract(p.currentTime, self->_range.start)
-                                                 : p.currentTime)]
-      });
+      self->_eventSink(@{@"event" : @"completed"});
     }
   }
 }
