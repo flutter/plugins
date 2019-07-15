@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 import 'page.dart';
 
@@ -40,6 +41,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _isMapCreated = false;
   bool _isMoving = false;
   bool _compassEnabled = true;
+  bool _mapToolbarEnabled = true;
   CameraTargetBounds _cameraTargetBounds = CameraTargetBounds.unbounded;
   MinMaxZoomPreference _minMaxZoomPreference = MinMaxZoomPreference.unbounded;
   MapType _mapType = MapType.normal;
@@ -47,8 +49,11 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _scrollGesturesEnabled = true;
   bool _tiltGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
+  bool _indoorViewEnabled = true;
   bool _myLocationEnabled = true;
   bool _myLocationButtonEnabled = true;
+  GoogleMapController _controller;
+  bool _nightMode = false;
 
   @override
   void initState() {
@@ -66,6 +71,17 @@ class MapUiBodyState extends State<MapUiBody> {
       onPressed: () {
         setState(() {
           _compassEnabled = !_compassEnabled;
+        });
+      },
+    );
+  }
+
+  Widget _mapToolbarToggler() {
+    return FlatButton(
+      child: Text('${_mapToolbarEnabled ? 'disable' : 'enable'} map toolbar'),
+      onPressed: () {
+        setState(() {
+          _mapToolbarEnabled = !_mapToolbarEnabled;
         });
       },
     );
@@ -160,9 +176,21 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Widget _indoorViewToggler() {
+    return FlatButton(
+      child: Text('${_indoorViewEnabled ? 'disable' : 'enable'} indoor'),
+      onPressed: () {
+        setState(() {
+          _indoorViewEnabled = !_indoorViewEnabled;
+        });
+      },
+    );
+  }
+
   Widget _myLocationToggler() {
     return FlatButton(
-      child: Text('${_myLocationEnabled ? 'disable' : 'enable'} my location'),
+      child: Text(
+          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
       onPressed: () {
         setState(() {
           _myLocationEnabled = !_myLocationEnabled;
@@ -183,12 +211,43 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Future<String> _getFileData(String path) async {
+    return await rootBundle.loadString(path);
+  }
+
+  void _setMapStyle(String mapStyle) {
+    setState(() {
+      _nightMode = true;
+      _controller.setMapStyle(mapStyle);
+    });
+  }
+
+  Widget _nightModeToggler() {
+    if (!_isMapCreated) {
+      return null;
+    }
+    return FlatButton(
+      child: Text('${_nightMode ? 'disable' : 'enable'} night mode'),
+      onPressed: () {
+        if (_nightMode) {
+          setState(() {
+            _nightMode = false;
+            _controller.setMapStyle(null);
+          });
+        } else {
+          _getFileData('assets/night_mode.json').then(_setMapStyle);
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final GoogleMap googleMap = GoogleMap(
       onMapCreated: onMapCreated,
       initialCameraPosition: _kInitialPosition,
       compassEnabled: _compassEnabled,
+      mapToolbarEnabled: _mapToolbarEnabled,
       cameraTargetBounds: _cameraTargetBounds,
       minMaxZoomPreference: _minMaxZoomPreference,
       mapType: _mapType,
@@ -196,6 +255,7 @@ class MapUiBodyState extends State<MapUiBody> {
       scrollGesturesEnabled: _scrollGesturesEnabled,
       tiltGesturesEnabled: _tiltGesturesEnabled,
       zoomGesturesEnabled: _zoomGesturesEnabled,
+      indoorViewEnabled: _indoorViewEnabled,
       myLocationEnabled: _myLocationEnabled,
       myLocationButtonEnabled: _myLocationButtonEnabled,
       onCameraMove: _updateCameraPosition,
@@ -227,6 +287,7 @@ class MapUiBodyState extends State<MapUiBody> {
               Text('camera tilt: ${_position.tilt}'),
               Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
               _compassToggler(),
+              _mapToolbarToggler(),
               _latLngBoundsToggler(),
               _mapTypeCycler(),
               _zoomBoundsToggler(),
@@ -234,8 +295,10 @@ class MapUiBodyState extends State<MapUiBody> {
               _scrollToggler(),
               _tiltToggler(),
               _zoomToggler(),
+              _indoorViewToggler(),
               _myLocationToggler(),
               _myLocationButtonToggler(),
+              _nightModeToggler(),
             ],
           ),
         ),
@@ -256,6 +319,7 @@ class MapUiBodyState extends State<MapUiBody> {
 
   void onMapCreated(GoogleMapController controller) {
     setState(() {
+      _controller = controller;
       _isMapCreated = true;
     });
   }

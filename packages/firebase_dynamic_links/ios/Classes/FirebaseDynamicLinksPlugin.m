@@ -1,4 +1,5 @@
 #import "FirebaseDynamicLinksPlugin.h"
+#import "UserAgent.h"
 
 #import "Firebase/Firebase.h"
 
@@ -21,6 +22,11 @@ static FlutterError *getFlutterError(NSError *error) {
   FLTFirebaseDynamicLinksPlugin *instance = [[FLTFirebaseDynamicLinksPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
   [registrar addApplicationDelegate:instance];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)init {

@@ -24,7 +24,9 @@
                                                                              ofType:@"jpg"]];
   UIImage *imageJPG = [UIImage imageWithData:dataJPG];
   NSString *savedPathJPG = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataJPG
-                                                                                  image:imageJPG];
+                                                                                  image:imageJPG
+                                                                               maxWidth:nil
+                                                                              maxHeight:nil];
   XCTAssertNotNil(savedPathJPG);
   XCTAssertEqualObjects([savedPathJPG substringFromIndex:savedPathJPG.length - 4], @".jpg");
 
@@ -38,7 +40,9 @@
                                                                              ofType:@"png"]];
   UIImage *imagePNG = [UIImage imageWithData:dataPNG];
   NSString *savedPathPNG = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataPNG
-                                                                                  image:imagePNG];
+                                                                                  image:imagePNG
+                                                                               maxWidth:nil
+                                                                              maxHeight:nil];
   XCTAssertNotNil(savedPathPNG);
   XCTAssertEqualObjects([savedPathPNG substringFromIndex:savedPathPNG.length - 4], @".png");
 
@@ -78,6 +82,59 @@
   XCTAssertEqualObjects(meta[(__bridge NSString *)kCGImagePropertyExifDictionary]
                             [(__bridge NSString *)kCGImagePropertyExifMakerNote],
                         @"aNote");
+}
+
+- (void)testSaveImageWithOriginalImageData_ShouldSaveAsGifAnimation {
+  // test gif
+  NSData *dataGIF = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"gifImage"
+                                                                             ofType:@"gif"]];
+  UIImage *imageGIF = [UIImage imageWithData:dataGIF];
+  CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)dataGIF, nil);
+
+  size_t numberOfFrames = CGImageSourceGetCount(imageSource);
+
+  NSNumber *nilSize = (NSNumber *)[NSNull null];
+  NSString *savedPathGIF = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataGIF
+                                                                                  image:imageGIF
+                                                                               maxWidth:nilSize
+                                                                              maxHeight:nilSize];
+  XCTAssertNotNil(savedPathGIF);
+  XCTAssertEqualObjects([savedPathGIF substringFromIndex:savedPathGIF.length - 4], @".gif");
+
+  NSData *newDataGIF = [NSData dataWithContentsOfFile:savedPathGIF];
+
+  CGImageSourceRef newImageSource = CGImageSourceCreateWithData((CFDataRef)newDataGIF, nil);
+
+  size_t newNumberOfFrames = CGImageSourceGetCount(newImageSource);
+
+  XCTAssertEqual(numberOfFrames, newNumberOfFrames);
+}
+
+- (void)testSaveImageWithOriginalImageData_ShouldSaveAsScalledGifAnimation {
+  // test gif
+  NSData *dataGIF = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"gifImage"
+                                                                             ofType:@"gif"]];
+  UIImage *imageGIF = [UIImage imageWithData:dataGIF];
+
+  CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)dataGIF, nil);
+
+  size_t numberOfFrames = CGImageSourceGetCount(imageSource);
+
+  NSString *savedPathGIF = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataGIF
+                                                                                  image:imageGIF
+                                                                               maxWidth:@3
+                                                                              maxHeight:@2];
+  NSData *newDataGIF = [NSData dataWithContentsOfFile:savedPathGIF];
+  UIImage *newImage = [[UIImage alloc] initWithData:newDataGIF];
+
+  XCTAssertEqual(newImage.size.width, 3);
+  XCTAssertEqual(newImage.size.height, 2);
+
+  CGImageSourceRef newImageSource = CGImageSourceCreateWithData((CFDataRef)newDataGIF, nil);
+
+  size_t newNumberOfFrames = CGImageSourceGetCount(newImageSource);
+
+  XCTAssertEqual(numberOfFrames, newNumberOfFrames);
 }
 
 @end
