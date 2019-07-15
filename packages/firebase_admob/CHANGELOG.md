@@ -1,6 +1,6 @@
 ## 0.9.0+2
 
-* On Android, avoid registering the plugin if no activity is available.
+* On Android, no longer crashes when registering the plugin if no activity is available.
 
 ## 0.9.0+1
 
