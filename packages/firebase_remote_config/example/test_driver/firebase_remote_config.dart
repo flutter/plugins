@@ -13,7 +13,8 @@ void main() {
 
     setUp(() async {
       remoteConfig = await RemoteConfig.instance;
-      await remoteConfig.setConfigSettings(RemoteConfigSettings(debugMode: true));
+      await remoteConfig
+          .setConfigSettings(RemoteConfigSettings(debugMode: true));
       await remoteConfig.setDefaults(<String, dynamic>{
         'welcome': 'default welcome',
         'hello': 'default hello',
