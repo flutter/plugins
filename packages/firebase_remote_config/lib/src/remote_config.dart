@@ -58,10 +58,8 @@ class RemoteConfig extends ChangeNotifier {
         <String, RemoteConfigValue>{};
     parameters.forEach((dynamic key, dynamic value) {
       final ValueSource valueSource = _parseValueSource(value['source']);
-      final List<int> origValue =
-          value['value'] == null ? null : value['value'].cast<int>();
       final RemoteConfigValue remoteConfigValue =
-          RemoteConfigValue._(origValue, valueSource);
+          RemoteConfigValue._(value['value']?.cast<int>(), valueSource);
       parsedParameters[key] = remoteConfigValue;
     });
     return parsedParameters;
