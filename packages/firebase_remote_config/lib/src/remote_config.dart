@@ -74,7 +74,7 @@ class RemoteConfig extends ChangeNotifier {
       case 'remote':
         return ValueSource.valueRemote;
       default:
-        return ValueSource.valueStatic;
+        return null;
     }
   }
 
