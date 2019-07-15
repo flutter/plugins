@@ -151,10 +151,6 @@ void main() {
       const String _key = 'dummy';
       const String _prefixedKey = 'flutter.' + _key;
 
-      setUp(() {
-        SharedPreferences.releaseSingleton();
-      });
-
       test('test 1', () async {
         SharedPreferences.setMockInitialValues(
             <String, dynamic>{_prefixedKey: 'my string'});
