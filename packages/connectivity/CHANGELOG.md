@@ -1,3 +1,6 @@
+## 0.4.3+5
+* Get network info as (2G, 3G, 4G).
+
 ## 0.4.3+4
 
 * [Android] Updated logic to retrieve network info.
