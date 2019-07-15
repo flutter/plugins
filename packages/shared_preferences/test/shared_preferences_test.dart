@@ -155,15 +155,7 @@ void main() {
       expect(preferences.getString('String'), kTestValues2['flutter.String']);
     });
 
-    test('mocking', () async {
-      expect(
-          await channel.invokeMapMethod<String, Object>('getAll'), kTestValues);
-      SharedPreferences.setMockInitialValues(kTestValues2);
-      expect(await channel.invokeMapMethod<String, Object>('getAll'),
-          kTestValues2);
-    });
-
-    group('releaseSingleton', () {
+    group('mocking', () {
       const String _key = 'dummy';
       const String _prefixedKey = 'flutter.' + _key;
 
