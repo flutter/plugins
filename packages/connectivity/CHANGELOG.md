@@ -1,7 +1,7 @@
 ## 0.4.3+5
 
-* [Android] Added Android API 29 support for `check()`.
-* Added lint suppress for "using deprecated api".
+* [Android] Added API 29 support for `check()`.
+* [Android] Suppress warnings for using deprecated APIs.
 
 ## 0.4.3+4
 
