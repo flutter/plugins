@@ -1,3 +1,7 @@
+## 0.3.2+1
+
+* Update usage example in README.
+
 ## 0.3.2
 
 * Fixed the quick actions launch on Android when the app is killed. 
