@@ -1,6 +1,6 @@
 ## 0.4.1+7
 
-* Fix possible crash on APIs below 19.
+* Fix possible crash on Android devices with APIs below 19.
 
 ## 0.4.1+6
 
