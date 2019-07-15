@@ -41,7 +41,6 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
-@property(nonatomic, assign) id notificationObserverId;
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
 - (void)play;
 - (void)pause;
@@ -83,19 +82,32 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
 
-  _notificationObserverId = [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
-                                                    object:[_player currentItem]
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  if (self->_isLooping) {
-                                                    AVPlayerItem* p = [note object];
-                                                    [p seekToTime:kCMTimeZero];
-                                                  } else {
-                                                    if (self->_eventSink) {
-                                                      self->_eventSink(@{@"event" : @"completed"});
-                                                    }
-                                                  }
-                                                }];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(itemDidPlayToEndTime:)
+                                               name:AVPlayerItemDidPlayToEndTimeNotification
+                                             object:item];
+}
+
+- (void)itemDidPlayToEndTime:(NSNotification*)note {
+  AVPlayerItem* p = [note object];
+  if (self->_isLooping) {
+    [p seekToTime:CMTIMERANGE_IS_VALID(self->_range) ? self->_range.start : kCMTimeZero
+          toleranceBefore:kCMTimeZero
+           toleranceAfter:kCMTimeZero
+        completionHandler:nil];
+  } else {
+    [self pause];
+    if (self->_eventSink) {
+      self->_eventSink(@{
+        @"event" : @"completed",
+        @"position" :
+            [NSNumber numberWithLongLong:FLTCMTimeToMillis(
+                                             CMTIMERANGE_IS_VALID(self->_range)
+                                                 ? CMTimeSubtract(p.currentTime, self->_range.start)
+                                                 : p.currentTime)]
+      });
+    }
+  }
 }
 
 static inline CGFloat radiansToDegrees(CGFloat radians) {
@@ -395,7 +407,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                              forKeyPath:@"playbackBufferFull"
                                 context:playbackBufferFullContext];
   [_player replaceCurrentItemWithPlayerItem:nil];
-  [[NSNotificationCenter defaultCenter] removeObserver:_notificationObserverId];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [_eventChannel setStreamHandler:nil];
 }
 
