@@ -1,3 +1,7 @@
+## 0.5.1+2
+
+* Copy `List` instances when reading and writing values to prevent mutations from propagating.
+
 ## 0.5.1+1
 
 * Log a more detailed warning at build time about the previous AndroidX
