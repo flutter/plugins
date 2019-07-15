@@ -1,12 +1,20 @@
 ## 4.0.0
 
-* Include missing tracking events:
+* Added new tracking events:
   - `logLevelStart`
   - `logLevelEnd`
   - `logRemoveFromCart`
   - `logSetCheckoutOption`
-* Update the list of reserved event names.
-* **Breaking change**. Add new required parameter to `logShare` event tracking.
+* **Breaking change**. Add new required parameter `method` to `logShare` event tracking.
+* **Breaking change**. The following event names are reserved and cannot be used:
+  - `ad_activeview`
+  - `ad_click`
+  - `ad_exposure`
+  - `ad_impression`
+  - `ad_query`
+  - `adunit_exposure`
+  - `first_visit`
+  - `screen_view`
 
 ## 3.0.3
 
