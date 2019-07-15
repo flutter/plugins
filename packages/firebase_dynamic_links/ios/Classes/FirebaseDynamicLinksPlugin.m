@@ -1,4 +1,5 @@
 #import "FirebaseDynamicLinksPlugin.h"
+#import "UserAgent.h"
 
 #import "Firebase/Firebase.h"
 
@@ -10,6 +11,7 @@ static FlutterError *getFlutterError(NSError *error) {
 
 @interface FLTFirebaseDynamicLinksPlugin ()
 @property(nonatomic, retain) FIRDynamicLink *dynamicLink;
+@property(nonatomic, retain) FlutterError *flutterError;
 @end
 
 @implementation FLTFirebaseDynamicLinksPlugin
@@ -20,6 +22,11 @@ static FlutterError *getFlutterError(NSError *error) {
   FLTFirebaseDynamicLinksPlugin *instance = [[FLTFirebaseDynamicLinksPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
   [registrar addApplicationDelegate:instance];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)init {
@@ -48,7 +55,13 @@ static FlutterError *getFlutterError(NSError *error) {
                                  options:options
                               completion:[self createShortLinkCompletion:result]];
   } else if ([@"FirebaseDynamicLinks#retrieveDynamicLink" isEqualToString:call.method]) {
-    result([self retrieveDynamicLink]);
+    NSMutableDictionary *dict = [self retrieveDynamicLink];
+    if (dict == nil && self.flutterError) {
+      result(self.flutterError);
+      self.flutterError = nil;
+    } else {
+      result(dict);
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -96,9 +109,13 @@ static FlutterError *getFlutterError(NSError *error) {
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(NSUserActivity *)userActivity
       restorationHandler:(void (^)(NSArray *))restorationHandler {
+  usleep(50000);
   BOOL handled = [[FIRDynamicLinks dynamicLinks]
       handleUniversalLink:userActivity.webpageURL
                completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
+                 if (error) {
+                   self.flutterError = getFlutterError(error);
+                 }
                  self.dynamicLink = dynamicLink;
                }];
   return handled;
@@ -109,6 +126,9 @@ static FlutterError *getFlutterError(NSError *error) {
     if (error) {
       result(getFlutterError(error));
     } else {
+      if (warnings == nil) {
+        warnings = [NSMutableArray array];
+      }
       result(@{@"url" : [shortURL absoluteString], @"warnings" : warnings});
     }
   };
@@ -141,10 +161,10 @@ static FlutterError *getFlutterError(NSError *error) {
 
 - (FIRDynamicLinkComponents *)setupParameters:(NSDictionary *)arguments {
   NSURL *link = [NSURL URLWithString:arguments[@"link"]];
-  NSString *domain = arguments[@"domain"];
+  NSString *uriPrefix = arguments[@"uriPrefix"];
 
   FIRDynamicLinkComponents *components = [FIRDynamicLinkComponents componentsWithLink:link
-                                                                               domain:domain];
+                                                                      domainURIPrefix:uriPrefix];
 
   if (![arguments[@"androidParameters"] isEqual:[NSNull null]]) {
     NSDictionary *params = arguments[@"androidParameters"];

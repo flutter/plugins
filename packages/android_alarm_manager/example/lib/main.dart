@@ -3,88 +3,29 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:isolate';
 
 import 'package:android_alarm_manager/android_alarm_manager.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 
-final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-FirebaseUser firebaseUser;
+void printMessage(String msg) => print('[${DateTime.now()}] $msg');
 
-Future<void> ensureFirebaseUser() async {
-  if (firebaseUser == null) {
-    firebaseUser = await firebaseAuth.currentUser();
-    if (firebaseUser == null) {
-      firebaseUser = await firebaseAuth.signInAnonymously();
-    }
-  }
-}
-
-class HelloMessage {
-  HelloMessage(this._now, this._msg, this._isolate, this._user, this._token);
-
-  final DateTime _now;
-  final String _msg;
-  final int _isolate;
-  final FirebaseUser _user;
-  final String _token;
-
-  @override
-  String toString() {
-    return "[$_now] $_msg "
-        "isolate=$_isolate "
-        "user='$_user' "
-        "token=$_token";
-  }
-}
-
-void printHelloMessage(String msg) {
-  ensureFirebaseUser().then((_) {
-    firebaseUser.getIdToken().then((String idToken) {
-      print(HelloMessage(
-        DateTime.now(),
-        msg,
-        Isolate.current.hashCode,
-        firebaseUser,
-        idToken,
-      ));
-    });
-  });
-}
-
-void printHello() {
-  printHelloMessage("Hello, world!");
-}
-
-void printGoodbye() {
-  printHelloMessage("Goodbye, world!");
-}
-
-bool oneShotFired = false;
-
-void printOneShot() {
-  printHelloMessage("Hello, once!");
-}
+void printPeriodic() => printMessage("Periodic!");
+void printOneShot() => printMessage("One shot!");
 
 Future<void> main() async {
-  final int helloAlarmID = 0;
-  final int goodbyeAlarmID = 1;
-  final int oneShotID = 2;
+  final int periodicID = 0;
+  final int oneShotID = 1;
 
   // Start the AlarmManager service.
   await AndroidAlarmManager.initialize();
 
-  printHelloMessage("Hello, main()!");
+  printMessage("main run");
   runApp(const Center(
-      child: Text('Hello, world!', textDirection: TextDirection.ltr)));
+      child:
+          Text('See device log for output', textDirection: TextDirection.ltr)));
   await AndroidAlarmManager.periodic(
-      const Duration(seconds: 5), helloAlarmID, printHello,
+      const Duration(seconds: 5), periodicID, printPeriodic,
       wakeup: true);
   await AndroidAlarmManager.oneShot(
-      const Duration(seconds: 5), goodbyeAlarmID, printGoodbye);
-  if (!oneShotFired) {
-    await AndroidAlarmManager.oneShot(
-        const Duration(seconds: 5), oneShotID, printOneShot);
-  }
+      const Duration(seconds: 5), oneShotID, printOneShot);
 }

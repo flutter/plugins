@@ -3,16 +3,22 @@
 // found in the LICENSE file.
 
 #import "FirebaseDatabasePlugin.h"
+#import "UserAgent.h"
 
 #import <Firebase/Firebase.h>
 
 static FlutterError *getFlutterError(NSError *error) {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+  if (error == nil) return nil;
+
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
                              message:error.domain
                              details:error.localizedDescription];
 }
 
 static NSDictionary *getDictionaryFromError(NSError *error) {
+  if (!error) {
+    return nil;
+  }
   return @{
     @"code" : @(error.code),
     @"message" : error.domain ?: [NSNull null],
@@ -139,6 +145,11 @@ id roundDoubles(id value) {
   FLTFirebaseDatabasePlugin *instance = [[FLTFirebaseDatabasePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)init {
