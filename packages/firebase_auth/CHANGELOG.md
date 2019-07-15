@@ -1,3 +1,7 @@
+## 0.11.1+8
+
+* On Android, providerData now includes UserInfo for phone provider.
+
 ## 0.11.1+7
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.
