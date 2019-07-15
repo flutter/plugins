@@ -1,6 +1,6 @@
 ## 0.4.0+5
 
-* Add IOS-specific warning to README.md.
+* Add iOS-specific warning to README.md.
 
 ## 0.4.0+4
 
