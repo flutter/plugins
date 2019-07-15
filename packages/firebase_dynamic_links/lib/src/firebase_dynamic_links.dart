@@ -4,8 +4,10 @@
 
 part of firebase_dynamic_links;
 
-typedef Future<dynamic> OnLinkSuccessHandler(PendingDynamicLinkData linkData);
-typedef Future<dynamic> OnLinkErrorHandler(OnLinkErrorException error);
+typedef OnLinkSuccessCallback = Future<dynamic> Function(
+    PendingDynamicLinkData linkData);
+typedef OnLinkErrorCallback = Future<dynamic> Function(
+    OnLinkErrorException error);
 
 /// Firebase Dynamic Links API.
 ///
@@ -20,8 +22,8 @@ class FirebaseDynamicLinks {
   /// Singleton of [FirebaseDynamicLinks].
   static final FirebaseDynamicLinks instance = FirebaseDynamicLinks._();
 
-  OnLinkSuccessHandler _onLinkSuccess;
-  OnLinkErrorHandler _onLinkError;
+  OnLinkSuccessCallback _onLinkSuccess;
+  OnLinkErrorCallback _onLinkError;
 
   /// Attempts to retrieve the dynamic link which launched the app.
   ///
@@ -62,8 +64,8 @@ class FirebaseDynamicLinks {
 
   /// Configures onLink listeners: it has two methods for success and failure.
   void configure({
-    OnLinkSuccessHandler onLinkSuccess,
-    OnLinkErrorHandler onLinkError,
+    OnLinkSuccessCallback onLinkSuccess,
+    OnLinkErrorCallback onLinkError,
   }) {
     _onLinkSuccess = onLinkSuccess;
     _onLinkError = onLinkError;
