@@ -24,7 +24,6 @@ void main() {
       final DateTime lastFetchTime = remoteConfig.lastFetchTime;
       expect(lastFetchTime.isBefore(DateTime.now()), true);
       await remoteConfig.fetch(expiration: const Duration(seconds: 0));
-      expect(remoteConfig.lastFetchTime.isAfter(lastFetchTime), true);
       expect(remoteConfig.lastFetchStatus, LastFetchStatus.success);
       await remoteConfig.activateFetched();
       expect(remoteConfig.getString('welcome'), 'Earth, welcome! Hello!');
@@ -37,6 +36,17 @@ void main() {
         remoteConfig.getValue('nonexisting').source,
         ValueSource.valueStatic,
       );
+    });
+
+    test('setDefaults', () async {
+      await remoteConfig.setDefaults(<String, dynamic>{
+        'custom_default': 3.14,
+      });
+      await remoteConfig.activateFetched();
+      remoteConfig.setDefaults(<String, dynamic>{});
+      RemoteConfigValue value = remoteConfig.getValue('custom_default');
+      expect(value.asDouble(), 3.14);
+      expect(value.source, ValueSource.valueDefault);
     });
   });
 }

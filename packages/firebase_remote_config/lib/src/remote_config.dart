@@ -156,10 +156,9 @@ class RemoteConfig extends ChangeNotifier {
     // Make defaults available even if fetch fails.
     defaults.forEach((String key, dynamic value) {
       if (!_parameters.containsKey(key)) {
-        final ValueSource valueSource = ValueSource.valueDefault;
         final RemoteConfigValue remoteConfigValue = RemoteConfigValue._(
           const Utf8Codec().encode(value.toString()),
-          valueSource,
+          ValueSource.valueDefault,
         );
         _parameters[key] = remoteConfigValue;
       }

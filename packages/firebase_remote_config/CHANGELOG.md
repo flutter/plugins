@@ -1,3 +1,8 @@
+## 0.2.0+4
+
+* Fixed a bug where `RemoteConfigValue` could report remote `source` on a default value.
+* Added an integration test for the above.
+
 ## 0.2.0+3
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.
