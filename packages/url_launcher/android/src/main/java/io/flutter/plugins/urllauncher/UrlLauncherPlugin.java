@@ -68,6 +68,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
     Intent launchIntent;
     boolean useWebView = call.argument("useWebView");
     boolean enableJavaScript = call.argument("enableJavaScript");
+    boolean enableDomStorage = call.argument("enableDomStorage");
     Activity activity = mRegistrar.activity();
     if (activity == null) {
       result.error("NO_ACTIVITY", "Launching a URL requires a foreground activity.", null);
@@ -77,6 +78,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       launchIntent = new Intent(activity, WebViewActivity.class);
       launchIntent.putExtra("url", url);
       launchIntent.putExtra("enableJavaScript", enableJavaScript);
+      launchIntent.putExtra("enableDomStorage", enableDomStorage);
     } else {
       launchIntent = new Intent(Intent.ACTION_VIEW);
       launchIntent.setData(Uri.parse(url));
@@ -105,9 +107,13 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       Intent intent = getIntent();
       String url = intent.getStringExtra("url");
       Boolean enableJavaScript = intent.getBooleanExtra("enableJavaScript", false);
+      Boolean enableDomStorage = intent.getBooleanExtra("enableDomStorage", false);
       webview.loadUrl(url);
       if (enableJavaScript) {
         webview.getSettings().setJavaScriptEnabled(enableJavaScript);
+      }
+      if (enableDomStorage) {
+        webview.getSettings().setDomStorageEnabled(enableDomStorage);
       }
       // Open new urls inside the webview itself.
       webview.setWebViewClient(

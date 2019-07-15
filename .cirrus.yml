@@ -59,26 +59,21 @@ task:
 task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-10.1
-  install_cocoapods_script:
-    - sudo gem install cocoapods
+    image: mojave-xcode-10.2-flutter
   setup_script:
-    - brew update
-    - brew install libimobiledevice
-    - brew install ideviceinstaller
-    - brew install ios-deploy
     - pod repo update
-    - git clone https://github.com/flutter/flutter.git
-    - git fetch origin master
-    - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+  switch_channel_script:
+    - flutter channel master
+    - flutter upgrade
     - flutter doctor
+  activate_script:
     - pub global activate flutter_plugin_tools
-    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-12-1 | xargs xcrun simctl boot
+  create_simulator_script:
+    - xcrun simctl list
+    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-12-2 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
-      script:
-        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
-        - ./script/build_all_plugins_app.sh ios --no-codesign
+      script: ./script/build_all_plugins_app.sh ios --no-codesign
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
@@ -89,6 +84,5 @@ task:
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       build_script:
-        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh drive-examples

@@ -1,3 +1,7 @@
+## 0.0.4+11
+
+* Fixed an issue where `Crashlytics#getStackTraceElements` didn't handle functions without classes.
+
 ## 0.0.4+10
 
 * Update README.

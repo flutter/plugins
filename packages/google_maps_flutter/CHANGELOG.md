@@ -1,6 +1,10 @@
-## 0.5.19+3
+## 0.5.20+1
 
 * Breaking change fix for BitmapDescriptor scaling override
+
+## 0.5.20
+
+* Add map toolbar support
 
 ## 0.5.19+2
 
