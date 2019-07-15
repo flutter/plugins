@@ -100,7 +100,7 @@ void main() {
                   'value': <int>[116, 114, 117, 101], // UTF-8 encoded 'true'
                 },
                 'param5': <String, dynamic>{
-                  'source': 'static',
+                  'source': 'default',
                   'value': <int>[
                     102,
                     97,
@@ -109,7 +109,7 @@ void main() {
                     101
                   ], // UTF-8 encoded 'false'
                 },
-                'param6': <String, dynamic>{'source': 'static', 'value': null}
+                'param6': <String, dynamic>{'source': 'default', 'value': null}
               },
               'newConfig': true,
             };
@@ -206,8 +206,8 @@ void main() {
         'param2': ValueSource.valueRemote,
         'param3': ValueSource.valueDefault,
         'param4': ValueSource.valueRemote,
-        'param5': ValueSource.valueStatic,
-        'param6': ValueSource.valueStatic,
+        'param5': ValueSource.valueDefault,
+        'param6': ValueSource.valueDefault,
       });
     });
 
