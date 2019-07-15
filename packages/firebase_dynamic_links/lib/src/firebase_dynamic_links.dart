@@ -63,12 +63,12 @@ class FirebaseDynamicLinks {
   }
 
   /// Configures onLink listeners: it has two methods for success and failure.
-  void configure({
-    OnLinkSuccessCallback onLinkSuccess,
-    OnLinkErrorCallback onLinkError,
+  void onLink({
+    OnLinkSuccessCallback onSuccess,
+    OnLinkErrorCallback onError,
   }) {
-    _onLinkSuccess = onLinkSuccess;
-    _onLinkError = onLinkError;
+    _onLinkSuccess = onSuccess;
+    _onLinkError = onError;
     channel.setMethodCallHandler(_handleMethod);
   }
 

@@ -98,7 +98,7 @@ applinks:YOUR_SUBDOMAIN.page.link
 ```
 
 4. To receive a dynamic link, call the `getLaunchLink()` method from `FirebaseDynamicLinks` which gets the link that opened the app (or null if it was not opened via a dynamic link)
-and configure listeners for link callbacks when the application is active or in background calling `configure`.
+and configure listeners for link callbacks when the application is active or in background calling `onLink`.
 
 ```dart
 void main() {
@@ -129,15 +129,15 @@ class MyHomeWidgetState extends State<MyHomeWidget> {
       Navigator.pushNamed(context, deepLink.path);
     }
 
-    FirebaseDynamicLinks.instance.configure(
-      onLinkSuccess: (PendingDynamicLinkData dynamicLink) async {
+    FirebaseDynamicLinks.instance.onLink(
+      onSuccess: (PendingDynamicLinkData dynamicLink) async {
         final Uri deepLink = dynamicLink?.link;
 
         if (deepLink != null) {
           Navigator.pushNamed(context, deepLink.path);
         }
       },
-      onLinkError: (OnLinkErrorException e) async {
+      onError: (OnLinkErrorException e) async {
         print('onLinkError');
         print(e.message);
       }
