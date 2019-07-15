@@ -27,6 +27,8 @@ class FakePlatformGoogleMap {
 
   bool compassEnabled;
 
+  bool mapToolbarEnabled;
+
   CameraTargetBounds cameraTargetBounds;
 
   MapType mapType;
@@ -46,6 +48,8 @@ class FakePlatformGoogleMap {
   bool myLocationEnabled;
 
   bool myLocationButtonEnabled;
+
+  List<dynamic> padding;
 
   Set<MarkerId> markerIdsToRemove;
 
@@ -299,6 +303,9 @@ class FakePlatformGoogleMap {
     if (options.containsKey('compassEnabled')) {
       compassEnabled = options['compassEnabled'];
     }
+    if (options.containsKey('mapToolbarEnabled')) {
+      mapToolbarEnabled = options['mapToolbarEnabled'];
+    }
     if (options.containsKey('cameraTargetBounds')) {
       final List<dynamic> boundsList = options['cameraTargetBounds'];
       cameraTargetBounds = boundsList[0] == null
@@ -333,6 +340,9 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('myLocationButtonEnabled')) {
       myLocationButtonEnabled = options['myLocationButtonEnabled'];
+    }
+    if (options.containsKey('padding')) {
+      padding = options['padding'];
     }
   }
 }

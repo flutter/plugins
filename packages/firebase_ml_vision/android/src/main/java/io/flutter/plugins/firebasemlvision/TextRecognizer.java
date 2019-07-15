@@ -18,36 +18,15 @@ import java.util.List;
 import java.util.Map;
 
 public class TextRecognizer implements Detector {
-  static final TextRecognizer instance = new TextRecognizer();
+  private final FirebaseVisionTextRecognizer recognizer;
 
-  private TextRecognizer() {}
-
-  private FirebaseVisionTextRecognizer textRecognizer;
-  private Map<String, Object> lastOptions;
+  TextRecognizer(FirebaseVision vision, Map<String, Object> options) {
+    recognizer = vision.getOnDeviceTextRecognizer();
+  }
 
   @Override
-  public void handleDetection(
-      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-
-    // Use instantiated detector if the options are the same. Otherwise, close and instantiate new
-    // options.
-
-    if (textRecognizer == null) {
-      lastOptions = options;
-      textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
-    } else if (!options.equals(lastOptions)) {
-      try {
-        textRecognizer.close();
-      } catch (IOException e) {
-        result.error("textRecognizerIOError", e.getLocalizedMessage(), null);
-        return;
-      }
-
-      lastOptions = options;
-      textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
-    }
-
-    textRecognizer
+  public void handleDetection(final FirebaseVisionImage image, final MethodChannel.Result result) {
+    recognizer
         .processImage(image)
         .addOnSuccessListener(
             new OnSuccessListener<FirebaseVisionText>() {
@@ -145,5 +124,10 @@ public class TextRecognizer implements Detector {
     addTo.put("recognizedLanguages", allLanguageData);
 
     addTo.put("text", text);
+  }
+
+  @Override
+  public void close() throws IOException {
+    recognizer.close();
   }
 }

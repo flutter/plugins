@@ -24,6 +24,9 @@
 		97C146F31CF9000F007C117D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C146F21CF9000F007C117D /* main.m */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		9FC8F0E9229FA49E00C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
+		9FC8F0EC229FA68500C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
+		9FC8F0EE229FB90B00C8D58F /* ImageUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */; };
 		F4F7A436CCA4BF276270A3AE /* libPods-Runner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC32F6993F4529982D9519F1 /* libPods-Runner.a */; };
 /* End PBXBuildFile section */
 
@@ -77,6 +80,8 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9FC8F0E8229FA49E00C8D58F /* gifImage.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = gifImage.gif; sourceTree = "<group>"; };
+		9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageUtilTests.m; sourceTree = "<group>"; };
 		EC32F6993F4529982D9519F1 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -105,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				6800491B2280D368006DD6AB /* Info.plist */,
+				9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */,
 				680049252280D736006DD6AB /* MetaDataUtilTests.m */,
 				68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */,
 			);
@@ -114,6 +120,7 @@
 		680049282280E33D006DD6AB /* TestImages */ = {
 			isa = PBXGroup;
 			children = (
+				9FC8F0E8229FA49E00C8D58F /* gifImage.gif */,
 				680049362280F2B8006DD6AB /* jpgImage.jpg */,
 				680049352280F2B8006DD6AB /* pngImage.png */,
 			);
@@ -291,6 +298,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				680049272280D79A006DD6AB /* Assets.xcassets in Resources */,
+				9FC8F0EC229FA68500C8D58F /* gifImage.gif in Resources */,
 				680049382280F2B9006DD6AB /* pngImage.png in Resources */,
 				680049392280F2B9006DD6AB /* jpgImage.jpg in Resources */,
 			);
@@ -301,6 +309,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
+				9FC8F0E9229FA49E00C8D58F /* gifImage.gif in Resources */,
 				9740EEB51CF90195004384FC /* Generated.xcconfig in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				9740EEB41CF90195004384FC /* Debug.xcconfig in Resources */,
@@ -382,6 +391,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FC8F0EE229FB90B00C8D58F /* ImageUtilTests.m in Sources */,
 				680049262280D736006DD6AB /* MetaDataUtilTests.m in Sources */,
 				68F4B464228B3AB500C25614 /* PhotoAssetUtilTests.m in Sources */,
 			);
