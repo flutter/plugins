@@ -53,10 +53,15 @@ final class InputAwareWebView extends WebView {
     imm.restartInput(containerView);
   }
 
+  /** Restore the original InputConnection, if needed. */
+  void dispose() {
+    resetInputConnection();
+  }
+
   /**
    * Creates an InputConnection from the IME thread when needed.
    *
-   * <p>We only need to create a {@link ThreadedInputConnectionProxy} and create an
+   * <p>We only need to create a {@link ThreadedInputConnectionProxyAdapterView} and create an
    * InputConnectionProxy on the IME thread when WebView is doing the same thing. So we rely on the
    * system calling this method for WebView's proxy view in order to know when we need to create our
    * own.
@@ -84,7 +89,6 @@ final class InputAwareWebView extends WebView {
             /*containerView=*/ containerView,
             /*targetView=*/ view,
             /*imeHandler=*/ view.getHandler());
-    final View container = this;
     proxyAdapterView.requestFocus();
     // This is the crucial trick that gets the InputConnection creation to happen on the correct
     // thread.
@@ -124,6 +128,17 @@ final class InputAwareWebView extends WebView {
   @Override
   public void clearFocus() {
     super.clearFocus();
+    resetInputConnection();
+  }
+
+  /**
+   * Ensure that input creation happens back on {@link #containerView}'s thread.
+   *
+   * <p>The logic in {@link #checkInputConnectionProxy} forces input creation to happen on Webview's
+   * thread for all connections. We undo it here so usres will be able to go back to typing in
+   * Flutter UIs as expected.
+   */
+  private void resetInputConnection() {
     if (proxyAdapterView == null) {
       // No need to reset the InputConnection to the default thread if we've never changed it.
       return;
