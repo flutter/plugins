@@ -1,0 +1,11 @@
+.DS_Store
+.dart_tool/
+
+.packages
+.pub/
+pubspec.lock
+
+build/
+
+ios/Classes/UserAgent.h
+

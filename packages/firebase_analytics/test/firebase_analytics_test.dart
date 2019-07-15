@@ -4,12 +4,10 @@
 
 import 'dart:async';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/services.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-
-import 'package:flutter/services.dart';
-
-import 'package:firebase_analytics/firebase_analytics.dart';
 
 void main() {
   group('filterOutNulls', () {
@@ -39,10 +37,7 @@ void main() {
       invokedMethod = null;
       arguments = null;
 
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      when(mockChannel.invokeMethod(any, any))
+      when(mockChannel.invokeMethod<void>(any, any))
           .thenAnswer((Invocation invocation) {
         invokedMethod = invocation.positionalArguments[0];
         arguments = invocation.positionalArguments[1];
@@ -114,6 +109,11 @@ void main() {
       expect(invokedMethod, 'setSessionTimeoutDuration');
       expect(arguments, 234);
     });
+
+    test('resetAnalyticsData', () async {
+      await analytics.resetAnalyticsData();
+      expect(invokedMethod, 'resetAnalyticsData');
+    });
   });
 
   group('$FirebaseAnalytics analytics events', () {
@@ -128,10 +128,7 @@ void main() {
       name = null;
       parameters = null;
 
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      when(mockChannel.invokeMethod('logEvent', any))
+      when(mockChannel.invokeMethod<void>('logEvent', any))
           .thenAnswer((Invocation invocation) {
         final Map<String, dynamic> args = invocation.positionalArguments[1];
         name = args['name'];
@@ -140,10 +137,7 @@ void main() {
         return Future<void>.value();
       });
 
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      when(mockChannel.invokeMethod(argThat(isNot('logEvent')), any))
+      when(mockChannel.invokeMethod<void>(argThat(isNot('logEvent')), any))
           .thenThrow(ArgumentError('Only logEvent invocations expected'));
 
       analytics = FirebaseAnalytics.private(mockChannel);
@@ -226,7 +220,26 @@ void main() {
               level: 56,
             ));
 
+    smokeTest(
+        'level_start',
+        () => analytics.logLevelStart(
+              levelName: 'level-name',
+            ));
+
+    smokeTest(
+        'level_end',
+        () => analytics.logLevelEnd(
+              levelName: 'level-name',
+              success: 1,
+            ));
+
     smokeTest('login', () => analytics.logLogin());
+
+    smokeTest(
+        'login',
+        () => analytics.logLogin(
+              loginMethod: 'email',
+            ));
 
     smokeTest(
         'post_score',
@@ -263,6 +276,7 @@ void main() {
         () => analytics.logShare(
               contentType: 'test content type',
               itemId: 'test item id',
+              method: 'test method',
             ));
 
     smokeTest(
@@ -309,6 +323,11 @@ void main() {
               searchTerm: 'test search term',
             ));
 
+    smokeTest('set_checkout_option', () {
+      return analytics.logSetCheckoutOption(
+          checkoutStep: 1, checkoutOption: 'some credit card');
+    });
+
     void testRequiresValueAndCurrencyTogether(
         String methodName, Future<void> testFn()) {
       test('$methodName requires value and currency together', () async {
@@ -323,6 +342,16 @@ void main() {
 
     testRequiresValueAndCurrencyTogether('logAddToCart', () {
       return analytics.logAddToCart(
+        itemId: 'test-id',
+        itemName: 'test-name',
+        itemCategory: 'test-category',
+        quantity: 5,
+        value: 123.90,
+      );
+    });
+
+    testRequiresValueAndCurrencyTogether('logRemoveFromCart', () {
+      return analytics.logRemoveFromCart(
         itemId: 'test-id',
         itemName: 'test-name',
         itemCategory: 'test-category',

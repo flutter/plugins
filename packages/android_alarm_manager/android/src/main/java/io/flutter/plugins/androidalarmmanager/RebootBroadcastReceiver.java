@@ -11,7 +11,25 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+/**
+ * Reschedules background work after the Android device reboots.
+ *
+ * <p>When an Android device reboots, all previously scheduled {@link AlarmManager} timers are
+ * cleared.
+ *
+ * <p>Timer callbacks registered with the android_alarm_manager plugin can be designated
+ * "persistent" and therefore, upon device reboot, should be rescheduled for execution. To
+ * accomplish this rescheduling, {@code RebootBroadcastReceiver} is scheduled by {@link
+ * AlarmService} to run on {@code BOOT_COMPLETED} and do the rescheduling.
+ */
 public class RebootBroadcastReceiver extends BroadcastReceiver {
+  /**
+   * Invoked by the OS whenever a broadcast is received by this app.
+   *
+   * <p>If the broadcast's action is {@code BOOT_COMPLETED} then this {@code
+   * RebootBroadcastReceiver} reschedules all persistent timer callbacks. That rescheduling work is
+   * handled by {@link AlarmService#reschedulePersistentAlarms(Context)}.
+   */
   @Override
   public void onReceive(Context context, Intent intent) {
     if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
@@ -20,10 +38,17 @@ public class RebootBroadcastReceiver extends BroadcastReceiver {
     }
   }
 
+  /**
+   * Schedules this {@code RebootBroadcastReceiver} to be run whenever the Android device reboots.
+   */
   public static void enableRescheduleOnReboot(Context context) {
     scheduleOnReboot(context, PackageManager.COMPONENT_ENABLED_STATE_ENABLED);
   }
 
+  /**
+   * Unschedules this {@code RebootBroadcastReceiver} to be run whenever the Android device reboots.
+   * This {@code RebootBroadcastReceiver} will no longer be run upon reboot.
+   */
   public static void disableRescheduleOnReboot(Context context) {
     scheduleOnReboot(context, PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
   }

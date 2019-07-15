@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #import "FirebaseCorePlugin.h"
+#import "UserAgent.h"
 
 #import <Firebase/Firebase.h>
 
 static NSDictionary *getDictionaryFromFIROptions(FIROptions *options) {
+  if (!options) {
+    return nil;
+  }
   return @{
     @"googleAppID" : options.googleAppID ?: [NSNull null],
     @"bundleID" : options.bundleID ?: [NSNull null],
@@ -23,6 +27,9 @@ static NSDictionary *getDictionaryFromFIROptions(FIROptions *options) {
 }
 
 static NSDictionary *getDictionaryFromFIRApp(FIRApp *app) {
+  if (!app) {
+    return nil;
+  }
   return @{@"name" : app.name, @"options" : getDictionaryFromFIROptions(app.options)};
 }
 
@@ -33,6 +40,11 @@ static NSDictionary *getDictionaryFromFIRApp(FIRApp *app) {
                                   binaryMessenger:[registrar messenger]];
   FLTFirebaseCorePlugin *instance = [[FLTFirebaseCorePlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {

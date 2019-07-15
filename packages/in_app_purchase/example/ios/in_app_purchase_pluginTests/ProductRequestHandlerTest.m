@@ -52,4 +52,37 @@
   XCTAssertNil(response);
 }
 
+- (void)testRequestHandlerWithRefreshReceiptSuccess {
+  SKReceiptRefreshRequestStub *request =
+      [[SKReceiptRefreshRequestStub alloc] initWithReceiptProperties:nil];
+  FIAPRequestHandler *handler = [[FIAPRequestHandler alloc] initWithRequest:request];
+  XCTestExpectation *expectation = [self expectationWithDescription:@"expect no error"];
+  __block NSError *e;
+  [handler
+      startProductRequestWithCompletionHandler:^(SKProductsResponse *_Nullable r, NSError *error) {
+        e = error;
+        [expectation fulfill];
+      }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertNil(e);
+}
+
+- (void)testRequestHandlerWithRefreshReceiptFailure {
+  SKReceiptRefreshRequestStub *request = [[SKReceiptRefreshRequestStub alloc]
+      initWithFailureError:[NSError errorWithDomain:@"test" code:123 userInfo:@{}]];
+  FIAPRequestHandler *handler = [[FIAPRequestHandler alloc] initWithRequest:request];
+  XCTestExpectation *expectation = [self expectationWithDescription:@"expect error"];
+  __block NSError *error;
+  __block SKProductsResponse *response;
+  [handler startProductRequestWithCompletionHandler:^(SKProductsResponse *_Nullable r, NSError *e) {
+    error = e;
+    response = r;
+    [expectation fulfill];
+  }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertNotNil(error);
+  XCTAssertEqual(error.domain, @"test");
+  XCTAssertNil(response);
+}
+
 @end
