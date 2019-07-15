@@ -29,6 +29,12 @@
                                                                              ofType:@"png"]];
   XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:dataPNG],
                  FLTImagePickerMIMETypePNG);
+
+  // test gif
+  NSData *dataGIF = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"gifImage"
+                                                                             ofType:@"gif"]];
+  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:dataGIF],
+                 FLTImagePickerMIMETypeGIF);
 }
 
 - (void)testSuffixFromType {
@@ -39,6 +45,10 @@
   // test png
   XCTAssertEqualObjects(
       [FLTImagePickerMetaDataUtil imageTypeSuffixFromType:FLTImagePickerMIMETypePNG], @".png");
+
+  // test gif
+  XCTAssertEqualObjects(
+      [FLTImagePickerMetaDataUtil imageTypeSuffixFromType:FLTImagePickerMIMETypeGIF], @".gif");
 
   // test other
   XCTAssertNil([FLTImagePickerMetaDataUtil imageTypeSuffixFromType:FLTImagePickerMIMETypeOther]);

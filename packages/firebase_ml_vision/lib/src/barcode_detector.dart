@@ -183,17 +183,24 @@ class BarcodeFormat {
 /// final List<Barcode> barcodes = await barcodeDetector.detectInImage(image);
 /// ```
 class BarcodeDetector {
-  BarcodeDetector._(this.options) : assert(options != null);
+  BarcodeDetector._(this.options, this._handle) : assert(options != null);
 
   /// The options for configuring this detector.
   final BarcodeDetectorOptions options;
+  final int _handle;
+  bool _hasBeenOpened = false;
+  bool _isClosed = false;
 
   /// Detects barcodes in the input image.
   Future<List<Barcode>> detectInImage(FirebaseVisionImage visionImage) async {
+    assert(!_isClosed);
+
+    _hasBeenOpened = true;
     final List<dynamic> reply =
         await FirebaseVision.channel.invokeListMethod<dynamic>(
       'BarcodeDetector#detectInImage',
       <String, dynamic>{
+        'handle': _handle,
         'options': <String, dynamic>{
           'barcodeFormats': options.barcodeFormats.value,
         },
@@ -206,6 +213,18 @@ class BarcodeDetector {
     });
 
     return barcodes;
+  }
+
+  /// Release resources used by this detector.
+  Future<void> close() {
+    if (!_hasBeenOpened) _isClosed = true;
+    if (_isClosed) return Future<void>.value(null);
+
+    _isClosed = true;
+    return FirebaseVision.channel.invokeMethod<void>(
+      'BarcodeDetector#close',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 }
 

@@ -1,3 +1,24 @@
+## 5.1.0
+
+* Changed the return type of `subscribeToTopic` and `unsubscribeFromTopic` to
+  `Future<void>`.
+
+## 5.0.6
+
+* Additional integration tests.
+
+## 5.0.5
+
+* On Android, fix crash when calling `deleteInstanceID` with latest Flutter engine.
+
+## 5.0.4
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 5.0.3
+
+* Update Dart code to conform to current Dart formatter.
+
 ## 5.0.2
 
 * Add missing template type parameter to `invokeMethod` calls.

@@ -7,6 +7,7 @@
 
 static const uint8_t kFirstByteJPEG = 0xFF;
 static const uint8_t kFirstBytePNG = 0x89;
+static const uint8_t kFirstByteGIF = 0x47;
 
 NSString *const kFLTImagePickerDefaultSuffix = @".jpg";
 const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIMETypeJPEG;
@@ -21,6 +22,8 @@ const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIME
       return FLTImagePickerMIMETypeJPEG;
     case kFirstBytePNG:
       return FLTImagePickerMIMETypePNG;
+    case kFirstByteGIF:
+      return FLTImagePickerMIMETypeGIF;
   }
   return FLTImagePickerMIMETypeOther;
 }
@@ -31,6 +34,8 @@ const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIME
       return @".jpg";
     case FLTImagePickerMIMETypePNG:
       return @".png";
+    case FLTImagePickerMIMETypeGIF:
+      return @".gif";
     default:
       return nil;
   }

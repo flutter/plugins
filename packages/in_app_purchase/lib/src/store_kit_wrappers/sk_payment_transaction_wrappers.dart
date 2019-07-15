@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'sk_product_wrapper.dart';
@@ -172,6 +173,15 @@ class SKPaymentTransactionWrapper {
         typedOther.transactionIdentifier == transactionIdentifier &&
         typedOther.error == error;
   }
+
+  @override
+  int get hashCode => hashValues(
+      this.payment,
+      this.transactionState,
+      this.originalTransaction,
+      this.transactionTimeStamp,
+      this.transactionIdentifier,
+      this.error);
 
   @override
   String toString() => _$SKPaymentTransactionWrapperToJson(this).toString();

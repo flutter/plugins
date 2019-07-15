@@ -88,12 +88,18 @@ class StorageReference {
   /// Returns the full path to this object, not including the Google Cloud
   /// Storage bucket.
   Future<String> getPath() async {
-    return await FirebaseStorage.channel
+    final String path = await FirebaseStorage.channel
         .invokeMethod<String>("StorageReference#getPath", <String, String>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
       'path': _pathComponents.join("/"),
     });
+
+    if (path.startsWith('/')) {
+      return path.substring(1);
+    } else {
+      return path;
+    }
   }
 
   /// Returns the short name of this object.

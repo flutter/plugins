@@ -28,7 +28,9 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
   private FirebaseDynamicLinksPlugin(Registrar registrar) {
     this.registrar = registrar;
-    latestIntent = registrar.activity().getIntent();
+    if (registrar.activity() != null) {
+      latestIntent = registrar.activity().getIntent();
+    }
 
     registrar.addNewIntentListener(
         new PluginRegistry.NewIntentListener() {

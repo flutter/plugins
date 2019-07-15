@@ -1,3 +1,11 @@
+## 0.4.3+4
+
+* [Android] Updated logic to retrieve network info.
+
+## 0.4.3+3
+
+* Support for TYPE_MOBILE_HIPRI on Android.
+
 ## 0.4.3+2
 
 * Add missing template type parameter to `invokeMethod` calls.
