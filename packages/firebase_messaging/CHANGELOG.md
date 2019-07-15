@@ -1,3 +1,7 @@
+## 5.0.5
+
+* Update README with more detailed integration instructions.
+
 ## 5.0.4
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.

@@ -45,7 +45,7 @@ Default FirebaseApp is not initialized in this process [package name].
 Make sure to call FirebaseApp.initializeApp(Context) first.
 ```
 
-Note: When you are debugging on android, use a device or AVD with Google Play services. Otherwise you will not be able to authenticate.
+Note: When you are debugging on Android, use a device or AVD with Google Play services. Otherwise you will not be able to authenticate.
 
 4. (optional, but recommended) If want to be notified in your app (via `onResume` and `onLaunch`, see below) when the user clicks on a notification in the system tray include the following `intent-filter` within the `<activity>` tag of your `android/app/src/main/AndroidManifest.xml`:
   ```xml
