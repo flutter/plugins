@@ -260,6 +260,10 @@ class Convert {
     if (compassEnabled != null) {
       sink.setCompassEnabled(toBoolean(compassEnabled));
     }
+    final Object mapToolbarEnabled = data.get("mapToolbarEnabled");
+    if (mapToolbarEnabled != null) {
+      sink.setMapToolbarEnabled(toBoolean(mapToolbarEnabled));
+    }
     final Object mapType = data.get("mapType");
     if (mapType != null) {
       sink.setMapType(toInt(mapType));

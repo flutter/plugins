@@ -1,7 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="io.flutter.plugins.quickactions">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="io.flutter.plugins.quickactions">
 
-  <application>
-    <activity android:name=".QuickActionsPlugin$ShortcutHandlerActivity" android:exported="false"/>
-  </application>
+    <application>
+        <activity
+            android:name=".QuickActionsPlugin$ShortcutHandlerActivity"
+            android:exported="false"
+            android:relinquishTaskIdentity="true"
+            tools:targetApi="lollipop" />
+    </application>
 </manifest>

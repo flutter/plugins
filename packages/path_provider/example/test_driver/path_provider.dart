@@ -56,9 +56,12 @@ void main() {
       expect(result, throwsA(isInstanceOf<UnsupportedError>()));
     } else if (Platform.isAndroid) {
       final Directory result = await getExternalStorageDirectory();
-      // This directory is not accessible in Android emulators.
-      // However, it should at least have a fake path returned.
-      expect(result.path.length, isNonZero);
+      final String uuid = Uuid().v1();
+      final File file = File('${result.path}/$uuid.txt');
+      file.writeAsStringSync('Hello world!');
+      expect(file.readAsStringSync(), 'Hello world!');
+      expect(result.listSync(), isNotEmpty);
+      file.deleteSync();
     }
   });
 }
