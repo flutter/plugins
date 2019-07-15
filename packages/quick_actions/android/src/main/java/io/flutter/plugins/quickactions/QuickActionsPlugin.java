@@ -26,6 +26,8 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class QuickActionsPlugin implements MethodCallHandler {
   private final Registrar registrar;
+  private static final String intentExtraAction = "action";
+  private static String launchAction = null;
 
   // Channel is a static field because it needs to be accessible to the
   // {@link ShortcutHandlerActivity} which has to be a static class with
@@ -45,6 +47,7 @@ public class QuickActionsPlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/quick_actions");
     channel.setMethodCallHandler(new QuickActionsPlugin(registrar));
+    launchAction = registrar.activity().getIntent().getStringExtra(intentExtraAction);
   }
 
   @Override
@@ -68,6 +71,10 @@ public class QuickActionsPlugin implements MethodCallHandler {
       case "clearShortcutItems":
         shortcutManager.removeAllDynamicShortcuts();
         break;
+      case "getLaunchAction":
+        result.success(launchAction);
+        launchAction = null;
+        return;
       default:
         result.notImplemented();
         return;
@@ -117,8 +124,27 @@ public class QuickActionsPlugin implements MethodCallHandler {
       String type = intent.getStringExtra("type");
       if (channel != null) {
         channel.invokeMethod("launch", type);
+      } else {
+        startActivity(getIntentToOpenMainActivity(this, type));
       }
       finish();
+    }
+
+    /**
+     * Returns Intent to launch the MainActivity. Used to start the app, if one of quick actions was
+     * called from the background.
+     */
+    private Intent getIntentToOpenMainActivity(Context context, String type) {
+      Intent launchIntentForPackage =
+          context
+              .getPackageManager()
+              .getLaunchIntentForPackage(context.getApplicationContext().getPackageName());
+      if (launchIntentForPackage == null) {
+        return null;
+      } else {
+        launchIntentForPackage.putExtra(intentExtraAction, type);
+        return launchIntentForPackage;
+      }
     }
   }
 }
