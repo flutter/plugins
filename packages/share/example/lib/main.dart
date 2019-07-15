@@ -44,7 +44,7 @@ class DemoAppState extends State<DemoApp> {
                 TextField(
                   decoration: const InputDecoration(
                     labelText: 'Share subject:',
-                    hintText: 'Enter subject to share (Optional)',
+                    hintText: 'Enter subject to share (optional)',
                   ),
                   maxLines: 2,
                   onChanged: (String value) => setState(() {
