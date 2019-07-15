@@ -1,6 +1,6 @@
 ## 0.11.1+8
 
-* On Android, providerData now includes UserInfo for phone provider.
+* On Android, `providerData` now includes `UserInfo` for the 'phone' provider.
 
 ## 0.11.1+7
 
