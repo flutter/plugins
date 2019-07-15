@@ -130,7 +130,7 @@ static const int SOURCE_GALLERY = 1;
                       otherButtonTitles:nil] show];
     self.result(nil);
     self.result = nil;
-    _arguments = nil;          
+    _arguments = nil;
   }
 }
 
