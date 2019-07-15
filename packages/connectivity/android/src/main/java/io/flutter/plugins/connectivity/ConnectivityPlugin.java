@@ -152,7 +152,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
             case "wifiIPAddress":
                 handleWifiIPAddress(call, result);
                 break;
-            case "getMobileConnectionType"
+            case "getMobileConnectionType":
                 handleMobileConnectionType(call, result);
                 break;
             default:
