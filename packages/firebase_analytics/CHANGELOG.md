@@ -1,13 +1,12 @@
-## 3.1.0
+## 4.0.0
 
 * Include missing tracking events:
  - `logLevelStart`
  - `logLevelEnd`
  - `logRemoveFromCart`
  - `logSetCheckoutOption`
-
 * Update the list of reserved event names.
-* Add new required parameter to `logShare` event tracking.
+* **Breaking change**. Add new required parameter to `logShare` event tracking.
 
 ## 3.0.3
 
