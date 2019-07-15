@@ -13,8 +13,8 @@ void main() {
 
     setUp(() async {
       remoteConfig = await RemoteConfig.instance;
-      remoteConfig.setConfigSettings(RemoteConfigSettings(debugMode: true));
-      remoteConfig.setDefaults(<String, dynamic>{
+      await remoteConfig.setConfigSettings(RemoteConfigSettings(debugMode: true));
+      await remoteConfig.setDefaults(<String, dynamic>{
         'welcome': 'default welcome',
         'hello': 'default hello',
       });
@@ -26,6 +26,7 @@ void main() {
       await remoteConfig.fetch(expiration: const Duration(seconds: 0));
       expect(remoteConfig.lastFetchStatus, LastFetchStatus.success);
       await remoteConfig.activateFetched();
+
       expect(remoteConfig.getString('welcome'), 'Earth, welcome! Hello!');
       expect(remoteConfig.getString('hello'), 'default hello');
       expect(remoteConfig.getInt('nonexisting'), 0);
@@ -36,17 +37,6 @@ void main() {
         remoteConfig.getValue('nonexisting').source,
         ValueSource.valueStatic,
       );
-    });
-
-    test('setDefaults', () async {
-      await remoteConfig.setDefaults(<String, dynamic>{
-        'custom_default': 3.14,
-      });
-      await remoteConfig.activateFetched();
-      remoteConfig.setDefaults(<String, dynamic>{});
-      RemoteConfigValue value = remoteConfig.getValue('custom_default');
-      expect(value.asDouble(), 3.14);
-      expect(value.source, ValueSource.valueDefault);
     });
   });
 }
