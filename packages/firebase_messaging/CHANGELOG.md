@@ -1,4 +1,4 @@
-## 5.1.0
+## 5.1.1
 
 * Update README with more detailed integration instructions.
 
