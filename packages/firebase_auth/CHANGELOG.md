@@ -1,3 +1,7 @@
+## 0.11.1+10
+
+* On Android, `providerData` now includes `UserInfo` for the phone authentication provider.
+
 ## 0.11.1+9
 
 * Update README to clarify importance of filling out all fields for OAuth consent screen.
