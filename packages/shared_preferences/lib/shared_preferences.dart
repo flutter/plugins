@@ -155,14 +155,9 @@ class SharedPreferences {
     return await _kChannel.invokeMethod('clear');
   }
 
-  ///release active instance for create
-  ///new singleton with new mock values ​[setMockInitialValues]
-  @visibleForTesting
-  static void releaseSingleton() {
-    _instance = null;
-  }
-
   /// Initializes the shared preferences with mock values for testing.
+  ///
+  /// After calling this method, `getInstance()` will obtain a newly allocated instance.
   @visibleForTesting
   static void setMockInitialValues(Map<String, dynamic> values) {
     _kChannel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -171,5 +166,6 @@ class SharedPreferences {
       }
       return null;
     });
+    _instance = null;
   }
 }
