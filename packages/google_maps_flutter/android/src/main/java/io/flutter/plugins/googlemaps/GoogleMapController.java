@@ -105,7 +105,7 @@ final class GoogleMapController
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
     this.polygonsController = new PolygonsController(methodChannel);
-    this.polylinesController = new PolylinesController(methodChannel);
+    this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel);
   }
 
@@ -285,6 +285,11 @@ final class GoogleMapController
       case "map#isCompassEnabled":
         {
           result.success(googleMap.getUiSettings().isCompassEnabled());
+          break;
+        }
+      case "map#isMapToolbarEnabled":
+        {
+          result.success(googleMap.getUiSettings().isMapToolbarEnabled());
           break;
         }
       case "map#getMinMaxZoomLevels":
@@ -482,6 +487,11 @@ final class GoogleMapController
   @Override
   public void setCompassEnabled(boolean compassEnabled) {
     googleMap.getUiSettings().setCompassEnabled(compassEnabled);
+  }
+
+  @Override
+  public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
+    googleMap.getUiSettings().setMapToolbarEnabled(mapToolbarEnabled);
   }
 
   @Override

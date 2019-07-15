@@ -408,7 +408,16 @@ public class ImagePickerDelegate
     }
 
     if (!permissionGranted) {
-      finishWithSuccess(null);
+      switch (requestCode) {
+        case REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION:
+        case REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION:
+          finishWithError("photo_access_denied", "The user did not allow photo access.");
+          break;
+        case REQUEST_CAMERA_IMAGE_PERMISSION:
+        case REQUEST_CAMERA_VIDEO_PERMISSION:
+          finishWithError("camera_access_denied", "The user did not allow camera access.");
+          break;
+      }
     }
 
     return true;
