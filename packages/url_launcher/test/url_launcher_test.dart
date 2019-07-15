@@ -40,6 +40,7 @@ void main() {
           'useSafariVC': true,
           'useWebView': false,
           'enableJavaScript': false,
+          'enableDomStorage': false,
           'universalLinksOnly': false,
         })
       ],
@@ -56,6 +57,7 @@ void main() {
           'useSafariVC': true,
           'useWebView': false,
           'enableJavaScript': false,
+          'enableDomStorage': false,
           'universalLinksOnly': false,
         })
       ],
@@ -73,6 +75,7 @@ void main() {
           'useSafariVC': false,
           'useWebView': false,
           'enableJavaScript': false,
+          'enableDomStorage': false,
           'universalLinksOnly': true,
         })
       ],
@@ -89,6 +92,7 @@ void main() {
           'useSafariVC': true,
           'useWebView': true,
           'enableJavaScript': false,
+          'enableDomStorage': false,
           'universalLinksOnly': false,
         })
       ],
@@ -106,6 +110,25 @@ void main() {
           'useSafariVC': true,
           'useWebView': true,
           'enableJavaScript': true,
+          'enableDomStorage': false,
+          'universalLinksOnly': false,
+        })
+      ],
+    );
+  });
+
+  test('launch force WebView enable DOM storage', () async {
+    await launch('http://example.com/',
+        forceWebView: true, enableDomStorage: true);
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('launch', arguments: <String, Object>{
+          'url': 'http://example.com/',
+          'useSafariVC': true,
+          'useWebView': true,
+          'enableJavaScript': false,
+          'enableDomStorage': true,
           'universalLinksOnly': false,
         })
       ],
@@ -122,6 +145,7 @@ void main() {
           'useSafariVC': false,
           'useWebView': false,
           'enableJavaScript': false,
+          'enableDomStorage': false,
           'universalLinksOnly': false,
         })
       ],

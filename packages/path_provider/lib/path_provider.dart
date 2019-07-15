@@ -76,7 +76,7 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 /// On iOS, this function throws an [UnsupportedError] as it is not possible
 /// to access outside the app's sandbox.
 ///
-/// On Android this uses the `getExternalStorageDirectory` API.
+/// On Android this uses the `getExternalFilesDir(null)`.
 Future<Directory> getExternalStorageDirectory() async {
   if (Platform.isIOS)
     throw UnsupportedError("Functionality not available on iOS");

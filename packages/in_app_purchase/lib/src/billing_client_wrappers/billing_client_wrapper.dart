@@ -220,7 +220,8 @@ class BillingClient {
         assert(_callbacks[kOnPurchasesUpdated].length == 1);
         final PurchasesUpdatedListener listener =
             _callbacks[kOnPurchasesUpdated].first;
-        listener(PurchasesResultWrapper.fromJson(call.arguments));
+        listener(PurchasesResultWrapper.fromJson(
+            call.arguments.cast<String, dynamic>()));
         break;
       case _kOnBillingServiceDisconnected:
         final int handle = call.arguments['handle'];

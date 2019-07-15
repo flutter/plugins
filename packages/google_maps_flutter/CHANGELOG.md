@@ -1,3 +1,35 @@
+## 0.5.20
+
+* Add map toolbar support
+
+## 0.5.19+2
+
+* Fix polygons for iOS
+
+## 0.5.19+1
+
+* Fix polyline width according to device density
+
+## 0.5.19
+
+
+* Adds support for toggling Indoor View on or off.
+
+* Allow BitmapDescriptor scaling override
+
+
+## 0.5.18
+
+* Fixed build issue on iOS.
+
+## 0.5.17
+
+* Add support for Padding.
+
+## 0.5.16+1
+
+* Update Dart code to conform to current Dart formatter.
+
 ## 0.5.16
 
 * Add support for custom map styling.

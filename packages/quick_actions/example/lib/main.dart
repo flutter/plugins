@@ -36,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    final QuickActions quickActions = const QuickActions();
+    final QuickActions quickActions = QuickActions();
     quickActions.initialize((String shortcutType) {
       if (shortcutType == 'action_main') {
         print('The user tapped on the "Main view" action.');

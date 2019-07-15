@@ -220,6 +220,19 @@ void main() {
               level: 56,
             ));
 
+    smokeTest(
+        'level_start',
+        () => analytics.logLevelStart(
+              levelName: 'level-name',
+            ));
+
+    smokeTest(
+        'level_end',
+        () => analytics.logLevelEnd(
+              levelName: 'level-name',
+              success: 1,
+            ));
+
     smokeTest('login', () => analytics.logLogin());
 
     smokeTest(
@@ -263,6 +276,7 @@ void main() {
         () => analytics.logShare(
               contentType: 'test content type',
               itemId: 'test item id',
+              method: 'test method',
             ));
 
     smokeTest(
@@ -309,6 +323,11 @@ void main() {
               searchTerm: 'test search term',
             ));
 
+    smokeTest('set_checkout_option', () {
+      return analytics.logSetCheckoutOption(
+          checkoutStep: 1, checkoutOption: 'some credit card');
+    });
+
     void testRequiresValueAndCurrencyTogether(
         String methodName, Future<void> testFn()) {
       test('$methodName requires value and currency together', () async {
@@ -323,6 +342,16 @@ void main() {
 
     testRequiresValueAndCurrencyTogether('logAddToCart', () {
       return analytics.logAddToCart(
+        itemId: 'test-id',
+        itemName: 'test-name',
+        itemCategory: 'test-category',
+        quantity: 5,
+        value: 123.90,
+      );
+    });
+
+    testRequiresValueAndCurrencyTogether('logRemoveFromCart', () {
+      return analytics.logRemoveFromCart(
         itemId: 'test-id',
         itemName: 'test-name',
         itemCategory: 'test-category',

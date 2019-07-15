@@ -1,3 +1,15 @@
+## 0.9.0+3
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.9.0+2
+
+* Fix bug causing memory leak with iOS images.
+
+## 0.9.0+1
+
+* Update example app Podfile to match latest Flutter template and support new Xcode build system.
+
 ## 0.9.0
 
 * **Breaking Change** Add capability to release resources held by detectors with `close()` method.

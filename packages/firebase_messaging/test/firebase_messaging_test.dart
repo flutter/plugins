@@ -123,13 +123,13 @@ void main() {
 
   const String myTopic = 'Flutter';
 
-  test('subscribe to topic', () {
-    firebaseMessaging.subscribeToTopic(myTopic);
+  test('subscribe to topic', () async {
+    await firebaseMessaging.subscribeToTopic(myTopic);
     verify(mockChannel.invokeMethod<void>('subscribeToTopic', myTopic));
   });
 
-  test('unsubscribe from topic', () {
-    firebaseMessaging.unsubscribeFromTopic(myTopic);
+  test('unsubscribe from topic', () async {
+    await firebaseMessaging.unsubscribeFromTopic(myTopic);
     verify(mockChannel.invokeMethod<void>('unsubscribeFromTopic', myTopic));
   });
 
