@@ -25,7 +25,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
   public static void registerWith(Registrar registrar) {
     if (registrar.activity() == null) {
-      // If a background flutter view tries to register the plugin, there will be no activity from the registrar,
+      // If a background Flutter view tries to register the plugin, there will be no activity from the registrar.
       // We stop the registering process immediately because the firebase_admob requires an activity.
       return;
     }
