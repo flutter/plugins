@@ -1,3 +1,7 @@
+## 0.6.0+16
+
+* iOS Simulator: fix hang after trying to take an image from the non-existent camera.
+
 ## 0.6.0+15
 
 * Android: throws an exception when permissions denied instead of ignoring.
