@@ -323,6 +323,11 @@ void main() {
               searchTerm: 'test search term',
             ));
 
+    smokeTest('set_checkout_option', () {
+      return analytics.logSetCheckoutOption(
+          checkoutStep: 1, checkoutOption: 'some credit card');
+    });
+
     void testRequiresValueAndCurrencyTogether(
         String methodName, Future<void> testFn()) {
       test('$methodName requires value and currency together', () async {
@@ -363,11 +368,6 @@ void main() {
         quantity: 5,
         value: 123.90,
       );
-    });
-
-    testRequiresValueAndCurrencyTogether('logSetCheckoutOption', () {
-      return analytics.logSetCheckoutOption(
-          checkoutOption: 'some option', checkoutStep: 1);
     });
 
     testRequiresValueAndCurrencyTogether('logBeginCheckout', () {
