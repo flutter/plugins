@@ -112,4 +112,28 @@ final class InputAwareWebView extends WebView {
         });
     return super.checkInputConnectionProxy(view);
   }
+
+  /**
+   * Ensure that input creation happens back on {@link #containerView}'s thread once this view no
+   * longer has focus.
+   *
+   * <p>The logic in {@link #checkInputConnectionProxy} forces input creation to happen on Webview's
+   * thread for all connections. We undo it here so usres will be able to go back to typing in
+   * Flutter UIs as expected.
+   */
+  @Override
+  public void clearFocus() {
+    super.clearFocus();
+    containerView.requestFocus();
+    containerView.post(
+        new Runnable() {
+          @Override
+          public void run() {
+            containerView.onWindowFocusChanged(true);
+            InputMethodManager imm =
+                (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
+            imm.isActive(containerView);
+          }
+        });
+  }
 }
