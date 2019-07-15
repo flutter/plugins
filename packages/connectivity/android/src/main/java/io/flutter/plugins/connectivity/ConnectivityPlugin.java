@@ -86,7 +86,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
 
   @SuppressWarnings("deprecated")
   private String getNetworkTypeLegacy(int type) {
-    // handle type for android less than android 9
+    // handle type for Android versions less than Android 9
     switch (type) {
       case ConnectivityManager.TYPE_ETHERNET:
       case ConnectivityManager.TYPE_WIFI:
