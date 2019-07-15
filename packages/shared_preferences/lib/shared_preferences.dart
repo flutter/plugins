@@ -78,7 +78,7 @@ class SharedPreferences {
       list = list.cast<String>().toList();
       _preferenceCache[key] = list;
     }
-    //copying list for prevent mutate from outside
+    // Make a copy of the list so that later mutations won't propagate
     return list?.toList();
   }
 
@@ -128,7 +128,12 @@ class SharedPreferences {
           .invokeMethod('remove', params)
           .then<bool>((dynamic result) => result);
     } else {
-      _putToCache(key, value);
+      if (value is List<String>) {
+        // Make a copy of the list so that later mutations won't propagate
+        _preferenceCache[key] = value.toList();
+        return;
+      }
+      _preferenceCache[key] = value;
       params['value'] = value;
       return _kChannel
           // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
@@ -137,15 +142,6 @@ class SharedPreferences {
           .invokeMethod('set$valueType', params)
           .then<bool>((dynamic result) => result);
     }
-  }
-
-  void _putToCache(String key, Object value) {
-    if (value is List<String>) {
-      //copying list for prevent mutate from outside
-      _preferenceCache[key] = value.toList();
-      return;
-    }
-    _preferenceCache[key] = value;
   }
 
   /// Always returns true.
