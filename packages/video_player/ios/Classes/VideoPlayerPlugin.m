@@ -407,7 +407,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   [_displayLink invalidate];
   [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
   [[_player currentItem] removeObserver:self forKeyPath:@"duration" context:durationContext];
-  [[_player currentItem] removeObserver:self forKeyPath:@"presentationSize" context:presentationSizeContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"presentationSize"
+                                context:presentationSizeContext];
   [[_player currentItem] removeObserver:self
                              forKeyPath:@"loadedTimeRanges"
                                 context:timeRangeContext];
