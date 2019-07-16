@@ -17,7 +17,7 @@
  * https://raw.githubusercontent.com/iPaulPro/aFileChooser/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
  */
 
-package io.flutter.plugins.imagepicker;
+package io.flutter.plugins.imagepicker.support;
 
 import android.annotation.SuppressLint;
 import android.content.ContentUris;
@@ -35,9 +35,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class FileUtils {
+public class FileUtils {
 
-  String getPathFromUri(final Context context, final Uri uri) {
+  public String getPathFromUri(final Context context, final Uri uri) {
     String path = getPathFromLocalUri(context, uri);
     if (path == null) {
       path = getPathFromRemoteUri(context, uri);

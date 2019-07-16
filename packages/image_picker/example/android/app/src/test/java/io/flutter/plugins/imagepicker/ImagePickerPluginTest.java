@@ -24,12 +24,17 @@ public class ImagePickerPluginTest {
   private static final int SOURCE_CAMERA = 0;
   private static final int SOURCE_GALLERY = 1;
 
-  @Rule public ExpectedException exception = ExpectedException.none();
+  @Rule
+  public ExpectedException exception = ExpectedException.none();
 
-  @Mock PluginRegistry.Registrar mockRegistrar;
-  @Mock Activity mockActivity;
-  @Mock ImagePickerDelegate mockImagePickerDelegate;
-  @Mock MethodChannel.Result mockResult;
+  @Mock
+  PluginRegistry.Registrar mockRegistrar;
+  @Mock
+  Activity mockActivity;
+  @Mock
+  ImagePickerDelegate mockImagePickerDelegate;
+  @Mock
+  MethodChannel.Result mockResult;
 
   ImagePickerPlugin plugin;
 
@@ -37,19 +42,7 @@ public class ImagePickerPluginTest {
   public void setUp() {
     MockitoAnnotations.initMocks(this);
 
-    plugin = new ImagePickerPlugin(mockRegistrar, mockImagePickerDelegate);
-  }
-
-  @Test
-  public void onMethodCall_WhenActivityIsNull_FinishesWithForegroundActivityRequiredError() {
-    when(mockRegistrar.activity()).thenReturn(null);
-    MethodCall call = buildMethodCall(SOURCE_GALLERY);
-
-    plugin.onMethodCall(call, mockResult);
-
-    verify(mockResult)
-        .error("no_activity", "image_picker plugin requires a foreground activity.", null);
-    verifyZeroInteractions(mockImagePickerDelegate);
+    plugin = new ImagePickerPlugin(mockImagePickerDelegate);
   }
 
   @Test
@@ -103,7 +96,7 @@ public class ImagePickerPluginTest {
     when(mockRegistrar.activity()).thenReturn(null);
     ImagePickerPlugin.registerWith((mockRegistrar));
     assertTrue(
-        "No exception thrown when ImagePickerPlugin.registerWith ran with activity = null", true);
+      "No exception thrown when ImagePickerPlugin.registerWith ran with activity = null", true);
   }
 
   private MethodCall buildMethodCall(final int source) {

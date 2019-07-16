@@ -75,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void deactivate() {
     if (_controller != null) {
       _controller.setVolume(0.0);
+      _controller.pause();
       _controller.removeListener(_onVideoControllerUpdate);
     }
     super.deactivate();
@@ -165,6 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Platform.isAndroid
             ? FutureBuilder<void>(
+
                 future: retrieveLostData(),
                 builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
                   switch (snapshot.connectionState) {

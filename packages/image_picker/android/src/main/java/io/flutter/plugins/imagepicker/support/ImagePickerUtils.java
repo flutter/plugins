@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.imagepicker;
+package io.flutter.plugins.imagepicker.support;
 
 import android.Manifest;
 import android.content.Context;
@@ -11,7 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import java.util.Arrays;
 
-final class ImagePickerUtils {
+public final class ImagePickerUtils {
   /** returns true, if permission present in manifest, otherwise false */
   private static boolean isPermissionPresentInManifest(Context context, String permissionName) {
     try {
@@ -36,7 +36,7 @@ final class ImagePickerUtils {
    *
    * @return returns true, if need request camera permission, otherwise false
    */
-  static boolean needRequestCameraPermission(Context context) {
+  public static boolean needRequestCameraPermission(Context context) {
     boolean greatOrEqualM = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     return greatOrEqualM && isPermissionPresentInManifest(context, Manifest.permission.CAMERA);
   }
