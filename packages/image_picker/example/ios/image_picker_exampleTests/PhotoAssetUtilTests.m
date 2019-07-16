@@ -18,6 +18,11 @@
   self.testBundle = [NSBundle bundleForClass:self.class];
 }
 
+- (void)getAssetFromImagePickerInfoShouldReturnNilIfNotAvailable {
+  NSDictionary *mockData = @{};
+  XCTAssertNil([FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:mockData]);
+}
+
 - (void)testSaveImageWithOriginalImageData_ShouldSaveWithTheCorrectExtentionAndMetaData {
   // test jpg
   NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
