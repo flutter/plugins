@@ -1,6 +1,6 @@
 ## 0.10.1+5
 
-* [iOS] Fixed a memory leak in the video player plugin.
+* [iOS] Fixed a memory leak with notification observing.
 
 ## 0.10.1+4
 
