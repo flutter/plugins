@@ -27,7 +27,7 @@ task:
       script: ./script/incremental_build.sh analyze
     - name: build_all_plugins_apk
       script: ./script/build_all_plugins_app.sh apk
-    - name: build-apks+java-test+drive-examples
+    - name: build-apks+java-test+instrumentation-test+drive-examples
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
