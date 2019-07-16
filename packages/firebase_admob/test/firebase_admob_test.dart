@@ -16,6 +16,8 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
     final FirebaseAdMob admob = FirebaseAdMob.private(channel);
 
+    int invalidAdId;
+
     setUp(() async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
@@ -27,6 +29,14 @@ void main() {
           case 'showAd':
           case 'showRewardedVideoAd':
           case 'disposeAd':
+            if (methodCall.arguments != null) {
+              if (methodCall.arguments.containsKey('id') &&
+                  (invalidAdId != null)) {
+                if (invalidAdId == methodCall.arguments['id']) {
+                  throw PlatformException(code: 'no_ad_for_id');
+                }
+              }
+            }
             return Future<bool>.value(true);
           default:
             assert(false);
@@ -130,6 +140,25 @@ void main() {
           'targetingInfo': <String, String>{'requestAgent': 'flutter-alpha'},
         }),
         isMethodCall('showRewardedVideoAd', arguments: null),
+      ]);
+    });
+
+    test('noAdForId', () async {
+      log.clear();
+
+      final BannerAd banner = BannerAd(
+        adUnitId: BannerAd.testAdUnitId,
+        size: AdSize.banner,
+      );
+      final int id = banner.id;
+      invalidAdId = banner.id;
+
+      expect(await banner.dispose(), false);
+
+      expect(log, <Matcher>[
+        isMethodCall('disposeAd', arguments: <String, dynamic>{
+          'id': id,
+        }),
       ]);
     });
   });
