@@ -70,7 +70,7 @@ class DatabaseReference extends Query {
   /// Passing null for the new value means all data at this location or any
   /// child location will be deleted.
   Future<void> set(dynamic value, {dynamic priority}) {
-    return _database._channel.invokeMethod(
+    return _database._channel.invokeMethod<void>(
       'DatabaseReference#set',
       <String, dynamic>{
         'app': _database.app?.name,
@@ -84,7 +84,7 @@ class DatabaseReference extends Query {
 
   /// Update the node with the `value`
   Future<void> update(Map<String, dynamic> value) {
-    return _database._channel.invokeMethod(
+    return _database._channel.invokeMethod<void>(
       'DatabaseReference#update',
       <String, dynamic>{
         'app': _database.app?.name,
@@ -120,7 +120,7 @@ class DatabaseReference extends Query {
   /// floating-point numbers. Keys are always stored as strings and are treated
   /// as numbers only when they can be parsed as a 32-bit integer.
   Future<void> setPriority(dynamic priority) async {
-    return _database._channel.invokeMethod(
+    return _database._channel.invokeMethod<void>(
       'DatabaseReference#setPriority',
       <String, dynamic>{
         'app': _database.app?.name,
@@ -170,8 +170,8 @@ class DatabaseReference extends Query {
       return TransactionResult._(databaseError, committed, dataSnapshot);
     }
 
-    _database._channel
-        .invokeMethod('DatabaseReference#runTransaction', <String, dynamic>{
+    _database._channel.invokeMethod<void>(
+        'DatabaseReference#runTransaction', <String, dynamic>{
       'app': _database.app?.name,
       'databaseURL': _database.databaseURL,
       'path': path,

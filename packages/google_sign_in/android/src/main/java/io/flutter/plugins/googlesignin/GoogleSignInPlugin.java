@@ -469,12 +469,19 @@ public class GoogleSignInPlugin implements MethodCallHandler {
               } catch (ExecutionException e) {
                 if (e.getCause() instanceof UserRecoverableAuthException) {
                   if (shouldRecoverAuth && pendingOperation == null) {
-                    checkAndSetPendingOperation(METHOD_GET_TOKENS, result, email);
-                    Intent recoveryIntent =
-                        ((UserRecoverableAuthException) e.getCause()).getIntent();
-                    registrar
-                        .activity()
-                        .startActivityForResult(recoveryIntent, REQUEST_CODE_RECOVER_AUTH);
+                    Activity activity = registrar.activity();
+                    if (activity == null) {
+                      result.error(
+                          ERROR_USER_RECOVERABLE_AUTH,
+                          "Cannot recover auth because app is not in foreground. "
+                              + e.getLocalizedMessage(),
+                          null);
+                    } else {
+                      checkAndSetPendingOperation(METHOD_GET_TOKENS, result, email);
+                      Intent recoveryIntent =
+                          ((UserRecoverableAuthException) e.getCause()).getIntent();
+                      activity.startActivityForResult(recoveryIntent, REQUEST_CODE_RECOVER_AUTH);
+                    }
                   } else {
                     result.error(ERROR_USER_RECOVERABLE_AUTH, e.getLocalizedMessage(), null);
                   }

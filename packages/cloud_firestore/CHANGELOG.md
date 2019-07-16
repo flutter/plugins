@@ -1,3 +1,187 @@
+## 0.12.7
+
+* Methods of `Transaction` no longer require `await`.
+* Added documentation to methods of `Transaction`.
+* Removed an unnecessary log on Android.
+* Added an integration test for rapidly incrementing field value.
+
+## 0.12.6
+
+* Support for `orderBy` on map fields (e.g. `orderBy('cake.flavor')`) for
+  `startAtDocument`, `startAfterDocument`, `endAtDocument`, and `endBeforeDocument` added.
+
+## 0.12.5+2
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.12.5+1
+* Added support for combining any of `Query.startAtDocument` and `Query.startAfterDocument`
+  with any of `Query.endAtDocument` and `Query.endBeforeDocument`.
+
+## 0.12.5
+
+* Makes `startAtDocument`, `startAfterDocument`, `endAtDocument` and `endBeforeDocument` work
+  with `Query.collectionGroup` queries.
+* Fixes `startAtDocument`, `startAfterDocument`, `endAtDocument` and `endBeforeDocument` to
+  also work with a descending order as the last explicit sort order.
+* Fixed an integration test by increasing the value of `cacheSizeBytes` to a valid value.
+
+## 0.12.4
+
+* Added support for `Query.collectionGroup`.
+
+## 0.12.3
+
+* Added support for `cacheSizeBytes` to `Firestore.settings`.
+
+## 0.12.2
+
+* Ensure that all channel calls to the Dart side from the Java side are done
+  on the UI thread. This change allows Transactions to work with upcoming
+  Engine restrictions, which require channel calls be made on the UI thread.
+  **Note** this is an Android only change, the iOS implementation was not impacted.
+* Updated the Firebase reporting string to `flutter-fire-fst` to be consistent
+  with other reporting libraries.
+
+## 0.12.1
+
+* Added support for `Source` to `Query.getDocuments()` and `DocumentReference.get()`.
+
+## 0.12.0+2
+
+* Bump the minimum Flutter version to 1.5.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.12.0+1
+
+* Send user agent to Firebase.
+
+## 0.12.0
+
+* **Breaking change**. Fixed `CollectionReference.parent` to correctly return a `DocumentReference`.
+  If you were using the method previously to obtain the parent
+  document's id via `collectionReference.parent().id`,
+  you will have to use `collectionReference.parent().documentID` now.
+* Added `DocumentReference.parent`.
+
+## 0.11.0+2
+
+* Remove iOS dependency on Firebase/Database and Firebase/Auth CocoaPods.
+
+## 0.11.0+1
+
+* Update iOS CocoaPod dependencies to '~> 6.0' to ensure support for `FieldValue.increment`.
+
+## 0.11.0
+
+* Update Android dependencies to latest.
+
+## 0.10.1
+
+* Support for `startAtDocument`, `startAfterDocument`, `endAtDocument`, `endBeforeDocument`.
+* Added additional unit and integration tests.
+
+## 0.10.0
+
+* Support for `FieldValue.increment`.
+* Remove `FieldValue.type` and `FieldValue.value` from public API.
+* Additional integration testing.
+
+## 0.9.13+1
+
+* Added an integration test for transactions.
+
+## 0.9.13
+
+* Remove Gradle BoM to avoid Gradle version issues.
+
+## 0.9.12
+
+* Move Android dependency to Gradle BoM to help maintain compatibility
+  with other FlutterFire plugins.
+
+## 0.9.11
+
+* Bump Android dependencies to latest.
+
+# 0.9.10
+
+* Support for cloud_firestore running in the background on Android.
+* Fixed a bug in cleanup for DocumentReference.snapshots().
+* Additional integration testing.
+
+## 0.9.9
+
+* Remove `invokeMapMethod` calls to prevent crash.
+
+## 0.9.8
+
+* Add metadata field to DocumentSnapshot.
+
+## 0.9.7+2
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
+## 0.9.7+1
+
+* Update README with example of getting a document.
+
+## 0.9.7
+
+* Fixes a NoSuchMethodError when using getDocuments on iOS (introduced in 0.9.6).
+* Adds a driver test for getDocuments.
+
+## 0.9.6
+
+* On iOS, update null checking to match the recommended pattern usage in the Firebase documentation.
+* Fixes a case where snapshot errors might result in plugin crash.
+
+## 0.9.5+2
+
+* Fixing PlatformException(Error 0, null, null) which happened when a successful operation was performed.
+
+## 0.9.5+1
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.9.5
+
+* Fix an issue on some iOS devices that results in reading incorrect dates.
+
+## 0.9.4
+
+* No longer sends empty snapshot events on iOS when encountering errors.
+
+## 0.9.3
+
+* Fix transactions on iOS when getting snapshot that doesn't exist.
+
+## 0.9.2
+
+* Fix IllegalStateException errors when using transactions on Android.
+
+## 0.9.1
+
+* Fixed Firebase multiple app support in transactions and document snapshots.
+
+## 0.9.0+2
+
+* Remove categories.
+
+## 0.9.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.9.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
 ## 0.8.2+3
 
 * Resolved "explicit self reference" and "loses accuracy" compiler warnings.

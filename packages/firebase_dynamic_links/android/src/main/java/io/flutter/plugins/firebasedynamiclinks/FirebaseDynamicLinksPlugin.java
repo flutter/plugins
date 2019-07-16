@@ -1,8 +1,10 @@
 package io.flutter.plugins.firebasedynamiclinks;
 
+import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
@@ -12,6 +14,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,9 +24,22 @@ import java.util.Map;
 /** FirebaseDynamicLinksPlugin */
 public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   private Registrar registrar;
+  private Intent latestIntent;
 
   private FirebaseDynamicLinksPlugin(Registrar registrar) {
     this.registrar = registrar;
+    if (registrar.activity() != null) {
+      latestIntent = registrar.activity().getIntent();
+    }
+
+    registrar.addNewIntentListener(
+        new PluginRegistry.NewIntentListener() {
+          @Override
+          public boolean onNewIntent(Intent intent) {
+            latestIntent = intent;
+            return false;
+          }
+        });
   }
 
   public static void registerWith(Registrar registrar) {
@@ -60,8 +76,13 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   }
 
   private void handleRetrieveDynamicLink(final Result result) {
+    if (latestIntent == null) {
+      result.success(null);
+      return;
+    }
+
     FirebaseDynamicLinks.getInstance()
-        .getDynamicLink(registrar.activity().getIntent())
+        .getDynamicLink(latestIntent)
         .addOnCompleteListener(
             registrar.activity(),
             new OnCompleteListener<PendingDynamicLinkData>() {
@@ -78,11 +99,20 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
                     androidData.put("minimumVersion", data.getMinimumAppVersion());
 
                     dynamicLink.put("android", androidData);
+
+                    latestIntent = null;
                     result.success(dynamicLink);
                     return;
                   }
                 }
                 result.success(null);
+              }
+            })
+        .addOnFailureListener(
+            new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+                result.error(e.getClass().getSimpleName(), e.getMessage(), null);
               }
             });
   }
@@ -96,9 +126,12 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
           url.put("url", task.getResult().getShortLink().toString());
 
           List<String> warnings = new ArrayList<>();
-          for (ShortDynamicLink.Warning warning : task.getResult().getWarnings()) {
-            warnings.add(warning.getMessage());
+          if (task.getResult().getWarnings() != null) {
+            for (ShortDynamicLink.Warning warning : task.getResult().getWarnings()) {
+              warnings.add(warning.getMessage());
+            }
           }
+
           url.put("warnings", warnings);
 
           result.success(url);
@@ -147,10 +180,10 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   private DynamicLink.Builder setupParameters(MethodCall call) {
     DynamicLink.Builder dynamicLinkBuilder = FirebaseDynamicLinks.getInstance().createDynamicLink();
 
-    String domain = call.argument("domain");
+    String uriPrefix = call.argument("uriPrefix");
     String link = call.argument("link");
 
-    dynamicLinkBuilder.setDynamicLinkDomain(domain);
+    dynamicLinkBuilder.setDomainUriPrefix(uriPrefix);
     dynamicLinkBuilder.setLink(Uri.parse(link));
 
     Map<String, Object> androidParameters = call.argument("androidParameters");

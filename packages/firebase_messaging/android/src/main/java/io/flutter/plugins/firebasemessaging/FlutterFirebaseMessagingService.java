@@ -5,7 +5,7 @@
 package io.flutter.plugins.firebasemessaging;
 
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -16,6 +16,9 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
   public static final String ACTION_BACKGROUND_REMOTE_MESSAGE =
           "io.flutter.plugins.firebasemessaging.BACKGROUND_NOTIFICATION";
   public static final String EXTRA_REMOTE_MESSAGE = "notification";
+
+  public static final String ACTION_TOKEN = "io.flutter.plugins.firebasemessaging.TOKEN";
+  public static final String EXTRA_TOKEN = "token";
 
   /**
    * true, if application receive messages with type "Data messages"
@@ -60,5 +63,17 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
     intent.putExtra(EXTRA_REMOTE_MESSAGE, remoteMessage);
     intent.setPackage(getPackageName());
     sendBroadcast(intent);
+
+  /**
+   * Called when a new token for the default Firebase project is generated.
+   *
+   * @param token The token used for sending messages to this application instance. This token is
+   *     the same as the one retrieved by getInstanceId().
+   */
+  @Override
+  public void onNewToken(String token) {
+    Intent intent = new Intent(ACTION_TOKEN);
+    intent.putExtra(EXTRA_TOKEN, token);
+    LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
   }
 }

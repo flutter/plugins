@@ -89,8 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _testSetAnalyticsCollectionEnabled() async {
-    await analytics.android?.setAnalyticsCollectionEnabled(false);
-    await analytics.android?.setAnalyticsCollectionEnabled(true);
+    await analytics.setAnalyticsCollectionEnabled(false);
+    await analytics.setAnalyticsCollectionEnabled(true);
     setMessage('setAnalyticsCollectionEnabled succeeded');
   }
 
@@ -227,9 +227,9 @@ class _MyHomePageState extends State<MyHomePage> {
       itemId: 'test item id',
     );
     await analytics.logShare(
-      contentType: 'test content type',
-      itemId: 'test item id',
-    );
+        contentType: 'test content type',
+        itemId: 'test item id',
+        method: 'facebook');
     await analytics.logSignUp(
       signUpMethod: 'test sign up method',
     );

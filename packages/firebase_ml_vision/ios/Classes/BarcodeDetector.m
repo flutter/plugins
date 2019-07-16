@@ -1,47 +1,50 @@
 #import "FirebaseMlVisionPlugin.h"
 
+@interface BarcodeDetector ()
+@property FIRVisionBarcodeDetector *detector;
+@end
+
 @implementation BarcodeDetector
-static FIRVisionBarcodeDetector *barcodeDetector;
-
-+ (void)handleDetection:(FIRVisionImage *)image
-                options:(NSDictionary *)options
-                 result:(FlutterResult)result {
-  if (barcodeDetector == nil) {
-    FIRVision *vision = [FIRVision vision];
-    barcodeDetector = [vision barcodeDetectorWithOptions:[BarcodeDetector parseOptions:options]];
+- (instancetype)initWithVision:(FIRVision *)vision options:(NSDictionary *)options {
+  self = [super init];
+  if (self) {
+    _detector = [vision barcodeDetectorWithOptions:[BarcodeDetector parseOptions:options]];
   }
-  NSMutableArray *ret = [NSMutableArray array];
-  [barcodeDetector detectInImage:image
-                      completion:^(NSArray<FIRVisionBarcode *> *barcodes, NSError *error) {
-                        if (error) {
-                          [FLTFirebaseMlVisionPlugin handleError:error result:result];
-                          return;
-                        } else if (!barcodes) {
-                          result(@[]);
-                          return;
-                        }
+  return self;
+}
 
-                        // Scanned barcode
-                        for (FIRVisionBarcode *barcode in barcodes) {
-                          [ret addObject:visionBarcodeToDictionary(barcode)];
-                        }
-                        result(ret);
-                      }];
+- (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
+  [_detector detectInImage:image
+                completion:^(NSArray<FIRVisionBarcode *> *barcodes, NSError *error) {
+                  if (error) {
+                    [FLTFirebaseMlVisionPlugin handleError:error result:result];
+                    return;
+                  } else if (!barcodes) {
+                    result(@[]);
+                    return;
+                  }
+
+                  NSMutableArray *ret = [NSMutableArray array];
+                  for (FIRVisionBarcode *barcode in barcodes) {
+                    [ret addObject:visionBarcodeToDictionary(barcode)];
+                  }
+                  result(ret);
+                }];
 }
 
 NSDictionary *visionBarcodeToDictionary(FIRVisionBarcode *barcode) {
   __block NSMutableArray<NSArray *> *points = [NSMutableArray array];
 
-  for (NSValue *point in points) {
-    [points addObject:@[ @(((__bridge CGPoint *)point)->x), @(((__bridge CGPoint *)point)->y) ]];
+  for (NSValue *point in barcode.cornerPoints) {
+    [points addObject:@[ @(point.CGPointValue.x), @(point.CGPointValue.y) ]];
   }
   return @{
     @"rawValue" : barcode.rawValue,
     @"displayValue" : barcode.displayValue ? barcode.displayValue : [NSNull null],
-    @"left" : @((int)barcode.frame.origin.x),
-    @"top" : @((int)barcode.frame.origin.y),
-    @"width" : @((int)barcode.frame.size.width),
-    @"height" : @((int)barcode.frame.size.height),
+    @"left" : @(barcode.frame.origin.x),
+    @"top" : @(barcode.frame.origin.y),
+    @"width" : @(barcode.frame.size.width),
+    @"height" : @(barcode.frame.size.height),
     @"format" : @(barcode.format),
     @"valueType" : @(barcode.valueType),
     @"points" : points,
@@ -94,8 +97,8 @@ NSDictionary *visionBarcodeSMSToDictionary(FIRVisionBarcodeSMS *sms) {
 
 NSDictionary *visionBarcodeURLToDictionary(FIRVisionBarcodeURLBookmark *url) {
   return @{
-    @"title" : url.title,
-    @"url" : url.url,
+    @"title" : url.title ? url.title : [NSNull null],
+    @"url" : url.url ? url.url : [NSNull null],
   };
 }
 
@@ -125,9 +128,9 @@ NSDictionary *barcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contac
   [contact.emails enumerateObjectsUsingBlock:^(FIRVisionBarcodeEmail *_Nonnull email,
                                                NSUInteger idx, BOOL *_Nonnull stop) {
     [emails addObject:@{
-      @"address" : email.address,
-      @"body" : email.body,
-      @"subject" : email.subject,
+      @"address" : email.address ? email.address : [NSNull null],
+      @"body" : email.body ? email.body : [NSNull null],
+      @"subject" : email.subject ? email.subject : [NSNull null],
       @"type" : @(email.type),
     }];
   }];
@@ -136,7 +139,7 @@ NSDictionary *barcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contac
   [contact.phones enumerateObjectsUsingBlock:^(FIRVisionBarcodePhone *_Nonnull phone,
                                                NSUInteger idx, BOOL *_Nonnull stop) {
     [phones addObject:@{
-      @"number" : phone.number,
+      @"number" : phone.number ? phone.number : [NSNull null],
       @"type" : @(phone.type),
     }];
   }];
@@ -149,19 +152,19 @@ NSDictionary *barcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contac
   return @{
     @"addresses" : addresses,
     @"emails" : emails,
-    @"name" : @{
-      @"formattedName" : contact.name.formattedName,
-      @"first" : contact.name.first,
-      @"last" : contact.name.last,
-      @"middle" : contact.name.middle,
-      @"prefix" : contact.name.prefix,
-      @"pronunciation" : contact.name.pronounciation,
-      @"suffix" : contact.name.suffix,
-    },
     @"phones" : phones,
     @"urls" : urls,
-    @"jobTitle" : contact.jobTitle,
-    @"organization" : contact.organization,
+    @"name" : @{
+      @"formattedName" : contact.name.formattedName ? contact.name.formattedName : [NSNull null],
+      @"first" : contact.name.first ? contact.name.first : [NSNull null],
+      @"last" : contact.name.last ? contact.name.last : [NSNull null],
+      @"middle" : contact.name.middle ? contact.name.middle : [NSNull null],
+      @"prefix" : contact.name.prefix ? contact.name.prefix : [NSNull null],
+      @"pronunciation" : contact.name.pronounciation ? contact.name.pronounciation : [NSNull null],
+      @"suffix" : contact.name.suffix ? contact.name.suffix : [NSNull null],
+    },
+    @"jobTitle" : contact.jobTitle ? contact.jobTitle : [NSNull null],
+    @"organization" : contact.organization ? contact.jobTitle : [NSNull null],
   };
 }
 

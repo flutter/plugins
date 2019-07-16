@@ -1,3 +1,64 @@
+## 0.4.0+5
+
+* Fix the bug below properly by allowing the activity to be null (but still registering the plugin). If activity is null, we don't get a latestIntent, instead we expect the intent listener to grab it.
+
+## 0.4.0+4
+
+* Fixed bug on Android when a headless plugin tries to register this plugin causing a crash due no activity from the registrar.
+
+## 0.4.0+3
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.4.0+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.4.0+1
+
+* Fixed bug where link persists after starting an app with a Dynamic Link.
+* Fixed bug where retrieving a link would fail when app was already running.
+
+## 0.4.0
+
+* Update dependency on firebase_core to 0.4.0.
+
+## 0.3.0.
+
+* Update Android dependencies to 16.1.7.
+* **Breaking change**. Dynamic link parameter `domain` replaced with `uriPrefix`.
+
+## 0.2.1
+
+* Throw `PlatformException` if there is an error retrieving dynamic link.
+
+## 0.2.0+4
+
+* Fix crash when receiving `ShortDynamicLink` warnings.
+
+## 0.2.0+3
+
+* Log messages about automatic configuration of the default app are now less confusing.
+
+## 0.2.0+2
+
+* Remove categories.
+
+## 0.2.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.2.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
 ## 0.1.1
 
 * Update example to create a clickable and copyable link.

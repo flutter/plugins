@@ -8,6 +8,8 @@
 .dart_tool/
 pubspec.lock
 
+examples/all_plugins/pubspec.yaml
+
 Podfile
 Podfile.lock
 Pods/
@@ -18,8 +20,10 @@ Pods/
 **/Flutter/flutter_assets/
 ServiceDefinitions.json
 xcuserdata/
+*.xcworkspace
 
 local.properties
+keystore.properties
 .gradle/
 gradlew
 gradlew.bat

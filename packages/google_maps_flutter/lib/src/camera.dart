@@ -51,14 +51,15 @@ class CameraPosition {
   /// will be silently clamped to the supported range.
   final double zoom;
 
-  dynamic _toJson() => <String, dynamic>{
+  dynamic _toMap() => <String, dynamic>{
         'bearing': bearing,
         'target': target._toJson(),
         'tilt': tilt,
         'zoom': zoom,
       };
 
-  static CameraPosition _fromJson(dynamic json) {
+  @visibleForTesting
+  static CameraPosition fromMap(dynamic json) {
     if (json == null) {
       return null;
     }
@@ -69,6 +70,24 @@ class CameraPosition {
       zoom: json['zoom'],
     );
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    if (identical(this, other)) return true;
+    if (runtimeType != other.runtimeType) return false;
+    final CameraPosition typedOther = other;
+    return bearing == typedOther.bearing &&
+        target == typedOther.target &&
+        tilt == typedOther.tilt &&
+        zoom == typedOther.zoom;
+  }
+
+  @override
+  int get hashCode => hashValues(bearing, target, tilt, zoom);
+
+  @override
+  String toString() =>
+      'CameraPosition(bearing: $bearing, target: $target, tilt: $tilt, zoom: $zoom)';
 }
 
 /// Defines a camera move, supporting absolute moves as well as moves relative
@@ -79,7 +98,7 @@ class CameraUpdate {
   /// Returns a camera update that moves the camera to the specified position.
   static CameraUpdate newCameraPosition(CameraPosition cameraPosition) {
     return CameraUpdate._(
-      <dynamic>['newCameraPosition', cameraPosition._toJson()],
+      <dynamic>['newCameraPosition', cameraPosition._toMap()],
     );
   }
 
@@ -96,7 +115,7 @@ class CameraUpdate {
   static CameraUpdate newLatLngBounds(LatLngBounds bounds, double padding) {
     return CameraUpdate._(<dynamic>[
       'newLatLngBounds',
-      bounds._toJson(),
+      bounds._toList(),
       padding,
     ]);
   }

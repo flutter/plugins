@@ -6,6 +6,7 @@ package io.flutter.plugins.sharedpreferences;
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.util.Base64;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -32,6 +33,7 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   // Fun fact: The following is a base64 encoding of the string "This is the prefix for a list."
   private static final String LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
   private static final String BIG_INTEGER_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy";
+  private static final String DOUBLE_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu";
 
   private final android.content.SharedPreferences preferences;
 
@@ -88,6 +90,9 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           } else if (stringValue.startsWith(BIG_INTEGER_PREFIX)) {
             String encoded = stringValue.substring(BIG_INTEGER_PREFIX.length());
             value = new BigInteger(encoded, Character.MAX_RADIX);
+          } else if (stringValue.startsWith(DOUBLE_PREFIX)) {
+            String doubleStr = stringValue.substring(DOUBLE_PREFIX.length());
+            value = Double.valueOf(doubleStr);
           }
         } else if (value instanceof Set) {
           // This only happens for previous usage of setStringSet. The app expects a list.
@@ -112,29 +117,46 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
     return filteredPrefs;
   }
 
+  private void commitAsync(final Editor editor, final MethodChannel.Result result) {
+    new AsyncTask<Void, Void, Boolean>() {
+      @Override
+      protected Boolean doInBackground(Void... voids) {
+        return editor.commit();
+      }
+
+      @Override
+      protected void onPostExecute(Boolean value) {
+        result.success(value);
+      }
+    }.execute();
+  }
+
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     String key = call.argument("key");
-    boolean status = false;
     try {
       switch (call.method) {
         case "setBool":
-          status = preferences.edit().putBoolean(key, (boolean) call.argument("value")).commit();
+          commitAsync(preferences.edit().putBoolean(key, (boolean) call.argument("value")), result);
           break;
         case "setDouble":
-          float floatValue = ((Number) call.argument("value")).floatValue();
-          status = preferences.edit().putFloat(key, floatValue).commit();
+          double doubleValue = ((Number) call.argument("value")).doubleValue();
+          String doubleValueStr = Double.toString(doubleValue);
+          commitAsync(preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr), result);
           break;
         case "setInt":
           Number number = call.argument("value");
-          Editor editor = preferences.edit();
           if (number instanceof BigInteger) {
             BigInteger integerValue = (BigInteger) number;
-            editor.putString(key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX));
+            commitAsync(
+                preferences
+                    .edit()
+                    .putString(
+                        key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX)),
+                result);
           } else {
-            editor.putLong(key, number.longValue());
+            commitAsync(preferences.edit().putLong(key, number.longValue()), result);
           }
-          status = editor.commit();
           break;
         case "setString":
           String value = (String) call.argument("value");
@@ -145,21 +167,22 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
                 null);
             return;
           }
-          status = preferences.edit().putString(key, value).commit();
+          commitAsync(preferences.edit().putString(key, value), result);
           break;
         case "setStringList":
           List<String> list = call.argument("value");
-          status = preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list)).commit();
+          commitAsync(
+              preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list)), result);
           break;
         case "commit":
           // We've been committing the whole time.
-          status = true;
+          result.success(true);
           break;
         case "getAll":
           result.success(getAllPrefs());
           return;
         case "remove":
-          status = preferences.edit().remove(key).commit();
+          commitAsync(preferences.edit().remove(key), result);
           break;
         case "clear":
           Set<String> keySet = getAllPrefs().keySet();
@@ -167,13 +190,12 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           for (String keyToDelete : keySet) {
             clearEditor.remove(keyToDelete);
           }
-          status = clearEditor.commit();
+          commitAsync(clearEditor, result);
           break;
         default:
           result.notImplemented();
           break;
       }
-      result.success(status);
     } catch (IOException e) {
       result.error("IOException encountered", call.method, e);
     }

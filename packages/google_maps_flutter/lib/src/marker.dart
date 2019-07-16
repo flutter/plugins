@@ -4,33 +4,6 @@
 
 part of google_maps_flutter;
 
-/// An icon placed at a particular geographical location on the map's surface.
-/// A marker icon is drawn oriented against the device's screen rather than the
-/// map's surface; that is, it will not necessarily change orientation due to
-/// map rotations, tilting, or zooming.
-///
-/// Markers are owned by a single [GoogleMapController] which fires events
-/// as markers are added, updated, tapped, and removed.
-class Marker {
-  @visibleForTesting
-  Marker(this._id, this._options);
-
-  /// A unique identifier for this marker.
-  ///
-  /// The identirifer is an arbitrary unique string.
-  final String _id;
-  String get id => _id;
-
-  MarkerOptions _options;
-
-  /// The marker configuration options most recently applied programmatically
-  /// via the map controller.
-  ///
-  /// The returned value does not reflect any changes made to the marker through
-  /// touch events. Add listeners to the owning map controller to track those.
-  MarkerOptions get options => _options;
-}
-
 dynamic _offsetToJson(Offset offset) {
   if (offset == null) {
     return null;
@@ -39,11 +12,16 @@ dynamic _offsetToJson(Offset offset) {
 }
 
 /// Text labels for a [Marker] info window.
-class InfoWindowText {
-  const InfoWindowText(this.title, this.snippet);
+class InfoWindow {
+  const InfoWindow({
+    this.title,
+    this.snippet,
+    this.anchor = const Offset(0.5, 0.0),
+    this.onTap,
+  });
 
   /// Text labels specifying that no text is to be displayed.
-  static const InfoWindowText noText = InfoWindowText(null, null);
+  static const InfoWindow noText = InfoWindow();
 
   /// Text displayed in an info window when the user taps the marker.
   ///
@@ -55,32 +33,137 @@ class InfoWindowText {
   /// A null value means no additional text.
   final String snippet;
 
-  dynamic _toJson() => <dynamic>[title, snippet];
+  /// The icon image point that will be the anchor of the info window when
+  /// displayed.
+  ///
+  /// The image point is specified in normalized coordinates: An anchor of
+  /// (0.0, 0.0) means the top left corner of the image. An anchor
+  /// of (1.0, 1.0) means the bottom right corner of the image.
+  final Offset anchor;
+
+  /// onTap callback for this [InfoWindow].
+  final VoidCallback onTap;
+
+  /// Creates a new [InfoWindow] object whose values are the same as this instance,
+  /// unless overwritten by the specified parameters.
+  InfoWindow copyWith({
+    String titleParam,
+    String snippetParam,
+    Offset anchorParam,
+    VoidCallback onTapParam,
+  }) {
+    return InfoWindow(
+      title: titleParam ?? title,
+      snippet: snippetParam ?? snippet,
+      anchor: anchorParam ?? anchor,
+      onTap: onTapParam ?? onTap,
+    );
+  }
+
+  dynamic _toJson() {
+    final Map<String, dynamic> json = <String, dynamic>{};
+
+    void addIfPresent(String fieldName, dynamic value) {
+      if (value != null) {
+        json[fieldName] = value;
+      }
+    }
+
+    addIfPresent('title', title);
+    addIfPresent('snippet', snippet);
+    addIfPresent('anchor', _offsetToJson(anchor));
+
+    return json;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    final InfoWindow typedOther = other;
+    return title == typedOther.title &&
+        snippet == typedOther.snippet &&
+        anchor == typedOther.anchor;
+  }
+
+  @override
+  int get hashCode => hashValues(title.hashCode, snippet, anchor);
+
+  @override
+  String toString() {
+    return 'InfoWindow{title: $title, snippet: $snippet, anchor: $anchor}';
+  }
 }
 
-/// Configuration options for [Marker] instances.
+/// Uniquely identifies a [Marker] among [GoogleMap] markers.
 ///
-/// When used to change configuration, null values will be interpreted as
-/// "do not change this configuration option".
-class MarkerOptions {
+/// This does not have to be globally unique, only unique among the list.
+@immutable
+class MarkerId {
+  MarkerId(this.value) : assert(value != null);
+
+  /// value of the [MarkerId].
+  final String value;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    final MarkerId typedOther = other;
+    return value == typedOther.value;
+  }
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  String toString() {
+    return 'MarkerId{value: $value}';
+  }
+}
+
+/// Marks a geographical location on the map.
+///
+/// A marker icon is drawn oriented against the device's screen rather than
+/// the map's surface; that is, it will not necessarily change orientation
+/// due to map rotations, tilting, or zooming.
+@immutable
+class Marker {
   /// Creates a set of marker configuration options.
   ///
-  /// By default, every non-specified field is null, meaning no desire to change
-  /// marker defaults or current configuration.
-  const MarkerOptions({
-    this.alpha,
-    this.anchor,
-    this.consumeTapEvents,
-    this.draggable,
-    this.flat,
-    this.icon,
-    this.infoWindowAnchor,
-    this.infoWindowText,
-    this.position,
-    this.rotation,
-    this.visible,
-    this.zIndex,
+  /// Default marker options.
+  ///
+  /// Specifies a marker that
+  /// * is fully opaque; [alpha] is 1.0
+  /// * uses icon bottom center to indicate map position; [anchor] is (0.5, 1.0)
+  /// * has default tap handling; [consumeTapEvents] is false
+  /// * is stationary; [draggable] is false
+  /// * is drawn against the screen, not the map; [flat] is false
+  /// * has a default icon; [icon] is `BitmapDescriptor.defaultMarker`
+  /// * anchors the info window at top center; [infoWindowAnchor] is (0.5, 0.0)
+  /// * has no info window text; [infoWindowText] is `InfoWindowText.noText`
+  /// * is positioned at 0, 0; [position] is `LatLng(0.0, 0.0)`
+  /// * has an axis-aligned icon; [rotation] is 0.0
+  /// * is visible; [visible] is true
+  /// * is placed at the base of the drawing order; [zIndex] is 0.0
+  const Marker({
+    @required this.markerId,
+    this.alpha = 1.0,
+    this.anchor = const Offset(0.5, 1.0),
+    this.consumeTapEvents = false,
+    this.draggable = false,
+    this.flat = false,
+    this.icon = BitmapDescriptor.defaultMarker,
+    this.infoWindow = InfoWindow.noText,
+    this.position = const LatLng(0.0, 0.0),
+    this.rotation = 0.0,
+    this.visible = true,
+    this.zIndex = 0.0,
+    this.onTap,
   }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
+
+  /// Uniquely identifies a [Marker].
+  final MarkerId markerId;
 
   /// The opacity of the marker, between 0.0 and 1.0 inclusive.
   ///
@@ -109,16 +192,10 @@ class MarkerOptions {
   /// A description of the bitmap used to draw the marker icon.
   final BitmapDescriptor icon;
 
-  /// The icon image point that will be the anchor of the info window when
-  /// displayed.
+  /// A Google Maps InfoWindow.
   ///
-  /// The image point is specified in normalized coordinates: An anchor of
-  /// (0.0, 0.0) means the top left corner of the image. An anchor
-  /// of (1.0, 1.0) means the bottom right corner of the image.
-  final Offset infoWindowAnchor;
-
-  /// Text content for the info window.
-  final InfoWindowText infoWindowText;
+  /// The window is displayed when the marker is tapped.
+  final InfoWindow infoWindow;
 
   /// Geographical location of the marker.
   final LatLng position;
@@ -136,61 +213,43 @@ class MarkerOptions {
   /// earlier, and thus appearing to be closer to the surface of the Earth.
   final double zIndex;
 
-  /// Default marker options.
-  ///
-  /// Specifies a marker that
-  /// * is fully opaque; [alpha] is 1.0
-  /// * uses icon bottom center to indicate map position; [anchor] is (0.5, 1.0)
-  /// * has default tap handling; [consumeTapEvents] is false
-  /// * is stationary; [draggable] is false
-  /// * is drawn against the screen, not the map; [flat] is false
-  /// * has a default icon; [icon] is `BitmapDescriptor.defaultMarker`
-  /// * anchors the info window at top center; [infoWindowAnchor] is (0.5, 0.0)
-  /// * has no info window text; [infoWindowText] is `InfoWindowText.noText`
-  /// * is positioned at 0, 0; [position] is `LatLng(0.0, 0.0)`
-  /// * has an axis-aligned icon; [rotation] is 0.0
-  /// * is visible; [visible] is true
-  /// * is placed at the base of the drawing order; [zIndex] is 0.0
-  static const MarkerOptions defaultOptions = MarkerOptions(
-    alpha: 1.0,
-    anchor: Offset(0.5, 1.0),
-    consumeTapEvents: false,
-    draggable: false,
-    flat: false,
-    icon: BitmapDescriptor.defaultMarker,
-    infoWindowAnchor: Offset(0.5, 0.0),
-    infoWindowText: InfoWindowText.noText,
-    position: LatLng(0.0, 0.0),
-    rotation: 0.0,
-    visible: true,
-    zIndex: 0.0,
-  );
+  /// Callbacks to receive tap events for markers placed on this map.
+  final VoidCallback onTap;
 
-  /// Creates a new options object whose values are the same as this instance,
-  /// unless overwritten by the specified [changes].
-  ///
-  /// Returns this instance, if [changes] is null.
-  MarkerOptions copyWith(MarkerOptions changes) {
-    if (changes == null) {
-      return this;
-    }
-    return MarkerOptions(
-      alpha: changes.alpha ?? alpha,
-      anchor: changes.anchor ?? anchor,
-      consumeTapEvents: changes.consumeTapEvents ?? consumeTapEvents,
-      draggable: changes.draggable ?? draggable,
-      flat: changes.flat ?? flat,
-      icon: changes.icon ?? icon,
-      infoWindowAnchor: changes.infoWindowAnchor ?? infoWindowAnchor,
-      infoWindowText: changes.infoWindowText ?? infoWindowText,
-      position: changes.position ?? position,
-      rotation: changes.rotation ?? rotation,
-      visible: changes.visible ?? visible,
-      zIndex: changes.zIndex ?? zIndex,
+  /// Creates a new [Marker] object whose values are the same as this instance,
+  /// unless overwritten by the specified parameters.
+  Marker copyWith({
+    double alphaParam,
+    Offset anchorParam,
+    bool consumeTapEventsParam,
+    bool draggableParam,
+    bool flatParam,
+    BitmapDescriptor iconParam,
+    InfoWindow infoWindowParam,
+    LatLng positionParam,
+    double rotationParam,
+    bool visibleParam,
+    double zIndexParam,
+    VoidCallback onTapParam,
+  }) {
+    return Marker(
+      markerId: markerId,
+      alpha: alphaParam ?? alpha,
+      anchor: anchorParam ?? anchor,
+      consumeTapEvents: consumeTapEventsParam ?? consumeTapEvents,
+      draggable: draggableParam ?? draggable,
+      flat: flatParam ?? flat,
+      icon: iconParam ?? icon,
+      infoWindow: infoWindowParam ?? infoWindow,
+      position: positionParam ?? position,
+      rotation: rotationParam ?? rotation,
+      visible: visibleParam ?? visible,
+      zIndex: zIndexParam ?? zIndex,
+      onTap: onTapParam ?? onTap,
     );
   }
 
-  dynamic _toJson() {
+  Map<String, dynamic> _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
     void addIfPresent(String fieldName, dynamic value) {
@@ -199,18 +258,52 @@ class MarkerOptions {
       }
     }
 
+    addIfPresent('markerId', markerId.value);
     addIfPresent('alpha', alpha);
     addIfPresent('anchor', _offsetToJson(anchor));
     addIfPresent('consumeTapEvents', consumeTapEvents);
     addIfPresent('draggable', draggable);
     addIfPresent('flat', flat);
     addIfPresent('icon', icon?._toJson());
-    addIfPresent('infoWindowAnchor', _offsetToJson(infoWindowAnchor));
-    addIfPresent('infoWindowText', infoWindowText?._toJson());
+    addIfPresent('infoWindow', infoWindow?._toJson());
     addIfPresent('position', position?._toJson());
     addIfPresent('rotation', rotation);
     addIfPresent('visible', visible);
     addIfPresent('zIndex', zIndex);
     return json;
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    final Marker typedOther = other;
+    return markerId == typedOther.markerId;
+  }
+
+  @override
+  int get hashCode => markerId.hashCode;
+
+  @override
+  String toString() {
+    return 'Marker{markerId: $markerId, alpha: $alpha, anchor: $anchor, '
+        'consumeTapEvents: $consumeTapEvents, draggable: $draggable, flat: $flat, '
+        'icon: $icon, infoWindow: $infoWindow, position: $position, rotation: $rotation, '
+        'visible: $visible, zIndex: $zIndex, onTap: $onTap}';
+  }
+}
+
+Map<MarkerId, Marker> _keyByMarkerId(Iterable<Marker> markers) {
+  if (markers == null) {
+    return <MarkerId, Marker>{};
+  }
+  return Map<MarkerId, Marker>.fromEntries(markers.map(
+      (Marker marker) => MapEntry<MarkerId, Marker>(marker.markerId, marker)));
+}
+
+List<Map<String, dynamic>> _serializeMarkerSet(Set<Marker> markers) {
+  if (markers == null) {
+    return null;
+  }
+  return markers.map<Map<String, dynamic>>((Marker m) => m._toJson()).toList();
 }

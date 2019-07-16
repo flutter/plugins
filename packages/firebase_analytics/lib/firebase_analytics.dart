@@ -4,29 +4,16 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
-import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
+const MethodChannel firebaseChannel =
+    MethodChannel('plugins.flutter.io/firebase_analytics');
 
 /// Firebase Analytics API.
 class FirebaseAnalytics {
-  /// Provides an instance of this class.
-  factory FirebaseAnalytics() => _instance;
-
-  /// We don't want people to extend this class, but implementing its interface,
-  /// e.g. in tests, is OK.
-  @visibleForTesting
-  FirebaseAnalytics.private(MethodChannel platformChannel)
-      : _channel = platformChannel,
-        android = defaultTargetPlatform == TargetPlatform.android
-            ? FirebaseAnalyticsAndroid.private(platformChannel)
-            : null;
-
-  static final FirebaseAnalytics _instance = FirebaseAnalytics.private(
-      const MethodChannel('plugins.flutter.io/firebase_analytics'));
-
-  final MethodChannel _channel;
+  final MethodChannel _channel = firebaseChannel;
 
   /// Namespace for analytics API available on Android only.
   ///
@@ -38,7 +25,10 @@ class FirebaseAnalytics {
   ///
   ///     FirebaseAnalytics analytics = FirebaseAnalytics();
   ///     analytics.android?.setMinimumSessionDuration(200000);
-  final FirebaseAnalyticsAndroid android;
+  final FirebaseAnalyticsAndroid android =
+      defaultTargetPlatform == TargetPlatform.android
+          ? FirebaseAnalyticsAndroid()
+          : null;
 
   /// Logs a custom Flutter Analytics event with the given [name] and event [parameters].
   Future<void> logEvent(
@@ -55,10 +45,21 @@ class FirebaseAnalytics {
           'Prefix "$kReservedPrefix" is reserved and cannot be used.');
     }
 
-    await _channel.invokeMethod('logEvent', <String, dynamic>{
+    await _channel.invokeMethod<void>('logEvent', <String, dynamic>{
       'name': name,
       'parameters': parameters,
     });
+  }
+
+  /// Sets whether analytics collection is enabled for this app on this device.
+  ///
+  /// This setting is persisted across app sessions. By default it is enabled.
+  Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
+    if (enabled == null) {
+      throw ArgumentError.notNull('enabled');
+    }
+
+    await _channel.invokeMethod<void>('setAnalyticsCollectionEnabled', enabled);
   }
 
   /// Sets the user ID property.
@@ -67,7 +68,7 @@ class FirebaseAnalytics {
   ///
   /// [1]: https://www.google.com/policies/privacy/
   Future<void> setUserId(String id) async {
-    await _channel.invokeMethod('setUserId', id);
+    await _channel.invokeMethod<void>('setUserId', id);
   }
 
   /// Sets the current [screenName], which specifies the current visual context
@@ -94,7 +95,7 @@ class FirebaseAnalytics {
       throw ArgumentError.notNull('screenName');
     }
 
-    await _channel.invokeMethod('setCurrentScreen', <String, String>{
+    await _channel.invokeMethod<void>('setCurrentScreen', <String, String>{
       'screenName': screenName,
       'screenClassOverride': screenClassOverride,
     });
@@ -128,10 +129,15 @@ class FirebaseAnalytics {
     if (name.startsWith('firebase_'))
       throw ArgumentError.value(name, 'name', '"firebase_" prefix is reserved');
 
-    await _channel.invokeMethod('setUserProperty', <String, String>{
+    await _channel.invokeMethod<void>('setUserProperty', <String, String>{
       'name': name,
       'value': value,
     });
+  }
+
+  /// Clears all analytics data for this app from the device and resets the app instance id.
+  Future<void> resetAnalyticsData() async {
+    await _channel.invokeMethod<void>('resetAnalyticsData');
   }
 
   /// Logs the standard `add_payment_info` event.
@@ -431,14 +437,49 @@ class FirebaseAnalytics {
     );
   }
 
+  /// Logs the standard `level_start` event.
+  ///
+  /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#LEVEL_START
+  Future<void> logLevelStart({
+    @required String levelName,
+  }) {
+    return logEvent(
+      name: 'level_start',
+      parameters: filterOutNulls(<String, dynamic>{
+        _LEVEL_NAME: levelName,
+      }),
+    );
+  }
+
+  /// Logs the standard `level_end` event.
+  ///
+  /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#LEVEL_END
+  Future<void> logLevelEnd({
+    @required String levelName,
+    int success,
+  }) {
+    return logEvent(
+      name: 'level_end',
+      parameters: filterOutNulls(<String, dynamic>{
+        _LEVEL_NAME: levelName,
+        _SUCCESS: success,
+      }),
+    );
+  }
+
   /// Logs the standard `login` event.
   ///
   /// Apps with a login feature can report this event to signify that a user
   /// has logged in.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#LOGIN
-  Future<void> logLogin() {
-    return logEvent(name: 'login');
+  Future<void> logLogin({String loginMethod}) {
+    return logEvent(
+      name: 'login',
+      parameters: filterOutNulls(<String, dynamic>{
+        _METHOD: loginMethod,
+      }),
+    );
   }
 
   /// Logs the standard `post_score` event.
@@ -524,6 +565,43 @@ class FirebaseAnalytics {
     );
   }
 
+  /// Logs the standard `remove_from_cart` event.
+  /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#REMOVE_FROM_CART
+  Future<void> logRemoveFromCart({
+    @required String itemId,
+    @required String itemName,
+    @required String itemCategory,
+    @required int quantity,
+    double price,
+    double value,
+    String currency,
+    String origin,
+    String itemLocationId,
+    String destination,
+    String startDate,
+    String endDate,
+  }) {
+    _requireValueAndCurrencyTogether(value, currency);
+
+    return logEvent(
+      name: 'remove_from_cart',
+      parameters: filterOutNulls(<String, dynamic>{
+        _QUANTITY: quantity,
+        _ITEM_CATEGORY: itemCategory,
+        _ITEM_NAME: itemName,
+        _ITEM_ID: itemId,
+        _VALUE: value,
+        _PRICE: price,
+        _CURRENCY: currency,
+        _ITEM_LOCATION_ID: itemLocationId,
+        _ORIGIN: origin,
+        _START_DATE: startDate,
+        _END_DATE: endDate,
+        _DESTINATION: destination,
+      }),
+    );
+  }
+
   /// Logs the standard `search` event.
   ///
   /// Apps that support search features can use this event to contextualize
@@ -579,6 +657,21 @@ class FirebaseAnalytics {
     );
   }
 
+  /// Logs the standard `set_checkout_option` event.
+  /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#SET_CHECKOUT_OPTION
+  Future<void> logSetCheckoutOption({
+    @required int checkoutStep,
+    @required String checkoutOption,
+  }) {
+    return logEvent(
+      name: 'set_checkout_option',
+      parameters: filterOutNulls(<String, dynamic>{
+        _CHECKOUT_STEP: checkoutStep,
+        _CHECKOUT_OPTION: checkoutOption,
+      }),
+    );
+  }
+
   /// Logs the standard `share` event.
   ///
   /// Apps with social features can log the Share event to identify the most
@@ -588,12 +681,14 @@ class FirebaseAnalytics {
   Future<void> logShare({
     @required String contentType,
     @required String itemId,
+    @required String method,
   }) {
     return logEvent(
       name: 'share',
       parameters: filterOutNulls(<String, dynamic>{
         _CONTENT_TYPE: contentType,
         _ITEM_ID: itemId,
+        _METHOD: method,
       }),
     );
   }
@@ -774,20 +869,18 @@ class FirebaseAnalytics {
 
 /// Android-specific analytics API.
 class FirebaseAnalyticsAndroid {
-  @visibleForTesting
-  const FirebaseAnalyticsAndroid.private(this._channel);
-
-  final MethodChannel _channel;
+  final MethodChannel _channel = firebaseChannel;
 
   /// Sets whether analytics collection is enabled for this app on this device.
   ///
   /// This setting is persisted across app sessions. By default it is enabled.
+  /// Deprecated: Use [FirebaseAnalytics.setAnalyticsCollectionEnabled] instead.
+  @deprecated
   Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
     if (enabled == null) {
       throw ArgumentError.notNull('enabled');
     }
-
-    await _channel.invokeMethod('setAnalyticsCollectionEnabled', enabled);
+    await _channel.invokeMethod<void>('setAnalyticsCollectionEnabled', enabled);
   }
 
   /// Sets the minimum engagement time required before starting a session.
@@ -797,8 +890,8 @@ class FirebaseAnalyticsAndroid {
     if (milliseconds == null) {
       throw ArgumentError.notNull('milliseconds');
     }
-
-    await _channel.invokeMethod('setMinimumSessionDuration', milliseconds);
+    await _channel.invokeMethod<void>(
+        'setMinimumSessionDuration', milliseconds);
   }
 
   /// Sets the duration of inactivity that terminates the current session.
@@ -808,8 +901,8 @@ class FirebaseAnalyticsAndroid {
     if (milliseconds == null) {
       throw ArgumentError.notNull('milliseconds');
     }
-
-    await _channel.invokeMethod('setSessionTimeoutDuration', milliseconds);
+    await _channel.invokeMethod<void>(
+        'setSessionTimeoutDuration', milliseconds);
   }
 }
 
@@ -840,17 +933,25 @@ void _requireValueAndCurrencyTogether(double value, String currency) {
 ///
 /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html
 const List<String> _reservedEventNames = <String>[
+  'ad_activeview',
+  'ad_click',
+  'ad_exposure',
+  'ad_impression',
+  'ad_query',
+  'adunit_exposure',
   'app_clear_data',
   'app_uninstall',
   'app_update',
   'error',
   'first_open',
+  'first_visit',
   'in_app_purchase',
   'notification_dismiss',
   'notification_foreground',
   'notification_open',
   'notification_receive',
   'os_update',
+  'screen_view',
   'session_start',
   'user_engagement',
 ];
@@ -894,6 +995,11 @@ const String _DESTINATION = 'destination';
 /// The arrival date, check-out date, or rental end date for the item.
 const String _END_DATE = 'end_date';
 
+/// Indicates that the associated event should either
+/// extend the current session or start a new session
+/// if no session was active when the event was logged.
+// const String _EXTENDED_SESSION = 'extend_session';
+
 /// Flight number for travel events.
 const String _FLIGHT_NUMBER = 'flight_number';
 
@@ -909,11 +1015,44 @@ const String _ITEM_ID = 'item_id';
 /// The Google Place ID that corresponds to the associated item.
 const String _ITEM_LOCATION_ID = 'item_location_id';
 
-/// Item name.
+/// Item Brand.
+// const String _ITEM_BRAND = 'item_brand';
+
+/// Item Variant.
+// const String _ITEM_VARIANT = 'item_variant';
+
+/// The list in which the item was presented to the user.
+// const String _ITEM_LIST = 'item_list';
+
+/// The checkout step (1..N).
+const String _CHECKOUT_STEP = 'checkout_step';
+
+/// Some option on a step in an ecommerce flow.
+const String _CHECKOUT_OPTION = 'checkout_option';
+
+/// The name of a creative used in a promotional spot.
+// const String _CREATIVE_NAME = 'creative_name';
+
+/// The name of a creative slot.
+// const String _CREATIVE_SLOT = 'creative_slot';
+
+/// The store or affiliation from which this transaction occurred.
+// const String _AFFILIATION = 'affiliation';
+
+/// The index of an item in a list.
+// const String _INDEX = 'index';
+
+/// Item name (String).
 const String _ITEM_NAME = 'item_name';
 
 /// Level in game (long).
 const String _LEVEL = 'level';
+
+/// The name of a level in a game (String).
+const String _LEVEL_NAME = 'level_name';
+
+/// The result of an operation (long).
+const String _SUCCESS = 'success';
 
 /// Location.
 const String _LOCATION = 'location';
