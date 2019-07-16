@@ -161,6 +161,8 @@ class SharedPreferences {
   }
 
   /// Initializes the shared preferences with mock values for testing.
+  ///
+  /// If the singleton instance has been initialized already, it is automatically reloaded.
   @visibleForTesting
   static void setMockInitialValues(Map<String, dynamic> values) {
     _kChannel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -169,5 +171,6 @@ class SharedPreferences {
       }
       return null;
     });
+    _instance?.reload();
   }
 }
