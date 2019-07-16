@@ -166,7 +166,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Platform.isAndroid
             ? FutureBuilder<void>(
-
                 future: retrieveLostData(),
                 builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
                   switch (snapshot.connectionState) {

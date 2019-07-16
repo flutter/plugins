@@ -12,32 +12,32 @@ import java.util.List;
 
 public class ExifUtils {
 
-  static public void copyExif(String filePathOri, String filePathDest) {
+  public static void copyExif(String filePathOri, String filePathDest) {
     try {
       ExifInterface oldExif = new ExifInterface(filePathOri);
       ExifInterface newExif = new ExifInterface(filePathDest);
 
       List<String> attributes =
-        Arrays.asList(
-          "FNumber",
-          "ExposureTime",
-          "ISOSpeedRatings",
-          "GPSAltitude",
-          "GPSAltitudeRef",
-          "FocalLength",
-          "GPSDateStamp",
-          "WhiteBalance",
-          "GPSProcessingMethod",
-          "GPSTimeStamp",
-          "DateTime",
-          "Flash",
-          "GPSLatitude",
-          "GPSLatitudeRef",
-          "GPSLongitude",
-          "GPSLongitudeRef",
-          "Make",
-          "Model",
-          "Orientation");
+          Arrays.asList(
+              "FNumber",
+              "ExposureTime",
+              "ISOSpeedRatings",
+              "GPSAltitude",
+              "GPSAltitudeRef",
+              "FocalLength",
+              "GPSDateStamp",
+              "WhiteBalance",
+              "GPSProcessingMethod",
+              "GPSTimeStamp",
+              "DateTime",
+              "Flash",
+              "GPSLatitude",
+              "GPSLatitudeRef",
+              "GPSLongitude",
+              "GPSLongitudeRef",
+              "Make",
+              "Model",
+              "Orientation");
       for (String attribute : attributes) {
         setIfNotNull(oldExif, newExif, attribute);
       }
@@ -54,9 +54,12 @@ public class ExifUtils {
       newExif.setAttribute(property, oldExif.getAttribute(property));
     }
   }
-  public static Bitmap modifyOrientation(Bitmap bitmap, String imageAbsolutePath) throws IOException {
+
+  public static Bitmap modifyOrientation(Bitmap bitmap, String imageAbsolutePath)
+      throws IOException {
     ExifInterface ei = new ExifInterface(imageAbsolutePath);
-    int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+    int orientation =
+        ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
 
     switch (orientation) {
       case ExifInterface.ORIENTATION_ROTATE_90:

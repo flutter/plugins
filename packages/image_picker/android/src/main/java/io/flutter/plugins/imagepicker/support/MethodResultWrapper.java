@@ -17,34 +17,33 @@ public class MethodResultWrapper implements Result {
   @Override
   public void success(final Object result) {
     handler.post(
-      new Runnable() {
-        @Override
-        public void run() {
-          methodResult.success(result);
-        }
-      });
+        new Runnable() {
+          @Override
+          public void run() {
+            methodResult.success(result);
+          }
+        });
   }
 
   @Override
-  public void error(
-    final String errorCode, final String errorMessage, final Object errorDetails) {
+  public void error(final String errorCode, final String errorMessage, final Object errorDetails) {
     handler.post(
-      new Runnable() {
-        @Override
-        public void run() {
-          methodResult.error(errorCode, errorMessage, errorDetails);
-        }
-      });
+        new Runnable() {
+          @Override
+          public void run() {
+            methodResult.error(errorCode, errorMessage, errorDetails);
+          }
+        });
   }
 
   @Override
   public void notImplemented() {
     handler.post(
-      new Runnable() {
-        @Override
-        public void run() {
-          methodResult.notImplemented();
-        }
-      });
+        new Runnable() {
+          @Override
+          public void run() {
+            methodResult.notImplemented();
+          }
+        });
   }
 }

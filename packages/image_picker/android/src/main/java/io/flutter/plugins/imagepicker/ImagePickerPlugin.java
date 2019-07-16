@@ -6,7 +6,6 @@ package io.flutter.plugins.imagepicker;
 
 import android.content.Context;
 import android.os.Environment;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import io.flutter.plugin.common.MethodCall;
@@ -28,7 +27,6 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
 
   private ImagePickerDelegate delegate;
 
-
   public static void registerWith(PluginRegistry.Registrar registrar) {
     if (registrar.activity() == null) {
       // If a background flutter view tries to register the plugin, there will be no activity from the registrar,
@@ -44,7 +42,8 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
     final File externalFilesDirectory = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     final ImageProcessor imageProcessor = new ImageProcessor(externalFilesDirectory);
     final ImagePickerDelegate delegate =
-      new ImagePickerDelegate(registrar.activity(), externalFilesDirectory, imageProcessor, cache);
+        new ImagePickerDelegate(
+            registrar.activity(), externalFilesDirectory, imageProcessor, cache);
 
     registrar.addActivityResultListener(delegate);
     registrar.addRequestPermissionsResultListener(delegate);

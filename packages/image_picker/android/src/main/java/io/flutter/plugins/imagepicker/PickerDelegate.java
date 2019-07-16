@@ -5,15 +5,12 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
 import io.flutter.plugin.common.PluginRegistry.RequestPermissionsResultListener;
 import java.io.File;
 
-interface PickerDelegate extends ActivityResultListener,
-                                   RequestPermissionsResultListener {
+interface PickerDelegate extends ActivityResultListener, RequestPermissionsResultListener {
   void chooseVideoFromGallery(@NonNull MethodCall methodCall, @NonNull Result result);
 
   void takeVideoWithCamera(@NonNull MethodCall methodCall, @NonNull Result result);

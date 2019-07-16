@@ -81,7 +81,6 @@ class ImageProcessor {
 
     Bitmap fixedOrientationBmp = ExifUtils.modifyOrientation(scaledBmp, path);
 
-
     String[] pathParts = path.split("/");
     String imageName = pathParts[pathParts.length - 1];
 
@@ -90,7 +89,7 @@ class ImageProcessor {
     boolean saveAsPNG = bmp.hasAlpha();
 
     fixedOrientationBmp.compress(
-      saveAsPNG ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, 100, outputStream);
+        saveAsPNG ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, 100, outputStream);
 
     FileOutputStream fileOutput = new FileOutputStream(imageFile);
     fileOutput.write(outputStream.toByteArray());
