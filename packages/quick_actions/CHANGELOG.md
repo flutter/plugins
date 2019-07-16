@@ -1,4 +1,4 @@
-## 0.3.3+0
+## 0.3.2+2
 * Fix bug that would make the shortcut not open on Android.
 * Report shortcut used on Android.
 * Improves example.
