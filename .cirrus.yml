@@ -10,7 +10,7 @@ task:
     - git fetch origin master
   activate_script:
     # TODO(jackson): Remove this line once the flutter_plugin_tools PR lands
-    - git clone git@github.com:collinjackson/flutter_plugin_tools.git -b ftl_demo
+    - git clone https://github.com/collinjackson/flutter_plugin_tools.git -b ftl_demo
     - pub global activate flutter_plugin_tools -s path
   matrix:
 #    - name: publishable
