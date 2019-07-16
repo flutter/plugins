@@ -44,6 +44,7 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// javascript.
 /// [enableDomStorage] is an Android only setting. If true, WebView enable
 /// DOM storage.
+/// [headers] is an Android only setting that adds headers to the WebView.
 ///
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
