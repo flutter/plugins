@@ -23,7 +23,6 @@
 ## 3.0.3
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.
->>>>>>> origin/master
 
 ## 3.0.2
 
