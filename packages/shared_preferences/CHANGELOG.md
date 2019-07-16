@@ -1,4 +1,4 @@
-## 0.5.1+3
+## 0.5.3+3
 
 * Copy `List` instances when reading and writing values to prevent mutations from propagating.
 
