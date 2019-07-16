@@ -1,3 +1,8 @@
+## 0.9.0+3
+
+* Handle exception in `BannerAd.dispose()` call for `no_ad_for_id` scenario.
+* Merged with upstream/master 00cc1de
+
 ## 0.9.0+2
 
 * On Android, no longer crashes when registering the plugin if no activity is available.
