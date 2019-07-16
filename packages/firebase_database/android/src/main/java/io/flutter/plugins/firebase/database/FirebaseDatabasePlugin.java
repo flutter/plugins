@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.firebase.database;
 
+import android.app.Activity;
 import android.util.Log;
 import android.util.SparseArray;
 import com.google.android.gms.tasks.Task;
@@ -37,6 +38,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
   private static final String TAG = "FirebaseDatabasePlugin";
 
   private final MethodChannel channel;
+  private final Activity activity;
   private static final String EVENT_TYPE_CHILD_ADDED = "_EventType.childAdded";
   private static final String EVENT_TYPE_CHILD_REMOVED = "_EventType.childRemoved";
   private static final String EVENT_TYPE_CHILD_CHANGED = "_EventType.childChanged";
@@ -50,11 +52,12 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_database");
-    channel.setMethodCallHandler(new FirebaseDatabasePlugin(channel));
+    channel.setMethodCallHandler(new FirebaseDatabasePlugin(channel, registrar.activity()));
   }
 
-  private FirebaseDatabasePlugin(MethodChannel channel) {
+  private FirebaseDatabasePlugin(MethodChannel channel, Activity activity) {
     this.channel = channel;
+    this.activity = activity;
   }
 
   private DatabaseReference getReference(FirebaseDatabase database, Map<String, Object> arguments) {
@@ -333,7 +336,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
                   final Task<Map<String, Object>> updateMutableDataTCSTask =
                       updateMutableDataTCS.getTask();
 
-                  Map<String, Object> doTransactionMap = new HashMap<>();
+                  final Map<String, Object> doTransactionMap = new HashMap<>();
                   doTransactionMap.put("transactionKey", arguments.get("transactionKey"));
 
                   final Map<String, Object> snapshotMap = new HashMap<>();
@@ -342,39 +345,46 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
                   doTransactionMap.put("snapshot", snapshotMap);
 
                   // Return snapshot to Dart side for update.
-                  channel.invokeMethod(
-                      "DoTransaction",
-                      doTransactionMap,
-                      new MethodChannel.Result() {
+                  activity.runOnUiThread(
+                      new Runnable() {
                         @Override
-                        @SuppressWarnings("unchecked")
-                        public void success(Object result) {
-                          updateMutableDataTCS.setResult((Map<String, Object>) result);
-                        }
+                        public void run() {
+                          channel.invokeMethod(
+                              "DoTransaction",
+                              doTransactionMap,
+                              new MethodChannel.Result() {
+                                @Override
+                                @SuppressWarnings("unchecked")
+                                public void success(Object result) {
+                                  updateMutableDataTCS.setResult((Map<String, Object>) result);
+                                }
 
-                        @Override
-                        public void error(
-                            String errorCode, String errorMessage, Object errorDetails) {
-                          String exceptionMessage =
-                              "Error code: "
-                                  + errorCode
-                                  + "\nError message: "
-                                  + errorMessage
-                                  + "\nError details: "
-                                  + errorDetails;
-                          updateMutableDataTCS.setException(new Exception(exceptionMessage));
-                        }
+                                @Override
+                                public void error(
+                                    String errorCode, String errorMessage, Object errorDetails) {
+                                  String exceptionMessage =
+                                      "Error code: "
+                                          + errorCode
+                                          + "\nError message: "
+                                          + errorMessage
+                                          + "\nError details: "
+                                          + errorDetails;
+                                  updateMutableDataTCS.setException(
+                                      new Exception(exceptionMessage));
+                                }
 
-                        @Override
-                        public void notImplemented() {
-                          updateMutableDataTCS.setException(
-                              new Exception("DoTransaction not implemented on Dart side."));
+                                @Override
+                                public void notImplemented() {
+                                  updateMutableDataTCS.setException(
+                                      new Exception("DoTransaction not implemented on Dart side."));
+                                }
+                              });
                         }
                       });
 
                   try {
                     // Wait for updated snapshot from the Dart side.
-                    Map<String, Object> updatedSnapshotMap =
+                    final Map<String, Object> updatedSnapshotMap =
                         Tasks.await(
                             updateMutableDataTCSTask,
                             (int) arguments.get("transactionTimeout"),
@@ -394,7 +404,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
                 @Override
                 public void onComplete(
                     DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
-                  Map<String, Object> completionMap = new HashMap<>();
+                  final Map<String, Object> completionMap = new HashMap<>();
                   completionMap.put("transactionKey", arguments.get("transactionKey"));
                   if (databaseError != null) {
                     completionMap.put("error", asMap(databaseError));
@@ -408,7 +418,12 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
                   }
 
                   // Invoke transaction completion on the Dart side.
-                  result.success(completionMap);
+                  activity.runOnUiThread(
+                      new Runnable() {
+                        public void run() {
+                          result.success(completionMap);
+                        }
+                      });
                 }
               });
           break;

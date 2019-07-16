@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui' show hashValues;
 import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
@@ -236,6 +237,9 @@ class SKError {
         DeepCollectionEquality.unordered()
             .equals(typedOther.userInfo, userInfo);
   }
+
+  @override
+  int get hashCode => hashValues(this.code, this.domain, this.userInfo);
 }
 
 /// Dart wrapper around StoreKit's
@@ -326,6 +330,14 @@ class SKPaymentWrapper {
         typedOther.simulatesAskToBuyInSandbox == simulatesAskToBuyInSandbox &&
         typedOther.requestData == requestData;
   }
+
+  @override
+  int get hashCode => hashValues(
+      this.productIdentifier,
+      this.applicationUsername,
+      this.quantity,
+      this.simulatesAskToBuyInSandbox,
+      this.requestData);
 
   @override
   String toString() => _$SKPaymentWrapperToJson(this).toString();
