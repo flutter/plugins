@@ -1,3 +1,8 @@
+## 0.4.3+5
+
+* [Android] Added API 29 support for `check()`.
+* [Android] Suppress warnings for using deprecated APIs.
+
 ## 0.4.3+4
 
 * [Android] Updated logic to retrieve network info.
