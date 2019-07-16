@@ -1,4 +1,4 @@
-## 5.0.6
+## 5.1.0
 
 * Add `headers` field to enable headers in the Android implementation.
 
