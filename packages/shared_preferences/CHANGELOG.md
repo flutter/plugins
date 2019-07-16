@@ -1,6 +1,11 @@
-## 0.5.3+3
+## 0.5.3+4
 
 * Copy `List` instances when reading and writing values to prevent mutations from propagating.
+
+## 0.5.3+3
+
+* `setMockInitialValues` can now be called multiple times and will
+  `reload()` the singleton if necessary.
 
 ## 0.5.3+2
 
