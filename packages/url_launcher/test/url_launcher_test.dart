@@ -42,6 +42,28 @@ void main() {
           'enableJavaScript': false,
           'enableDomStorage': false,
           'universalLinksOnly': false,
+          'headers': <String, String>{},
+        })
+      ],
+    );
+  });
+
+  test('launch with headers', () async {
+    await launch(
+      'http://example.com/',
+      headers: <String, String>{'key': 'value'},
+    );
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('launch', arguments: <String, Object>{
+          'url': 'http://example.com/',
+          'useSafariVC': true,
+          'useWebView': false,
+          'enableJavaScript': false,
+          'enableDomStorage': false,
+          'universalLinksOnly': false,
+          'headers': <String, String>{'key': 'value'},
         })
       ],
     );
@@ -59,6 +81,7 @@ void main() {
           'enableJavaScript': false,
           'enableDomStorage': false,
           'universalLinksOnly': false,
+          'headers': <String, String>{},
         })
       ],
     );
@@ -77,6 +100,7 @@ void main() {
           'enableJavaScript': false,
           'enableDomStorage': false,
           'universalLinksOnly': true,
+          'headers': <String, String>{},
         })
       ],
     );
@@ -94,6 +118,7 @@ void main() {
           'enableJavaScript': false,
           'enableDomStorage': false,
           'universalLinksOnly': false,
+          'headers': <String, String>{},
         })
       ],
     );
@@ -112,6 +137,7 @@ void main() {
           'enableJavaScript': true,
           'enableDomStorage': false,
           'universalLinksOnly': false,
+          'headers': <String, String>{},
         })
       ],
     );
@@ -130,6 +156,7 @@ void main() {
           'enableJavaScript': false,
           'enableDomStorage': true,
           'universalLinksOnly': false,
+          'headers': <String, String>{},
         })
       ],
     );
@@ -147,6 +174,7 @@ void main() {
           'enableJavaScript': false,
           'enableDomStorage': false,
           'universalLinksOnly': false,
+          'headers': <String, String>{},
         })
       ],
     );
