@@ -26,8 +26,11 @@ class FirebaseInAppMessaging {
   }
 
   /// Disable data collection for the app.
-  Future<void> setDataCollectionEnabled(bool setAutomaticDataCollectionEnabled) async {
-    await channel.invokeMethod<void>('setAutomaticDataCollectionEnabled',
-        <bool, bool>{setAutomaticDataCollectionEnabled: setAutomaticDataCollectionEnabled});
+  Future<void> setDataCollectionEnabled(
+      bool setAutomaticDataCollectionEnabled) async {
+    await channel.invokeMethod<void>(
+        'setAutomaticDataCollectionEnabled', <bool, bool>{
+      setAutomaticDataCollectionEnabled: setAutomaticDataCollectionEnabled
+    });
   }
 }

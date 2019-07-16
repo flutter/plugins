@@ -3,11 +3,11 @@
 #import <Firebase/Firebase.h>
 
 @implementation FirebaseInAppMessagingPlugin
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_inappmessaging"
                                   binaryMessenger:[registrar messenger]];
-  FirebaseInAppMessagingPlugin* instance = [[FirebaseInAppMessagingPlugin alloc] init];
+  FirebaseInAppMessagingPlugin *instance = [[FirebaseInAppMessagingPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -35,7 +35,8 @@
     fiam.messageDisplaySuppressed = [suppress boolValue];
     result(nil);
   } else if ([@"setAutomaticDataCollectionEnabled" isEqualToString:call.method]) {
-    NSNumber *setAutomaticDataCollectionEnabled = (NSNumber *)call.arguments[@"setAutomaticDataCollectionEnabled"];
+    NSNumber *setAutomaticDataCollectionEnabled =
+        (NSNumber *)call.arguments[@"setAutomaticDataCollectionEnabled"];
     FIRInAppMessaging *fiam = [FIRInAppMessaging inAppMessaging];
     fiam.automaticDataCollectionEnabled = [setAutomaticDataCollectionEnabled boolValue];
     result(nil);

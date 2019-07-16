@@ -40,7 +40,8 @@ public class FirebaseInAppMessagingPlugin implements MethodCallHandler {
         }
       case "setAutomaticDataCollectionEnabled":
         {
-          boolean setAutomaticDataCollectionEnabled = call.argument("setAutomaticDataCollectionEnabled");
+          boolean setAutomaticDataCollectionEnabled =
+              call.argument("setAutomaticDataCollectionEnabled");
           instance.setAutomaticDataCollectionEnabled(setAutomaticDataCollectionEnabled);
           result.success(null);
           break;
