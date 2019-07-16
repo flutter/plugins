@@ -735,11 +735,6 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     if (user != null) {
       List<Map<String, Object>> providerData = new ArrayList<>();
       for (UserInfo userInfo : user.getProviderData()) {
-        // Ignore phone provider since firebase provider is a super set of the phone
-        // provider.
-        if (userInfo.getProviderId().equals("phone")) {
-          continue;
-        }
         providerData.add(Collections.unmodifiableMap(userInfoToMap(userInfo)));
       }
       Map<String, Object> userMap = userInfoToMap(user);

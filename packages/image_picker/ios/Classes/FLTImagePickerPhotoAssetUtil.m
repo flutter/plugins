@@ -6,7 +6,7 @@
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 
-#import <MobileCoreServices/MobileCoreServices.h>;
+#import <MobileCoreServices/MobileCoreServices.h>
 
 @implementation FLTImagePickerPhotoAssetUtil
 
@@ -15,6 +15,9 @@
     return [info objectForKey:UIImagePickerControllerPHAsset];
   }
   NSURL *referenceURL = [info objectForKey:UIImagePickerControllerReferenceURL];
+  if (!referenceURL) {
+    return nil;
+  }
   PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsWithALAssetURLs:@[ referenceURL ]
                                                                  options:nil];
   return result.firstObject;
@@ -35,9 +38,9 @@
     metaData = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:originalImageData];
   }
   if (type == FLTImagePickerMIMETypeGIF) {
-    GIFInfo gifInfo = [FLTImagePickerImageUtil scaledGIFImage:originalImageData
-                                                     maxWidth:maxWidth
-                                                    maxHeight:maxHeight];
+    GIFInfo *gifInfo = [FLTImagePickerImageUtil scaledGIFImage:originalImageData
+                                                      maxWidth:maxWidth
+                                                     maxHeight:maxHeight];
 
     return [self saveImageWithMetaData:metaData gifInfo:gifInfo suffix:suffix];
   } else {
@@ -54,7 +57,7 @@
 }
 
 + (NSString *)saveImageWithMetaData:(NSDictionary *)metaData
-                            gifInfo:(GIFInfo)gifInfo
+                            gifInfo:(GIFInfo *)gifInfo
                              suffix:(NSString *)suffix {
   NSString *path = [self temporaryFilePath:suffix];
   return [self saveImageWithMetaData:metaData gifInfo:gifInfo path:path];
@@ -82,7 +85,7 @@
 }
 
 + (NSString *)saveImageWithMetaData:(NSDictionary *)metaData
-                            gifInfo:(GIFInfo)gifInfo
+                            gifInfo:(GIFInfo *)gifInfo
                                path:(NSString *)path {
   CGImageDestinationRef destination = CGImageDestinationCreateWithURL(
       (CFURLRef)[NSURL fileURLWithPath:path], kUTTypeGIF, gifInfo.images.count, NULL);
