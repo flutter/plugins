@@ -8,14 +8,40 @@ import 'package:flutter/services.dart';
 
 import '../platform_interface.dart';
 
-/// A [WebViewPlatform] that uses a method channel to control the webview.
-class MethodChannelWebViewPlatform implements WebViewPlatform {
-  MethodChannelWebViewPlatform(this._id)
-      : _channel = MethodChannel('plugins.flutter.io/webview_$_id');
+/// A [WebViewPlatformController] that uses a method channel to control the webview.
+class MethodChannelWebViewPlatform implements WebViewPlatformController {
+  MethodChannelWebViewPlatform(int id, this._platformCallbacksHandler)
+      : assert(_platformCallbacksHandler != null),
+        _channel = MethodChannel('plugins.flutter.io/webview_$id') {
+    _channel.setMethodCallHandler(_onMethodCall);
+  }
 
-  final int _id;
+  final WebViewPlatformCallbacksHandler _platformCallbacksHandler;
 
   final MethodChannel _channel;
+
+  static const MethodChannel _cookieManagerChannel =
+      MethodChannel('plugins.flutter.io/cookie_manager');
+
+  Future<bool> _onMethodCall(MethodCall call) async {
+    switch (call.method) {
+      case 'javascriptChannelMessage':
+        final String channel = call.arguments['channel'];
+        final String message = call.arguments['message'];
+        _platformCallbacksHandler.onJavaScriptChannelMessage(channel, message);
+        return true;
+      case 'navigationRequest':
+        return _platformCallbacksHandler.onNavigationRequest(
+          url: call.arguments['url'],
+          isForMainFrame: call.arguments['isForMainFrame'],
+        );
+      case 'onPageFinished':
+        _platformCallbacksHandler.onPageFinished(call.arguments['url']);
+        return null;
+    }
+    throw MissingPluginException(
+        '${call.method} was invoked but has no handler');
+  }
 
   @override
   Future<void> loadUrl(
@@ -23,25 +49,65 @@ class MethodChannelWebViewPlatform implements WebViewPlatform {
     Map<String, String> headers,
   ) async {
     assert(url != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod('loadUrl', <String, dynamic>{
+    return _channel.invokeMethod<void>('loadUrl', <String, dynamic>{
       'url': url,
       'headers': headers,
     });
   }
 
   @override
+  Future<String> currentUrl() => _channel.invokeMethod<String>('currentUrl');
+
+  @override
+  Future<bool> canGoBack() => _channel.invokeMethod<bool>("canGoBack");
+
+  @override
+  Future<bool> canGoForward() => _channel.invokeMethod<bool>("canGoForward");
+
+  @override
+  Future<void> goBack() => _channel.invokeMethod<void>("goBack");
+
+  @override
+  Future<void> goForward() => _channel.invokeMethod<void>("goForward");
+
+  @override
+  Future<void> reload() => _channel.invokeMethod<void>("reload");
+
+  @override
+  Future<void> clearCache() => _channel.invokeMethod<void>("clearCache");
+
+  @override
   Future<void> updateSettings(WebSettings settings) {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
     final Map<String, dynamic> updatesMap = _webSettingsToMap(settings);
     if (updatesMap.isEmpty) {
       return null;
     }
-    return _channel.invokeMethod('updateSettings', updatesMap);
+    return _channel.invokeMethod<void>('updateSettings', updatesMap);
+  }
+
+  @override
+  Future<String> evaluateJavascript(String javascriptString) {
+    return _channel.invokeMethod<String>(
+        'evaluateJavascript', javascriptString);
+  }
+
+  @override
+  Future<void> addJavascriptChannels(Set<String> javascriptChannelNames) {
+    return _channel.invokeMethod<void>(
+        'addJavascriptChannels', javascriptChannelNames.toList());
+  }
+
+  @override
+  Future<void> removeJavascriptChannels(Set<String> javascriptChannelNames) {
+    return _channel.invokeMethod<void>(
+        'removeJavascriptChannels', javascriptChannelNames.toList());
+  }
+
+  /// Method channel mplementation for [WebViewPlatform.clearCookies].
+  static Future<bool> clearCookies() {
+    return _cookieManagerChannel
+        .invokeMethod<bool>('clearCookies')
+        .then<bool>((dynamic result) => result);
   }
 
   static Map<String, dynamic> _webSettingsToMap(WebSettings settings) {
@@ -71,7 +137,4 @@ class MethodChannelWebViewPlatform implements WebViewPlatform {
       'javascriptChannelNames': creationParams.javascriptChannelNames.toList(),
     };
   }
-
-  @override
-  int get id => _id;
 }

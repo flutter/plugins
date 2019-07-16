@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
@@ -12,14 +14,15 @@ import 'webview_method_channel.dart';
 
 /// Builds an iOS webview.
 ///
-/// This is used as the default implementation for [WebView.platformBuilder] on iOS. It uses
+/// This is used as the default implementation for [WebView.platform] on iOS. It uses
 /// a [UiKitView] to embed the webview in the widget hierarchy, and uses a method channel to
 /// communicate with the platform code.
-class CupertinoWebViewBuilder implements WebViewBuilder {
+class CupertinoWebView implements WebViewPlatform {
   @override
   Widget build({
     BuildContext context,
     CreationParams creationParams,
+    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
     WebViewPlatformCreatedCallback onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   }) {
@@ -29,7 +32,8 @@ class CupertinoWebViewBuilder implements WebViewBuilder {
         if (onWebViewPlatformCreated == null) {
           return;
         }
-        onWebViewPlatformCreated(MethodChannelWebViewPlatform(id));
+        onWebViewPlatformCreated(
+            MethodChannelWebViewPlatform(id, webViewPlatformCallbacksHandler));
       },
       gestureRecognizers: gestureRecognizers,
       creationParams:
@@ -37,4 +41,7 @@ class CupertinoWebViewBuilder implements WebViewBuilder {
       creationParamsCodec: const StandardMessageCodec(),
     );
   }
+
+  @override
+  Future<bool> clearCookies() => MethodChannelWebViewPlatform.clearCookies();
 }
