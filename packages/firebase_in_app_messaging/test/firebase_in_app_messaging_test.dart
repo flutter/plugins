@@ -1,6 +1,6 @@
+import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 
 void main() {
   group('$FirebaseInAppMessaging', () {
@@ -27,34 +27,27 @@ void main() {
     test('setMessagesSuppressed', () async {
       final FirebaseInAppMessaging fiam = FirebaseInAppMessaging();
       fiam.setMessagesSuppressed(true);
-      expect(log, <Matcher>[
-        isMethodCall('setMessagesSuppressed',
-            arguments: <bool, bool>{true: true}),
-      ]);
+      expect(log,
+          <Matcher>[isMethodCall('setMessagesSuppressed', arguments: true)]);
 
       fiam.setMessagesSuppressed(false);
       expect(log, <Matcher>[
-        isMethodCall('setMessagesSuppressed',
-            arguments: <bool, bool>{true: true}),
-        isMethodCall('setMessagesSuppressed',
-            arguments: <bool, bool>{false: false}),
+        isMethodCall('setMessagesSuppressed', arguments: true),
+        isMethodCall('setMessagesSuppressed', arguments: false),
       ]);
     });
 
     test('setDataCollectionEnabled', () async {
       final FirebaseInAppMessaging fiam = FirebaseInAppMessaging();
-      fiam.setDataCollectionEnabled(true);
+      fiam.setAutomaticDataCollectionEnabled(true);
       expect(log, <Matcher>[
-        isMethodCall('setAutomaticDataCollectionEnabled',
-            arguments: <bool, bool>{true: true}),
+        isMethodCall('setAutomaticDataCollectionEnabled', arguments: true)
       ]);
 
-      fiam.setDataCollectionEnabled(false);
+      fiam.setAutomaticDataCollectionEnabled(false);
       expect(log, <Matcher>[
-        isMethodCall('setAutomaticDataCollectionEnabled',
-            arguments: <bool, bool>{true: true}),
-        isMethodCall('setAutomaticDataCollectionEnabled',
-            arguments: <bool, bool>{false: false}),
+        isMethodCall('setAutomaticDataCollectionEnabled', arguments: true),
+        isMethodCall('setAutomaticDataCollectionEnabled', arguments: false),
       ]);
     });
   });

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:meta/meta.dart';
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 class FirebaseInAppMessaging {
   @visibleForTesting
@@ -21,16 +21,18 @@ class FirebaseInAppMessaging {
 
   /// Suppress message displays for the [FirebaseInAppMessaging] instance
   Future<void> setMessagesSuppressed(bool suppress) async {
-    await channel.invokeMethod<void>(
-        'setMessagesSuppressed', <bool, bool>{suppress: suppress});
+    if (suppress == null) {
+      throw ArgumentError.notNull('suppress');
+    }
+    await channel.invokeMethod<void>('setMessagesSuppressed', suppress);
   }
 
   /// Disable data collection for the app.
-  Future<void> setDataCollectionEnabled(
-      bool setAutomaticDataCollectionEnabled) async {
+  Future<void> setAutomaticDataCollectionEnabled(bool enabled) async {
+    if (enabled == null) {
+      throw ArgumentError.notNull('enabled');
+    }
     await channel.invokeMethod<void>(
-        'setAutomaticDataCollectionEnabled', <bool, bool>{
-      setAutomaticDataCollectionEnabled: setAutomaticDataCollectionEnabled
-    });
+        'setAutomaticDataCollectionEnabled', enabled);
   }
 }

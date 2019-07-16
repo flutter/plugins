@@ -33,16 +33,15 @@ public class FirebaseInAppMessagingPlugin implements MethodCallHandler {
         }
       case "setMessagesSuppressed":
         {
-          boolean suppress = call.argument("suppress");
+          Boolean suppress = (Boolean) call.arguments;
           instance.setMessagesSuppressed(suppress);
           result.success(null);
           break;
         }
       case "setAutomaticDataCollectionEnabled":
         {
-          boolean setAutomaticDataCollectionEnabled =
-              call.argument("setAutomaticDataCollectionEnabled");
-          instance.setAutomaticDataCollectionEnabled(setAutomaticDataCollectionEnabled);
+          Boolean enabled = (Boolean) call.arguments;
+          instance.setAutomaticDataCollectionEnabled(enabled);
           result.success(null);
           break;
         }

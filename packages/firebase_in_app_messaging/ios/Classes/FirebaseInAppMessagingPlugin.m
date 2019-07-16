@@ -30,15 +30,16 @@
     [fiam triggerEvent:eventName];
     result(nil);
   } else if ([@"setMessagesSuppressed" isEqualToString:call.method]) {
-    NSNumber *suppress = (NSNumber *)call.arguments[@"suppress"];
+    //NSNumber *suppress = (NSNumber *)call.arguments[@"suppress"];
+    NSNumber *suppress = [NSNumber numberWithBool:call.arguments];
     FIRInAppMessaging *fiam = [FIRInAppMessaging inAppMessaging];
     fiam.messageDisplaySuppressed = [suppress boolValue];
     result(nil);
   } else if ([@"setAutomaticDataCollectionEnabled" isEqualToString:call.method]) {
-    NSNumber *setAutomaticDataCollectionEnabled =
-        (NSNumber *)call.arguments[@"setAutomaticDataCollectionEnabled"];
+    //NSNumber *setAutomaticDataCollectionEnabled = (NSNumber *)call.arguments[@"setAutomaticDataCollectionEnabled"];
+    NSNumber *enabled = [NSNumber numberWithBool:call.arguments];
     FIRInAppMessaging *fiam = [FIRInAppMessaging inAppMessaging];
-    fiam.automaticDataCollectionEnabled = [setAutomaticDataCollectionEnabled boolValue];
+    fiam.automaticDataCollectionEnabled = [enabled boolValue];
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);
