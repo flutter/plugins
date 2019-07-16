@@ -4,15 +4,14 @@
 
 package io.flutter.plugins.quickactions;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
+import android.content.res.Resources;
 import android.graphics.drawable.Icon;
 import android.os.Build;
-import android.os.Bundle;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -23,17 +22,11 @@ import java.util.List;
 import java.util.Map;
 
 /** QuickActionsPlugin */
-@SuppressWarnings("unchecked")
 public class QuickActionsPlugin implements MethodCallHandler {
-  private final Registrar registrar;
-  private static final String intentExtraAction = "action";
-  private static String launchAction = null;
+  private static final String CHANNEL_ID = "plugins.flutter.io/quick_actions";
+  private static final String EXTRA_ACTION = "some unique action key";
 
-  // Channel is a static field because it needs to be accessible to the
-  // {@link ShortcutHandlerActivity} which has to be a static class with
-  // no-args constructor.
-  // It is also mutable because it is derived from {@link Registrar}.
-  private static MethodChannel channel;
+  private final Registrar registrar;
 
   private QuickActionsPlugin(Registrar registrar) {
     this.registrar = registrar;
@@ -45,13 +38,11 @@ public class QuickActionsPlugin implements MethodCallHandler {
    * <p>Must be called when the application is created.
    */
   public static void registerWith(Registrar registrar) {
-    channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/quick_actions");
+    final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_ID);
     channel.setMethodCallHandler(new QuickActionsPlugin(registrar));
-    launchAction = registrar.activity().getIntent().getStringExtra(intentExtraAction);
   }
 
   @Override
-  @SuppressLint("NewApi")
   public void onMethodCall(MethodCall call, Result result) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
       // We already know that this functionality does not work for anything
@@ -72,8 +63,13 @@ public class QuickActionsPlugin implements MethodCallHandler {
         shortcutManager.removeAllDynamicShortcuts();
         break;
       case "getLaunchAction":
+        final Intent intent = registrar.activity().getIntent();
+        final String launchAction = intent.getStringExtra(EXTRA_ACTION);
+        if (launchAction != null && !launchAction.isEmpty()) {
+          shortcutManager.reportShortcutUsed(launchAction);
+          intent.removeExtra(EXTRA_ACTION);
+        }
         result.success(launchAction);
-        launchAction = null;
         return;
       default:
         result.notImplemented();
@@ -82,69 +78,56 @@ public class QuickActionsPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  @SuppressLint("NewApi")
+  @TargetApi(Build.VERSION_CODES.N_MR1)
   private List<ShortcutInfo> deserializeShortcuts(List<Map<String, String>> shortcuts) {
-    List<ShortcutInfo> shortcutInfos = new ArrayList<>();
-    Context context = registrar.context();
+    final List<ShortcutInfo> shortcutInfos = new ArrayList<>();
+    final Context context = registrar.context();
+
     for (Map<String, String> shortcut : shortcuts) {
-      String icon = shortcut.get("icon");
-      String type = shortcut.get("type");
-      String title = shortcut.get("localizedTitle");
-      ShortcutInfo.Builder shortcutBuilder = new ShortcutInfo.Builder(context, type);
-      if (icon != null) {
-        int resourceId =
-            context.getResources().getIdentifier(icon, "drawable", context.getPackageName());
-        if (resourceId > 0) {
-          shortcutBuilder.setIcon(Icon.createWithResource(context, resourceId));
-        }
+      final String icon = shortcut.get("icon");
+      final String type = shortcut.get("type");
+      final String title = shortcut.get("localizedTitle");
+      final ShortcutInfo.Builder shortcutBuilder = new ShortcutInfo.Builder(context, type);
+
+      final int resourceId = loadResourceId(context, icon);
+      final Intent intent = getIntentToOpenMainActivity(type);
+
+      if (resourceId > 0) {
+        shortcutBuilder.setIcon(Icon.createWithResource(context, resourceId));
       }
-      shortcutBuilder.setLongLabel(title);
-      shortcutBuilder.setShortLabel(title);
-      Intent intent = new Intent(context, ShortcutHandlerActivity.class);
-      intent.setAction("plugins.flutter.io/quick_action");
-      intent.putExtra("type", type);
-      shortcutBuilder.setIntent(intent);
-      shortcutInfos.add(shortcutBuilder.build());
+
+      final ShortcutInfo shortcutInfo =
+          shortcutBuilder.setLongLabel(title).setShortLabel(title).setIntent(intent).build();
+      shortcutInfos.add(shortcutInfo);
     }
     return shortcutInfos;
   }
 
-  /**
-   * Handle the shortcut and immediately closes the activity.
-   *
-   * <p>Needs to be invocable by Android system; hence it is public.
-   */
-  public static class ShortcutHandlerActivity extends Activity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      // Get the Intent that started this activity and extract the string
-      Intent intent = getIntent();
-      String type = intent.getStringExtra("type");
-      if (channel != null) {
-        channel.invokeMethod("launch", type);
-      } else {
-        startActivity(getIntentToOpenMainActivity(this, type));
-      }
-      finish();
+  private int loadResourceId(Context context, String icon) {
+    if (icon == null) {
+      return 0;
     }
+    final String packageName = context.getPackageName();
+    final Resources res = context.getResources();
+    final int resourceId = res.getIdentifier(icon, "drawable", packageName);
 
-    /**
-     * Returns Intent to launch the MainActivity. Used to start the app, if one of quick actions was
-     * called from the background.
-     */
-    private Intent getIntentToOpenMainActivity(Context context, String type) {
-      Intent launchIntentForPackage =
-          context
-              .getPackageManager()
-              .getLaunchIntentForPackage(context.getApplicationContext().getPackageName());
-      if (launchIntentForPackage == null) {
-        return null;
-      } else {
-        launchIntentForPackage.putExtra(intentExtraAction, type);
-        return launchIntentForPackage;
-      }
+    if (resourceId == 0) {
+      return res.getIdentifier(icon, "mipmap", packageName);
+    } else {
+      return resourceId;
     }
+  }
+
+  private Intent getIntentToOpenMainActivity(String type) {
+    final Context context = registrar.context();
+    final String packageName = context.getPackageName();
+
+    return context
+        .getPackageManager()
+        .getLaunchIntentForPackage(packageName)
+        .setAction(Intent.ACTION_RUN)
+        .putExtra(EXTRA_ACTION, type)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
   }
 }
