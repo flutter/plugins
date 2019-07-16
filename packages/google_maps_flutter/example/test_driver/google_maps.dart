@@ -539,4 +539,20 @@ void main() {
     final GoogleMapController controller = await controllerCompleter.future;
     await controller.setMapStyle(null);
   });
+
+  test("fromAssetImage", () async {
+    final Iterable<Future<bool>> futures = <double>[1, 2, 3].map((double pixelRatio) async {
+      final ImageConfiguration imageConfiguration =
+      ImageConfiguration(devicePixelRatio: pixelRatio);
+      final BitmapDescriptor mip = await BitmapDescriptor.fromAssetImage(
+          imageConfiguration, 'red_square.png');
+      final BitmapDescriptor scaled = await BitmapDescriptor.fromAssetImage(
+          imageConfiguration, 'red_square.png', mipmaps: false);
+      mip.toJson().forEach((dynamic x)=>print(x));
+      scaled.toJson().forEach((dynamic x)=>print(x));
+      return Future<bool>.value(true);
+    });
+
+    Future.wait(futures);
+  });
 }

@@ -86,5 +86,8 @@ class BitmapDescriptor {
 
   final dynamic _json;
 
+  @visibleForTesting
+  dynamic toJson() => _json;
+
   dynamic _toJson() => _json;
 }
