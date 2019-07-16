@@ -4,7 +4,6 @@ import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info/package_info.dart';
 
-
 void main() {
   group('package_info test driver', () {
     testWidgets('test package info result', (_) async {
