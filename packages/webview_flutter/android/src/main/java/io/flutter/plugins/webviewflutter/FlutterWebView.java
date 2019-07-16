@@ -35,7 +35,17 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       int id,
       Map<String, Object> params,
       final View containerView) {
-    webView = new InputAwareWebView(context, containerView);
+    
+    Context activityContext = context;
+    Context appContext = context.getApplicationContext();
+    if (appContext instanceof FlutterApplication) {
+      Activity currentActivity = ((FlutterApplication) appContext).getCurrentActivity();
+      if (currentActivity != null) {
+        activityContext = currentActivity;
+      }
+    }
+    
+    webView = new InputAwareWebView(activityContext, containerView);
 
     platformThreadHandler = new Handler(context.getMainLooper());
     // Allow local storage.
