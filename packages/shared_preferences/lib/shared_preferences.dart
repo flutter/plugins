@@ -71,7 +71,8 @@ class SharedPreferences {
       list = list.cast<String>().toList();
       _preferenceCache[key] = list;
     }
-    return list;
+    // Make a copy of the list so that later mutations won't propagate
+    return list?.toList();
   }
 
   /// Saves a boolean [value] to persistent storage in the background.
@@ -117,7 +118,12 @@ class SharedPreferences {
           .invokeMethod<bool>('remove', params)
           .then<bool>((dynamic result) => result);
     } else {
-      _preferenceCache[key] = value;
+      if (value is List<String>) {
+        // Make a copy of the list so that later mutations won't propagate
+        _preferenceCache[key] = value.toList();
+      } else {
+        _preferenceCache[key] = value;
+      }
       params['value'] = value;
       return _kChannel
           .invokeMethod<bool>('set$valueType', params)
