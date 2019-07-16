@@ -19,6 +19,10 @@ class GoogleMapInspector {
     return await _channel.invokeMethod<bool>('map#isCompassEnabled');
   }
 
+  Future<bool> isMapToolbarEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isMapToolbarEnabled');
+  }
+
   Future<MinMaxZoomPreference> getMinMaxZoomLevels() async {
     final List<double> zoomLevels =
         (await _channel.invokeMethod<List<dynamic>>('map#getMinMaxZoomLevels'))

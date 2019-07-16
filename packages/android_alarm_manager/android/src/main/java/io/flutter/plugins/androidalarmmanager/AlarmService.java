@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.util.Log;
+import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.JobIntentService;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
@@ -25,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -127,7 +129,7 @@ public class AlarmService extends JobIntentService {
       // initialized, then clear the queue.
       Iterator<Intent> i = sAlarmQueue.iterator();
       while (i.hasNext()) {
-        executeDartCallbackInBackgroundIsolate(i.next());
+        executeDartCallbackInBackgroundIsolate(i.next(), null);
       }
       sAlarmQueue.clear();
     }
@@ -169,7 +171,8 @@ public class AlarmService extends JobIntentService {
    * <p>The given {@code intent} should contain a {@code long} extra called "callbackHandle", which
    * corresponds to a callback registered with the Dart VM.
    */
-  private static void executeDartCallbackInBackgroundIsolate(Intent intent) {
+  private static void executeDartCallbackInBackgroundIsolate(
+      Intent intent, final CountDownLatch latch) {
     // Grab the handle for the callback associated with this alarm. Pay close
     // attention to the type of the callback handle as storing this value in a
     // variable of the wrong size will cause the callback lookup to fail.
@@ -180,12 +183,35 @@ public class AlarmService extends JobIntentService {
           "setBackgroundChannel was not called before alarms were scheduled." + " Bailing out.");
       return;
     }
+
+    // If another thread is waiting, then wake that thread when the callback returns a result.
+    MethodChannel.Result result = null;
+    if (latch != null) {
+      result =
+          new MethodChannel.Result() {
+            @Override
+            public void success(Object result) {
+              latch.countDown();
+            }
+
+            @Override
+            public void error(String errorCode, String errorMessage, Object errorDetails) {
+              latch.countDown();
+            }
+
+            @Override
+            public void notImplemented() {
+              latch.countDown();
+            }
+          };
+    }
+
     // Handle the alarm event in Dart. Note that for this plugin, we don't
     // care about the method name as we simply lookup and invoke the callback
     // provided.
     // TODO(mattcarroll): consider giving a method name anyway for the purpose of developer discoverability
     //                    when reading the source code. Especially on the Dart side.
-    sBackgroundChannel.invokeMethod("", new Object[] {callbackHandle});
+    sBackgroundChannel.invokeMethod("", new Object[] {callbackHandle}, result);
   }
 
   private static void scheduleAlarm(
@@ -228,7 +254,7 @@ public class AlarmService extends JobIntentService {
       if (repeating) {
         manager.setRepeating(clock, startMillis, intervalMillis, pendingIntent);
       } else {
-        manager.setExact(clock, startMillis, pendingIntent);
+        AlarmManagerCompat.setExact(manager, clock, startMillis, pendingIntent);
       }
     } else {
       if (repeating) {
@@ -321,7 +347,7 @@ public class AlarmService extends JobIntentService {
           .edit()
           .putString(key, obj.toString())
           .putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms)
-          .commit();
+          .apply();
     }
   }
 
@@ -334,7 +360,7 @@ public class AlarmService extends JobIntentService {
       }
       persistentAlarms.remove(requestCode);
       String key = getPersistentAlarmKey(requestCode);
-      p.edit().remove(key).putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms).commit();
+      p.edit().remove(key).putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms).apply();
 
       if (persistentAlarms.isEmpty()) {
         RebootBroadcastReceiver.disableRescheduleOnReboot(context);
@@ -380,18 +406,11 @@ public class AlarmService extends JobIntentService {
               false,
               callbackHandle);
         } catch (JSONException e) {
-          Log.e(
-              TAG,
-              "Data for alarm request code "
-                  + Integer.toString(requestCode)
-                  + " is invalid: "
-                  + json);
+          Log.e(TAG, "Data for alarm request code " + requestCode + " is invalid: " + json);
         }
       }
     }
   }
-
-  private String mAppBundlePath;
 
   @Override
   public void onCreate() {
@@ -399,7 +418,6 @@ public class AlarmService extends JobIntentService {
 
     Context context = getApplicationContext();
     FlutterMain.ensureInitializationComplete(context, null);
-    mAppBundlePath = FlutterMain.findAppBundlePath(context);
 
     if (!sIsIsolateRunning.get()) {
       SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
@@ -435,13 +453,20 @@ public class AlarmService extends JobIntentService {
 
     // There were no pre-existing callback requests. Execute the callback
     // specified by the incoming intent.
+    final CountDownLatch latch = new CountDownLatch(1);
     new Handler(getMainLooper())
         .post(
             new Runnable() {
               @Override
               public void run() {
-                executeDartCallbackInBackgroundIsolate(intent);
+                executeDartCallbackInBackgroundIsolate(intent, latch);
               }
             });
+
+    try {
+      latch.await();
+    } catch (InterruptedException ex) {
+      Log.i(TAG, "Exception waiting to execute Dart callback", ex);
+    }
   }
 }
