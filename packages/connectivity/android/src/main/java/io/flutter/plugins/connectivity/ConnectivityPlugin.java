@@ -65,7 +65,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
     receiver = null;
   }
 
-  private String getNetworkType(int type, ConnectivityManager manager) {
+  private String getNetworkType(ConnectivityManager manager) {
     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       Network network = manager.getActiveNetwork();
       NetworkCapabilities capabilities = manager.getNetworkCapabilities(network);
@@ -81,12 +81,17 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
       }
     }
 
-    return getNetworkTypeLegacy(type);
+    return getNetworkTypeLegacy(manager);
   }
 
   @SuppressWarnings("deprecated")
-  private String getNetworkTypeLegacy(int type) {
+  private String getNetworkTypeLegacy(ConnectivityManager manager) {
     // handle type for Android versions less than Android 9
+    NetworkInfo info = manager.getActiveNetworkInfo();
+    if (info == null || !info.isConnected()) {
+      return "none";
+    }
+    int type = info.getType();
     switch (type) {
       case ConnectivityManager.TYPE_ETHERNET:
       case ConnectivityManager.TYPE_WIFI:
@@ -127,12 +132,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   }
 
   private String checkNetworkType() {
-    NetworkInfo info = manager.getActiveNetworkInfo();
-    if (info != null && info.isConnected()) {
-      return getNetworkType(info.getType(), manager);
-    } else {
-      return "none";
-    }
+    return getNetworkType(manager);
   }
 
   private WifiInfo getWifiInfo() {
