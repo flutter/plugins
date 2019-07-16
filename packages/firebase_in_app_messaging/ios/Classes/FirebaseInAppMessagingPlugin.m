@@ -34,10 +34,10 @@
     FIRInAppMessaging *fiam = [FIRInAppMessaging inAppMessaging];
     fiam.messageDisplaySuppressed = [suppress boolValue];
     result(nil);
-  } else if ([@"dataCollectionEnabled" isEqualToString:call.method]) {
-    NSNumber *dataCollectionEnabled = (NSNumber *)call.arguments[@"dataCollectionEnabled"];
+  } else if ([@"setAutomaticDataCollectionEnabled" isEqualToString:call.method]) {
+    NSNumber *setAutomaticDataCollectionEnabled = (NSNumber *)call.arguments[@"setAutomaticDataCollectionEnabled"];
     FIRInAppMessaging *fiam = [FIRInAppMessaging inAppMessaging];
-    fiam.automaticDataCollectionEnabled = [dataCollectionEnabled boolValue];
+    fiam.automaticDataCollectionEnabled = [setAutomaticDataCollectionEnabled boolValue];
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);

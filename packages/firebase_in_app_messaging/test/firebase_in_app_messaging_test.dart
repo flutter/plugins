@@ -45,15 +45,15 @@ void main() {
       final FirebaseInAppMessaging fiam = FirebaseInAppMessaging();
       fiam.setDataCollectionEnabled(true);
       expect(log, <Matcher>[
-        isMethodCall('dataCollectionEnabled',
+        isMethodCall('setAutomaticDataCollectionEnabled',
             arguments: <bool, bool>{true: true}),
       ]);
 
       fiam.setDataCollectionEnabled(false);
       expect(log, <Matcher>[
-        isMethodCall('dataCollectionEnabled',
+        isMethodCall('setAutomaticDataCollectionEnabled',
             arguments: <bool, bool>{true: true}),
-        isMethodCall('dataCollectionEnabled',
+        isMethodCall('setAutomaticDataCollectionEnabled',
             arguments: <bool, bool>{false: false}),
       ]);
     });

@@ -76,7 +76,7 @@ FirebaseInAppMessaging.setMessagesSuppressed(false);
 First, follow the step outlined [here](https://firebase.google.com/docs/in-app-messaging/modify-message-behavior#enable_opt-out_message_delivery) for both iOS and Android. Then add the following code in your app:
 
 ```dart
-FirebaseInAppMessaging.dataCollectionEnabled(false);
+FirebaseInAppMessaging.setAutomaticDataCollectionEnabled(false);
 ```
 
 ## Example
