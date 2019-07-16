@@ -11,7 +11,9 @@ class FirebaseUser extends UserInfo {
             .map<UserInfo>((dynamic item) => UserInfo._(item, app))
             .toList(),
         _metadata = FirebaseUserMetadata._(data),
-        _additionalUserInfo = AdditionalUserInfo._(data['additionalUserInfo']),
+        _additionalUserInfo = data.containsKey('additionalUserInfo')
+            ? AdditionalUserInfo._(data['additionalUserInfo'])
+            : null,
         super._(data, app);
 
   final List<UserInfo> providerData;
