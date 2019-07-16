@@ -175,5 +175,18 @@ void main() {
         expect(value, 'my other string');
       });
     });
+
+    test('writing copy of strings list', () async {
+      final List<String> myList = <String>[];
+      await preferences.setStringList("myList", myList);
+      myList.add("foobar");
+
+      final List<String> cachedList = preferences.getStringList('myList');
+      expect(cachedList, <String>[]);
+
+      cachedList.add("foobar2");
+
+      expect(preferences.getStringList('myList'), <String>[]);
+    });
   });
 }
