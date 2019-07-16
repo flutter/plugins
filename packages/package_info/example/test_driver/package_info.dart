@@ -10,7 +10,7 @@ void main() {
   tearDownAll(() => completer.complete(null));
 
   group('package_info test driver', () {
-    test('test package info result', () async {
+    testWidgets('test package info result', (_) async {
       final PackageInfo info = await PackageInfo.fromPlatform();
       // These tests are based on the example app. The tests should be updated if any related info changes.
       if (Platform.isAndroid) {
