@@ -121,9 +121,9 @@ class SharedPreferences {
       if (value is List<String>) {
         // Make a copy of the list so that later mutations won't propagate
         _preferenceCache[key] = value.toList();
-        return;
+      } else {
+        _preferenceCache[key] = value;
       }
-      _preferenceCache[key] = value;
       params['value'] = value;
       return _kChannel
           .invokeMethod<bool>('set$valueType', params)
