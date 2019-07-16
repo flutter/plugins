@@ -7,6 +7,7 @@ package io.flutter.plugins.imagepicker;
 import static io.flutter.plugins.imagepicker.ImagePickerCache.*;
 
 import android.Manifest;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
