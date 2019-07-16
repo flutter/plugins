@@ -125,9 +125,7 @@
     result(nil);
     return;
   }
-  result([FlutterError errorWithCode:@"updateSettings_failed"
-                             message:error
-                             details:nil]);
+  result([FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil]);
 }
 
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -255,7 +253,8 @@
   if ([unknownKeys count] == 0) {
     return nil;
   }
-  return [NSString stringWithFormat:@"webview_flutter: unknown setting keys: {%@}", [unknownKeys componentsJoinedByString:@", "]];
+  return [NSString stringWithFormat:@"webview_flutter: unknown setting keys: {%@}",
+                                    [unknownKeys componentsJoinedByString:@", "]];
 }
 
 - (void)updateJsMode:(NSNumber*)mode {
