@@ -1,3 +1,7 @@
+## 0.10.1+5
+
+* [iOS] Fixed a memory leak in the video player plugin.
+
 ## 0.10.1+4
 
 * Fixed syntax error in README.md.
