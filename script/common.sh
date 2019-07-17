@@ -14,7 +14,7 @@ function check_changed_packages() {
   # We need this check because some CIs can do a single branch clones with a limited history of commits.
   local packages
   local branch_base_sha="$(get_branch_base_sha)"
-  if [[ "$?" == 0 ]]; then
+  if [[ "$branch_base_sha" != "" ]]; then
     echo "Checking for changed packages from $branch_base_sha"
     IFS=$'\n' packages=( $(git diff --name-only "$branch_base_sha" HEAD | grep -o "packages/[^/]*" | sed -e "s/packages\///g" | sort | uniq) )
   else
