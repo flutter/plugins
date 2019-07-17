@@ -25,10 +25,10 @@ class ImageProcessor {
    *
    * <p>If no resizing is needed, returns the path for the original image.
    */
-  String processImage(String imagePath, Double maxWidth, Double maxHeight) {
+  String processImage(int screenOrientation, String imagePath, Double maxWidth, Double maxHeight) {
 
     try {
-      File scaledImage = resizedImage(imagePath, maxWidth, maxHeight);
+      File scaledImage = resizedImage(screenOrientation, imagePath, maxWidth, maxHeight);
       ExifUtils.copyExif(imagePath, scaledImage.getPath());
 
       return scaledImage.getPath();
@@ -37,7 +37,8 @@ class ImageProcessor {
     }
   }
 
-  private File resizedImage(String path, Double maxWidth, Double maxHeight) throws IOException {
+  private File resizedImage(int screenOrientation, String path, Double maxWidth, Double maxHeight)
+      throws IOException {
     Bitmap bmp = BitmapFactory.decodeFile(path);
     double originalWidth = bmp.getWidth() * 1.0;
     double originalHeight = bmp.getHeight() * 1.0;
@@ -79,7 +80,7 @@ class ImageProcessor {
 
     Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, width.intValue(), height.intValue(), false);
 
-    Bitmap fixedOrientationBmp = ExifUtils.modifyOrientation(scaledBmp, path);
+    Bitmap fixedOrientationBmp = ExifUtils.modifyOrientation(screenOrientation, scaledBmp, path);
 
     String[] pathParts = path.split("/");
     String imageName = pathParts[pathParts.length - 1];
