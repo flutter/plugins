@@ -4,9 +4,10 @@ description: Flutter plugin for selecting images from the Android and iOS image
 authors:
   - Flutter Team <flutter-dev@googlegroups.com>
   - Rhodes Davis Jr. <rody.davis.jr@gmail.com>
+  - Júlio Cotta <juliocbcotta@gmail.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/image_picker
 
-version: 0.6.0+16
+version: 0.6.1
 
 flutter:
   plugin:
