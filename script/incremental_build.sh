@@ -3,7 +3,6 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
-pushd $REPO_DIR
 
 source "$SCRIPT_DIR/common.sh"
 
@@ -16,7 +15,7 @@ fi
 BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
 if [[ "${BRANCH_NAME}" == "master" ]]; then
   echo "Running for all packages"
-  pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING
+  (cd "$REPO_DIR"; pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
 else
   # Sets CHANGED_PACKAGES
   check_changed_packages
@@ -24,10 +23,8 @@ else
   if [[ "$CHANGED_PACKAGES" == "" ]]; then
     echo "No changes detected in packages."
   else
-    pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING
+    (cd "$REPO_DIR"; pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING)
     echo "Running version check for changed packages"
-    pub global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)"
+    (cd "$REPO_DIR"; pub global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
   fi
 fi
-
-popd
