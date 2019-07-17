@@ -2,13 +2,11 @@ package io.flutter.plugins.imagepicker.support;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-
 import android.util.Log;
 import androidx.exifinterface.media.ExifInterface;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
 
 public class ExifUtils {
 
@@ -18,26 +16,26 @@ public class ExifUtils {
       ExifInterface newExif = new ExifInterface(filePathDest);
 
       List<String> attributes =
-        Arrays.asList(
-          "FNumber",
-          "ExposureTime",
-          "ISOSpeedRatings",
-          "GPSAltitude",
-          "GPSAltitudeRef",
-          "FocalLength",
-          "GPSDateStamp",
-          "WhiteBalance",
-          "GPSProcessingMethod",
-          "GPSTimeStamp",
-          "DateTime",
-          "Flash",
-          "GPSLatitude",
-          "GPSLatitudeRef",
-          "GPSLongitude",
-          "GPSLongitudeRef",
-          "Make",
-          "Model",
-          "Orientation");
+          Arrays.asList(
+              "FNumber",
+              "ExposureTime",
+              "ISOSpeedRatings",
+              "GPSAltitude",
+              "GPSAltitudeRef",
+              "FocalLength",
+              "GPSDateStamp",
+              "WhiteBalance",
+              "GPSProcessingMethod",
+              "GPSTimeStamp",
+              "DateTime",
+              "Flash",
+              "GPSLatitude",
+              "GPSLatitudeRef",
+              "GPSLongitude",
+              "GPSLongitudeRef",
+              "Make",
+              "Model",
+              "Orientation");
       for (String attribute : attributes) {
         setIfNotNull(oldExif, newExif, attribute);
       }
@@ -58,10 +56,10 @@ public class ExifUtils {
   // from : https://github.com/google/cameraview/issues/22#issuecomment-363047917
 
   public static Bitmap modifyOrientation(Bitmap bitmap, String imageAbsolutePath)
-    throws IOException {
+      throws IOException {
     ExifInterface ei = new ExifInterface(imageAbsolutePath);
     int orientation =
-      ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
 
     Matrix matrix = new Matrix();
     switch (orientation) {
