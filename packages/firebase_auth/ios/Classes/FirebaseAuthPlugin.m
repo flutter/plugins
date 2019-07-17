@@ -228,7 +228,7 @@ int nextHandle = 0;
                           }
                         }
                         
-                        [self sendResult:result forObject:tokenResult error:error];
+                        [self sendResult:result forObject:tokenData error:error];
                       }];
   } else if ([@"reauthenticateWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
