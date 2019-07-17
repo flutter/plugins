@@ -1,3 +1,15 @@
+## 0.4.0+5
+
+* Fix the bug below properly by allowing the activity to be null (but still registering the plugin). If activity is null, we don't get a latestIntent, instead we expect the intent listener to grab it.
+
+## 0.4.0+4
+
+* Fixed bug on Android when a headless plugin tries to register this plugin causing a crash due no activity from the registrar.
+
+## 0.4.0+3
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
 ## 0.4.0+2
 
 * Add missing template type parameter to `invokeMethod` calls.
