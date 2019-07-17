@@ -48,12 +48,15 @@ class FirebaseUser extends UserInfo {
   /// integrity and validity of this token.
   ///
   /// Completes with an error if the user is signed out.
-  Future<String> getIdTokenResult({bool refresh = false}) async {
-    return await FirebaseAuth.channel
-        .invokeMethod<String>('getIdTokenResult', <String, dynamic>{
+  Future<IdTokenResult> getIdTokenResult({bool refresh = false}) async {
+    final Map<String, dynamic> data = await FirebaseAuth.channel
+        .invokeMapMethod<String, dynamic>('getIdTokenResult', <String, dynamic>{
       'refresh': refresh,
       'app': _app.name,
     });
+
+    final IdTokenResult idTokenResult = IdTokenResult._(data, _app);
+    return idTokenResult;
   }
 
   /// Associates a user account from a third-party identity provider with this

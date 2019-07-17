@@ -211,11 +211,15 @@ int nextHandle = 0;
                       completion:^(FIRAuthTokenResult * _Nullable tokenResult, NSError * _Nullable error) {
                         NSMutableDictionary *tokenData = nil;
                         if(tokenResult != nil) {
+                          long expirationTimestamp = [tokenResult.expirationDate timeIntervalSince1970];
+                          long authTimestamp = [tokenResult.authDate timeIntervalSince1970];
+                          long issuedAtTimestamp = [tokenResult.issuedAtDate timeIntervalSince1970];
+                          
                           tokenData = [[NSMutableDictionary alloc] initWithDictionary:@{
                             @"token" : tokenResult.token,
-                            @"expirationTimestamp" : [NSNumber numberWithInt:[tokenResult.expirationDate timeIntervalSince1970]],
-                            @"authTimestamp" : [NSNumber numberWithInt:[tokenResult.authDate timeIntervalSince1970]],
-                            @"issuedAtTimestamp" : [NSNumber numberWithInt:[tokenResult.issuedAtDate timeIntervalSince1970]],
+                            @"expirationTimestamp" : [NSNumber numberWithInt:expirationTimestamp],
+                            @"authTimestamp" : [NSNumber numberWithInt:authTimestamp],
+                            @"issuedAtTimestamp" : [NSNumber numberWithInt:issuedAtTimestamp],
                             @"claims" : tokenResult.claims,
                           }];
                           
