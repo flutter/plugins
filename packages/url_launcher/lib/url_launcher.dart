@@ -44,6 +44,7 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// javascript.
 /// [enableDomStorage] is an Android only setting. If true, WebView enable
 /// DOM storage.
+/// [headers] is an Android only setting that adds headers to the WebView.
 ///
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
@@ -61,6 +62,7 @@ Future<bool> launch(
   bool enableJavaScript,
   bool enableDomStorage,
   bool universalLinksOnly,
+  Map<String, String> headers,
   Brightness statusBarBrightness,
 }) async {
   assert(urlString != null);
@@ -91,6 +93,7 @@ Future<bool> launch(
       'enableJavaScript': enableJavaScript ?? false,
       'enableDomStorage': enableDomStorage ?? false,
       'universalLinksOnly': universalLinksOnly ?? false,
+      'headers': headers ?? <String, String>{},
     },
   );
   if (statusBarBrightness != null) {
