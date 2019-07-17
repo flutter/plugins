@@ -780,7 +780,6 @@ void main() {
           expect(block.confidence, 0.5);
 
           block = text.blocks[1];
-          // ignore: prefer_const_constructors
           // TODO(jackson): Use const Rect when available in minimum Flutter SDK
           // ignore: prefer_const_constructors
           expect(block.boundingBox, Rect.fromLTWH(14.0, 13.0, 16.0, 15.0));
@@ -1043,7 +1042,6 @@ void main() {
           expect(block.confidence, 0.5);
 
           block = text.blocks[1];
-          // ignore: prefer_const_constructors
           // TODO(jackson): Use const Rect when available in minimum Flutter SDK
           // ignore: prefer_const_constructors
           expect(block.boundingBox, Rect.fromLTWH(14.0, 13.0, 16.0, 15.0));
@@ -1092,6 +1090,7 @@ void main() {
           final VisionText text = await recognizer.processImage(image);
 
           TextElement element = text.blocks[0].lines[0].elements[0];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
           // ignore: prefer_const_constructors
           expect(element.boundingBox, Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
           expect(element.text, 'hello');
