@@ -3,6 +3,10 @@
 * **Breaking change**. Android: gain audio focus when playing a video. Stop mixing audio from 
   3rd party video/music players when a video is played.
 
+## 0.10.1+4
+
+* Fixed syntax error in README.md.
+
 ## 0.10.1+3
 
 * Add missing template type parameter to `invokeMethod` calls.

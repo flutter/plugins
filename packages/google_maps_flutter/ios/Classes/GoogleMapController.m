@@ -100,7 +100,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
     }
-    id polygonsToAdd = args[@"polygonToAdd"];
+    id polygonsToAdd = args[@"polygonsToAdd"];
     if ([polygonsToAdd isKindOfClass:[NSArray class]]) {
       [_polygonsController addPolygons:polygonsToAdd];
     }
@@ -208,6 +208,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isCompassEnabled"]) {
     NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
     result(isCompassEnabled);
+  } else if ([call.method isEqualToString:@"map#isMapToolbarEnabled"]) {
+    NSNumber* isMapToolbarEnabled = [NSNumber numberWithBool:NO];
+    result(isMapToolbarEnabled);
   } else if ([call.method isEqualToString:@"map#getMinMaxZoomLevels"]) {
     NSArray* zoomLevels = @[ @(_mapView.minZoom), @(_mapView.maxZoom) ];
     result(zoomLevels);
@@ -277,6 +280,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)setCompassEnabled:(BOOL)enabled {
   _mapView.settings.compassButton = enabled;
+}
+
+- (void)setIndoorEnabled:(BOOL)enabled {
+  _mapView.indoorEnabled = enabled;
 }
 
 - (void)setMapType:(GMSMapViewType)mapType {
@@ -493,7 +500,11 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   if (compassEnabled) {
     [sink setCompassEnabled:ToBool(compassEnabled)];
   }
-  NSNumber* mapType = data[@"mapType"];
+  id indoorEnabled = data[@"indoorEnabled"];
+  if (indoorEnabled) {
+    [sink setIndoorEnabled:ToBool(indoorEnabled)];
+  }
+  id mapType = data[@"mapType"];
   if (mapType) {
     [sink setMapType:ToMapViewType(mapType)];
   }

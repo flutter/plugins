@@ -1,3 +1,7 @@
+## 0.4.0+2
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
 ## 0.4.0+1
 
 * Remove reference to unused header file.
