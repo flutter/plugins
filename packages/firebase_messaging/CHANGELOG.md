@@ -1,3 +1,7 @@
+## 5.1.1
+
+* Update README with more detailed integration instructions.
+
 ## 5.1.0
 
 * Changed the return type of `subscribeToTopic` and `unsubscribeFromTopic` to

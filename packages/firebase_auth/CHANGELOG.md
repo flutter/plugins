@@ -1,3 +1,16 @@
+## 0.11.1+10
+
+* On Android, `providerData` now includes `UserInfo` for the phone authentication provider.
+
+## 0.11.1+9
+
+* Update README to clarify importance of filling out all fields for OAuth consent screen.
+
+## 0.11.1+8
+
+* Automatically register for iOS notifications, ensuring that phone authentication
+  will work even if Firebase method swizzling is disabled.
+
 ## 0.11.1+7
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.

@@ -1,3 +1,7 @@
+## 0.6.2
+
+* Add optional subject to fill email subject in case user selects email app.
+
 ## 0.6.1+2
 
 * Update Dart code to conform to current Dart formatter.

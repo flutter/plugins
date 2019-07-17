@@ -28,6 +28,8 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
   } else if ([call.method isEqualToString:@"clearShortcutItems"]) {
     [UIApplication sharedApplication].shortcutItems = @[];
     result(nil);
+  } else if ([call.method isEqualToString:@"getLaunchAction"]) {
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }

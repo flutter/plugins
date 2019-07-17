@@ -43,6 +43,7 @@ int nextHandle = 0;
   FLTFirebaseAuthPlugin *instance = [[FLTFirebaseAuthPlugin alloc] init];
   instance.channel = channel;
   instance.authStateChangeListeners = [[NSMutableDictionary alloc] init];
+  [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 
   SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
@@ -66,6 +67,25 @@ int nextHandle = 0;
 - (FIRAuth *_Nullable)getAuth:(NSDictionary *)args {
   NSString *appName = [args objectForKey:@"app"];
   return [FIRAuth authWithApp:[FIRApp appNamed:appName]];
+}
+
+- (bool)application:(UIApplication *)application
+    didReceiveRemoteNotification:(NSDictionary *)notification
+          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+  if ([[FIRAuth auth] canHandleNotification:notification]) {
+    completionHandler(UIBackgroundFetchResultNoData);
+    return YES;
+  }
+  return NO;
+}
+
+- (void)application:(UIApplication *)application
+    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [[FIRAuth auth] setAPNSToken:deviceToken type:FIRAuthAPNSTokenTypeProd];
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
+  return [[FIRAuth auth] canHandleURL:url];
 }
 
 // TODO(jackson): We should use the renamed versions of the following methods
