@@ -8,7 +8,7 @@ RUN yes | sdkmanager \
     "platforms;android-27" \
     "build-tools;27.0.3" \
     "extras;google;m2repository" \
-    "extras;android;m2repository" \
+    "extras;android;m2repository"
 
 # Add repo for gcloud sdk and install it
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | \
