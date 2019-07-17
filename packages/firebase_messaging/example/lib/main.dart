@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 
 final Map<String, Item> _items = <String, Item>{};
 Item _itemForMessage(Map<String, dynamic> message) {
-  var data = message['data'] ?? message;
+  final dynamic data = message['data'] ?? message;
   final String itemId = data['id'];
   final Item item = _items.putIfAbsent(itemId, () => Item(itemId: itemId))
     ..status = data['status'];
