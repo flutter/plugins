@@ -33,6 +33,7 @@ void main() {
               if (methodCall.arguments.containsKey('id') &&
                   (invalidAdId != null)) {
                 if (invalidAdId == methodCall.arguments['id']) {
+                  invalidAdId = null;
                   throw PlatformException(code: 'no_ad_for_id');
                 }
               }
