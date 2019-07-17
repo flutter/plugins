@@ -1,6 +1,6 @@
 ## 0.11.1+11
 
-* On iOS, `getIdToken()` now properly takes in account the refresh parameter. It was previously ignored, and always set to `true`.
+* On iOS, `getIdToken()` now uses the `refresh` parameter instead of always using `true`.
 
 ## 0.11.1+10
 
