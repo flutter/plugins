@@ -13,7 +13,7 @@ public class FirebaseInAppMessagingPlugin implements MethodCallHandler {
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_inappmessaging");
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_in_app_messaging");
     channel.setMethodCallHandler(new FirebaseInAppMessagingPlugin());
   }
 

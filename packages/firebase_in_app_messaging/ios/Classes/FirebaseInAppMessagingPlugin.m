@@ -5,7 +5,7 @@
 @implementation FirebaseInAppMessagingPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_inappmessaging"
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_in_app_messaging"
                                   binaryMessenger:[registrar messenger]];
   FirebaseInAppMessagingPlugin *instance = [[FirebaseInAppMessagingPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];

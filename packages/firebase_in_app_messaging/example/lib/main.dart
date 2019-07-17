@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 import 'package:flutter/material.dart';
 
@@ -9,8 +8,6 @@ void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   static FirebaseAnalytics analytics = FirebaseAnalytics();
-  static FirebaseAnalyticsObserver observer =
-      FirebaseAnalyticsObserver(analytics: analytics);
   static FirebaseInAppMessaging fiam = FirebaseInAppMessaging();
 
   @override
@@ -58,8 +55,8 @@ class ProgrammaticTriggersExample extends StatelessWidget {
             const Text("Manually trigger events programmatically "),
             const SizedBox(height: 8),
             RaisedButton(
-              onPressed: () async {
-                await fiam.triggerEvent('chicken_event');
+              onPressed: () {
+                fiam.triggerEvent('chicken_event');
                 Scaffold.of(context).showSnackBar(SnackBar(
                     content: const Text("Triggering event: chicken_event")));
               },

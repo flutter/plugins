@@ -1,4 +1,4 @@
-# firebase_inappmessaging plugin
+# firebase_in_app_messaging plugin
 
 A Flutter plugin to use the [Firebase In-App Messaging API](https://firebase.google.com/products/in-app-messaging).
 
@@ -8,8 +8,8 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 
 ## Usage
 
-### Import the firebase_inappmessaging plugin
-To use the firebase_inappmessaging plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/firebase_inappmessaging#pub-pkg-tab-installing).
+### Import the firebase_in_app_messaging plugin
+To use the firebase_in_app_messaging plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/firebase_in_app_messaging#pub-pkg-tab-installing).
 
 ### Android integration
 
@@ -38,7 +38,7 @@ Default FirebaseApp is not initialized in this process [package name].
 Make sure to call FirebaseApp.initializeApp(Context) first.
 ```
 
-*Note:* When you are debugging on android, use a device or AVD with Google Play services.
+*Note:* When you are debugging on Android, use a device or AVD with Google Play services.
 Otherwise you will not be able to use Firebase In-App Messaging.
 
 ### Use the plugin
@@ -48,7 +48,7 @@ are good to go. However, to modify message behavior (as documented [here](https:
 
 First off, add the following imports to your Dart code:
 ```dart
-import 'package:firebase_inappmessaging/firebase_inappmessaging.dart';
+import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 ```
 
 #### Programmatic Triggers ([docs](https://firebase.google.com/docs/in-app-messaging/modify-message-behavior?platform=android#trigger_in-app_messages_programmatically))
@@ -81,7 +81,7 @@ FirebaseInAppMessaging.setAutomaticDataCollectionEnabled(false);
 
 ## Example
 
-See the [example application](https://github.com/flutter/plugins/tree/master/packages/firebase_inappmessaging/example) source
+See the [example application](https://github.com/flutter/plugins/tree/master/packages/firebase_in_app_messaging/example) source
 for a complete sample app using the Firebase In-App Messaging.
 
 ## Issues and feedback
