@@ -4,12 +4,27 @@
 
 import 'dart:async';
 
+import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/services.dart';
-import 'package:mockito/mockito.dart';
-import 'package:test/test.dart';
 
 void main() {
+  final FirebaseAnalytics analytics = FirebaseAnalytics();
+  const MethodChannel channel =
+      MethodChannel('plugins.flutter.io/firebase_analytics');
+  MethodCall methodCall;
+
+  setUp(() async {
+    channel.setMockMethodCallHandler((MethodCall m) async {
+      methodCall = m;
+    });
+  });
+
+  tearDown(() {
+    channel.setMockMethodCallHandler(null);
+    methodCall = null;
+  });
+
   group('filterOutNulls', () {
     test('filters out null values', () {
       final Map<String, dynamic> original = <String, dynamic>{
@@ -25,52 +40,47 @@ void main() {
     });
   });
 
-  group('$FirebaseAnalytics', () {
-    FirebaseAnalytics analytics;
-
-    String invokedMethod;
-    dynamic arguments;
-
-    setUp(() {
-      final MockPlatformChannel mockChannel = MockPlatformChannel();
-
-      invokedMethod = null;
-      arguments = null;
-
-      when(mockChannel.invokeMethod<void>(any, any))
-          .thenAnswer((Invocation invocation) {
-        invokedMethod = invocation.positionalArguments[0];
-        arguments = invocation.positionalArguments[1];
-        return Future<void>.value();
-      });
-
-      analytics = FirebaseAnalytics.private(mockChannel);
-    });
-
+  group('FirebaseAnalytics', () {
     test('setUserId', () async {
       await analytics.setUserId('test-user-id');
-      expect(invokedMethod, 'setUserId');
-      expect(arguments, 'test-user-id');
+      expect(
+        methodCall,
+        isMethodCall(
+          'setUserId',
+          arguments: 'test-user-id',
+        ),
+      );
     });
 
     test('setCurrentScreen', () async {
       await analytics.setCurrentScreen(
-          screenName: 'test-screen-name',
-          screenClassOverride: 'test-class-override');
-      expect(invokedMethod, 'setCurrentScreen');
-      expect(arguments, <String, String>{
-        'screenName': 'test-screen-name',
-        'screenClassOverride': 'test-class-override',
-      });
+        screenName: 'test-screen-name',
+        screenClassOverride: 'test-class-override',
+      );
+      expect(
+        methodCall,
+        isMethodCall(
+          'setCurrentScreen',
+          arguments: <String, String>{
+            'screenName': 'test-screen-name',
+            'screenClassOverride': 'test-class-override',
+          },
+        ),
+      );
     });
 
     test('setUserProperty', () async {
       await analytics.setUserProperty(name: 'test_name', value: 'test-value');
-      expect(invokedMethod, 'setUserProperty');
-      expect(arguments, <String, String>{
-        'name': 'test_name',
-        'value': 'test-value',
-      });
+      expect(
+        methodCall,
+        isMethodCall(
+          'setUserProperty',
+          arguments: <String, String>{
+            'name': 'test_name',
+            'value': 'test-value',
+          },
+        ),
+      );
     });
 
     test('setUserProperty rejects invalid names', () async {
@@ -94,60 +104,65 @@ void main() {
 
     test('setAnalyticsCollectionEnabled', () async {
       await analytics.setAnalyticsCollectionEnabled(false);
-      expect(invokedMethod, 'setAnalyticsCollectionEnabled');
-      expect(arguments, false);
+      expect(
+        methodCall,
+        isMethodCall(
+          'setAnalyticsCollectionEnabled',
+          arguments: false,
+        ),
+      );
     });
 
     test('setMinimumSessionDuration', () async {
       await analytics.android.setMinimumSessionDuration(123);
-      expect(invokedMethod, 'setMinimumSessionDuration');
-      expect(arguments, 123);
+      expect(
+        methodCall,
+        isMethodCall(
+          'setMinimumSessionDuration',
+          arguments: 123,
+        ),
+      );
     });
 
     test('setSessionTimeoutDuration', () async {
       await analytics.android.setSessionTimeoutDuration(234);
-      expect(invokedMethod, 'setSessionTimeoutDuration');
-      expect(arguments, 234);
+      expect(
+        methodCall,
+        isMethodCall(
+          'setSessionTimeoutDuration',
+          arguments: 234,
+        ),
+      );
     });
 
     test('resetAnalyticsData', () async {
       await analytics.resetAnalyticsData();
-      expect(invokedMethod, 'resetAnalyticsData');
+      expect(
+        methodCall,
+        isMethodCall(
+          'resetAnalyticsData',
+          arguments: null,
+        ),
+      );
     });
   });
 
-  group('$FirebaseAnalytics analytics events', () {
-    FirebaseAnalytics analytics;
-
-    String name;
-    Map<String, dynamic> parameters;
-
-    setUp(() {
-      final MockPlatformChannel mockChannel = MockPlatformChannel();
-
-      name = null;
-      parameters = null;
-
-      when(mockChannel.invokeMethod<void>('logEvent', any))
-          .thenAnswer((Invocation invocation) {
-        final Map<String, dynamic> args = invocation.positionalArguments[1];
-        name = args['name'];
-        parameters = args['parameters'];
-        expect(args.keys, unorderedEquals(<String>['name', 'parameters']));
-        return Future<void>.value();
-      });
-
-      when(mockChannel.invokeMethod<void>(argThat(isNot('logEvent')), any))
-          .thenThrow(ArgumentError('Only logEvent invocations expected'));
-
-      analytics = FirebaseAnalytics.private(mockChannel);
-    });
-
+  group('FirebaseAnalytics analytics events', () {
     test('logEvent log events', () async {
       await analytics.logEvent(
-          name: 'test-event', parameters: <String, dynamic>{'a': 'b'});
-      expect(name, 'test-event');
-      expect(parameters, <String, dynamic>{'a': 'b'});
+        name: 'test-event',
+        parameters: <String, dynamic>{'a': 'b'},
+      );
+      expect(
+        methodCall,
+        isMethodCall(
+          'logEvent',
+          arguments: <String, dynamic>{
+            'name': 'test-event',
+            'parameters': <String, dynamic>{'a': 'b'},
+          },
+        ),
+      );
     });
 
     test('logEvent rejects events with reserved names', () async {
@@ -161,7 +176,7 @@ void main() {
     void smokeTest(String testFunctionName, Future<void> testFunction()) {
       test('$testFunctionName works', () async {
         await testFunction();
-        expect(name, testFunctionName);
+        expect(methodCall.arguments['name'], testFunctionName);
       });
     }
 
@@ -414,5 +429,3 @@ void main() {
     });
   });
 }
-
-class MockPlatformChannel extends Mock implements MethodChannel {}

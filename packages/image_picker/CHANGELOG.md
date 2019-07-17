@@ -2,6 +2,10 @@
 
 * Fix images orientation for Android.
 
+## 0.6.0+17
+
+* iOS: Fix a crash when user captures image from the camera with devices under iOS 11.
+
 ## 0.6.0+16
 
 * iOS Simulator: fix hang after trying to take an image from the non-existent camera.
