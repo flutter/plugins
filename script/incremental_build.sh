@@ -15,7 +15,7 @@ fi
 BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
 if [[ "${BRANCH_NAME}" == "master" ]]; then
   echo "Running for all packages"
-  (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
+  (cd "$REPO_DIR"; pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
 else
   # Sets CHANGED_PACKAGES
   check_changed_packages
@@ -23,8 +23,8 @@ else
   if [[ "$CHANGED_PACKAGES" == "" ]]; then
     echo "No changes detected in packages."
   else
-    (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING)
+    (cd "$REPO_DIR"; pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING)
     echo "Running version check for changed packages"
-    (cd "$REPO_DIR" && pub global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
+    (cd "$REPO_DIR"; pub global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
   fi
 fi
