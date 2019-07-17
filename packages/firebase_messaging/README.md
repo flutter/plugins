@@ -93,6 +93,21 @@ Messages are sent to your Flutter app via the `onMessage`, `onLaunch`, and `onRe
 
 Additional reading: Firebase's [About FCM Messages](https://firebase.google.com/docs/cloud-messaging/concept-options).
 
+## Notification messages with additional data
+It is possible to include additional data in notification messages by adding them to the `"data"`-field of the message.
+
+On Android, the message contains an additional field `data` containing the data. On iOS, the data is directly appended to the message and the additional `data`-field is omitted.
+
+To receive the data on both platforms:
+
+````dart
+Future<void> _handleNotification (Map<dynamic, dynamic> message, bool dialog) async {
+    var data = message['data'] ?? message;
+    String expectedAttribute = data['expectedAttribute'];
+    /// [...]
+}
+````
+
 ## Sending Messages
 Refer to the [Firebase documentation](https://firebase.google.com/docs/cloud-messaging/) about FCM for all the details about sending messages to your app. When sending a notification message to an Android device, you need to make sure to set the `click_action` property of the message to `FLUTTER_NOTIFICATION_CLICK`. Otherwise the plugin will be unable to deliver the notification to your app when the users clicks on it in the system tray.
 
