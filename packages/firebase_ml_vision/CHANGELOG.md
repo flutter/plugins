@@ -1,4 +1,4 @@
-## 0.9.0+4
+## 0.9.1.0
 
 * Add support for cloud text recognizer.
 
