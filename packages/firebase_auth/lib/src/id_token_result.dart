@@ -41,7 +41,7 @@ class IdTokenResult {
 
   /// The entire payload claims of the ID token including the standard reserved
   /// claims as well as the custom claims.
-  Map<String, dynamic> get claims => Map<String, dynamic>.from(_data['claims']);
+  Map<dynamic, dynamic> get claims => _data['claims'];
 
   @override
   String toString() {
