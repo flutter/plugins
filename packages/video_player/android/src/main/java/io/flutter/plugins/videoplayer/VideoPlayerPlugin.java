@@ -9,7 +9,6 @@ import static com.google.android.exoplayer2.Player.REPEAT_MODE_OFF;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.util.LongSparseArray;
 import android.view.Surface;
 import com.google.android.exoplayer2.C;
@@ -21,8 +20,8 @@ import com.google.android.exoplayer2.Player.EventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
@@ -40,9 +39,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.flutter.view.FlutterNativeView;
 import io.flutter.view.TextureRegistry;
 import java.util.Arrays;
 import java.util.Collections;
@@ -124,8 +121,8 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         case C.TYPE_HLS:
           return new HlsMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
         case C.TYPE_OTHER:
-          return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
-              .setExtractorsFactory(new DefaultExtractorsFactory())
+          return new ProgressiveMediaSource.Factory(
+                  mediaDataSourceFactory, new DefaultExtractorsFactory())
               .createMediaSource(uri);
         default:
           {
@@ -197,14 +194,9 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       eventSink.success(event);
     }
 
-    @SuppressWarnings("deprecation")
     private static void setAudioAttributes(SimpleExoPlayer exoPlayer) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        exoPlayer.setAudioAttributes(
-            new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build());
-      } else {
-        exoPlayer.setAudioStreamType(C.STREAM_TYPE_MUSIC);
-      }
+      exoPlayer.setAudioAttributes(
+          new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build());
     }
 
     void play() {
@@ -277,12 +269,9 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         new MethodChannel(registrar.messenger(), "flutter.io/videoPlayer");
     channel.setMethodCallHandler(plugin);
     registrar.addViewDestroyListener(
-        new PluginRegistry.ViewDestroyListener() {
-          @Override
-          public boolean onViewDestroy(FlutterNativeView view) {
-            plugin.onDestroy();
-            return false; // We are not interested in assuming ownership of the NativeView.
-          }
+        view -> {
+          plugin.onDestroy();
+          return false; // We are not interested in assuming ownership of the NativeView.
         });
   }
 

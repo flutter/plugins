@@ -1,3 +1,7 @@
+## 0.10.1+5
+
+* Updated ExoPlayer to version 2.10.3
+
 ## 0.10.1+4
 
 * Fixed syntax error in README.md.
