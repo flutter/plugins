@@ -7,6 +7,7 @@ package io.flutter.plugins.imagepicker;
 import static io.flutter.plugins.imagepicker.ImagePickerCache.*;
 
 import android.Manifest;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -476,10 +477,8 @@ public class ImagePickerDelegate implements PickerDelegate {
     final Map<String, Double> dimens = cache.getMaxDimensions();
     final double maxWidth = dimens.get(MAP_KEY_MAX_WIDTH);
     final double maxHeight = dimens.get(MAP_KEY_MAX_HEIGHT);
-    final int scrrenOrientation = activity.getResources().getConfiguration().orientation;
 
-    String finalImagePath =
-        imageProcessor.processImage(scrrenOrientation, path, maxWidth, maxHeight);
+    String finalImagePath = imageProcessor.processImage(path, maxWidth, maxHeight);
 
     finishWithSuccess(finalImagePath);
 
