@@ -125,9 +125,10 @@ class ExplicitIntentsWidget extends StatelessWidget {
     intent.launch();
   }
 
-  void _openLocationSettingsConfiguration(){
+  void _openLocationSettingsConfiguration() {
     final AndroidIntent intent = const AndroidIntent(
-      action: 'action_location_source_settings',);
+      action: 'action_location_source_settings',
+    );
     intent.launch();
   }
 
@@ -168,7 +169,8 @@ class ExplicitIntentsWidget extends StatelessWidget {
               ),
               RaisedButton(
                 child: const Text(
-                  'Tap here to open Location Settings Configuration',),
+                  'Tap here to open Location Settings Configuration',
+                ),
                 onPressed: _openLocationSettingsConfiguration,
               )
             ],
