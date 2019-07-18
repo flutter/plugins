@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FirebaseMessagingPlugin.h"
+#import "UserAgent.h"
 
 #import "Firebase/Firebase.h"
 
@@ -10,6 +11,13 @@
 @interface FLTFirebaseMessagingPlugin () <FIRMessagingDelegate>
 @end
 #endif
+
+static FlutterError *getFlutterError(NSError *error) {
+  if (error == nil) return nil;
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
+}
 
 @implementation FLTFirebaseMessagingPlugin {
   FlutterMethodChannel *_channel;
@@ -25,6 +33,11 @@
       [[FLTFirebaseMessagingPlugin alloc] initWithChannel:channel];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
@@ -71,12 +84,16 @@
     result(nil);
   } else if ([@"subscribeToTopic" isEqualToString:method]) {
     NSString *topic = call.arguments;
-    [[FIRMessaging messaging] subscribeToTopic:topic];
-    result(nil);
+    [[FIRMessaging messaging] subscribeToTopic:topic
+                                    completion:^(NSError *error) {
+                                      result(getFlutterError(error));
+                                    }];
   } else if ([@"unsubscribeFromTopic" isEqualToString:method]) {
     NSString *topic = call.arguments;
-    [[FIRMessaging messaging] unsubscribeFromTopic:topic];
-    result(nil);
+    [[FIRMessaging messaging] unsubscribeFromTopic:topic
+                                        completion:^(NSError *error) {
+                                          result(getFlutterError(error));
+                                        }];
   } else if ([@"getToken" isEqualToString:method]) {
     [[FIRInstanceID instanceID]
         instanceIDWithHandler:^(FIRInstanceIDResult *_Nullable instanceIDResult,

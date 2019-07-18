@@ -71,7 +71,8 @@ class SharedPreferences {
       list = list.cast<String>().toList();
       _preferenceCache[key] = list;
     }
-    return list;
+    // Make a copy of the list so that later mutations won't propagate
+    return list?.toList();
   }
 
   /// Saves a boolean [value] to persistent storage in the background.
@@ -117,7 +118,12 @@ class SharedPreferences {
           .invokeMethod<bool>('remove', params)
           .then<bool>((dynamic result) => result);
     } else {
-      _preferenceCache[key] = value;
+      if (value is List<String>) {
+        // Make a copy of the list so that later mutations won't propagate
+        _preferenceCache[key] = value.toList();
+      } else {
+        _preferenceCache[key] = value;
+      }
       params['value'] = value;
       return _kChannel
           .invokeMethod<bool>('set$valueType', params)
@@ -161,6 +167,8 @@ class SharedPreferences {
   }
 
   /// Initializes the shared preferences with mock values for testing.
+  ///
+  /// If the singleton instance has been initialized already, it is automatically reloaded.
   @visibleForTesting
   static void setMockInitialValues(Map<String, dynamic> values) {
     _kChannel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -169,5 +177,6 @@ class SharedPreferences {
       }
       return null;
     });
+    _instance?.reload();
   }
 }

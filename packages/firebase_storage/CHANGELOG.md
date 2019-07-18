@@ -1,3 +1,12 @@
+## 3.0.3
+
+* Fix inconsistency of `getPath`, on Android the path returned started with a `/` but on iOS it did not
+* Fix content-type auto-detection on Android
+
+## 3.0.2
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
 ## 3.0.1
 
 * Add missing template type parameter to `invokeMethod` calls.
