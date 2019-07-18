@@ -1,3 +1,7 @@
+## 0.11.1+11
+
+* On iOS, `getIdToken()` now uses the `refresh` parameter instead of always using `true`.
+
 ## 0.11.1+10
 
 * On Android, `providerData` now includes `UserInfo` for the phone authentication provider.
