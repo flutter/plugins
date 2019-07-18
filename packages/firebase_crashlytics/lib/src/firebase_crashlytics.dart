@@ -40,8 +40,8 @@ class Crashlytics {
       final List<String> stackTraceLines =
           Trace.format(details.stack).trimRight().split('\n');
       final List<Map<String, String>> stackTraceElements =
-          _getStackTraceElements(stackTraceLines);
-      final dynamic result = await channel
+          getStackTraceElements(stackTraceLines);
+      await channel
           .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
         'exception': details.exceptionAsString(),
         // FlutterErrorDetails.context has been migrated from a String to a
@@ -52,7 +52,6 @@ class Crashlytics {
         'logs': _logs.toList(),
         'keys': _prepareKeys(),
       });
-      print(result);
     }
   }
 
@@ -156,30 +155,41 @@ class Crashlytics {
       } else if (value is bool) {
         crashlyticsKey['type'] = 'boolean';
       }
+      crashlyticsKeys.add(crashlyticsKey);
     }
 
     return crashlyticsKeys;
   }
 
-  List<Map<String, String>> _getStackTraceElements(List<String> lines) {
+  @visibleForTesting
+  List<Map<String, String>> getStackTraceElements(List<String> lines) {
     final List<Map<String, String>> elements = <Map<String, String>>[];
     for (String line in lines) {
       final List<String> lineParts = line.split(RegExp('\\s+'));
       try {
         final String fileName = lineParts[0];
-        final String lineNumber =
-            lineParts[1].substring(0, lineParts[1].indexOf(":")).trim();
-        final String className =
-            lineParts[2].substring(0, lineParts[2].indexOf(".")).trim();
-        final String methodName =
-            lineParts[2].substring(lineParts[2].indexOf(".") + 1).trim();
+        final String lineNumber = lineParts[1].contains(":")
+            ? lineParts[1].substring(0, lineParts[1].indexOf(":")).trim()
+            : lineParts[1];
 
-        elements.add(<String, String>{
-          'class': className,
-          'method': methodName,
+        final Map<String, String> element = <String, String>{
           'file': fileName,
           'line': lineNumber,
-        });
+        };
+
+        if (lineParts[2].contains(".")) {
+          final String className =
+              lineParts[2].substring(0, lineParts[2].indexOf(".")).trim();
+          final String methodName =
+              lineParts[2].substring(lineParts[2].indexOf(".") + 1).trim();
+
+          element['class'] = className;
+          element['method'] = methodName;
+        } else {
+          element['method'] = lineParts[2];
+        }
+
+        elements.add(element);
       } catch (e) {
         print(e.toString());
       }
