@@ -1,6 +1,6 @@
 ## 0.3.0+3
 
-* Fix bug that caused invokeMethod to fail with Dart code obfuscation
+* Fix bug that caused `invokeMethod` to fail with Dart code obfuscation
 
 ## 0.3.0+2
 
