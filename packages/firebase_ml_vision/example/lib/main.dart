@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:camera/camera.dart';
-import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-
-import 'detector_painters.dart';
-import 'utils.dart';
 import 'package:flutter/material.dart';
 
 import 'camera_preview_scanner.dart';
@@ -41,23 +34,6 @@ class _ExampleListState extends State<_ExampleList> {
     '$CameraPreviewScanner',
     '$MaterialBarcodeScanner',
   ];
-
-  void _toggleCameraDirection() async {
-    if (_direction == CameraLensDirection.back) {
-      _direction = CameraLensDirection.front;
-    } else {
-      _direction = CameraLensDirection.back;
-    }
-
-    await _camera.stopImageStream();
-    await _camera.dispose();
-
-    setState(() {
-      _camera = null;
-    });
-
-    _initializeCamera();
-  }
 
   @override
   Widget build(BuildContext context) {
