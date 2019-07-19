@@ -1,3 +1,7 @@
+## 0.6.2+1
+
+* Specify explicit type for `invokeMethod`.
+
 ## 0.6.2
 
 * Add optional subject to fill email subject in case user selects email app.
