@@ -33,7 +33,7 @@ Create a `assets` folder and place the previous folder within it. In `pubspec.ya
 ### Android
 If you're using the on-device `ImageLabeler`, include the latest matching [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android) dependency in your app-level build.gradle file.
 
-```
+```xml
 android {
     dependencies {
         // ...
@@ -111,7 +111,7 @@ final ImageLabeler labeler = FirebaseVision.instance.imageLabler(
 );
 ```
 
-### 3. Call `detectInImage()` with `visionImage`.
+### 3. Call `detectInImage()` or `processImage()` with `visionImage`.
 
 ```dart
 final List<Barcode> barcodes = await barcodeDetector.detectInImage(visionImage);
@@ -214,6 +214,16 @@ for (TextBlock block in visionText.blocks) {
     }
   }
 }
+```
+
+### 5. Release resources with `close()`.
+
+```dart
+barcodeDetector.close();
+cloudLabeler.close();
+faceDetector.close();
+labeler.close();
+textRecognizer.close();
 ```
 
 ## Getting Started

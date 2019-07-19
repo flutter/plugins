@@ -4,7 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
+import android.util.SparseArray;
 import androidx.exifinterface.media.ExifInterface;
+import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
 import io.flutter.plugin.common.MethodCall;
@@ -18,6 +20,8 @@ import java.util.Map;
 
 /** FirebaseMlVisionPlugin */
 public class FirebaseMlVisionPlugin implements MethodCallHandler {
+  private final SparseArray<Detector> detectors = new SparseArray<>();
+
   private Registrar registrar;
 
   private FirebaseMlVisionPlugin(Registrar registrar) {
@@ -33,6 +37,25 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
+    switch (call.method) {
+      case "BarcodeDetector#detectInImage":
+      case "FaceDetector#processImage":
+      case "ImageLabeler#processImage":
+      case "TextRecognizer#processImage":
+        handleDetection(call, result);
+        break;
+      case "BarcodeDetector#close":
+      case "FaceDetector#close":
+      case "ImageLabeler#close":
+      case "TextRecognizer#close":
+        closeDetector(call, result);
+        break;
+      default:
+        result.notImplemented();
+    }
+  }
+
+  private void handleDetection(MethodCall call, Result result) {
     Map<String, Object> options = call.argument("options");
     String modelName = call.argument("model");
     FirebaseVisionImage image;
@@ -147,5 +170,19 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       default:
         throw new IllegalArgumentException(String.format("No rotation for: %d", rotation));
     }
+  }
+
+  private void addDetector(final int handle, final Detector detector) {
+    if (detectors.get(handle) != null) {
+      final String message = String.format("Object for handle already exists: %s", handle);
+      throw new IllegalArgumentException(message);
+    }
+
+    detectors.put(handle, detector);
+  }
+
+  private Detector getDetector(final MethodCall call) {
+    final Integer handle = call.argument("handle");
+    return detectors.get(handle);
   }
 }

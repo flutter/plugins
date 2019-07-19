@@ -11,7 +11,7 @@ dependencies:
   firebase_ml_vision:
     path: ../
   firebase_core: ^0.4.0
-  camera: ^0.4.2
+  camera: ^0.5.2+1
 
 dev_dependencies:
   flutter_test:
@@ -32,3 +32,4 @@ flutter:
     - assets/potholes/dict.txt
     - assets/potholes/manifest.json
     - assets/potholes/model.tflite
+    - assets/span_book.jpg

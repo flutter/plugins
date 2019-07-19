@@ -155,16 +155,38 @@ void main() {
       expect(preferences.getString('String'), kTestValues2['flutter.String']);
     });
 
-    test('mocking', () async {
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      expect(await channel.invokeMethod('getAll'), kTestValues);
-      SharedPreferences.setMockInitialValues(kTestValues2);
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      expect(await channel.invokeMethod('getAll'), kTestValues2);
+    group('mocking', () {
+      const String _key = 'dummy';
+      const String _prefixedKey = 'flutter.' + _key;
+
+      test('test 1', () async {
+        SharedPreferences.setMockInitialValues(
+            <String, dynamic>{_prefixedKey: 'my string'});
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final String value = prefs.getString(_key);
+        expect(value, 'my string');
+      });
+
+      test('test 2', () async {
+        SharedPreferences.setMockInitialValues(
+            <String, dynamic>{_prefixedKey: 'my other string'});
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final String value = prefs.getString(_key);
+        expect(value, 'my other string');
+      });
+    });
+
+    test('writing copy of strings list', () async {
+      final List<String> myList = <String>[];
+      await preferences.setStringList("myList", myList);
+      myList.add("foobar");
+
+      final List<String> cachedList = preferences.getStringList('myList');
+      expect(cachedList, <String>[]);
+
+      cachedList.add("foobar2");
+
+      expect(preferences.getStringList('myList'), <String>[]);
     });
   });
 }

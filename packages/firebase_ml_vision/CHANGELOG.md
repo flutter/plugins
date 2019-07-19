@@ -1,6 +1,27 @@
+## 1.0.0
+
+* Added AutoML Vision Edge Support
+
+## 0.9.1
+
+* Add support for cloud text recognizer.
+
+## 0.9.0+3
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.9.0+2
+
+* Fix bug causing memory leak with iOS images.
+
+## 0.9.0+1
+
+* Update example app Podfile to match latest Flutter template and support new Xcode build system.
+
 ## 0.9.0
 
-* Added AutoML Vision Edge Support for iOS
+* **Breaking Change** Add capability to release resources held by detectors with `close()` method.
+You should now call `detector.close()` when a detector will no longer be used.
 
 ## 0.8.0+3
 

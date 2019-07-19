@@ -4,6 +4,8 @@
 
 A Flutter plugin for iOS and Android allowing access to the device cameras.
 
+*Note*: This plugin is still under development, and some APIs might not be available yet. We are working on a refactor which can be followed here: [issue](https://github.com/flutter/flutter/issues/31225)
+
 ## Features:
 
 * Display live camera preview in a widget.
