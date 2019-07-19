@@ -39,24 +39,26 @@ class _MyHomePageState extends State<MyHomePage> {
   VideoPlayerController _controller;
   String _retrieveDataError;
 
+  Future<void> _playVideo(File file) async {
+    if (file != null && mounted) {
+      _controller = VideoPlayerController.file(file);
+      _controller.addListener(_onVideoControllerUpdate);
+      await _controller.setVolume(1.0);
+      await _controller.initialize();
+      await _controller.setLooping(true);
+      await _controller.play();
+      setState(() {});
+    }
+  }
+
   void _onImageButtonPressed(ImageSource source) async {
     if (_controller != null) {
-      _controller.setVolume(0.0);
+      await _controller.setVolume(0.0);
       _controller.removeListener(_onVideoControllerUpdate);
     }
     if (isVideo) {
-      ImagePicker.pickVideo(source: source).then((File file) {
-        if (file != null && mounted) {
-          setState(() {
-            _controller = VideoPlayerController.file(file)
-              ..addListener(_onVideoControllerUpdate)
-              ..setVolume(1.0)
-              ..initialize()
-              ..setLooping(true)
-              ..play();
-          });
-        }
-      });
+      final File file = await ImagePicker.pickVideo(source: source);
+      await _playVideo(file);
     } else {
       try {
         _imageFile = await ImagePicker.pickImage(source: source);
@@ -68,13 +70,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onVideoControllerUpdate() {
-    setState(() {});
+    // setState(() {});
   }
 
   @override
   void deactivate() {
     if (_controller != null) {
       _controller.setVolume(0.0);
+      _controller.pause();
       _controller.removeListener(_onVideoControllerUpdate);
     }
     super.deactivate();
@@ -137,20 +140,15 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
     if (response.file != null) {
-      setState(() {
-        if (response.type == RetrieveType.video) {
-          isVideo = true;
-          _controller = VideoPlayerController.file(response.file)
-            ..addListener(_onVideoControllerUpdate)
-            ..setVolume(1.0)
-            ..initialize()
-            ..setLooping(true)
-            ..play();
-        } else {
-          isVideo = false;
+      if (response.type == RetrieveType.video) {
+        isVideo = true;
+        await _playVideo(response.file);
+      } else {
+        isVideo = false;
+        setState(() {
           _imageFile = response.file;
-        }
-      });
+        });
+      }
     } else {
       _retrieveDataError = response.exception.code;
     }
