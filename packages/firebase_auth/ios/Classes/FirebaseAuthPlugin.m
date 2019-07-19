@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FirebaseAuthPlugin.h"
+#import "UserAgent.h"
 
 #import "Firebase/Firebase.h"
 
@@ -42,7 +43,13 @@ int nextHandle = 0;
   FLTFirebaseAuthPlugin *instance = [[FLTFirebaseAuthPlugin alloc] init];
   instance.channel = channel;
   instance.authStateChangeListeners = [[NSMutableDictionary alloc] init];
+  [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)init {
@@ -60,6 +67,25 @@ int nextHandle = 0;
 - (FIRAuth *_Nullable)getAuth:(NSDictionary *)args {
   NSString *appName = [args objectForKey:@"app"];
   return [FIRAuth authWithApp:[FIRApp appNamed:appName]];
+}
+
+- (bool)application:(UIApplication *)application
+    didReceiveRemoteNotification:(NSDictionary *)notification
+          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+  if ([[FIRAuth auth] canHandleNotification:notification]) {
+    completionHandler(UIBackgroundFetchResultNoData);
+    return YES;
+  }
+  return NO;
+}
+
+- (void)application:(UIApplication *)application
+    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [[FIRAuth auth] setAPNSToken:deviceToken type:FIRAuthAPNSTokenTypeProd];
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
+  return [[FIRAuth auth] canHandleURL:url];
 }
 
 // TODO(jackson): We should use the renamed versions of the following methods
@@ -172,8 +198,10 @@ int nextHandle = 0;
       [self sendResult:result forObject:nil error:nil];
     }
   } else if ([@"getIdToken" isEqualToString:call.method]) {
+    NSDictionary *args = call.arguments;
+    BOOL refresh = [args objectForKey:@"refresh"];
     [[self getAuth:call.arguments].currentUser
-        getIDTokenForcingRefresh:YES
+        getIDTokenForcingRefresh:refresh
                       completion:^(NSString *_Nullable token, NSError *_Nullable error) {
                         [self sendResult:result forObject:token error:error];
                       }];
@@ -205,6 +233,14 @@ int nextHandle = 0;
                                                          forObject:nil
                                                              error:error];
                                                 }];
+  } else if ([@"updatePhoneNumberCredential" isEqualToString:call.method]) {
+    FIRPhoneAuthCredential *credential =
+        (FIRPhoneAuthCredential *)[self getCredential:call.arguments];
+    [[self getAuth:call.arguments].currentUser
+        updatePhoneNumberCredential:credential
+                         completion:^(NSError *_Nullable error) {
+                           [self sendResult:result forObject:nil error:error];
+                         }];
   } else if ([@"updatePassword" isEqualToString:call.method]) {
     NSString *password = call.arguments[@"password"];
     [[self getAuth:call.arguments].currentUser updatePassword:password

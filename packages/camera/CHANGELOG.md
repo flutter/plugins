@@ -1,3 +1,19 @@
+## 0.5.2+1
+
+* Fix bug that prevented video recording with audio.
+
+## 0.5.2
+
+* Added capability to disable audio for the `CameraController`. (e.g. `CameraController(_, _,
+ enableAudio: false);`)
+
+## 0.5.1
+
+* Can now be compiled with earlier Android sdks below 21 when
+`<uses-sdk tools:overrideLibrary="io.flutter.plugins.camera"/>` has been added to the project
+`AndroidManifest.xml`. For sdks below 21, the plugin won't be registered and calls to it will throw
+a `MissingPluginException.`
+
 ## 0.5.0
 
 * **Breaking Change** This plugin no longer handles closing and opening the camera on Android

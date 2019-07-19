@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FirebaseStoragePlugin.h"
+#import "UserAgent.h"
 
 #import <Firebase/Firebase.h>
 
@@ -31,6 +32,11 @@ static FlutterError *getFlutterError(NSError *error) {
   FLTFirebaseStoragePlugin *instance = [[FLTFirebaseStoragePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)init {

@@ -24,10 +24,8 @@ class FirebaseApp {
   /// This getter is asynchronous because apps can also be configured by native
   /// code.
   Future<FirebaseOptions> get options async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final Map<dynamic, dynamic> app = await channel.invokeMethod(
+    final Map<String, dynamic> app =
+        await channel.invokeMapMethod<String, dynamic>(
       'FirebaseApp#appNamed',
       name,
     );
@@ -41,7 +39,8 @@ class FirebaseApp {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    final Map<dynamic, dynamic> app = await channel.invokeMethod(
+    final Map<String, dynamic> app =
+        await channel.invokeMapMethod<String, dynamic>(
       'FirebaseApp#appNamed',
       name,
     );
@@ -70,10 +69,7 @@ class FirebaseApp {
     if (existingApp != null) {
       return existingApp;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
       'FirebaseApp#configure',
       <String, dynamic>{'name': name, 'options': options.asMap},
     );
@@ -83,10 +79,7 @@ class FirebaseApp {
   /// Returns a list of all extant FirebaseApp instances, or null if there are
   /// no FirebaseApp instances.
   static Future<List<FirebaseApp>> allApps() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final List<dynamic> result = await channel.invokeMethod(
+    final List<dynamic> result = await channel.invokeListMethod<dynamic>(
       'FirebaseApp#allApps',
     );
     return result

@@ -1,3 +1,55 @@
+## 0.11.1+11
+
+* On iOS, `getIdToken()` now uses the `refresh` parameter instead of always using `true`.
+
+## 0.11.1+10
+
+* On Android, `providerData` now includes `UserInfo` for the phone authentication provider.
+
+## 0.11.1+9
+
+* Update README to clarify importance of filling out all fields for OAuth consent screen.
+
+## 0.11.1+8
+
+* Automatically register for iOS notifications, ensuring that phone authentication
+  will work even if Firebase method swizzling is disabled.
+
+## 0.11.1+7
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.11.1+6
+
+* Add documentation of support email requirement to README.
+
+## 0.11.1+5
+
+* Fix `updatePhoneNumberCredential` on Android.
+
+## 0.11.1+4
+
+* Fix `updatePhoneNumberCredential` on iOS.
+
+## 0.11.1+3
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+* FirebaseUser private constructor takes `Map<String, dynamic>` instead of `Map<dynamic, dynamic>`.
+
+## 0.11.1+2
+
+* Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
+
+## 0.11.1+1
+
+* Updated the error code documentation for `linkWithCredential`.
+
+## 0.11.1
+
+* Support for `updatePhoneNumberCredential`.
+
 ## 0.11.0
 
 * **Breaking change**: `linkWithCredential` is now a function of `FirebaseUser`instead of

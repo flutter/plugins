@@ -139,6 +139,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "updateEmail":
         handleUpdateEmail(call, result, getAuth(call));
         break;
+      case "updatePhoneNumberCredential":
+        handleUpdatePhoneNumber(call, result, getAuth(call));
+        break;
       case "updatePassword":
         handleUpdatePassword(call, result, getAuth(call));
         break;
@@ -558,6 +561,16 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     currentUser.updateEmail(email).addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
+  private void handleUpdatePhoneNumber(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    @SuppressWarnings("unchecked")
+    AuthCredential credential = getCredential((Map<String, Object>) call.arguments);
+
+    firebaseAuth
+        .getCurrentUser()
+        .updatePhoneNumber((PhoneAuthCredential) credential)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
   private void handleUpdatePassword(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
     final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
     if (currentUser == null) {
@@ -722,11 +735,6 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     if (user != null) {
       List<Map<String, Object>> providerData = new ArrayList<>();
       for (UserInfo userInfo : user.getProviderData()) {
-        // Ignore phone provider since firebase provider is a super set of the phone
-        // provider.
-        if (userInfo.getProviderId().equals("phone")) {
-          continue;
-        }
         providerData.add(Collections.unmodifiableMap(userInfoToMap(userInfo)));
       }
       Map<String, Object> userMap = userInfoToMap(user);
