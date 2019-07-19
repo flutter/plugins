@@ -1,3 +1,7 @@
+## 0.9.2
+
+* Add detection of `FaceContour`s when using the `FaceDetector`. See `README.md` for more information.
+
 ## 0.9.1
 
 * Add support for cloud text recognizer.
