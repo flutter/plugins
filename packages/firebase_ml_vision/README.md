@@ -1,4 +1,4 @@
-# ML Kit Vision for Firebase with AutoML Vision Edge Support
+# ML Kit Vision and AutoML Vision Edge for Firebase
 
 [![pub package](https://img.shields.io/pub/v/firebase_ml_vision.svg)](https://pub.dartlang.org/packages/firebase_ml_vision)
 
