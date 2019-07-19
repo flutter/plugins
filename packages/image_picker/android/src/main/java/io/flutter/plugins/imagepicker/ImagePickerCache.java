@@ -22,15 +22,15 @@ class ImagePickerCache {
   private static final String MAP_KEY_ERROR_MESSAGE = "errorMessage";
 
   private static final String FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY =
-    "flutter_image_picker_image_path";
+      "flutter_image_picker_image_path";
   private static final String SHARED_PREFERENCE_ERROR_CODE_KEY = "flutter_image_picker_error_code";
   private static final String SHARED_PREFERENCE_ERROR_MESSAGE_KEY =
-    "flutter_image_picker_error_message";
+      "flutter_image_picker_error_message";
   private static final String SHARED_PREFERENCE_MAX_WIDTH_KEY = "flutter_image_picker_max_width";
   private static final String SHARED_PREFERENCE_MAX_HEIGHT_KEY = "flutter_image_picker_max_height";
   private static final String SHARED_PREFERENCE_TYPE_KEY = "flutter_image_picker_type";
   private static final String SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY =
-    "flutter_image_picker_pending_image_uri";
+      "flutter_image_picker_pending_image_uri";
   private static final String SHARED_PREFERENCES_NAME = "flutter_image_picker_shared_preference";
 
   private SharedPreferences prefs;
@@ -94,7 +94,7 @@ class ImagePickerCache {
   }
 
   void saveResult(
-    @Nullable String path, @Nullable String errorCode, @Nullable String errorMessage) {
+      @Nullable String path, @Nullable String errorCode, @Nullable String errorMessage) {
 
     SharedPreferences.Editor editor = prefs.edit();
     if (path != null) {

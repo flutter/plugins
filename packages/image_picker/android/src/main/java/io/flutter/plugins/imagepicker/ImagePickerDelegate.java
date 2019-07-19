@@ -114,9 +114,9 @@ public class ImagePickerDelegate
 
   public ImagePickerDelegate(
       final Activity activity,
-    final File externalFilesDirectory,
-    final ImageResizer imageResizer,
-    final ImagePickerCache cache) {
+      final File externalFilesDirectory,
+      final ImageResizer imageResizer,
+      final ImagePickerCache cache) {
     this(
         activity,
         externalFilesDirectory,
