@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -200,8 +201,7 @@ class SampleMenu extends StatelessWidget {
 
   void _onListCookies(
       WebViewController controller, BuildContext context) async {
-    final String cookies =
-        await controller.evaluateJavascript('document.cookie');
+    final List<Cookie> cookies = await cookieManager.getCookies();
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -253,13 +253,27 @@ class SampleMenu extends StatelessWidget {
     controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
-  Widget _getCookieList(String cookies) {
-    if (cookies == null || cookies == '""') {
+  Widget _getCookieList(List<Cookie> cookies) {
+    if (cookies == null || cookies.isEmpty) {
       return Container();
     }
-    final List<String> cookieList = cookies.split(';');
-    final Iterable<Text> cookieWidgets =
-        cookieList.map((String cookie) => Text(cookie));
+    final Iterable<RichText> cookieWidgets = cookies.map(
+      (Cookie cookie) => RichText(
+        text: TextSpan(
+          children: <InlineSpan>[
+            TextSpan(
+              text: '${cookie.name}',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const TextSpan(text: ' = '),
+            TextSpan(
+              text: '${cookie.value}',
+              style: TextStyle(color: Colors.grey.shade400),
+            ),
+          ],
+        ),
+      ),
+    );
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,

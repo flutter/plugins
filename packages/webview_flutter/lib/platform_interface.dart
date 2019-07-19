@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -47,7 +48,7 @@ abstract class WebViewPlatformController {
 
   /// Loads the specified URL.
   ///
-  /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
+  /// If `headers` is not null and the URL is an HTTP URL, the key value pairs in `headers` will
   /// be added as key value pairs of HTTP headers for the request.
   ///
   /// `url` must not be null.
@@ -164,6 +165,12 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView getTitle is not implemented on the current platform");
   }
+
+  Future<List<Cookie>> getCookies();
+
+  Future<void> setCookies(List<Cookie> cookies);
+
+  Future<bool> clearCookies();
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.
@@ -313,6 +320,11 @@ typedef WebViewPlatformCreatedCallback = void Function(
 /// [AndroidWebViewPlatform] and [CupertinoWebViewPlatform] are the default implementations
 /// for Android and iOS respectively.
 abstract class WebViewPlatform {
+  /// The current [WebViewPlatformController] instance.
+  ///
+  /// This is set in the [build] method before the `WebViewPlatformCreatedCallback` is called.
+  WebViewPlatformController platformController;
+
   /// Builds a new WebView.
   ///
   /// Returns a Widget tree that embeds the created webview.
@@ -344,6 +356,25 @@ abstract class WebViewPlatform {
     WebViewPlatformCreatedCallback onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   });
+
+  /// Gets the current cookies.
+  ///
+  /// On iOS, returns all cookies from the [WebView] instance.
+  /// On Android, only returns the cookies for the current URL from the [WebView] instance.
+  Future<List<Cookie>> getCookies() {
+    throw UnimplementedError(
+        "WebView getCookies is not implemented on the current platform");
+  }
+
+  /// Sets the specified cookies.
+  ///
+  /// `cookies` must not be null.
+  Future<void> setCookies(
+    List<Cookie> cookies,
+  ) {
+    throw UnimplementedError(
+        "WebView setCookies is not implemented on the current platform");
+  }
 
   /// Clears all cookies for all [WebView] instances.
   ///

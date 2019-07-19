@@ -24,26 +24,30 @@
   }
 }
 
-- (void)clearCookies:(FlutterResult)result {
-  if (@available(iOS 9.0, *)) {
-    NSSet<NSString *> *websiteDataTypes = [NSSet setWithObject:WKWebsiteDataTypeCookies];
-    WKWebsiteDataStore *dataStore = [WKWebsiteDataStore defaultDataStore];
+- (void)getCookies:(FlutterResult)result API_AVAILABLE(ios(11.0)) {
+  [cookieStore getAllCookies:^(NSArray<NSHTTPCookie *> *cookies) {
+    NSArray *serialized = [CookieDto manyToDictionary:[CookieDto manyFromNSHTTPCookies:cookies]];
+    result(serialized);
+  }];
+}
 
-    void (^deleteAndNotify)(NSArray<WKWebsiteDataRecord *> *) =
-        ^(NSArray<WKWebsiteDataRecord *> *cookies) {
-          BOOL hasCookies = cookies.count > 0;
-          [dataStore removeDataOfTypes:websiteDataTypes
-                        forDataRecords:cookies
-                     completionHandler:^{
-                       result(@(hasCookies));
-                     }];
-        };
-
-    [dataStore fetchDataRecordsOfTypes:websiteDataTypes completionHandler:deleteAndNotify];
-  } else {
-    // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
-    NSLog(@"Clearing cookies is not supported for Flutter WebViews prior to iOS 9.");
+- (void)setCookies:(FlutterMethodCall *)call result:(FlutterResult)result API_AVAILABLE(ios(11.0)) {
+  NSArray<CookieDto *> *cookieDtos = [CookieDto manyFromDictionaries:[call arguments]];
+  for (CookieDto *cookieDto in cookieDtos) {
+    [cookieStore setCookie:[cookieDto toNSHTTPCookie]
+         completionHandler:^(){
+         }];
   }
+}
+
+- (void)clearCookies:(FlutterResult)result API_AVAILABLE(ios(11.0)) {
+  [cookieStore getAllCookies:^(NSArray<NSHTTPCookie *> *allCookies) {
+    for (NSHTTPCookie *cookie in allCookies) {
+      [cookieStore deleteCookie:cookie
+              completionHandler:^(){
+              }];
+    }
+  }];
 }
 
 @end
