@@ -43,7 +43,7 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
 
     final File externalFilesDirectory =
         registrar.activity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    final ExifDataCopier exifDataCopier = new ExifDataCopier();
+    final ExifHandler exifDataCopier = new ExifHandler();
     final ImageResizer imageResizer = new ImageResizer(externalFilesDirectory, exifDataCopier);
     final ImagePickerDelegate delegate =
         new ImagePickerDelegate(registrar.activity(), externalFilesDirectory, imageResizer);

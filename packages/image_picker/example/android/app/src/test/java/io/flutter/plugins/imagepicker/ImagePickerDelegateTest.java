@@ -60,12 +60,12 @@ public class ImagePickerDelegateTest {
     when(mockFileUtils.getPathFromUri(any(Context.class), any(Uri.class)))
         .thenReturn("pathFromUri");
 
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null))
+    when(mockImageResizer.normalizeImage("pathFromUri", null, null))
         .thenReturn("originalPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, HEIGHT))
+    when(mockImageResizer.normalizeImage("pathFromUri", WIDTH, HEIGHT))
         .thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null)).thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT))
+    when(mockImageResizer.normalizeImage("pathFromUri", WIDTH, null)).thenReturn("scaledPath");
+    when(mockImageResizer.normalizeImage("pathFromUri", null, HEIGHT))
         .thenReturn("scaledPath");
 
     mockFileUriResolver = new MockFileUriResolver();

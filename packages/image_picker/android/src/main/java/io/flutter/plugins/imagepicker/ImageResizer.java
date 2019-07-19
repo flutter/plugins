@@ -5,7 +5,8 @@
 package io.flutter.plugins.imagepicker;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.CompressFormat;
+import androidx.exifinterface.media.ExifInterface;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,38 +14,44 @@ import java.io.IOException;
 
 class ImageResizer {
   private final File externalFilesDirectory;
-  private final ExifDataCopier exifDataCopier;
+  private final ExifHandler exifHandler;
 
-  ImageResizer(File externalFilesDirectory, ExifDataCopier exifDataCopier) {
+  ImageResizer(File externalFilesDirectory, ExifHandler exifHandler) {
     this.externalFilesDirectory = externalFilesDirectory;
-    this.exifDataCopier = exifDataCopier;
+    this.exifHandler = exifHandler;
+
   }
 
   /**
-   * If necessary, resizes the image located in imagePath and then returns the path for the scaled
-   * image.
+   * This method will utilize the Exif information to try to place the image in normal orientation
+   * and then resize it.
    *
-   * <p>If no resizing is needed, returns the path for the original image.
+   * <p>This method will always apply the operations of fix and resize operation.
+   * returns the path for the scaled image.
+   * This will create a new image file for every call.
    */
-  String resizeImageIfNeeded(String imagePath, Double maxWidth, Double maxHeight) {
-    boolean shouldScale = maxWidth != null || maxHeight != null;
+  String normalizeImage(String imagePath, Double maxWidth, Double maxHeight) throws IOException {
 
-    if (!shouldScale) {
-      return imagePath;
-    }
 
-    try {
-      File scaledImage = resizedImage(imagePath, maxWidth, maxHeight);
-      exifDataCopier.copyExif(imagePath, scaledImage.getPath());
+      final Bitmap bitmap = exifHandler.getNormalOrientationBitmap(imagePath);
+      final File file = resizedImage(bitmap, imagePath, maxWidth, maxHeight);
+      final ExifInterface newExif = exifHandler.copyExif(imagePath, file.getPath());
 
-      return scaledImage.getPath();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+      bitmap.recycle();
+
+      exifHandler.setNormalOrientation(newExif);
+
+      return file.getPath();
+
   }
 
-  private File resizedImage(String path, Double maxWidth, Double maxHeight) throws IOException {
-    Bitmap bmp = BitmapFactory.decodeFile(path);
+  private File resizedImage(
+    Bitmap bmp,
+    String path,
+    Double maxWidth,
+    Double maxHeight
+  ) throws IOException {
+
     double originalWidth = bmp.getWidth() * 1.0;
     double originalHeight = bmp.getHeight() * 1.0;
 
@@ -85,9 +92,10 @@ class ImageResizer {
 
     Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, width.intValue(), height.intValue(), false);
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    boolean saveAsPNG = bmp.hasAlpha();
-    scaledBmp.compress(
-        saveAsPNG ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, 100, outputStream);
+    final boolean saveAsPNG = bmp.hasAlpha();
+    final CompressFormat selectedFormat = saveAsPNG ? CompressFormat.PNG : CompressFormat.JPEG;
+
+    scaledBmp.compress(selectedFormat, 100, outputStream);
 
     String[] pathParts = path.split("/");
     String imageName = pathParts[pathParts.length - 1];
@@ -96,7 +104,7 @@ class ImageResizer {
     FileOutputStream fileOutput = new FileOutputStream(imageFile);
     fileOutput.write(outputStream.toByteArray());
     fileOutput.close();
-
+    scaledBmp.recycle();
     return imageFile;
   }
 }

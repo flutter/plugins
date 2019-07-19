@@ -210,7 +210,13 @@ public class ImagePickerDelegate
     if (path != null) {
       Double maxWidth = (Double) resultMap.get(ImagePickerCache.MAP_KEY_MAX_WIDTH);
       Double maxHeight = (Double) resultMap.get(ImagePickerCache.MAP_KEY_MAX_HEIGHT);
-      String newPath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+      String newPath = null;
+      try {
+        newPath = imageResizer.normalizeImage(path, maxWidth, maxHeight);
+        new File(path).delete();
+      } catch (IOException e) {
+        finishWithError("failed_to_read_image", e.getMessage());
+      }
       resultMap.put(ImagePickerCache.MAP_KEY_PATH, newPath);
     }
     if (resultMap.isEmpty()) {
@@ -509,14 +515,19 @@ public class ImagePickerDelegate
     if (methodCall != null) {
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
-      String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
 
-      finishWithSuccess(finalImagePath);
+      try {
+        final String finalImagePath = imageResizer.normalizeImage(path, maxWidth, maxHeight);
+        if (shouldDeleteOriginalIfScaled) {
+          new File(path).delete();
+        }
 
-      //delete original file if scaled
-      if (!finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
-        new File(path).delete();
+        finishWithSuccess(finalImagePath);
+
+      } catch (IOException e) {
+        finishWithError("failed_to_read_image", e.getMessage());
       }
+
     } else {
       finishWithSuccess(path);
     }
