@@ -1,6 +1,7 @@
 ## 0.6.2+1
 
 * Specify explicit type for `invokeMethod`.
+* Use `const` for `Rect`.
 
 ## 0.6.2
 
