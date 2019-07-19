@@ -25,7 +25,6 @@ android {
 }
 ```
 
-### Android
 If you're using the on-device `Face Contour Detection`, include the latest matching [ML Kit: Face Detection Model](https://firebase.google.com/support/release-notes/android) dependency in your app-level build.gradle file.
 
 ```
