@@ -1,6 +1,6 @@
 ## 0.9.0
 
-* Added AutoML Vision Edge Support for iOS
+* Added AutoML Vision Edge Support for iOS.
 
 ## 0.8.0
 
