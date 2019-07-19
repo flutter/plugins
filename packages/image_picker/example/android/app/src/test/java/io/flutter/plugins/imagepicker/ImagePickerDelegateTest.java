@@ -18,6 +18,7 @@ import android.net.Uri;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.File;
+import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -51,7 +52,7 @@ public class ImagePickerDelegateTest {
   }
 
   @Before
-  public void setUp() {
+  public void setUp() throws IOException {
     MockitoAnnotations.initMocks(this);
 
     when(mockActivity.getPackageName()).thenReturn("com.example.test");
@@ -61,7 +62,7 @@ public class ImagePickerDelegateTest {
         .thenReturn("pathFromUri");
 
     when(mockImageResizer.normalizeImage("pathFromUri", null, null))
-        .thenReturn("originalPath");
+        .thenReturn("scaledPath");
     when(mockImageResizer.normalizeImage("pathFromUri", WIDTH, HEIGHT))
         .thenReturn("scaledPath");
     when(mockImageResizer.normalizeImage("pathFromUri", WIDTH, null)).thenReturn("scaledPath");
@@ -284,18 +285,6 @@ public class ImagePickerDelegateTest {
 
   @Test
   public void
-      onActivityResult_WhenImagePickedFromGallery_AndNoResizeNeeded_FinishesWithImagePath() {
-    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
-
-    delegate.onActivityResult(
-        ImagePickerDelegate.REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY, Activity.RESULT_OK, mockIntent);
-
-    verify(mockResult).success("originalPath");
-    verifyNoMoreInteractions(mockResult);
-  }
-
-  @Test
-  public void
       onActivityResult_WhenImagePickedFromGallery_AndResizeNeeded_FinishesWithScaledImagePath() {
     when(mockMethodCall.argument("maxWidth")).thenReturn(WIDTH);
 
@@ -331,16 +320,6 @@ public class ImagePickerDelegateTest {
     verifyNoMoreInteractions(mockResult);
   }
 
-  @Test
-  public void onActivityResult_WhenImageTakenWithCamera_AndNoResizeNeeded_FinishesWithImagePath() {
-    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
-
-    delegate.onActivityResult(
-        ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA, Activity.RESULT_OK, mockIntent);
-
-    verify(mockResult).success("originalPath");
-    verifyNoMoreInteractions(mockResult);
-  }
 
   @Test
   public void
