@@ -175,7 +175,7 @@ class UploadTaskListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<StorageTaskEvent>(
+    return StreamBuilder<StorageTaskEvent>.withoutInitialData(
       stream: task.events,
       builder: (BuildContext context,
           AsyncSnapshot<StorageTaskEvent> asyncSnapshot) {
