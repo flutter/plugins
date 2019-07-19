@@ -1,3 +1,7 @@
+## 0.7.0
+
+* Android: Fix image orientation problem (if Exif information exist in the image file)
+
 ## 0.6.0+17
 
 * iOS: Fix a crash when user captures image from the camera with devices under iOS 11.
