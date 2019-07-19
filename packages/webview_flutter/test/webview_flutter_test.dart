@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:_http';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -827,7 +828,7 @@ void main() {
       );
 
       final MyWebViewPlatform builder = WebView.platform;
-      final MyWebViewPlatformController platform = builder.lastPlatformBuilt;
+      final MyWebViewPlatformController platform = builder.platformController;
 
       expect(
           platform.creationParams,
@@ -858,7 +859,7 @@ void main() {
       );
 
       final MyWebViewPlatform builder = WebView.platform;
-      final MyWebViewPlatformController platform = builder.lastPlatformBuilt;
+      final MyWebViewPlatformController platform = builder.platformController;
 
       final Map<String, String> headers = <String, String>{
         'header': 'value',
@@ -1125,7 +1126,8 @@ class _FakeCookieManager {
 }
 
 class MyWebViewPlatform implements WebViewPlatform {
-  MyWebViewPlatformController lastPlatformBuilt;
+  @override
+  WebViewPlatformController platformController;
 
   @override
   Widget build({
@@ -1136,15 +1138,25 @@ class MyWebViewPlatform implements WebViewPlatform {
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   }) {
     assert(onWebViewPlatformCreated != null);
-    lastPlatformBuilt = MyWebViewPlatformController(
-        creationParams, gestureRecognizers, webViewPlatformCallbacksHandler);
-    onWebViewPlatformCreated(lastPlatformBuilt);
+    platformController =
+        MyWebViewPlatformController(creationParams, gestureRecognizers, webViewPlatformCallbacksHandler);
+    onWebViewPlatformCreated(platformController);
     return Container();
   }
 
   @override
   Future<bool> clearCookies() {
     return Future<bool>.sync(() => null);
+  }
+
+  @override
+  Future<List<Cookie>> getCookies(String url) {
+    return Future<List<Cookie>>.sync(() => null);
+  }
+
+  @override
+  Future<void> setCookies(String url, List<Cookie> cookies) {
+    return Future<void>.sync(() => null);
   }
 }
 
@@ -1164,6 +1176,24 @@ class MyWebViewPlatformController extends WebViewPlatformController {
     equals(1, 1);
     lastUrlLoaded = url;
     lastRequestHeaders = headers;
+    return null;
+  }
+
+  @override
+  Future<bool> clearCookies() {
+    // TODO: implement clearCookies
+    return null;
+  }
+
+  @override
+  Future<List<Cookie>> getCookies(String url) {
+    // TODO: implement getCookies
+    return null;
+  }
+
+  @override
+  Future<void> setCookies(String url, List<Cookie> cookies) {
+    // TODO: implement setCookies
     return null;
   }
 }

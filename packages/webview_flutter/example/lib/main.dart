@@ -4,8 +4,8 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -32,8 +32,8 @@ class WebViewExample extends StatefulWidget {
 }
 
 class _WebViewExampleState extends State<WebViewExample> {
-  final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
+  final ValueNotifier<WebViewController> _controller =
+      ValueNotifier<WebViewController>(null);
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +42,8 @@ class _WebViewExampleState extends State<WebViewExample> {
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
-          NavigationControls(_controller.future),
-          SampleMenu(_controller.future),
+          NavigationControls(_controller),
+          SampleMenu(_controller),
         ],
       ),
       // We're using a Builder here so we have a context that is below the Scaffold
@@ -53,7 +53,7 @@ class _WebViewExampleState extends State<WebViewExample> {
           initialUrl: 'https://flutter.dev',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
-            _controller.complete(webViewController);
+            _controller.value = webViewController;
           },
           // TODO(iskakaushik): Remove this when collection literals makes it to stable.
           // ignore: prefer_collection_literals
@@ -92,14 +92,13 @@ class _WebViewExampleState extends State<WebViewExample> {
   }
 
   Widget favoriteButton() {
-    return FutureBuilder<WebViewController>(
-        future: _controller.future,
-        builder: (BuildContext context,
-            AsyncSnapshot<WebViewController> controller) {
-          if (controller.hasData) {
+    return ValueListenableBuilder<WebViewController>(
+        valueListenable: _controller,
+        builder: (BuildContext context, WebViewController controller, Widget child) {
+          if (controller != null) {
             return FloatingActionButton(
               onPressed: () async {
-                final String url = await controller.data.currentUrl();
+                final String url = await controller.currentUrl();
                 Scaffold.of(context).showSnackBar(
                   SnackBar(content: Text('Favorited $url')),
                 );
@@ -125,38 +124,38 @@ enum MenuOptions {
 class SampleMenu extends StatelessWidget {
   SampleMenu(this.controller);
 
-  final Future<WebViewController> controller;
+  final ValueNotifier<WebViewController> controller;
   final CookieManager cookieManager = CookieManager();
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<WebViewController>(
-      future: controller,
+    return ValueListenableBuilder<WebViewController>(
+      valueListenable: controller,
       builder:
-          (BuildContext context, AsyncSnapshot<WebViewController> controller) {
+          (BuildContext context, WebViewController controller, Widget child) {
         return PopupMenuButton<MenuOptions>(
           onSelected: (MenuOptions value) {
             switch (value) {
               case MenuOptions.showUserAgent:
-                _onShowUserAgent(controller.data, context);
+                _onShowUserAgent(controller, context);
                 break;
               case MenuOptions.listCookies:
-                _onListCookies(controller.data, context);
+                _onListCookies(controller, context);
                 break;
               case MenuOptions.clearCookies:
                 _onClearCookies(context);
                 break;
               case MenuOptions.addToCache:
-                _onAddToCache(controller.data, context);
+                _onAddToCache(controller, context);
                 break;
               case MenuOptions.listCache:
-                _onListCache(controller.data, context);
+                _onListCache(controller, context);
                 break;
               case MenuOptions.clearCache:
-                _onClearCache(controller.data, context);
+                _onClearCache(controller, context);
                 break;
               case MenuOptions.navigationDelegate:
-                _onNavigationDelegateExample(controller.data, context);
+                _onNavigationDelegateExample(controller, context);
                 break;
             }
           },
@@ -164,7 +163,7 @@ class SampleMenu extends StatelessWidget {
             PopupMenuItem<MenuOptions>(
               value: MenuOptions.showUserAgent,
               child: const Text('Show user agent'),
-              enabled: controller.hasData,
+              enabled: controller != null,
             ),
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.listCookies,
@@ -206,8 +205,7 @@ class SampleMenu extends StatelessWidget {
 
   void _onListCookies(
       WebViewController controller, BuildContext context) async {
-    final String cookies =
-        await controller.evaluateJavascript('document.cookie');
+    final List<Cookie> cookies = await cookieManager.getCookies(await controller.currentUrl());
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -259,13 +257,27 @@ class SampleMenu extends StatelessWidget {
     await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
-  Widget _getCookieList(String cookies) {
-    if (cookies == null || cookies == '""') {
+  Widget _getCookieList(List<Cookie> cookies) {
+    if (cookies == null || cookies.isEmpty) {
       return Container();
     }
-    final List<String> cookieList = cookies.split(';');
-    final Iterable<Text> cookieWidgets =
-        cookieList.map((String cookie) => Text(cookie));
+    final Iterable<RichText> cookieWidgets = cookies.map(
+      (Cookie cookie) => RichText(
+        text: TextSpan(
+          children: <InlineSpan>[
+            TextSpan(
+              text: '${cookie.name}',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const TextSpan(text: ' = '),
+            TextSpan(
+              text: '${cookie.value}',
+              style: TextStyle(color: Colors.grey.shade400),
+            ),
+          ],
+        ),
+      ),
+    );
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
@@ -278,17 +290,14 @@ class NavigationControls extends StatelessWidget {
   const NavigationControls(this._webViewControllerFuture)
       : assert(_webViewControllerFuture != null);
 
-  final Future<WebViewController> _webViewControllerFuture;
+  final ValueNotifier<WebViewController> _webViewControllerFuture;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<WebViewController>(
-      future: _webViewControllerFuture,
-      builder:
-          (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
-        final bool webViewReady =
-            snapshot.connectionState == ConnectionState.done;
-        final WebViewController controller = snapshot.data;
+    return ValueListenableBuilder<WebViewController>(
+      valueListenable: _webViewControllerFuture,
+      builder: (BuildContext context, WebViewController controller, Widget child) {
+        final bool webViewReady = controller != null;
         return Row(
           children: <Widget>[
             IconButton(
