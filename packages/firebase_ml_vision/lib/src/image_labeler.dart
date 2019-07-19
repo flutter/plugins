@@ -44,6 +44,8 @@ class ImageLabeler {
   bool _hasBeenOpened = false;
   bool _isClosed = false;
 
+  bool get isClosed => _isClosed;
+
   /// Finds entities in the input image.
   Future<List<ImageLabel>> processImage(FirebaseVisionImage visionImage) async {
     assert(!_isClosed);

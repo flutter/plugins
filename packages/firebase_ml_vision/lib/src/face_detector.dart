@@ -46,6 +46,8 @@ class FaceDetector {
   bool _hasBeenOpened = false;
   bool _isClosed = false;
 
+  bool get isClosed => _isClosed;
+
   /// Detects faces in the input image.
   Future<List<Face>> processImage(FirebaseVisionImage visionImage) async {
     assert(!_isClosed);

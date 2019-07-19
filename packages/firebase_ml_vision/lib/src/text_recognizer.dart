@@ -31,6 +31,8 @@ class TextRecognizer {
   bool _hasBeenOpened = false;
   bool _isClosed = false;
 
+  bool get isClosed => _isClosed;
+
   /// Detects [VisionText] from a [FirebaseVisionImage].
   Future<VisionText> processImage(FirebaseVisionImage visionImage) async {
     assert(!_isClosed);

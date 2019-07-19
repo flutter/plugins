@@ -191,6 +191,8 @@ class BarcodeDetector {
   bool _hasBeenOpened = false;
   bool _isClosed = false;
 
+  bool get isClosed => _isClosed;
+
   /// Detects barcodes in the input image.
   Future<List<Barcode>> detectInImage(FirebaseVisionImage visionImage) async {
     assert(!_isClosed);
