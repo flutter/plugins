@@ -1,3 +1,7 @@
+## 0.6.0+19
+
+* Android: Migrated information cache methods to use instance methods.
+
 ## 0.6.0+17
 
 * iOS: Fix a crash when user captures image from the camera with devices under iOS 11.
