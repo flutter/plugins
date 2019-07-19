@@ -1,3 +1,19 @@
+## 0.12.7
+
+* Methods of `Transaction` no longer require `await`.
+* Added documentation to methods of `Transaction`.
+* Removed an unnecessary log on Android.
+* Added an integration test for rapidly incrementing field value.
+
+## 0.12.6
+
+* Support for `orderBy` on map fields (e.g. `orderBy('cake.flavor')`) for
+  `startAtDocument`, `startAfterDocument`, `endAtDocument`, and `endBeforeDocument` added.
+
+## 0.12.5+2
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
 ## 0.12.5+1
 * Added support for combining any of `Query.startAtDocument` and `Query.startAfterDocument`
   with any of `Query.endAtDocument` and `Query.endBeforeDocument`.

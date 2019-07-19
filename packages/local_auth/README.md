@@ -29,7 +29,7 @@ Currently the following biometric types are implemented:
 To get a list of enrolled biometrics, call getAvailableBiometrics:
 
 ```dart
-List<BiometricType> availableBiometrics;
+List<BiometricType> availableBiometrics =
     await auth.getAvailableBiometrics();
 
 if (Platform.isIOS) {
@@ -126,6 +126,11 @@ app has not been updated to use TouchID.
 
 
 ## Android Integration
+
+Note that local_auth plugin requires the use of a FragmentActivity as
+opposed to Activity. This can be easily done by switching to use
+`FlutterFragmentActivity` as opposed to `FlutterActivity` in your
+manifest (or your own Activity class if you are extending the base class).
 
 Update your project's `AndroidManifest.xml` file to include the
 `USE_FINGERPRINT` permissions:

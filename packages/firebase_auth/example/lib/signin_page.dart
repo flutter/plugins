@@ -504,7 +504,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
     );
   }
 
-  // Exmaple code of how to veify phone number
+  // Example code of how to verify phone number
   void _verifyPhoneNumber() async {
     setState(() {
       _message = '';

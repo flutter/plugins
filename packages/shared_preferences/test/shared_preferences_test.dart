@@ -155,12 +155,38 @@ void main() {
       expect(preferences.getString('String'), kTestValues2['flutter.String']);
     });
 
-    test('mocking', () async {
-      expect(
-          await channel.invokeMapMethod<String, Object>('getAll'), kTestValues);
-      SharedPreferences.setMockInitialValues(kTestValues2);
-      expect(await channel.invokeMapMethod<String, Object>('getAll'),
-          kTestValues2);
+    group('mocking', () {
+      const String _key = 'dummy';
+      const String _prefixedKey = 'flutter.' + _key;
+
+      test('test 1', () async {
+        SharedPreferences.setMockInitialValues(
+            <String, dynamic>{_prefixedKey: 'my string'});
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final String value = prefs.getString(_key);
+        expect(value, 'my string');
+      });
+
+      test('test 2', () async {
+        SharedPreferences.setMockInitialValues(
+            <String, dynamic>{_prefixedKey: 'my other string'});
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final String value = prefs.getString(_key);
+        expect(value, 'my other string');
+      });
+    });
+
+    test('writing copy of strings list', () async {
+      final List<String> myList = <String>[];
+      await preferences.setStringList("myList", myList);
+      myList.add("foobar");
+
+      final List<String> cachedList = preferences.getStringList('myList');
+      expect(cachedList, <String>[]);
+
+      cachedList.add("foobar2");
+
+      expect(preferences.getStringList('myList'), <String>[]);
     });
   });
 }
