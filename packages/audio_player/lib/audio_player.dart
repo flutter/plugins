@@ -12,10 +12,7 @@ import 'package:meta/meta.dart';
 final MethodChannel _channel = const MethodChannel('flutter.io/audioPlayer')
 // This will clear all open audios on the platform when a full restart is
 // performed.
-// TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-// https://github.com/flutter/flutter/issues/26431
-// ignore: strong_mode_implicit_dynamic_method
-  ..invokeMethod('init');
+  ..invokeMethod<void>('init');
 
 class AudioDurationRange {
   AudioDurationRange(this.start, this.end);
@@ -217,10 +214,7 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
       case DataSourceType.file:
         dataSourceDescription = <String, dynamic>{'uri': dataSource};
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final Map<dynamic, dynamic> response = await _channel.invokeMethod(
+    final Map<dynamic, dynamic> response = await _channel.invokeMapMethod<dynamic,dynamic>(
       'create',
       dataSourceDescription,
     );
@@ -294,10 +288,7 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
         _isDisposed = true;
         _timer?.cancel();
         await _eventSubscription?.cancel();
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await _channel.invokeMethod(
+        await _channel.invokeMethod<void>(
           'dispose',
           <String, dynamic>{'textureId': _textureId},
         );
@@ -327,10 +318,7 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    _channel.invokeMethod(
+    _channel.invokeMethod<void>(
       'setLooping',
       <String, dynamic>{'textureId': _textureId, 'looping': value.isLooping},
     );
@@ -341,10 +329,7 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
       return;
     }
     if (value.isPlaying) {
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      await _channel.invokeMethod(
+      _channel.invokeMethod<void>(
         'play',
         <String, dynamic>{'textureId': _textureId},
       );
@@ -363,10 +348,7 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
       );
     } else {
       _timer?.cancel();
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      await _channel.invokeMethod(
+      await _channel.invokeMethod<void>(
         'pause',
         <String, dynamic>{'textureId': _textureId},
       );
@@ -377,10 +359,7 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod(
+    await _channel.invokeMethod<void>(
       'setVolume',
       <String, dynamic>{'textureId': _textureId, 'volume': value.volume},
     );
@@ -390,10 +369,7 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod(
+    await _channel.invokeMethod<void>(
       'setSpeed',
       <String, dynamic>{'textureId': _textureId, 'speed': value.speed},
     );
@@ -405,10 +381,7 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
       return null;
     }
     return Duration(
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      milliseconds: await _channel.invokeMethod(
+      milliseconds: await _channel.invokeMethod<int>(
         'position',
         <String, dynamic>{'textureId': _textureId},
       ),
@@ -424,10 +397,7 @@ class AudioPlayerController extends ValueNotifier<AudioPlayerValue> {
     } else if (moment < const Duration()) {
       moment = const Duration();
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('seekTo', <String, dynamic>{
+    await _channel.invokeMethod<void>('seekTo', <String, dynamic>{
       'textureId': _textureId,
       'location': moment.inMilliseconds,
     });
