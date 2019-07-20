@@ -1,3 +1,7 @@
+## 0.3.10+3
+
+* Fix disposing Android webview properly.
+
 ## 0.3.10+2
 
 * Fix InputConnection being lost when combined with route transitions.
