@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:camera/new/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:camera/new/src/camera_testing.dart';
@@ -33,6 +34,41 @@ void main() {
       CameraTesting.nextHandle = 0;
     });
 
+    group('$CameraController', () {
+      test('Initializing a second controller closes the first', () {
+        final MockCameraDescription description = MockCameraDescription();
+        final MockCameraConfigurator configurator = MockCameraConfigurator();
+
+        final CameraController controller1 =
+            CameraController.customConfigurator(
+          description: description,
+          configurator: configurator,
+        );
+
+        controller1.initialize();
+
+        final CameraController controller2 =
+            CameraController.customConfigurator(
+          description: description,
+          configurator: configurator,
+        );
+
+        controller2.initialize();
+
+        expect(
+          () => controller1.start(),
+          throwsA(isInstanceOf<AssertionError>()),
+        );
+
+        expect(
+          () => controller1.stop(),
+          throwsA(isInstanceOf<AssertionError>()),
+        );
+
+        expect(controller1.isDisposed, isTrue);
+      });
+    });
+
     group('$NativeTexture', () {
       test('allocate', () async {
         final NativeTexture texture = await NativeTexture.allocate();
@@ -47,4 +83,32 @@ void main() {
       });
     });
   });
+}
+
+class MockCameraDescription extends CameraDescription {
+  @override
+  LensDirection get direction => LensDirection.unknown;
+
+  @override
+  String get name => 'none';
+}
+
+class MockCameraConfigurator extends CameraConfigurator {
+  @override
+  Future<int> addPreviewTexture() => Future<int>.value(7);
+
+  @override
+  Future<void> dispose() => Future<void>.value();
+
+  @override
+  Future<void> initialize() => Future<void>.value();
+
+  @override
+  int get previewTextureId => 7;
+
+  @override
+  Future<void> start() => Future<void>.value();
+
+  @override
+  Future<void> stop() => Future<void>.value();
 }
