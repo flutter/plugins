@@ -58,20 +58,6 @@ class ImagePickerCache {
     setMaxDimension(maxWidth, maxHeight);
   }
 
-  Map<String, Double> getMaxDimensions() {
-
-    final long maxWidthValue = prefs.getLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, 0);
-    final long maxHeigthValue = prefs.getLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, 0);
-
-    final double maxWidth = Double.longBitsToDouble(maxWidthValue);
-    final double maxHeight = Double.longBitsToDouble(maxHeigthValue);
-
-    final Map<String, Double> map = new HashMap<>();
-    map.put(MAP_KEY_MAX_WIDTH, maxWidth);
-    map.put(MAP_KEY_MAX_HEIGHT, maxHeight);
-    return map;
-  }
-
   private void setMaxDimension(Double maxWidth, Double maxHeight) {
 
     SharedPreferences.Editor editor = prefs.edit();
@@ -139,12 +125,14 @@ class ImagePickerCache {
         final String typeValue = prefs.getString(SHARED_PREFERENCE_TYPE_KEY, "");
         resultMap.put(MAP_KEY_TYPE, typeValue);
       }
-
-      final long maxWidthValue = prefs.getLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, 0);
-      resultMap.put(MAP_KEY_MAX_WIDTH, Double.longBitsToDouble(maxWidthValue));
-
-      final long maxHeighValue = prefs.getLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, 0);
-      resultMap.put(MAP_KEY_MAX_HEIGHT, Double.longBitsToDouble(maxHeighValue));
+      if (prefs.contains(SHARED_PREFERENCE_MAX_WIDTH_KEY)) {
+        final long maxWidthValue = prefs.getLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, 0);
+        resultMap.put(MAP_KEY_MAX_WIDTH, Double.longBitsToDouble(maxWidthValue));
+      }
+      if (prefs.contains(SHARED_PREFERENCE_MAX_HEIGHT_KEY)) {
+        final long maxHeighValue = prefs.getLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, 0);
+        resultMap.put(MAP_KEY_MAX_HEIGHT, Double.longBitsToDouble(maxHeighValue));
+      }
     }
 
     return resultMap;
