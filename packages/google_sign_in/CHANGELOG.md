@@ -1,3 +1,7 @@
+## 4.0.5
+
+* Update README with solution to `APIException` errors.
+
 ## 4.0.4
 
 * Revert changes in 4.0.3.

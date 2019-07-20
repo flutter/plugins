@@ -1,3 +1,11 @@
+## 5.1.2
+
+* Updates to README and example with explanations of differences in data format.
+
+## 5.1.1
+
+* Update README with more detailed integration instructions.
+
 ## 5.1.0
 
 * Changed the return type of `subscribeToTopic` and `unsubscribeFromTopic` to

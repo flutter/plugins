@@ -19,7 +19,13 @@ part of firebase_ml_vision;
 ///     await textRecognizer.processImage(image);
 /// ```
 class TextRecognizer {
-  TextRecognizer._(this._handle);
+  TextRecognizer._({
+    @required this.modelType,
+    @required int handle,
+  })  : _handle = handle,
+        assert(modelType != null);
+
+  final ModelType modelType;
 
   final int _handle;
   bool _hasBeenOpened = false;
@@ -35,7 +41,9 @@ class TextRecognizer {
       'TextRecognizer#processImage',
       <String, dynamic>{
         'handle': _handle,
-        'options': <String, dynamic>{},
+        'options': <String, dynamic>{
+          'modelType': _enumToString(modelType),
+        },
       }..addAll(visionImage._serialize()),
     );
 
