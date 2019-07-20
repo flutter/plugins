@@ -2,6 +2,7 @@
 
 * Specify explicit type for `invokeMethod`.
 * Use `const` for `Rect`.
+* Updated minimum Flutter SDK to 1.6.0.
 
 ## 0.6.2
 
