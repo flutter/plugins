@@ -1,3 +1,16 @@
+## 0.3.2+2
+* Fix bug that would make the shortcut not open on Android.
+* Report shortcut used on Android.
+* Improves example.
+
+## 0.3.2+1
+
+* Update usage example in README.
+
+## 0.3.2
+
+* Fixed the quick actions launch on Android when the app is killed. 
+
 ## 0.3.1
 
 * Added unit tests.
