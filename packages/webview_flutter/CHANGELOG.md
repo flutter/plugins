@@ -1,6 +1,10 @@
-## 0.3.10+3
+## 0.3.10+4
 
 * Don't log an unknown setting key error for 'debuggingEnabled' on iOS.
+
+## 0.3.10+3
+
+Don't log an unknown setting key error for 'debuggingEnabled' on iOS.
 
 ## 0.3.10+2
 
