@@ -1,6 +1,6 @@
 ## 0.3.10+4
 
-* Don't log an unknown setting key error for 'debuggingEnabled' on iOS.
+* Calling destroy on Android webview when flutter webview is getting disposed.
 
 ## 0.3.10+3
 
