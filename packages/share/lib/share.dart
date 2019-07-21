@@ -49,9 +49,6 @@ class Share {
       params['originHeight'] = sharePositionOrigin.height;
     }
 
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return channel.invokeMethod('share', params);
+    return channel.invokeMethod<void>('share', params);
   }
 }
