@@ -54,7 +54,7 @@
       functions = [FIRFunctions functionsForApp:app];
     }
     if (origin != nil && origin != (id)[NSNull null]) {
-      [functions useFunctionsEmulator:origin];
+      [functions useFunctionsEmulatorOrigin:origin];
     }
     FIRHTTPSCallable *function = [functions HTTPSCallableWithName:functionName];
     if (timeoutMicroseconds != nil && timeoutMicroseconds != [NSNull null]) {
