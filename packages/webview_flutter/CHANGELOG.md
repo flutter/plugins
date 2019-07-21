@@ -1,6 +1,6 @@
 ## 0.3.10+3
 
-* Fix disposing Android webview properly.
+* Don't log an unknown setting key error for 'debuggingEnabled' on iOS.
 
 ## 0.3.10+2
 
