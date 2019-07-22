@@ -83,7 +83,9 @@ void main() {
                   },
                 ],
               },
-              'options': <String, dynamic>{},
+              'options': <String, dynamic>{
+                'modelType': 'onDevice',
+              },
             },
           ),
         ]);
@@ -778,7 +780,6 @@ void main() {
           expect(block.confidence, 0.5);
 
           block = text.blocks[1];
-          // ignore: prefer_const_constructors
           // TODO(jackson): Use const Rect when available in minimum Flutter SDK
           // ignore: prefer_const_constructors
           expect(block.boundingBox, Rect.fromLTWH(14.0, 13.0, 16.0, 15.0));
@@ -865,7 +866,272 @@ void main() {
               'path': 'empty',
               'bytes': null,
               'metadata': null,
-              'options': <String, dynamic>{},
+              'options': <String, dynamic>{
+                'modelType': 'onDevice',
+              },
+            },
+          ),
+        ]);
+      });
+
+      test('processImage no bounding box', () async {
+        returnValue = <dynamic, dynamic>{
+          'blocks': <dynamic>[
+            <dynamic, dynamic>{
+              'text': '',
+              'points': <dynamic>[],
+              'recognizedLanguages': <dynamic>[],
+              'lines': <dynamic>[],
+            },
+          ],
+        };
+
+        final VisionText text = await recognizer.processImage(image);
+
+        final TextBlock block = text.blocks[0];
+        expect(block.boundingBox, null);
+      });
+    });
+
+    group('Cloud $TextRecognizer', () {
+      TextRecognizer recognizer;
+      final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
+        'empty',
+      );
+
+      setUp(() {
+        recognizer = FirebaseVision.instance.cloudTextRecognizer();
+        final List<dynamic> elements = <dynamic>[
+          <dynamic, dynamic>{
+            'text': 'hello',
+            'left': 1.0,
+            'top': 2.0,
+            'width': 3.0,
+            'height': 4.0,
+            'points': <dynamic>[
+              <dynamic>[5.0, 6.0],
+              <dynamic>[7.0, 8.0],
+            ],
+            'recognizedLanguages': <dynamic>[
+              <dynamic, dynamic>{
+                'languageCode': 'ab',
+              },
+              <dynamic, dynamic>{
+                'languageCode': 'cd',
+              }
+            ],
+            'confidence': 0.1,
+          },
+          <dynamic, dynamic>{
+            'text': 'my',
+            'left': 4.0,
+            'top': 3.0,
+            'width': 2.0,
+            'height': 1.0,
+            'points': <dynamic>[
+              <dynamic>[6.0, 5.0],
+              <dynamic>[8.0, 7.0],
+            ],
+            'recognizedLanguages': <dynamic>[],
+            'confidence': 0.2,
+          },
+        ];
+
+        final List<dynamic> lines = <dynamic>[
+          <dynamic, dynamic>{
+            'text': 'friend',
+            'left': 5.0,
+            'top': 6.0,
+            'width': 7.0,
+            'height': 8.0,
+            'points': <dynamic>[
+              <dynamic>[9.0, 10.0],
+              <dynamic>[11.0, 12.0],
+            ],
+            'recognizedLanguages': <dynamic>[
+              <dynamic, dynamic>{
+                'languageCode': 'ef',
+              },
+              <dynamic, dynamic>{
+                'languageCode': 'gh',
+              }
+            ],
+            'elements': elements,
+            'confidence': 0.3,
+          },
+          <dynamic, dynamic>{
+            'text': 'how',
+            'left': 8.0,
+            'top': 7.0,
+            'width': 4.0,
+            'height': 5.0,
+            'points': <dynamic>[
+              <dynamic>[10.0, 9.0],
+              <dynamic>[12.0, 11.0],
+            ],
+            'recognizedLanguages': <dynamic>[],
+            'elements': <dynamic>[],
+            'confidence': 0.4,
+          },
+        ];
+
+        final List<dynamic> blocks = <dynamic>[
+          <dynamic, dynamic>{
+            'text': 'friend',
+            'left': 13.0,
+            'top': 14.0,
+            'width': 15.0,
+            'height': 16.0,
+            'points': <dynamic>[
+              <dynamic>[17.0, 18.0],
+              <dynamic>[19.0, 20.0],
+            ],
+            'recognizedLanguages': <dynamic>[
+              <dynamic, dynamic>{
+                'languageCode': 'ij',
+              },
+              <dynamic, dynamic>{
+                'languageCode': 'kl',
+              }
+            ],
+            'lines': lines,
+            'confidence': 0.5,
+          },
+          <dynamic, dynamic>{
+            'text': 'hello',
+            'left': 14.0,
+            'top': 13.0,
+            'width': 16.0,
+            'height': 15.0,
+            'points': <dynamic>[
+              <dynamic>[18.0, 17.0],
+              <dynamic>[20.0, 19.0],
+            ],
+            'recognizedLanguages': <dynamic>[],
+            'lines': <dynamic>[],
+            'confidence': 0.6,
+          },
+        ];
+
+        final dynamic visionText = <dynamic, dynamic>{
+          'text': 'testext',
+          'blocks': blocks,
+        };
+
+        returnValue = visionText;
+      });
+
+      group('$TextBlock', () {
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
+
+          expect(text.blocks, hasLength(2));
+
+          TextBlock block = text.blocks[0];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
+          expect(block.boundingBox, Rect.fromLTWH(13.0, 14.0, 15.0, 16.0));
+          expect(block.text, 'friend');
+          expect(block.cornerPoints, const <Offset>[
+            Offset(17.0, 18.0),
+            Offset(19.0, 20.0),
+          ]);
+          expect(block.recognizedLanguages, hasLength(2));
+          expect(block.recognizedLanguages[0].languageCode, 'ij');
+          expect(block.recognizedLanguages[1].languageCode, 'kl');
+          expect(block.confidence, 0.5);
+
+          block = text.blocks[1];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
+          expect(block.boundingBox, Rect.fromLTWH(14.0, 13.0, 16.0, 15.0));
+          expect(block.text, 'hello');
+          expect(block.cornerPoints, const <Offset>[
+            Offset(18.0, 17.0),
+            Offset(20.0, 19.0),
+          ]);
+          expect(block.confidence, 0.6);
+        });
+      });
+
+      group('$TextLine', () {
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
+
+          TextLine line = text.blocks[0].lines[0];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
+          expect(line.boundingBox, Rect.fromLTWH(5, 6, 7, 8));
+          expect(line.text, 'friend');
+          expect(line.cornerPoints, const <Offset>[
+            Offset(9.0, 10.0),
+            Offset(11.0, 12.0),
+          ]);
+          expect(line.recognizedLanguages, hasLength(2));
+          expect(line.recognizedLanguages[0].languageCode, 'ef');
+          expect(line.recognizedLanguages[1].languageCode, 'gh');
+          expect(line.confidence, 0.3);
+
+          line = text.blocks[0].lines[1];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
+          expect(line.boundingBox, Rect.fromLTWH(8.0, 7.0, 4.0, 5.0));
+          expect(line.text, 'how');
+          expect(line.cornerPoints, const <Offset>[
+            Offset(10.0, 9.0),
+            Offset(12.0, 11.0),
+          ]);
+          expect(line.confidence, 0.4);
+        });
+      });
+
+      group('$TextElement', () {
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
+
+          TextElement element = text.blocks[0].lines[0].elements[0];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
+          expect(element.boundingBox, Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
+          expect(element.text, 'hello');
+          expect(element.cornerPoints, const <Offset>[
+            Offset(5.0, 6.0),
+            Offset(7.0, 8.0),
+          ]);
+          expect(element.recognizedLanguages, hasLength(2));
+          expect(element.recognizedLanguages[0].languageCode, 'ab');
+          expect(element.recognizedLanguages[1].languageCode, 'cd');
+          expect(element.confidence, 0.1);
+
+          element = text.blocks[0].lines[0].elements[1];
+          // TODO(jackson): Use const Rect when available in minimum Flutter SDK
+          // ignore: prefer_const_constructors
+          expect(element.boundingBox, Rect.fromLTWH(4.0, 3.0, 2.0, 1.0));
+          expect(element.text, 'my');
+          expect(element.cornerPoints, const <Offset>[
+            Offset(6.0, 5.0),
+            Offset(8.0, 7.0),
+          ]);
+          expect(element.confidence, 0.2);
+        });
+      });
+
+      test('processImage', () async {
+        final VisionText text = await recognizer.processImage(image);
+
+        expect(text.text, 'testext');
+        expect(log, <Matcher>[
+          isMethodCall(
+            'TextRecognizer#processImage',
+            arguments: <String, dynamic>{
+              'handle': 0,
+              'type': 'file',
+              'path': 'empty',
+              'bytes': null,
+              'metadata': null,
+              'options': <String, dynamic>{
+                'modelType': 'cloud',
+              },
             },
           ),
         ]);

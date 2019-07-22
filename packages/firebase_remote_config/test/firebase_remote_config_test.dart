@@ -84,11 +84,11 @@ void main() {
             return <String, dynamic>{
               'parameters': <String, dynamic>{
                 'param1': <String, dynamic>{
-                  'source': 'static',
+                  'source': 'remote',
                   'value': <int>[118, 97, 108, 49], // UTF-8 encoded 'val1'
                 },
                 'param2': <String, dynamic>{
-                  'source': 'static',
+                  'source': 'remote',
                   'value': <int>[49, 50, 51, 52, 53], // UTF-8 encoded '12345'
                 },
                 'param3': <String, dynamic>{
@@ -96,9 +96,20 @@ void main() {
                   'value': <int>[51, 46, 49, 52], // UTF-8 encoded '3.14'
                 },
                 'param4': <String, dynamic>{
-                  'source': 'static',
-                  'value': <int>[116, 114, 117, 101] // UTF-8 encoded 'true'
-                }
+                  'source': 'remote',
+                  'value': <int>[116, 114, 117, 101], // UTF-8 encoded 'true'
+                },
+                'param5': <String, dynamic>{
+                  'source': 'default',
+                  'value': <int>[
+                    102,
+                    97,
+                    108,
+                    115,
+                    101
+                  ], // UTF-8 encoded 'false'
+                },
+                'param6': <String, dynamic>{'source': 'default', 'value': null}
               },
               'newConfig': true,
             };
@@ -159,6 +170,45 @@ void main() {
       expect(remoteConfig.getInt('param2'), 12345);
       expect(remoteConfig.getDouble('param3'), 3.14);
       expect(remoteConfig.getBool('param4'), true);
+      expect(remoteConfig.getBool('param5'), false);
+      expect(remoteConfig.getInt('param6'), 0);
+
+      remoteConfig.getAll().forEach((String key, RemoteConfigValue value) {
+        switch (key) {
+          case 'param1':
+            expect(value.asString(), 'val1');
+            break;
+          case 'param2':
+            expect(value.asInt(), 12345);
+            break;
+          case 'param3':
+            expect(value.asDouble(), 3.14);
+            break;
+          case 'param4':
+            expect(value.asBool(), true);
+            break;
+          case 'param5':
+            expect(value.asBool(), false);
+            break;
+          case 'param6':
+            expect(value.asInt(), 0);
+            break;
+          default:
+        }
+      });
+
+      final Map<String, ValueSource> resultAllSources = remoteConfig
+          .getAll()
+          .map((String key, RemoteConfigValue value) =>
+              MapEntry<String, ValueSource>(key, value.source));
+      expect(resultAllSources, <String, ValueSource>{
+        'param1': ValueSource.valueRemote,
+        'param2': ValueSource.valueRemote,
+        'param3': ValueSource.valueDefault,
+        'param4': ValueSource.valueRemote,
+        'param5': ValueSource.valueDefault,
+        'param6': ValueSource.valueDefault,
+      });
     });
 
     test('setConfigSettings', () async {

@@ -6,6 +6,10 @@ the dynamic link which opened the app and links clicked during app execution (ac
 - `getInitialLink` a future to retrieve the link that opened the app
 - `onLink` a callback to listen to links opened while the app is active or in background
 
+## 0.4.0+6
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
 ## 0.4.0+5
 
 * Fix the bug below properly by allowing the activity to be null (but still registering the plugin). If activity is null, we don't get a latestIntent, instead we expect the intent listener to grab it.

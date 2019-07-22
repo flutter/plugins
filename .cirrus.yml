@@ -10,8 +10,6 @@ task:
     - git fetch origin master
   activate_script: pub global activate flutter_plugin_tools
   matrix:
-    - name: hard_coded_version
-      script: ./script/check_hard_coded_version.sh
     - name: publishable
       script: ./script/check_publish.sh
     - name: test+format
@@ -62,10 +60,10 @@ task:
     image: mojave-xcode-10.2-flutter
   setup_script:
     - pod repo update
-  switch_channel_script:
+  upgrade_script:
     - flutter channel master
     - flutter upgrade
-    - flutter doctor
+    - git fetch origin master
   activate_script:
     - pub global activate flutter_plugin_tools
   create_simulator_script:

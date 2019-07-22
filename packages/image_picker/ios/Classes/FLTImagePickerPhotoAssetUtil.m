@@ -15,6 +15,9 @@
     return [info objectForKey:UIImagePickerControllerPHAsset];
   }
   NSURL *referenceURL = [info objectForKey:UIImagePickerControllerReferenceURL];
+  if (!referenceURL) {
+    return nil;
+  }
   PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsWithALAssetURLs:@[ referenceURL ]
                                                                  options:nil];
   return result.firstObject;
