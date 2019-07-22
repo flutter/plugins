@@ -121,12 +121,6 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     }
   }
 
-  private Query implicitOrderBy(Query query, List<List<Object>> orderBy) {
-    boolean descending = (boolean) orderBy.get(orderBy.size() - 1).get(1);
-    Query.Direction direction = descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
-    return query.orderBy(FieldPath.documentId(), direction);
-  }
-
   private Object[] getDocumentValues(
       Map<String, Object> document, List<List<Object>> orderBy, Map<String, Object> arguments) {
     String documentId = (String) document.get("id");
@@ -135,7 +129,16 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     if (orderBy != null) {
       for (List<Object> order : orderBy) {
         String orderByFieldName = (String) order.get(0);
-        data.add(documentData.get(orderByFieldName));
+        if (orderByFieldName.contains(".")) {
+          String[] fieldNameParts = orderByFieldName.split("\\.");
+          Map<String, Object> current = (Map<String, Object>) documentData.get(fieldNameParts[0]);
+          for (int i = 1; i < fieldNameParts.length - 1; i++) {
+            current = (Map<String, Object>) current.get(fieldNameParts[i]);
+          }
+          data.add(current.get(fieldNameParts[fieldNameParts.length - 1]));
+        } else {
+          data.add(documentData.get(orderByFieldName));
+        }
       }
     }
     data.add((boolean) arguments.get("isCollectionGroup") ? document.get("path") : documentId);
@@ -238,18 +241,28 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     }
     @SuppressWarnings("unchecked")
     Map<String, Object> startAtDocument = (Map<String, Object>) parameters.get("startAtDocument");
-    if (startAtDocument != null) {
-      query =
-          implicitOrderBy(query, orderBy)
-              .startAt(getDocumentValues(startAtDocument, orderBy, arguments));
-    }
     @SuppressWarnings("unchecked")
     Map<String, Object> startAfterDocument =
         (Map<String, Object>) parameters.get("startAfterDocument");
+    @SuppressWarnings("unchecked")
+    Map<String, Object> endAtDocument = (Map<String, Object>) parameters.get("endAtDocument");
+    @SuppressWarnings("unchecked")
+    Map<String, Object> endBeforeDocument =
+        (Map<String, Object>) parameters.get("endBeforeDocument");
+    if (startAtDocument != null
+        || startAfterDocument != null
+        || endAtDocument != null
+        || endBeforeDocument != null) {
+      boolean descending = (boolean) orderBy.get(orderBy.size() - 1).get(1);
+      Query.Direction direction =
+          descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
+      query = query.orderBy(FieldPath.documentId(), direction);
+    }
+    if (startAtDocument != null) {
+      query = query.startAt(getDocumentValues(startAtDocument, orderBy, arguments));
+    }
     if (startAfterDocument != null) {
-      query =
-          implicitOrderBy(query, orderBy)
-              .startAfter(getDocumentValues(startAfterDocument, orderBy, arguments));
+      query = query.startAfter(getDocumentValues(startAfterDocument, orderBy, arguments));
     }
     @SuppressWarnings("unchecked")
     List<Object> startAt = (List<Object>) parameters.get("startAt");
@@ -257,20 +270,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     @SuppressWarnings("unchecked")
     List<Object> startAfter = (List<Object>) parameters.get("startAfter");
     if (startAfter != null) query = query.startAfter(startAfter.toArray());
-    @SuppressWarnings("unchecked")
-    Map<String, Object> endAtDocument = (Map<String, Object>) parameters.get("endAtDocument");
     if (endAtDocument != null) {
-      query =
-          implicitOrderBy(query, orderBy)
-              .endAt(getDocumentValues(endAtDocument, orderBy, arguments));
+      query = query.endAt(getDocumentValues(endAtDocument, orderBy, arguments));
     }
-    @SuppressWarnings("unchecked")
-    Map<String, Object> endBeforeDocument =
-        (Map<String, Object>) parameters.get("endBeforeDocument");
     if (endBeforeDocument != null) {
-      query =
-          implicitOrderBy(query, orderBy)
-              .endBefore(getDocumentValues(endBeforeDocument, orderBy, arguments));
+      query = query.endBefore(getDocumentValues(endBeforeDocument, orderBy, arguments));
     }
     @SuppressWarnings("unchecked")
     List<Object> endAt = (List<Object>) parameters.get("endAt");
@@ -394,7 +398,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                                         String errorMessage,
                                         Object errorDetails) {
                                       transactionTCS.trySetException(
-                                          new Exception("Do transaction failed."));
+                                          new Exception("DoTransaction failed: " + errorMessage));
                                     }
 
                                     @Override
@@ -524,7 +528,6 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                   new Runnable() {
                     @Override
                     public void run() {
-                      Log.d(TAG, "sending set success");
                       result.success(null);
                     }
                   });

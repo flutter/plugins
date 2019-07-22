@@ -35,7 +35,7 @@ dependencies {
   // Example existing classpath
   classpath 'com.android.tools.build:gradle:3.2.1'
   // Add the google services classpath
-  classpath 'com.google.gms:google-services:4.2.0'
+  classpath 'com.google.gms:google-services:4.3.0'
   // Add fabric classpath
   classpath 'io.fabric.tools:gradle:1.26.1'
 }
@@ -92,6 +92,17 @@ void main() {
   runApp(MyApp());
 }
 ```
+
+## Result
+
+If an error is caught, you should see the following messages in your logs:
+```
+flutter: Error caught by Crashlytics plugin:
+...
+flutter: Error reported to Crashlytics.
+```
+
+*Note:* It may take awhile (up to 24 hours) before you will be able to see the logs appear in your Firebase console.
 
 ## Example
 

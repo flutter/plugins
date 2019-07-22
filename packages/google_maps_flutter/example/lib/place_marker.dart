@@ -31,7 +31,6 @@ typedef Marker MarkerUpdateAction(Marker marker);
 
 class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   PlaceMarkerBodyState();
-
   static final LatLng center = const LatLng(-33.86711, 151.1947171);
 
   GoogleMapController controller;

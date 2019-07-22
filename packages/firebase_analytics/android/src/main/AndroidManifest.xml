@@ -4,4 +4,11 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+  <application>
+    <service android:name="com.google.firebase.components.ComponentDiscoveryService">
+      <meta-data android:name="com.google.firebase.components:io.flutter.plugins.firebaseanalytics.FlutterFirebaseAppRegistrar"
+                 android:value="com.google.firebase.components.ComponentRegistrar" />
+    </service>
+  </application>
 </manifest>

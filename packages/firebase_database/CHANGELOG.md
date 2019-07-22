@@ -1,3 +1,17 @@
+## 3.0.5
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 3.0.4
+
+* Updated transactions implementation on Android for compatibility with
+  newer versions of Flutter engine that require channel calls be made
+  on the UI thread.
+
+## 3.0.3
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
 ## 3.0.2
 
 * Add missing template type parameter to `invokeMethod` calls.

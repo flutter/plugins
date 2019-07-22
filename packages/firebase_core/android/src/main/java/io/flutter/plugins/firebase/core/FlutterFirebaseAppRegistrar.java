@@ -10,7 +10,6 @@ public class FlutterFirebaseAppRegistrar implements ComponentRegistrar {
   @Override
   public List<Component<?>> getComponents() {
     return Collections.<Component<?>>singletonList(
-        LibraryVersionComponent.create(
-            "flutter-fire-core", BuildConfig.VERSION_NAME.replaceAll("\\+", "-")));
+        LibraryVersionComponent.create(BuildConfig.LIBRARY_NAME, BuildConfig.LIBRARY_VERSION));
   }
 }

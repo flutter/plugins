@@ -29,7 +29,6 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.webkit.MimeTypeMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -141,7 +140,7 @@ class FileUtils {
     OutputStream outputStream = null;
     boolean success = false;
     try {
-      String extension = getImageExtension(context, uri);
+      String extension = getImageExtension(uri);
       inputStream = context.getContentResolver().openInputStream(uri);
       file = File.createTempFile("image_picker", extension, context.getCacheDir());
       outputStream = new FileOutputStream(file);
@@ -168,31 +167,23 @@ class FileUtils {
   }
 
   /** @return extension of image with dot, or default .jpg if it none. */
-  private static String getImageExtension(Context context, Uri uriImage) {
+  private static String getImageExtension(Uri uriImage) {
     String extension = null;
-    Cursor cursor = null;
 
     try {
-      cursor =
-          context
-              .getContentResolver()
-              .query(uriImage, new String[] {MediaStore.MediaColumns.MIME_TYPE}, null, null, null);
-
-      if (cursor != null && cursor.moveToNext()) {
-        String mimeType = cursor.getString(0);
-
-        extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+      String imagePath = uriImage.getPath();
+      if (imagePath != null && imagePath.lastIndexOf(".") != -1) {
+        extension = imagePath.substring(imagePath.lastIndexOf(".") + 1);
       }
-    } finally {
-      if (cursor != null) {
-        cursor.close();
-      }
+    } catch (Exception e) {
+      extension = null;
     }
 
-    if (extension == null) {
+    if (extension == null || extension.isEmpty()) {
       //default extension for matches the previous behavior of the plugin
       extension = "jpg";
     }
+
     return "." + extension;
   }
 
