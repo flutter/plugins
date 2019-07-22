@@ -90,8 +90,8 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler, NewIntentL
         builder.setLongLink(url);
         buildShortDynamicLink(builder, call, createShortLinkListener(result));
         break;
-      case "FirebaseDynamicLinks#getLaunchLink":
-        handleGetLaunchDynamicLink(result);
+      case "FirebaseDynamicLinks#getInitialLink":
+        handleGetInitialDynamicLink(result);
         break;
       default:
         result.notImplemented();
@@ -112,7 +112,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler, NewIntentL
     return dynamicLink;
   }
 
-  private void handleGetLaunchDynamicLink(final Result result) {
+  private void handleGetInitialDynamicLink(final Result result) {
     FirebaseDynamicLinks.getInstance()
         .getDynamicLink(registrar.activity().getIntent())
         .addOnSuccessListener(

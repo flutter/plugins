@@ -39,7 +39,7 @@ static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError *error) {
 
 @interface FLTFirebaseDynamicLinksPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
-@property(nonatomic, retain) FIRDynamicLink *launchLink;
+@property(nonatomic, retain) FIRDynamicLink *initialLink;
 @property(nonatomic, retain) FlutterError *flutterError;
 @property(nonatomic) BOOL initiated;
 @end
@@ -87,9 +87,9 @@ static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError *error) {
     [FIRDynamicLinkComponents shortenURL:url
                                  options:options
                               completion:[self createShortLinkCompletion:result]];
-  } else if ([@"FirebaseDynamicLinks#getLaunchLink" isEqualToString:call.method]) {
+  } else if ([@"FirebaseDynamicLinks#getInitialLink" isEqualToString:call.method]) {
     _initiated = YES;
-    NSMutableDictionary *dict = [self getLaunchLink];
+    NSMutableDictionary *dict = [self getInitialLink];
     if (dict == nil && self.flutterError) {
       result(self.flutterError);
     } else {
@@ -100,8 +100,8 @@ static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError *error) {
   }
 }
 
-- (NSMutableDictionary *)getLaunchLink {
-  return getDictionaryFromDynamicLink(_launchLink);
+- (NSMutableDictionary *)getInitialLink {
+  return getDictionaryFromDynamicLink(_initialLink);
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -120,7 +120,7 @@ static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError *error) {
 - (BOOL)checkForDynamicLink:(NSURL *)url {
   FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
   if (dynamicLink) {
-    if (dynamicLink.url) _launchLink = dynamicLink;
+    if (dynamicLink.url) _initialLink = dynamicLink;
     return YES;
   }
   return NO;
@@ -142,14 +142,14 @@ static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError *error) {
   return handled;
 }
 
-- (BOOL)onLaunchLink:(NSUserActivity *)userActivity {
+- (BOOL)onInitialLink:(NSUserActivity *)userActivity {
   BOOL handled = [[FIRDynamicLinks dynamicLinks]
       handleUniversalLink:userActivity.webpageURL
                completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
                  if (error) {
                    self.flutterError = getFlutterError(error);
                  }
-                 self.launchLink = dynamicLink;
+                 self.initialLink = dynamicLink;
                }];
   return handled;
 }
@@ -160,7 +160,7 @@ static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError *error) {
   if (_initiated) {
     return [self onLink:userActivity];
   }
-  return [self onLaunchLink:userActivity];
+  return [self onInitialLink:userActivity];
 }
 
 - (FIRDynamicLinkShortenerCompletion)createShortLinkCompletion:(FlutterResult)result {

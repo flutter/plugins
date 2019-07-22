@@ -97,7 +97,7 @@ Receiving dynamic links on *iOS* requires a couple more steps than *Android*. If
 applinks:YOUR_SUBDOMAIN.page.link
 ```
 
-4. To receive a dynamic link, call the `getLaunchLink()` method from `FirebaseDynamicLinks` which gets the link that opened the app (or null if it was not opened via a dynamic link)
+4. To receive a dynamic link, call the `getInitialLink()` method from `FirebaseDynamicLinks` which gets the link that opened the app (or null if it was not opened via a dynamic link)
 and configure listeners for link callbacks when the application is active or in background calling `onLink`.
 
 ```dart
@@ -122,7 +122,7 @@ class MyHomeWidgetState extends State<MyHomeWidget> {
   }
 
   void initDynamicLinks() async {
-    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getLaunchLink();
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
@@ -149,7 +149,7 @@ class MyHomeWidgetState extends State<MyHomeWidget> {
 }
 ```
 
-If your app did not open from a dynamic link, `getLaunchLink()` will return `null`.
+If your app did not open from a dynamic link, `getInitialLink()` will return `null`.
 
 ## Getting Started
 
