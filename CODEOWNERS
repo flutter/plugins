@@ -18,6 +18,7 @@ packages/firebase_core/* @collinjackson @kroikie
 packages/firebase_crashlytics/* @kroikie @collinjackson
 packages/firebase_database/* @collinjackson @kroikie
 packages/firebase_dynamic_links/* @bparrishMines
+packages/firebase_in_app_messaging/* @collinjackson
 packages/firebase_messaging/* @collinjackson @kroikie
 packages/firebase_ml_vision/* @bparrishMines
 packages/firebase_performance/* @bparrishMines @collinjackson
