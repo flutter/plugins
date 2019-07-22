@@ -1,3 +1,7 @@
+## 0.0.4+12
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
 ## 0.0.4+11
 
 * Fixed an issue where `Crashlytics#getStackTraceElements` didn't handle functions without classes.
