@@ -1,3 +1,7 @@
+## 0.5.20+1
+
+* Marker drag event
+
 ## 0.5.20
 
 * Add map toolbar support
