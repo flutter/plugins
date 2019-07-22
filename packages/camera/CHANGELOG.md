@@ -1,3 +1,5 @@
+* Fix bug so that ResolutionPresets effect image capture size on Android.
+
 ## 0.5.2+1
 
 * Fix bug that prevented video recording with audio.
