@@ -1,3 +1,7 @@
+## 0.12.7+1
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
 ## 0.12.7
 
 * Methods of `Transaction` no longer require `await`.

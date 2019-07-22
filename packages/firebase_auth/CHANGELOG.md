@@ -1,3 +1,7 @@
+## 0.11.1+12
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
 ## 0.11.1+11
 
 * On iOS, `getIdToken()` now uses the `refresh` parameter instead of always using `true`.
