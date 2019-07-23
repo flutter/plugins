@@ -4,14 +4,10 @@
 
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
-
 import '../common/camera_channel.dart';
-import '../common/camera_interface.dart';
 import '../common/camera_mixins.dart';
 import '../common/native_texture.dart';
-
-part 'camera_info.dart';
+import 'camera_info.dart';
 
 /// The Camera class used to set image capture settings, start/stop preview, snap pictures, and retrieve frames for encoding for video.
 ///
@@ -64,7 +60,7 @@ class Camera with NativeMethodCallHandler {
       <String, dynamic>{'cameraId': cameraId},
     );
 
-    return CameraInfo._fromMap(infoMap);
+    return CameraInfo.fromMap(infoMap);
   }
 
   /// Sets the [NativeTexture] to be used for live preview.
