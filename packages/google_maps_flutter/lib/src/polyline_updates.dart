@@ -41,6 +41,10 @@ class _PolylineUpdates {
     final Set<Polyline> _polylinesToChange = currentPolylineIds
         .intersection(prevPolylineIds)
         .map(idToCurrentPolyline)
+        .where((Polyline _current) {
+          final Polyline _previous = previousPolylines[_current.polylineId];
+          return _current != _previous;
+        })
         .toSet();
 
     polylinesToAdd = _polylinesToAdd;

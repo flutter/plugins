@@ -39,6 +39,10 @@ class _PolygonUpdates {
     final Set<Polygon> _polygonsToChange = currentPolygonIds
         .intersection(prevPolygonIds)
         .map(idToCurrentPolygon)
+        .where((Polygon _current) {
+          final Polygon _previous = previousPolygons[_current.polygonId];
+          return _current != _previous;
+        })
         .toSet();
 
     polygonsToAdd = _polygonsToAdd;

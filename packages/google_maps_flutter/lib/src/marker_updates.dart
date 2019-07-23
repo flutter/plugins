@@ -39,6 +39,10 @@ class _MarkerUpdates {
     final Set<Marker> _markersToChange = currentMarkerIds
         .intersection(prevMarkerIds)
         .map(idToCurrentMarker)
+        .where((Marker _current) {
+          final Marker _previous = previousMarkers[_current.markerId];
+          return _current != _previous;
+        })
         .toSet();
 
     markersToAdd = _markersToAdd;
