@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-import 'package:camera/new/src/common/camera_mixins.dart';
 import 'package:flutter/foundation.dart';
 
 import '../common/camera_channel.dart';
