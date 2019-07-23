@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Android: `getApplicationSupportDirectory` enabled by using `getFilesDir`.
+
 ## 1.1.2
 
 * `getExternalStorageDirectory` now uses `getExternalFilesDir` on Android.
