@@ -39,15 +39,14 @@ Future<Directory> getTemporaryDirectory() async {
 /// On iOS, this uses the `NSApplicationSupportDirectory` API.
 /// If this directory does not exist, it is created automatically.
 ///
-/// On Android, this function throws an [UnsupportedError].
+/// On Android, this function uses the `getFilesDir` API on the context.
 Future<Directory> getApplicationSupportDirectory() async {
-  if (!Platform.isIOS)
-    throw UnsupportedError("getApplicationSupportDirectory requires iOS");
   final String path =
       await _channel.invokeMethod<String>('getApplicationSupportDirectory');
   if (path == null) {
     return null;
   }
+
   return Directory(path);
 }
 
