@@ -91,7 +91,7 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
         };
 
     if (this.registrar != null) {
-      ((Application)this.registrar.context())
+      ((Application) this.registrar.context())
           .registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
     }
   }
