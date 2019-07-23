@@ -153,7 +153,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#fromScreenLocation"]) {
     if (_mapView != nil) {
       CGPoint point = ToPoint(call.arguments);
-      CLLocationCoordinate2D location = [_mapView.projection coordinateForPoint: point];
+      CLLocationCoordinate2D location = [_mapView.projection coordinateForPoint:point];
 
       result(LocationToJson(location));
     } else {
@@ -164,7 +164,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#toScreenLocation"]) {
     if (_mapView != nil) {
       CLLocationCoordinate2D location = ToLocation(call.arguments);
-      CGPoint point = [_mapView.projection pointForCoordinate: location];
+      CGPoint point = [_mapView.projection pointForCoordinate:location];
 
       result(PointToJson(point));
     } else {

@@ -224,26 +224,24 @@ final class GoogleMapController
           break;
         }
       case "map#fromScreenLocation":
-      {
-        if (googleMap != null) {
-          final Point point =
-                  Convert.toPoint(call.arguments,density);
-          LatLng location = googleMap.getProjection().fromScreenLocation( point );
-          result.success(Convert.latLngToJson(location));
-        } else {
-          result.error(
-                  "GoogleMap uninitialized",
-                  "fromScreenLocation called prior to map initialization",
-                  null);
+        {
+          if (googleMap != null) {
+            final Point point = Convert.toPoint(call.arguments, density);
+            LatLng location = googleMap.getProjection().fromScreenLocation(point);
+            result.success(Convert.latLngToJson(location));
+          } else {
+            result.error(
+                "GoogleMap uninitialized",
+                "fromScreenLocation called prior to map initialization",
+                null);
+          }
+          break;
         }
-        break;
-      }
       case "map#toScreenLocation":
         {
           if (googleMap != null) {
-            final LatLng location =
-                    Convert.toLatLng(call.arguments);
-            Point point = googleMap.getProjection().toScreenLocation( location );
+            final LatLng location = Convert.toLatLng(call.arguments);
+            Point point = googleMap.getProjection().toScreenLocation(location);
             point.x /= density;
             point.y /= density;
             result.success(Convert.pointToJson(point));

@@ -207,9 +207,8 @@ class GoogleMapController {
 
   /// Returns the [LatLng] that corresponds to a screen [Point] location.
   Future<LatLng> fromScreenLocation(Point point) async {
-    final List<dynamic> location =
-    await channel.invokeMethod<List<dynamic>>('map#fromScreenLocation',
-        point._toJson());
+    final List<dynamic> location = await channel.invokeMethod<List<dynamic>>(
+        'map#fromScreenLocation', point._toJson());
 
     return LatLng._fromJson(location);
   }
@@ -217,8 +216,8 @@ class GoogleMapController {
   /// Returns a screen [Point] location that corresponds to a geographical coordinate [LatLng].
   Future<Point> toScreenLocation(LatLng location) async {
     final List<dynamic> screenLocation =
-    await channel.invokeMethod<List<dynamic>>('map#toScreenLocation',
-        location._toJson());
+        await channel.invokeMethod<List<dynamic>>(
+            'map#toScreenLocation', location._toJson());
 
     return Point._fromJson(screenLocation);
   }
