@@ -175,7 +175,14 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
       long callbackHandle = json.getLong(7);
 
       return new OneShotRequest(
-          requestCode, alarmClock, allowWhileIdle, exact, wakeup, startMillis, rescheduleOnReboot, callbackHandle);
+          requestCode,
+          alarmClock,
+          allowWhileIdle,
+          exact,
+          wakeup,
+          startMillis,
+          rescheduleOnReboot,
+          callbackHandle);
     }
 
     final int requestCode;

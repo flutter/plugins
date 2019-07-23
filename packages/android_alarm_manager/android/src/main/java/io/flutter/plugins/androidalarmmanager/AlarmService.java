@@ -215,29 +215,29 @@ public class AlarmService extends JobIntentService {
   }
 
   private static void scheduleAlarm(
-          Context context,
-          int requestCode,
-          boolean alarmClock,
-          boolean allowWhileIdle,
-          boolean repeating,
-          boolean exact,
-          boolean wakeup,
-          long startMillis,
-          long intervalMillis,
-          boolean rescheduleOnReboot,
-          long callbackHandle) {
+      Context context,
+      int requestCode,
+      boolean alarmClock,
+      boolean allowWhileIdle,
+      boolean repeating,
+      boolean exact,
+      boolean wakeup,
+      long startMillis,
+      long intervalMillis,
+      boolean rescheduleOnReboot,
+      long callbackHandle) {
     if (rescheduleOnReboot) {
       addPersistentAlarm(
-              context,
-              requestCode,
-              alarmClock,
-              allowWhileIdle,
-              repeating,
-              exact,
-              wakeup,
-              startMillis,
-              intervalMillis,
-              callbackHandle);
+          context,
+          requestCode,
+          alarmClock,
+          allowWhileIdle,
+          repeating,
+          exact,
+          wakeup,
+          startMillis,
+          intervalMillis,
+          callbackHandle);
     }
 
     // Create an Intent for the alarm and set the desired Dart callback handle.
@@ -286,36 +286,36 @@ public class AlarmService extends JobIntentService {
   public static void setOneShot(Context context, AndroidAlarmManagerPlugin.OneShotRequest request) {
     final boolean repeating = false;
     scheduleAlarm(
-            context,
-            request.requestCode,
-            request.alarmClock,
-            request.allowWhileIdle,
-            repeating,
-            request.exact,
-            request.wakeup,
-            request.startMillis,
-            0,
-            request.rescheduleOnReboot,
-            request.callbackHandle);
+        context,
+        request.requestCode,
+        request.alarmClock,
+        request.allowWhileIdle,
+        repeating,
+        request.exact,
+        request.wakeup,
+        request.startMillis,
+        0,
+        request.rescheduleOnReboot,
+        request.callbackHandle);
   }
 
   public static void setPeriodic(
-          Context context, AndroidAlarmManagerPlugin.PeriodicRequest request) {
+      Context context, AndroidAlarmManagerPlugin.PeriodicRequest request) {
     final boolean repeating = true;
     final boolean allowWhileIdle = false;
     final boolean alarmClock = false;
     scheduleAlarm(
-            context,
-            request.requestCode,
-            alarmClock,
-            allowWhileIdle,
-            repeating,
-            request.exact,
-            request.wakeup,
-            request.startMillis,
-            request.intervalMillis,
-            request.rescheduleOnReboot,
-            request.callbackHandle);
+        context,
+        request.requestCode,
+        alarmClock,
+        allowWhileIdle,
+        repeating,
+        request.exact,
+        request.wakeup,
+        request.startMillis,
+        request.intervalMillis,
+        request.rescheduleOnReboot,
+        request.callbackHandle);
   }
 
   public static void cancel(Context context, int requestCode) {
@@ -339,16 +339,16 @@ public class AlarmService extends JobIntentService {
   }
 
   private static void addPersistentAlarm(
-          Context context,
-          int requestCode,
-          boolean alarmClock,
-          boolean allowWhileIdle,
-          boolean repeating,
-          boolean exact,
-          boolean wakeup,
-          long startMillis,
-          long intervalMillis,
-          long callbackHandle) {
+      Context context,
+      int requestCode,
+      boolean alarmClock,
+      boolean allowWhileIdle,
+      boolean repeating,
+      boolean exact,
+      boolean wakeup,
+      long startMillis,
+      long intervalMillis,
+      long callbackHandle) {
     HashMap<String, Object> alarmSettings = new HashMap<>();
     alarmSettings.put("alarmClock", alarmClock);
     alarmSettings.put("allowWhileIdle", allowWhileIdle);
@@ -426,17 +426,17 @@ public class AlarmService extends JobIntentService {
           long intervalMillis = alarm.getLong("intervalMillis");
           long callbackHandle = alarm.getLong("callbackHandle");
           scheduleAlarm(
-                  context,
-                  requestCode,
-                  alarmClock,
-                  allowWhileIdle,
-                  repeating,
-                  exact,
-                  wakeup,
-                  startMillis,
-                  intervalMillis,
-                  false,
-                  callbackHandle);
+              context,
+              requestCode,
+              alarmClock,
+              allowWhileIdle,
+              repeating,
+              exact,
+              wakeup,
+              startMillis,
+              intervalMillis,
+              false,
+              callbackHandle);
         } catch (JSONException e) {
           Log.e(TAG, "Data for alarm request code " + requestCode + " is invalid: " + json);
         }
