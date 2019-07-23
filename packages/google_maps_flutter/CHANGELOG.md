@@ -1,3 +1,7 @@
+## 0.5.21
+
+* toScreenLocation() and fromScreenLocation() added to map controller.
+
 ## 0.5.20
 
 * Add map toolbar support
