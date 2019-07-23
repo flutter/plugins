@@ -5,7 +5,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.common.FirebaseVisionPoint;
 import com.google.firebase.ml.vision.face.FirebaseVisionFace;
+import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceLandmark;
@@ -63,6 +65,8 @@ class FaceDetector implements Detector {
 
                   faceData.put("landmarks", getLandmarkData(face));
 
+                  faceData.put("contours", getContourData(face));
+
                   faces.add(faceData);
                 }
 
@@ -95,10 +99,54 @@ class FaceDetector implements Detector {
     return landmarks;
   }
 
+  private Map<String, List<double[]>> getContourData(FirebaseVisionFace face) {
+    Map<String, List<double[]>> contours = new HashMap<>();
+
+    contours.put("allPoints", contourPosition(face, FirebaseVisionFaceContour.ALL_POINTS));
+    contours.put("face", contourPosition(face, FirebaseVisionFaceContour.FACE));
+    contours.put("leftEye", contourPosition(face, FirebaseVisionFaceContour.LEFT_EYE));
+    contours.put(
+        "leftEyebrowBottom", contourPosition(face, FirebaseVisionFaceContour.LEFT_EYEBROW_BOTTOM));
+    contours.put(
+        "leftEyebrowTop", contourPosition(face, FirebaseVisionFaceContour.LEFT_EYEBROW_TOP));
+    contours.put(
+        "lowerLipBottom", contourPosition(face, FirebaseVisionFaceContour.LOWER_LIP_BOTTOM));
+    contours.put("lowerLipTop", contourPosition(face, FirebaseVisionFaceContour.LOWER_LIP_TOP));
+    contours.put("noseBottom", contourPosition(face, FirebaseVisionFaceContour.NOSE_BOTTOM));
+    contours.put("noseBridge", contourPosition(face, FirebaseVisionFaceContour.NOSE_BRIDGE));
+    contours.put("rightEye", contourPosition(face, FirebaseVisionFaceContour.RIGHT_EYE));
+    contours.put(
+        "rightEyebrowBottom",
+        contourPosition(face, FirebaseVisionFaceContour.RIGHT_EYEBROW_BOTTOM));
+    contours.put(
+        "rightEyebrowTop", contourPosition(face, FirebaseVisionFaceContour.RIGHT_EYEBROW_TOP));
+    contours.put(
+        "upperLipBottom", contourPosition(face, FirebaseVisionFaceContour.UPPER_LIP_BOTTOM));
+    contours.put("upperLipTop", contourPosition(face, FirebaseVisionFaceContour.UPPER_LIP_TOP));
+
+    return contours;
+  }
+
   private double[] landmarkPosition(FirebaseVisionFace face, int landmarkInt) {
     FirebaseVisionFaceLandmark landmark = face.getLandmark(landmarkInt);
     if (landmark != null) {
       return new double[] {landmark.getPosition().getX(), landmark.getPosition().getY()};
+    }
+
+    return null;
+  }
+
+  private List<double[]> contourPosition(FirebaseVisionFace face, int contourInt) {
+    FirebaseVisionFaceContour contour = face.getContour(contourInt);
+    if (contour != null) {
+      List<FirebaseVisionPoint> contourPoints = contour.getPoints();
+      List<double[]> result = new ArrayList<double[]>();
+
+      for (int i = 0; i < contourPoints.size(); i++) {
+        result.add(new double[] {contourPoints.get(i).getX(), contourPoints.get(i).getY()});
+      }
+
+      return result;
     }
 
     return null;
@@ -114,6 +162,11 @@ class FaceDetector implements Detector {
         (boolean) options.get("enableLandmarks")
             ? FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS
             : FirebaseVisionFaceDetectorOptions.NO_LANDMARKS;
+
+    int contours =
+        (boolean) options.get("enableContours")
+            ? FirebaseVisionFaceDetectorOptions.ALL_CONTOURS
+            : FirebaseVisionFaceDetectorOptions.NO_CONTOURS;
 
     int mode;
     switch ((String) options.get("mode")) {
@@ -131,6 +184,7 @@ class FaceDetector implements Detector {
         new FirebaseVisionFaceDetectorOptions.Builder()
             .setClassificationMode(classification)
             .setLandmarkMode(landmark)
+            .setContourMode(contours)
             .setMinFaceSize((float) ((double) options.get("minFaceSize")))
             .setPerformanceMode(mode);
 
