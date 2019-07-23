@@ -1,4 +1,4 @@
-## 0.5.21
+## 0.5.20+1
 
 * Android: Fix memory leak of ActivityLifecycleCallbacks.
 
