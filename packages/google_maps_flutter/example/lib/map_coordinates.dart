@@ -34,11 +34,14 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
     southwest: const LatLng(0, 0),
     northeast: const LatLng(0, 0),
   );
+  Point _point = const Point(100,100);
+  LatLng _location = const LatLng(0.0,0.0);
 
   @override
   Widget build(BuildContext context) {
     final GoogleMap googleMap = GoogleMap(
       onMapCreated: onMapCreated,
+      onTap: onTap,
       initialCameraPosition: _kInitialPosition,
     );
 
@@ -61,6 +64,13 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
           '\nsouthwest: ${_visibleRegion.southwest}';
       columnChildren.add(Center(child: Text(currentVisibleRegion)));
       columnChildren.add(_getVisibleRegionButton());
+      final String screenLocation = 'Screen location: x: ${_point.x}, y: ${_point.y}';
+      columnChildren.add(Center(child: Text("\nClick on map to select a location\n")));
+      columnChildren.add(Center(child: Text(screenLocation)));
+      columnChildren.add(_toScreenLocationButton(_location));
+      final String location = 'location: x: ${_location.latitude}, y: ${_location.longitude}';
+      columnChildren.add(Center(child: Text(location)));
+      columnChildren.add(_fromScreenLocationButton(_point));
     }
 
     return Column(
@@ -78,6 +88,15 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
     });
   }
 
+  void onTap( LatLng location ) async {
+    final Point point = await mapController.toScreenLocation(location);
+
+    setState(() {
+      _location = location;
+      _point = point;
+    });
+  }
+
   Widget _getVisibleRegionButton() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -88,6 +107,36 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
               await mapController.getVisibleRegion();
           setState(() {
             _visibleRegion = visibleRegion;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _fromScreenLocationButton( Point point ) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RaisedButton(
+        child: const Text('From screen Location'),
+        onPressed: () async {
+          final LatLng location = await mapController.fromScreenLocation(point);
+          setState(() {
+            _location = location;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _toScreenLocationButton( LatLng location ) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RaisedButton(
+        child: const Text('To screen Location'),
+        onPressed: () async {
+          final Point point = await mapController.toScreenLocation(location);
+          setState(() {
+            _point = point;
           });
         },
       ),

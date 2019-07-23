@@ -201,7 +201,7 @@ class Convert {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 
-  private static LatLng toLatLng(Object o) {
+  static LatLng toLatLng(Object o) {
     final List<?> data = toList(o);
     return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
   }
@@ -240,7 +240,11 @@ class Convert {
     }
   }
 
-  private static Point toPoint(Object o, float density) {
+  static Object pointToJson(Point point) {
+    return Arrays.asList(point.x, point.y);
+  }
+
+  static Point toPoint(Object o, float density) {
     final List<?> data = toList(o);
     return new Point(toPixels(data.get(0), density), toPixels(data.get(1), density));
   }

@@ -4,6 +4,39 @@
 
 part of google_maps_flutter;
 
+/// Point holds two integer coordinates.
+class Point {
+  const Point(int x, int y)
+      : assert(x != null),
+        assert(y != null),
+        x = x, y = y;
+
+  final int x;
+  final int y;
+
+  dynamic _toJson() {
+    return <int>[x, y];
+  }
+
+  static Point _fromJson(dynamic json) {
+    if (json == null) {
+      return null;
+    }
+    return Point(json[0], json[1]);
+  }
+
+  @override
+  String toString() => '$runtimeType($x, $y)';
+
+  @override
+  bool operator ==(Object o) {
+    return o is Point && o.x == x && o.y == y;
+  }
+
+  @override
+  int get hashCode => hashValues(x, y);
+}
+
 /// A pair of latitude and longitude coordinates, stored as degrees.
 class LatLng {
   /// Creates a geographical location specified in degrees [latitude] and

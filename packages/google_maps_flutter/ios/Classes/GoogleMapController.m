@@ -8,7 +8,10 @@
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position);
+static CLLocationCoordinate2D ToLocation(NSArray* data);
 static NSArray* LocationToJson(CLLocationCoordinate2D position);
+static CGPoint ToPoint(NSArray* data);
+static NSArray* PointToJson(CGPoint point);
 static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json);
 static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
 static GMSCameraUpdate* ToCameraUpdate(NSArray* data);
@@ -145,6 +148,28 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     } else {
       result([FlutterError errorWithCode:@"GoogleMap uninitialized"
                                  message:@"getVisibleRegion called prior to map initialization"
+                                 details:nil]);
+    }
+  } else if ([call.method isEqualToString:@"map#fromScreenLocation"]) {
+    if (_mapView != nil) {
+      CGPoint point = ToPoint(call.arguments);
+      CLLocationCoordinate2D location = [_mapView.projection coordinateForPoint: point];
+
+      result(LocationToJson(location));
+    } else {
+      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                 message:@"fromScreenLocation called prior to map initialization"
+                                 details:nil]);
+    }
+  } else if ([call.method isEqualToString:@"map#toScreenLocation"]) {
+    if (_mapView != nil) {
+      CLLocationCoordinate2D location = ToLocation(call.arguments);
+      CGPoint point = [_mapView.projection pointForCoordinate: location];
+
+      result(PointToJson(point));
+    } else {
+      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                 message:@"toScreenLocation called prior to map initialization"
                                  details:nil]);
     }
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
@@ -402,6 +427,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 static NSArray* LocationToJson(CLLocationCoordinate2D position) {
   return @[ @(position.latitude), @(position.longitude) ];
+}
+
+static NSArray* PointToJson(CGPoint point) {
+  return @[ @((int)point.x), @((int)point.y) ];
 }
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position) {
