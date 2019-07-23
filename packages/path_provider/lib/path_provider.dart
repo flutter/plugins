@@ -57,7 +57,7 @@ Future<Directory> getApplicationSupportDirectory() async {
 /// [getApplicationSupportDirectory] instead if the data is not user-generated.
 ///
 /// On Android, this uses the `getDataDirectory` API on the context. Consider
-/// using getExternalStorageDirectory instead if data is intended to be visible
+/// using [getExternalStorageDirectory] instead if data is intended to be visible
 /// to the user.
 Future<Directory> getApplicationDocumentsDirectory() async {
   final String path =
