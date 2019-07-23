@@ -1,4 +1,4 @@
-## 0.6.0+19
+## 0.6.0+18
 
 * Android: Migrated information cache methods to use instance methods.
 
