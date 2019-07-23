@@ -429,9 +429,7 @@ static NSArray* LocationToJson(CLLocationCoordinate2D position) {
   return @[ @(position.latitude), @(position.longitude) ];
 }
 
-static NSArray* PointToJson(CGPoint point) {
-  return @[ @((int)point.x), @((int)point.y) ];
-}
+static NSArray* PointToJson(CGPoint point) { return @[ @((int)point.x), @((int)point.y) ]; }
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position) {
   if (!position) {
