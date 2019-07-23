@@ -6,10 +6,9 @@ part of google_maps_flutter;
 
 /// Point holds two integer coordinates.
 class Point {
-  const Point(int x, int y)
+  const Point(this.x, this.y)
       : assert(x != null),
-        assert(y != null),
-        x = x, y = y;
+        assert(y != null);
 
   final int x;
   final int y;

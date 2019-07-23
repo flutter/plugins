@@ -65,7 +65,7 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
       columnChildren.add(Center(child: Text(currentVisibleRegion)));
       columnChildren.add(_getVisibleRegionButton());
       final String screenLocation = 'Screen location: x: ${_point.x}, y: ${_point.y}';
-      columnChildren.add(Center(child: Text("\nClick on map to select a location\n")));
+      columnChildren.add(Center(child: const Text("\nClick on map to select a location\n")));
       columnChildren.add(Center(child: Text(screenLocation)));
       columnChildren.add(_toScreenLocationButton(_location));
       final String location = 'location: x: ${_location.latitude}, y: ${_location.longitude}';
