@@ -1,8 +1,11 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'package:camera/new/src/support_android/support_android_camera.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:camera/new/src/camera_testing.dart';
-
-import 'package:camera/new/support_android_camera.dart';
 
 void main() {
   group('Support Android Camera', () {

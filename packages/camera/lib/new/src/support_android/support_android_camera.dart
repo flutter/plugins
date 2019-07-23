@@ -1,4 +1,18 @@
-part of support_android_camera;
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'dart:async';
+
+import 'package:camera/new/src/common/camera_mixins.dart';
+import 'package:flutter/foundation.dart';
+
+import '../common/camera_channel.dart';
+import '../common/camera_interface.dart';
+import '../common/camera_mixins.dart';
+import '../common/native_texture.dart';
+
+part 'camera_info.dart';
 
 /// The Camera class used to set image capture settings, start/stop preview, snap pictures, and retrieve frames for encoding for video.
 ///
