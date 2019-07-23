@@ -17,10 +17,8 @@ void main() {
     mockChannel = MockMethodChannel();
     // Re-pipe to mockito for easier verifies.
     Share.channel.setMockMethodCallHandler((MethodCall call) async {
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      mockChannel.invokeMethod(call.method, call.arguments);
+      // The explicit type can be void as the only method call has a return type of void.
+      mockChannel.invokeMethod<void>(call.method, call.arguments);
     });
   });
 
@@ -44,14 +42,9 @@ void main() {
     await Share.share(
       'some text to share',
       subject: 'some subject to share',
-      // TODO(jackson): Use const Rect when available in minimum Flutter SDK
-      // ignore: prefer_const_constructors
-      sharePositionOrigin: Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
+      sharePositionOrigin: const Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
     );
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    verify(mockChannel.invokeMethod('share', <String, dynamic>{
+    verify(mockChannel.invokeMethod<void>('share', <String, dynamic>{
       'text': 'some text to share',
       'subject': 'some subject to share',
       'originX': 1.0,

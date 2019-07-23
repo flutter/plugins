@@ -1,3 +1,7 @@
+## 0.2.0+5
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
 ## 0.2.0+4
 
 * Fixed a bug where `RemoteConfigValue` could incorrectly report a remote `source` for default values.
