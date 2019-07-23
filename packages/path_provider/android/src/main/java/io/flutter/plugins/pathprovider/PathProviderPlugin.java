@@ -17,7 +17,7 @@ public class PathProviderPlugin implements MethodCallHandler {
 
   public static void registerWith(Registrar registrar) {
     MethodChannel channel =
-      new MethodChannel(registrar.messenger(), "plugins.flutter.io/path_provider");
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/path_provider");
     PathProviderPlugin instance = new PathProviderPlugin(registrar);
     channel.setMethodCallHandler(instance);
   }
@@ -59,7 +59,7 @@ public class PathProviderPlugin implements MethodCallHandler {
 
   private String getPathProviderStorageDirectory() {
     final File dir = mRegistrar.context().getExternalFilesDir(null);
-    if(dir == null){
+    if (dir == null) {
       return null;
     }
     return dir.getAbsolutePath();
