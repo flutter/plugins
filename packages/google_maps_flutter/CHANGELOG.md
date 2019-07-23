@@ -1,3 +1,7 @@
+## 0.5.21
+
+* Android: Fix memory leak of ActivityLifecycleCallbacks.
+
 ## 0.5.20
 
 * Add map toolbar support
