@@ -12,17 +12,17 @@ import com.google.firebase.messaging.RemoteMessage;
 public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
 
   public static final String ACTION_FOREGROUND_REMOTE_MESSAGE =
-          "io.flutter.plugins.firebasemessaging.FOREGROUND_NOTIFICATION";
+      "io.flutter.plugins.firebasemessaging.FOREGROUND_NOTIFICATION";
   public static final String ACTION_BACKGROUND_REMOTE_MESSAGE =
-          "io.flutter.plugins.firebasemessaging.BACKGROUND_NOTIFICATION";
+      "io.flutter.plugins.firebasemessaging.BACKGROUND_NOTIFICATION";
   public static final String EXTRA_REMOTE_MESSAGE = "notification";
 
   public static final String ACTION_TOKEN = "io.flutter.plugins.firebasemessaging.TOKEN";
   public static final String EXTRA_TOKEN = "token";
 
   /**
-   * true, if application receive messages with type "Data messages"
-   * About FCM messages {@https://firebase.google.com/docs/cloud-messaging/concept-options}
+   * true, if application receive messages with type "Data messages" About FCM messages
+   * {@https://firebase.google.com/docs/cloud-messaging/concept-options}
    */
   private boolean isDataMessages;
 
@@ -43,7 +43,8 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
       sendForegroundBroadcast(remoteMessage);
     }
 
-    boolean applicationForeground = FlutterFirebaseMessagingUtils.isApplicationForeground(getApplicationContext());
+    boolean applicationForeground =
+        FlutterFirebaseMessagingUtils.isApplicationForeground(getApplicationContext());
 
     if (applicationForeground) {
       sendForegroundBroadcast(remoteMessage);
