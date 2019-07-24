@@ -19,6 +19,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
+
+import io.flutter.plugin.common.JSONMethodCodec;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -26,7 +28,9 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** FirebaseMessagingPlugin */
@@ -41,9 +45,17 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_messaging");
+    final MethodChannel backgroundCallbackChannel =
+        new MethodChannel(
+            registrar.messenger(),
+            "plugins.flutter.io/android_fcm_background",
+            JSONMethodCodec.INSTANCE);
     final FirebaseMessagingPlugin plugin = new FirebaseMessagingPlugin(registrar, channel);
     registrar.addNewIntentListener(plugin);
     channel.setMethodCallHandler(plugin);
+    backgroundCallbackChannel.setMethodCallHandler(plugin);
+
+    FlutterFirebaseMessagingService.setBackgroundChannel(backgroundCallbackChannel);
   }
 
   private FirebaseMessagingPlugin(Registrar registrar, MethodChannel channel) {
@@ -99,7 +111,25 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
 
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
-    if ("configure".equals(call.method)) {
+    if ("FcmDartService.start".equals(call.method)) {
+      long callbackHandle = 0;
+      long onMessageHandle = 0;
+      try {
+        List<Long> callbacks = ((ArrayList<Long>) call.arguments);
+        callbackHandle = callbacks.get(0);
+        onMessageHandle = callbacks.get(1);
+      } catch (Exception e) {
+        Log.e(TAG, "There was an exception when getting callback handle from dart side");
+        e.printStackTrace();
+      }
+      FlutterFirebaseMessagingService.setBackgroundSetupHandle(this.registrar.context(), callbackHandle);
+      FlutterFirebaseMessagingService.startBackgroundIsolate(this.registrar.context(), callbackHandle);
+      FlutterFirebaseMessagingService.setBackgroundMessageHandle(this.registrar.context(), onMessageHandle);
+      result.success(true);
+    } else if ("FcmDartService.initialized".equals(call.method)) {
+      FlutterFirebaseMessagingService.onInitialized();
+      result.success(true);
+    } else if ("configure".equals(call.method)) {
       FirebaseInstanceId.getInstance()
           .getInstanceId()
           .addOnCompleteListener(

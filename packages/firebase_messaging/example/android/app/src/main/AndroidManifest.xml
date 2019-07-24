@@ -3,7 +3,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <application android:name="io.flutter.app.FlutterApplication" android:label="firebase_messaging_example" android:icon="@mipmap/ic_launcher">
+    <application android:name=".Application" android:label="firebase_messaging_example" android:icon="@mipmap/ic_launcher">
         <activity android:name=".MainActivity"
                   android:launchMode="singleTop"
                   android:theme="@android:style/Theme.Black.NoTitleBar"
