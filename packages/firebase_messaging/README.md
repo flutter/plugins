@@ -88,10 +88,39 @@ Messages are sent to your Flutter app via the `onMessage`, `onLaunch`, and `onRe
 | --------------------------: | ----------------- | ----------------- | -------------- |
 | **Notification on Android** | `onMessage` | Notification is delivered to system tray. When the user clicks on it to open app `onResume` fires if `click_action: FLUTTER_NOTIFICATION_CLICK` is set (see below). | Notification is delivered to system tray. When the user clicks on it to open app `onLaunch` fires if `click_action: FLUTTER_NOTIFICATION_CLICK` is set (see below). |
 | **Notification on iOS** | `onMessage` | Notification is delivered to system tray. When the user clicks on it to open app `onResume` fires. | Notification is delivered to system tray. When the user clicks on it to open app `onLaunch` fires. |
-| **Data Message on Android** | `onMessage` | `onMessage` while app stays in the background. | *not supported by plugin, message is lost* |
+| **Data Message on Android** | `onMessage` | `onMessage` while app stays in the background. | see "Receiving Data messages(Android)" |
 | **Data Message on iOS**     | `onMessage` | Message is stored by FCM and delivered to app via `onMessage` when the app is brought back to foreground. | Message is stored by FCM and delivered to app via `onMessage` when the app is brought back to foreground. |
 
 Additional reading: Firebase's [About FCM Messages](https://firebase.google.com/docs/cloud-messaging/concept-options).
+
+## Receiving Data messages(Android)
+
+To receiving data messages, follow these steps:
+1. Include the following code within the `<activity>` tag of your `android/app/src/main/AndroidManifest.xml`:
+```xml
+        <receiver android:name=".MyReceiver">
+            <intent-filter>
+                <action android:name="io.flutter.plugins.firebasemessaging.BACKGROUND_NOTIFICATION" />
+            </intent-filter>
+        </receiver>
+        <meta-data
+            android:name="flutter.firebase.data.message"
+            android:value="true" />
+  ```
+2. implement onReceive method. onReceive called if app terminated or app in background.
+```java
+public class MyReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        RemoteMessage remoteMessage = intent.getParcelableExtra(EXTRA_REMOTE_MESSAGE);
+
+        Map<String, String> data = remoteMessage.getData();
+
+        String title = data.get("title");
+        String body = data.get("body");
+    }
+}
+```
 
 ## Sending Messages
 Refer to the [Firebase documentation](https://firebase.google.com/docs/cloud-messaging/) about FCM for all the details about sending messages to your app. When sending a notification message to an Android device, you need to make sure to set the `click_action` property of the message to `FLUTTER_NOTIFICATION_CLICK`. Otherwise the plugin will be unable to deliver the notification to your app when the users clicks on it in the system tray.
