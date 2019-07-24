@@ -21,9 +21,10 @@ function error() {
 failures=0
 
 for version in "debug" "release"; do
-  (flutter build $@ --$version > /dev/null)
+  # Put a copy of stderr into a log file to ensure no error messages are generated
+  (flutter build $@ --$version > /dev/null 2> >(tee /tmp/stderr.log >&2))
 
-  if [ $? -eq 0 ]; then
+  if [ $? -eq 0 ] && [ "$(wc -c </tmp/stderr.log)" -eq "0" ]; then
     echo "Successfully built $version all_plugins app."
     echo "All first party plugins compile together."
   else
