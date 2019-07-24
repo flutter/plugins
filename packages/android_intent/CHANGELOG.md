@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Added "action_location_source_settings" action to start Location Settings Activity.
+
 ## 0.3.1+1
 
 * Fix Gradle version.

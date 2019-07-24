@@ -9,9 +9,39 @@ static FlutterError *getFlutterError(NSError *error) {
                              details:error.localizedDescription];
 }
 
+static NSMutableDictionary *getDictionaryFromDynamicLink(FIRDynamicLink *dynamicLink) {
+  if (dynamicLink != nil) {
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    dictionary[@"link"] = dynamicLink.url.absoluteString;
+
+    NSMutableDictionary *iosData = [[NSMutableDictionary alloc] init];
+    if (dynamicLink.minimumAppVersion) {
+      iosData[@"minimumVersion"] = dynamicLink.minimumAppVersion;
+    }
+    dictionary[@"ios"] = iosData;
+    return dictionary;
+  } else {
+    return nil;
+  }
+}
+
+static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError *error) {
+  if (error == nil) {
+    return nil;
+  }
+
+  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+  dictionary[@"code"] = error.code;
+  dictionary[@"message"] = error.message;
+  dictionary[@"details"] = error.details;
+  return dictionary;
+}
+
 @interface FLTFirebaseDynamicLinksPlugin ()
-@property(nonatomic, retain) FIRDynamicLink *dynamicLink;
+@property(nonatomic, retain) FlutterMethodChannel *channel;
+@property(nonatomic, retain) FIRDynamicLink *initialLink;
 @property(nonatomic, retain) FlutterError *flutterError;
+@property(nonatomic) BOOL initiated;
 @end
 
 @implementation FLTFirebaseDynamicLinksPlugin
@@ -19,7 +49,8 @@ static FlutterError *getFlutterError(NSError *error) {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_dynamic_links"
                                   binaryMessenger:[registrar messenger]];
-  FLTFirebaseDynamicLinksPlugin *instance = [[FLTFirebaseDynamicLinksPlugin alloc] init];
+  FLTFirebaseDynamicLinksPlugin *instance =
+      [[FLTFirebaseDynamicLinksPlugin alloc] initWithChannel:channel];
   [registrar addMethodCallDelegate:instance channel:channel];
   [registrar addApplicationDelegate:instance];
 
@@ -29,9 +60,11 @@ static FlutterError *getFlutterError(NSError *error) {
   }
 }
 
-- (instancetype)init {
+- (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
   self = [super init];
   if (self) {
+    _initiated = NO;
+    _channel = channel;
     if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
       NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
@@ -54,11 +87,11 @@ static FlutterError *getFlutterError(NSError *error) {
     [FIRDynamicLinkComponents shortenURL:url
                                  options:options
                               completion:[self createShortLinkCompletion:result]];
-  } else if ([@"FirebaseDynamicLinks#retrieveDynamicLink" isEqualToString:call.method]) {
-    NSMutableDictionary *dict = [self retrieveDynamicLink];
+  } else if ([@"FirebaseDynamicLinks#getInitialLink" isEqualToString:call.method]) {
+    _initiated = YES;
+    NSMutableDictionary *dict = [self getInitialLink];
     if (dict == nil && self.flutterError) {
       result(self.flutterError);
-      self.flutterError = nil;
     } else {
       result(dict);
     }
@@ -67,21 +100,8 @@ static FlutterError *getFlutterError(NSError *error) {
   }
 }
 
-- (NSMutableDictionary *)retrieveDynamicLink {
-  if (_dynamicLink != nil) {
-    NSMutableDictionary *dynamicLink = [[NSMutableDictionary alloc] init];
-    dynamicLink[@"link"] = _dynamicLink.url.absoluteString;
-
-    NSMutableDictionary *iosData = [[NSMutableDictionary alloc] init];
-    if (_dynamicLink.minimumAppVersion) {
-      iosData[@"minimumVersion"] = _dynamicLink.minimumAppVersion;
-    }
-    _dynamicLink = nil;
-    dynamicLink[@"ios"] = iosData;
-    return dynamicLink;
-  } else {
-    return nil;
-  }
+- (NSMutableDictionary *)getInitialLink {
+  return getDictionaryFromDynamicLink(_initialLink);
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -100,25 +120,47 @@ static FlutterError *getFlutterError(NSError *error) {
 - (BOOL)checkForDynamicLink:(NSURL *)url {
   FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
   if (dynamicLink) {
-    if (dynamicLink.url) _dynamicLink = dynamicLink;
+    if (dynamicLink.url) _initialLink = dynamicLink;
     return YES;
   }
   return NO;
 }
 
-- (BOOL)application:(UIApplication *)application
-    continueUserActivity:(NSUserActivity *)userActivity
-      restorationHandler:(void (^)(NSArray *))restorationHandler {
-  usleep(50000);
+- (BOOL)onLink:(NSUserActivity *)userActivity {
+  BOOL handled = [[FIRDynamicLinks dynamicLinks]
+      handleUniversalLink:userActivity.webpageURL
+               completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
+                 if (error) {
+                   FlutterError *flutterError = getFlutterError(error);
+                   [self.channel invokeMethod:@"onLinkError"
+                                    arguments:getDictionaryFromFlutterError(flutterError)];
+                 } else {
+                   NSMutableDictionary *dictionary = getDictionaryFromDynamicLink(dynamicLink);
+                   [self.channel invokeMethod:@"onLinkSuccess" arguments:dictionary];
+                 }
+               }];
+  return handled;
+}
+
+- (BOOL)onInitialLink:(NSUserActivity *)userActivity {
   BOOL handled = [[FIRDynamicLinks dynamicLinks]
       handleUniversalLink:userActivity.webpageURL
                completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
                  if (error) {
                    self.flutterError = getFlutterError(error);
                  }
-                 self.dynamicLink = dynamicLink;
+                 self.initialLink = dynamicLink;
                }];
   return handled;
+}
+
+- (BOOL)application:(UIApplication *)application
+    continueUserActivity:(NSUserActivity *)userActivity
+      restorationHandler:(void (^)(NSArray *))restorationHandler {
+  if (_initiated) {
+    return [self onLink:userActivity];
+  }
+  return [self onInitialLink:userActivity];
 }
 
 - (FIRDynamicLinkShortenerCompletion)createShortLinkCompletion:(FlutterResult)result {

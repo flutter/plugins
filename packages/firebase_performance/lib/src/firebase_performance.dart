@@ -37,7 +37,7 @@ class FirebasePerformance {
   /// does not reflect whether instrumentation is enabled/disabled.
   Future<bool> isPerformanceCollectionEnabled() {
     return channel.invokeMethod<bool>(
-      '$FirebasePerformance#isPerformanceCollectionEnabled',
+      'FirebasePerformance#isPerformanceCollectionEnabled',
       <String, dynamic>{'handle': _handle},
     );
   }
@@ -48,7 +48,7 @@ class FirebasePerformance {
   /// application. By default, performance monitoring is enabled.
   Future<void> setPerformanceCollectionEnabled(bool enable) {
     return channel.invokeMethod<void>(
-      '$FirebasePerformance#setPerformanceCollectionEnabled',
+      'FirebasePerformance#setPerformanceCollectionEnabled',
       <String, dynamic>{'handle': _handle, 'enable': enable},
     );
   }
@@ -62,7 +62,7 @@ class FirebasePerformance {
     final int handle = _nextHandle++;
 
     FirebasePerformance.channel.invokeMethod<void>(
-      '$FirebasePerformance#newTrace',
+      'FirebasePerformance#newTrace',
       <String, dynamic>{'handle': _handle, 'traceHandle': handle, 'name': name},
     );
 
@@ -74,7 +74,7 @@ class FirebasePerformance {
     final int handle = _nextHandle++;
 
     FirebasePerformance.channel.invokeMethod<void>(
-      '$FirebasePerformance#newHttpMetric',
+      'FirebasePerformance#newHttpMetric',
       <String, dynamic>{
         'handle': _handle,
         'httpMetricHandle': handle,

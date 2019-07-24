@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FLTImagePickerPhotoAssetUtil : NSObject
 
-+ (PHAsset *)getAssetFromImagePickerInfo:(NSDictionary *)info;
++ (nullable PHAsset *)getAssetFromImagePickerInfo:(NSDictionary *)info;
 
 // Save image with correct meta data and extention copied from the original asset.
 // maxWidth and maxHeight are used only for GIF images.
