@@ -50,7 +50,7 @@
                                 suffix:suffix
                                   type:type
                           imageQuality:imageQuality];
- }
+  }
 }
 
 + (NSString *)saveImageWithPickerInfo:(nullable NSDictionary *)info
