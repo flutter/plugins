@@ -46,7 +46,7 @@ class CloudFunctions {
   /// Changes this instance to point to a Cloud Functions emulator running locally.
   ///
   /// @param origin The origin of the local emulator, such as "//10.0.2.2:5005".
-  CloudFunctions useEmulatorFunctions({@required String origin}) {
+  CloudFunctions useFunctionsEmulator({@required String origin}) {
     _origin = origin;
     return this;
   }
