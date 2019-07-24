@@ -93,7 +93,6 @@ Messages are sent to your Flutter app via the `onMessage`, `onLaunch`, and `onRe
 
 Additional reading: Firebase's [About FCM Messages](https://firebase.google.com/docs/cloud-messaging/concept-options).
 
-=======
 ## Notification messages with additional data
 It is possible to include additional data in notification messages by adding them to the `"data"`-field of the message.
 
