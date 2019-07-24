@@ -21,7 +21,7 @@ function error() {
 failures=0
 
 for version in "debug" "release"; do
-  (flutter build $@ --$version > /dev/null)
+  (flutter build $@ --$version)
 
   if [ $? -eq 0 ]; then
     echo "Successfully built $version all_plugins app."
