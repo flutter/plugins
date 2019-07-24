@@ -26,7 +26,7 @@ import org.mockito.MockitoAnnotations;
 public class ImagePickerDelegateTest {
   private static final double WIDTH = 10.0;
   private static final double HEIGHT = 10.0;
-  private static final double IMAGE_QUALITY = 70;
+  private static final int IMAGE_QUALITY = 70;
 
   @Mock Activity mockActivity;
   @Mock ImageResizer mockImageResizer;
@@ -67,7 +67,7 @@ public class ImagePickerDelegateTest {
         .thenReturn("scaledPath");
     when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null, 0))
         .thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT, null))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT, 0))
         .thenReturn("scaledPath");
     when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null, IMAGE_QUALITY))
         .thenReturn("scaledPath");
