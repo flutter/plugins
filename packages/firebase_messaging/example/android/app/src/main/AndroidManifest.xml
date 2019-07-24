@@ -19,5 +19,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <receiver android:name=".FlutterBackgroundMessagesReceiver">
+            <intent-filter>
+                <action android:name="io.flutter.plugins.firebasemessaging.BACKGROUND_NOTIFICATION" />
+            </intent-filter>
+        </receiver>
+        <meta-data
+            android:name="flutter.firebase.data.message"
+            android:value="true" />
     </application>
 </manifest>

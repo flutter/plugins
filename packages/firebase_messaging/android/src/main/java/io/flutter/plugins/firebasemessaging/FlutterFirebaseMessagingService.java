@@ -63,7 +63,7 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
     intent.putExtra(EXTRA_REMOTE_MESSAGE, remoteMessage);
     intent.setPackage(getPackageName());
     sendBroadcast(intent);
-
+  }
   /**
    * Called when a new token for the default Firebase project is generated.
    *

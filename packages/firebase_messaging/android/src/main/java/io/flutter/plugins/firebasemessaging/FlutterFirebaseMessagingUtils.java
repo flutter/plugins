@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.firebasemessaging;
 
 import android.app.ActivityManager;
@@ -10,15 +14,11 @@ import android.os.Process;
 
 import java.util.List;
 
-/**
- * Created by Ivan Kuznetsov
- * on 04/12/2018.
- */
 public class FlutterFirebaseMessagingUtils {
 
     private static final String DATA_MESSAGES_KEY = "flutter.firebase.data.message";
 
-    public static boolean isDataMessages(Context context) {
+    static boolean isDataMessages(Context context) {
         try {
             ApplicationInfo info = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = info.metaData;
