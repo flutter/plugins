@@ -255,7 +255,7 @@ static const int SOURCE_GALLERY = 1;
 
     if (imageQuality.intValue < 0 || imageQuality.intValue > 100) {
         imageQuality = [NSNumber numberWithInt:1];
-    }else{
+    } else {
         imageQuality = @([imageQuality floatValue] / 100);
     }
 
@@ -310,7 +310,7 @@ static const int SOURCE_GALLERY = 1;
 
 - (void)saveImageWithPickerInfo:(NSDictionary *)info
                           image:(UIImage *)image
-                          imageQuality:(NSNumber *)imageQuality{
+                          imageQuality:(NSNumber *)imageQuality {
     NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info
                                                                           image:image
                                                                    imageQuality:imageQuality];

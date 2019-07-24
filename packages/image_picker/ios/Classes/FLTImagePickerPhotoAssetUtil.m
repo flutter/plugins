@@ -27,7 +27,7 @@
                                        image:(UIImage *)image
                                     maxWidth:(NSNumber *)maxWidth
                                    maxHeight:(NSNumber *)maxHeight
-                                imageQuality:(NSNumber *)imageQuality{
+                                imageQuality:(NSNumber *)imageQuality {
   NSString *suffix = kFLTImagePickerDefaultSuffix;
   FLTImagePickerMIMEType type = kFLTImagePickerMIMETypeDefault;
   NSDictionary *metaData = nil;
@@ -46,7 +46,7 @@
     return [self saveImageWithMetaData:metaData gifInfo:gifInfo suffix:suffix];
   } else {
     return [self saveImageWithMetaData:metaData image:image suffix:suffix type:type imageQuality:imageQuality];
-  }
+ }
 }
 
 + (NSString *)saveImageWithPickerInfo:(nullable NSDictionary *)info image:(UIImage *)image imageQuality:(NSNumber *)imageQuality {
@@ -69,7 +69,7 @@
                               image:(UIImage *)image
                              suffix:(NSString *)suffix
                                type:(FLTImagePickerMIMEType)type
-                       imageQuality:(NSNumber *)imageQuality{
+                       imageQuality:(NSNumber *)imageQuality {
   CGImagePropertyOrientation orientation = (CGImagePropertyOrientation)[metaData[(
       __bridge NSString *)kCGImagePropertyOrientation] integerValue];
   UIImage *newImage = [UIImage
