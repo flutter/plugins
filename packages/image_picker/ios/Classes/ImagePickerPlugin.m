@@ -254,9 +254,9 @@ static const int SOURCE_GALLERY = 1;
     NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
 
     if (imageQuality.intValue < 0 || imageQuality.intValue > 100) {
-        imageQuality = [NSNumber numberWithInt:1];
+      imageQuality = [NSNumber numberWithInt:1];
     } else {
-        imageQuality = @([imageQuality floatValue] / 100);
+      imageQuality = @([imageQuality floatValue] / 100);
     }
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
@@ -310,7 +310,7 @@ static const int SOURCE_GALLERY = 1;
 
 - (void)saveImageWithPickerInfo:(NSDictionary *)info
                           image:(UIImage *)image
-                          imageQuality:(NSNumber *)imageQuality {
+                   imageQuality:(NSNumber *)imageQuality {
     NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info
                                                                           image:image
                                                                    imageQuality:imageQuality];

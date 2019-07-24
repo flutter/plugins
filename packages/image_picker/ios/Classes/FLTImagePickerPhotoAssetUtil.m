@@ -49,7 +49,9 @@
  }
 }
 
-+ (NSString *)saveImageWithPickerInfo:(nullable NSDictionary *)info image:(UIImage *)image imageQuality:(NSNumber *)imageQuality {
++ (NSString *)saveImageWithPickerInfo:(nullable NSDictionary *)info
+                                image:(UIImage *)image
+                         imageQuality:(NSNumber *)imageQuality {
   NSDictionary *metaData = info[UIImagePickerControllerMediaMetadata];
   return [self saveImageWithMetaData:metaData
                                image:image
@@ -79,7 +81,9 @@
                [FLTImagePickerMetaDataUtil
                    getNormalizedUIImageOrientationFromCGImagePropertyOrientation:orientation]];
 
-  NSData *data = [FLTImagePickerMetaDataUtil convertImage:newImage usingType:type quality:imageQuality];
+  NSData *data = [FLTImagePickerMetaDataUtil convertImage:newImage
+                                                usingType:type
+                                                  quality:imageQuality];
   if (metaData) {
     data = [FLTImagePickerMetaDataUtil updateMetaData:metaData toImage:data];
   }
