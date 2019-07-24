@@ -311,9 +311,9 @@ static const int SOURCE_GALLERY = 1;
 - (void)saveImageWithPickerInfo:(NSDictionary *)info
                           image:(UIImage *)image
                    imageQuality:(NSNumber *)imageQuality {
-    NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info
-                                                                          image:image
-                                                                   imageQuality:imageQuality];
+  NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info
+                                                                        image:image
+                                                                 imageQuality:imageQuality];
   [self handleSavedPath:savedPath];
 }
 

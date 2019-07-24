@@ -45,7 +45,11 @@
 
     return [self saveImageWithMetaData:metaData gifInfo:gifInfo suffix:suffix];
   } else {
-    return [self saveImageWithMetaData:metaData image:image suffix:suffix type:type imageQuality:imageQuality];
+    return [self saveImageWithMetaData:metaData
+                                 image:image
+                                suffix:suffix
+                                  type:type
+                          imageQuality:imageQuality];
  }
 }
 
