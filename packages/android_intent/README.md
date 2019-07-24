@@ -27,6 +27,8 @@ for it in the plugin and use an action constant to refer to it. For instance:
 
 `'action_view'` translates to `android.os.Intent.ACTION_VIEW`
 
+`'action_location_source_settings'` translates to `android.settings.LOCATION_SOURCE_SETTINGS`
+
 Feel free to add support for additional Android intents.
 
 The Dart values supported for the arguments parameter, and their corresponding

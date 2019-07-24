@@ -217,6 +217,8 @@ public class AlarmService extends JobIntentService {
   private static void scheduleAlarm(
       Context context,
       int requestCode,
+      boolean alarmClock,
+      boolean allowWhileIdle,
       boolean repeating,
       boolean exact,
       boolean wakeup,
@@ -228,6 +230,8 @@ public class AlarmService extends JobIntentService {
       addPersistentAlarm(
           context,
           requestCode,
+          alarmClock,
+          allowWhileIdle,
           repeating,
           exact,
           wakeup,
@@ -250,17 +254,31 @@ public class AlarmService extends JobIntentService {
 
     // Schedule the alarm.
     AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+    if (alarmClock) {
+      AlarmManagerCompat.setAlarmClock(manager, startMillis, pendingIntent, pendingIntent);
+      return;
+    }
+
     if (exact) {
       if (repeating) {
         manager.setRepeating(clock, startMillis, intervalMillis, pendingIntent);
       } else {
-        AlarmManagerCompat.setExact(manager, clock, startMillis, pendingIntent);
+        if (allowWhileIdle) {
+          AlarmManagerCompat.setExactAndAllowWhileIdle(manager, clock, startMillis, pendingIntent);
+        } else {
+          AlarmManagerCompat.setExact(manager, clock, startMillis, pendingIntent);
+        }
       }
     } else {
       if (repeating) {
         manager.setInexactRepeating(clock, startMillis, intervalMillis, pendingIntent);
       } else {
-        manager.set(clock, startMillis, pendingIntent);
+        if (allowWhileIdle) {
+          AlarmManagerCompat.setAndAllowWhileIdle(manager, clock, startMillis, pendingIntent);
+        } else {
+          manager.set(clock, startMillis, pendingIntent);
+        }
       }
     }
   }
@@ -270,6 +288,8 @@ public class AlarmService extends JobIntentService {
     scheduleAlarm(
         context,
         request.requestCode,
+        request.alarmClock,
+        request.allowWhileIdle,
         repeating,
         request.exact,
         request.wakeup,
@@ -282,9 +302,13 @@ public class AlarmService extends JobIntentService {
   public static void setPeriodic(
       Context context, AndroidAlarmManagerPlugin.PeriodicRequest request) {
     final boolean repeating = true;
+    final boolean allowWhileIdle = false;
+    final boolean alarmClock = false;
     scheduleAlarm(
         context,
         request.requestCode,
+        alarmClock,
+        allowWhileIdle,
         repeating,
         request.exact,
         request.wakeup,
@@ -317,6 +341,8 @@ public class AlarmService extends JobIntentService {
   private static void addPersistentAlarm(
       Context context,
       int requestCode,
+      boolean alarmClock,
+      boolean allowWhileIdle,
       boolean repeating,
       boolean exact,
       boolean wakeup,
@@ -324,6 +350,8 @@ public class AlarmService extends JobIntentService {
       long intervalMillis,
       long callbackHandle) {
     HashMap<String, Object> alarmSettings = new HashMap<>();
+    alarmSettings.put("alarmClock", alarmClock);
+    alarmSettings.put("allowWhileIdle", allowWhileIdle);
     alarmSettings.put("repeating", repeating);
     alarmSettings.put("exact", exact);
     alarmSettings.put("wakeup", wakeup);
@@ -389,6 +417,8 @@ public class AlarmService extends JobIntentService {
         }
         try {
           JSONObject alarm = new JSONObject(json);
+          boolean alarmClock = alarm.getBoolean("alarmClock");
+          boolean allowWhileIdle = alarm.getBoolean("allowWhileIdle");
           boolean repeating = alarm.getBoolean("repeating");
           boolean exact = alarm.getBoolean("exact");
           boolean wakeup = alarm.getBoolean("wakeup");
@@ -398,6 +428,8 @@ public class AlarmService extends JobIntentService {
           scheduleAlarm(
               context,
               requestCode,
+              alarmClock,
+              allowWhileIdle,
               repeating,
               exact,
               wakeup,
