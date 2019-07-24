@@ -33,7 +33,7 @@ void main() {
       log.clear();
     });
 
-    test('onError', () async {
+    test('recordFlutterError', () async {
       final FlutterErrorDetails details = FlutterErrorDetails(
         exception: 'foo exception',
         stack: StackTrace.current,
@@ -46,7 +46,7 @@ void main() {
       crashlytics.setInt('testInt', 42);
       crashlytics.setDouble('testDouble', 42.0);
       crashlytics.setString('testString', 'bar');
-      await crashlytics.onError(details);
+      await crashlytics.recordFlutterError(details);
       expect(log[0].method, 'Crashlytics#onError');
       expect(log[0].arguments['exception'], 'foo exception');
       expect(log[0].arguments['context'], 'foo context');
@@ -66,13 +66,14 @@ void main() {
       expect(log[0].arguments['keys'][3]['type'], 'string');
     });
 
-    test('onRuntimeException', () async {
+    test('recordError', () async {
       crashlytics.enableInDevMode = true;
       crashlytics.log('foo');
-      await crashlytics.onRuntimeException('foo exception', StackTrace.current);
+      await crashlytics.recordError('foo exception', StackTrace.current,
+          context: "context");
       expect(log[0].method, 'Crashlytics#onError');
       expect(log[0].arguments['exception'], 'foo exception');
-      expect(log[0].arguments['context'], null);
+      expect(log[0].arguments['context'], "context");
       expect(log[0].arguments['logs'], isNotEmpty);
       expect(log[0].arguments['logs'], contains('foo'));
       expect(log[0].arguments['keys'][0]['key'], 'testBool');

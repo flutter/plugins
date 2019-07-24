@@ -25,8 +25,8 @@ class Crashlytics {
       MethodChannel('plugins.flutter.io/firebase_crashlytics');
 
   /// Submits non-fatal crash report to Firebase Crashlytics.
-  Future<void> onError(FlutterErrorDetails details) async {
-    print('Error caught by Crashlytics plugin:');
+  Future<void> recordFlutterError(FlutterErrorDetails details) async {
+    print('Error caught by Crashlytics plugin <recordFlutterError>:');
 
     bool inDebugMode = false;
     if (!enableInDevMode) {
@@ -55,8 +55,9 @@ class Crashlytics {
     }
   }
 
-  Future<void> onRuntimeException(dynamic exception, dynamic stack) async {
-    print('Runtime Exception caught by Crashlytics plugin:');
+  Future<void> recordError(dynamic exception, StackTrace stack,
+      {dynamic context}) async {
+    print('Error caught by Crashlytics plugin <recordError>:');
 
     bool inDebugMode = false;
     if (!enableInDevMode) {
@@ -74,6 +75,7 @@ class Crashlytics {
       final dynamic result = await channel
           .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
         'exception': "${exception.toString()}",
+        'context': '$context',
         'stackTraceElements': stackTraceElements,
         'logs': _logs.toList(),
         'keys': _prepareKeys(),
