@@ -1,3 +1,7 @@
+## 5.2.0
+
+* Android: Receiving Data messages if app terminated
+
 ## 5.1.3
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
