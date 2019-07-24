@@ -24,64 +24,21 @@ class Crashlytics {
   static const MethodChannel channel =
       MethodChannel('plugins.flutter.io/firebase_crashlytics');
 
-  /// Submits non-fatal crash report to Firebase Crashlytics.
+  /// Submits non-fatal flutter crash report based on `FlutterErrorDetails`
+  /// to Firebase Crashlytics.
   Future<void> recordFlutterError(FlutterErrorDetails details) async {
     print('Error caught by Crashlytics plugin <recordFlutterError>:');
 
-    bool inDebugMode = false;
-    if (!enableInDevMode) {
-      assert(inDebugMode = true);
-    }
-
-    if (inDebugMode && !enableInDevMode) {
-      print(Trace.format(details.stack));
-    } else {
-      // Report error
-      final List<String> stackTraceLines =
-          Trace.format(details.stack).trimRight().split('\n');
-      final List<Map<String, String>> stackTraceElements =
-          getStackTraceElements(stackTraceLines);
-      await channel
-          .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
-        'exception': details.exceptionAsString(),
-        // FlutterErrorDetails.context has been migrated from a String to a
-        // DiagnosticsNode. Coerce it to a String here in a way that will work
-        // on both Strings and the new DiagnosticsNode values. See https://groups.google.com/forum/#!topic/flutter-announce/hp1RNIgej38
-        'context': '${details.context}',
-        'stackTraceElements': stackTraceElements,
-        'logs': _logs.toList(),
-        'keys': _prepareKeys(),
-      });
-    }
+    _recordError(details.exceptionAsString(), details.stack,
+        context: details.context);
   }
 
+  /// Submits non-fatal crash report to Firebase Crashlytics.
   Future<void> recordError(dynamic exception, StackTrace stack,
       {dynamic context}) async {
     print('Error caught by Crashlytics plugin <recordError>:');
 
-    bool inDebugMode = false;
-    if (!enableInDevMode) {
-      assert(inDebugMode = true);
-    }
-
-    if (inDebugMode && !enableInDevMode) {
-      print(Trace.format(stack));
-    } else {
-      // Report error
-      final List<String> stackTraceLines =
-          Trace.format(stack).trimRight().split('\n');
-      final List<Map<String, String>> stackTraceElements =
-          getStackTraceElements(stackTraceLines);
-      final dynamic result = await channel
-          .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
-        'exception': "${exception.toString()}",
-        'context': '$context',
-        'stackTraceElements': stackTraceElements,
-        'logs': _logs.toList(),
-        'keys': _prepareKeys(),
-      });
-      print(result);
-    }
+    _recordError(exception, stack, context: context);
   }
 
   void crash() {
@@ -224,5 +181,31 @@ class Crashlytics {
       }
     }
     return elements;
+  }
+
+  Future<void> _recordError(dynamic exception, StackTrace stack,
+      {dynamic context}) async {
+    bool inDebugMode = false;
+    if (!enableInDevMode) {
+      assert(inDebugMode = true);
+    }
+
+    if (inDebugMode && !enableInDevMode) {
+      print(Trace.format(stack));
+    } else {
+      // Report error
+      final List<String> stackTraceLines =
+          Trace.format(stack).trimRight().split('\n');
+      final List<Map<String, String>> stackTraceElements =
+          getStackTraceElements(stackTraceLines);
+      await channel
+          .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
+        'exception': "${exception.toString()}",
+        'context': '$context',
+        'stackTraceElements': stackTraceElements,
+        'logs': _logs.toList(),
+        'keys': _prepareKeys(),
+      });
+    }
   }
 }
