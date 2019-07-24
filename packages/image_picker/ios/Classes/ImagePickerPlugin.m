@@ -251,6 +251,13 @@ static const int SOURCE_GALLERY = 1;
 
     NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+    NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
+
+      if (imageQuality.intValue < 0 || imageQuality.intValue > 100) {
+          imageQuality = [NSNumber numberWithInt:1];
+      }else{
+          imageQuality = @([imageQuality floatValue] / 100);
+      }
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
       image = [FLTImagePickerImageUtil scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
@@ -259,7 +266,7 @@ static const int SOURCE_GALLERY = 1;
     PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
     if (!originalAsset) {
       // Image picked without an original asset (e.g. User took a photo directly)
-      [self saveImageWithPickerInfo:info image:image];
+        [self saveImageWithPickerInfo:info image:image imageQuality:imageQuality];
     } else {
       __weak typeof(self) weakSelf = self;
       [[PHImageManager defaultManager]
@@ -271,7 +278,8 @@ static const int SOURCE_GALLERY = 1;
                        [weakSelf saveImageWithOriginalImageData:imageData
                                                           image:image
                                                        maxWidth:maxWidth
-                                                      maxHeight:maxHeight];
+                                                      maxHeight:maxHeight
+                                                   imageQuality:imageQuality];
                      }];
     }
   }
@@ -289,17 +297,19 @@ static const int SOURCE_GALLERY = 1;
 - (void)saveImageWithOriginalImageData:(NSData *)originalImageData
                                  image:(UIImage *)image
                               maxWidth:(NSNumber *)maxWidth
-                             maxHeight:(NSNumber *)maxHeight {
+                             maxHeight:(NSNumber *)maxHeight
+                          imageQuality:(NSNumber *)imageQuality{
   NSString *savedPath =
       [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:originalImageData
                                                              image:image
                                                           maxWidth:maxWidth
-                                                         maxHeight:maxHeight];
+                                                         maxHeight:maxHeight
+       imageQuality:imageQuality];
   [self handleSavedPath:savedPath];
 }
 
-- (void)saveImageWithPickerInfo:(NSDictionary *)info image:(UIImage *)image {
-  NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info image:image];
+- (void)saveImageWithPickerInfo:(NSDictionary *)info image:(UIImage *)image imageQuality:(NSNumber *)imageQuality{
+    NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info image:image imageQuality:imageQuality];
   [self handleSavedPath:savedPath];
 }
 

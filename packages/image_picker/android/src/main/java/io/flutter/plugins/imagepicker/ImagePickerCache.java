@@ -18,6 +18,7 @@ class ImagePickerCache {
   static final String MAP_KEY_PATH = "path";
   static final String MAP_KEY_MAX_WIDTH = "maxWidth";
   static final String MAP_KEY_MAX_HEIGHT = "maxHeight";
+  static final String MAP_KEY_IMAGE_QUALITY = "imageQuality";
   private static final String MAP_KEY_TYPE = "type";
   private static final String MAP_KEY_ERROR_CODE = "errorCode";
   private static final String MAP_KEY_ERROR_MESSAGE = "errorMessage";

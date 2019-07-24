@@ -63,14 +63,16 @@ const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIME
 + (NSData *)convertImage:(UIImage *)image
                usingType:(FLTImagePickerMIMEType)type
                  quality:(nullable NSNumber *)quality {
-  if (quality && type != FLTImagePickerMIMETypeJPEG) {
-    @throw [NSException
-        exceptionWithName:@"flutter_image_picker_convert_image_exception"
-                   reason:[NSString stringWithFormat:@"quality is not available for type %@",
-                                                     [FLTImagePickerMetaDataUtil
-                                                         imageTypeSuffixFromType:type]]
-                 userInfo:nil];
-  }
+
+// Commenting as of now as JPEG conversion is done by default
+//  if (quality && type != FLTImagePickerMIMETypeJPEG) {
+//    @throw [NSException
+//        exceptionWithName:@"flutter_image_picker_convert_image_exception"
+//                   reason:[NSString stringWithFormat:@"quality is not available for type %@",
+//                                                     [FLTImagePickerMetaDataUtil
+//                                                         imageTypeSuffixFromType:type]]
+//                 userInfo:nil];
+//  }
 
   switch (type) {
     case FLTImagePickerMIMETypeJPEG: {

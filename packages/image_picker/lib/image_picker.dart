@@ -32,14 +32,17 @@ class ImagePicker {
   /// If specified, the image will be at most [maxWidth] wide and
   /// [maxHeight] tall. Otherwise the image will be returned at it's
   /// original width and height.
+  /// The [imageQuality] argument resize the image as per the input, ranging from 0-100 compression.
+  /// 0 meaning compress for small size, 100 meaning compress for max quality.
+  /// Some formats, like PNG which is loss less, will ignore the quality setting
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  static Future<File> pickImage({
-    @required ImageSource source,
-    double maxWidth,
-    double maxHeight,
-  }) async {
+  static Future<File> pickImage(
+      {@required ImageSource source,
+      double maxWidth,
+      double maxHeight,
+      int imageQuality}) async {
     assert(source != null);
 
     if (maxWidth != null && maxWidth < 0) {
@@ -50,12 +53,22 @@ class ImagePicker {
       throw ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
     }
 
+    if (null == imageQuality) {
+      imageQuality = 100;
+    }
+
+    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
+      throw ArgumentError.value(
+          imageQuality, 'invalid imageQuality, must be between 0 and 100');
+    }
+
     final String path = await _channel.invokeMethod<String>(
       'pickImage',
       <String, dynamic>{
         'source': source.index,
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
+        'imageQuality': imageQuality
       },
     );
 

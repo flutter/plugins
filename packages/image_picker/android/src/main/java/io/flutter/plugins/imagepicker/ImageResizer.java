@@ -26,15 +26,17 @@ class ImageResizer {
    *
    * <p>If no resizing is needed, returns the path for the original image.
    */
-  String resizeImageIfNeeded(String imagePath, Double maxWidth, Double maxHeight) {
-    boolean shouldScale = maxWidth != null || maxHeight != null;
+  String resizeImageIfNeeded(
+      String imagePath, Double maxWidth, Double maxHeight, int imageQuality) {
+    boolean shouldScale =
+        maxWidth != null || maxHeight != null || (imageQuality > -1 && imageQuality < 101);
 
     if (!shouldScale) {
       return imagePath;
     }
 
     try {
-      File scaledImage = resizedImage(imagePath, maxWidth, maxHeight);
+      File scaledImage = resizedImage(imagePath, maxWidth, maxHeight, imageQuality);
       exifDataCopier.copyExif(imagePath, scaledImage.getPath());
 
       return scaledImage.getPath();
@@ -43,10 +45,15 @@ class ImageResizer {
     }
   }
 
-  private File resizedImage(String path, Double maxWidth, Double maxHeight) throws IOException {
+  private File resizedImage(String path, Double maxWidth, Double maxHeight, int imageQuality)
+      throws IOException {
     Bitmap bmp = BitmapFactory.decodeFile(path);
     double originalWidth = bmp.getWidth() * 1.0;
     double originalHeight = bmp.getHeight() * 1.0;
+
+    if (imageQuality < 0 || imageQuality > 100) {
+      imageQuality = 100;
+    }
 
     boolean hasMaxWidth = maxWidth != null;
     boolean hasMaxHeight = maxHeight != null;
@@ -87,7 +94,9 @@ class ImageResizer {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     boolean saveAsPNG = bmp.hasAlpha();
     scaledBmp.compress(
-        saveAsPNG ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, 100, outputStream);
+        saveAsPNG ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG,
+        imageQuality,
+        outputStream);
 
     String[] pathParts = path.split("/");
     String imageName = pathParts[pathParts.length - 1];
@@ -96,7 +105,6 @@ class ImageResizer {
     FileOutputStream fileOutput = new FileOutputStream(imageFile);
     fileOutput.write(outputStream.toByteArray());
     fileOutput.close();
-
     return imageFile;
   }
 }
