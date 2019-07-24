@@ -25,6 +25,18 @@ android {
 }
 ```
 
+If you're using the on-device `Face Contour Detection`, include the latest matching [ML Kit: Face Detection Model](https://firebase.google.com/support/release-notes/android) dependency in your app-level build.gradle file.
+
+```
+android {
+    dependencies {
+        // ...
+
+        api 'com.google.firebase:firebase-ml-vision-face-model:17.0.2'
+    }
+}
+```
+
 If you receive compilation errors, try an earlier version of [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android).
 
 Optional but recommended: If you use the on-device API, configure your app to automatically download the ML model to the device after your app is installed from the Play Store. To do so, add the following declaration to your app's AndroidManifest.xml file:

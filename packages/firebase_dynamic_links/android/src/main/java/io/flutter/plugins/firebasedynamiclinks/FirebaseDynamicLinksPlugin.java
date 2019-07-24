@@ -5,6 +5,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
@@ -14,7 +15,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,30 +23,53 @@ import java.util.List;
 import java.util.Map;
 
 /** FirebaseDynamicLinksPlugin */
-public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
-  private Registrar registrar;
-  private Intent latestIntent;
+public class FirebaseDynamicLinksPlugin implements MethodCallHandler, NewIntentListener {
+  private final Registrar registrar;
+  private final MethodChannel channel;
 
-  private FirebaseDynamicLinksPlugin(Registrar registrar) {
+  private FirebaseDynamicLinksPlugin(Registrar registrar, MethodChannel channel) {
     this.registrar = registrar;
-    if (registrar.activity() != null) {
-      latestIntent = registrar.activity().getIntent();
-    }
+    this.channel = channel;
+  }
 
-    registrar.addNewIntentListener(
-        new PluginRegistry.NewIntentListener() {
-          @Override
-          public boolean onNewIntent(Intent intent) {
-            latestIntent = intent;
-            return false;
-          }
-        });
+  @Override
+  public boolean onNewIntent(Intent intent) {
+    FirebaseDynamicLinks.getInstance()
+        .getDynamicLink(intent)
+        .addOnSuccessListener(
+            registrar.activity(),
+            new OnSuccessListener<PendingDynamicLinkData>() {
+              @Override
+              public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                if (pendingDynamicLinkData != null) {
+                  Map<String, Object> dynamicLink =
+                      getMapFromPendingDynamicLinkData(pendingDynamicLinkData);
+                  channel.invokeMethod("onLinkSuccess", dynamicLink);
+                }
+              }
+            })
+        .addOnFailureListener(
+            registrar.activity(),
+            new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+                Map<String, Object> exception = new HashMap<>();
+                exception.put("code", e.getClass().getSimpleName());
+                exception.put("message", e.getMessage());
+                exception.put("details", null);
+                channel.invokeMethod("onLinkError", exception);
+              }
+            });
+
+    return false;
   }
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_dynamic_links");
-    channel.setMethodCallHandler(new FirebaseDynamicLinksPlugin(registrar));
+    final FirebaseDynamicLinksPlugin plugin = new FirebaseDynamicLinksPlugin(registrar, channel);
+    registrar.addNewIntentListener(plugin);
+    channel.setMethodCallHandler(plugin);
   }
 
   @Override
@@ -66,8 +90,8 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
         builder.setLongLink(url);
         buildShortDynamicLink(builder, call, createShortLinkListener(result));
         break;
-      case "FirebaseDynamicLinks#retrieveDynamicLink":
-        handleRetrieveDynamicLink(result);
+      case "FirebaseDynamicLinks#getInitialLink":
+        handleGetInitialDynamicLink(result);
         break;
       default:
         result.notImplemented();
@@ -75,40 +99,38 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     }
   }
 
-  private void handleRetrieveDynamicLink(final Result result) {
-    if (latestIntent == null) {
-      result.success(null);
-      return;
-    }
+  private Map<String, Object> getMapFromPendingDynamicLinkData(
+      PendingDynamicLinkData pendingDynamicLinkData) {
+    Map<String, Object> dynamicLink = new HashMap<>();
+    dynamicLink.put("link", pendingDynamicLinkData.getLink().toString());
 
+    Map<String, Object> androidData = new HashMap<>();
+    androidData.put("clickTimestamp", pendingDynamicLinkData.getClickTimestamp());
+    androidData.put("minimumVersion", pendingDynamicLinkData.getMinimumAppVersion());
+
+    dynamicLink.put("android", androidData);
+    return dynamicLink;
+  }
+
+  private void handleGetInitialDynamicLink(final Result result) {
     FirebaseDynamicLinks.getInstance()
-        .getDynamicLink(latestIntent)
-        .addOnCompleteListener(
+        .getDynamicLink(registrar.activity().getIntent())
+        .addOnSuccessListener(
             registrar.activity(),
-            new OnCompleteListener<PendingDynamicLinkData>() {
+            new OnSuccessListener<PendingDynamicLinkData>() {
               @Override
-              public void onComplete(@NonNull Task<PendingDynamicLinkData> task) {
-                if (task.isSuccessful()) {
-                  PendingDynamicLinkData data = task.getResult();
-                  if (data != null) {
-                    Map<String, Object> dynamicLink = new HashMap<>();
-                    dynamicLink.put("link", data.getLink().toString());
-
-                    Map<String, Object> androidData = new HashMap<>();
-                    androidData.put("clickTimestamp", data.getClickTimestamp());
-                    androidData.put("minimumVersion", data.getMinimumAppVersion());
-
-                    dynamicLink.put("android", androidData);
-
-                    latestIntent = null;
-                    result.success(dynamicLink);
-                    return;
-                  }
+              public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                if (pendingDynamicLinkData != null) {
+                  Map<String, Object> dynamicLink =
+                      getMapFromPendingDynamicLinkData(pendingDynamicLinkData);
+                  result.success(dynamicLink);
+                  return;
                 }
                 result.success(null);
               }
             })
         .addOnFailureListener(
+            registrar.activity(),
             new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception e) {

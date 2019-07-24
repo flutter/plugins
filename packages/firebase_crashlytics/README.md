@@ -35,7 +35,7 @@ dependencies {
   // Example existing classpath
   classpath 'com.android.tools.build:gradle:3.2.1'
   // Add the google services classpath
-  classpath 'com.google.gms:google-services:4.2.0'
+  classpath 'com.google.gms:google-services:4.3.0'
   // Add fabric classpath
   classpath 'io.fabric.tools:gradle:1.26.1'
 }
