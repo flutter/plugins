@@ -1,6 +1,6 @@
 ## 0.5.20+1
 
-* Fix some confusions with my location and my location button
+* Fix references to `myLocationButtonEnabled` in test and example app.
 
 ## 0.5.20
 

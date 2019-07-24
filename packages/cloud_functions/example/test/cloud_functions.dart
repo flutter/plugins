@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 void main() {
@@ -34,5 +35,26 @@ void main() {
       expect(response2.data['repeat_message'], 'bar');
       expect(response2.data['repeat_count'], 43);
     });
+
+    test('useFunctionsEmulator', () async {
+      FirebaseApp app = FirebaseApp(name: FirebaseApp.defaultAppName);
+      FirebaseOptions options = await app.options;
+      // Sends the request to the actual Firebase backend
+      CloudFunctions functions = CloudFunctions(app: app)
+        ..useEmulatorFunctions(
+          origin: 'https://us-central1-${options.projectID}.cloudfunctions.net'
+      );
+      final HttpsCallable callable = functions.getHttpsCallable(
+        functionName: 'repeat',
+      );
+      final HttpsCallableResult response =
+          await callable.call(<String, dynamic>{
+        'message': 'foo',
+        'count': 1,
+      });
+      expect(response.data['repeat_message'], 'foo');
+      expect(response.data['repeat_count'], 2);
+    });
+
   });
 }
