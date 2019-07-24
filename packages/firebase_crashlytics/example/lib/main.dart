@@ -13,13 +13,13 @@ void main() {
 
   // Pass all uncaught errors to Crashlytics.
   FlutterError.onError = (FlutterErrorDetails details) {
-    Crashlytics.instance.onError(details);
+    Crashlytics.instance.recordFlutterError(details);
   };
 
   runZoned<Future<void>>(() async {
     runApp(MyApp());
   }, onError: (dynamic error, dynamic stack) async {
-    await Crashlytics.instance.onRuntimeException(error, stack);
+    await Crashlytics.instance.recordError(error, stack);
   });
 }
 
