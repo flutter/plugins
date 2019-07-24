@@ -253,6 +253,10 @@ static const int SOURCE_GALLERY = 1;
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
     NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
 
+    if (![imageQuality isKindOfClass:[NSNumber class]]) {
+      imageQuality = @1;
+    }
+      
     if (imageQuality.intValue < 0 || imageQuality.intValue > 100) {
       imageQuality = [NSNumber numberWithInt:1];
     } else {

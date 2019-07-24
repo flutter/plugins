@@ -6,6 +6,7 @@ package io.flutter.plugins.imagepicker;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -93,6 +94,11 @@ class ImageResizer {
     Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, width.intValue(), height.intValue(), false);
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     boolean saveAsPNG = bmp.hasAlpha();
+    if (saveAsPNG) {
+      Log.d(
+          "ImageResizer",
+          "image_picker: compressing is not supported for type PNG. Returning the image with original quality");
+    }
     scaledBmp.compress(
         saveAsPNG ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG,
         imageQuality,

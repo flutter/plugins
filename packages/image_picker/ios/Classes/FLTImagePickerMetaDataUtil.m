@@ -64,15 +64,9 @@ const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIME
                usingType:(FLTImagePickerMIMEType)type
                  quality:(nullable NSNumber *)quality {
 
-  // Commenting as of now as JPEG conversion is done by default
-  //  if (quality && type != FLTImagePickerMIMETypeJPEG) {
-  //    @throw [NSException
-  //        exceptionWithName:@"flutter_image_picker_convert_image_exception"
-  //                   reason:[NSString stringWithFormat:@"quality is not available for type %@",
-  //                                                     [FLTImagePickerMetaDataUtil
-  //                                                         imageTypeSuffixFromType:type]]
-  //                 userInfo:nil];
-  //  }
+  if (quality && type != FLTImagePickerMIMETypeJPEG) {
+    NSLog(@"image_picker: compressing is not supported for type %@. Returning the image with original quality");
+  }
 
   switch (type) {
     case FLTImagePickerMIMETypeJPEG: {

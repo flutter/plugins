@@ -44,6 +44,7 @@ class ImagePicker {
       double maxHeight,
       int imageQuality}) async {
     assert(source != null);
+    assert(imageQuality == null || (imageQuality >= 0 && imageQuality <= 100));
 
     if (maxWidth != null && maxWidth < 0) {
       throw ArgumentError.value(maxWidth, 'maxWidth cannot be negative');
@@ -51,15 +52,6 @@ class ImagePicker {
 
     if (maxHeight != null && maxHeight < 0) {
       throw ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
-    }
-
-    if (null == imageQuality) {
-      imageQuality = 100;
-    }
-
-    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
-      throw ArgumentError.value(
-          imageQuality, 'invalid imageQuality, must be between 0 and 100');
     }
 
     final String path = await _channel.invokeMethod<String>(
