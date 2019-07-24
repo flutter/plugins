@@ -75,17 +75,15 @@ class AndroidIntent {
   static const String action_airplane_mode_settings = 'action_airplane_mode_settings';
   static const String action_application_development_settings = 'action_application_development_settings';
   static const String action_application_settings = 'action_application_settings';
-  static const String action_app_notification_bubble_settings = 'action_app_notification_bubble_settings';
   static const String action_app_notification_settings = 'action_app_notification_settings';
   static const String action_app_search_settings = 'action_app_search_settings';
-  static const String action_app_usage_settings = 'action_app_usage_settings';
+  static const String action_data_usage_settings = 'action_data_usage_settings';
   static const String action_battery_saver_settings = 'action_battery_saver_settings';
   static const String action_bluetooth_settings = 'action_bluetooth_settings';
   static const String action_captioning_settings = 'action_captioning_settings';
   static const String action_cast_settings = 'action_cast_settings';
   static const String action_channel_notification_settings = 'action_channel_notification_settings';
   static const String action_data_roaming_settings = 'action_data_roaming_settings';
-  static const String action_data_usage_settings = 'action_data_usage_settings';
   static const String action_date_settings = 'action_date_settings';
   static const String action_device_info_settings = 'action_device_info_settings';
   static const String action_display_settings = 'action_display_settings';
@@ -141,5 +139,4 @@ class AndroidIntent {
   static const String action_wifi_settings = 'action_wifi_settings';
   static const String action_wireless_settings = 'action_wireless_settings';
   static const String action_zen_mode_priority_settings = 'action_zen_mode_priority_settings';
-
 }

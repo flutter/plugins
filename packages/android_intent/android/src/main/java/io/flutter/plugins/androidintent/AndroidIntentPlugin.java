@@ -46,6 +46,62 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         return Settings.ACTION_SETTINGS;
       case "action_location_source_settings":
         return Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+      case "action_add_account":
+        return Settings.ACTION_ADD_ACCOUNT;
+      case "action_apn_settings":
+        return Settings.ACTION_APN_SETTINGS;
+      case "action_accessibility_settings":
+        return Settings.ACTION_ACCESSIBILITY_SETTINGS;
+      case "action_airplane_mode_settings":
+        return Settings.ACTION_AIRPLANE_MODE_SETTINGS;
+      case "action_application_development_settings":
+        return Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS;
+      case "action_application_settings":
+        return Settings.ACTION_APPLICATION_SETTINGS;
+      case "action_app_notification_settings":
+        return Settings.ACTION_APP_NOTIFICATION_SETTINGS;
+      case "action_data_usage_settings":
+        return Settings.ACTION_DATA_USAGE_SETTINGS;
+      case "action_battery_saver_settings":
+        return Settings.ACTION_BATTERY_SAVER_SETTINGS;
+      case "action_bluetooth_settings":
+        return Settings.ACTION_BLUETOOTH_SETTINGS;
+      case "action_captioning_settings":
+        return Settings.ACTION_CAPTIONING_SETTINGS;
+      case "action_cast_settings":
+        return Settings.ACTION_CAST_SETTINGS;
+      case "action_channel_notification_settings":
+        return Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS;
+      case "action_data_roaming_settings":
+        return Settings.ACTION_DATA_ROAMING_SETTINGS;
+      case "action_date_settings":
+        return Settings.ACTION_DATE_SETTINGS;
+      case "action_device_info_settings":
+        return Settings.ACTION_DEVICE_INFO_SETTINGS;
+      case "action_display_settings":
+        return Settings.ACTION_DISPLAY_SETTINGS;
+      case "action_dream_settings":
+        return Settings.ACTION_DREAM_SETTINGS;
+      case "action_fingerprint_enroll":
+        return Settings.ACTION_FINGERPRINT_ENROLL;
+      case "action_hard_keyboard_settings":
+        return Settings.ACTION_HARD_KEYBOARD_SETTINGS;
+      case "action_home_settings":
+        return Settings.ACTION_HOME_SETTINGS;
+      case "action_ignore_background_data_restrictions_settings":
+        return Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS;
+      case "action_ignore_battery_optimization_settings":
+        return Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS;
+      case "action_input_method_settings":
+        return Settings.ACTION_INPUT_METHOD_SETTINGS;
+      case "action_input_method_subtype_settings":
+        return Settings.ACTION_INPUT_METHOD_SUBTYPE_SETTINGS;
+      case "action_internal_storage_settings":
+        return Settings.ACTION_INTERNAL_STORAGE_SETTINGS;
+      case "action_locale_settings":
+        return Settings.ACTION_LOCALE_SETTINGS;
+      case "action_manage_all_applications_settings":
+        return Settings.ACTION_MANAGE_ALL_APPLICATIONS_SETTINGS;
       default:
         return action;
     }
