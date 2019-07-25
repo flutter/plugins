@@ -1,3 +1,8 @@
+## 0.1.0
+
+* **Breaking Change** Renamed `onError` to `reportFlutterError`.
+* Added `recordError` method for errors caught using `runZoned`'s `onError`.
+
 ## 0.0.4+12
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
