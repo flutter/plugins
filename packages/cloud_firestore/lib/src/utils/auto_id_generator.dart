@@ -12,7 +12,7 @@ import 'dart:math';
 /// newly-created node synchronously.
 ///
 /// This code is based largely on the Android implementation and ported to Dart.
-///
+
 class AutoIdGenerator {
   static const int _AUTO_ID_LENGTH = 20;
 
