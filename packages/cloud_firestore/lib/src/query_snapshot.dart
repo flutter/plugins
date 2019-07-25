@@ -12,6 +12,10 @@ class QuerySnapshot {
           return DocumentSnapshot._(
             data['paths'][index],
             _asStringKeyedMap(data['documents'][index]),
+            SnapshotMetadata._(
+              data['metadatas'][index]['hasPendingWrites'],
+              data['metadatas'][index]['isFromCache'],
+            ),
             _firestore,
           );
         }),

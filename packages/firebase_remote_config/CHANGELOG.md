@@ -1,3 +1,35 @@
+## 0.2.0+5
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 0.2.0+4
+
+* Fixed a bug where `RemoteConfigValue` could incorrectly report a remote `source` for default values.
+* Added an integration test for the fixed behavior of `source`.
+* Removed a test that made integration test flaky.
+
+## 0.2.0+3
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.2.0+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.2.0+1
+
+* Minor internal code cleanup in Java implementation.
+
+## 0.2.0
+
+* Update Android dependencies to latest.
+
+## 0.1.0+3
+
+* Initial integration tests.
+
 ## 0.1.0+2
 
 * Log messages about automatic configuration of the default app are now less confusing.

@@ -1,3 +1,36 @@
+## 0.3.0+4
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 0.3.0+3
+
+* Fix bug that caused `invokeMethod` to fail with Dart code obfuscation
+
+## 0.3.0+2
+
+* Fix bug preventing this plugin from working with hot restart.
+
+## 0.3.0+1
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.3.0
+
+* **Breaking Change** Removed `Trace.incrementCounter`. Please use `Trace.incrementMetric`.
+* Assertion errors are no longer thrown for incorrect input for `Trace`s and `HttpMetric`s.
+* You can now get entire list of attributes from `Trace` and `HttpMetric` with `getAttributes()`.
+* Added access to `Trace` value `name`.
+* Added access to `HttpMetric` values `url` and `HttpMethod`.
+
+## 0.2.0
+
+* Update Android dependencies to latest.
+
+## 0.1.1
+
+* Deprecate `Trace.incrementCounter` and add `Trace.incrementMetric`.
+* Additional integration testing.
+
 ## 0.1.0+4
 
 * Remove deprecated methods for iOS.

@@ -6,15 +6,12 @@ enum ValueSource { valueStatic, valueDefault, valueRemote }
 /// RemoteConfigValue encapsulates the value and source of a Remote Config
 /// parameter.
 class RemoteConfigValue {
-  RemoteConfigValue._(this._value, this._source);
+  RemoteConfigValue._(this._value, this.source) : assert(source != null);
 
   List<int> _value;
-  ValueSource _source;
 
   /// Indicates at which source this value came from.
-  ValueSource get source => _source == ValueSource.valueDefault
-      ? ValueSource.valueDefault
-      : ValueSource.valueRemote;
+  final ValueSource source;
 
   /// Decode value to string.
   String asString() {

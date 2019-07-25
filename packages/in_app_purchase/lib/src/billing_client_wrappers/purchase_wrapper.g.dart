@@ -18,6 +18,18 @@ PurchaseWrapper _$PurchaseWrapperFromJson(Map json) {
       originalJson: json['originalJson'] as String);
 }
 
+Map<String, dynamic> _$PurchaseWrapperToJson(PurchaseWrapper instance) =>
+    <String, dynamic>{
+      'orderId': instance.orderId,
+      'packageName': instance.packageName,
+      'purchaseTime': instance.purchaseTime,
+      'purchaseToken': instance.purchaseToken,
+      'signature': instance.signature,
+      'sku': instance.sku,
+      'isAutoRenewing': instance.isAutoRenewing,
+      'originalJson': instance.originalJson
+    };
+
 PurchasesResultWrapper _$PurchasesResultWrapperFromJson(Map json) {
   return PurchasesResultWrapper(
       responseCode: const BillingResponseConverter()
@@ -26,3 +38,11 @@ PurchasesResultWrapper _$PurchasesResultWrapperFromJson(Map json) {
           .map((e) => PurchaseWrapper.fromJson(e as Map))
           .toList());
 }
+
+Map<String, dynamic> _$PurchasesResultWrapperToJson(
+        PurchasesResultWrapper instance) =>
+    <String, dynamic>{
+      'responseCode':
+          const BillingResponseConverter().toJson(instance.responseCode),
+      'purchasesList': instance.purchasesList
+    };

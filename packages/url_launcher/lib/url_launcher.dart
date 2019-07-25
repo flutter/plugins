@@ -42,6 +42,9 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// WebViews.
 /// [enableJavaScript] is an Android only setting. If true, WebView enable
 /// javascript.
+/// [enableDomStorage] is an Android only setting. If true, WebView enable
+/// DOM storage.
+/// [headers] is an Android only setting that adds headers to the WebView.
 ///
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
@@ -57,7 +60,9 @@ Future<bool> launch(
   bool forceSafariVC,
   bool forceWebView,
   bool enableJavaScript,
+  bool enableDomStorage,
   bool universalLinksOnly,
+  Map<String, String> headers,
   Brightness statusBarBrightness,
 }) async {
   assert(urlString != null);
@@ -79,17 +84,16 @@ Future<bool> launch(
         ? SystemUiOverlayStyle.dark
         : SystemUiOverlayStyle.light);
   }
-  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-  // https://github.com/flutter/flutter/issues/26431
-  // ignore: strong_mode_implicit_dynamic_method
-  final bool result = await _channel.invokeMethod(
+  final bool result = await _channel.invokeMethod<bool>(
     'launch',
     <String, Object>{
       'url': urlString,
       'useSafariVC': forceSafariVC ?? isWebURL,
       'useWebView': forceWebView ?? false,
       'enableJavaScript': enableJavaScript ?? false,
+      'enableDomStorage': enableDomStorage ?? false,
       'universalLinksOnly': universalLinksOnly ?? false,
+      'headers': headers ?? <String, String>{},
     },
   );
   if (statusBarBrightness != null) {
@@ -105,10 +109,7 @@ Future<bool> canLaunch(String urlString) async {
   if (urlString == null) {
     return false;
   }
-  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-  // https://github.com/flutter/flutter/issues/26431
-  // ignore: strong_mode_implicit_dynamic_method
-  return await _channel.invokeMethod(
+  return await _channel.invokeMethod<bool>(
     'canLaunch',
     <String, Object>{'url': urlString},
   );
@@ -126,8 +127,5 @@ Future<bool> canLaunch(String urlString) async {
 /// SafariViewController is only available on IOS version >= 9.0, this method does not do anything
 /// on IOS version below 9.0
 Future<void> closeWebView() async {
-  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-  // https://github.com/flutter/flutter/issues/26431
-  // ignore: strong_mode_implicit_dynamic_method
-  return await _channel.invokeMethod('closeWebView');
+  return await _channel.invokeMethod<void>('closeWebView');
 }
