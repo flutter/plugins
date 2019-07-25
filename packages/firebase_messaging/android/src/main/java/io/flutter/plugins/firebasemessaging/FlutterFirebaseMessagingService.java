@@ -12,11 +12,15 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Process;
 import android.util.Log;
-
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.view.FlutterCallbackInformation;
+import io.flutter.view.FlutterMain;
+import io.flutter.view.FlutterNativeView;
+import io.flutter.view.FlutterRunArguments;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,13 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.view.FlutterCallbackInformation;
-import io.flutter.view.FlutterMain;
-import io.flutter.view.FlutterNativeView;
-import io.flutter.view.FlutterRunArguments;
 
 public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -44,7 +41,8 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
 
   private static final String SHARED_PREFERENCES_KEY = "io.flutter.android_fcm_plugin";
   private static final String BACKGROUND_SETUP_CALLBACK_HANDLE_KEY = "background_setup_callback";
-  private static final String BACKGROUND_MESSAGE_CALLBACK_HANDLE_KEY = "background_message_callback";
+  private static final String BACKGROUND_MESSAGE_CALLBACK_HANDLE_KEY =
+      "background_message_callback";
 
   // TODO(kroikie): make sIsIsolateRunning per-instance, not static.
   private static AtomicBoolean sIsIsolateRunning = new AtomicBoolean(false);
@@ -56,7 +54,8 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
 
   private static Long sBackgroundMessageHandle;
 
-  private static List<RemoteMessage> sBackgroundMessageQueue = Collections.synchronizedList(new LinkedList<RemoteMessage>());
+  private static List<RemoteMessage> sBackgroundMessageQueue =
+      Collections.synchronizedList(new LinkedList<RemoteMessage>());
 
   private static PluginRegistry.PluginRegistrantCallback sPluginRegistrantCallback;
 
@@ -105,8 +104,8 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
                 new Runnable() {
                   @Override
                   public void run() {
-                    Log.d(TAG, "executing dart callback");
-                    executeDartCallbackInBackgroundIsolate(FlutterFirebaseMessagingService.this, remoteMessage, latch);
+                    executeDartCallbackInBackgroundIsolate(
+                        FlutterFirebaseMessagingService.this, remoteMessage, latch);
                   }
                 });
         try {
@@ -199,16 +198,15 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
   }
 
   public static Long getOnMessageCallbackHandle(Context context) {
-    return context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0)
+    return context
+        .getSharedPreferences(SHARED_PREFERENCES_KEY, 0)
         .getLong(BACKGROUND_MESSAGE_CALLBACK_HANDLE_KEY, 0);
   }
 
-  private static void executeDartCallbackInBackgroundIsolate(Context context,
-      RemoteMessage remoteMessage, final CountDownLatch latch) {
+  private static void executeDartCallbackInBackgroundIsolate(
+      Context context, RemoteMessage remoteMessage, final CountDownLatch latch) {
     if (sBackgroundChannel == null) {
-      Log.e(
-          TAG,
-          "setBackgroundChannel was not called before messages came in, exiting.");
+      Log.e(TAG, "setBackgroundChannel was not called before messages came in, exiting.");
       return;
     }
 
@@ -257,14 +255,16 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
 
   // TODO(kroikie): Find a better way to determine application state.
   public static boolean isApplicationForeground(Context context) {
-    KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+    KeyguardManager keyguardManager =
+        (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
 
     if (keyguardManager.inKeyguardRestrictedInputMode()) {
       return false;
     }
     int myPid = Process.myPid();
 
-    ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+    ActivityManager activityManager =
+        (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 
     List<ActivityManager.RunningAppProcessInfo> list;
 

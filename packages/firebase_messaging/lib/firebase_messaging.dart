@@ -25,8 +25,10 @@ void _fcmSetupCallback() {
   // This is where the magic happens and we handle background events from the
   // native portion of the plugin.
   _channel.setMethodCallHandler((MethodCall call) async {
-    final CallbackHandle handle = CallbackHandle.fromRawHandle(call.arguments['handle']);
-    final Function handlerFunction = PluginUtilities.getCallbackFromHandle(handle);
+    final CallbackHandle handle =
+        CallbackHandle.fromRawHandle(call.arguments['handle']);
+    final Function handlerFunction =
+        PluginUtilities.getCallbackFromHandle(handle);
     await handlerFunction(call.arguments['message']);
     return Future<void>.value();
   });
@@ -98,9 +100,9 @@ class FirebaseMessaging {
     if (_onBackgroundMessage != null) {
       _onBackgroundMessage = onBackgroundMessage;
       final CallbackHandle backgroundSetupHandle =
-      PluginUtilities.getCallbackHandle(_fcmSetupCallback);
+          PluginUtilities.getCallbackHandle(_fcmSetupCallback);
       final CallbackHandle backgroundMessageHandle =
-      PluginUtilities.getCallbackHandle(_onBackgroundMessage);
+          PluginUtilities.getCallbackHandle(_onBackgroundMessage);
       _channel.invokeMethod<bool>(
         'FcmDartService.start',
         <dynamic>[
