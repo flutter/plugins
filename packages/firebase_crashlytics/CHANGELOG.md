@@ -1,6 +1,7 @@
-## 0.0.4+13
+## 0.1.0
 
-* Support `runZoned`s `onError` arguments to be send to Crashlytics.
+* **Breaking Change** Renamed `onError` to `reportFlutterError`.
+* Added `recordError` method for errors caught using `runZoned`'s `onError`.
 
 ## 0.0.4+12
 

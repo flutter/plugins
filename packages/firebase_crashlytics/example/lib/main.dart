@@ -12,15 +12,11 @@ void main() {
   Crashlytics.instance.enableInDevMode = true;
 
   // Pass all uncaught errors to Crashlytics.
-  FlutterError.onError = (FlutterErrorDetails details) {
-    Crashlytics.instance.recordFlutterError(details);
-  };
+  FlutterError.onError = Crashlytics.instance.recordFlutterError;
 
   runZoned<Future<void>>(() async {
     runApp(MyApp());
-  }, onError: (dynamic error, dynamic stack) async {
-    await Crashlytics.instance.recordError(error, stack);
-  });
+  }, onError: Crashlytics.instance.recordError);
 }
 
 class MyApp extends StatefulWidget {
@@ -71,8 +67,8 @@ class _MyAppState extends State<MyApp> {
               FlatButton(
                   child: const Text('Async out of bounds'),
                   onPressed: () {
-                    // Example of an exception that does not get catched
-                    // by `Flutter.onError` but the `onError` handler of
+                    // Example of an exception that does not get caught
+                    // by `FlutterError.onError` but is caught by the `onError` handler of
                     // `runZoned`.
                     Future<void>.delayed(Duration(seconds: 2), () {
                       final List<int> list = <int>[];
