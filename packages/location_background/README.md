@@ -2,6 +2,8 @@
 
 An example Flutter plugin that showcases background execution using iOS location services.
 
+**This plugin is not being actively maintained and is not for production use.** An [archive](https://github.com/flutter/plugins/tree/af86b9db204d4fee2d0eeabb2325007ec5f20424/packages/location_background) of previous versions can be found in the Flutter plugins repository.
+
 ## Getting Started
 
 **_NOTE: This plugin does not currently have an Android implementation._**
