@@ -63,9 +63,10 @@ const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIME
 + (NSData *)convertImage:(UIImage *)image
                usingType:(FLTImagePickerMIMEType)type
                  quality:(nullable NSNumber *)quality {
-
   if (quality && type != FLTImagePickerMIMETypeJPEG) {
-    NSLog(@"image_picker: compressing is not supported for type %@. Returning the image with original quality", [FLTImagePickerMetaDataUtil imageTypeSuffixFromType:type]);
+    NSLog(@"image_picker: compressing is not supported for type %@. Returning the image with "
+          @"original quality",
+          [FLTImagePickerMetaDataUtil imageTypeSuffixFromType:type]);
   }
 
   switch (type) {

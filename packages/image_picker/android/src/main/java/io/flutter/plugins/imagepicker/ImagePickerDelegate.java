@@ -210,7 +210,10 @@ public class ImagePickerDelegate
     if (path != null) {
       Double maxWidth = (Double) resultMap.get(ImagePickerCache.MAP_KEY_MAX_WIDTH);
       Double maxHeight = (Double) resultMap.get(ImagePickerCache.MAP_KEY_MAX_HEIGHT);
-      int imageQuality = (int) resultMap.get(ImagePickerCache.MAP_KEY_IMAGE_QUALITY);
+      int imageQuality =
+          resultMap.get(ImagePickerCache.MAP_KEY_IMAGE_QUALITY) == null
+              ? 100
+              : (int) resultMap.get(ImagePickerCache.MAP_KEY_IMAGE_QUALITY);
 
       String newPath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);
       resultMap.put(ImagePickerCache.MAP_KEY_PATH, newPath);
@@ -522,7 +525,7 @@ public class ImagePickerDelegate
       finishWithSuccess(finalImagePath);
 
       //delete original file if scaled
-      if (!finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
+      if (finalImagePath != null && !finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }
     } else {

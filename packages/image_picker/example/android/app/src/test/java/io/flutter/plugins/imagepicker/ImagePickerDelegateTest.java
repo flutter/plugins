@@ -65,11 +65,9 @@ public class ImagePickerDelegateTest {
         .thenReturn("originalPath");
     when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, HEIGHT, IMAGE_QUALITY))
         .thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null, 0))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null, -1))
         .thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT, 0))
-        .thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null, IMAGE_QUALITY))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT, -1))
         .thenReturn("scaledPath");
 
     mockFileUriResolver = new MockFileUriResolver();

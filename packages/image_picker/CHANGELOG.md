@@ -1,3 +1,8 @@
+## 0.6.0+18
+
+* New feature : Get images with custom quality. While picking images, user can pass `imageQuality`
+parameter to compress image.
+
 ## 0.6.0+17
 
 * iOS: Fix a crash when user captures image from the camera with devices under iOS 11.
