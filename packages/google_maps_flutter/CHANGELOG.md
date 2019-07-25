@@ -1,6 +1,8 @@
-## 0.5.20+1
+## 0.5.21
 
 * Fix references to `myLocationButtonEnabled` in test and example app.
+* On iOS, `myLocationEnabled` no longer affects the value of `myLocationButtonEnabled`
+* Added `isMyLocationEnabled` to `GoogleMapsInspector`.
 
 ## 0.5.20
 

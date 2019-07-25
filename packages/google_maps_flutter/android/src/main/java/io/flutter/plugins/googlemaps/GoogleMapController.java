@@ -320,6 +320,11 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isRotateGesturesEnabled());
           break;
         }
+      case "map#isMyLocationEnabled":
+        {
+          result.success(googleMap.isMyLocationEnabled());
+          break;
+        }
       case "map#isMyLocationButtonEnabled":
         {
           result.success(googleMap.getUiSettings().isMyLocationButtonEnabled());
