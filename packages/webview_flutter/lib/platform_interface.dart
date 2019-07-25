@@ -185,12 +185,15 @@ class WebSettings {
 /// Configuration to use when creating a new [WebViewPlatformController].
 class CreationParams {
   CreationParams(
-      {this.initialUrl, this.webSettings, this.javascriptChannelNames});
+      {this.initialUrl, this.initialPostParameters, this.webSettings, this.javascriptChannelNames});
 
   /// The initialUrl to load in the webview.
   ///
   /// When null the webview will be created without loading any page.
   final String initialUrl;
+
+  /// The initial POST parameters used on initial URL load.
+  final Map initialPostParameters;
 
   /// The initial [WebSettings] for the new webview.
   ///
@@ -212,7 +215,7 @@ class CreationParams {
 
   @override
   String toString() {
-    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames)';
+    return '$runtimeType(initialUrl: $initialUrl, initialPostParameters: $initialPostParameters, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames)';
   }
 }
 

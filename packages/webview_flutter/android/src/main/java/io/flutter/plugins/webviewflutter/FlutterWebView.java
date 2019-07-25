@@ -8,6 +8,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebViewClient;
@@ -17,12 +18,16 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
+  private static final String TAG = "FlutterWebView";
   private final InputAwareWebView webView;
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
@@ -53,7 +58,17 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
-      webView.loadUrl(url);
+      Map<String, Object> postParameters = (Map<String, Object>) params.get("initialPostParameters");
+      if(postParameters != null && !postParameters.isEmpty()) {
+        try {
+          webView.postUrl(url, initialParametersToString(postParameters).getBytes());
+        } catch (UnsupportedEncodingException e) {
+          Log.e(TAG, "" + e.getMessage(), e);
+        }
+      } else {
+        webView.loadUrl(url);
+      }
+
     }
   }
 
@@ -124,6 +139,15 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       default:
         result.notImplemented();
     }
+  }
+
+  private static String initialParametersToString(Map<String, Object> parameters) throws UnsupportedEncodingException {
+    StringBuilder sb = new StringBuilder();
+    for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+      sb.append(URLEncoder.encode(entry.getKey(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue().toString(), "UTF-8") + "&");
+    }
+
+    return sb.deleteCharAt(sb.length() - 1).toString();
   }
 
   @SuppressWarnings("unchecked")
