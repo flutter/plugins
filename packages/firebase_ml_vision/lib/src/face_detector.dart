@@ -24,6 +24,24 @@ enum FaceLandmarkType {
   rightMouth,
 }
 
+/// Available face contour types detected by [FaceDetector].
+enum FaceContourType {
+  allPoints,
+  face,
+  leftEye,
+  leftEyebrowBottom,
+  leftEyebrowTop,
+  lowerLipBottom,
+  lowerLipTop,
+  noseBottom,
+  noseBridge,
+  rightEye,
+  rightEyebrowBottom,
+  rightEyebrowTop,
+  upperLipBottom,
+  upperLipTop
+}
+
 /// Detector for detecting faces in an input image.
 ///
 /// A face detector is created via
@@ -38,22 +56,28 @@ enum FaceLandmarkType {
 /// final List<Faces> faces = await faceDetector.processImage(image);
 /// ```
 class FaceDetector {
-  FaceDetector._(this.options) : assert(options != null);
+  FaceDetector._(this.options, this._handle) : assert(options != null);
 
   /// The options for the face detector.
   final FaceDetectorOptions options;
+  final int _handle;
+  bool _hasBeenOpened = false;
+  bool _isClosed = false;
 
   /// Detects faces in the input image.
   Future<List<Face>> processImage(FirebaseVisionImage visionImage) async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
+    assert(!_isClosed);
+
+    _hasBeenOpened = true;
+    final List<dynamic> reply =
+        await FirebaseVision.channel.invokeListMethod<dynamic>(
       'FaceDetector#processImage',
       <String, dynamic>{
+        'handle': _handle,
         'options': <String, dynamic>{
           'enableClassification': options.enableClassification,
           'enableLandmarks': options.enableLandmarks,
+          'enableContours': options.enableContours,
           'enableTracking': options.enableTracking,
           'minFaceSize': options.minFaceSize,
           'mode': _enumToString(options.mode),
@@ -68,6 +92,18 @@ class FaceDetector {
 
     return faces;
   }
+
+  /// Release resources used by this detector.
+  Future<void> close() {
+    if (!_hasBeenOpened) _isClosed = true;
+    if (_isClosed) return Future<void>.value(null);
+
+    _isClosed = true;
+    return FirebaseVision.channel.invokeMethod<void>(
+      'FaceDetector#close',
+      <String, dynamic>{'handle': _handle},
+    );
+  }
 }
 
 /// Immutable options for configuring features of [FaceDetector].
@@ -81,6 +117,7 @@ class FaceDetectorOptions {
   const FaceDetectorOptions({
     this.enableClassification = false,
     this.enableLandmarks = false,
+    this.enableContours = false,
     this.enableTracking = false,
     this.minFaceSize = 0.1,
     this.mode = FaceDetectorMode.fast,
@@ -94,6 +131,9 @@ class FaceDetectorOptions {
 
   /// Whether to detect [FaceLandmark]s.
   final bool enableLandmarks;
+
+  /// Whether to detect [FaceContour]s.
+  final bool enableContours;
 
   /// Whether to enable face tracking.
   ///
@@ -137,9 +177,25 @@ class Face {
                   type,
                   Offset(pos[0], pos[1]),
                 );
+        })),
+        _contours = Map<FaceContourType, FaceContour>.fromIterables(
+            FaceContourType.values,
+            FaceContourType.values.map((FaceContourType type) {
+          /// added empty map to pass the tests
+          final List<dynamic> arr =
+              (data['contours'] ?? <String, dynamic>{})[_enumToString(type)];
+          return (arr == null)
+              ? null
+              : FaceContour._(
+                  type,
+                  arr
+                      .map<Offset>((dynamic pos) => Offset(pos[0], pos[1]))
+                      .toList(),
+                );
         }));
 
   final Map<FaceLandmarkType, FaceLandmark> _landmarks;
+  final Map<FaceContourType, FaceContour> _contours;
 
   /// The axis-aligned bounding rectangle of the detected face.
   ///
@@ -195,6 +251,11 @@ class Face {
   ///
   /// Null if landmark was not detected.
   FaceLandmark getLandmark(FaceLandmarkType landmark) => _landmarks[landmark];
+
+  /// Gets the contour based on the provided [FaceContourType].
+  ///
+  /// Null if contour was not detected.
+  FaceContour getContour(FaceContourType contour) => _contours[contour];
 }
 
 /// Represent a face landmark.
@@ -210,4 +271,19 @@ class FaceLandmark {
   ///
   /// The point (0, 0) is defined as the upper-left corner of the image.
   final Offset position;
+}
+
+/// Represent a face contour.
+///
+/// Contours of facial features.
+class FaceContour {
+  FaceContour._(this.type, this.positionsList);
+
+  /// The [FaceContourType] of this contour.
+  final FaceContourType type;
+
+  /// Gets a 2D point [List] for contour positions.
+  ///
+  /// The point (0, 0) is defined as the upper-left corner of the image.
+  final List<Offset> positionsList;
 }

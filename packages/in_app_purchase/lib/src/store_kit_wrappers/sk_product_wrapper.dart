@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
 import 'package:collection/collection.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
 // below generated file. Run `flutter packages pub run build_runner watch` to
@@ -25,7 +25,7 @@ class SkProductResponseWrapper {
   ///
   /// This method should only be used with `map` values returned by [SKRequestMaker.startProductRequest].
   /// The `map` parameter must not be null.
-  factory SkProductResponseWrapper.fromJson(Map map) {
+  factory SkProductResponseWrapper.fromJson(Map<String, dynamic> map) {
     assert(map != null, 'Map must not be null.');
     return _$SkProductResponseWrapperFromJson(map);
   }
@@ -56,6 +56,9 @@ class SkProductResponseWrapper {
         DeepCollectionEquality().equals(
             typedOther.invalidProductIdentifiers, invalidProductIdentifiers);
   }
+
+  @override
+  int get hashCode => hashValues(this.products, this.invalidProductIdentifiers);
 }
 
 /// Dart wrapper around StoreKit's [SKProductPeriodUnit](https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc).
@@ -111,6 +114,9 @@ class SKProductSubscriptionPeriodWrapper {
     final SKProductSubscriptionPeriodWrapper typedOther = other;
     return typedOther.numberOfUnits == numberOfUnits && typedOther.unit == unit;
   }
+
+  @override
+  int get hashCode => hashValues(this.numberOfUnits, this.unit);
 }
 
 /// Dart wrapper around StoreKit's [SKProductDiscountPaymentMode](https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc).
@@ -188,6 +194,10 @@ class SKProductDiscountWrapper {
         typedOther.paymentMode == paymentMode &&
         typedOther.subscriptionPeriod == subscriptionPeriod;
   }
+
+  @override
+  int get hashCode => hashValues(this.price, this.priceLocale,
+      this.numberOfPeriods, this.paymentMode, this.subscriptionPeriod);
 }
 
 /// Dart wrapper around StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).
@@ -274,16 +284,16 @@ class SKProductWrapper {
         typedOther.introductoryPrice == introductoryPrice;
   }
 
-  /// Method to convert to the wrapper to the consolidated [ProductDetails] class.
-  ProductDetails toProductDetails() {
-    return ProductDetails(
-      id: productIdentifier,
-      title: localizedTitle,
-      description: localizedDescription,
-      price: priceLocale.currencySymbol + price,
-      skProduct: this,
-    );
-  }
+  @override
+  int get hashCode => hashValues(
+      this.productIdentifier,
+      this.localizedTitle,
+      this.localizedDescription,
+      this.priceLocale,
+      this.subscriptionGroupIdentifier,
+      this.price,
+      this.subscriptionPeriod,
+      this.introductoryPrice);
 }
 
 /// Object that indicates the locale of the price
@@ -319,4 +329,7 @@ class SKPriceLocaleWrapper {
     final SKPriceLocaleWrapper typedOther = other;
     return typedOther.currencySymbol == currencySymbol;
   }
+
+  @override
+  int get hashCode => this.currencySymbol.hashCode;
 }

@@ -46,7 +46,10 @@ android {
     }
     dependencies {
         api 'com.google.firebase:firebase-ml-vision:20.0.0'
+        implementation 'com.google.firebase:firebase-common:16.1.0'
         implementation 'androidx.annotation:annotation:1.0.0'
         implementation 'androidx.exifinterface:exifinterface:1.0.0'
     }
 }
+
+apply from: file("./user-agent.gradle")

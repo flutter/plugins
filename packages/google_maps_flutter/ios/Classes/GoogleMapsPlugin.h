@@ -7,6 +7,7 @@
 #import "GoogleMapCircleController.h"
 #import "GoogleMapController.h"
 #import "GoogleMapMarkerController.h"
+#import "GoogleMapPolygonController.h"
 #import "GoogleMapPolylineController.h"
 
 @interface FLTGoogleMapsPlugin : NSObject <FlutterPlugin>

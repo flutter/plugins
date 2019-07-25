@@ -1140,6 +1140,9 @@ void main() {
       mockHandleId = 42;
 
       Future<void> simulateEvent(Map<String, dynamic> user) async {
+        // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+        // https://github.com/flutter/flutter/issues/33446
+        // ignore: deprecated_member_use
         await BinaryMessages.handlePlatformMessage(
           FirebaseAuth.channel.name,
           FirebaseAuth.channel.codec.encodeMethodCall(
