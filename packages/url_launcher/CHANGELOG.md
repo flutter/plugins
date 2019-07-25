@@ -1,4 +1,4 @@
-## 5.1.0+1
+## 5.1.1
 
 * Suppress a handled deprecation warning on iOS
 
