@@ -166,7 +166,7 @@ class Crashlytics {
           'line': lineNumber,
         };
 
-        // The next section would throw an exception if there was no stop here.
+        // The next section would throw an exception in some cases if there was no stop here.
         if (lineParts.length < 3) {
           elements.add(element);
           continue;
