@@ -26,14 +26,13 @@ void main() {
     Crashlytics.instance.log('testing');
     await crashlytics.recordFlutterError(
       FlutterErrorDetails(
-        exception: 'testing',
-        stack: StackTrace.fromString(''),
-        context: DiagnosticsNode.message('during testing'),
-        informationCollector: () => <DiagnosticsNode>[
-          DiagnosticsNode.message('testing'),
-          DiagnosticsNode.message('information'),
-        ]
-      ),
+          exception: 'testing',
+          stack: StackTrace.fromString(''),
+          context: DiagnosticsNode.message('during testing'),
+          informationCollector: () => <DiagnosticsNode>[
+                DiagnosticsNode.message('testing'),
+                DiagnosticsNode.message('information'),
+              ])
     );
   });
 }
