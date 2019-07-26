@@ -193,14 +193,21 @@ class Crashlytics {
     }
 
     if (inDebugMode && !enableInDevMode) {
-      print(Trace.format(stack));
+      // Need to print the exception to give context on what the exception is.
+      print(exception);
+      // Not using Trace.format here to stick to the default stack trace format
+      // that Flutter developers are used to seeing.
+      if (stack != null) print(stack);
     } else {
-      // Report error
-      final List<String> stackTraceLines =
+      // Report error. The stack trace can be null. To avoid the following exception:
+      // Invalid argument(s): Cannot create a Trace from null.
+      // To avoid that exception, we can check for null and return an empty List.
+      final List<String> stackTraceLines = stack == null ? null :
           Trace.format(stack).trimRight().split('\n');
       final List<Map<String, String>> stackTraceElements =
+          stackTraceLines == null ? <Map<String,String>>[] :
           getStackTraceElements(stackTraceLines);
-      await channel
+      final String result = await channel
           .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
         'exception': "${exception.toString()}",
         'context': '$context',
@@ -208,6 +215,8 @@ class Crashlytics {
         'logs': _logs.toList(),
         'keys': _prepareKeys(),
       });
+      // Print result.
+      print(result);
     }
   }
 }

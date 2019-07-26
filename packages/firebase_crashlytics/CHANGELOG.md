@@ -1,3 +1,11 @@
+## 0.1.1
+
+* Updated `README.md` to include both the breaking change from `0.1.0` and the newly added
+  `recordError` function in the setup section.
+* Made the `_recordError` function safe for missing stack traces (`null`).
+* Added the "Error reported to Crashlytics." print statement that was previously missing.
+* Adjusted `README.md` formatting.
+
 ## 0.1.0
 
 * **Breaking Change** Renamed `onError` to `reportFlutterError`.
