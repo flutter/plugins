@@ -76,9 +76,11 @@
     for (NSDictionary *errorElement in errorElements) {
       [frames addObject:[self generateFrame:errorElement]];
     }
-    [[Crashlytics sharedInstance] recordCustomExceptionName:call.arguments[@"exception"]
-                                                     reason:[NSString stringWithFormat:@"thrown %s", call.arguments[@"context"]]
-                                                 frameArray:frames];
+    [[Crashlytics sharedInstance]
+        recordCustomExceptionName:call.arguments[@"exception"]
+                           reason:[NSString
+                                      stringWithFormat:@"thrown %s", call.arguments[@"context"]]
+                       frameArray:frames];
     result(@"Error reported to Crashlytics.");
   } else if ([@"Crashlytics#isDebuggable" isEqualToString:call.method]) {
     result([NSNumber numberWithBool:[Crashlytics sharedInstance].debugMode]);

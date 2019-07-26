@@ -236,6 +236,11 @@ class Crashlytics {
           Trace.format(stack).trimRight().split('\n');
       final List<Map<String, String>> stackTraceElements =
           getStackTraceElements(stackTraceLines);
+
+      // The context is a string that "should be in a form that will make sense in
+      // English when following the word 'thrown'" according to the documentation for
+      // [FlutterErrorDetails.context]. It is displayed to the user on Crashlytics
+      // as the "reason", which is forced by iOS, with the "thrown" prefix added.
       final String result = await channel
           .invokeMethod<String>('Crashlytics#onError', <String, dynamic>{
         'exception': "${exception.toString()}",
