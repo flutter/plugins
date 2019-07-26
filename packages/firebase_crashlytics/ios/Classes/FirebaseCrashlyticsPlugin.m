@@ -77,7 +77,7 @@
       [frames addObject:[self generateFrame:errorElement]];
     }
     [[Crashlytics sharedInstance] recordCustomExceptionName:call.arguments[@"exception"]
-                                                     reason:call.arguments[@"context"]
+                                                     reason:[NSString stringWithFormat:@"thrown %s", call.arguments[@"context"]]
                                                  frameArray:frames];
     result(@"Error reported to Crashlytics.");
   } else if ([@"Crashlytics#isDebuggable" isEqualToString:call.method]) {
