@@ -132,6 +132,49 @@ void main() {
     await controller.evaluateJavascript('Echo.postMessage("hello");');
     expect(messagesReceived, equals(<String>['hello']));
   });
+
+  test('userAgent', () async {
+    final Completer<WebViewController> controllerCompleter1 =
+        Completer<WebViewController>();
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          javascriptMode: JavascriptMode.unrestricted,
+          userAgent: 'Custom_User_Agent1',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter1.complete(controller);
+          },
+        ),
+      ),
+    );
+    final WebViewController controller1 = await controllerCompleter1.future;
+    final String customUserAgent1 = await controller1.getUserAgent();
+    expect(customUserAgent1, 'Custom_User_Agent1');
+
+    // rebuilds a WebView with a different user agent.
+    final Completer<WebViewController> controllerCompleter2 =
+        Completer<WebViewController>();
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          javascriptMode: JavascriptMode.unrestricted,
+          userAgent: 'Custom_User_Agent2',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter2.complete(controller);
+          },
+        ),
+      ),
+    );
+    final WebViewController controller2 = await controllerCompleter2.future;
+    final String customUserAgent2 = await controller2.getUserAgent();
+    expect(customUserAgent2, 'Custom_User_Agent2');
+  });
 }
 
 Future<void> pumpWidget(Widget widget) {
