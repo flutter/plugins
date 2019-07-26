@@ -1,4 +1,4 @@
-## 0.12.8
+## 0.12.8+1
 
 * Add metatdata to QuerySnapshot.
 
