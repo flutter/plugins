@@ -1,6 +1,10 @@
-## 0.10.1+5
+## 0.10.1+6
 
 * iOS: fixed some videos being rendered black
+
+## 0.10.1+5
+
+* Fix race condition while disposing the VideoController.
 
 ## 0.10.1+4
 

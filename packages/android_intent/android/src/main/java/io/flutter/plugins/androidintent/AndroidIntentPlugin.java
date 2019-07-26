@@ -44,6 +44,8 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         return Intent.ACTION_VOICE_COMMAND;
       case "settings":
         return Settings.ACTION_SETTINGS;
+      case "action_location_source_settings":
+        return Settings.ACTION_LOCATION_SOURCE_SETTINGS;
       default:
         return action;
     }

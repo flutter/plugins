@@ -60,10 +60,10 @@ task:
     image: mojave-xcode-10.2-flutter
   setup_script:
     - pod repo update
-  switch_channel_script:
+  upgrade_script:
     - flutter channel master
     - flutter upgrade
-    - flutter doctor
+    - git fetch origin master
   activate_script:
     - pub global activate flutter_plugin_tools
   create_simulator_script:

@@ -83,9 +83,16 @@ class AndroidAlarmManager {
   /// The timer is uniquely identified by `id`. Calling this function again
   /// again with the same `id` will cancel and replace the existing timer.
   ///
+  /// If `alarmClock` is passed as `true`, the timer will be created with
+  /// Android's `AlarmManagerCompat.setAlarmClock`.
+  ///
+  /// If `allowWhileIdle` is passed as `true`, the timer will be created with
+  /// Android's `AlarmManagerCompat.setExactAndAllowWhileIdle` or
+  /// `AlarmManagerCompat.setAndAllowWhileIdle`.
+  ///
   /// If `exact` is passed as `true`, the timer will be created with Android's
-  /// `AlarmManager.setRepeating`. When `exact` is `false` (the default), the
-  /// timer will be created with `AlarmManager.setInexactRepeating`.
+  /// `AlarmManagerCompat.setExact`. When `exact` is `false` (the default), the
+  /// timer will be created with `AlarmManager.set`.
   ///
   /// If `wakeup` is passed as `true`, the device will be woken up when the
   /// alarm fires. If `wakeup` is false (the default), the device will not be
@@ -101,6 +108,8 @@ class AndroidAlarmManager {
     Duration delay,
     int id,
     dynamic Function() callback, {
+    bool alarmClock = false,
+    bool allowWhileIdle = false,
     bool exact = false,
     bool wakeup = false,
     bool rescheduleOnReboot = false,
@@ -113,6 +122,8 @@ class AndroidAlarmManager {
     }
     final bool r = await _channel.invokeMethod<bool>('Alarm.oneShot', <dynamic>[
       id,
+      alarmClock,
+      allowWhileIdle,
       exact,
       wakeup,
       first,
