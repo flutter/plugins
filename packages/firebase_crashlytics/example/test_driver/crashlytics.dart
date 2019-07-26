@@ -24,15 +24,13 @@ void main() {
     crashlytics.setDouble('testDouble', 42.0);
     crashlytics.setString('testString', 'bar');
     Crashlytics.instance.log('testing');
-    await crashlytics.recordFlutterError(
-      FlutterErrorDetails(
-          exception: 'testing',
-          stack: StackTrace.fromString(''),
-          context: DiagnosticsNode.message('during testing'),
-          informationCollector: () => <DiagnosticsNode>[
-                DiagnosticsNode.message('testing'),
-                DiagnosticsNode.message('information'),
-              ])
-    );
+    await crashlytics.recordFlutterError(FlutterErrorDetails(
+        exception: 'testing',
+        stack: StackTrace.fromString(''),
+        context: DiagnosticsNode.message('during testing'),
+        informationCollector: () => <DiagnosticsNode>[
+              DiagnosticsNode.message('testing'),
+              DiagnosticsNode.message('information'),
+            ]));
   });
 }
