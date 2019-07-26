@@ -1,3 +1,11 @@
+## 0.9.0+3
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 0.9.0+2
+
+* On Android, no longer crashes when registering the plugin if no activity is available.
+
 ## 0.9.0+1
 
 * Add missing template type parameter to `invokeMethod` calls.

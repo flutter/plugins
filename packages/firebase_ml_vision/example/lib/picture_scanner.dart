@@ -29,6 +29,8 @@ class _PictureScannerState extends State<PictureScanner> {
   final ImageLabeler _cloudImageLabeler =
       FirebaseVision.instance.cloudImageLabeler();
   final TextRecognizer _recognizer = FirebaseVision.instance.textRecognizer();
+  final TextRecognizer _cloudRecognizer =
+      FirebaseVision.instance.cloudTextRecognizer();
 
   Future<void> _getAndScanImage() async {
     setState(() {
@@ -93,6 +95,9 @@ class _PictureScannerState extends State<PictureScanner> {
       case Detector.text:
         results = await _recognizer.processImage(visionImage);
         break;
+      case Detector.cloudText:
+        results = await _cloudRecognizer.processImage(visionImage);
+        break;
       default:
         return;
     }
@@ -119,6 +124,9 @@ class _PictureScannerState extends State<PictureScanner> {
         painter = LabelDetectorPainter(_imageSize, results);
         break;
       case Detector.text:
+        painter = TextDetectorPainter(_imageSize, results);
+        break;
+      case Detector.cloudText:
         painter = TextDetectorPainter(_imageSize, results);
         break;
       default:
@@ -185,6 +193,10 @@ class _PictureScannerState extends State<PictureScanner> {
                 child: Text('Detect Text'),
                 value: Detector.text,
               ),
+              const PopupMenuItem<Detector>(
+                child: Text('Detect Cloud Text'),
+                value: Detector.cloudText,
+              ),
             ],
           ),
         ],
@@ -207,6 +219,7 @@ class _PictureScannerState extends State<PictureScanner> {
     _imageLabeler.close();
     _cloudImageLabeler.close();
     _recognizer.close();
+    _cloudRecognizer.close();
     super.dispose();
   }
 }

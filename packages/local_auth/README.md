@@ -29,7 +29,7 @@ Currently the following biometric types are implemented:
 To get a list of enrolled biometrics, call getAvailableBiometrics:
 
 ```dart
-List<BiometricType> availableBiometrics;
+List<BiometricType> availableBiometrics =
     await auth.getAvailableBiometrics();
 
 if (Platform.isIOS) {
