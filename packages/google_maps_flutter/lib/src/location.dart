@@ -121,3 +121,26 @@ class LatLngBounds {
   @override
   int get hashCode => hashValues(southwest, northeast);
 }
+
+
+/// A point on the screen described by x,y coordinates
+class Point {
+  
+  final int x;
+  
+  final int y;
+  
+  const Point({@required this.x,@required  this.y});
+
+  dynamic _toJson() {
+    return <int>[x, y];
+  }
+
+  static Point _fromJson(dynamic json) {
+    if (json == null) {
+      return null;
+    }
+    return Point(x: json[0], y:json[1]);
+  }
+  
+}

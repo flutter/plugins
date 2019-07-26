@@ -194,7 +194,7 @@ class GoogleMapController {
       throw MapStyleException(successAndError[1]);
     }
   }
-
+  
   /// Return [LatLngBounds] defining the region that is visible in a map.
   Future<LatLngBounds> getVisibleRegion() async {
     final Map<String, dynamic> latLngBounds =
@@ -204,4 +204,31 @@ class GoogleMapController {
 
     return LatLngBounds(northeast: northeast, southwest: southwest);
   }
+  
+  /// Return [LatLng] defining corresponding to the point coordinates on the screen
+  /// The screen location is in screen pixels (not display pixels) relative
+  ///  to the top left of the map (not of the whole screen).
+  Future<LatLng> fromScreenLocation(Point point) async {
+    final Map<String, dynamic> latLngBounds =
+        await channel.invokeMapMethod<String, dynamic>('map#fromScreenLocation',<String, dynamic>{
+          'point': point._toJson(),
+        });
+
+    print(latLngBounds);
+    return LatLng._fromJson(latLngBounds['position']);
+  }
+  
+  /// Return [Point] defining the point on the screen corresponding to LatLng
+  ///  The screen location is in screen pixels (not display pixels) relative
+  ///  to the top left of the map (not of the whole screen).
+  Future<Point> toScreenLocation(LatLng latlng) async {
+    final Map<String, dynamic> point =
+        await channel.invokeMapMethod<String, dynamic>('map#toScreenLocation',<String, dynamic>{
+          'position': latlng._toJson(),
+        });
+
+    print(point);
+    return Point._fromJson(point['point']);
+  }
 }
+

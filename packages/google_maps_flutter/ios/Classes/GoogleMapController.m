@@ -13,6 +13,7 @@ static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json);
 static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
 static GMSCameraUpdate* ToCameraUpdate(NSArray* data);
 static NSDictionary* GMSCoordinateBoundsToJson(GMSCoordinateBounds* bounds);
+static NSDictionary* CGPointToJson(CGPoint* point);
 static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> sink);
 static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
 
@@ -147,6 +148,28 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
                                  message:@"getVisibleRegion called prior to map initialization"
                                  details:nil]);
     }
+  } else if ([call.method isEqualToString:@"map#fromScreenLocation"]) {
+    if (_mapView != nil) {
+        NSArray* arr = call.arguments[@"point"];
+        CGPoint point = [FLTGoogleMapJsonConversions toPoint:arr];
+        CLLocationCoordinate2D coords = [_mapView.projection coordinateForPoint:point];
+        result(@{@"position" : LocationToJson(coords)});
+    } else {
+      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                 message:@"fromScreenLocation called prior to map initialization"
+                                 details:nil]);
+    }
+  } else if ([call.method isEqualToString:@"map#toScreenLocation"]) {
+      if (_mapView != nil) {
+          NSArray* arr = call.arguments[@"position"];
+          CLLocationCoordinate2D coords = [FLTGoogleMapJsonConversions toLocation:arr];
+          CGPoint extractedExpr = [_mapView.projection pointForCoordinate:(coords)];
+          result(CGPointToJson(&extractedExpr));
+      } else {
+          result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                     message:@"toScreenLocation called prior to map initialization"
+                                     details:nil]);
+      }
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
     result(nil);
   } else if ([call.method isEqualToString:@"markers#update"]) {
@@ -425,6 +448,17 @@ static NSDictionary* GMSCoordinateBoundsToJson(GMSCoordinateBounds* bounds) {
     @"northeast" : LocationToJson([bounds northEast]),
   };
 }
+
+
+static NSDictionary* CGPointToJson(CGPoint* point) {
+    if (!point) {
+        return nil;
+    }
+    return @{
+             @"point" : @[ @((int) point->x), @((int) point->y) ]
+             };
+}
+
 
 static float ToFloat(NSNumber* data) { return [FLTGoogleMapJsonConversions toFloat:data]; }
 

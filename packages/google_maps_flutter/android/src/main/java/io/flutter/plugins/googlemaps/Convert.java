@@ -201,7 +201,13 @@ class Convert {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 
-  private static LatLng toLatLng(Object o) {
+
+  static Object pointToJson(Point resp) {
+    return Arrays.asList(resp.x,resp.y);
+  }
+
+
+  static LatLng toLatLng(Object o) {
     final List<?> data = toList(o);
     return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
   }
@@ -587,4 +593,6 @@ class Convert {
         throw new IllegalArgumentException("Cannot interpret " + o + " as Cap");
     }
   }
+
+
 }
