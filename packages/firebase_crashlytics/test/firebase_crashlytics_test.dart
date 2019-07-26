@@ -40,11 +40,10 @@ void main() {
         exception: 'foo exception',
         stack: StackTrace.current,
         library: 'foo library',
-        informationCollector:
-            () => <DiagnosticsNode>[
-              DiagnosticsNode.message('test message'),
-              DiagnosticsNode.message('second message'),
-            ],
+        informationCollector: () => <DiagnosticsNode>[
+          DiagnosticsNode.message('test message'),
+          DiagnosticsNode.message('second message'),
+        ],
         context: ErrorDescription('foo context'),
       );
       crashlytics.enableInDevMode = true;

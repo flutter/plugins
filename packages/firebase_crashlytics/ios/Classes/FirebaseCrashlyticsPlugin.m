@@ -60,12 +60,12 @@
     }
 
     // Add additional information from the Flutter framework to the exception reported in Crashlytics.
-    // CLS_LOG would also print to the log if it was called in debug mode, however, the
-    // "onError" method call only occurs in release mode, which is why this is fine.
-    // Otherwise, this should use CLSLog as explained here: https://support.crashlytics.com/knowledgebase/articles/92519-how-do-i-use-logging
+    // Using CLSLog instead of CLS_LOG to try to avoid the automatic inclusion of the line number.
+    // It also ensures that the log is only written to Crashlytics and not also to the offline log
+    // as explained here: https://support.crashlytics.com/knowledgebase/articles/92519-how-do-i-use-logging
     NSString *information = call.arguments[@"information"];
     if ([information length] != 0) {
-      CLS_LOG(information);
+      CLSLog(information);
     }
 
     // Report crash.

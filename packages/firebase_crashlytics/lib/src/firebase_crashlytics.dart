@@ -31,7 +31,9 @@ class Crashlytics {
 
     _recordError(details.exceptionAsString(), details.stack,
         context: details.context,
-        information: details.informationCollector == null ? null : details.informationCollector());
+        information: details.informationCollector == null
+            ? null
+            : details.informationCollector());
   }
 
   /// Submits a report of a non-fatal error.
@@ -205,13 +207,14 @@ class Crashlytics {
       assert(inDebugMode = true);
     }
 
-    final String _information =
-      (information == null || information.isEmpty) ? '' :
-      (StringBuffer()..writeAll(information, '\n')).toString();
+    final String _information = (information == null || information.isEmpty)
+        ? ''
+        : (StringBuffer()..writeAll(information, '\n')).toString();
 
     if (inDebugMode && !enableInDevMode) {
       // If available, give context to the exception.
-      if (context != null) print('The following exception was thrown $context:');
+      if (context != null)
+        print('The following exception was thrown $context:');
 
       // Need to print the exception to explain why the exception was thrown.
       print(exception);
@@ -228,9 +231,11 @@ class Crashlytics {
       // To avoid that exception, we can check for null and provide an empty stack trace.
       if (stack == null) stack = StackTrace.fromString('');
 
-      // Report error. 
-      final List<String> stackTraceLines = Trace.format(stack).trimRight().split('\n');
-      final List<Map<String, String>> stackTraceElements = getStackTraceElements(stackTraceLines);
+      // Report error.
+      final List<String> stackTraceLines =
+          Trace.format(stack).trimRight().split('\n');
+      final List<Map<String, String>> stackTraceElements =
+          getStackTraceElements(stackTraceLines);
       final String result = await channel
           .invokeMethod<String>('Crashlytics#onError', <String, dynamic>{
         'exception': "${exception.toString()}",

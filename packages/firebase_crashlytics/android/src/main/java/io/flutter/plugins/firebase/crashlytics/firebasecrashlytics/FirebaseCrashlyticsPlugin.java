@@ -75,10 +75,9 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
       final String context = call.argument("context");
       if (context != null) Crashlytics.setString("context", "thrown " + context);
 
-      // Log information
+      // Log information.
       final String information = call.argument("information");
-      if (information != null && !information.isEmpty())
-        Crashlytics.log(information);
+      if (information != null && !information.isEmpty()) Crashlytics.log(information);
 
       Crashlytics.logException(exception);
       result.success("Error reported to Crashlytics.");
