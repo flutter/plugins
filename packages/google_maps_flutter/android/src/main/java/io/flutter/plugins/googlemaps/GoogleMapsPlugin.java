@@ -88,6 +88,7 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
     if (activity.hashCode() != registrarActivityHashCode) {
       return;
     }
+    activity.getApplication().unregisterActivityLifecycleCallbacks(this);
     state.set(DESTROYED);
   }
 
