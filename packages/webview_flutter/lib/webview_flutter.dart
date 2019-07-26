@@ -121,6 +121,7 @@ class WebView extends StatefulWidget {
     this.gestureRecognizers,
     this.onPageFinished,
     this.debuggingEnabled = false,
+    this.userAgent,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -255,6 +256,18 @@ class WebView extends StatefulWidget {
   /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
 
+  /// The User_Agent used for WebView requests.
+  ///
+  /// By default `userAgent` is null.
+  /// If the `userAgent` is null, the default User Agent from the Android / iOS WebView is used.
+  /// WebView User Agent for Android (https://developer.chrome.com/multidevice/user-agent)
+  ///
+  /// When the WebView is rebuild with a new User Agent, the page reloads and the request uses the new User Agent.
+  ///
+  /// When [WebViewController.goBack] is called after changing the User Agent, the old User Agent is used.
+  /// Only after reloading the Page you went back to,the request uses the new User Agent.
+  final String userAgent;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -317,6 +330,7 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     initialUrl: widget.initialUrl,
     webSettings: _webSettingsFromWidget(widget),
     javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
+    userAgent: widget.userAgent,
   );
 }
 
@@ -325,6 +339,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     javascriptMode: widget.javascriptMode,
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
+    userAgent: widget.userAgent,
   );
 }
 
@@ -337,9 +352,11 @@ WebSettings _clearUnchangedWebSettings(
   assert(newValue.javascriptMode != null);
   assert(newValue.hasNavigationDelegate != null);
   assert(newValue.debuggingEnabled != null);
+  assert(newValue.userAgent != null);
   JavascriptMode javascriptMode;
   bool hasNavigationDelegate;
   bool debuggingEnabled;
+  String userAgent;
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }
@@ -349,11 +366,15 @@ WebSettings _clearUnchangedWebSettings(
   if (currentValue.debuggingEnabled != newValue.debuggingEnabled) {
     debuggingEnabled = newValue.debuggingEnabled;
   }
+  if (currentValue.userAgent != newValue.userAgent) {
+    userAgent = newValue.userAgent;
+  }
 
   return WebSettings(
       javascriptMode: javascriptMode,
       hasNavigationDelegate: hasNavigationDelegate,
-      debuggingEnabled: debuggingEnabled);
+      debuggingEnabled: debuggingEnabled,
+      userAgent: userAgent);
 }
 
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
@@ -567,6 +588,11 @@ class WebViewController {
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     return _webViewPlatformController.evaluateJavascript(javascriptString);
+  }
+
+  /// Returns the User Agent value that will be used for subsequent HTTP requests.
+  Future<String> getUserAgent() async {
+    return _webViewPlatformController.getUserAgent();
   }
 }
 

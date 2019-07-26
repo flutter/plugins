@@ -152,6 +152,11 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView removeJavascriptChannels is not implemented on the current platform");
   }
+
+  Future<String> getUserAgent() {
+    throw UnimplementedError(
+        "WebView getUserAgent is not implemented on the current platform");
+  }
 }
 
 /// Settings for configuring a WebViewPlatform.
@@ -163,6 +168,7 @@ class WebSettings {
     this.javascriptMode,
     this.hasNavigationDelegate,
     this.debuggingEnabled,
+    this.userAgent,
   });
 
   /// The JavaScript execution mode to be used by the webview.
@@ -176,16 +182,24 @@ class WebSettings {
   /// See also: [WebView.debuggingEnabled].
   final bool debuggingEnabled;
 
+  /// The User Agent used for all following requests
+  ///
+  /// See also [WebView.userAgent]
+  final String userAgent;
+
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, userAgent: $userAgent,)';
   }
 }
 
 /// Configuration to use when creating a new [WebViewPlatformController].
 class CreationParams {
   CreationParams(
-      {this.initialUrl, this.webSettings, this.javascriptChannelNames});
+      {this.initialUrl,
+      this.webSettings,
+      this.javascriptChannelNames,
+      this.userAgent});
 
   /// The initialUrl to load in the webview.
   ///
@@ -210,9 +224,14 @@ class CreationParams {
   // to PlatformWebView.
   final Set<String> javascriptChannelNames;
 
+  /// The User Agent used for all following requests
+  ///
+  /// When null, the default User Agent of the Android/iOS WebView is used
+  final String userAgent;
+
   @override
   String toString() {
-    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames)';
+    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent)';
   }
 }
 
