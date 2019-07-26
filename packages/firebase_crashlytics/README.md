@@ -93,7 +93,7 @@ void main() {
 }
 ```
 
-Overriding the `FlutterError.onError` with `Crashlytics.instance.recordFlutterError`  will automatically catch all 
+Overriding `FlutterError.onError` with `Crashlytics.instance.recordFlutterError`  will automatically catch all 
 errors that are thrown from within the Flutter framework.  
 If you want to catch errors that occur in `runZoned`, 
 you can supply `Crashlytics.instance.recordError` to the `onError` parameter:
