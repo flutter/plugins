@@ -1,5 +1,9 @@
 ## 0.12.8
 
+* Add metatdata to QuerySnapshot.
+
+## 0.12.8
+
 * Updated how document ids are generated to more closely match native implementations.
 
 ## 0.12.7+1
