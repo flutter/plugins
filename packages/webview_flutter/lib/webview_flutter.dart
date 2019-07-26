@@ -121,6 +121,7 @@ class WebView extends StatefulWidget {
     this.gestureRecognizers,
     this.onPageFinished,
     this.debuggingEnabled = false,
+    this.allowsBack = true,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -255,6 +256,8 @@ class WebView extends StatefulWidget {
   /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
 
+  final bool allowsBack;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -325,6 +328,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     javascriptMode: widget.javascriptMode,
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
+    allowsBack: widget.allowsBack,
   );
 }
 
@@ -334,12 +338,15 @@ WebSettings _clearUnchangedWebSettings(
   assert(currentValue.javascriptMode != null);
   assert(currentValue.hasNavigationDelegate != null);
   assert(currentValue.debuggingEnabled != null);
+  assert(currentValue.allowsBack != null);
   assert(newValue.javascriptMode != null);
   assert(newValue.hasNavigationDelegate != null);
   assert(newValue.debuggingEnabled != null);
+  assert(newValue.allowsBack != null);
   JavascriptMode javascriptMode;
   bool hasNavigationDelegate;
   bool debuggingEnabled;
+  bool allowsBack;
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }
@@ -349,11 +356,15 @@ WebSettings _clearUnchangedWebSettings(
   if (currentValue.debuggingEnabled != newValue.debuggingEnabled) {
     debuggingEnabled = newValue.debuggingEnabled;
   }
+  if (currentValue.allowsBack != newValue.allowsBack) {
+    allowsBack = newValue.allowsBack;
+  }
 
   return WebSettings(
       javascriptMode: javascriptMode,
       hasNavigationDelegate: hasNavigationDelegate,
-      debuggingEnabled: debuggingEnabled);
+      debuggingEnabled: debuggingEnabled,
+      allowsBack: allowsBack);
 }
 
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {

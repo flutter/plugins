@@ -246,6 +246,9 @@
       _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
     } else if ([key isEqualToString:@"debuggingEnabled"]) {
       // no-op debugging is always enabled on iOS.
+    } else if ([key isEqualToString:@"allowsBack"]) {
+    NSNumber* allowsBack = settings[key];
+      _webView.allowsBackForwardNavigationGestures = [allowsBack boolValue];
     } else {
       [unknownKeys addObject:key];
     }

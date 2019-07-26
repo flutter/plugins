@@ -7,7 +7,35 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-void main() => runApp(MaterialApp(home: WebViewExample()));
+import 'custom_page.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      routes: {
+        '/': (context) => Scaffold(
+              appBar: AppBar(
+                title: const Text('Home'),
+              ),
+              body: Center(
+                child: RaisedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        CustomPageRoute<void>(
+                            builder: (context) => WebViewExample()));
+                  },
+                  child: Text('Flutter WebView example'),
+                ),
+              ),
+            ),
+      },
+    );
+  }
+}
 
 const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
@@ -33,8 +61,52 @@ class _WebViewExampleState extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
 
+  String get _initialUrl => 'https://flutter.dev/';
+  String _currentUrl;
+  String get currentUrl => _currentUrl ?? _initialUrl;
+
+  @override
+  void dispose() {
+    final route = ModalRoute.of(context);
+    route?.removeScopedWillPopCallback(_onWillPop);
+    if (route is CustomPageRoute) {
+      route.removeShouldSwipePopCallback(_shouldSwipePop);
+    }
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  bool _shouldSwipePop() {
+    return _currentUrl == _initialUrl;
+  }
+
+  Future<bool> _onWillPop() async {
+    final res = _shouldSwipePop();
+    if (!res) {
+      _goBack();
+    }
+    return res;
+  }
+
+  Future _goBack() async {
+    final controller = await _controller.future;
+    controller.goBack();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final route = ModalRoute.of(context);
+    route?.removeScopedWillPopCallback(_onWillPop);
+    route?.addScopedWillPopCallback(_onWillPop);
+    if (route is CustomPageRoute) {
+      route?.removeShouldSwipePopCallback(_shouldSwipePop);
+      route?.addShouldSwipePopCallback(_shouldSwipePop);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
@@ -48,7 +120,7 @@ class _WebViewExampleState extends State<WebViewExample> {
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
-          initialUrl: 'https://flutter.dev',
+          initialUrl: _initialUrl,
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
@@ -63,11 +135,15 @@ class _WebViewExampleState extends State<WebViewExample> {
               print('blocking navigation to $request}');
               return NavigationDecision.prevent;
             }
+            if (request.isForMainFrame && request.url.startsWith('https')) {
+              _currentUrl = request.url;
+            }
             print('allowing navigation to $request');
             return NavigationDecision.navigate;
           },
           onPageFinished: (String url) {
             print('Page finished loading: $url');
+            _currentUrl = url;
           },
         );
       }),

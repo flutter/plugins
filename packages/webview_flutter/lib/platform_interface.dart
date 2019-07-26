@@ -163,6 +163,7 @@ class WebSettings {
     this.javascriptMode,
     this.hasNavigationDelegate,
     this.debuggingEnabled,
+    this.allowsBack,
   });
 
   /// The JavaScript execution mode to be used by the webview.
@@ -176,9 +177,12 @@ class WebSettings {
   /// See also: [WebView.debuggingEnabled].
   final bool debuggingEnabled;
 
+  /// Whether the [WebView] has a [allowsBackForwardNavigationGestures] set.
+  final bool allowsBack;
+
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, allowsBack: $allowsBack)';
   }
 }
 
