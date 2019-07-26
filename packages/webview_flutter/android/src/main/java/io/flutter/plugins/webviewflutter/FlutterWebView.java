@@ -55,6 +55,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
+
+    if (params.containsKey("userAgent")) {
+      String userAgent = (String) params.get("userAgent");
+      updateUserAgent(userAgent);
+    }
   }
 
   @Override
@@ -120,6 +125,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         break;
       case "clearCache":
         clearCache(result);
+        break;
+      case "getUserAgent":
+        getUserAgent(methodCall, result);
         break;
       default:
         result.notImplemented();
@@ -232,6 +240,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
           webView.setWebContentsDebuggingEnabled(debuggingEnabled);
           break;
+        case "userAgent":
+          updateUserAgent((String) settings.get(key));
+          break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
@@ -256,6 +267,15 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       webView.addJavascriptInterface(
           new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
     }
+  }
+
+  private void getUserAgent(MethodCall methodCall, Result result) {
+    String userAgent = webView.getSettings().getUserAgentString();
+    result.success(userAgent);
+  }
+
+  private void updateUserAgent(String userAgent) {
+    webView.getSettings().setUserAgentString(userAgent);
   }
 
   @Override
