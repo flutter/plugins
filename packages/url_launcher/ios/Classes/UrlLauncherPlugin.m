@@ -138,7 +138,10 @@ API_AVAILABLE(ios(9.0))
           result(@(success));
         }];
   } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     BOOL success = [application openURL:url];
+#pragma clang diagnostic pop
     result(@(success));
   }
 }
