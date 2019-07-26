@@ -1,6 +1,6 @@
 ## 0.5.20+1
 
-* Android: Fix memory leak of ActivityLifecycleCallbacks.
+* Android: Unregister ActivityLifecycleCallbacks on activity destroy (fixes a memory leak).
 
 ## 0.5.20
 
