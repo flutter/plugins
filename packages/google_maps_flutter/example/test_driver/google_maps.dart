@@ -397,9 +397,10 @@ void main() {
     ));
 
     final GoogleMapInspector inspector = await inspectorCompleter.future;
-    bool myLocationEnabled = await inspector.isMyLocationEnabled();
+    final bool myLocationEnabled = await inspector.isMyLocationEnabled();
     expect(myLocationEnabled, true);
-    bool myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
+    final bool myLocationButtonEnabled =
+        await inspector.isMyLocationButtonEnabled();
     expect(myLocationButtonEnabled, false);
   });
 
