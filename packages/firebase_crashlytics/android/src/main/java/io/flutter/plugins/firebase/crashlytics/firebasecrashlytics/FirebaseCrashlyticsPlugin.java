@@ -71,7 +71,7 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
 
       Crashlytics.setString("exception", (String) call.argument("exception"));
 
-      // Set context to show when the exception was thrown.
+      // Set a "reason" (to match iOS) to show where the exception was thrown.
       final String context = call.argument("context");
       if (context != null) Crashlytics.setString("reason", "thrown " + context);
 
