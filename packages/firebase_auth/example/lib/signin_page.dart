@@ -145,10 +145,11 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
 
   // Example code of how to sign in with email and password.
   void _signInWithEmailAndPassword() async {
-    final FirebaseUser user = await _auth.signInWithEmailAndPassword(
+    final FirebaseUser user = (await _auth.signInWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
-    );
+    ))
+        .user;
     if (user != null) {
       setState(() {
         _success = true;
@@ -193,10 +194,11 @@ class _EmailLinkSignInSectionState extends State<_EmailLinkSignInSection>
       final Uri link = await _retrieveDynamicLink();
 
       if (link != null) {
-        final FirebaseUser user = await _auth.signInWithEmailAndLink(
+        final FirebaseUser user = (await _auth.signInWithEmailAndLink(
           email: _userEmail,
           link: link.toString(),
-        );
+        ))
+            .user;
 
         if (user != null) {
           _userID = user.uid;
@@ -330,7 +332,7 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
 
   // Example code of how to sign in anonymously.
   void _signInAnonymously() async {
-    final FirebaseUser user = await _auth.signInAnonymously();
+    final FirebaseUser user = (await _auth.signInAnonymously()).user;
     assert(user != null);
     assert(user.isAnonymous);
     assert(!user.isEmailVerified);
@@ -413,7 +415,8 @@ class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    final FirebaseUser user =
+        (await _auth.signInWithCredential(credential)).user;
     assert(user.email != null);
     assert(user.displayName != null);
     assert(!user.isAnonymous);
@@ -554,7 +557,8 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
       verificationId: _verificationId,
       smsCode: _smsController.text,
     );
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    final FirebaseUser user =
+        (await _auth.signInWithCredential(credential)).user;
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
     setState(() {
@@ -698,7 +702,8 @@ class _OtherProvidersSignInSectionState
     final AuthCredential credential = GithubAuthProvider.getCredential(
       token: _tokenController.text,
     );
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    final FirebaseUser user =
+        (await _auth.signInWithCredential(credential)).user;
     assert(user.email != null);
     assert(user.displayName != null);
     assert(!user.isAnonymous);
@@ -720,7 +725,8 @@ class _OtherProvidersSignInSectionState
     final AuthCredential credential = FacebookAuthProvider.getCredential(
       accessToken: _tokenController.text,
     );
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    final FirebaseUser user =
+        (await _auth.signInWithCredential(credential)).user;
     assert(user.email != null);
     assert(user.displayName != null);
     assert(!user.isAnonymous);
@@ -742,7 +748,8 @@ class _OtherProvidersSignInSectionState
     final AuthCredential credential = TwitterAuthProvider.getCredential(
         authToken: _tokenController.text,
         authTokenSecret: _tokenSecretController.text);
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    final FirebaseUser user =
+        (await _auth.signInWithCredential(credential)).user;
     assert(user.email != null);
     assert(user.displayName != null);
     assert(!user.isAnonymous);
