@@ -28,6 +28,11 @@ void main() {
       FlutterErrorDetails(
         exception: 'testing',
         stack: StackTrace.fromString(''),
+        context: DiagnosticsNode.message('during testing'),
+        informationCollector: () => <DiagnosticsNode>[
+          DiagnosticsNode.message('testing'),
+          DiagnosticsNode.message('information'),
+        ]
       ),
     );
   });
