@@ -36,8 +36,6 @@ class MessageList extends StatelessWidget {
       stream: firestore.collection('messages').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) return const Text('Loading...');
-        print(snapshot.data.metadata.isFromCache);
-        print(snapshot.data.metadata.hasPendingWrites);
         final int messageCount = snapshot.data.documents.length;
         return ListView.builder(
           itemCount: messageCount,
