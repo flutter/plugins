@@ -59,10 +59,10 @@
       }
     }
 
-    // Add additional information from the Flutter framework to the exception reported in Crashlytics.
-    // Using CLSLog instead of CLS_LOG to try to avoid the automatic inclusion of the line number.
-    // It also ensures that the log is only written to Crashlytics and not also to the offline log
-    // as explained here:
+    // Add additional information from the Flutter framework to the exception reported in
+    // Crashlytics. Using CLSLog instead of CLS_LOG to try to avoid the automatic inclusion of the
+    // line number. It also ensures that the log is only written to Crashlytics and not also to the
+    // offline log as explained here:
     // https://support.crashlytics.com/knowledgebase/articles/92519-how-do-i-use-logging
     // Although, that would only happen in debug mode, which this method call is never called in.
     NSString *information = call.arguments[@"information"];
