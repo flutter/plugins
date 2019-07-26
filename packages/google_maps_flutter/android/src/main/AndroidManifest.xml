@@ -1,3 +1,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="io.flutter.plugins.googlemaps">
+  <uses-sdk android:minSdkVersion="20" />
 </manifest>
