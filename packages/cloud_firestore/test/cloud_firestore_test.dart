@@ -9,7 +9,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_test/flutter_test.dart' as prefix0;
 
 void main() {
   group('$Firestore', () {
@@ -617,8 +616,10 @@ void main() {
       test('getDocumentsFromCollection', () async {
         QuerySnapshot snapshot =
             await collectionReference.getDocuments(source: Source.server);
-        expect(snapshot.metadata.hasPendingWrites, equals(kMockSnapshotMetadata['hasPendingWrites']));
-        expect(snapshot.metadata.isFromCache, equals(kMockSnapshotMetadata['isFromCache']));
+        expect(snapshot.metadata.hasPendingWrites,
+            equals(kMockSnapshotMetadata['hasPendingWrites']));
+        expect(snapshot.metadata.isFromCache,
+            equals(kMockSnapshotMetadata['isFromCache']));
         DocumentSnapshot document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
