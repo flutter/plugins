@@ -203,9 +203,9 @@ static NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
     @"documentChanges" : documentChanges,
     @"documents" : documents,
     @"metadatas" : metadatas,
-    @"metadata": @{
-      @"hasPendingWrites": @(snapshot.metadata.hasPendingWrites),
-      @"isFromCache": @(snapshot.metadata.isFromCache),
+    @"metadata" : @{
+      @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
+      @"isFromCache" : @(snapshot.metadata.isFromCache),
     }
   };
 }
