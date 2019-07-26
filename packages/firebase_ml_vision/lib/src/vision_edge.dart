@@ -20,9 +20,11 @@ class VisionEdgeImageLabeler {
   VisionEdgeImageLabeler._(
       {@required dynamic options,
       @required String dataset,
-      @required String modelLocation})
+      @required String modelLocation,
+      @required int handle,})
       : _options = options,
         _dataset = dataset,
+        _handle = handle,
         _modelLocation = modelLocation,
         assert(options != null),
         assert(dataset != null);
@@ -34,9 +36,17 @@ class VisionEdgeImageLabeler {
 
   final String _modelLocation;
 
+  final int _handle;
+
+  bool _hasBeenOpened = false;
+  bool _isClosed = false;
+
   /// Finds entities in the input image.
   Future<List<VisionEdgeImageLabel>> processImage(
       FirebaseVisionImage visionImage) async {
+      assert(!_isClosed);
+
+      _hasBeenOpened = true;
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
@@ -44,6 +54,7 @@ class VisionEdgeImageLabeler {
       final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
         'VisionEdgeImageLabeler#processLocalImage',
         <String, dynamic>{
+          'handle': _handle,
           'options': <String, dynamic>{
             'dataset': _dataset,
             'confidenceThreshold': _options.confidenceThreshold,
@@ -61,6 +72,7 @@ class VisionEdgeImageLabeler {
       final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
         'VisionEdgeImageLabeler#processRemoteImage',
         <String, dynamic>{
+          'handle': _handle,
           'options': <String, dynamic>{
             'dataset': _dataset,
             'confidenceThreshold': _options.confidenceThreshold,
@@ -75,6 +87,18 @@ class VisionEdgeImageLabeler {
 
       return labels;
     }
+  }
+
+  /// Release resources used by this labeler.
+  Future<void> close() {
+    if (!_hasBeenOpened) _isClosed = true;
+    if (_isClosed) return Future<void>.value(null);
+
+    _isClosed = true;
+    return FirebaseVision.channel.invokeMethod<void>(
+      'VisionEdgeImageLabeler#close',
+      <String, dynamic>{'handle': _handle},
+    );
   }
 }
 

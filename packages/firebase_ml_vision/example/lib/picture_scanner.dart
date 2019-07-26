@@ -31,6 +31,8 @@ class _PictureScannerState extends State<PictureScanner> {
   final TextRecognizer _recognizer = FirebaseVision.instance.textRecognizer();
   final TextRecognizer _cloudRecognizer =
       FirebaseVision.instance.cloudTextRecognizer();
+  final VisionEdgeImageLabeler _visionEdgeImageLabeler = FirebaseVision.instance
+      .visionEdgeImageLabeler('potholes', ModelLocation.Local);
 
   Future<void> _getAndScanImage() async {
     setState(() {
@@ -98,6 +100,9 @@ class _PictureScannerState extends State<PictureScanner> {
       case Detector.cloudText:
         results = await _cloudRecognizer.processImage(visionImage);
         break;
+      case Detector.visionEdgeLabel:
+        results = await _visionEdgeImageLabeler.processImage(visionImage);
+        break;
       default:
         return;
     }
@@ -128,6 +133,9 @@ class _PictureScannerState extends State<PictureScanner> {
         break;
       case Detector.cloudText:
         painter = TextDetectorPainter(_imageSize, results);
+        break;
+      case Detector.visionEdgeLabel:
+        painter = VisionEdgeLabelDetectorPainter(_imageSize, results);
         break;
       default:
         break;
@@ -197,6 +205,10 @@ class _PictureScannerState extends State<PictureScanner> {
                 child: Text('Detect Cloud Text'),
                 value: Detector.cloudText,
               ),
+              const PopupMenuItem<Detector>(
+                child: Text('Detect AutoML Vision Label'),
+                value: Detector.visionEdgeLabel,
+              ),
             ],
           ),
         ],
@@ -220,6 +232,7 @@ class _PictureScannerState extends State<PictureScanner> {
     _cloudImageLabeler.close();
     _recognizer.close();
     _cloudRecognizer.close();
+    _visionEdgeImageLabeler.close();
     super.dispose();
   }
 }

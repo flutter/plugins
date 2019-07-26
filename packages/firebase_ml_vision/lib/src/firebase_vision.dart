@@ -56,6 +56,7 @@ class FirebaseVision {
     return VisionEdgeImageLabeler._(
         options: options ?? const VisionEdgeImageLabelerOptions(),
         dataset: dataset,
+        handle: nextHandle++,
         modelLocation: modelLocation);
   }
 

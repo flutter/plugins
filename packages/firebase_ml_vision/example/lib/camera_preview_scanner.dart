@@ -31,6 +31,8 @@ class _CameraPreviewScannerState extends State<CameraPreviewScanner> {
   final TextRecognizer _recognizer = FirebaseVision.instance.textRecognizer();
   final TextRecognizer _cloudRecognizer =
       FirebaseVision.instance.cloudTextRecognizer();
+  final VisionEdgeImageLabeler _visionEdgeImageLabeler = FirebaseVision.instance
+      .visionEdgeImageLabeler('potholes', ModelLocation.Local);
 
   @override
   void initState() {
@@ -84,6 +86,8 @@ class _CameraPreviewScannerState extends State<CameraPreviewScanner> {
         return _cloudImageLabeler.processImage;
       case Detector.face:
         return _faceDetector.processImage;
+      case Detector.visionEdgeLabel:
+        return _visionEdgeImageLabeler.processImage;
     }
 
     return null;
@@ -121,6 +125,10 @@ class _CameraPreviewScannerState extends State<CameraPreviewScanner> {
       case Detector.cloudLabel:
         if (_scanResults is! List<ImageLabel>) return noResultsText;
         painter = LabelDetectorPainter(imageSize, _scanResults);
+        break;
+      case Detector.visionEdgeLabel:
+        if (_scanResults is! List<VisionEdgeImageLabel>) return noResultsText;
+        painter = VisionEdgeLabelDetectorPainter(imageSize, _scanResults);
         break;
       default:
         assert(_currentDetector == Detector.text ||
@@ -209,6 +217,10 @@ class _CameraPreviewScannerState extends State<CameraPreviewScanner> {
                 child: Text('Detect Cloud Text'),
                 value: Detector.cloudText,
               ),
+              const PopupMenuItem<Detector>(
+                child: Text('Detect AutoML Vision Label'),
+                value: Detector.visionEdgeLabel,
+              ),
             ],
           ),
         ],
@@ -232,6 +244,7 @@ class _CameraPreviewScannerState extends State<CameraPreviewScanner> {
       _cloudImageLabeler.close();
       _recognizer.close();
       _cloudRecognizer.close();
+      _visionEdgeImageLabeler.close();
     });
 
     _currentDetector = null;
