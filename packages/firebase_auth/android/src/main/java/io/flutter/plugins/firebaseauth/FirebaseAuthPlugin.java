@@ -546,7 +546,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
                   map.put("issuedAtTimestamp", task.getResult().getIssuedAtTimestamp());
                   map.put("claims", task.getResult().getClaims());
 
-                  if(task.getResult().getSignInProvider() != null) {
+                  if (task.getResult().getSignInProvider() != null) {
                     map.put("signInProvider", task.getResult().getSignInProvider());
                   }
 
