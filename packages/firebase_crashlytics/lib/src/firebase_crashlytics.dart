@@ -223,11 +223,12 @@ class Crashlytics {
       // that Flutter developers are used to seeing.
       if (stack != null) print('\n$stack');
     } else {
-      // Report error. The stack trace can be null. To avoid the following exception:
+      // The stack trace can be null. To avoid the following exception:
       // Invalid argument(s): Cannot create a Trace from null.
       // To avoid that exception, we can check for null and provide an empty stack trace.
       if (stack == null) stack = StackTrace.fromString('');
 
+      // Report error. 
       final List<String> stackTraceLines = Trace.format(stack).trimRight().split('\n');
       final List<Map<String, String>> stackTraceElements = getStackTraceElements(stackTraceLines);
       final String result = await channel
