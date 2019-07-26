@@ -59,15 +59,28 @@
       }
     }
 
+    // Add additional information from the Flutter framework to the exception reported in
+    // Crashlytics. Using CLSLog instead of CLS_LOG to try to avoid the automatic inclusion of the
+    // line number. It also ensures that the log is only written to Crashlytics and not also to the
+    // offline log as explained here:
+    // https://support.crashlytics.com/knowledgebase/articles/92519-how-do-i-use-logging
+    // Although, that would only happen in debug mode, which this method call is never called in.
+    NSString *information = call.arguments[@"information"];
+    if ([information length] != 0) {
+      CLSLog(information);
+    }
+
     // Report crash.
     NSArray *errorElements = call.arguments[@"stackTraceElements"];
     NSMutableArray *frames = [NSMutableArray array];
     for (NSDictionary *errorElement in errorElements) {
       [frames addObject:[self generateFrame:errorElement]];
     }
-    [[Crashlytics sharedInstance] recordCustomExceptionName:call.arguments[@"exception"]
-                                                     reason:call.arguments[@"context"]
-                                                 frameArray:frames];
+    [[Crashlytics sharedInstance]
+        recordCustomExceptionName:call.arguments[@"exception"]
+                           reason:[NSString
+                                      stringWithFormat:@"thrown %s", call.arguments[@"context"]]
+                       frameArray:frames];
     result(@"Error reported to Crashlytics.");
   } else if ([@"Crashlytics#isDebuggable" isEqualToString:call.method]) {
     result([NSNumber numberWithBool:[Crashlytics sharedInstance].debugMode]);
