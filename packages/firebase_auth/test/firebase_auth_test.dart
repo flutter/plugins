@@ -25,6 +25,13 @@ const String kMockPhoneNumber = '5555555555';
 const String kMockVerificationId = '12345';
 const String kMockSmsCode = '123456';
 const String kMockLanguage = 'en';
+const String kMockIdTokenResultSignInProvider = 'password';
+const Map<dynamic, dynamic> kMockIdTokenResultClaims = <dynamic, dynamic>{
+  'claim1': 'value1',
+};
+const int kMockIdTokenResultExpirationTimestamp = 123456;
+const int kMockIdTokenResultAuthTimestamp = 1234567;
+const int kMockIdTokenResultIssuedAtTimestamp = 12345678;
 
 void main() {
   group('$FirebaseAuth', () {
@@ -41,7 +48,7 @@ void main() {
         log.add(call);
         switch (call.method) {
           case "getIdToken":
-            return kMockIdToken;
+            return mockIdTokenResult();
             break;
           case "isSignInWithEmailLink":
             return true;
@@ -93,11 +100,32 @@ void main() {
       );
     });
 
+    void verifyIdTokenResult(IdTokenResult idTokenResult) {
+      expect(idTokenResult.token, equals(kMockIdToken));
+      expect(
+          idTokenResult.expirationDate,
+          equals(DateTime.fromMillisecondsSinceEpoch(
+              kMockIdTokenResultExpirationTimestamp * 1000)));
+      expect(
+          idTokenResult.authDate,
+          equals(DateTime.fromMillisecondsSinceEpoch(
+              kMockIdTokenResultAuthTimestamp * 1000)));
+      expect(
+          idTokenResult.issuedAtDate,
+          equals(DateTime.fromMillisecondsSinceEpoch(
+              kMockIdTokenResultIssuedAtTimestamp * 1000)));
+      expect(idTokenResult.signInProvider,
+          equals(kMockIdTokenResultSignInProvider));
+      expect(idTokenResult.claims, equals(kMockIdTokenResultClaims));
+    }
+
     test('signInAnonymously', () async {
       final FirebaseUser user = await auth.signInAnonymously();
       verifyUser(user);
-      expect(await user.getIdToken(), equals(kMockIdToken));
-      expect(await user.getIdToken(refresh: true), equals(kMockIdToken));
+
+      verifyIdTokenResult(await user.getIdToken());
+      verifyIdTokenResult(await user.getIdToken(refresh: true));
+
       expect(
         log,
         <Matcher>[
@@ -1229,6 +1257,15 @@ Map<String, dynamic> mockFirebaseUser(
           'email': email,
         },
       ],
+    };
+
+Map<String, dynamic> mockIdTokenResult() => <String, dynamic>{
+      'token': kMockIdToken,
+      'expirationTimestamp': kMockIdTokenResultExpirationTimestamp,
+      'authTimestamp': kMockIdTokenResultAuthTimestamp,
+      'issuedAtTimestamp': kMockIdTokenResultIssuedAtTimestamp,
+      'signInProvider': kMockIdTokenResultSignInProvider,
+      'claims': kMockIdTokenResultClaims,
     };
 
 /// Queue whose remove operation is asynchronous, awaiting a corresponding add.

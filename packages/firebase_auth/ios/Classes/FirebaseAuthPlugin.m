@@ -198,12 +198,6 @@ int nextHandle = 0;
       [self sendResult:result forObject:nil error:nil];
     }
   } else if ([@"getIdToken" isEqualToString:call.method]) {
-    [[self getAuth:call.arguments].currentUser
-        getIDTokenForcingRefresh:YES
-                      completion:^(NSString *_Nullable token, NSError *_Nullable error) {
-                        [self sendResult:result forObject:token error:error];
-                      }];
-  } else if ([@"getIdTokenResult" isEqualToString:call.method]) {
     NSDictionary *args = call.arguments;
     BOOL refresh = [args objectForKey:@"refresh"];
     [[self getAuth:call.arguments].currentUser

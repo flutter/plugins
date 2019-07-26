@@ -1,3 +1,9 @@
+## 0.12.0
+
+ * Added new `IdTokenResult` class.
+ * **Breaking Change**. `getIdToken()` method now returns `IdTokenResult` instead of just the `String token`.
+ Retrieve the `String token` using the `token` property of `IdTokenResult`.
+
 ## 0.11.1+10
 
 * On Android, `providerData` now includes `UserInfo` for the phone authentication provider.

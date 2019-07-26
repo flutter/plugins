@@ -13,7 +13,8 @@ part of firebase_auth;
 /// Only server side verification can guarantee the integrity of the token
 /// claims.
 class IdTokenResult {
-  IdTokenResult._(this._data, this._app);
+  @visibleForTesting
+  IdTokenResult(this._data, this._app);
 
   final FirebaseApp _app;
 
