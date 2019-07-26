@@ -1,5 +1,7 @@
 ## 0.1.1
 
+* Added additional exception information from the Flutter framework to the reports.
+* Reformatted debug printing of exceptions to be human-readable.
 * Updated `README.md` to include both the breaking change from `0.1.0` and the newly added
   `recordError` function in the setup section.
 * Made the `_recordError` function safe for missing stack traces (`null`).
