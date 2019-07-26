@@ -23,6 +23,7 @@ The plugins are still under development, and some APIs might not be available ye
 | [firebase_crashlytics][crash_pub] | ![pub package][crash_badge] | [Firebase Crashlytics][crash_product] | [`packages/firebase_crashlytics`][crash_code] |
 | [firebase_database][database_pub] | ![pub package][database_badge] | [Firebase Realtime Database][database_product] | [`packages/firebase_database`][database_code] |
 | [firebase_dynamic_links][dynamic_links_pub] | ![pub package][dynamic_links_badge] | [Firebase Dynamic Links][dynamic_links_product] | [`packages/firebase_dynamic_links`][dynamic_links_code] |
+| [in_app_messaging][in_app_messaging_pub] | ![pub package][in_app_messaging_badge] | [Firebase In-App Messaging][in_app_messaging_product] | [`packages/firebase_in_app_messaging`][in_app_messaging_code] |
 | [firebase_messaging][messaging_pub] | ![pub package][messaging_badge] | [Firebase Cloud Messaging][messaging_product] | [`packages/firebase_messaging`][messaging_code] |
 | [firebase_ml_vision][ml_vision_pub] | ![pub package][ml_vision_badge] | [Firebase ML Kit][ml_vision_product] | [`packages/firebase_ml_vision`][ml_vision_code] |
 | [firebase_performance][performance_pub] | ![pub package][performance_badge] | [Firebase Performance Monitoring][performance_product] | [`packages/firebase_performance`][performance_code] |
@@ -73,6 +74,11 @@ The plugins are still under development, and some APIs might not be available ye
 [functions_product]: https://firebase.google.com/products/functions/
 [functions_code]: https://github.com/flutter/plugins/tree/master/packages/cloud_functions
 [functions_badge]: https://img.shields.io/pub/v/cloud_functions.svg
+
+[in_app_messaging_pub]: https://pub.dartlang.org/packages/firebase_in_app_messaging
+[in_app_messaging_product]: https://firebase.google.com/products/in-app-messaging/
+[in_app_messaging_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_in_app_messaging
+[in_app_messaging_badge]: https://img.shields.io/pub/v/firebase_in_app_messaging.svg
 
 [messaging_pub]: https://pub.dartlang.org/packages/firebase_messaging
 [messaging_product]: https://firebase.google.com/products/cloud-messaging/

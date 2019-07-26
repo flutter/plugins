@@ -21,6 +21,7 @@ class GoogleMap extends StatefulWidget {
     this.onMapCreated,
     this.gestureRecognizers,
     this.compassEnabled = true,
+    this.mapToolbarEnabled = true,
     this.cameraTargetBounds = CameraTargetBounds.unbounded,
     this.mapType = MapType.normal,
     this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
@@ -53,6 +54,9 @@ class GoogleMap extends StatefulWidget {
 
   /// True if the map should show a compass when rotated.
   final bool compassEnabled;
+
+  /// True if the map should show a toolbar when you interact with the map. Android only.
+  final bool mapToolbarEnabled;
 
   /// Geographical bounding box for the camera target.
   final CameraTargetBounds cameraTargetBounds;
@@ -347,6 +351,7 @@ class _GoogleMapState extends State<GoogleMap> {
 class _GoogleMapOptions {
   _GoogleMapOptions({
     this.compassEnabled,
+    this.mapToolbarEnabled,
     this.cameraTargetBounds,
     this.mapType,
     this.minMaxZoomPreference,
@@ -364,6 +369,7 @@ class _GoogleMapOptions {
   static _GoogleMapOptions fromWidget(GoogleMap map) {
     return _GoogleMapOptions(
       compassEnabled: map.compassEnabled,
+      mapToolbarEnabled: map.mapToolbarEnabled,
       cameraTargetBounds: map.cameraTargetBounds,
       mapType: map.mapType,
       minMaxZoomPreference: map.minMaxZoomPreference,
@@ -380,6 +386,8 @@ class _GoogleMapOptions {
   }
 
   final bool compassEnabled;
+
+  final bool mapToolbarEnabled;
 
   final CameraTargetBounds cameraTargetBounds;
 
@@ -415,6 +423,7 @@ class _GoogleMapOptions {
     }
 
     addIfNonNull('compassEnabled', compassEnabled);
+    addIfNonNull('mapToolbarEnabled', mapToolbarEnabled);
     addIfNonNull('cameraTargetBounds', cameraTargetBounds?._toJson());
     addIfNonNull('mapType', mapType?.index);
     addIfNonNull('minMaxZoomPreference', minMaxZoomPreference?._toJson());

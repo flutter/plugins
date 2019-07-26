@@ -18,6 +18,8 @@ manager](https://console.developers.google.com/). For example, if you
 want to mimic the behavior of the Google Sign-In sample app, you'll need to
 enable the [Google People API](https://developers.google.com/people/).
 
+Make sure you've filled out all required fields in the console for [OAuth consent screen](https://console.developers.google.com/apis/credentials/consent). Otherwise, you may encounter `APIException` errors.
+
 ## iOS integration
 
 1. [First register your application](https://developers.google.com/mobile/add?platform=ios).
