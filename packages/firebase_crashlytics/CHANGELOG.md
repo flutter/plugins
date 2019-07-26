@@ -1,6 +1,6 @@
 ## 0.1.0
 
-* **Breaking Change** Renamed `onError` to `reportFlutterError`.
+* **Breaking Change** Renamed `onError` to `recordFlutterError`.
 * Added `recordError` method for errors caught using `runZoned`'s `onError`.
 
 ## 0.0.4+12
