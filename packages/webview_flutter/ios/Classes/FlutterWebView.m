@@ -114,6 +114,8 @@
     [self onRemoveJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"clearCache"]) {
     [self clearCache:result];
+  } else if ([[call method] isEqualToString:@"getUserAgent"]) {
+    [self onGetUserAgent:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -246,6 +248,9 @@
       _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
     } else if ([key isEqualToString:@"debuggingEnabled"]) {
       // no-op debugging is always enabled on iOS.
+    } else if ([key isEqualToString:@"userAgent"]) {
+        NSString* userAgent = settings[key];
+        [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
     } else {
       [unknownKeys addObject:key];
     }
@@ -319,6 +324,30 @@
                             forMainFrameOnly:NO];
     [userContentController addUserScript:wrapperScript];
   }
+}
+
+- (void)onGetUserAgent:(FlutterMethodCall*)call result:(FlutterResult)result {
+    [_webView evaluateJavaScript:@"navigator.userAgent"
+               completionHandler:^(NSString* userAgent, NSError* error) {
+                   if (error) {
+                       result([FlutterError
+                               errorWithCode:@"userAgent_failed"
+                               message:@"Failed to get UserAgent"
+                               details:[NSString stringWithFormat:
+                                        @"webview_flutter: failed evaluating JavaScript: %@",
+                                        [error localizedDescription]]]);
+                   } else {
+                       result(userAgent);
+                   }
+               }];
+}
+
+- (void)updateUserAgent:(NSString*)userAgent {
+    if (@available(iOS 9.0, *)) {
+        [_webView setCustomUserAgent:userAgent];
+    } else {
+        NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
+    }
 }
 
 @end
