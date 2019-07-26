@@ -39,15 +39,14 @@ Future<Directory> getTemporaryDirectory() async {
 /// On iOS, this uses the `NSApplicationSupportDirectory` API.
 /// If this directory does not exist, it is created automatically.
 ///
-/// On Android, this function throws an [UnsupportedError].
+/// On Android, this function uses the `getFilesDir` API on the context.
 Future<Directory> getApplicationSupportDirectory() async {
-  if (!Platform.isIOS)
-    throw UnsupportedError("getApplicationSupportDirectory requires iOS");
   final String path =
       await _channel.invokeMethod<String>('getApplicationSupportDirectory');
   if (path == null) {
     return null;
   }
+
   return Directory(path);
 }
 
@@ -58,7 +57,7 @@ Future<Directory> getApplicationSupportDirectory() async {
 /// [getApplicationSupportDirectory] instead if the data is not user-generated.
 ///
 /// On Android, this uses the `getDataDirectory` API on the context. Consider
-/// using getExternalStorageDirectory instead if data is intended to be visible
+/// using [getExternalStorageDirectory] instead if data is intended to be visible
 /// to the user.
 Future<Directory> getApplicationDocumentsDirectory() async {
   final String path =
