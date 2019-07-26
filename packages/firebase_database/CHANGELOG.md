@@ -1,3 +1,7 @@
+## 3.0.5
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
 ## 3.0.4
 
 * Updated transactions implementation on Android for compatibility with

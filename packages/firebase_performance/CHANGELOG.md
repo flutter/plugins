@@ -1,3 +1,7 @@
+## 0.3.0+4
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
 ## 0.3.0+3
 
 * Fix bug that caused `invokeMethod` to fail with Dart code obfuscation
