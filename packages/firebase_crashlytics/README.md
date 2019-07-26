@@ -110,7 +110,7 @@ If an error is caught, you should see the following messages in your logs:
 flutter: Flutter error caught by Crashlytics plugin:
 // OR if you use recordError for runZoned:
 flutter: Error caught by Crashlytics plugin <recordError>:
-// Exception and stack trace in debug mode
+// Exception, context, information and stack trace in debug mode
 // OR if not in debug mode:
 flutter: Error reported to Crashlytics.
 ```
