@@ -70,6 +70,16 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
       exception.setStackTrace(elements.toArray(new StackTraceElement[elements.size()]));
 
       Crashlytics.setString("exception", (String) call.argument("exception"));
+
+      // Set context to show when the exception was thrown.
+      final String context = call.argument("context");
+      if (context != null) Crashlytics.setString("context", "thrown " + context);
+
+      // Log information
+      final String information = call.argument("information");
+      if (information != null && !information.isEmpty())
+        Crashlytics.log(information);
+
       Crashlytics.logException(exception);
       result.success("Error reported to Crashlytics.");
     } else if (call.method.equals("Crashlytics#isDebuggable")) {

@@ -11,6 +11,7 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 ## Usage
 
 ### Import the firebase_crashlytics plugin
+
 To use the `firebase_crashlytics` plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/firebase_crashlytics#pub-pkg-tab-installing).
 
 ### Android integration
