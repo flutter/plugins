@@ -7,10 +7,11 @@
 * Made the `_recordError` function safe for missing stack traces (`null`).
 * Added the "Error reported to Crashlytics." print statement that was previously missing.
 * Adjusted `README.md` formatting.
+* Fixed `recordFlutterError` method name in the `0.1.0` changelog entry.
 
 ## 0.1.0
 
-* **Breaking Change** Renamed `onError` to `reportFlutterError`.
+* **Breaking Change** Renamed `onError` to `recordFlutterError`.
 * Added `recordError` method for errors caught using `runZoned`'s `onError`.
 
 ## 0.0.4+12
