@@ -18,6 +18,9 @@ To use this plugin on iOS you need to opt-in for the embedded views preview by
 adding a boolean property to the app's `Info.plist` file, with the key `io.flutter.embedded_views_preview`
 and the value `YES`.
 
+Keyboard support within webviews is also experimental. The above tags also
+surface known issues with keyboard input.
+
 ## Setup
 
 ### iOS
