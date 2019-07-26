@@ -24,7 +24,7 @@ class _MainScreen extends StatefulWidget {
   State<StatefulWidget> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<_MainScreen> with WidgetsBindingObserver {
+class _MainScreenState extends State<_MainScreen> {
   String _linkMessage;
   bool _isCreatingLink = false;
   String _testString =
@@ -36,31 +36,29 @@ class _MainScreenState extends State<_MainScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _retrieveDynamicLink();
-    WidgetsBinding.instance.addObserver(this);
+    initDynamicLinks();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _retrieveDynamicLink();
-    }
-  }
-
-  Future<void> _retrieveDynamicLink() async {
+  void initDynamicLinks() async {
     final PendingDynamicLinkData data =
-        await FirebaseDynamicLinks.instance.retrieveDynamicLink();
+        await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
       Navigator.pushNamed(context, deepLink.path);
     }
+
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+      final Uri deepLink = dynamicLink?.link;
+
+      if (deepLink != null) {
+        Navigator.pushNamed(context, deepLink.path);
+      }
+    }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    });
   }
 
   Future<void> _createDynamicLink(bool short) async {
