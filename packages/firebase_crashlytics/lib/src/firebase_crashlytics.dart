@@ -194,12 +194,12 @@ class Crashlytics {
     return elements;
   }
 
-  /// On top of the default exception components, [information] can be passed as well.
-  /// This allows the developer to get a better understanding of exceptions thrown
-  /// by the Flutter framework. [FlutterErrorDetails] often explain why an exception
-  /// occurred and give useful background information in [FlutterErrorDetails.informationCollector].
-  /// Crashlytics will log this information in addition to the stack trace.
-  /// If [information] is `null` or empty, it will be ignored.
+  // On top of the default exception components, [information] can be passed as well.
+  // This allows the developer to get a better understanding of exceptions thrown
+  // by the Flutter framework. [FlutterErrorDetails] often explain why an exception
+  // occurred and give useful background information in [FlutterErrorDetails.informationCollector].
+  // Crashlytics will log this information in addition to the stack trace.
+  // If [information] is `null` or empty, it will be ignored.
   Future<void> _recordError(dynamic exception, StackTrace stack,
       {dynamic context, Iterable<DiagnosticsNode> information}) async {
     bool inDebugMode = false;
@@ -229,7 +229,7 @@ class Crashlytics {
       // The stack trace can be null. To avoid the following exception:
       // Invalid argument(s): Cannot create a Trace from null.
       // To avoid that exception, we can check for null and provide an empty stack trace.
-      if (stack == null) stack = StackTrace.fromString('');
+      stack ??= StackTrace.fromString('');
 
       // Report error.
       final List<String> stackTraceLines =
