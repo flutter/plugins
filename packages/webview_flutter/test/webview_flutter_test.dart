@@ -807,6 +807,41 @@ void main() {
       expect(platform.lastRequestHeaders, headers);
     });
   });
+  testWidgets('Set UserAgent', (WidgetTester tester) async {
+    await tester.pumpWidget(const WebView(
+      initialUrl: 'https://youtube.com',
+      javascriptMode: JavascriptMode.unrestricted,
+    ));
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.userAgent, isNull);
+
+    await tester.pumpWidget(const WebView(
+      initialUrl: 'https://youtube.com',
+      javascriptMode: JavascriptMode.unrestricted,
+      userAgent: 'UA',
+    ));
+
+    expect(platformWebView.userAgent, 'UA');
+  });
+
+  testWidgets('Get UserAgent', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptMode: JavascriptMode.unrestricted,
+        userAgent: 'UA',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(controller, isNotNull);
+    expect(await controller.getUserAgent(), 'UA');
+  });
 }
 
 class FakePlatformWebView {
@@ -826,7 +861,7 @@ class FakePlatformWebView {
     hasNavigationDelegate =
         params['settings']['hasNavigationDelegate'] ?? false;
     debuggingEnabled = params['settings']['debuggingEnabled'];
-
+    userAgent = params['settings']['userAgent'];
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
@@ -845,6 +880,7 @@ class FakePlatformWebView {
 
   bool hasNavigationDelegate;
   bool debuggingEnabled;
+  String userAgent;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -861,6 +897,9 @@ class FakePlatformWebView {
         }
         if (call.arguments['debuggingEnabled'] != null) {
           debuggingEnabled = call.arguments['debuggingEnabled'];
+        }
+        if (call.arguments['userAgent'] != null) {
+          userAgent = call.arguments['userAgent'];
         }
         break;
       case 'canGoBack':
@@ -898,6 +937,8 @@ class FakePlatformWebView {
       case 'clearCache':
         hasCache = false;
         return Future<void>.sync(() {});
+      case 'getUserAgent':
+        return Future<String>.value(userAgent);
     }
     return Future<void>.sync(() {});
   }
@@ -1092,7 +1133,8 @@ class MatchesWebSettings extends Matcher {
     return _webSettings.javascriptMode == webSettings.javascriptMode &&
         _webSettings.hasNavigationDelegate ==
             webSettings.hasNavigationDelegate &&
-        _webSettings.debuggingEnabled == webSettings.debuggingEnabled;
+        _webSettings.debuggingEnabled == webSettings.debuggingEnabled &&
+        _webSettings.userAgent == webSettings.userAgent;
   }
 }
 

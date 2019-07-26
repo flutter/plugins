@@ -343,7 +343,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
   );
 }
 
-// This method assumes that no fields in `currentValue` are null.
+// This method assumes that no fields, except userAgent (see WebView.userAgent), in `currentValue` are null.
 WebSettings _clearUnchangedWebSettings(
     WebSettings currentValue, WebSettings newValue) {
   assert(currentValue.javascriptMode != null);
@@ -352,7 +352,6 @@ WebSettings _clearUnchangedWebSettings(
   assert(newValue.javascriptMode != null);
   assert(newValue.hasNavigationDelegate != null);
   assert(newValue.debuggingEnabled != null);
-  assert(newValue.userAgent != null);
   JavascriptMode javascriptMode;
   bool hasNavigationDelegate;
   bool debuggingEnabled;
