@@ -26,16 +26,3 @@ class SnapshotMetadata {
   /// up-to-date data from the backend.
   final bool isFromCache;
 }
-
-/// Indicates whether metadata-only changes (i.e. only [DocumentSnapshot.metadata]
-/// or [Query.metadata] changed) should trigger snapshot events.
-enum MetadataChanges { exclude, include }
-
-/// Converts [MetadataChanges] to [String]
-String _getMetadataChangesString(MetadataChanges metadataChanges) {
-  assert(metadataChanges != null);
-  if (metadataChanges == MetadataChanges.include) {
-    return 'include';
-  }
-  return 'exclude';
-}

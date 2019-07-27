@@ -122,14 +122,6 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     }
   }
 
-  private MetadataChanges getMetadataChanges(Map<String, Object> arguments) {
-    String metadataChanges = (String) arguments.get("metadataChanges");
-    if ("include".equals(metadataChanges)) {
-      return MetadataChanges.INCLUDE;
-    }
-    return MetadataChanges.EXCLUDE;
-  }
-
   private Object[] getDocumentValues(
       Map<String, Object> document, List<List<Object>> orderBy, Map<String, Object> arguments) {
     String documentId = (String) document.get("id");
@@ -625,29 +617,29 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       case "Query#addSnapshotListener":
         {
           Map<String, Object> arguments = call.arguments();
-          MetadataChanges metadataChanges = getMetadataChanges(arguments);
+          Boolean includeMetadataChanges = (Boolean) arguments.get("includeMetadataChanges");
           int handle = nextListenerHandle++;
           EventObserver observer = new EventObserver(handle);
           observers.put(handle, observer);
           listenerRegistrations.put(
-              handle, getQuery(arguments).addSnapshotListener(metadataChanges, observer));
+              handle, getQuery(arguments).addSnapshotListener(includeMetadataChanges, observer));
           result.success(handle);
           break;
         }
-      case "Query#addDocumentListener":
+      case "DocumentReference#addSnapshotListener":
         {
           Map<String, Object> arguments = call.arguments();
-          MetadataChanges metadataChanges = getMetadataChanges(arguments);
+          Boolean includeMetadataChanges = (Boolean) arguments.get("includeMetadataChanges");
           int handle = nextListenerHandle++;
           DocumentObserver observer = new DocumentObserver(handle);
           documentObservers.put(handle, observer);
           listenerRegistrations.put(
               handle,
-              getDocumentReference(arguments).addSnapshotListener(metadataChanges, observer));
+              getDocumentReference(arguments).addSnapshotListener(includeMetadataChanges, observer));
           result.success(handle);
           break;
         }
-      case "Query#removeListener":
+      case "removeListener":
         {
           Map<String, Object> arguments = call.arguments();
           int handle = (Integer) arguments.get("handle");

@@ -78,7 +78,7 @@ void main() {
               );
             });
             return handle;
-          case 'Query#addDocumentListener':
+          case 'DocumentReference#addSnapshotListener':
             final int handle = mockHandleId++;
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
@@ -351,7 +351,7 @@ void main() {
             },
           ),
           isMethodCall(
-            'Query#removeListener',
+            'removeListener',
             arguments: <String, dynamic>{'handle': 0},
           ),
         ]);
@@ -383,7 +383,7 @@ void main() {
               },
             ),
             isMethodCall(
-              'Query#removeListener',
+              'removeListener',
               arguments: <String, dynamic>{'handle': 0},
             ),
           ]),
@@ -416,7 +416,7 @@ void main() {
               },
             ),
             isMethodCall(
-              'Query#removeListener',
+              'removeListener',
               arguments: <String, dynamic>{'handle': 0},
             ),
           ]),
@@ -449,7 +449,7 @@ void main() {
               },
             ),
             isMethodCall(
-              'Query#removeListener',
+              'removeListener',
               arguments: <String, dynamic>{'handle': 0},
             ),
           ]),
@@ -470,7 +470,7 @@ void main() {
           log,
           <Matcher>[
             isMethodCall(
-              'Query#addDocumentListener',
+              'DocumentReference#addSnapshotListener',
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'path/to/foo',
@@ -478,7 +478,7 @@ void main() {
               },
             ),
             isMethodCall(
-              'Query#removeListener',
+              'removeListener',
               arguments: <String, dynamic>{'handle': 0},
             ),
           ],

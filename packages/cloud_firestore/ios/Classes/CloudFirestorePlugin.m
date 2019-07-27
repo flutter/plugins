@@ -160,14 +160,6 @@ static FIRFirestoreSource getSource(NSDictionary *arguments) {
   return FIRFirestoreSourceDefault;
 }
 
-static BOOL getIncludeMetadataChanges(NSDictionary *arguments) {
-  NSString *metadataChanges = arguments[@"metadataChanges"];
-  if ([@"include" isEqualToString:metadataChanges]) {
-    return YES;
-  }
-  return NO;
-}
-
 static NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
   NSMutableArray *paths = [NSMutableArray array];
   NSMutableArray *documents = [NSMutableArray array];
@@ -523,7 +515,6 @@ const UInt8 INCREMENT_INTEGER = 138;
   } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     FIRQuery *query;
-    BOOL includeMetadataChanges = getIncludeMetadataChanges(call.arguments);
     @try {
       query = getQuery(call.arguments);
     } @catch (NSException *exception) {
@@ -531,6 +522,7 @@ const UInt8 INCREMENT_INTEGER = 138;
                                  message:[exception name]
                                  details:[exception reason]]);
     }
+    BOOL includeMetadataChanges = call.arguments["includeMetadataChanges"].boolValue;
     id<FIRListenerRegistration> listener = [query
         addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges
                                              listener:^(FIRQuerySnapshot *_Nullable snapshot,
@@ -547,10 +539,10 @@ const UInt8 INCREMENT_INTEGER = 138;
                                              }];
     _listeners[handle] = listener;
     result(handle);
-  } else if ([@"Query#addDocumentListener" isEqualToString:call.method]) {
+  } else if ([@"DocumentReference#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     FIRDocumentReference *document = getDocumentReference(call.arguments);
-    BOOL includeMetadataChanges = getIncludeMetadataChanges(call.arguments);
+    BOOL includeMetadataChanges = call.arguments["includeMetadataChanges"].boolValue;
     id<FIRListenerRegistration> listener = [document
         addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges
                                              listener:^(FIRDocumentSnapshot *snapshot,
@@ -598,7 +590,7 @@ const UInt8 INCREMENT_INTEGER = 138;
                       }
                       result(parseQuerySnapshot(snapshot));
                     }];
-  } else if ([@"Query#removeListener" isEqualToString:call.method]) {
+  } else if ([@"removeListener" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
     [[_listeners objectForKey:handle] remove];
     [_listeners removeObjectForKey:handle];

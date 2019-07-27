@@ -116,8 +116,7 @@ class DocumentReference {
 
   /// Notifies of documents at this location
   // TODO(jackson): Reduce code duplication with [Query]
-  Stream<DocumentSnapshot> snapshots(
-      {MetadataChanges metadataChanges = MetadataChanges.exclude}) {
+  Stream<DocumentSnapshot> snapshots({bool includeMetadataChanges = false}) {
     assert(metadataChanges != null);
     Future<int> _handle;
     // It's fine to let the StreamController be garbage collected once all the
@@ -126,11 +125,11 @@ class DocumentReference {
     controller = StreamController<DocumentSnapshot>.broadcast(
       onListen: () {
         _handle = Firestore.channel.invokeMethod<int>(
-          'Query#addDocumentListener',
+          'DocumentReference#addDocumentListener',
           <String, dynamic>{
             'app': firestore.app.name,
             'path': path,
-            'metadataChanges': _getMetadataChangesString(metadataChanges),
+            'includeMetadataChanges': includeMetadataChanges,
           },
         ).then<int>((dynamic result) => result);
         _handle.then((int handle) {
@@ -140,7 +139,7 @@ class DocumentReference {
       onCancel: () {
         _handle.then((int handle) async {
           await Firestore.channel.invokeMethod<void>(
-            'Query#removeListener',
+            'removeListener',
             <String, dynamic>{'handle': handle},
           );
           Firestore._documentObservers.remove(handle);
