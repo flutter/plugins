@@ -2,7 +2,7 @@
 
 - Support for cloud functions emulators.
 
-## 0.4.0+3
+## 0.4.1
 
 - Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
 
