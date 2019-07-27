@@ -327,19 +327,20 @@
 }
 
 - (void)onGetUserAgent:(FlutterMethodCall*)call result:(FlutterResult)result {
-    [_webView evaluateJavaScript:@"navigator.userAgent"
-               completionHandler:^(NSString* userAgent, NSError* error) {
-                   if (error) {
-                       result([FlutterError
-                               errorWithCode:@"userAgent_failed"
-                               message:@"Failed to get UserAgent"
-                               details:[NSString stringWithFormat:
-                                        @"webview_flutter: failed evaluating JavaScript: %@",
-                                        [error localizedDescription]]]);
-                   } else {
-                       result(userAgent);
-                   }
-               }];
+  [_webView
+      evaluateJavaScript:@"navigator.userAgent"
+       completionHandler:^(NSString* userAgent, NSError* error) {
+         if (error) {
+           result([FlutterError
+               errorWithCode:@"userAgent_failed"
+                     message:@"Failed to get UserAgent"
+                     details:[NSString stringWithFormat:
+                                           @"webview_flutter: failed evaluating JavaScript: %@",
+                                           [error localizedDescription]]]);
+         } else {
+           result(userAgent);
+         }
+       }];
 }
 
 - (void)updateUserAgent:(NSString*)userAgent {
