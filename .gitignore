@@ -21,7 +21,6 @@ Pods/
 ServiceDefinitions.json
 xcuserdata/
 *.xcworkspace
-*.pbxproj
 
 local.properties
 keystore.properties

@@ -22,8 +22,7 @@ import java.util.Map;
 class RemoteVisionEdgeDetector implements Detector {
   private FirebaseVisionImageLabeler labeler;
 
-  RemoteVisionEdgeDetector(
-      FirebaseVision vision, Map<String, Object> options, final MethodChannel.Result result) {
+  RemoteVisionEdgeDetector(FirebaseVision vision, final Map<String, Object> options) {
     FirebaseRemoteModel remoteModel =
         FirebaseModelManager.getInstance().getNonBaseRemoteModel((String) options.get("dataset"));
     if (remoteModel == null) {
@@ -47,9 +46,7 @@ class RemoteVisionEdgeDetector implements Detector {
                         FirebaseVision.getInstance()
                             .getOnDeviceAutoMLImageLabeler(parseOptions(options));
                   } catch (FirebaseMLException e) {
-                    result.error(
-                        "visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
-                    return;
+                    throw new IllegalArgumentException(e.getLocalizedMessage());
                   }
                 }
               })
@@ -57,16 +54,13 @@ class RemoteVisionEdgeDetector implements Detector {
               new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                  result.error(
-                      "visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
-                  return;
+                  throw new IllegalArgumentException(e.getLocalizedMessage());
                 }
               });
       try {
         labeler = FirebaseVision.getInstance().getOnDeviceAutoMLImageLabeler(parseOptions(options));
       } catch (FirebaseMLException e) {
-        result.error("visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
-        return;
+        throw new IllegalArgumentException(e.getLocalizedMessage());
       }
     } else {
       FirebaseModelManager.getInstance()
@@ -80,9 +74,7 @@ class RemoteVisionEdgeDetector implements Detector {
                         FirebaseVision.getInstance()
                             .getOnDeviceAutoMLImageLabeler(parseOptions(options));
                   } catch (FirebaseMLException e) {
-                    result.error(
-                        "visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
-                    return;
+                    throw new IllegalArgumentException(e.getLocalizedMessage());
                   }
                 }
               })
@@ -90,9 +82,7 @@ class RemoteVisionEdgeDetector implements Detector {
               new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                  result.error(
-                      "visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
-                  return;
+                  throw new IllegalArgumentException(e.getLocalizedMessage());
                 }
               });
     }

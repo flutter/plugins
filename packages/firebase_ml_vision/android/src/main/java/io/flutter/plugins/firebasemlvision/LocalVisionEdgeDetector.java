@@ -19,10 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 class LocalVisionEdgeDetector implements Detector {
-  private final FirebaseVisionImageLabeler labeler;
+  private FirebaseVisionImageLabeler labeler;
 
-  LocalVisionEdgeDetector(
-      FirebaseVision vision, Map<String, Object> options, final MethodChannel.Result result) {
+  LocalVisionEdgeDetector(FirebaseVision vision, Map<String, Object> options) {
     String finalPath = "flutter_assets/assets/" + options.get("dataset") + "/manifest.json";
     FirebaseLocalModel localModel =
         FirebaseModelManager.getInstance().getLocalModel((String) options.get("dataset"));
@@ -35,8 +34,7 @@ class LocalVisionEdgeDetector implements Detector {
       try {
         labeler = FirebaseVision.getInstance().getOnDeviceAutoMLImageLabeler(parseOptions(options));
       } catch (FirebaseMLException e) {
-        result.error("visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
-        return;
+        throw new IllegalArgumentException(e.getLocalizedMessage());
       }
     }
   }
