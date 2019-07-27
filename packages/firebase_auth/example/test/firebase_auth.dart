@@ -19,6 +19,15 @@ void main() {
       final FirebaseUser user = await auth.signInAnonymously();
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isTrue);
+      final IdTokenResult result = await user.getIdToken();
+      expect(result.token, isNotNull);
+      expect(result.expirationTime.isAfter(DateTime.now()), isTrue);
+      expect(result.authTime, isNotNull);
+      expect(result.issuedAtTime, isNotNull);
+      expect(result.signInProvider, 'anonymous');
+      expect(result.claims['provider_id'], 'anonymous');
+      expect(result.claims['firebase']['sign_in_provider'], 'anonymous');
+      expect(result.claims['user_id'], user.uid);
     });
 
     test('isSignInWithEmailLink', () async {
