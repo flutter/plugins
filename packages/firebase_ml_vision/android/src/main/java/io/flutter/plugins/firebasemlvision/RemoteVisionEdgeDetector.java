@@ -22,7 +22,7 @@ import java.util.Map;
 class RemoteVisionEdgeDetector implements Detector {
   private FirebaseVisionImageLabeler labeler;
 
-  RemoteVisionEdgeDetector(FirebaseVision vision, Map<String, Object> options) {
+  RemoteVisionEdgeDetector(FirebaseVision vision, Map<String, Object> options, final MethodChannel.Result result) {
     FirebaseRemoteModel remoteModel =
         FirebaseModelManager.getInstance().getNonBaseRemoteModel((String) options.get("dataset"));
     if (remoteModel == null) {
