@@ -103,15 +103,15 @@ void main() {
     void verifyIdTokenResult(IdTokenResult idTokenResult) {
       expect(idTokenResult.token, equals(kMockIdToken));
       expect(
-          idTokenResult.expirationDate,
+          idTokenResult.expirationTime,
           equals(DateTime.fromMillisecondsSinceEpoch(
               kMockIdTokenResultExpirationTimestamp * 1000)));
       expect(
-          idTokenResult.authDate,
+          idTokenResult.authTime,
           equals(DateTime.fromMillisecondsSinceEpoch(
               kMockIdTokenResultAuthTimestamp * 1000)));
       expect(
-          idTokenResult.issuedAtDate,
+          idTokenResult.issuedAtTime,
           equals(DateTime.fromMillisecondsSinceEpoch(
               kMockIdTokenResultIssuedAtTimestamp * 1000)));
       expect(idTokenResult.signInProvider,

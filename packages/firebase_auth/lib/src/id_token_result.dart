@@ -23,17 +23,17 @@ class IdTokenResult {
   String get token => _data['token'];
 
   /// The time when the ID token expires.
-  DateTime get expirationDate =>
+  DateTime get expirationTime =>
       DateTime.fromMillisecondsSinceEpoch(_data['expirationTimestamp'] * 1000);
 
   /// The time the user authenticated (signed in).
   /// 
   /// Note that this is not the time the token was refreshed.
-  DateTime get authDate =>
+  DateTime get authTime =>
       DateTime.fromMillisecondsSinceEpoch(_data['authTimestamp'] * 1000);
 
   /// The time when ID token was issued.
-  DateTime get issuedAtDate =>
+  DateTime get issuedAtTime =>
       DateTime.fromMillisecondsSinceEpoch(_data['issuedAtTimestamp'] * 1000);
 
   /// The sign-in provider through which the ID token was obtained (anonymous,
