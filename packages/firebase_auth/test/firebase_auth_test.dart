@@ -45,7 +45,6 @@ const Map<String, dynamic> kMockUser = <String, dynamic>{
   ],
 };
 
-
 void main() {
   group('$FirebaseAuth', () {
     final String appName = 'testApp';
@@ -105,12 +104,15 @@ void main() {
       expect(userInfo.photoUrl, kMockPhotoUrl);
       expect(userInfo.email, kMockEmail);
     }
+
     void verifyAuthResult(AuthResult result) {
       verifyUser(result.user);
       final AdditionalUserInfo additionalUserInfo = result.additionalUserInfo;
-      expect(additionalUserInfo.isNewUser, kMockAdditionalUserInfo['isNewUser']);
+      expect(
+          additionalUserInfo.isNewUser, kMockAdditionalUserInfo['isNewUser']);
       expect(additionalUserInfo.username, kMockAdditionalUserInfo['username']);
-      expect(additionalUserInfo.providerId, kMockAdditionalUserInfo['providerId']);
+      expect(
+          additionalUserInfo.providerId, kMockAdditionalUserInfo['providerId']);
       expect(additionalUserInfo.profile, kMockAdditionalUserInfo['profile']);
     }
 
@@ -125,7 +127,10 @@ void main() {
               arguments: <String, String>{'app': auth.app.name}),
           isMethodCall(
             'getIdToken',
-            arguments: <String, dynamic>{'refresh': false, 'app': auth.app.name},
+            arguments: <String, dynamic>{
+              'refresh': false,
+              'app': auth.app.name
+            },
           ),
           isMethodCall(
             'getIdToken',
@@ -136,7 +141,7 @@ void main() {
     });
 
     test('signInAnonymously', () async {
-      AuthResult result = await auth.signInAnonymously();
+      final AuthResult result = await auth.signInAnonymously();
       verifyAuthResult(result);
       expect(
         log,
@@ -187,7 +192,7 @@ void main() {
     });
 
     test('signInWithEmailAndLink', () async {
-      AuthResult result = await auth.signInWithEmailAndLink(
+      final AuthResult result = await auth.signInWithEmailAndLink(
         email: 'test@example.com',
         link: '<Url with domain from your Firebase project>',
       );
@@ -249,8 +254,8 @@ void main() {
         email: 'test@example.com',
         link: '<Url with domain from your Firebase project>',
       );
-      FirebaseUser user = await auth.currentUser();
-      AuthResult result = await user.linkWithCredential(credential);
+      final FirebaseUser user = await auth.currentUser();
+      final AuthResult result = await user.linkWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -332,8 +337,8 @@ void main() {
         authToken: kMockIdToken,
         authTokenSecret: kMockAccessToken,
       );
-      FirebaseUser user = await auth.currentUser();
-      AuthResult result = await user.linkWithCredential(credential);
+      final FirebaseUser user = await auth.currentUser();
+      final AuthResult result = await user.linkWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -388,8 +393,8 @@ void main() {
       final AuthCredential credential = GithubAuthProvider.getCredential(
         token: kMockGithubToken,
       );
-      FirebaseUser user = await auth.currentUser();
-      AuthResult result = await user.linkWithCredential(credential);
+      final FirebaseUser user = await auth.currentUser();
+      final AuthResult result = await user.linkWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -499,7 +504,7 @@ void main() {
         verificationId: kMockVerificationId,
         smsCode: kMockSmsCode,
       );
-      AuthResult result = await auth.signInWithCredential(credential);
+      final AuthResult result = await auth.signInWithCredential(credential);
       verifyAuthResult(result);
       expect(log, <Matcher>[
         isMethodCall('signInWithCredential', arguments: <String, dynamic>{
@@ -539,7 +544,8 @@ void main() {
         email: kMockEmail,
         password: kMockPassword,
       );
-      final AuthResult result = await user.reauthenticateWithCredential(credential);
+      final AuthResult result =
+          await user.reauthenticateWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -565,7 +571,8 @@ void main() {
         idToken: kMockIdToken,
         accessToken: kMockAccessToken,
       );
-      final AuthResult result = await user.reauthenticateWithCredential(credential);
+      final AuthResult result =
+          await user.reauthenticateWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -591,7 +598,8 @@ void main() {
       final AuthCredential credential = FacebookAuthProvider.getCredential(
         accessToken: kMockAccessToken,
       );
-      final AuthResult result = await user.reauthenticateWithCredential(credential);
+      final AuthResult result =
+          await user.reauthenticateWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -617,7 +625,8 @@ void main() {
         authToken: kMockAuthToken,
         authTokenSecret: kMockAuthTokenSecret,
       );
-      final AuthResult result = await user.reauthenticateWithCredential(credential);
+      final AuthResult result =
+          await user.reauthenticateWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -643,7 +652,8 @@ void main() {
       final AuthCredential credential = GithubAuthProvider.getCredential(
         token: kMockGithubToken,
       );
-      final AuthResult result = await user.reauthenticateWithCredential(credential);
+      final AuthResult result =
+          await user.reauthenticateWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -667,8 +677,8 @@ void main() {
         idToken: kMockIdToken,
         accessToken: kMockAccessToken,
       );
-      FirebaseUser user = await auth.currentUser();
-      AuthResult result = await user.linkWithCredential(credential);
+      final FirebaseUser user = await auth.currentUser();
+      final AuthResult result = await user.linkWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -698,8 +708,8 @@ void main() {
       final AuthCredential credential = FacebookAuthProvider.getCredential(
         accessToken: kMockAccessToken,
       );
-      FirebaseUser user = await auth.currentUser();
-      AuthResult result = await user.linkWithCredential(credential);
+      final FirebaseUser user = await auth.currentUser();
+      final AuthResult result = await user.linkWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -728,8 +738,7 @@ void main() {
       final AuthCredential credential = FacebookAuthProvider.getCredential(
         accessToken: kMockAccessToken,
       );
-      final AuthResult result =
-          await auth.signInWithCredential(credential);
+      final AuthResult result = await auth.signInWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -753,8 +762,8 @@ void main() {
         authToken: kMockAuthToken,
         authTokenSecret: kMockAuthTokenSecret,
       );
-      FirebaseUser user = await auth.currentUser();
-      AuthResult result = await user.linkWithCredential(credential);
+      final FirebaseUser user = await auth.currentUser();
+      final AuthResult result = await user.linkWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -809,8 +818,8 @@ void main() {
       final AuthCredential credential = GithubAuthProvider.getCredential(
         token: kMockGithubToken,
       );
-      FirebaseUser user = await auth.currentUser();
-      AuthResult result = await user.linkWithCredential(credential);
+      final FirebaseUser user = await auth.currentUser();
+      final AuthResult result = await user.linkWithCredential(credential);
       verifyAuthResult(result);
       expect(
         log,
@@ -863,7 +872,7 @@ void main() {
         email: kMockEmail,
         password: kMockPassword,
       );
-      FirebaseUser user = await auth.currentUser();
+      final FirebaseUser user = await auth.currentUser();
       final AuthResult result = await user.linkWithCredential(credential);
       verifyAuthResult(result);
       expect(
@@ -1159,9 +1168,9 @@ void main() {
     });
 
     test('signInWithCustomToken', () async {
-      final FirebaseUser user =
-          (await auth.signInWithCustomToken(token: kMockCustomToken)).user;
-      verifyUser(user);
+      final AuthResult result =
+          await auth.signInWithCustomToken(token: kMockCustomToken);
+      verifyAuthResult(result);
       expect(
         log,
         <Matcher>[

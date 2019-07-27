@@ -193,7 +193,8 @@ class FirebaseUser extends UserInfo {
   Future<AuthResult> reauthenticateWithCredential(
       AuthCredential credential) async {
     assert(credential != null);
-    Map<String, dynamic> data = await FirebaseAuth.channel.invokeMapMethod<String, dynamic>(
+    final Map<String, dynamic> data =
+        await FirebaseAuth.channel.invokeMapMethod<String, dynamic>(
       'reauthenticateWithCredential',
       <String, dynamic>{
         'app': _app.name,

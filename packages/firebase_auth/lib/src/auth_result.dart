@@ -19,8 +19,10 @@ class AuthResult {
 
   /// Returns IDP-specific information for the user if the provider is one of
   /// Facebook, Github, Google, or Twitter.
-  AdditionalUserInfo get additionalUserInfo => _data['additionalUserInfo'] == null ? null :
-      AdditionalUserInfo._(_data['additionalUserInfo']);
+  AdditionalUserInfo get additionalUserInfo =>
+      _data['additionalUserInfo'] == null
+          ? null
+          : AdditionalUserInfo._(_data['additionalUserInfo']);
 
   @override
   String toString() {
