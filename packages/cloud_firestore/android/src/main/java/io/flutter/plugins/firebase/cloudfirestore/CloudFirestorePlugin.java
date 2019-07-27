@@ -31,7 +31,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
@@ -635,7 +634,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           documentObservers.put(handle, observer);
           listenerRegistrations.put(
               handle,
-              getDocumentReference(arguments).addSnapshotListener(includeMetadataChanges, observer));
+              getDocumentReference(arguments)
+                  .addSnapshotListener(includeMetadataChanges, observer));
           result.success(handle);
           break;
         }

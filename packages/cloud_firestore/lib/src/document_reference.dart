@@ -117,7 +117,7 @@ class DocumentReference {
   /// Notifies of documents at this location
   // TODO(jackson): Reduce code duplication with [Query]
   Stream<DocumentSnapshot> snapshots({bool includeMetadataChanges = false}) {
-    assert(metadataChanges != null);
+    assert(includeMetadataChanges != null);
     Future<int> _handle;
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
