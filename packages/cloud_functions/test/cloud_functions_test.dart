@@ -39,7 +39,7 @@ void main() {
         'quux': 'quuz',
       });
       await CloudFunctions.instance
-          .useEmulatorFunctions(origin: 'http://localhost:5001')
+          .useFunctionsEmulator(origin: 'http://localhost:5001')
           .getHttpsCallable(functionName: 'bez')
           .call();
       expect(
