@@ -27,7 +27,7 @@ class IdTokenResult {
       DateTime.fromMillisecondsSinceEpoch(_data['expirationTimestamp'] * 1000);
 
   /// The time the user authenticated (signed in).
-  /// 
+  ///
   /// Note that this is not the time the token was refreshed.
   DateTime get authTime =>
       DateTime.fromMillisecondsSinceEpoch(_data['authTimestamp'] * 1000);
