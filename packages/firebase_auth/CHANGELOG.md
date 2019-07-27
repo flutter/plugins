@@ -1,8 +1,9 @@
 ## 0.12.0
 
- * Added new `IdTokenResult` class.
- * **Breaking Change**. `getIdToken()` method now returns `IdTokenResult` instead of just the token `String`.
- Retrieve the token `String` using the `token` property of `IdTokenResult`.
+* Added new `IdTokenResult` class.
+* **Breaking Change**. `getIdToken()` method now returns `IdTokenResult` instead of a token `String`.
+  Use the `token` property of `IdTokenResult` to retrieve the token `String`.
+* Added integration testing for `getIdToken()`.
 
 ## 0.11.1+12
 
