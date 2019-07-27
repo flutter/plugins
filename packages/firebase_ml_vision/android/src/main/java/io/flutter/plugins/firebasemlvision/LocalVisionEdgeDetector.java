@@ -19,53 +19,30 @@ import java.util.List;
 import java.util.Map;
 
 class LocalVisionEdgeDetector implements Detector {
-  static final LocalVisionEdgeDetector instance = new LocalVisionEdgeDetector();
+  private final FirebaseVisionImageLabeler labeler;
 
-  private LocalVisionEdgeDetector() {}
-
-  private FirebaseVisionImageLabeler labeler;
-  private Map<String, Object> lastOptions;
-
-  @Override
-  public void handleDetection(
-      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-
-    // Use instantiated labeler if the options are the same. Otherwise, close and instantiate new
-    // options.
-
-    if (labeler != null && !options.equals(lastOptions)) {
+  LocalVisionEdgeDetector(FirebaseVision vision, Map<String,Object> options){
+    String finalPath = "flutter_assets/assets/" + options.get("dataset") + "/manifest.json";
+    FirebaseLocalModel localModel =
+        FirebaseModelManager.getInstance().getLocalModel((String) options.get("dataset"));
+    if (localModel == null) {
+      localModel =
+          new FirebaseLocalModel.Builder((String) options.get("dataset"))
+              .setAssetFilePath(finalPath)
+              .build();
+      FirebaseModelManager.getInstance().registerLocalModel(localModel);
       try {
-        labeler.close();
-      } catch (IOException e) {
-        result.error("visionEdgeLabelDetectorIOError", e.getLocalizedMessage(), null);
+        labeler =
+            FirebaseVision.getInstance().getOnDeviceAutoMLImageLabeler(parseOptions(options));
+      } catch (FirebaseMLException e) {
+        result.error("visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
         return;
       }
-
-      labeler = null;
-      lastOptions = null;
     }
+  }
 
-    if (labeler == null) {
-      lastOptions = options;
-      String finalPath = "flutter_assets/assets/" + options.get("dataset") + "/manifest.json";
-      FirebaseLocalModel localModel =
-          FirebaseModelManager.getInstance().getLocalModel((String) options.get("dataset"));
-      if (localModel == null) {
-        localModel =
-            new FirebaseLocalModel.Builder((String) options.get("dataset"))
-                .setAssetFilePath(finalPath)
-                .build();
-        FirebaseModelManager.getInstance().registerLocalModel(localModel);
-        try {
-          labeler =
-              FirebaseVision.getInstance().getOnDeviceAutoMLImageLabeler(parseOptions(options));
-        } catch (FirebaseMLException e) {
-          result.error("visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
-          return;
-        }
-      }
-    }
-
+  @Override
+  public void handleDetection(final FirebaseVisionImage image, final MethodChannel.Result result) {
     labeler
         .processImage(image)
         .addOnSuccessListener(
@@ -100,5 +77,10 @@ class LocalVisionEdgeDetector implements Detector {
         .setLocalModelName((String) optionsData.get("dataset"))
         .setConfidenceThreshold(conf)
         .build();
+  }
+
+  @Override
+  public void close() throws IOException {
+    labeler.close();
   }
 }

@@ -20,112 +20,88 @@ import java.util.List;
 import java.util.Map;
 
 class RemoteVisionEdgeDetector implements Detector {
-  static final RemoteVisionEdgeDetector instance = new RemoteVisionEdgeDetector();
-
-  private RemoteVisionEdgeDetector() {}
-
   private FirebaseVisionImageLabeler labeler;
-  private Map<String, Object> lastOptions;
+
+  RemoteVisionEdgeDetector(FirebaseVision vision, Map<String, Object> options){
+    FirebaseRemoteModel remoteModel = FirebaseModelManager.getInstance().getNonBaseRemoteModel((String) options.get("dataset"));
+    if (remoteModel == null) {
+      FirebaseModelDownloadConditions conditions =
+          new FirebaseModelDownloadConditions.Builder().build();
+      remoteModel =
+          new FirebaseRemoteModel.Builder((String) options.get("dataset"))
+              .enableModelUpdates(true)
+              .setInitialDownloadConditions(conditions)
+              .setUpdatesDownloadConditions(conditions)
+              .build();
+      FirebaseModelManager.getInstance().registerRemoteModel(remoteModel);
+      FirebaseModelManager.getInstance()
+          .downloadRemoteModelIfNeeded(remoteModel)
+          .addOnSuccessListener(
+              new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void success) {
+                  try {
+                    labeler =
+                        FirebaseVision.getInstance()
+                            .getOnDeviceAutoMLImageLabeler(parseOptions(options));
+                  } catch (FirebaseMLException e) {
+                    result.error(
+                        "visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
+                    return;
+                  }
+                }
+              })
+          .addOnFailureListener(
+              new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                  result.error(
+                      "visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
+                  return;
+                }
+              });
+      try {
+        labeler =
+            FirebaseVision.getInstance().getOnDeviceAutoMLImageLabeler(parseOptions(options));
+      } catch (FirebaseMLException e) {
+        result.error("visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
+        return;
+      }
+    } else {
+      FirebaseModelManager.getInstance()
+          .downloadRemoteModelIfNeeded(remoteModel)
+          .addOnSuccessListener(
+              new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void success) {
+                  try {
+                    labeler =
+                        FirebaseVision.getInstance()
+                            .getOnDeviceAutoMLImageLabeler(parseOptions(options));
+                  } catch (FirebaseMLException e) {
+                    result.error(
+                        "visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
+                    return;
+                  }
+                }
+              })
+          .addOnFailureListener(
+              new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                  result.error(
+                      "visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
+                  return;
+                }
+              });
+    }
+  }
 
   @Override
   public void handleDetection(
-      FirebaseVisionImage image,
-      final Map<String, Object> options,
+      final FirebaseVisionImage image,
       final MethodChannel.Result result) {
-
-    // Use instantiated labeler if the options are the same. Otherwise, close and instantiate new
-    // options.
-
-    if (labeler != null && !options.equals(lastOptions)) {
-      try {
-        labeler.close();
-      } catch (IOException e) {
-        result.error("visionEdgeLabelDetectorIOError", e.getLocalizedMessage(), null);
-        return;
-      }
-
-      labeler = null;
-      lastOptions = null;
-    }
-
-    if (labeler == null) {
-      lastOptions = options;
-      FirebaseRemoteModel remoteModel =
-          FirebaseModelManager.getInstance().getNonBaseRemoteModel((String) options.get("dataset"));
-      if (remoteModel == null) {
-        FirebaseModelDownloadConditions conditions =
-            new FirebaseModelDownloadConditions.Builder().build();
-        remoteModel =
-            new FirebaseRemoteModel.Builder((String) options.get("dataset"))
-                .enableModelUpdates(true)
-                .setInitialDownloadConditions(conditions)
-                .setUpdatesDownloadConditions(conditions)
-                .build();
-        FirebaseModelManager.getInstance().registerRemoteModel(remoteModel);
-        FirebaseModelManager.getInstance()
-            .downloadRemoteModelIfNeeded(remoteModel)
-            .addOnSuccessListener(
-                new OnSuccessListener<Void>() {
-                  @Override
-                  public void onSuccess(Void success) {
-                    try {
-                      labeler =
-                          FirebaseVision.getInstance()
-                              .getOnDeviceAutoMLImageLabeler(parseOptions(options));
-                    } catch (FirebaseMLException e) {
-                      result.error(
-                          "visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
-                      return;
-                    }
-                  }
-                })
-            .addOnFailureListener(
-                new OnFailureListener() {
-                  @Override
-                  public void onFailure(@NonNull Exception e) {
-                    result.error(
-                        "visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
-                    return;
-                  }
-                });
-        try {
-          labeler =
-              FirebaseVision.getInstance().getOnDeviceAutoMLImageLabeler(parseOptions(options));
-        } catch (FirebaseMLException e) {
-          result.error("visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
-          return;
-        }
-      } else {
-        FirebaseModelManager.getInstance()
-            .downloadRemoteModelIfNeeded(remoteModel)
-            .addOnSuccessListener(
-                new OnSuccessListener<Void>() {
-                  @Override
-                  public void onSuccess(Void success) {
-                    try {
-                      labeler =
-                          FirebaseVision.getInstance()
-                              .getOnDeviceAutoMLImageLabeler(parseOptions(options));
-                    } catch (FirebaseMLException e) {
-                      result.error(
-                          "visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
-                      return;
-                    }
-                  }
-                })
-            .addOnFailureListener(
-                new OnFailureListener() {
-                  @Override
-                  public void onFailure(@NonNull Exception e) {
-                    result.error(
-                        "visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
-                    return;
-                  }
-                });
-      }
-    }
-
-    labeler
+  labeler
         .processImage(image)
         .addOnSuccessListener(
             new OnSuccessListener<List<FirebaseVisionImageLabel>>() {
@@ -160,4 +136,10 @@ class RemoteVisionEdgeDetector implements Detector {
         .setConfidenceThreshold(conf)
         .build();
   }
+
+  @Override
+  public void close() throws IOException {
+    labeler.close();
+  }
+
 }
