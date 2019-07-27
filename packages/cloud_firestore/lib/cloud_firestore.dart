@@ -15,7 +15,7 @@ import 'package:flutter/foundation.dart' show ReadBuffer, WriteBuffer;
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
-import 'src/utils/push_id_generator.dart';
+import 'src/utils/auto_id_generator.dart';
 
 part 'src/blob.dart';
 part 'src/collection_reference.dart';
