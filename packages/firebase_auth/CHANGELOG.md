@@ -1,3 +1,7 @@
+## 0.11.1+13
+
+* Fix inconsistency between iOS and Android `FirebaseUserMetadata`. On iOS `creationTimestamp` and `lastSignInTimestamp` were return in seconds and on Android in milliseconds. Now both platforms return those values in milliseconds. 
+
 ## 0.11.1+12
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
