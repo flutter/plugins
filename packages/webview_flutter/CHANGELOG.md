@@ -1,3 +1,8 @@
+## 0.3.11
+
+* Add an optional `userAgent` property to set a custom User Agent.
+  Add `getUserAgent` to WebViewController. 
+
 ## 0.3.10+3
 
 * Don't log an unknown setting key error for 'debuggingEnabled' on iOS.
