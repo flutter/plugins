@@ -24,7 +24,7 @@ void main() {
       expect(additionalUserInfo.username, isNull);
       expect(additionalUserInfo.isNewUser, isNotNull);
       expect(additionalUserInfo.profile, isNull);
-      expect(additionalUserInfo.providerId, 'firebase');
+      expect(additionalUserInfo.providerId, isNull);
     });
 
     test('isSignInWithEmailLink', () async {
