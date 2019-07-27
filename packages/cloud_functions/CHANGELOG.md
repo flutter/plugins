@@ -1,6 +1,6 @@
 ## 0.4.1
 
-- Automatically use version from pubspec.yaml when reporting usage to Firebase.
+- Support for cloud functions emulators.
 
 ## 0.4.0+3
 
