@@ -141,8 +141,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               RaisedButton(
                 onPressed: () => setState(() {
-                  _launched = _makePhoneCall('tel:$_phone');
-                }),
+                      _launched = _makePhoneCall('tel:$_phone');
+                    }),
                 child: const Text('Make phone call'),
               ),
               const Padding(
@@ -151,46 +151,46 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               RaisedButton(
                 onPressed: () => setState(() {
-                  _launched = _launchInBrowser(toLaunch);
-                }),
+                      _launched = _launchInBrowser(toLaunch);
+                    }),
                 child: const Text('Launch in browser'),
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
               RaisedButton(
                 onPressed: () => setState(() {
-                  _launched = _launchInWebViewOrVC(toLaunch);
-                }),
+                      _launched = _launchInWebViewOrVC(toLaunch);
+                    }),
                 child: const Text('Launch in app'),
               ),
               RaisedButton(
                 onPressed: () => setState(() {
-                  _launched = _launchInWebViewWithJavaScript(toLaunch);
-                }),
+                      _launched = _launchInWebViewWithJavaScript(toLaunch);
+                    }),
                 child: const Text('Launch in app(JavaScript ON)'),
               ),
               RaisedButton(
                 onPressed: () => setState(() {
-                  _launched = _launchInWebViewWithDomStorage(toLaunch);
-                }),
+                      _launched = _launchInWebViewWithDomStorage(toLaunch);
+                    }),
                 child: const Text('Launch in app(DOM storage ON)'),
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
               RaisedButton(
                 onPressed: () => setState(() {
-                  _launched = _launchUniversalLinkIos(toLaunch);
-                }),
+                      _launched = _launchUniversalLinkIos(toLaunch);
+                    }),
                 child: const Text(
                     'Launch a universal link in a native app, fallback to Safari.(Youtube)'),
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
               RaisedButton(
                 onPressed: () => setState(() {
-                  _launched = _launchInWebViewOrVC(toLaunch);
-                  Timer(const Duration(seconds: 5), () {
-                    print('Closing WebView after 5 seconds...');
-                    closeWebView();
-                  });
-                }),
+                      _launched = _launchInWebViewOrVC(toLaunch);
+                      Timer(const Duration(seconds: 5), () {
+                        print('Closing WebView after 5 seconds...');
+                        closeWebView();
+                      });
+                    }),
                 child: const Text('Launch in app + close after 5 seconds'),
               ),
               const Padding(padding: EdgeInsets.all(16.0)),

@@ -38,8 +38,8 @@ class DemoAppState extends State<DemoApp> {
                   ),
                   maxLines: 2,
                   onChanged: (String value) => setState(() {
-                    text = value;
-                  }),
+                        text = value;
+                      }),
                 ),
                 TextField(
                   decoration: const InputDecoration(
@@ -48,8 +48,8 @@ class DemoAppState extends State<DemoApp> {
                   ),
                   maxLines: 2,
                   onChanged: (String value) => setState(() {
-                    subject = value;
-                  }),
+                        subject = value;
+                      }),
                 ),
                 const Padding(padding: EdgeInsets.only(top: 24.0)),
                 Builder(

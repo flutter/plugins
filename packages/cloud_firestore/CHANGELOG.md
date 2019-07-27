@@ -1,7 +1,11 @@
-## 0.12.8
+## 0.12.9
 
 * Add support for MetadataChanges for snapshots on both Documents and Queries
 * Fix example app crash when the `message` field was not a string 
+
+## 0.12.8
+
+* Updated how document ids are generated to more closely match native implementations.
 
 ## 0.12.7+1
 
