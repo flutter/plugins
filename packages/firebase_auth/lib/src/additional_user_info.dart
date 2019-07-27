@@ -22,5 +22,5 @@ class AdditionalUserInfo {
 
   /// Returns a Map containing IDP-specific user data if the provider
   /// is one of Facebook, GitHub, Google, Twitter, Microsoft, or Yahoo.
-  Map<String, dynamic> get profile => _data['profile'];
+  Map<String, dynamic> get profile => _data['profile'].cast<String, dynamic>();
 }
