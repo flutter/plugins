@@ -33,6 +33,5 @@ android {
     }
     dependencies {
         api 'com.google.firebase:firebase-inappmessaging-display:18.0.1'
-        implementation 'androidx.annotation:annotation:1.0.0'
     }
 }

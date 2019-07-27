@@ -1,3 +1,7 @@
+## 0.11.1+13
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
 ## 0.11.1+12
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.

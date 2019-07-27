@@ -1,3 +1,7 @@
+## 0.6.0+18
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
 ## 0.6.0+17
 
 * iOS: Fix a crash when user captures image from the camera with devices under iOS 11.
