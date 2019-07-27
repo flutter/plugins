@@ -616,26 +616,31 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       case "Query#addSnapshotListener":
         {
           Map<String, Object> arguments = call.arguments();
-          Boolean includeMetadataChanges = (Boolean) arguments.get("includeMetadataChanges");
           int handle = nextListenerHandle++;
           EventObserver observer = new EventObserver(handle);
           observers.put(handle, observer);
+          MetadataChanges metadataChanges =
+              (Boolean) arguments.get("includeMetadataChanges")
+                  ? MetadataChanges.include
+                  : MetadataChanges.exclude;
           listenerRegistrations.put(
-              handle, getQuery(arguments).addSnapshotListener(includeMetadataChanges, observer));
+              handle, getQuery(arguments).addSnapshotListener(metadataChanges, observer));
           result.success(handle);
           break;
         }
       case "DocumentReference#addSnapshotListener":
         {
           Map<String, Object> arguments = call.arguments();
-          Boolean includeMetadataChanges = (Boolean) arguments.get("includeMetadataChanges");
           int handle = nextListenerHandle++;
           DocumentObserver observer = new DocumentObserver(handle);
           documentObservers.put(handle, observer);
+          MetadataChanges metadataChanges =
+              (Boolean) arguments.get("includeMetadataChanges")
+                  ? MetadataChanges.include
+                  : MetadataChanges.exclude;
           listenerRegistrations.put(
               handle,
-              getDocumentReference(arguments)
-                  .addSnapshotListener(includeMetadataChanges, observer));
+              getDocumentReference(arguments).addSnapshotListener(metadataChanges, observer));
           result.success(handle);
           break;
         }
