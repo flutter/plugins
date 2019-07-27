@@ -37,17 +37,27 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
+    String modelName = call.argument("model");
     switch (call.method) {
+      case "ModelManager#setupLocalModel":
+        SetupLocalModel.instance.setup(modelName, result);
+        break;
+      case "ModelManager#setupRemoteModel":
+        SetupRemoteModel.instance.setup(modelName, result);
+        break;
       case "BarcodeDetector#detectInImage":
       case "FaceDetector#processImage":
       case "ImageLabeler#processImage":
       case "TextRecognizer#processImage":
+      case "VisionEdgeImageLabeler#processLocalImage":
+      case "VisionEdgeImageLabeler#processRemoteImage":
         handleDetection(call, result);
         break;
       case "BarcodeDetector#close":
       case "FaceDetector#close":
       case "ImageLabeler#close":
       case "TextRecognizer#close":
+      case "VisionEdgeImageLabeler#close":
         closeDetector(call, result);
         break;
       default:
@@ -57,7 +67,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
 
   private void handleDetection(MethodCall call, Result result) {
     Map<String, Object> options = call.argument("options");
-    String modelName = call.argument("model");
+
     FirebaseVisionImage image;
     Map<String, Object> imageData = call.arguments();
     try {
@@ -67,33 +77,54 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       return;
     }
 
-    switch (call.method) {
-      case "BarcodeDetector#detectInImage":
-        BarcodeDetector.instance.handleDetection(image, options, result);
-        break;
-      case "FaceDetector#processImage":
-        FaceDetector.instance.handleDetection(image, options, result);
-        break;
-      case "ImageLabeler#processImage":
-        ImageLabeler.instance.handleDetection(image, options, result);
-        break;
-      case "TextRecognizer#processImage":
-        TextRecognizer.instance.handleDetection(image, options, result);
-        break;
-      case "VisionEdgeImageLabeler#processLocalImage":
-        LocalVisionEdgeDetector.instance.handleDetection(image, options, result);
-        break;
-      case "VisionEdgeImageLabeler#processRemoteImage":
-        RemoteVisionEdgeDetector.instance.handleDetection(image, options, result);
-        break;
-      case "ModelManager#setupLocalModel":
-        SetupLocalModel.instance.setup(modelName, result);
-        break;
-      case "ModelManager#setupRemoteModel":
-        SetupRemoteModel.instance.setup(modelName, result);
-        break;
-      default:
-        result.notImplemented();
+    Detector detector = getDetector(call);
+    if (detector == null) {
+      switch (call.method) {
+        case "BarcodeDetector#detectInImage":
+          detector = new BarcodeDetector(FirebaseVision.getInstance(), options);
+          break;
+        case "FaceDetector#processImage":
+          detector = new FaceDetector(FirebaseVision.getInstance(), options);
+          break;
+        case "ImageLabeler#processImage":
+          detector = new ImageLabeler(FirebaseVision.getInstance(), options);
+          break;
+        case "TextRecognizer#processImage":
+          detector = new TextRecognizer(FirebaseVision.getInstance(), options);
+          break;
+        case "VisionEdgeImageLabeler#processLocalImage":
+          detector = new LocalVisionEdgeDetector(FirebaseVision.getInstance(), options);
+          break;
+        case "VisionEdgeImageLabeler#processRemoteImage":
+          detector = new RemoteVisionEdgeDetector(FirebaseVision.getInstance(), options);
+          break;  
+      }
+
+      final Integer handle = call.argument("handle");
+      addDetector(handle, detector);
+    }
+
+    detector.handleDetection(image, result);
+  }
+
+    private void closeDetector(final MethodCall call, final Result result) {
+    final Detector detector = getDetector(call);
+
+    if (detector == null) {
+      final Integer handle = call.argument("handle");
+      final String message = String.format("Object for handle does not exists: %s", handle);
+      throw new IllegalArgumentException(message);
+    }
+
+    try {
+      detector.close();
+      result.success(null);
+    } catch (IOException e) {
+      final String code = String.format("%sIOError", detector.getClass().getSimpleName());
+      result.error(code, e.getLocalizedMessage(), null);
+    } finally {
+      final Integer handle = call.argument("handle");
+      detectors.remove(handle);
     }
   }
 
