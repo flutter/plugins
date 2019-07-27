@@ -42,7 +42,7 @@ class MessageList extends StatelessWidget {
           itemBuilder: (_, int index) {
             final DocumentSnapshot document = snapshot.data.documents[index];
             return ListTile(
-              title: Text(document['message'] ?? '<No message retrieved>'),
+              title: Text('${document['message']}' ?? '<No message retrieved>'),
               subtitle: Text('Message ${index + 1} of $messageCount'),
             );
           },
