@@ -17,6 +17,7 @@ part 'barcode_detector.dart';
 part 'face_detector.dart';
 part 'image_labeler.dart';
 part 'text_recognizer.dart';
+part 'vision_edge.dart';
 
 void main() {
   final Completer<String> completer = Completer<String>();
@@ -28,6 +29,7 @@ void main() {
     faceDetectorTests();
     imageLabelerTests();
     textRecognizerTests();
+    visionEdgeTests();
   });
 }
 

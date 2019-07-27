@@ -97,7 +97,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
           break;
         case "VisionEdgeImageLabeler#processRemoteImage":
           detector = new RemoteVisionEdgeDetector(FirebaseVision.getInstance(), options);
-          break;  
+          break;
       }
 
       final Integer handle = call.argument("handle");
@@ -107,7 +107,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
     detector.handleDetection(image, result);
   }
 
-    private void closeDetector(final MethodCall call, final Result result) {
+  private void closeDetector(final MethodCall call, final Result result) {
     final Detector detector = getDetector(call);
 
     if (detector == null) {

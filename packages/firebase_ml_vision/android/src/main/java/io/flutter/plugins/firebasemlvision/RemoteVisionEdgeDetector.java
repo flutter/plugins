@@ -22,8 +22,9 @@ import java.util.Map;
 class RemoteVisionEdgeDetector implements Detector {
   private FirebaseVisionImageLabeler labeler;
 
-  RemoteVisionEdgeDetector(FirebaseVision vision, Map<String, Object> options){
-    FirebaseRemoteModel remoteModel = FirebaseModelManager.getInstance().getNonBaseRemoteModel((String) options.get("dataset"));
+  RemoteVisionEdgeDetector(FirebaseVision vision, Map<String, Object> options) {
+    FirebaseRemoteModel remoteModel =
+        FirebaseModelManager.getInstance().getNonBaseRemoteModel((String) options.get("dataset"));
     if (remoteModel == null) {
       FirebaseModelDownloadConditions conditions =
           new FirebaseModelDownloadConditions.Builder().build();
@@ -61,8 +62,7 @@ class RemoteVisionEdgeDetector implements Detector {
                 }
               });
       try {
-        labeler =
-            FirebaseVision.getInstance().getOnDeviceAutoMLImageLabeler(parseOptions(options));
+        labeler = FirebaseVision.getInstance().getOnDeviceAutoMLImageLabeler(parseOptions(options));
       } catch (FirebaseMLException e) {
         result.error("visionEdgeLabelDetectorLabelerError", e.getLocalizedMessage(), null);
         return;
@@ -98,10 +98,8 @@ class RemoteVisionEdgeDetector implements Detector {
   }
 
   @Override
-  public void handleDetection(
-      final FirebaseVisionImage image,
-      final MethodChannel.Result result) {
-  labeler
+  public void handleDetection(final FirebaseVisionImage image, final MethodChannel.Result result) {
+    labeler
         .processImage(image)
         .addOnSuccessListener(
             new OnSuccessListener<List<FirebaseVisionImageLabel>>() {
@@ -141,5 +139,4 @@ class RemoteVisionEdgeDetector implements Detector {
   public void close() throws IOException {
     labeler.close();
   }
-
 }

@@ -41,18 +41,18 @@ static NSMutableDictionary<NSNumber *, id<Detector>> *detectors;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-    NSString *modelName = call.arguments[@"model"];
-    if ([@"ModelManager#setupLocalModel" isEqualToString:call.method]) {
-        [SetupLocalModel modelName:modelName result:result];
-    } else if ([@"ModelManager#setupRemoteModel" isEqualToString:call.method]){
-        [SetupRemoteModel modelName:modelName result:result];
-    } else if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method] ||
-        [@"FaceDetector#processImage" isEqualToString:call.method] ||
-        [@"ImageLabeler#processImage" isEqualToString:call.method] ||
-        [@"TextRecognizer#processImage" isEqualToString:call.method] ||
-        [@"VisionEdgeImageLabeler#processLocalImage" isEqualToString:call.method] ||
-        [@"VisionEdgeImageLabeler#processRemoteImage" isEqualToString:call.method]) {
-      [self handleDetection:call result:result];
+  NSString *modelName = call.arguments[@"model"];
+  if ([@"ModelManager#setupLocalModel" isEqualToString:call.method]) {
+    [SetupLocalModel modelName:modelName result:result];
+  } else if ([@"ModelManager#setupRemoteModel" isEqualToString:call.method]) {
+    [SetupRemoteModel modelName:modelName result:result];
+  } else if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method] ||
+             [@"FaceDetector#processImage" isEqualToString:call.method] ||
+             [@"ImageLabeler#processImage" isEqualToString:call.method] ||
+             [@"TextRecognizer#processImage" isEqualToString:call.method] ||
+             [@"VisionEdgeImageLabeler#processLocalImage" isEqualToString:call.method] ||
+             [@"VisionEdgeImageLabeler#processRemoteImage" isEqualToString:call.method]) {
+    [self handleDetection:call result:result];
   } else if ([@"BarcodeDetector#close" isEqualToString:call.method] ||
              [@"FaceDetector#close" isEqualToString:call.method] ||
              [@"ImageLabeler#close" isEqualToString:call.method] ||
@@ -81,10 +81,12 @@ static NSMutableDictionary<NSNumber *, id<Detector>> *detectors;
       detector = [[ImageLabeler alloc] initWithVision:[FIRVision vision] options:options];
     } else if ([call.method hasPrefix:@"TextRecognizer"]) {
       detector = [[TextRecognizer alloc] initWithVision:[FIRVision vision] options:options];
-    } else if ([call.method isEqualToString:@"VisionEdgeImageLabeler#processLocalImage"]){
-      detector = [[LocalVisionEdgeDetector alloc] initWithVision:[FIRVision vision] options:options];
-    } else if ([call.method isEqualToString:@"VisionEdgeImageLabeler#processRemoteImage"]){
-      detector = [[RemoteVisionEdgeDetector alloc] initWithVision:[FIRVision vision] options:options];
+    } else if ([call.method isEqualToString:@"VisionEdgeImageLabeler#processLocalImage"]) {
+      detector = [[LocalVisionEdgeDetector alloc] initWithVision:[FIRVision vision]
+                                                         options:options];
+    } else if ([call.method isEqualToString:@"VisionEdgeImageLabeler#processRemoteImage"]) {
+      detector = [[RemoteVisionEdgeDetector alloc] initWithVision:[FIRVision vision]
+                                                          options:options];
     }
     [FLTFirebaseMlVisionPlugin addDetector:handle detector:detector];
   }

@@ -48,7 +48,7 @@ class _ExampleListState extends State<_ExampleList> {
 
           return Container(
             decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.grey)),
+              border: Border(bottom: const BorderSide(color: Colors.grey)),
             ),
             child: ListTile(
               title: Text(widgetName),
