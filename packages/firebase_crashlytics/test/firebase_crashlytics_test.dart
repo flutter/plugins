@@ -16,6 +16,8 @@ void main() {
           .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
+          case 'Crashlytics#onError':
+            return 'Error reported to Crashlytics.';
           case 'Crashlytics#isDebuggable':
             return true;
           case 'Crashlytics#setUserEmail':
@@ -38,6 +40,10 @@ void main() {
         exception: 'foo exception',
         stack: StackTrace.current,
         library: 'foo library',
+        informationCollector: () => <DiagnosticsNode>[
+          DiagnosticsNode.message('test message'),
+          DiagnosticsNode.message('second message'),
+        ],
         context: ErrorDescription('foo context'),
       );
       crashlytics.enableInDevMode = true;
@@ -50,6 +56,7 @@ void main() {
       expect(log[0].method, 'Crashlytics#onError');
       expect(log[0].arguments['exception'], 'foo exception');
       expect(log[0].arguments['context'], 'foo context');
+      expect(log[0].arguments['information'], 'test message\nsecond message');
       expect(log[0].arguments['logs'], isNotEmpty);
       expect(log[0].arguments['logs'], contains('foo'));
       expect(log[0].arguments['keys'][0]['key'], 'testBool');
