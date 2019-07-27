@@ -26,7 +26,8 @@ const String kMockVerificationId = '12345';
 const String kMockSmsCode = '123456';
 const String kMockLanguage = 'en';
 final DateTime kMockCreationTime = DateTime(2019, 1, 1);
-final DateTime kMockLastSignInTime = DateTime.now().subtract(const Duration(days: 1));
+final DateTime kMockLastSignInTime =
+    DateTime.now().subtract(const Duration(days: 1));
 
 void main() {
   group('$FirebaseAuth', () {
