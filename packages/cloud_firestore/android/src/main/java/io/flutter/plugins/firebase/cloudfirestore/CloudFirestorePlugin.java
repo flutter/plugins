@@ -31,6 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
@@ -119,6 +120,14 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       default:
         return Source.DEFAULT;
     }
+  }
+
+  private MetadataChanges getMetadataChanges(Map<String, Object> arguments) {
+    String metadataChanges = (String) arguments.get("metadataChanges");
+    if ("include".equals(metadataChanges)) {
+      return MetadataChanges.INCLUDE;
+    }
+    return MetadataChanges.EXCLUDE;
   }
 
   private Object[] getDocumentValues(
@@ -616,21 +625,25 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       case "Query#addSnapshotListener":
         {
           Map<String, Object> arguments = call.arguments();
+          MetadataChanges metadataChanges = getMetadataChanges(arguments);
           int handle = nextListenerHandle++;
           EventObserver observer = new EventObserver(handle);
           observers.put(handle, observer);
-          listenerRegistrations.put(handle, getQuery(arguments).addSnapshotListener(observer));
+          listenerRegistrations.put(
+              handle, getQuery(arguments).addSnapshotListener(metadataChanges, observer));
           result.success(handle);
           break;
         }
       case "Query#addDocumentListener":
         {
           Map<String, Object> arguments = call.arguments();
+          MetadataChanges metadataChanges = getMetadataChanges(arguments);
           int handle = nextListenerHandle++;
           DocumentObserver observer = new DocumentObserver(handle);
           documentObservers.put(handle, observer);
           listenerRegistrations.put(
-              handle, getDocumentReference(arguments).addSnapshotListener(observer));
+              handle,
+              getDocumentReference(arguments).addSnapshotListener(metadataChanges, observer));
           result.success(handle);
           break;
         }

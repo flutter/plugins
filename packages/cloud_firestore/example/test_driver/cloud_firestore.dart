@@ -95,8 +95,8 @@ void main() {
       await Future.wait<void>(List<Future<void>>.generate(
         3,
         (int i) => ref.updateData(<String, dynamic>{
-          'message': FieldValue.increment(i),
-        }),
+              'message': FieldValue.increment(i),
+            }),
       ));
       snapshot = await ref.get();
       expect(snapshot.data['message'], 45.1);

@@ -1,3 +1,8 @@
+## 0.12.8
+
+* Add support for MetadataChanges for snapshots on both Documents and Queries
+* Fix example app crash when the `message` field was not a string 
+
 ## 0.12.7+1
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.

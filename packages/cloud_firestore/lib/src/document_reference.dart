@@ -116,7 +116,9 @@ class DocumentReference {
 
   /// Notifies of documents at this location
   // TODO(jackson): Reduce code duplication with [Query]
-  Stream<DocumentSnapshot> snapshots() {
+  Stream<DocumentSnapshot> snapshots(
+      {MetadataChanges metadataChanges = MetadataChanges.exclude}) {
+    assert(metadataChanges != null);
     Future<int> _handle;
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
@@ -128,6 +130,7 @@ class DocumentReference {
           <String, dynamic>{
             'app': firestore.app.name,
             'path': path,
+            'metadataChanges': _getMetadataChangesString(metadataChanges),
           },
         ).then<int>((dynamic result) => result);
         _handle.then((int handle) {

@@ -346,7 +346,8 @@ void main() {
               'parameters': <String, dynamic>{
                 'where': <List<dynamic>>[],
                 'orderBy': <List<dynamic>>[],
-              }
+              },
+              'metadataChanges': 'exclude',
             },
           ),
           isMethodCall(
@@ -377,7 +378,8 @@ void main() {
                     <dynamic>['createdAt', '<', 100],
                   ],
                   'orderBy': <List<dynamic>>[],
-                }
+                },
+                'metadataChanges': 'exclude',
               },
             ),
             isMethodCall(
@@ -409,7 +411,8 @@ void main() {
                     <dynamic>['profile', '==', null],
                   ],
                   'orderBy': <List<dynamic>>[],
-                }
+                },
+                'metadataChanges': 'exclude',
               },
             ),
             isMethodCall(
@@ -441,7 +444,8 @@ void main() {
                   'orderBy': <List<dynamic>>[
                     <dynamic>['createdAt', false]
                   ],
-                }
+                },
+                'metadataChanges': 'exclude',
               },
             ),
             isMethodCall(
@@ -470,6 +474,7 @@ void main() {
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'path/to/foo',
+                'metadataChanges': 'exclude',
               },
             ),
             isMethodCall(

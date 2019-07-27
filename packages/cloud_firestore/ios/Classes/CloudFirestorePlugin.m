@@ -160,6 +160,14 @@ static FIRFirestoreSource getSource(NSDictionary *arguments) {
   return FIRFirestoreSourceDefault;
 }
 
+static BOOL getIncludeMetadataChanges(NSDictionary *arguments) {
+  NSString *metadataChanges = arguments[@"metadataChanges"];
+  if ([@"include" isEqualToString:metadataChanges]) {
+    return YES;
+  }
+  return NO;
+}
+
 static NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
   NSMutableArray *paths = [NSMutableArray array];
   NSMutableArray *documents = [NSMutableArray array];
@@ -515,6 +523,7 @@ const UInt8 INCREMENT_INTEGER = 138;
   } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     FIRQuery *query;
+    BOOL includeMetadataChanges = getIncludeMetadataChanges(call.arguments);
     @try {
       query = getQuery(call.arguments);
     } @catch (NSException *exception) {
@@ -523,38 +532,50 @@ const UInt8 INCREMENT_INTEGER = 138;
                                  details:[exception reason]]);
     }
     id<FIRListenerRegistration> listener = [query
-        addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
-          if (snapshot == nil) {
-            result(getFlutterError(error));
-            return;
-          }
-          NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
-          [arguments setObject:handle forKey:@"handle"];
-          [weakSelf.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
-        }];
+        addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges
+                                             listener:^(FIRQuerySnapshot *_Nullable snapshot,
+                                                        NSError *_Nullable error) {
+                                               if (snapshot == nil) {
+                                                 result(getFlutterError(error));
+                                                 return;
+                                               }
+                                               NSMutableDictionary *arguments =
+                                                   [parseQuerySnapshot(snapshot) mutableCopy];
+                                               [arguments setObject:handle forKey:@"handle"];
+                                               [weakSelf.channel invokeMethod:@"QuerySnapshot"
+                                                                    arguments:arguments];
+                                             }];
     _listeners[handle] = listener;
     result(handle);
   } else if ([@"Query#addDocumentListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     FIRDocumentReference *document = getDocumentReference(call.arguments);
-    id<FIRListenerRegistration> listener =
-        [document addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
-          if (snapshot == nil) {
-            result(getFlutterError(error));
-            return;
-          }
-          [weakSelf.channel invokeMethod:@"DocumentSnapshot"
-                               arguments:@{
-                                 @"handle" : handle,
-                                 @"path" : snapshot ? snapshot.reference.path : [NSNull null],
-                                 @"data" : snapshot.exists ? snapshot.data : [NSNull null],
-                                 @"metadata" : snapshot ? @{
-                                   @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
-                                   @"isFromCache" : @(snapshot.metadata.isFromCache),
-                                 }
-                                                        : [NSNull null],
-                               }];
-        }];
+    BOOL includeMetadataChanges = getIncludeMetadataChanges(call.arguments);
+    id<FIRListenerRegistration> listener = [document
+        addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges
+                                             listener:^(FIRDocumentSnapshot *snapshot,
+                                                        NSError *_Nullable error) {
+                                               if (snapshot == nil) {
+                                                 result(getFlutterError(error));
+                                                 return;
+                                               }
+                                               [weakSelf.channel
+                                                   invokeMethod:@"DocumentSnapshot"
+                                                      arguments:@{
+                                                        @"handle" : handle,
+                                                        @"path" : snapshot ? snapshot.reference.path
+                                                                           : [NSNull null],
+                                                        @"data" : snapshot.exists ? snapshot.data
+                                                                                  : [NSNull null],
+                                                        @"metadata" : snapshot ? @{
+                                                          @"hasPendingWrites" :
+                                                              @(snapshot.metadata.hasPendingWrites),
+                                                          @"isFromCache" :
+                                                              @(snapshot.metadata.isFromCache),
+                                                        }
+                                                                               : [NSNull null],
+                                                      }];
+                                             }];
     _listeners[handle] = listener;
     result(handle);
   } else if ([@"Query#getDocuments" isEqualToString:call.method]) {
