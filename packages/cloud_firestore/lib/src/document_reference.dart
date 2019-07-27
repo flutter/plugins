@@ -125,7 +125,7 @@ class DocumentReference {
     controller = StreamController<DocumentSnapshot>.broadcast(
       onListen: () {
         _handle = Firestore.channel.invokeMethod<int>(
-          'DocumentReference#addDocumentListener',
+          'DocumentReference#addSnapshotListener',
           <String, dynamic>{
             'app': firestore.app.name,
             'path': path,

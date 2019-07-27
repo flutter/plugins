@@ -328,8 +328,9 @@ void main() {
         expect(collectionReference.path, equals('foo'));
       });
       test('listen', () async {
-        final QuerySnapshot snapshot =
-            await collectionReference.snapshots().first;
+        final QuerySnapshot snapshot = await collectionReference
+            .snapshots(includeMetadataChanges: true)
+            .first;
         final DocumentSnapshot document = snapshot.documents[0];
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
@@ -347,7 +348,7 @@ void main() {
                 'where': <List<dynamic>>[],
                 'orderBy': <List<dynamic>>[],
               },
-              'metadataChanges': 'exclude',
+              'includeMetadataChanges': true,
             },
           ),
           isMethodCall(
@@ -379,7 +380,7 @@ void main() {
                   ],
                   'orderBy': <List<dynamic>>[],
                 },
-                'metadataChanges': 'exclude',
+                'includeMetadataChanges': false,
               },
             ),
             isMethodCall(
@@ -412,7 +413,7 @@ void main() {
                   ],
                   'orderBy': <List<dynamic>>[],
                 },
-                'metadataChanges': 'exclude',
+                'includeMetadataChanges': false,
               },
             ),
             isMethodCall(
@@ -445,7 +446,7 @@ void main() {
                     <dynamic>['createdAt', false]
                   ],
                 },
-                'metadataChanges': 'exclude',
+                'includeMetadataChanges': false,
               },
             ),
             isMethodCall(
@@ -459,8 +460,10 @@ void main() {
 
     group('DocumentReference', () {
       test('listen', () async {
-        final DocumentSnapshot snapshot =
-            await firestore.document('path/to/foo').snapshots().first;
+        final DocumentSnapshot snapshot = await firestore
+            .document('path/to/foo')
+            .snapshots(includeMetadataChanges: true)
+            .first;
         expect(snapshot.documentID, equals('foo'));
         expect(snapshot.reference.path, equals('path/to/foo'));
         expect(snapshot.data, equals(kMockDocumentSnapshotData));
@@ -474,7 +477,7 @@ void main() {
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'path/to/foo',
-                'metadataChanges': 'exclude',
+                'includeMetadataChanges': true,
               },
             ),
             isMethodCall(
