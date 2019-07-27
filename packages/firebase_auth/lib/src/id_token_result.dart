@@ -4,10 +4,9 @@
 
 part of firebase_auth;
 
-/// Represents ID token result obtained from FirebaseUser
-/// It contains the ID token JWT string
-/// and other helper properties for getting different data associated with the
-/// token as well as all the decoded payload claims.
+/// Represents ID token result obtained from [FirebaseUser], containing the
+/// ID token JWT string and other helper properties for getting different
+/// data associated with the token as well as all the decoded payload claims.
 ///
 /// Note that these claims are not to be trusted as they are parsed client side.
 /// Only server side verification can guarantee the integrity of the token
@@ -23,16 +22,17 @@ class IdTokenResult {
   /// The Firebase Auth ID token JWT string.
   String get token => _data['token'];
 
-  /// The ID token expiration time formatted.
+  /// The time when the ID token expires.
   DateTime get expirationDate =>
       DateTime.fromMillisecondsSinceEpoch(_data['expirationTimestamp'] * 1000);
 
-  /// The authentication time. This is the time the
-  /// user authenticated (signed in) and not the time the token was refreshed.
+  /// The time the user authenticated (signed in).
+  /// 
+  /// Note that this is not the time the token was refreshed.
   DateTime get authDate =>
       DateTime.fromMillisecondsSinceEpoch(_data['authTimestamp'] * 1000);
 
-  /// The ID token issued at time formatted.
+  /// The time when ID token was issued.
   DateTime get issuedAtDate =>
       DateTime.fromMillisecondsSinceEpoch(_data['issuedAtTimestamp'] * 1000);
 
