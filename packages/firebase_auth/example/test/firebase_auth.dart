@@ -20,8 +20,16 @@ void main() {
       final FirebaseUser user = await auth.signInAnonymously();
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isTrue);
-      expect('${user.metadata.lastSignInTimestamp}'.length, greaterThan(12));
-      expect('${user.metadata.creationTimestamp}'.length, greaterThan(12));
+      expect(user.metadata.creationTime.isAfter(DateTime(2018, 1, 1)), isTrue);
+      expect(user.metadata.creationTime.isBefore(DateTime.now()), isTrue);
+      await auth.signOut();
+      final FirebaseUser user2 = await auth.signInAnonymously();
+      expect(user2.uid, isNot(equals(user.uid)));
+      expect(user2.metadata.creationTime.isBefore(user.metadata.creationTime), isFalse);
+      expect(user2.metadata.lastSignInTime.isAfter(DateTime(2018, 1, 1)), isTrue);
+      expect(user2.metadata.lastSignInTime
+              .isBefore(DateTime.now().add(Duration(days: 1))),
+          isTrue);
     });
 
     test('isSignInWithEmailLink', () async {

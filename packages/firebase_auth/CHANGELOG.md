@@ -1,6 +1,10 @@
-## 0.11.1+13
+## 0.12.0
 
-* Fix inconsistency between iOS and Android `FirebaseUserMetadata`. On iOS `creationTimestamp` and `lastSignInTimestamp` were return in seconds and on Android in milliseconds. Now both platforms return those values in milliseconds. 
+* **Breaking change**: Replace `FirebaseUserMetadata.creationTimestamp` and
+  `FirebaseUserMetadata.lastSignInTimestamp` with `creationTime` and `lastSignInTime`.
+  Previously on iOS `creationTimestamp` and `lastSignInTimestamp` returned in
+  seconds and on Android in milliseconds. Now, both platforms provide values as a
+  `DateTime`.
 
 ## 0.11.1+12
 

@@ -25,6 +25,8 @@ const String kMockPhoneNumber = '5555555555';
 const String kMockVerificationId = '12345';
 const String kMockSmsCode = '123456';
 const String kMockLanguage = 'en';
+final DateTime kMockCreationTime = DateTime(2019, 1, 1);
+final DateTime kMockLastSignInTime = DateTime.now().subtract(Duration(days: 1));
 
 void main() {
   group('$FirebaseAuth', () {
@@ -1229,6 +1231,10 @@ Map<String, dynamic> mockFirebaseUser(
           'email': email,
         },
       ],
+      'metadata': {
+        'creationTimestamp': kMockCreationTime.millisecondsSinceEpoch,
+        'lastSignInTimestamp': kMockLastSignInTime.millisecondsSinceEpoch,
+      },
     };
 
 /// Queue whose remove operation is asynchronous, awaiting a corresponding add.
