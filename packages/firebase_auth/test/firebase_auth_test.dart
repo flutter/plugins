@@ -38,6 +38,15 @@ const Map<String, dynamic> kMockAdditionalUserInfo = <String, dynamic>{
   'providerId': 'testProvider',
   'profile': <String, dynamic>{'foo': 'bar'},
 };
+const Map<String, dynamic> kMockIdTokenResult = const <String, dynamic>{
+      'token': kMockIdToken,
+      'expirationTimestamp': kMockIdTokenResultExpirationTimestamp,
+      'authTimestamp': kMockIdTokenResultAuthTimestamp,
+      'issuedAtTimestamp': kMockIdTokenResultIssuedAtTimestamp,
+      'signInProvider': kMockIdTokenResultSignInProvider,
+      'claims': kMockIdTokenResultClaims,
+    };
+
 const Map<String, dynamic> kMockUser = <String, dynamic>{
   'isAnonymous': true,
   'isEmailVerified': false,
@@ -67,7 +76,7 @@ void main() {
         log.add(call);
         switch (call.method) {
           case "getIdToken":
-            return mockIdTokenResult();
+            return kMockIdTokenResult;
             break;
           case "isSignInWithEmailLink":
             return true;
@@ -123,7 +132,6 @@ void main() {
       expect(additionalUserInfo.profile, kMockAdditionalUserInfo['profile']);
     }
 
-<<<<<<< HEAD
     void verifyIdTokenResult(IdTokenResult idTokenResult) {
       expect(idTokenResult.token, equals(kMockIdToken));
       expect(
@@ -143,19 +151,10 @@ void main() {
       expect(idTokenResult.claims, equals(kMockIdTokenResultClaims));
     }
 
-    test('signInAnonymously', () async {
-      final FirebaseUser user = await auth.signInAnonymously();
-      verifyUser(user);
-
-      verifyIdTokenResult(await user.getIdToken());
-      verifyIdTokenResult(await user.getIdToken(refresh: true));
-
-=======
     test('getIdToken', () async {
       final FirebaseUser user = await auth.currentUser();
       expect(await user.getIdToken(), equals(kMockIdToken));
       expect(await user.getIdToken(refresh: true), equals(kMockIdToken));
->>>>>>> origin/master
       expect(
         log,
         <Matcher>[
@@ -1293,38 +1292,6 @@ void main() {
   });
 }
 
-<<<<<<< HEAD
-Map<String, dynamic> mockFirebaseUser(
-        {String providerId = kMockProviderId,
-        String uid = kMockUid,
-        String displayName = kMockDisplayName,
-        String photoUrl = kMockPhotoUrl,
-        String email = kMockEmail}) =>
-    <String, dynamic>{
-      'isAnonymous': true,
-      'isEmailVerified': false,
-      'providerData': <Map<String, String>>[
-        <String, String>{
-          'providerId': providerId,
-          'uid': uid,
-          'displayName': displayName,
-          'photoUrl': photoUrl,
-          'email': email,
-        },
-      ],
-    };
-
-Map<String, dynamic> mockIdTokenResult() => <String, dynamic>{
-      'token': kMockIdToken,
-      'expirationTimestamp': kMockIdTokenResultExpirationTimestamp,
-      'authTimestamp': kMockIdTokenResultAuthTimestamp,
-      'issuedAtTimestamp': kMockIdTokenResultIssuedAtTimestamp,
-      'signInProvider': kMockIdTokenResultSignInProvider,
-      'claims': kMockIdTokenResultClaims,
-    };
-
-=======
->>>>>>> origin/master
 /// Queue whose remove operation is asynchronous, awaiting a corresponding add.
 class AsyncQueue<T> {
   Map<int, Completer<T>> _completers = <int, Completer<T>>{};
