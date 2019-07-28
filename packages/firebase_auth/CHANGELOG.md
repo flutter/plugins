@@ -1,3 +1,9 @@
+## 0.12.0
+
+* Added new `AuthResult` and `AdditionalUserInfo` classes.
+* **Breaking Change**. Sign-in methods now return `AuthResult` instead of `FirebaseUser`.
+  Retrieve the `FirebaseUser` using the `user` property of `AuthResult`.
+
 ## 0.11.1+12
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
