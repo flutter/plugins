@@ -522,9 +522,9 @@ const UInt8 INCREMENT_INTEGER = 138;
                                  message:[exception name]
                                  details:[exception reason]]);
     }
-    BOOL includeMetadataChanges = call.arguments["includeMetadataChanges"].boolValue;
+    NSNumber *includeMetadataChanges = call.arguments[@"includeMetadataChanges"];
     id<FIRListenerRegistration> listener = [query
-        addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges
+        addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges.boolValue
                                              listener:^(FIRQuerySnapshot *_Nullable snapshot,
                                                         NSError *_Nullable error) {
                                                if (snapshot == nil) {
