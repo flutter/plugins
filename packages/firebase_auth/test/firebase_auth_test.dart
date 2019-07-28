@@ -82,6 +82,8 @@ void main() {
       expect(userInfo.displayName, kMockDisplayName);
       expect(userInfo.photoUrl, kMockPhotoUrl);
       expect(userInfo.email, kMockEmail);
+      expect(user.metadata.creationTime, equals(kMockCreationTime));
+      expect(user.metadata.lastSignInTime, equals(kMockLastSignInTime));
     }
 
     test('currentUser', () async {
