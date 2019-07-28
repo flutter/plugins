@@ -106,6 +106,32 @@ void main() {
       await ref.delete();
     });
 
+    test('includeMetadataChanges', () async {
+      final DocumentReference ref = firestore.collection('messages').document();
+      Future<DocumentSnapshot> streamWithoutMetadataChanges =
+          ref.snapshots(includeMetadataChanges: false).first;
+      Stream<DocumentSnapshot> streamWithMetadataChanges =
+          ref.snapshots(includeMetadataChanges: true).take(2);
+
+      ref.setData(<String, dynamic>{'hello': 'world'});
+
+      DocumentSnapshot snapshot = await streamWithoutMetadataChanges;
+      expect(snapshot.metadata.hasPendingWrites, true);
+      expect(snapshot.metadata.isFromCache, true);
+      expect(snapshot.data['hello'], 'world');
+
+      List<DocumentSnapshot> snapshots =
+          await streamWithMetadataChanges.toList();
+      expect(snapshots[0].metadata.isFromCache, true);
+      expect(snapshots[0].metadata.hasPendingWrites, true);
+      expect(snapshots[0].data['hello'], 'world');
+      expect(snapshots[1].metadata.hasPendingWrites, false);
+      expect(snapshots[1].metadata.isFromCache, false);
+      expect(snapshots[1].data['hello'], 'world');
+
+      await ref.delete();
+    });
+
     test('runTransaction', () async {
       final DocumentReference ref = firestore.collection('messages').document();
       await ref.setData(<String, dynamic>{
