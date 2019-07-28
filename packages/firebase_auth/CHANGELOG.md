@@ -1,4 +1,4 @@
-## 0.12.1
+## 0.13.0
 
 * Added new `IdTokenResult` class.
 * **Breaking Change**. `getIdToken()` method now returns `IdTokenResult` instead of a token `String`.
