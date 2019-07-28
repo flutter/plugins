@@ -26,19 +26,19 @@ void main() {
       expect(additionalUserInfo.providerId, isNull);
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isTrue);
-      final IdTokenResult result = await user.getIdToken();
-      expect(result.token, isNotNull);
-      expect(result.expirationTime.isAfter(DateTime.now()), isTrue);
-      expect(result.authTime, isNotNull);
-      expect(result.issuedAtTime, isNotNull);
+      final IdTokenResult tokenResult = await user.getIdToken();
+      expect(tokenResult.token, isNotNull);
+      expect(tokenResult.expirationTime.isAfter(DateTime.now()), isTrue);
+      expect(tokenResult.authTime, isNotNull);
+      expect(tokenResult.issuedAtTime, isNotNull);
       // TODO(jackson): Remove this `if` check once iOS is fixed
       // https://github.com/firebase/firebase-ios-sdk/issues/3445
       if (Platform.isAndroid) {
-        expect(result.signInProvider, 'anonymous');
+        expect(tokenResult.signInProvider, 'anonymous');
       }
-      expect(result.claims['provider_id'], 'anonymous');
-      expect(result.claims['firebase']['sign_in_provider'], 'anonymous');
-      expect(result.claims['user_id'], user.uid);
+      expect(tokenResult.claims['provider_id'], 'anonymous');
+      expect(tokenResult.claims['firebase']['sign_in_provider'], 'anonymous');
+      expect(tokenResult.claims['user_id'], user.uid);
     });
 
     test('isSignInWithEmailLink', () async {

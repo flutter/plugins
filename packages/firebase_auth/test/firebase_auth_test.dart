@@ -38,7 +38,7 @@ const Map<String, dynamic> kMockAdditionalUserInfo = <String, dynamic>{
   'providerId': 'testProvider',
   'profile': <String, dynamic>{'foo': 'bar'},
 };
-const Map<String, dynamic> kMockIdTokenResult = const <String, dynamic>{
+const Map<String, dynamic> kMockIdTokenResult = <String, dynamic>{
       'token': kMockIdToken,
       'expirationTimestamp': kMockIdTokenResultExpirationTimestamp,
       'authTimestamp': kMockIdTokenResultAuthTimestamp,
