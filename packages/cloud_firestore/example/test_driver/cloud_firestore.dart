@@ -51,6 +51,7 @@ void main() {
           .where('message', isEqualTo: 'Hello world!')
           .limit(1);
       final QuerySnapshot querySnapshot = await query.getDocuments();
+      expect(querySnapshot.metadata, isNotNull);
       expect(querySnapshot.documents.first['message'], 'Hello world!');
       final DocumentReference firstDoc =
           querySnapshot.documents.first.reference;
@@ -70,6 +71,7 @@ void main() {
           .limit(1);
       final QuerySnapshot querySnapshot = await query.getDocuments();
       expect(querySnapshot.documents.first['stars'], 5);
+      expect(querySnapshot.metadata, isNotNull);
     });
 
     test('increment', () async {
