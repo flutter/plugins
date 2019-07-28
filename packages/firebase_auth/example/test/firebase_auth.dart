@@ -16,6 +16,10 @@ void main() {
   group('$FirebaseAuth', () {
     final FirebaseAuth auth = FirebaseAuth.instance;
 
+    setUp(() async {
+      await auth.signOut();
+    });
+
     test('signInAnonymously', () async {
       final AuthResult result = await auth.signInAnonymously();
       final FirebaseUser user = result.user;
@@ -23,7 +27,12 @@ void main() {
       expect(additionalUserInfo.username, isNull);
       expect(additionalUserInfo.isNewUser, isNotNull);
       expect(additionalUserInfo.profile, isNull);
-      expect(additionalUserInfo.providerId, isNull);
+      // TODO(jackson): Fix behavior to be consistent across platforms
+      // https://github.com/firebase/firebase-ios-sdk/issues/3450
+      expect(
+          additionalUserInfo.providerId == null ||
+              additionalUserInfo.providerId == 'password',
+          isTrue);
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isTrue);
       final IdTokenResult tokenResult = await user.getIdToken();
@@ -31,11 +40,10 @@ void main() {
       expect(tokenResult.expirationTime.isAfter(DateTime.now()), isTrue);
       expect(tokenResult.authTime, isNotNull);
       expect(tokenResult.issuedAtTime, isNotNull);
-      // TODO(jackson): Remove this `if` check once iOS is fixed
+      // TODO(jackson): Fix behavior to be consistent across platforms
       // https://github.com/firebase/firebase-ios-sdk/issues/3445
-      if (Platform.isAndroid) {
-        expect(tokenResult.signInProvider, 'anonymous');
-      }
+      expect(tokenResult.signInProvider == null ||
+          tokenResult.signInProvider == 'anonymous');
       expect(tokenResult.claims['provider_id'], 'anonymous');
       expect(tokenResult.claims['firebase']['sign_in_provider'], 'anonymous');
       expect(tokenResult.claims['user_id'], user.uid);
