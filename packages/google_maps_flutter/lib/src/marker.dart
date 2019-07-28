@@ -293,20 +293,21 @@ class Marker {
           onTap == other.onTap;
 
   @override
-  int get hashCode =>
-      markerId.hashCode ^
-      alpha.hashCode ^
-      anchor.hashCode ^
-      consumeTapEvents.hashCode ^
-      draggable.hashCode ^
-      flat.hashCode ^
-      icon.hashCode ^
-      infoWindow.hashCode ^
-      position.hashCode ^
-      rotation.hashCode ^
-      visible.hashCode ^
-      zIndex.hashCode ^
-      onTap.hashCode;
+  int get hashCode => hashValues(
+      markerId,
+      alpha,
+      anchor,
+      anchor,
+      consumeTapEvents,
+      draggable,
+      flat,
+      icon,
+      infoWindow,
+      position,
+      rotation,
+      visible,
+      zIndex,
+      onTap);
 
   @override
   String toString() {
