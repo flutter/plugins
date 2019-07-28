@@ -1,3 +1,8 @@
+## 0.3.2+1
+
+* Added support for over 70 actions as constants for easy use.
+* Call actions like: `AndroidIntent.action_view`
+
 ## 0.3.2
 
 * Added "action_location_source_settings" action to start Location Settings Activity.
