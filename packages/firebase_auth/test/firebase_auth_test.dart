@@ -39,13 +39,13 @@ const Map<String, dynamic> kMockAdditionalUserInfo = <String, dynamic>{
   'profile': <String, dynamic>{'foo': 'bar'},
 };
 const Map<String, dynamic> kMockIdTokenResult = <String, dynamic>{
-      'token': kMockIdToken,
-      'expirationTimestamp': kMockIdTokenResultExpirationTimestamp,
-      'authTimestamp': kMockIdTokenResultAuthTimestamp,
-      'issuedAtTimestamp': kMockIdTokenResultIssuedAtTimestamp,
-      'signInProvider': kMockIdTokenResultSignInProvider,
-      'claims': kMockIdTokenResultClaims,
-    };
+  'token': kMockIdToken,
+  'expirationTimestamp': kMockIdTokenResultExpirationTimestamp,
+  'authTimestamp': kMockIdTokenResultAuthTimestamp,
+  'issuedAtTimestamp': kMockIdTokenResultIssuedAtTimestamp,
+  'signInProvider': kMockIdTokenResultSignInProvider,
+  'claims': kMockIdTokenResultClaims,
+};
 
 const Map<String, dynamic> kMockUser = <String, dynamic>{
   'isAnonymous': true,
@@ -151,6 +151,7 @@ void main() {
             equals(kMockIdTokenResultSignInProvider));
         expect(idTokenResult.claims, equals(kMockIdTokenResultClaims));
       }
+
       final FirebaseUser user = await auth.currentUser();
       verifyIdTokenResult(await user.getIdToken());
       verifyIdTokenResult(await user.getIdToken(refresh: true));
