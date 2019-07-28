@@ -377,7 +377,7 @@ int nextHandle = 0;
            @"additionalUserInfo" : @{
              @"isNewUser" : [NSNumber numberWithBool:additionalUserInfo.isNewUser],
              @"username" : additionalUserInfo.username,
-             @"providerId" : additionalUserInfo.providerId,
+             @"providerId" : additionalUserInfo.providerID,
              @"profile" : additionalUserInfo.profile,
            }
          }
