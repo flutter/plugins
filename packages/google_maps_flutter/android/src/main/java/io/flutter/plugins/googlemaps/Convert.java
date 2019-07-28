@@ -170,12 +170,30 @@ class Convert {
     return data;
   }
 
+  static Object polygonIdToJson(String polygonId) {
+    if (polygonId == null) {
+      return null;
+    }
+    final Map<String, Object> data = new HashMap<>(1);
+    data.put("polygonId", polygonId);
+    return data;
+  }
+
   static Object polylineIdToJson(String polylineId) {
     if (polylineId == null) {
       return null;
     }
     final Map<String, Object> data = new HashMap<>(1);
     data.put("polylineId", polylineId);
+    return data;
+  }
+
+  static Object circleIdToJson(String circleId) {
+    if (circleId == null) {
+      return null;
+    }
+    final Map<String, Object> data = new HashMap<>(1);
+    data.put("circleId", circleId);
     return data;
   }
 
@@ -242,6 +260,10 @@ class Convert {
     if (compassEnabled != null) {
       sink.setCompassEnabled(toBoolean(compassEnabled));
     }
+    final Object mapToolbarEnabled = data.get("mapToolbarEnabled");
+    if (mapToolbarEnabled != null) {
+      sink.setMapToolbarEnabled(toBoolean(mapToolbarEnabled));
+    }
     final Object mapType = data.get("mapType");
     if (mapType != null) {
       sink.setMapType(toInt(mapType));
@@ -252,6 +274,15 @@ class Convert {
       sink.setMinMaxZoomPreference( //
           toFloatWrapper(zoomPreferenceData.get(0)), //
           toFloatWrapper(zoomPreferenceData.get(1)));
+    }
+    final Object padding = data.get("padding");
+    if (padding != null) {
+      final List<?> paddingData = toList(padding);
+      sink.setPadding(
+          toFloat(paddingData.get(0)),
+          toFloat(paddingData.get(1)),
+          toFloat(paddingData.get(2)),
+          toFloat(paddingData.get(3)));
     }
     final Object rotateGesturesEnabled = data.get("rotateGesturesEnabled");
     if (rotateGesturesEnabled != null) {
@@ -280,6 +311,10 @@ class Convert {
     final Object myLocationButtonEnabled = data.get("myLocationButtonEnabled");
     if (myLocationButtonEnabled != null) {
       sink.setMyLocationButtonEnabled(toBoolean(myLocationButtonEnabled));
+    }
+    final Object indoorEnabled = data.get("indoorEnabled");
+    if (indoorEnabled != null) {
+      sink.setIndoorEnabled(toBoolean(indoorEnabled));
     }
   }
 
@@ -355,6 +390,48 @@ class Convert {
     }
   }
 
+  static String interpretPolygonOptions(Object o, PolygonOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object consumeTapEvents = data.get("consumeTapEvents");
+    if (consumeTapEvents != null) {
+      sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
+    }
+    final Object geodesic = data.get("geodesic");
+    if (geodesic != null) {
+      sink.setGeodesic(toBoolean(geodesic));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object fillColor = data.get("fillColor");
+    if (fillColor != null) {
+      sink.setFillColor(toInt(fillColor));
+    }
+    final Object strokeColor = data.get("strokeColor");
+    if (strokeColor != null) {
+      sink.setStrokeColor(toInt(strokeColor));
+    }
+    final Object strokeWidth = data.get("strokeWidth");
+    if (strokeWidth != null) {
+      sink.setStrokeWidth(toInt(strokeWidth));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final Object points = data.get("points");
+    if (points != null) {
+      sink.setPoints(toPoints(points));
+    }
+    final String polygonId = (String) data.get("polygonId");
+    if (polygonId == null) {
+      throw new IllegalArgumentException("polygonId was null");
+    } else {
+      return polygonId;
+    }
+  }
+
   static String interpretPolylineOptions(Object o, PolylineOptionsSink sink) {
     final Map<?, ?> data = toMap(o);
     final Object consumeTapEvents = data.get("consumeTapEvents");
@@ -406,6 +483,48 @@ class Convert {
       throw new IllegalArgumentException("polylineId was null");
     } else {
       return polylineId;
+    }
+  }
+
+  static String interpretCircleOptions(Object o, CircleOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object consumeTapEvents = data.get("consumeTapEvents");
+    if (consumeTapEvents != null) {
+      sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
+    }
+    final Object fillColor = data.get("fillColor");
+    if (fillColor != null) {
+      sink.setFillColor(toInt(fillColor));
+    }
+    final Object strokeColor = data.get("strokeColor");
+    if (strokeColor != null) {
+      sink.setStrokeColor(toInt(strokeColor));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object strokeWidth = data.get("strokeWidth");
+    if (strokeWidth != null) {
+      sink.setStrokeWidth(toInt(strokeWidth));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final Object center = data.get("center");
+    if (center != null) {
+      sink.setCenter(toLatLng(center));
+    }
+    final Object radius = data.get("radius");
+    if (radius != null) {
+      sink.setRadius(toDouble(radius));
+    }
+    final String circleId = (String) data.get("circleId");
+    if (circleId == null) {
+      throw new IllegalArgumentException("circleId was null");
+    } else {
+      return circleId;
     }
   }
 

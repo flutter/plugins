@@ -9,9 +9,10 @@ import 'package:flutter/material.dart';
 
 final Map<String, Item> _items = <String, Item>{};
 Item _itemForMessage(Map<String, dynamic> message) {
-  final String itemId = message['data']['id'];
+  final dynamic data = message['data'] ?? message;
+  final String itemId = data['id'];
   final Item item = _items.putIfAbsent(itemId, () => Item(itemId: itemId))
-    ..status = message['data']['status'];
+    ..status = data['status'];
   return item;
 }
 
@@ -35,9 +36,9 @@ class Item {
     return routes.putIfAbsent(
       routeName,
       () => MaterialPageRoute<void>(
-            settings: RouteSettings(name: routeName),
-            builder: (BuildContext context) => DetailPage(itemId),
-          ),
+        settings: RouteSettings(name: routeName),
+        builder: (BuildContext context) => DetailPage(itemId),
+      ),
     );
   }
 }
@@ -175,11 +176,11 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
         // For testing -- simulate a message being received
         floatingActionButton: FloatingActionButton(
           onPressed: () => _showItemDialog(<String, dynamic>{
-                "data": <String, String>{
-                  "id": "2",
-                  "status": "out of stock",
-                },
-              }),
+            "data": <String, String>{
+              "id": "2",
+              "status": "out of stock",
+            },
+          }),
           tooltip: 'Simulate Message',
           child: const Icon(Icons.message),
         ),

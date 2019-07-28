@@ -33,19 +33,6 @@ void main() {
       });
       expect(response2.data['repeat_message'], 'bar');
       expect(response2.data['repeat_count'], 43);
-
-      // impossibly short timeout
-      callable.timeout = const Duration(milliseconds: 1);
-      bool timedOut = false;
-      try {
-        await callable.call(<String, dynamic>{
-          'message': 'impossible',
-          'count': 9001,
-        });
-      } on CloudFunctionsException {
-        timedOut = true;
-      }
-      expect(timedOut, true);
     });
   });
 }

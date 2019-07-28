@@ -45,6 +45,9 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-core:16.0.4'
+        api 'com.google.firebase:firebase-core:16.0.9'
+        implementation 'com.google.firebase:firebase-common:16.1.0'
     }
 }
+
+apply from: file("./user-agent.gradle")

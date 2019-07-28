@@ -18,11 +18,13 @@ class PolylinesController {
   private final Map<String, String> googleMapsPolylineIdToDartPolylineId;
   private final MethodChannel methodChannel;
   private GoogleMap googleMap;
+  private final float density;
 
-  PolylinesController(MethodChannel methodChannel) {
+  PolylinesController(MethodChannel methodChannel, float density) {
     this.polylineIdToController = new HashMap<>();
     this.googleMapsPolylineIdToDartPolylineId = new HashMap<>();
     this.methodChannel = methodChannel;
+    this.density = density;
   }
 
   void setGoogleMap(GoogleMap googleMap) {
@@ -88,7 +90,7 @@ class PolylinesController {
   private void addPolyline(
       String polylineId, PolylineOptions polylineOptions, boolean consumeTapEvents) {
     final Polyline polyline = googleMap.addPolyline(polylineOptions);
-    PolylineController controller = new PolylineController(polyline, consumeTapEvents);
+    PolylineController controller = new PolylineController(polyline, consumeTapEvents, density);
     polylineIdToController.put(polylineId, controller);
     googleMapsPolylineIdToDartPolylineId.put(polyline.getId(), polylineId);
   }

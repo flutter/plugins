@@ -8,7 +8,7 @@ part of firebase_auth;
 class FirebaseUserMetadata {
   FirebaseUserMetadata._(this._data);
 
-  final Map<dynamic, dynamic> _data;
+  final Map<String, dynamic> _data;
 
   int get creationTimestamp => _data['creationTimestamp'];
 

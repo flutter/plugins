@@ -1,3 +1,15 @@
+## 0.3.2
+
+* Added "action_location_source_settings" action to start Location Settings Activity.
+
+## 0.3.1+1
+
+* Fix Gradle version.
+
+## 0.3.1
+
+* Add a new componentName parameter to help the intent resolution.
+
 ## 0.3.0+2
 
 * Bump the minimum Flutter version to 1.2.0.

@@ -1,3 +1,34 @@
+## 0.5.3+4
+
+* Copy `List` instances when reading and writing values to prevent mutations from propagating.
+
+## 0.5.3+3
+
+* `setMockInitialValues` can now be called multiple times and will
+  `reload()` the singleton if necessary.
+
+## 0.5.3+2
+
+* Fix Gradle version.
+
+## 0.5.3+1
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.5.3
+
+* Add reload method.
+
+## 0.5.2+2
+
+* Updated Gradle tooling to match Android Studio 3.4.
+
+## 0.5.2+1
+
+* .commit() calls are now run in an async background task on Android.
+
 ## 0.5.2
 
 * Add containsKey method.
