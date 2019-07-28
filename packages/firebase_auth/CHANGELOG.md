@@ -1,9 +1,15 @@
-## 0.12.0
+## 0.12.1
 
 * Added new `IdTokenResult` class.
 * **Breaking Change**. `getIdToken()` method now returns `IdTokenResult` instead of a token `String`.
   Use the `token` property of `IdTokenResult` to retrieve the token `String`.
 * Added integration testing for `getIdToken()`.
+
+## 0.12.0
+
+* Added new `AuthResult` and `AdditionalUserInfo` classes.
+* **Breaking Change**. Sign-in methods now return `AuthResult` instead of `FirebaseUser`.
+  Retrieve the `FirebaseUser` using the `user` property of `AuthResult`.
 
 ## 0.11.1+12
 

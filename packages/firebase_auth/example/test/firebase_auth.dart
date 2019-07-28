@@ -17,7 +17,13 @@ void main() {
     final FirebaseAuth auth = FirebaseAuth.instance;
 
     test('signInAnonymously', () async {
-      final FirebaseUser user = await auth.signInAnonymously();
+      final AuthResult result = await auth.signInAnonymously();
+      final FirebaseUser user = result.user;
+      final AdditionalUserInfo additionalUserInfo = result.additionalUserInfo;
+      expect(additionalUserInfo.username, isNull);
+      expect(additionalUserInfo.isNewUser, isNotNull);
+      expect(additionalUserInfo.profile, isNull);
+      expect(additionalUserInfo.providerId, isNull);
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isTrue);
       final IdTokenResult result = await user.getIdToken();
