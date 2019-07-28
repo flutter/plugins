@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,7 +25,11 @@ void main() {
       expect(result.expirationTime.isAfter(DateTime.now()), isTrue);
       expect(result.authTime, isNotNull);
       expect(result.issuedAtTime, isNotNull);
-      expect(result.signInProvider, 'anonymous');
+      // TODO(jackson): Remove this `if` check once iOS is fixed
+      // https://github.com/firebase/firebase-ios-sdk/issues/3445
+      if (Platform.isAndroid) {
+        expect(result.signInProvider, 'anonymous');
+      }
       expect(result.claims['provider_id'], 'anonymous');
       expect(result.claims['firebase']['sign_in_provider'], 'anonymous');
       expect(result.claims['user_id'], user.uid);
