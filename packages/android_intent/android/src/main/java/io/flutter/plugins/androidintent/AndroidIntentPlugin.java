@@ -178,6 +178,10 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         return Settings.ACTION_WIRELESS_SETTINGS;
       case "action_zen_mode_priority_settings":
         return Settings.ACTION_ZEN_MODE_PRIORITY_SETTINGS;
+      case "action_edit":
+        return Intent.ACTION_EDIT;
+      case "action_call":
+        return Intent.ACTION_CALL;
       default:
         return action;
     }

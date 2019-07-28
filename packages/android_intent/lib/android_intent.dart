@@ -137,4 +137,6 @@ class AndroidIntent {
   static const String action_wifi_settings = 'action_wifi_settings';
   static const String action_wireless_settings = 'action_wireless_settings';
   static const String action_zen_mode_priority_settings = 'action_zen_mode_priority_settings';
+  static const String action_edit = 'action_edit';
+  static const String action_call = 'action_call';
 }
