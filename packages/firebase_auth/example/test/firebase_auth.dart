@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,13 +28,12 @@ void main() {
       expect(additionalUserInfo.username, isNull);
       expect(additionalUserInfo.isNewUser, isNotNull);
       expect(additionalUserInfo.profile, isNull);
-      if (Platform.isIOS) {
-        // TODO(jackson): Fix behavior to be consistent across platforms
-        // https://github.com/firebase/firebase-ios-sdk/issues/3450
-        expect(additionalUserInfo.providerId, 'password');
-      } else if (Platform.isAndroid) {
-        expect(additionalUserInfo.providerId, isNull);
-      }
+      // TODO(jackson): Fix behavior to be consistent across platforms
+      // https://github.com/firebase/firebase-ios-sdk/issues/3450
+      expect(
+          additionalUserInfo.providerId == null ||
+              additionalUserInfo.providerId == 'password',
+          isTrue);
     });
 
     test('isSignInWithEmailLink', () async {
