@@ -1,3 +1,7 @@
+## 0.12.0+1
+
+* Fixes iOS sign-in exceptions when `additionalUserInfo` is `nil`.
+
 ## 0.12.0
 
 * Added new `AuthResult` and `AdditionalUserInfo` classes.
