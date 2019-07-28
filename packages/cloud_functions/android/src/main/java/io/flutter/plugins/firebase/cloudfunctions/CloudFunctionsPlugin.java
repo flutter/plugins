@@ -47,7 +47,7 @@ public class CloudFunctionsPlugin implements MethodCallHandler {
         }
         if (origin != null) {
           functions.useFunctionsEmulator(origin);
-        } 
+        }
         HttpsCallableReference httpsCallableReference = functions.getHttpsCallable(functionName);
         Number timeoutMilliseconds = call.argument("timeoutMilliseconds");
         if (timeoutMilliseconds != null) {
