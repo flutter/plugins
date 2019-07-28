@@ -107,13 +107,15 @@ int nextHandle = 0;
   } else if ([@"signInAnonymously" isEqualToString:call.method]) {
     [[self getAuth:call.arguments]
         signInAnonymouslyWithCompletion:^(FIRAuthDataResult *authResult, NSError *error) {
-          [self sendResult:result forUser:authResult.user error:error];
+          [self sendResult:result forAuthDataResult:authResult error:error];
         }];
   } else if ([@"signInWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments]
         signInAndRetrieveDataWithCredential:[self getCredential:call.arguments]
                                  completion:^(FIRAuthDataResult *authResult, NSError *error) {
-                                   [self sendResult:result forUser:authResult.user error:error];
+                                   [self sendResult:result
+                                       forAuthDataResult:authResult
+                                                   error:error];
                                  }];
   } else if ([@"createUserWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
@@ -122,7 +124,7 @@ int nextHandle = 0;
         createUserWithEmail:email
                    password:password
                  completion:^(FIRAuthDataResult *authResult, NSError *error) {
-                   [self sendResult:result forUser:authResult.user error:error];
+                   [self sendResult:result forAuthDataResult:authResult error:error];
                  }];
   } else if ([@"fetchSignInMethodsForEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
@@ -177,7 +179,7 @@ int nextHandle = 0;
         signInWithEmail:email
                    link:link
              completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
-               [self sendResult:result forUser:authResult.user error:error];
+               [self sendResult:result forAuthDataResult:authResult error:error];
              }];
   } else if ([@"signInWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
@@ -186,7 +188,7 @@ int nextHandle = 0;
         signInWithEmail:email
                password:password
              completion:^(FIRAuthDataResult *authResult, NSError *error) {
-               [self sendResult:result forUser:authResult.user error:error];
+               [self sendResult:result forAuthDataResult:authResult error:error];
              }];
   } else if ([@"signOut" isEqualToString:call.method]) {
     NSError *signOutError;
@@ -215,8 +217,8 @@ int nextHandle = 0;
   } else if ([@"linkWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
         linkAndRetrieveDataWithCredential:[self getCredential:call.arguments]
-                               completion:^(FIRAuthDataResult *r, NSError *error) {
-                                 [self sendResult:result forUser:r.user error:error];
+                               completion:^(FIRAuthDataResult *authResult, NSError *error) {
+                                 [self sendResult:result forAuthDataResult:authResult error:error];
                                }];
   } else if ([@"unlinkFromProvider" isEqualToString:call.method]) {
     NSString *provider = call.arguments[@"provider"];
@@ -266,7 +268,7 @@ int nextHandle = 0;
     [[self getAuth:call.arguments]
         signInWithCustomToken:token
                    completion:^(FIRAuthDataResult *authResult, NSError *error) {
-                     [self sendResult:result forUser:authResult.user error:error];
+                     [self sendResult:result forAuthDataResult:authResult error:error];
                    }];
 
   } else if ([@"startListeningAuthState" isEqualToString:call.method]) {
@@ -329,8 +331,11 @@ int nextHandle = 0;
                                                      verificationCode:smsCode];
     [[self getAuth:call.arguments]
         signInAndRetrieveDataWithCredential:credential
-                                 completion:^(FIRAuthDataResult *r, NSError *_Nullable error) {
-                                   [self sendResult:result forUser:r.user error:error];
+                                 completion:^(FIRAuthDataResult *authResult,
+                                              NSError *_Nullable error) {
+                                   [self sendResult:result
+                                       forAuthDataResult:authResult
+                                                   error:error];
                                  }];
   } else if ([@"setLanguageCode" isEqualToString:call.method]) {
     NSString *language = call.arguments[@"language"];
@@ -353,13 +358,31 @@ int nextHandle = 0;
 
   NSMutableDictionary *userData = [toDictionary(user) mutableCopy];
   userData[@"creationTimestamp"] = [NSNumber numberWithLong:creationDate];
-  userData[@"lastSignInTimestamp"] = [NSNumber numberWithInt:lastSignInDate];
+  userData[@"lastSignInTimestamp"] = [NSNumber numberWithLong:lastSignInDate];
   userData[@"isAnonymous"] = [NSNumber numberWithBool:user.isAnonymous];
   userData[@"isEmailVerified"] = [NSNumber numberWithBool:user.isEmailVerified];
   userData[@"providerData"] = providerData;
   return userData;
 }
 #pragma clang diagnostic pop
+
+- (void)sendResult:(FlutterResult)result
+    forAuthDataResult:(FIRAuthDataResult *)authResult
+                error:(NSError *)error {
+  FIRUser *user = authResult.user;
+  FIRAdditionalUserInfo *additionalUserInfo = authResult.additionalUserInfo;
+  [self sendResult:result
+         forObject:@{
+           @"user" : (user != nil ? [self dictionaryFromUser:user] : nil),
+           @"additionalUserInfo" : @{
+             @"isNewUser" : [NSNumber numberWithBool:additionalUserInfo.isNewUser],
+             @"username" : additionalUserInfo.username,
+             @"providerId" : additionalUserInfo.providerID,
+             @"profile" : additionalUserInfo.profile,
+           }
+         }
+             error:error];
+}
 
 - (void)sendResult:(FlutterResult)result forUser:(FIRUser *)user error:(NSError *)error {
   [self sendResult:result
