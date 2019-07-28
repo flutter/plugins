@@ -63,6 +63,7 @@ void main() {
                     'paths': <String>["${methodCall.arguments['path']}/0"],
                     'documents': <dynamic>[kMockDocumentSnapshotData],
                     'metadatas': <Map<String, dynamic>>[kMockSnapshotMetadata],
+                    'metadata': kMockSnapshotMetadata,
                     'documentChanges': <dynamic>[
                       <String, dynamic>{
                         'oldIndex': -1,
@@ -105,6 +106,7 @@ void main() {
               'paths': <String>["${methodCall.arguments['path']}/0"],
               'documents': <dynamic>[kMockDocumentSnapshotData],
               'metadatas': <Map<String, dynamic>>[kMockSnapshotMetadata],
+              'metadata': kMockSnapshotMetadata,
               'documentChanges': <dynamic>[
                 <String, dynamic>{
                   'oldIndex': -1,
@@ -614,6 +616,10 @@ void main() {
       test('getDocumentsFromCollection', () async {
         QuerySnapshot snapshot =
             await collectionReference.getDocuments(source: Source.server);
+        expect(snapshot.metadata.hasPendingWrites,
+            equals(kMockSnapshotMetadata['hasPendingWrites']));
+        expect(snapshot.metadata.isFromCache,
+            equals(kMockSnapshotMetadata['isFromCache']));
         DocumentSnapshot document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
@@ -781,6 +787,10 @@ void main() {
       });
       test('getDocumentsFromCollectionGroup', () async {
         QuerySnapshot snapshot = await collectionGroupQuery.getDocuments();
+        expect(snapshot.metadata.hasPendingWrites,
+            equals(kMockSnapshotMetadata['hasPendingWrites']));
+        expect(snapshot.metadata.isFromCache,
+            equals(kMockSnapshotMetadata['isFromCache']));
         DocumentSnapshot document = snapshot.documents.first;
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('bar/0'));

@@ -192,6 +192,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     }
     data.put("documentChanges", documentChanges);
 
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put("hasPendingWrites", querySnapshot.getMetadata().hasPendingWrites());
+    metadata.put("isFromCache", querySnapshot.getMetadata().isFromCache());
+    data.put("metadata", metadata);
+
     return data;
   }
 
