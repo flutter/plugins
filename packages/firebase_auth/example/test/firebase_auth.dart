@@ -16,6 +16,10 @@ void main() {
   group('$FirebaseAuth', () {
     final FirebaseAuth auth = FirebaseAuth.instance;
 
+    setUp(() async {
+      await auth.signOut();
+    });
+
     test('signInAnonymously', () async {
       final AuthResult result = await auth.signInAnonymously();
       final FirebaseUser user = result.user;
