@@ -41,8 +41,10 @@ void main() {
       expect(tokenResult.issuedAtTime, isNotNull);
       // TODO(jackson): Fix behavior to be consistent across platforms
       // https://github.com/firebase/firebase-ios-sdk/issues/3445
-      expect(tokenResult.signInProvider == null ||
-          tokenResult.signInProvider == 'anonymous');
+      expect(
+          tokenResult.signInProvider == null ||
+              tokenResult.signInProvider == 'anonymous',
+          isTrue);
       expect(tokenResult.claims['provider_id'], 'anonymous');
       expect(tokenResult.claims['firebase']['sign_in_provider'], 'anonymous');
       expect(tokenResult.claims['user_id'], user.uid);
