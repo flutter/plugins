@@ -374,12 +374,12 @@ int nextHandle = 0;
   [self sendResult:result
          forObject:@{
            @"user" : (user != nil ? [self dictionaryFromUser:user] : nil),
-           @"additionalUserInfo" : @{
+           @"additionalUserInfo" : additionalUserInfo ? @{
              @"isNewUser" : [NSNumber numberWithBool:additionalUserInfo.isNewUser],
              @"username" : additionalUserInfo.username,
              @"providerId" : additionalUserInfo.providerID,
              @"profile" : additionalUserInfo.profile,
-           }
+           } : [NSNull null],
          }
              error:error];
 }
