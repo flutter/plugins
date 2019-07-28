@@ -28,7 +28,7 @@ const String kMockLanguage = 'en';
 final int kMockCreationTimestamp = DateTime(2019, 1, 1).millisecondsSinceEpoch;
 final int kMockLastSignInTimestamp =
     DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch;
-const Map<String, dynamic> kMockUser = <String, dynamic>{
+final Map<String, dynamic> kMockUser = <String, dynamic>{
   'isAnonymous': true,
   'isEmailVerified': false,
   'creationTimestamp': kMockCreationTimestamp,
