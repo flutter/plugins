@@ -1,6 +1,6 @@
 ## 0.12.0+1
 
-* Fixes iOS sign-in exceptions when `additionalUserInfo` is `nil`.
+* Fixes iOS sign-in exceptions when `additionalUserInfo` is `nil` or has `nil` fields.
 
 ## 0.12.0
 
