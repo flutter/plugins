@@ -40,8 +40,9 @@ class _MarkerUpdates {
         .map(idToCurrentMarker)
         .toSet();
 
-    final Set<Marker> _markersToChange =
-        currentMarkersSet.difference(previousMarkersSet);
+    final Set<Marker> _markersToChange = currentMarkersSet
+        .difference(previousMarkersSet)
+          ..removeAll(_markersToAdd);
 
     markersToAdd = _markersToAdd;
     markerIdsToRemove = _markerIdsToRemove;
