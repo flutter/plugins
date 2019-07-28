@@ -109,12 +109,10 @@ class AndroidIntent {
   static const String action_nfc_payment_settings = 'action_nfc_payment_settings';
   static const String action_nfc_settings = 'action_nfc_settings';
   static const String action_night_display_settings = 'action_night_display_settings';
-  static const String action_notification_assistant_settings = 'action_notification_assistant_settings';
   static const String action_notification_listener_settings = 'action_notification_listener_settings';
   static const String action_notification_policy_access_settings = 'action_notification_policy_access_settings';
   static const String action_print_settings = 'action_print_settings';
   static const String action_privacy_settings = 'action_privacy_settings';
-  static const String action_process_wifi_easy_connect_uri = 'action_process_wifi_easy_connect_uri';
   static const String action_quick_launch_settings = 'action_quick_launch_settings';
   static const String action_request_ignore_battery_optimizations = 'action_request_ignore_battery_optimizations';
   static const String action_request_set_autofill_service = 'action_request_set_autofill_service';
