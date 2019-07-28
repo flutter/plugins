@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,10 +22,14 @@ void main() {
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isTrue);
       final AdditionalUserInfo additionalUserInfo = result.additionalUserInfo;
-      expect(additionalUserInfo.username, isNull);
-      expect(additionalUserInfo.isNewUser, isNotNull);
-      expect(additionalUserInfo.profile, isNull);
-      expect(additionalUserInfo.providerId, isNull);
+      if (Platform.isIOS) {
+        expect(additionalUserInfo, isNull);
+      } else if (Platform.isAndroid) {
+        expect(additionalUserInfo.username, isNull);
+        expect(additionalUserInfo.isNewUser, isNotNull);
+        expect(additionalUserInfo.profile, isNull);
+        expect(additionalUserInfo.providerId, isNull);
+      }
     });
 
     test('isSignInWithEmailLink', () async {
