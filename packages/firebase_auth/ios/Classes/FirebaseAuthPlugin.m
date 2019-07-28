@@ -358,7 +358,7 @@ int nextHandle = 0;
 
   NSMutableDictionary *userData = [toDictionary(user) mutableCopy];
   userData[@"creationTimestamp"] = [NSNumber numberWithLong:creationDate];
-  userData[@"lastSignInTimestamp"] = [NSNumber numberWithInt:lastSignInDate];
+  userData[@"lastSignInTimestamp"] = [NSNumber numberWithLong:lastSignInDate];
   userData[@"isAnonymous"] = [NSNumber numberWithBool:user.isAnonymous];
   userData[@"isEmailVerified"] = [NSNumber numberWithBool:user.isEmailVerified];
   userData[@"providerData"] = providerData;
@@ -369,9 +369,9 @@ int nextHandle = 0;
 - (void)sendResult:(FlutterResult)result
     forAuthDataResult:(FIRAuthDataResult *)authResult
                 error:(NSError *)error {
-  FIRUser *user = result.user;
-  FIRAdditionalUserInfo *additionalUserInfo = result.additionalUserInfo;
-  [self sendResult:authResult
+  FIRUser *user = authResult.user;
+  FIRAdditionalUserInfo *additionalUserInfo = authResult.additionalUserInfo;
+  [self sendResult:result
          forObject:@{
            @"user" : (user != nil ? [self dictionaryFromUser:user] : nil),
            @"additionalUserInfo" : @{
