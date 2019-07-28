@@ -38,7 +38,6 @@ This plugin brings a set of actions defined on the Android side so that you can 
   await intent.launch();
 ```
 
-
 Feel free to add support for additional Android intents.
 
 The Dart values supported for the arguments parameter, and their corresponding

@@ -1,3 +1,22 @@
+## 0.12.0+1
+
+* Fixes iOS sign-in exceptions when `additionalUserInfo` is `nil` or has `nil` fields.
+* Additional integration testing.
+
+## 0.12.0
+
+* Added new `AuthResult` and `AdditionalUserInfo` classes.
+* **Breaking Change**. Sign-in methods now return `AuthResult` instead of `FirebaseUser`.
+  Retrieve the `FirebaseUser` using the `user` property of `AuthResult`.
+
+## 0.11.1+12
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 0.11.1+11
+
+* On iOS, `getIdToken()` now uses the `refresh` parameter instead of always using `true`.
+
 ## 0.11.1+10
 
 * On Android, `providerData` now includes `UserInfo` for the phone authentication provider.

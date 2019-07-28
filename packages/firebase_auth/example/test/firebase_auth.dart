@@ -15,10 +15,25 @@ void main() {
   group('$FirebaseAuth', () {
     final FirebaseAuth auth = FirebaseAuth.instance;
 
+    setUp(() async {
+      await auth.signOut();
+    });
+
     test('signInAnonymously', () async {
-      final FirebaseUser user = await auth.signInAnonymously();
+      final AuthResult result = await auth.signInAnonymously();
+      final FirebaseUser user = result.user;
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isTrue);
+      final AdditionalUserInfo additionalUserInfo = result.additionalUserInfo;
+      expect(additionalUserInfo.username, isNull);
+      expect(additionalUserInfo.isNewUser, isNotNull);
+      expect(additionalUserInfo.profile, isNull);
+      // TODO(jackson): Fix behavior to be consistent across platforms
+      // https://github.com/firebase/firebase-ios-sdk/issues/3450
+      expect(
+          additionalUserInfo.providerId == null ||
+              additionalUserInfo.providerId == 'password',
+          isTrue);
     });
 
     test('isSignInWithEmailLink', () async {
