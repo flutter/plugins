@@ -17,13 +17,19 @@ void main() {
     final FirebaseAuth auth = FirebaseAuth.instance;
 
     test('signInAnonymously', () async {
-      final FirebaseUser user = await auth.signInAnonymously();
+      final AuthResult result = await auth.signInAnonymously();
+      final FirebaseUser user = result.user;
+      final AdditionalUserInfo additionalUserInfo = result.additionalUserInfo;
+      expect(additionalUserInfo.username, isNull);
+      expect(additionalUserInfo.isNewUser, isNotNull);
+      expect(additionalUserInfo.profile, isNull);
+      expect(additionalUserInfo.providerId, isNull);
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isTrue);
       expect(user.metadata.creationTime.isAfter(DateTime(2018, 1, 1)), isTrue);
       expect(user.metadata.creationTime.isBefore(DateTime.now()), isTrue);
       await auth.signOut();
-      final FirebaseUser user2 = await auth.signInAnonymously();
+      final FirebaseUser user2 = (await auth.signInAnonymously()).user;
       expect(user2.uid, isNot(equals(user.uid)));
       expect(user2.metadata.creationTime.isBefore(user.metadata.creationTime),
           isFalse);

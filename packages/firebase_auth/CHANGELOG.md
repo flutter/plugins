@@ -1,10 +1,16 @@
-## 0.12.0
+## 0.13.0
 
 * **Breaking change**: Replace `FirebaseUserMetadata.creationTimestamp` and
   `FirebaseUserMetadata.lastSignInTimestamp` with `creationTime` and `lastSignInTime`.
   Previously on iOS `creationTimestamp` and `lastSignInTimestamp` returned in
   seconds and on Android in milliseconds. Now, both platforms provide values as a
   `DateTime`.
+
+## 0.12.0
+
+* Added new `AuthResult` and `AdditionalUserInfo` classes.
+* **Breaking Change**. Sign-in methods now return `AuthResult` instead of `FirebaseUser`.
+  Retrieve the `FirebaseUser` using the `user` property of `AuthResult`.
 
 ## 0.11.1+12
 
