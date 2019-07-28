@@ -132,29 +132,28 @@ void main() {
       expect(additionalUserInfo.profile, kMockAdditionalUserInfo['profile']);
     }
 
-    void verifyIdTokenResult(IdTokenResult idTokenResult) {
-      expect(idTokenResult.token, equals(kMockIdToken));
-      expect(
-          idTokenResult.expirationTime,
-          equals(DateTime.fromMillisecondsSinceEpoch(
-              kMockIdTokenResultExpirationTimestamp * 1000)));
-      expect(
-          idTokenResult.authTime,
-          equals(DateTime.fromMillisecondsSinceEpoch(
-              kMockIdTokenResultAuthTimestamp * 1000)));
-      expect(
-          idTokenResult.issuedAtTime,
-          equals(DateTime.fromMillisecondsSinceEpoch(
-              kMockIdTokenResultIssuedAtTimestamp * 1000)));
-      expect(idTokenResult.signInProvider,
-          equals(kMockIdTokenResultSignInProvider));
-      expect(idTokenResult.claims, equals(kMockIdTokenResultClaims));
-    }
-
     test('getIdToken', () async {
+      void verifyIdTokenResult(IdTokenResult idTokenResult) {
+        expect(idTokenResult.token, equals(kMockIdToken));
+        expect(
+            idTokenResult.expirationTime,
+            equals(DateTime.fromMillisecondsSinceEpoch(
+                kMockIdTokenResultExpirationTimestamp * 1000)));
+        expect(
+            idTokenResult.authTime,
+            equals(DateTime.fromMillisecondsSinceEpoch(
+                kMockIdTokenResultAuthTimestamp * 1000)));
+        expect(
+            idTokenResult.issuedAtTime,
+            equals(DateTime.fromMillisecondsSinceEpoch(
+                kMockIdTokenResultIssuedAtTimestamp * 1000)));
+        expect(idTokenResult.signInProvider,
+            equals(kMockIdTokenResultSignInProvider));
+        expect(idTokenResult.claims, equals(kMockIdTokenResultClaims));
+      }
       final FirebaseUser user = await auth.currentUser();
-      expect(await user.getIdToken(), equals(kMockIdToken));
-      expect(await user.getIdToken(refresh: true), equals(kMockIdToken));
+      verifyIdTokenResult(await user.getIdToken());
+      verifyIdTokenResult(await user.getIdToken(refresh: true));
       expect(
         log,
         <Matcher>[
