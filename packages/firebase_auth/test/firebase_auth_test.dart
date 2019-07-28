@@ -25,9 +25,9 @@ const String kMockPhoneNumber = '5555555555';
 const String kMockVerificationId = '12345';
 const String kMockSmsCode = '123456';
 const String kMockLanguage = 'en';
-final DateTime kMockCreationTime = DateTime(2019, 1, 1);
-final DateTime kMockLastSignInTime =
-    DateTime.now().subtract(const Duration(days: 1));
+final int kMockCreationTimestamp = DateTime(2019, 1, 1).millisecondsSinceEpoch;
+final int kMockLastSignInTimestamp =
+    DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch;
 
 void main() {
   group('$FirebaseAuth', () {
@@ -82,8 +82,10 @@ void main() {
       expect(userInfo.displayName, kMockDisplayName);
       expect(userInfo.photoUrl, kMockPhotoUrl);
       expect(userInfo.email, kMockEmail);
-      expect(user.metadata.creationTime, equals(kMockCreationTime));
-      expect(user.metadata.lastSignInTime, equals(kMockLastSignInTime));
+      expect(user.metadata.creationTime.millisecondsSinceEpoch,
+          kMockCreationTimestamp);
+      expect(user.metadata.lastSignInTime.millisecondsSinceEpoch,
+          kMockLastSignInTimestamp);
     }
 
     test('currentUser', () async {
@@ -1234,10 +1236,8 @@ Map<String, dynamic> mockFirebaseUser(
           'email': email,
         },
       ],
-      'metadata': <String, dynamic>{
-        'creationTimestamp': kMockCreationTime.millisecondsSinceEpoch,
-        'lastSignInTimestamp': kMockLastSignInTime.millisecondsSinceEpoch,
-      },
+      'creationTimestamp': kMockCreationTimestamp,
+      'lastSignInTimestamp': kMockLastSignInTimestamp,
     };
 
 /// Queue whose remove operation is asynchronous, awaiting a corresponding add.
