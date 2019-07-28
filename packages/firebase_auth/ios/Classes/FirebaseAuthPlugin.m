@@ -379,7 +379,8 @@ int nextHandle = 0;
              @"username" : additionalUserInfo.username ?: [NSNull null],
              @"providerId" : additionalUserInfo.providerID ?: [NSNull null],
              @"profile" : additionalUserInfo.profile ?: [NSNull null],
-           } : [NSNull null],
+           }
+                                                      : [NSNull null],
          }
              error:error];
 }
