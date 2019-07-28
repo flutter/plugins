@@ -542,9 +542,9 @@ const UInt8 INCREMENT_INTEGER = 138;
   } else if ([@"DocumentReference#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     FIRDocumentReference *document = getDocumentReference(call.arguments);
-    BOOL includeMetadataChanges = call.arguments["includeMetadataChanges"].boolValue;
+    NSNumber *includeMetadataChanges = call.arguments[@"includeMetadataChanges"];
     id<FIRListenerRegistration> listener = [document
-        addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges
+        addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges.boolValue
                                              listener:^(FIRDocumentSnapshot *snapshot,
                                                         NSError *_Nullable error) {
                                                if (snapshot == nil) {
