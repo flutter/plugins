@@ -26,12 +26,14 @@ void main() {
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isTrue);
       final AdditionalUserInfo additionalUserInfo = result.additionalUserInfo;
+      expect(additionalUserInfo.username, isNull);
+      expect(additionalUserInfo.isNewUser, isNotNull);
+      expect(additionalUserInfo.profile, isNull);
       if (Platform.isIOS) {
-        expect(additionalUserInfo, isNull);
+        // TODO(jackson): Fix behavior to be consistent across platforms
+        // https://github.com/firebase/firebase-ios-sdk/issues/3450
+        expect(additionalUserInfo.providerId, 'password');
       } else if (Platform.isAndroid) {
-        expect(additionalUserInfo.username, isNull);
-        expect(additionalUserInfo.isNewUser, isNotNull);
-        expect(additionalUserInfo.profile, isNull);
         expect(additionalUserInfo.providerId, isNull);
       }
     });
