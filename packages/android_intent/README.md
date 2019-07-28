@@ -29,6 +29,16 @@ for it in the plugin and use an action constant to refer to it. For instance:
 
 `'action_location_source_settings'` translates to `android.settings.LOCATION_SOURCE_SETTINGS`
 
+This plugin brings set of corresponding actions already defined on the Android side. For now you can use such actions as:
+
+```
+  final AndroidIntent intent = const AndroidIntent(
+      action: AndroidIntent.action_location_source_settings,
+  );
+  await intent.launch();
+```
+
+
 Feel free to add support for additional Android intents.
 
 The Dart values supported for the arguments parameter, and their corresponding

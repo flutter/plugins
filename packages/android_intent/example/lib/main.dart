@@ -127,7 +127,7 @@ class ExplicitIntentsWidget extends StatelessWidget {
 
   void _openLocationSettingsConfiguration() {
     final AndroidIntent intent = const AndroidIntent(
-      action: 'action_location_source_settings',
+      action: AndroidIntent.action_location_source_settings,
     );
     intent.launch();
   }
