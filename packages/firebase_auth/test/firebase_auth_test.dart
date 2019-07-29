@@ -25,15 +25,14 @@ const String kMockPhoneNumber = '5555555555';
 const String kMockVerificationId = '12345';
 const String kMockSmsCode = '123456';
 const String kMockLanguage = 'en';
-const Map<String, dynamic> kMockAdditionalUserInfo = <String, dynamic>{
-  'isNewUser': false,
-  'username': 'flutterUser',
-  'providerId': 'testProvider',
-  'profile': <String, dynamic>{'foo': 'bar'},
-};
-const Map<String, dynamic> kMockUser = <String, dynamic>{
+final int kMockCreationTimestamp = DateTime(2019, 1, 1).millisecondsSinceEpoch;
+final int kMockLastSignInTimestamp =
+    DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch;
+final Map<String, dynamic> kMockUser = <String, dynamic>{
   'isAnonymous': true,
   'isEmailVerified': false,
+  'creationTimestamp': kMockCreationTimestamp,
+  'lastSignInTimestamp': kMockLastSignInTimestamp,
   'providerData': <Map<String, String>>[
     <String, String>{
       'providerId': kMockProviderId,
@@ -43,6 +42,12 @@ const Map<String, dynamic> kMockUser = <String, dynamic>{
       'email': kMockEmail,
     },
   ],
+};
+const Map<String, dynamic> kMockAdditionalUserInfo = <String, dynamic>{
+  'isNewUser': false,
+  'username': 'flutterUser',
+  'providerId': 'testProvider',
+  'profile': <String, dynamic>{'foo': 'bar'},
 };
 
 void main() {
@@ -103,6 +108,10 @@ void main() {
       expect(userInfo.displayName, kMockDisplayName);
       expect(userInfo.photoUrl, kMockPhotoUrl);
       expect(userInfo.email, kMockEmail);
+      expect(user.metadata.creationTime.millisecondsSinceEpoch,
+          kMockCreationTimestamp);
+      expect(user.metadata.lastSignInTime.millisecondsSinceEpoch,
+          kMockLastSignInTimestamp);
     }
 
     void verifyAuthResult(AuthResult result) {

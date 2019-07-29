@@ -353,8 +353,8 @@ int nextHandle = 0;
     [providerData addObject:toDictionary(userInfo)];
   }
 
-  long creationDate = [user.metadata.creationDate timeIntervalSince1970];
-  long lastSignInDate = [user.metadata.lastSignInDate timeIntervalSince1970];
+  long creationDate = [user.metadata.creationDate timeIntervalSince1970] * 1000;
+  long lastSignInDate = [user.metadata.lastSignInDate timeIntervalSince1970] * 1000;
 
   NSMutableDictionary *userData = [toDictionary(user) mutableCopy];
   userData[@"creationTimestamp"] = [NSNumber numberWithLong:creationDate];
