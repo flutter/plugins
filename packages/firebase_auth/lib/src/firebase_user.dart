@@ -86,7 +86,13 @@ class FirebaseUser extends UserInfo {
         .invokeMethod<void>('reload', <String, String>{'app': _app.name});
   }
 
-  /// Deletes the user record from your Firebase project's database.
+  /// Deletes the current user (also signs out the user).
+  ///
+  /// Errors:
+  ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the credential is malformed or has expired.
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_USER_NOT_FOUND` - If the user has been deleted (for example, in the Firebase console)
   Future<void> delete() async {
     await FirebaseAuth.channel
         .invokeMethod<void>('delete', <String, String>{'app': _app.name});
