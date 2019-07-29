@@ -1,3 +1,9 @@
+## 0.13.1
+
+* Fixed a crash on iOS when sign-in fails.
+* Additional integration testing.
+* Updated documentation for `FirebaseUser.delete()` to include error codes.
+
 ## 0.13.0
 
 * **Breaking change**: Replace `FirebaseUserMetadata.creationTimestamp` and

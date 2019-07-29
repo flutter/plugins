@@ -3,10 +3,14 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+const String kTestEmail = 'test@example.com';
+const String kTestPassword = 'password';
 
 void main() {
   final Completer<String> completer = Completer<String>();
@@ -44,6 +48,37 @@ void main() {
           isFalse);
       expect(
           user2.metadata.lastSignInTime, equals(user2.metadata.creationTime));
+    });
+
+    test('email auth', () async {
+      final Random random = Random();
+      final String testEmail = 'testuser${random.nextInt(100000000)}@gmail.com';
+      final String testPassword = 'testpassword';
+      AuthResult result = await auth.createUserWithEmailAndPassword(
+        email: testEmail,
+        password: testPassword,
+      );
+      final FirebaseUser user = result.user;
+      expect(user.uid, isNotNull);
+      expect(user.isAnonymous, isFalse);
+      auth.signOut();
+      result = nil;
+      try {
+        result = await auth.signInWithEmailAndPassword(
+          email: testEmail,
+          password: 'incorrect password',
+        );
+      } catch(e) {
+        // login failed
+      }
+      expect(result, isNil);
+      result = await auth.signInWithEmailAndPassword(
+        email: testEmail,
+        password: testPassword,
+      );
+      expect(result.user.uid, equals(user.uid));
+      auth.signOut();
+      await user.delete();
     });
 
     test('isSignInWithEmailLink', () async {
