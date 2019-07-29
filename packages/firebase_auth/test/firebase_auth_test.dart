@@ -32,12 +32,6 @@ const Map<dynamic, dynamic> kMockIdTokenResultClaims = <dynamic, dynamic>{
 const int kMockIdTokenResultExpirationTimestamp = 123456;
 const int kMockIdTokenResultAuthTimestamp = 1234567;
 const int kMockIdTokenResultIssuedAtTimestamp = 12345678;
-const Map<String, dynamic> kMockAdditionalUserInfo = <String, dynamic>{
-  'isNewUser': false,
-  'username': 'flutterUser',
-  'providerId': 'testProvider',
-  'profile': <String, dynamic>{'foo': 'bar'},
-};
 const Map<String, dynamic> kMockIdTokenResult = <String, dynamic>{
   'token': kMockIdToken,
   'expirationTimestamp': kMockIdTokenResultExpirationTimestamp,

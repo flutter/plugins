@@ -37,13 +37,6 @@ void main() {
       expect(user.isAnonymous, isTrue);
       expect(user.metadata.creationTime.isAfter(DateTime(2018, 1, 1)), isTrue);
       expect(user.metadata.creationTime.isBefore(DateTime.now()), isTrue);
-      await auth.signOut();
-      final FirebaseUser user2 = (await auth.signInAnonymously()).user;
-      expect(user2.uid, isNot(equals(user.uid)));
-      expect(user2.metadata.creationTime.isBefore(user.metadata.creationTime),
-          isFalse);
-      expect(
-          user2.metadata.lastSignInTime, equals(user2.metadata.creationTime));
       final IdTokenResult tokenResult = await user.getIdToken();
       expect(tokenResult.token, isNotNull);
       expect(tokenResult.expirationTime.isAfter(DateTime.now()), isTrue);
@@ -58,6 +51,13 @@ void main() {
       expect(tokenResult.claims['provider_id'], 'anonymous');
       expect(tokenResult.claims['firebase']['sign_in_provider'], 'anonymous');
       expect(tokenResult.claims['user_id'], user.uid);
+      await auth.signOut();
+      final FirebaseUser user2 = (await auth.signInAnonymously()).user;
+      expect(user2.uid, isNot(equals(user.uid)));
+      expect(user2.metadata.creationTime.isBefore(user.metadata.creationTime),
+          isFalse);
+      expect(
+          user2.metadata.lastSignInTime, equals(user2.metadata.creationTime));
     });
 
     test('isSignInWithEmailLink', () async {
