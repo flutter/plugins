@@ -1,9 +1,17 @@
-## 0.13.0
+## 0.14.0
 
 * Added new `IdTokenResult` class.
 * **Breaking Change**. `getIdToken()` method now returns `IdTokenResult` instead of a token `String`.
   Use the `token` property of `IdTokenResult` to retrieve the token `String`.
 * Added integration testing for `getIdToken()`.
+
+## 0.13.0
+
+* **Breaking change**: Replace `FirebaseUserMetadata.creationTimestamp` and
+  `FirebaseUserMetadata.lastSignInTimestamp` with `creationTime` and `lastSignInTime`.
+  Previously on iOS `creationTimestamp` and `lastSignInTimestamp` returned in
+  seconds and on Android in milliseconds. Now, both platforms provide values as a
+  `DateTime`.
 
 ## 0.12.0+1
 
