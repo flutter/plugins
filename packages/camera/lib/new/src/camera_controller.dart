@@ -4,9 +4,13 @@
 
 import 'dart:async';
 
+import 'package:device_info/device_info.dart';
 import 'package:flutter/foundation.dart';
 
 import 'common/camera_interface.dart';
+import 'support_android/camera.dart';
+import 'support_android/camera_info.dart';
+import 'support_android/support_android_configurator.dart';
 
 /// Controls a device camera.
 ///
@@ -88,6 +92,22 @@ class CameraController {
   ///
   /// This will choose the best [CameraAPI] for the current device.
   static Future<List<CameraDescription>> availableCameras() async {
+    final List<CameraDescription> devices = <CameraDescription>[];
+
+    final DeviceInfoPlugin infoPlugin = DeviceInfoPlugin();
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      final AndroidDeviceInfo info = await infoPlugin.androidInfo;
+      if (info.version.sdkInt < 21) {
+        final int numCameras = await Camera.getNumberOfCameras();
+
+        for (int i = 0; i < numCameras; i++) {
+          devices.add(await Camera.getCameraInfo(i));
+        }
+
+        return devices;
+      }
+    }
+
     throw UnimplementedError('$defaultTargetPlatform not supported');
   }
 
@@ -150,22 +170,21 @@ class CameraController {
       case CameraApi.iOS:
         throw UnimplementedError();
       case CameraApi.supportAndroid:
-        throw UnimplementedError();
+        return SupportAndroidConfigurator(description);
     }
 
     return null; // Unreachable code
   }
 
   static CameraApi _getCameraApi(CameraDescription description) {
-    return CameraApi.iOS;
+    if (description is CameraInfo) {
+      return CameraApi.supportAndroid;
+    }
 
-    // TODO(bparrishMines): Uncomment this when platform specific code is added.
-    /*
     throw ArgumentError.value(
       description.runtimeType,
       'description.runtimeType',
       'Failed to get $CameraApi from',
     );
-    */
   }
 }
