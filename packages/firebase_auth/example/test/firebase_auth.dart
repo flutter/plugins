@@ -39,6 +39,20 @@ void main() {
       expect(user.isAnonymous, isTrue);
       expect(user.metadata.creationTime.isAfter(DateTime(2018, 1, 1)), isTrue);
       expect(user.metadata.creationTime.isBefore(DateTime.now()), isTrue);
+      final IdTokenResult tokenResult = await user.getIdToken();
+      expect(tokenResult.token, isNotNull);
+      expect(tokenResult.expirationTime.isAfter(DateTime.now()), isTrue);
+      expect(tokenResult.authTime, isNotNull);
+      expect(tokenResult.issuedAtTime, isNotNull);
+      // TODO(jackson): Fix behavior to be consistent across platforms
+      // https://github.com/firebase/firebase-ios-sdk/issues/3445
+      expect(
+          tokenResult.signInProvider == null ||
+              tokenResult.signInProvider == 'anonymous',
+          isTrue);
+      expect(tokenResult.claims['provider_id'], 'anonymous');
+      expect(tokenResult.claims['firebase']['sign_in_provider'], 'anonymous');
+      expect(tokenResult.claims['user_id'], user.uid);
       await auth.signOut();
       final FirebaseUser user2 = (await auth.signInAnonymously()).user;
       expect(user2.uid, isNot(equals(user.uid)));

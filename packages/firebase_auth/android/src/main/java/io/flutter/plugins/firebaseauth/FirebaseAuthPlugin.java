@@ -532,7 +532,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
 
     Map<String, Boolean> arguments = call.arguments();
-    boolean refresh = arguments.get("refresh");
+    final boolean refresh = arguments.get("refresh");
 
     currentUser
         .getIdToken(refresh)
@@ -540,8 +540,18 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
             new OnCompleteListener<GetTokenResult>() {
               public void onComplete(@NonNull Task<GetTokenResult> task) {
                 if (task.isSuccessful() && task.getResult() != null) {
-                  String idToken = task.getResult().getToken();
-                  result.success(idToken);
+                  final Map<String, Object> map = new HashMap<>();
+                  map.put("token", task.getResult().getToken());
+                  map.put("expirationTimestamp", task.getResult().getExpirationTimestamp());
+                  map.put("authTimestamp", task.getResult().getAuthTimestamp());
+                  map.put("issuedAtTimestamp", task.getResult().getIssuedAtTimestamp());
+                  map.put("claims", task.getResult().getClaims());
+
+                  if (task.getResult().getSignInProvider() != null) {
+                    map.put("signInProvider", task.getResult().getSignInProvider());
+                  }
+
+                  result.success(Collections.unmodifiableMap(map));
                 } else {
                   reportException(result, task.getException());
                 }
