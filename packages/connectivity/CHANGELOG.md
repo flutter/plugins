@@ -1,3 +1,7 @@
+## 0.4.3+4
+
+* Include Minimum SDK Version of 16 for the plugin.
+
 ## 0.4.3+3
 
 * Support for TYPE_MOBILE_HIPRI on Android.

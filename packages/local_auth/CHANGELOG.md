@@ -1,3 +1,7 @@
+## 0.5.2+4
+
+* Include Minimum SDK Version of 16 for the plugin.
+
 ## 0.5.2+3
 * Update documentation to clarify the need for FragmentActivity.
 

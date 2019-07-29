@@ -1,3 +1,7 @@
+## 0.11.1+8
+
+* Include Minimum SDK Version of 16 for the plugin.
+
 ## 0.11.1+7
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.

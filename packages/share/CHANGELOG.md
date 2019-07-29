@@ -1,3 +1,7 @@
+## 0.6.1+3
+
+* Include Minimum SDK Version of 16 for the plugin.
+
 ## 0.6.1+2
 
 * Update Dart code to conform to current Dart formatter.

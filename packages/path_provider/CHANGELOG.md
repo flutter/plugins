@@ -1,3 +1,7 @@
+## 1.1.1+1
+
+* Include Minimum SDK Version of 16 for the plugin.
+
 ## 1.1.1
 
 * Cast error codes as longs in iOS error strings to ensure compatibility

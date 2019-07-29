@@ -1,3 +1,7 @@
+## 0.3.1+1
+
+* Include Minimum SDK Version of 16 for the plugin.
+
 ## 0.3.1
 
 * Add a new componentName parameter to help the intent resolution.

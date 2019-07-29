@@ -1,3 +1,7 @@
+## 0.5.3+2
+
+* Include Minimum SDK Version of 16 for the plugin.
+
 ## 0.5.3+1
 
 * Add missing template type parameter to `invokeMethod` calls.

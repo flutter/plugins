@@ -1,3 +1,7 @@
+## 0.4.0+5
+
+* Include Minimum SDK Version of 16 for the plugin.
+
 ## 0.4.0+4
 
 * Fixed bug on Android when a headless plugin tries to register this plugin causing a crash due no activity from the registrar.

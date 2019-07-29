@@ -1,3 +1,7 @@
+## 0.4.0+3
+
+* Include Minimum SDK Version of 16 for the plugin.
+
 ## 0.4.0+2
 
 * Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446

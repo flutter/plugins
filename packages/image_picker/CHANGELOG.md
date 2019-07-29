@@ -1,3 +1,7 @@
+## 0.6.0+11
+
+* Include Minimum SDK Version of 16 for the plugin.
+
 ## 0.6.0+10
 
 * iOS: support picking GIF from gallery.
