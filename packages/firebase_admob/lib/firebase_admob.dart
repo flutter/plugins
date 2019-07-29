@@ -221,7 +221,9 @@ abstract class MobileAd {
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
   /// anchorType place advert at top or bottom of screen (default bottom)
   Future<bool> show(
-      {double anchorOffset = 0.0, double horizontalCenterOffset = 0.0, AnchorType anchorType = AnchorType.bottom}) {
+      {double anchorOffset = 0.0,
+      double horizontalCenterOffset = 0.0,
+      AnchorType anchorType = AnchorType.bottom}) {
     return _invokeBooleanMethod("showAd", <String, dynamic>{
       'id': id,
       'anchorOffset': anchorOffset.toString(),

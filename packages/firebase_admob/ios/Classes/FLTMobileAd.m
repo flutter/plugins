@@ -70,7 +70,9 @@ int _anchorType;
   // Implemented by the Banner and Interstitial subclasses
 }
 
-- (void)showAtOffset:(double)anchorOffset hCenterOffset:(double)horizontalCenterOffset fromAnchor:(int)anchorType {
+- (void)showAtOffset:(double)anchorOffset
+       hCenterOffset:(double)horizontalCenterOffset
+          fromAnchor:(int)anchorType {
   _anchorType = anchorType;
   _anchorOffset = anchorOffset;
   if (_anchorType == 0) {
@@ -151,7 +153,7 @@ GADAdSize _adSize;
     UILayoutGuide *guide = screen.safeAreaLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[
       [_banner.centerXAnchor constraintEqualToAnchor:guide.centerXAnchor
-                        constant:_horizontalCenterOffset],
+                                            constant:_horizontalCenterOffset],
       [_banner.bottomAnchor
           constraintEqualToAnchor:_anchorType == 0 ? guide.bottomAnchor : guide.topAnchor
                          constant:_anchorOffset]

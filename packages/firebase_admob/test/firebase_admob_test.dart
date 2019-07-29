@@ -93,7 +93,9 @@ void main() {
       expect(await interstitial.load(), true);
       expect(
           await interstitial.show(
-              anchorOffset: 60.0, horizontalCenterOffset: 10.0, anchorType: AnchorType.top),
+              anchorOffset: 60.0,
+              horizontalCenterOffset: 10.0,
+              anchorType: AnchorType.top),
           true);
       expect(await interstitial.dispose(), true);
 

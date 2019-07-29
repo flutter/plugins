@@ -98,9 +98,7 @@ class _MyAppState extends State<MyApp> {
                       _bannerAd ??= createBannerAd();
                       _bannerAd
                         ..load()
-                        ..show(
-                          horizontalCenterOffset: -50, 
-                          anchorOffset: 100);
+                        ..show(horizontalCenterOffset: -50, anchorOffset: 100);
                     }),
                 RaisedButton(
                     child: const Text('REMOVE BANNER'),
