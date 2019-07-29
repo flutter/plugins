@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.app.Application;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -28,6 +29,7 @@ public class ImagePickerPluginTest {
 
   @Mock PluginRegistry.Registrar mockRegistrar;
   @Mock Activity mockActivity;
+  @Mock Application mockApplication;
   @Mock ImagePickerDelegate mockImagePickerDelegate;
   @Mock MethodChannel.Result mockResult;
 
@@ -36,6 +38,7 @@ public class ImagePickerPluginTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+    when(mockRegistrar.context()).thenReturn(mockApplication);
 
     plugin = new ImagePickerPlugin(mockRegistrar, mockImagePickerDelegate);
   }
