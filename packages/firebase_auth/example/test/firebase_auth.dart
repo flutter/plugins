@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -62,16 +63,11 @@ void main() {
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isFalse);
       auth.signOut();
-      result = nil;
-      try {
-        result = await auth.signInWithEmailAndPassword(
-          email: testEmail,
-          password: 'incorrect password',
-        );
-      } catch(e) {
-        // login failed
-      }
-      expect(result, isNil);
+      Future<AuthResult> failedResult = auth.signInWithEmailAndPassword(
+        email: testEmail,
+        password: 'incorrect password',
+      );
+      expect(failedResult, throwsA(isInstanceOf<PlatformException>()));
       result = await auth.signInWithEmailAndPassword(
         email: testEmail,
         password: testPassword,
