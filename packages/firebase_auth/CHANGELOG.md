@@ -1,3 +1,7 @@
+## 0.13.0+1
+
+* Update authentication example in README.
+
 ## 0.13.0
 
 * **Breaking change**: Replace `FirebaseUserMetadata.creationTimestamp` and
