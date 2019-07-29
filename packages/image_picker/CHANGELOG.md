@@ -1,6 +1,10 @@
-## 0.6.0+20
+## 0.6.0+21
 
 * Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.6.0+20
+
+* Android: Migrated information cache methods to use instance methods.
 
 ## 0.6.0+19
 

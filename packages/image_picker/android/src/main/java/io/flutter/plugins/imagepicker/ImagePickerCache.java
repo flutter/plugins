@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.imagepicker;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -34,16 +33,13 @@ class ImagePickerCache {
       "flutter_image_picker_pending_image_uri";
   private static final String SHARED_PREFERENCES_NAME = "flutter_image_picker_shared_preference";
 
-  private static SharedPreferences getFilePref;
+  private SharedPreferences prefs;
 
-  static void setUpWithActivity(Activity activity) {
-    getFilePref =
-        activity
-            .getApplicationContext()
-            .getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+  ImagePickerCache(Context context) {
+    prefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
   }
 
-  static void saveTypeWithMethodCallName(String methodCallName) {
+  void saveTypeWithMethodCallName(String methodCallName) {
     if (methodCallName.equals(ImagePickerPlugin.METHOD_CALL_IMAGE)) {
       setType("image");
     } else if (methodCallName.equals(ImagePickerPlugin.METHOD_CALL_VIDEO)) {
@@ -51,25 +47,20 @@ class ImagePickerCache {
     }
   }
 
-  private static void setType(String type) {
-    if (getFilePref == null) {
-      return;
-    }
-    getFilePref.edit().putString(SHARED_PREFERENCE_TYPE_KEY, type).apply();
+  private void setType(String type) {
+
+    prefs.edit().putString(SHARED_PREFERENCE_TYPE_KEY, type).apply();
   }
 
-  static void saveDemensionWithMethodCall(MethodCall methodCall) {
-    Double maxWidth = methodCall.argument("maxWidth");
-    Double maxHeight = methodCall.argument("maxHeight");
+  void saveDimensionWithMethodCall(MethodCall methodCall) {
+    Double maxWidth = methodCall.argument(MAP_KEY_MAX_WIDTH);
+    Double maxHeight = methodCall.argument(MAP_KEY_MAX_HEIGHT);
     setMaxDimension(maxWidth, maxHeight);
   }
 
-  private static void setMaxDimension(Double maxWidth, Double maxHeight) {
-    if (getFilePref == null) {
-      return;
-    }
+  private void setMaxDimension(Double maxWidth, Double maxHeight) {
 
-    SharedPreferences.Editor editor = getFilePref.edit();
+    SharedPreferences.Editor editor = prefs.edit();
     if (maxWidth != null) {
       editor.putLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, Double.doubleToRawLongBits(maxWidth));
     }
@@ -79,29 +70,19 @@ class ImagePickerCache {
     editor.apply();
   }
 
-  static void savePendingCameraMediaUriPath(Uri uri) {
-    if (getFilePref == null) {
-      return;
-    }
-    getFilePref
-        .edit()
-        .putString(SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, uri.getPath())
-        .apply();
+  void savePendingCameraMediaUriPath(Uri uri) {
+    prefs.edit().putString(SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, uri.getPath()).apply();
   }
 
-  static String retrievePendingCameraMediaUriPath() {
-    if (getFilePref == null) {
-      return null;
-    }
-    return getFilePref.getString(SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, "");
+  String retrievePendingCameraMediaUriPath() {
+
+    return prefs.getString(SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY, "");
   }
 
-  static void saveResult(
+  void saveResult(
       @Nullable String path, @Nullable String errorCode, @Nullable String errorMessage) {
-    if (getFilePref == null) {
-      return;
-    }
-    SharedPreferences.Editor editor = getFilePref.edit();
+
+    SharedPreferences.Editor editor = prefs.edit();
     if (path != null) {
       editor.putString(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, path);
     }
@@ -114,50 +95,43 @@ class ImagePickerCache {
     editor.apply();
   }
 
-  static void clear() {
-    if (getFilePref == null) {
-      return;
-    }
-    getFilePref.edit().clear().apply();
+  void clear() {
+    prefs.edit().clear().apply();
   }
 
-  static Map<String, Object> getCacheMap() {
-    if (getFilePref == null) {
-      return new HashMap<>();
-    }
+  Map<String, Object> getCacheMap() {
+
     Map<String, Object> resultMap = new HashMap<>();
-    Boolean hasData = false;
+    boolean hasData = false;
 
-    if (getFilePref.contains(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY)) {
-      resultMap.put(MAP_KEY_PATH, getFilePref.getString(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, ""));
+    if (prefs.contains(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY)) {
+      final String imagePathValue = prefs.getString(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, "");
+      resultMap.put(MAP_KEY_PATH, imagePathValue);
       hasData = true;
     }
 
-    if (getFilePref.contains(SHARED_PREFERENCE_ERROR_CODE_KEY)) {
-      resultMap.put(
-          MAP_KEY_ERROR_CODE, getFilePref.getString(SHARED_PREFERENCE_ERROR_CODE_KEY, ""));
+    if (prefs.contains(SHARED_PREFERENCE_ERROR_CODE_KEY)) {
+      final String errorCodeValue = prefs.getString(SHARED_PREFERENCE_ERROR_CODE_KEY, "");
+      resultMap.put(MAP_KEY_ERROR_CODE, errorCodeValue);
       hasData = true;
-      if (getFilePref.contains(SHARED_PREFERENCE_ERROR_MESSAGE_KEY)) {
-        resultMap.put(
-            MAP_KEY_ERROR_MESSAGE, getFilePref.getString(SHARED_PREFERENCE_ERROR_MESSAGE_KEY, ""));
+      if (prefs.contains(SHARED_PREFERENCE_ERROR_MESSAGE_KEY)) {
+        final String errorMessageValue = prefs.getString(SHARED_PREFERENCE_ERROR_MESSAGE_KEY, "");
+        resultMap.put(MAP_KEY_ERROR_MESSAGE, errorMessageValue);
       }
     }
 
     if (hasData) {
-      if (getFilePref.contains(SHARED_PREFERENCE_TYPE_KEY)) {
-        resultMap.put(MAP_KEY_TYPE, getFilePref.getString(SHARED_PREFERENCE_TYPE_KEY, ""));
+      if (prefs.contains(SHARED_PREFERENCE_TYPE_KEY)) {
+        final String typeValue = prefs.getString(SHARED_PREFERENCE_TYPE_KEY, "");
+        resultMap.put(MAP_KEY_TYPE, typeValue);
       }
-
-      if (getFilePref.contains(SHARED_PREFERENCE_MAX_WIDTH_KEY)) {
-        resultMap.put(
-            MAP_KEY_MAX_WIDTH,
-            Double.longBitsToDouble(getFilePref.getLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, 0)));
+      if (prefs.contains(SHARED_PREFERENCE_MAX_WIDTH_KEY)) {
+        final long maxWidthValue = prefs.getLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, 0);
+        resultMap.put(MAP_KEY_MAX_WIDTH, Double.longBitsToDouble(maxWidthValue));
       }
-
-      if (getFilePref.contains(SHARED_PREFERENCE_MAX_HEIGHT_KEY)) {
-        resultMap.put(
-            MAP_KEY_MAX_HEIGHT,
-            Double.longBitsToDouble(getFilePref.getLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, 0)));
+      if (prefs.contains(SHARED_PREFERENCE_MAX_HEIGHT_KEY)) {
+        final long maxHeighValue = prefs.getLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, 0);
+        resultMap.put(MAP_KEY_MAX_HEIGHT, Double.longBitsToDouble(maxHeighValue));
       }
     }
 

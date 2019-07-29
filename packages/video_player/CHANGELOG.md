@@ -1,3 +1,7 @@
+## 0.10.1+6
+
+* [iOS] Fixed a memory leak with notification observing.
+
 ## 0.10.1+5
 
 * Fix race condition while disposing the VideoController.
