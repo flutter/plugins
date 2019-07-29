@@ -1,3 +1,10 @@
+## 0.12.9
+
+* New optional `includeMetadataChanges` parameter added to `DocumentReference.snapshots()`
+ and `Query.snapshots()`
+* Fix example app crash when the `message` field was not a string
+* Internal renaming of method names.
+
 ## 0.12.8+1
 
 * Add `metadata` to `QuerySnapshot`.

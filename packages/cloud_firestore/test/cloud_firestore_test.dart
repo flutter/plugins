@@ -79,7 +79,7 @@ void main() {
               );
             });
             return handle;
-          case 'Query#addDocumentListener':
+          case 'DocumentReference#addSnapshotListener':
             final int handle = mockHandleId++;
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
@@ -330,8 +330,9 @@ void main() {
         expect(collectionReference.path, equals('foo'));
       });
       test('listen', () async {
-        final QuerySnapshot snapshot =
-            await collectionReference.snapshots().first;
+        final QuerySnapshot snapshot = await collectionReference
+            .snapshots(includeMetadataChanges: true)
+            .first;
         final DocumentSnapshot document = snapshot.documents[0];
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
@@ -348,11 +349,12 @@ void main() {
               'parameters': <String, dynamic>{
                 'where': <List<dynamic>>[],
                 'orderBy': <List<dynamic>>[],
-              }
+              },
+              'includeMetadataChanges': true,
             },
           ),
           isMethodCall(
-            'Query#removeListener',
+            'removeListener',
             arguments: <String, dynamic>{'handle': 0},
           ),
         ]);
@@ -379,11 +381,12 @@ void main() {
                     <dynamic>['createdAt', '<', 100],
                   ],
                   'orderBy': <List<dynamic>>[],
-                }
+                },
+                'includeMetadataChanges': false,
               },
             ),
             isMethodCall(
-              'Query#removeListener',
+              'removeListener',
               arguments: <String, dynamic>{'handle': 0},
             ),
           ]),
@@ -411,11 +414,12 @@ void main() {
                     <dynamic>['profile', '==', null],
                   ],
                   'orderBy': <List<dynamic>>[],
-                }
+                },
+                'includeMetadataChanges': false,
               },
             ),
             isMethodCall(
-              'Query#removeListener',
+              'removeListener',
               arguments: <String, dynamic>{'handle': 0},
             ),
           ]),
@@ -443,11 +447,12 @@ void main() {
                   'orderBy': <List<dynamic>>[
                     <dynamic>['createdAt', false]
                   ],
-                }
+                },
+                'includeMetadataChanges': false,
               },
             ),
             isMethodCall(
-              'Query#removeListener',
+              'removeListener',
               arguments: <String, dynamic>{'handle': 0},
             ),
           ]),
@@ -457,8 +462,10 @@ void main() {
 
     group('DocumentReference', () {
       test('listen', () async {
-        final DocumentSnapshot snapshot =
-            await firestore.document('path/to/foo').snapshots().first;
+        final DocumentSnapshot snapshot = await firestore
+            .document('path/to/foo')
+            .snapshots(includeMetadataChanges: true)
+            .first;
         expect(snapshot.documentID, equals('foo'));
         expect(snapshot.reference.path, equals('path/to/foo'));
         expect(snapshot.data, equals(kMockDocumentSnapshotData));
@@ -468,14 +475,15 @@ void main() {
           log,
           <Matcher>[
             isMethodCall(
-              'Query#addDocumentListener',
+              'DocumentReference#addSnapshotListener',
               arguments: <String, dynamic>{
                 'app': app.name,
                 'path': 'path/to/foo',
+                'includeMetadataChanges': true,
               },
             ),
             isMethodCall(
-              'Query#removeListener',
+              'removeListener',
               arguments: <String, dynamic>{'handle': 0},
             ),
           ],

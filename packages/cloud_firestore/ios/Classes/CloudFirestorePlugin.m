@@ -526,39 +526,52 @@ const UInt8 INCREMENT_INTEGER = 138;
                                  message:[exception name]
                                  details:[exception reason]]);
     }
+    NSNumber *includeMetadataChanges = call.arguments[@"includeMetadataChanges"];
     id<FIRListenerRegistration> listener = [query
-        addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
-          if (snapshot == nil) {
-            result(getFlutterError(error));
-            return;
-          }
-          NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
-          [arguments setObject:handle forKey:@"handle"];
-          [weakSelf.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
-        }];
+        addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges.boolValue
+                                             listener:^(FIRQuerySnapshot *_Nullable snapshot,
+                                                        NSError *_Nullable error) {
+                                               if (snapshot == nil) {
+                                                 result(getFlutterError(error));
+                                                 return;
+                                               }
+                                               NSMutableDictionary *arguments =
+                                                   [parseQuerySnapshot(snapshot) mutableCopy];
+                                               [arguments setObject:handle forKey:@"handle"];
+                                               [weakSelf.channel invokeMethod:@"QuerySnapshot"
+                                                                    arguments:arguments];
+                                             }];
     _listeners[handle] = listener;
     result(handle);
-  } else if ([@"Query#addDocumentListener" isEqualToString:call.method]) {
+  } else if ([@"DocumentReference#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     FIRDocumentReference *document = getDocumentReference(call.arguments);
-    id<FIRListenerRegistration> listener =
-        [document addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
-          if (snapshot == nil) {
-            result(getFlutterError(error));
-            return;
-          }
-          [weakSelf.channel invokeMethod:@"DocumentSnapshot"
-                               arguments:@{
-                                 @"handle" : handle,
-                                 @"path" : snapshot ? snapshot.reference.path : [NSNull null],
-                                 @"data" : snapshot.exists ? snapshot.data : [NSNull null],
-                                 @"metadata" : snapshot ? @{
-                                   @"hasPendingWrites" : @(snapshot.metadata.hasPendingWrites),
-                                   @"isFromCache" : @(snapshot.metadata.isFromCache),
-                                 }
-                                                        : [NSNull null],
-                               }];
-        }];
+    NSNumber *includeMetadataChanges = call.arguments[@"includeMetadataChanges"];
+    id<FIRListenerRegistration> listener = [document
+        addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges.boolValue
+                                             listener:^(FIRDocumentSnapshot *snapshot,
+                                                        NSError *_Nullable error) {
+                                               if (snapshot == nil) {
+                                                 result(getFlutterError(error));
+                                                 return;
+                                               }
+                                               [weakSelf.channel
+                                                   invokeMethod:@"DocumentSnapshot"
+                                                      arguments:@{
+                                                        @"handle" : handle,
+                                                        @"path" : snapshot ? snapshot.reference.path
+                                                                           : [NSNull null],
+                                                        @"data" : snapshot.exists ? snapshot.data
+                                                                                  : [NSNull null],
+                                                        @"metadata" : snapshot ? @{
+                                                          @"hasPendingWrites" :
+                                                              @(snapshot.metadata.hasPendingWrites),
+                                                          @"isFromCache" :
+                                                              @(snapshot.metadata.isFromCache),
+                                                        }
+                                                                               : [NSNull null],
+                                                      }];
+                                             }];
     _listeners[handle] = listener;
     result(handle);
   } else if ([@"Query#getDocuments" isEqualToString:call.method]) {
@@ -581,7 +594,7 @@ const UInt8 INCREMENT_INTEGER = 138;
                       }
                       result(parseQuerySnapshot(snapshot));
                     }];
-  } else if ([@"Query#removeListener" isEqualToString:call.method]) {
+  } else if ([@"removeListener" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
     [[_listeners objectForKey:handle] remove];
     [_listeners removeObjectForKey:handle];
