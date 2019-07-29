@@ -16,6 +16,7 @@ import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.ActionCodeSettings;
+import com.google.firebase.auth.AdditionalUserInfo;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -669,9 +670,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       if (!task.isSuccessful() || task.getResult() == null) {
         reportException(result, task.getException());
       } else {
-        FirebaseUser user = task.getResult().getUser();
-        Map<String, Object> userMap = Collections.unmodifiableMap(mapFromUser(user));
-        result.success(userMap);
+        AuthResult authResult = task.getResult();
+        FirebaseUser user = authResult.getUser();
+        AdditionalUserInfo additionalUserInfo = authResult.getAdditionalUserInfo();
+        Map<String, Object> userMap = (mapFromUser(user));
+        Map<String, Object> additionalUserInfoMap = mapFromAdditionalUserInfo(additionalUserInfo);
+        Map<String, Object> map = new HashMap<>();
+        map.put("user", userMap);
+        map.put("additionalUserInfo", additionalUserInfoMap);
+        result.success(Collections.unmodifiableMap(map));
       }
     }
   }
@@ -747,6 +754,19 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       userMap.put("isEmailVerified", user.isEmailVerified());
       userMap.put("providerData", Collections.unmodifiableList(providerData));
       return Collections.unmodifiableMap(userMap);
+    } else {
+      return null;
+    }
+  }
+
+  private Map<String, Object> mapFromAdditionalUserInfo(AdditionalUserInfo info) {
+    if (info != null) {
+      Map<String, Object> additionalUserInfoMap = new HashMap<>();
+      additionalUserInfoMap.put("profile", info.getProfile());
+      additionalUserInfoMap.put("providerId", info.getProviderId());
+      additionalUserInfoMap.put("username", info.getUsername());
+      additionalUserInfoMap.put("isNewUser", info.isNewUser());
+      return Collections.unmodifiableMap(additionalUserInfoMap);
     } else {
       return null;
     }

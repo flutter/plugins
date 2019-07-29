@@ -1,6 +1,14 @@
-## 0.6.0+18
+## 0.6.0+20
 
 * Android: Migrated information cache methods to use instance methods.
+
+## 0.6.0+19
+
+* Android: Fix memory leak due not unregistering ActivityLifecycleCallbacks.
+
+## 0.6.0+18
+
+* Fix video play in example and update video_player plugin dependency.
 
 ## 0.6.0+17
 
