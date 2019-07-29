@@ -1,3 +1,7 @@
+## 0.5.2+2
+
+* Fix memory leak related to not unregistering stream handler in FlutterEventChannel when disposing camera.
+
 ## 0.5.2+1
 
 * Fix bug that prevented video recording with audio.

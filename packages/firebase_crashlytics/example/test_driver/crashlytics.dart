@@ -14,7 +14,7 @@ void main() {
   enableFlutterDriverExtension(handler: (_) => allTestsCompleter.future);
   tearDownAll(() => allTestsCompleter.complete(null));
 
-  test('onError', () async {
+  test('recordFlutterError', () async {
     // This is currently only testing that we can log errors without crashing.
     final Crashlytics crashlytics = Crashlytics.instance;
     await crashlytics.setUserName('testing');
@@ -24,11 +24,13 @@ void main() {
     crashlytics.setDouble('testDouble', 42.0);
     crashlytics.setString('testString', 'bar');
     Crashlytics.instance.log('testing');
-    await crashlytics.onError(
-      FlutterErrorDetails(
+    await crashlytics.recordFlutterError(FlutterErrorDetails(
         exception: 'testing',
         stack: StackTrace.fromString(''),
-      ),
-    );
+        context: DiagnosticsNode.message('during testing'),
+        informationCollector: () => <DiagnosticsNode>[
+              DiagnosticsNode.message('testing'),
+              DiagnosticsNode.message('information'),
+            ]));
   });
 }

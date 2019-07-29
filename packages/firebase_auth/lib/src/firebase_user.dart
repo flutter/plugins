@@ -58,7 +58,7 @@ class FirebaseUser extends UserInfo {
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that this type of account is not enabled.
   ///   • `ERROR_INVALID_ACTION_CODE` - If the action code in the link is malformed, expired, or has already been used.
   ///       This can only occur when using [EmailAuthProvider.getCredentialWithLink] to obtain the credential.
-  Future<FirebaseUser> linkWithCredential(AuthCredential credential) async {
+  Future<AuthResult> linkWithCredential(AuthCredential credential) async {
     assert(credential != null);
     final Map<String, dynamic> data =
         await FirebaseAuth.channel.invokeMapMethod<String, dynamic>(
@@ -69,8 +69,8 @@ class FirebaseUser extends UserInfo {
         'data': credential._data,
       },
     );
-    final FirebaseUser currentUser = FirebaseUser._(data, _app);
-    return currentUser;
+    final AuthResult result = AuthResult._(data, _app);
+    return result;
   }
 
   /// Initiates email verification for the user.
@@ -86,7 +86,13 @@ class FirebaseUser extends UserInfo {
         .invokeMethod<void>('reload', <String, String>{'app': _app.name});
   }
 
-  /// Deletes the user record from your Firebase project's database.
+  /// Deletes the current user (also signs out the user).
+  ///
+  /// Errors:
+  ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the credential is malformed or has expired.
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_USER_NOT_FOUND` - If the user has been deleted (for example, in the Firebase console)
   Future<void> delete() async {
     await FirebaseAuth.channel
         .invokeMethod<void>('delete', <String, String>{'app': _app.name});
@@ -190,10 +196,11 @@ class FirebaseUser extends UserInfo {
   ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
   ///   • `ERROR_USER_NOT_FOUND` - If the user has been deleted (for example, in the Firebase console)
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
-  Future<FirebaseUser> reauthenticateWithCredential(
+  Future<AuthResult> reauthenticateWithCredential(
       AuthCredential credential) async {
     assert(credential != null);
-    await FirebaseAuth.channel.invokeMethod<void>(
+    final Map<String, dynamic> data =
+        await FirebaseAuth.channel.invokeMapMethod<String, dynamic>(
       'reauthenticateWithCredential',
       <String, dynamic>{
         'app': _app.name,
@@ -201,7 +208,7 @@ class FirebaseUser extends UserInfo {
         'data': credential._data,
       },
     );
-    return this;
+    return AuthResult._(data, _app);
   }
 
   /// Detaches the [provider] account from the current user.

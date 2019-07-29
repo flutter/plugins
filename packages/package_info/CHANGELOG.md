@@ -1,3 +1,7 @@
+## 0.4.0+6
+
+* Fix Android compiler warnings.
+
 ## 0.4.0+5
 
 * Add iOS-specific warning to README.md.
