@@ -108,14 +108,15 @@ void main() {
 
     test('includeMetadataChanges', () async {
       final DocumentReference ref = firestore.collection('messages').document();
-      final Future<DocumentSnapshot> snapshotsWithoutMetadataChanges =
+      final Stream<DocumentSnapshot> snapshotWithoutMetadataChanges =
           ref.snapshots(includeMetadataChanges: false).take(1);
       final Stream<DocumentSnapshot> snapshotsWithMetadataChanges =
           ref.snapshots(includeMetadataChanges: true).take(3);
 
       ref.setData(<String, dynamic>{'hello': 'world'});
 
-      final DocumentSnapshot snapshot = await snapshotsWithoutMetadataChanges.first;
+      final DocumentSnapshot snapshot =
+          await snapshotWithoutMetadataChanges.first;
       expect(snapshot.metadata.hasPendingWrites, true);
       expect(snapshot.metadata.isFromCache, true);
       expect(snapshot.data['hello'], 'world');
