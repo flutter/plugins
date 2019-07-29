@@ -1,3 +1,7 @@
+## 0.13.1+1
+
+* Update authentication example in README.
+
 ## 0.13.1
 
 * Fixed a crash on iOS when sign-in fails.
