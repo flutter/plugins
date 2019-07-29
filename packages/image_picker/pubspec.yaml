@@ -6,7 +6,7 @@ authors:
   - Rhodes Davis Jr. <rody.davis.jr@gmail.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/image_picker
 
-version: 0.6.0+17
+version: 0.6.0+18
 
 flutter:
   plugin:
@@ -19,7 +19,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  video_player: 0.5.2
+  video_player: 0.10.1+5
   flutter_test:
     sdk: flutter
 
