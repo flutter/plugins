@@ -1,3 +1,7 @@
+## 0.6.0+18
+
+* Fix video play in example and update video_player plugin dependency.
+
 ## 0.6.0+17
 
 * iOS: Fix a crash when user captures image from the camera with devices under iOS 11.
