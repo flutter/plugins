@@ -223,17 +223,17 @@ final class GoogleMapController
           break;
         }
       case "map#getCameraPosition":
-      {
-        if (googleMap != null) {
-          result.success(Convert.cameraPositionToJson(googleMap.getCameraPosition()));
-        } else {
-          result.error(
-                  "GoogleMap uninitialized",
-                  "getCameraPosition called prior to map initialization",
-                  null);
+        {
+          if (googleMap != null) {
+            result.success(Convert.cameraPositionToJson(googleMap.getCameraPosition()));
+          } else {
+            result.error(
+                "GoogleMap uninitialized",
+                "getCameraPosition called prior to map initialization",
+                null);
+          }
+          break;
         }
-        break;
-      }
       case "camera#move":
         {
           final CameraUpdate cameraUpdate =
