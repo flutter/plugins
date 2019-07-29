@@ -26,6 +26,10 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   };
 }
 
+NSDictionary *tokenToDictionary(FIRAuthTokenResult *result) {
+  return @{@"token" : result.token, @"claims" : result.claims};
+}
+
 @interface FLTFirebaseAuthPlugin ()
 @property(nonatomic, retain) NSMutableDictionary *authStateChangeListeners;
 @property(nonatomic, retain) FlutterMethodChannel *channel;
@@ -203,10 +207,12 @@ int nextHandle = 0;
     NSDictionary *args = call.arguments;
     BOOL refresh = [args objectForKey:@"refresh"];
     [[self getAuth:call.arguments].currentUser
-        getIDTokenForcingRefresh:refresh
-                      completion:^(NSString *_Nullable token, NSError *_Nullable error) {
-                        [self sendResult:result forObject:token error:error];
-                      }];
+        getIDTokenResultForcingRefresh:refresh
+                            completion:^(FIRAuthTokenResult *_Nullable tokenResult,
+                                         NSError *_Nullable error) {
+                              NSDictionary *token = tokenToDictionary(tokenResult);
+                              [self sendResult:result forObject:token error:error];
+                            }];
   } else if ([@"reauthenticateWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
         reauthenticateAndRetrieveDataWithCredential:[self getCredential:call.arguments]

@@ -1,14 +1,16 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 
 class SignInPage extends StatefulWidget {
   final String title = 'Registration';
+
   @override
   State<StatefulWidget> createState() => SignInPageState();
 }
@@ -52,6 +54,7 @@ class SignInPageState extends State<SignInPage> {
             _GoogleSignInSection(),
             _PhoneSignInSection(Scaffold.of(context)),
             _OtherProvidersSignInSection(),
+            _TokenSectionSection(),
           ],
         );
       }),
@@ -75,6 +78,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
   final TextEditingController _passwordController = TextEditingController();
   bool _success;
   String _userEmail;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -294,6 +298,7 @@ class _AnonymouslySignInSection extends StatefulWidget {
 class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
   bool _success;
   String _userID;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -371,6 +376,7 @@ class _GoogleSignInSection extends StatefulWidget {
 class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
   bool _success;
   String _userID;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -439,6 +445,7 @@ class _PhoneSignInSection extends StatefulWidget {
   _PhoneSignInSection(this._scaffold);
 
   final ScaffoldState _scaffold;
+
   @override
   State<StatefulWidget> createState() => _PhoneSignInSectionState();
 }
@@ -763,6 +770,131 @@ class _OtherProvidersSignInSectionState
       } else {
         _message = 'Failed to sign in with Twitter. ';
       }
+    });
+  }
+}
+
+class _TokenSectionSection extends StatefulWidget {
+  @override
+  _TokenSectionSectionState createState() => _TokenSectionSectionState();
+}
+
+class _TokenSectionSectionState extends State<_TokenSectionSection> {
+  bool _success;
+  AuthTokenResult _token;
+
+  TableRow buildRow(String key, String value) {
+    return TableRow(
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.0))),
+      children: <TableCell>[
+        TableCell(child: Text(key)),
+        TableCell(child: Text(value)),
+      ],
+    );
+  }
+
+  Widget _buildTokenTable() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Table(
+        children: <TableRow>[
+          TableRow(
+            decoration: BoxDecoration(border: Border(bottom: BorderSide())),
+            children: <TableCell>[
+              const TableCell(
+                child: Text(
+                  'token',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              TableCell(
+                child: Text(
+                  _token.token,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          buildRow('authTime', _token.authTime.toString()),
+          buildRow('expirationTime', _token.expirationTime.toString()),
+          buildRow('issuedAtTime', _token.issuedAtTime.toString()),
+          buildRow('signInProvider', _token.signInProvider.toString()),
+          TableRow(
+            decoration: BoxDecoration(border: Border(bottom: BorderSide())),
+            children: <TableCell>[
+              TableCell(
+                child: Container(
+                  margin: const EdgeInsetsDirectional.only(top: 16.0),
+                  child: Text(
+                    '${_token.claims?.length ?? 0} claims',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              TableCell(child: Container()),
+            ],
+          ),
+          if (_token.claims != null)
+            for (String key in _token.claims.keys)
+              buildRow(key, _token.claims[key].toString()),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          child: const Text('Test geting the ID Token'),
+          padding: const EdgeInsets.all(16),
+          alignment: Alignment.center,
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          alignment: Alignment.center,
+          child: RaisedButton(
+            onPressed: () async {
+              _signInAnonymously();
+            },
+            child: const Text('Get ID Token'),
+          ),
+        ),
+        Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _success == null
+              ? null
+              : _success
+                  ? _buildTokenTable()
+                  : const Text(
+                      'Make sure you are logged in first.',
+                      style: TextStyle(color: Colors.red),
+                    ),
+        )
+      ],
+    );
+  }
+
+  void _signInAnonymously() async {
+    final FirebaseUser user = await _auth.currentUser();
+    if (user == null) {
+      setState(() => _success = false);
+    }
+
+    final AuthTokenResult token = await user.getIdToken();
+    assert(token != null);
+
+    setState(() {
+      _success = true;
+      _token = token;
     });
   }
 }

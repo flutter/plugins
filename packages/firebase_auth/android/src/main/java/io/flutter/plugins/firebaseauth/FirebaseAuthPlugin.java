@@ -540,8 +540,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
             new OnCompleteListener<GetTokenResult>() {
               public void onComplete(@NonNull Task<GetTokenResult> task) {
                 if (task.isSuccessful() && task.getResult() != null) {
-                  String idToken = task.getResult().getToken();
-                  result.success(idToken);
+                  Map<String, Object> token = mapGetTokenResult(task.getResult());
+                  result.success(token);
                 } else {
                   reportException(result, task.getException());
                 }
@@ -767,6 +767,20 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       additionalUserInfoMap.put("username", info.getUsername());
       additionalUserInfoMap.put("isNewUser", info.isNewUser());
       return Collections.unmodifiableMap(additionalUserInfoMap);
+    } else {
+      return null;
+    }
+  }
+
+  private Map<String, Object> mapGetTokenResult(GetTokenResult result) {
+    if (result != null) {
+      Map<String, Object> tokenClaims = new HashMap<>();
+      tokenClaims.putAll(result.getClaims());
+
+      Map<String, Object> getTokenResultMap = new HashMap<>();
+      getTokenResultMap.put("token", result.getToken());
+      getTokenResultMap.put("claims", tokenClaims);
+      return Collections.unmodifiableMap(getTokenResultMap);
     } else {
       return null;
     }
