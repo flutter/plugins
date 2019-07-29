@@ -7,11 +7,9 @@ import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:uuid/uuid.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-const String kTestEmail = 'test@example.com';
-const String kTestPassword = 'password';
 
 void main() {
   final Completer<String> completer = Completer<String>();
@@ -53,7 +51,7 @@ void main() {
 
     test('email auth', () async {
       final Random random = Random();
-      final String testEmail = 'testuser${random.nextInt(100000000)}@gmail.com';
+      final String testEmail = 'testuser${Uuid().v4()}@example.com';
       final String testPassword = 'testpassword';
       AuthResult result = await auth.createUserWithEmailAndPassword(
         email: testEmail,
