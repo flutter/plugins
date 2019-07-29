@@ -204,4 +204,12 @@ class GoogleMapController {
 
     return LatLngBounds(northeast: northeast, southwest: southwest);
   }
+
+  /// Return current [CameraPosition].
+  Future<CameraPosition> getCameraPosition() async {
+    final Map<String, dynamic> cameraPosition =
+        await channel.invokeMapMethod<String, dynamic>('map#getCameraPosition');
+
+    return CameraPosition.fromMap(cameraPosition);
+  }
 }
