@@ -70,7 +70,7 @@ class _WebViewExampleState extends State<WebViewExample> {
     final route = ModalRoute.of(context);
     route?.removeScopedWillPopCallback(_onWillPop);
     if (route is CustomPageRoute) {
-      route.removeShouldSwipePopCallback(_shouldSwipePop);
+      route.removeShouldSwipePopCallback(_shouldPopBack);
     }
     super.dispose();
   }
@@ -80,12 +80,12 @@ class _WebViewExampleState extends State<WebViewExample> {
     super.initState();
   }
 
-  bool _shouldSwipePop() {
+  bool _shouldPopBack() {
     return _currentUrl == _initialUrl;
   }
 
   Future<bool> _onWillPop() async {
-    final res = _shouldSwipePop();
+    final res = _shouldPopBack();
     if (!res) {
       _goBack();
     }
@@ -103,8 +103,8 @@ class _WebViewExampleState extends State<WebViewExample> {
     route?.removeScopedWillPopCallback(_onWillPop);
     route?.addScopedWillPopCallback(_onWillPop);
     if (route is CustomPageRoute) {
-      route?.removeShouldSwipePopCallback(_shouldSwipePop);
-      route?.addShouldSwipePopCallback(_shouldSwipePop);
+      route?.removeShouldSwipePopCallback(_shouldPopBack);
+      route?.addShouldSwipePopCallback(_shouldPopBack);
     }
 
     return Scaffold(

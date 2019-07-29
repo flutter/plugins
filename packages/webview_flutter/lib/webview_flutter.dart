@@ -256,6 +256,9 @@ class WebView extends StatefulWidget {
   /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
 
+  /// Setting allowsBackForwardNavigationGestures for iOS
+  ///
+  /// By default `allowsBack` is true.
   final bool allowsBack;
 
   @override

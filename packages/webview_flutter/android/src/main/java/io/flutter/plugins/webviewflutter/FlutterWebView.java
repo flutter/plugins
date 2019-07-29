@@ -232,6 +232,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
           webView.setWebContentsDebuggingEnabled(debuggingEnabled);
           break;
+        case "allowsBack":
+          // no-op "allowsBack" is only iOS.
+          break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
