@@ -3,6 +3,7 @@
 * Fixed a crash on iOS when sign-in fails.
 * Additional integration testing.
 * Updated documentation for `FirebaseUser.delete()` to include error codes.
+* Updated Firebase project to match other Flutterfire apps.
 
 ## 0.13.0
 
