@@ -41,8 +41,11 @@ class MessageList extends StatelessWidget {
           itemCount: messageCount,
           itemBuilder: (_, int index) {
             final DocumentSnapshot document = snapshot.data.documents[index];
+            final dynamic message = document['message'];
             return ListTile(
-              title: Text(document['message'] ?? '<No message retrieved>'),
+              title: Text(
+                message != null ? message.toString() : '<No message retrieved>',
+              ),
               subtitle: Text('Message ${index + 1} of $messageCount'),
             );
           },
@@ -54,7 +57,9 @@ class MessageList extends StatelessWidget {
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({this.firestore});
+
   final Firestore firestore;
+
   CollectionReference get messages => firestore.collection('messages');
 
   Future<void> _addMessage() async {

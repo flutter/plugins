@@ -1,6 +1,10 @@
-## 0.6.0+18
+## 0.6.0+19
 
 * Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.6.0+18
+
+* Fix video play in example and update video_player plugin dependency.
 
 ## 0.6.0+17
 

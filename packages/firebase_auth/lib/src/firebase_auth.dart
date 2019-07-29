@@ -71,12 +71,12 @@ class FirebaseAuth {
   ///
   /// Errors:
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Anonymous accounts are not enabled.
-  Future<FirebaseUser> signInAnonymously() async {
+  Future<AuthResult> signInAnonymously() async {
     final Map<String, dynamic> data = await channel
         .invokeMapMethod<String, dynamic>(
             'signInAnonymously', <String, String>{"app": app.name});
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
+    final AuthResult authResult = AuthResult._(data, app);
+    return authResult;
   }
 
   /// Tries to create a new user account with the given email address and password.
@@ -88,7 +88,7 @@ class FirebaseAuth {
   ///   • `ERROR_WEAK_PASSWORD` - If the password is not strong enough.
   ///   • `ERROR_INVALID_EMAIL` - If the email address is malformed.
   ///   • `ERROR_EMAIL_ALREADY_IN_USE` - If the email is already in use by a different account.
-  Future<FirebaseUser> createUserWithEmailAndPassword({
+  Future<AuthResult> createUserWithEmailAndPassword({
     @required String email,
     @required String password,
   }) async {
@@ -99,8 +99,8 @@ class FirebaseAuth {
       'createUserWithEmailAndPassword',
       <String, String>{'email': email, 'password': password, 'app': app.name},
     );
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
+    final AuthResult authResult = AuthResult._(data, app);
+    return authResult;
   }
 
   /// Returns a list of sign-in methods that can be used to sign in a given
@@ -187,8 +187,7 @@ class FirebaseAuth {
   ///      Firebase console.
   ///   • `ERROR_DISABLED` - Indicates the user's account is disabled.
   ///   • `ERROR_INVALID` - Indicates the email address is invalid.
-  Future<FirebaseUser> signInWithEmailAndLink(
-      {String email, String link}) async {
+  Future<AuthResult> signInWithEmailAndLink({String email, String link}) async {
     final Map<String, dynamic> data =
         await channel.invokeMapMethod<String, dynamic>(
       'signInWithEmailAndLink',
@@ -198,8 +197,8 @@ class FirebaseAuth {
         'link': link,
       },
     );
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
+    final AuthResult authResult = AuthResult._(data, app);
+    return authResult;
   }
 
   /// Tries to sign in a user with the given email address and password.
@@ -217,7 +216,7 @@ class FirebaseAuth {
   ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
   ///   • `ERROR_TOO_MANY_REQUESTS` - If there was too many attempts to sign in as this user.
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
-  Future<FirebaseUser> signInWithEmailAndPassword({
+  Future<AuthResult> signInWithEmailAndPassword({
     @required String email,
     @required String password,
   }) {
@@ -251,7 +250,7 @@ class FirebaseAuth {
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Google accounts are not enabled.
   ///   • `ERROR_INVALID_ACTION_CODE` - If the action code in the link is malformed, expired, or has already been used.
   ///       This can only occur when using [EmailAuthProvider.getCredentialWithLink] to obtain the credential.
-  Future<FirebaseUser> signInWithCredential(AuthCredential credential) async {
+  Future<AuthResult> signInWithCredential(AuthCredential credential) async {
     assert(credential != null);
     final Map<String, dynamic> data =
         await channel.invokeMapMethod<String, dynamic>(
@@ -262,8 +261,8 @@ class FirebaseAuth {
         'data': credential._data,
       },
     );
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
+    final AuthResult authResult = AuthResult._(data, app);
+    return authResult;
   }
 
   /// Starts the phone number verification process for the given phone number.
@@ -356,15 +355,15 @@ class FirebaseAuth {
   ///     Please check the documentation.
   ///   • `ERROR_CUSTOM_TOKEN_MISMATCH` - Invalid configuration.
   ///     Ensure your app's SHA1 is correct in the Firebase console.
-  Future<FirebaseUser> signInWithCustomToken({@required String token}) async {
+  Future<AuthResult> signInWithCustomToken({@required String token}) async {
     assert(token != null);
     final Map<String, dynamic> data =
         await channel.invokeMapMethod<String, dynamic>(
       'signInWithCustomToken',
       <String, String>{'token': token, 'app': app.name},
     );
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
+    final AuthResult authResult = AuthResult._(data, app);
+    return authResult;
   }
 
   /// Signs out the current user and clears it from the disk cache.
