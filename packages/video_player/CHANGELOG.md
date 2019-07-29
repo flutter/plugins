@@ -1,3 +1,8 @@
+## 0.10.1+7
+
+* Use DefaultHttpDataSourceFactory only when network schemas and use
+DefaultHttpDataSourceFactory by default.
+
 ## 0.10.1+6
 
 * [iOS] Fixed a memory leak with notification observing.
