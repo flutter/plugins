@@ -35,6 +35,7 @@ public class ImagePickerDelegateTest {
   @Mock ImagePickerDelegate.IntentResolver mockIntentResolver;
   @Mock FileUtils mockFileUtils;
   @Mock Intent mockIntent;
+  @Mock ImagePickerCache cache;
 
   ImagePickerDelegate.FileUriResolver mockFileUriResolver;
 
@@ -375,6 +376,7 @@ public class ImagePickerDelegateTest {
         mockImageResizer,
         null,
         null,
+        cache,
         mockPermissionManager,
         mockIntentResolver,
         mockFileUriResolver,
@@ -388,6 +390,7 @@ public class ImagePickerDelegateTest {
         mockImageResizer,
         mockResult,
         mockMethodCall,
+        cache,
         mockPermissionManager,
         mockIntentResolver,
         mockFileUriResolver,
