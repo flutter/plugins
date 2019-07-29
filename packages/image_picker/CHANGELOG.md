@@ -1,6 +1,10 @@
-## 0.6.0+19
+## 0.6.0+20
 
 * Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.6.0+19
+
+* Android: Fix memory leak due not unregistering ActivityLifecycleCallbacks.
 
 ## 0.6.0+18
 
