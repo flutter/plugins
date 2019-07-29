@@ -73,7 +73,6 @@ void main() {
         password: testPassword,
       );
       expect(result.user.uid, equals(user.uid));
-      auth.signOut();
       await user.delete();
     });
 
