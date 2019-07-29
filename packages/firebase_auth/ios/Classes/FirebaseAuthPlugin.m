@@ -353,8 +353,8 @@ int nextHandle = 0;
     [providerData addObject:toDictionary(userInfo)];
   }
 
-  long creationDate = [user.metadata.creationDate timeIntervalSince1970];
-  long lastSignInDate = [user.metadata.lastSignInDate timeIntervalSince1970];
+  long creationDate = [user.metadata.creationDate timeIntervalSince1970] * 1000;
+  long lastSignInDate = [user.metadata.lastSignInDate timeIntervalSince1970] * 1000;
 
   NSMutableDictionary *userData = [toDictionary(user) mutableCopy];
   userData[@"creationTimestamp"] = [NSNumber numberWithLong:creationDate];
@@ -374,12 +374,13 @@ int nextHandle = 0;
   [self sendResult:result
          forObject:@{
            @"user" : (user != nil ? [self dictionaryFromUser:user] : nil),
-           @"additionalUserInfo" : @{
+           @"additionalUserInfo" : additionalUserInfo ? @{
              @"isNewUser" : [NSNumber numberWithBool:additionalUserInfo.isNewUser],
-             @"username" : additionalUserInfo.username,
-             @"providerId" : additionalUserInfo.providerID,
-             @"profile" : additionalUserInfo.profile,
+             @"username" : additionalUserInfo.username ?: [NSNull null],
+             @"providerId" : additionalUserInfo.providerID ?: [NSNull null],
+             @"profile" : additionalUserInfo.profile ?: [NSNull null],
            }
+                                                      : [NSNull null],
          }
              error:error];
 }

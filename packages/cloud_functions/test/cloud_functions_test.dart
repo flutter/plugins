@@ -38,6 +38,10 @@ void main() {
       await callable.call(<String, dynamic>{
         'quux': 'quuz',
       });
+      await CloudFunctions.instance
+          .useFunctionsEmulator(origin: 'http://localhost:5001')
+          .getHttpsCallable(functionName: 'bez')
+          .call();
       expect(
         log,
         <Matcher>[
@@ -46,6 +50,7 @@ void main() {
             arguments: <String, dynamic>{
               'app': '[DEFAULT]',
               'region': null,
+              'origin': null,
               'functionName': 'baz',
               'timeoutMicroseconds': null,
               'parameters': null,
@@ -56,9 +61,21 @@ void main() {
             arguments: <String, dynamic>{
               'app': '1337',
               'region': 'space',
+              'origin': null,
               'functionName': 'qux',
               'timeoutMicroseconds': (const Duration(days: 300)).inMicroseconds,
               'parameters': <String, dynamic>{'quux': 'quuz'},
+            },
+          ),
+          isMethodCall(
+            'CloudFunctions#call',
+            arguments: <String, dynamic>{
+              'app': '[DEFAULT]',
+              'region': null,
+              'origin': 'http://localhost:5001',
+              'functionName': 'bez',
+              'timeoutMicroseconds': null,
+              'parameters': null,
             },
           ),
         ],
