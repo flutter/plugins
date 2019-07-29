@@ -1,4 +1,4 @@
-## 0.13.1
+## 0.13.0+1
 
 * Add dependency on `androidx.annotation:annotation:1.0.0`.
 
