@@ -187,15 +187,19 @@
   }
 
   double offset = 0.0;
+  double horizontalCenterOffset = 0.0;
   int type = 0;
   if (call.arguments[@"anchorOffset"] != nil) {
     offset = [call.arguments[@"anchorOffset"] doubleValue];
+  }
+  if (call.arguments[@"horizontalCenterOffset"] != nil) {
+    horizontalCenterOffset = [call.arguments[@"horizontalCenterOffset"] doubleValue];
   }
   if (call.arguments[@"anchorType"] != nil) {
     type = [call.arguments[@"anchorType"] isEqualToString:@"bottom"] ? 0 : 1;
   }
 
-  [ad showAtOffset:offset fromAnchor:type];
+  [ad showAtOffset:offset hCenterOffset:horizontalCenterOffset fromAnchor:type];
   result([NSNumber numberWithBool:YES]);
 }
 
