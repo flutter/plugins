@@ -203,10 +203,33 @@ int nextHandle = 0;
     NSDictionary *args = call.arguments;
     BOOL refresh = [args objectForKey:@"refresh"];
     [[self getAuth:call.arguments].currentUser
-        getIDTokenForcingRefresh:refresh
-                      completion:^(NSString *_Nullable token, NSError *_Nullable error) {
-                        [self sendResult:result forObject:token error:error];
-                      }];
+        getIDTokenResultForcingRefresh:refresh
+                            completion:^(FIRAuthTokenResult *_Nullable tokenResult,
+                                         NSError *_Nullable error) {
+                              NSMutableDictionary *tokenData = nil;
+                              if (tokenResult != nil) {
+                                long expirationTimestamp =
+                                    [tokenResult.expirationDate timeIntervalSince1970];
+                                long authTimestamp = [tokenResult.authDate timeIntervalSince1970];
+                                long issuedAtTimestamp =
+                                    [tokenResult.issuedAtDate timeIntervalSince1970];
+
+                                tokenData = [[NSMutableDictionary alloc] initWithDictionary:@{
+                                  @"token" : tokenResult.token,
+                                  @"expirationTimestamp" :
+                                      [NSNumber numberWithInt:expirationTimestamp],
+                                  @"authTimestamp" : [NSNumber numberWithInt:authTimestamp],
+                                  @"issuedAtTimestamp" : [NSNumber numberWithInt:issuedAtTimestamp],
+                                  @"claims" : tokenResult.claims,
+                                }];
+
+                                if (tokenResult.signInProvider != nil) {
+                                  tokenData[@"signInProvider"] = tokenResult.signInProvider;
+                                }
+                              }
+
+                              [self sendResult:result forObject:tokenData error:error];
+                            }];
   } else if ([@"reauthenticateWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
         reauthenticateAndRetrieveDataWithCredential:[self getCredential:call.arguments]

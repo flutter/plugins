@@ -1,6 +1,13 @@
-## 0.13.0+2
+## 0.14.0+1
 
 * Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.14.0
+
+* Added new `IdTokenResult` class.
+* **Breaking Change**. `getIdToken()` method now returns `IdTokenResult` instead of a token `String`.
+  Use the `token` property of `IdTokenResult` to retrieve the token `String`.
+* Added integration testing for `getIdToken()`.
 
 ## 0.13.1+1
 
