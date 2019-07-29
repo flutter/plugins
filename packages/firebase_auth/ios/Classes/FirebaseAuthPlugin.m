@@ -396,7 +396,7 @@ int nextHandle = 0;
   FIRAdditionalUserInfo *additionalUserInfo = authResult.additionalUserInfo;
   [self sendResult:result
          forObject:@{
-           @"user" : (user != nil ? [self dictionaryFromUser:user] : nil),
+           @"user" : (user != nil ? [self dictionaryFromUser:user] : [NSNull null]),
            @"additionalUserInfo" : additionalUserInfo ? @{
              @"isNewUser" : [NSNumber numberWithBool:additionalUserInfo.isNewUser],
              @"username" : additionalUserInfo.username ?: [NSNull null],

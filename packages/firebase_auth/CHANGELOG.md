@@ -5,6 +5,17 @@
   Use the `token` property of `IdTokenResult` to retrieve the token `String`.
 * Added integration testing for `getIdToken()`.
 
+## 0.13.1+1
+
+* Update authentication example in README.
+
+## 0.13.1
+
+* Fixed a crash on iOS when sign-in fails.
+* Additional integration testing.
+* Updated documentation for `FirebaseUser.delete()` to include error codes.
+* Updated Firebase project to match other Flutterfire apps.
+
 ## 0.13.0
 
 * **Breaking change**: Replace `FirebaseUserMetadata.creationTimestamp` and
