@@ -6,6 +6,12 @@ import 'camera.dart';
 import 'camera_info.dart';
 
 /// Default [CameraConfigurator] for [CameraApi.supportAndroid].
+///
+/// This is used as the default [CameraConfigurator] for Android sdks below 21
+/// when using [CameraController].
+///
+/// This can also be used independently of [CameraController] when one needs
+/// greater control of a camera on Android sdks below 21.
 class SupportAndroidConfigurator implements CameraConfigurator {
   SupportAndroidConfigurator(this.info) : assert(info != null);
 
