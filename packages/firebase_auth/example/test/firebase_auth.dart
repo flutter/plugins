@@ -50,7 +50,6 @@ void main() {
     });
 
     test('email auth', () async {
-      final Random random = Random();
       final String testEmail = 'testuser${Uuid().v4()}@example.com';
       final String testPassword = 'testpassword';
       AuthResult result = await auth.createUserWithEmailAndPassword(
@@ -61,7 +60,7 @@ void main() {
       expect(user.uid, isNotNull);
       expect(user.isAnonymous, isFalse);
       auth.signOut();
-      Future<AuthResult> failedResult = auth.signInWithEmailAndPassword(
+      final Future<AuthResult> failedResult = auth.signInWithEmailAndPassword(
         email: testEmail,
         password: 'incorrect password',
       );
