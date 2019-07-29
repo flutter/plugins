@@ -5,6 +5,8 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:uuid/uuid.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -44,6 +46,30 @@ void main() {
           isFalse);
       expect(
           user2.metadata.lastSignInTime, equals(user2.metadata.creationTime));
+    });
+
+    test('email auth', () async {
+      final String testEmail = 'testuser${Uuid().v4()}@example.com';
+      final String testPassword = 'testpassword';
+      AuthResult result = await auth.createUserWithEmailAndPassword(
+        email: testEmail,
+        password: testPassword,
+      );
+      final FirebaseUser user = result.user;
+      expect(user.uid, isNotNull);
+      expect(user.isAnonymous, isFalse);
+      auth.signOut();
+      final Future<AuthResult> failedResult = auth.signInWithEmailAndPassword(
+        email: testEmail,
+        password: 'incorrect password',
+      );
+      expect(failedResult, throwsA(isInstanceOf<PlatformException>()));
+      result = await auth.signInWithEmailAndPassword(
+        email: testEmail,
+        password: testPassword,
+      );
+      expect(result.user.uid, equals(user.uid));
+      await user.delete();
     });
 
     test('isSignInWithEmailLink', () async {
