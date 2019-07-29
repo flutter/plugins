@@ -1,3 +1,7 @@
+## 0.6.0+20
+
+* Android: Migrated information cache methods to use instance methods.
+
 ## 0.6.0+19
 
 * Android: Fix memory leak due not unregistering ActivityLifecycleCallbacks.
