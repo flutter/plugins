@@ -1,3 +1,7 @@
+## 0.2.0+8
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
 ## 0.2.0+7
 
 * Make Gradle version compatible with the Android Gradle plugin version.

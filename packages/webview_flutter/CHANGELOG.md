@@ -1,3 +1,7 @@
+## 0.3.10+5
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
 ## 0.3.10+4
 
 * Add keyboard text to README.

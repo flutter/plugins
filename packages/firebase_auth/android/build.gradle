@@ -46,8 +46,9 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-auth:17.0.0'
+        implementation 'androidx.annotation:annotation:1.0.0'
         implementation 'com.google.firebase:firebase-common:16.1.0'
+        api 'com.google.firebase:firebase-auth:17.0.0'
         api 'com.google.code.gson:gson:2.8.5'
     }
 }
