@@ -76,7 +76,7 @@ class ImagePickerCache {
     }
     if (imageQuality > -1 && imageQuality < 101) {
       editor.putInt(SHARED_PREFERENCE_IMAGE_QUALITY_KEY, imageQuality);
-    }else{
+    } else {
       editor.putInt(SHARED_PREFERENCE_IMAGE_QUALITY_KEY, 100);
     }
     editor.apply();
@@ -148,7 +148,7 @@ class ImagePickerCache {
       if (prefs.contains(SHARED_PREFERENCE_IMAGE_QUALITY_KEY)) {
         final int imageQuality = prefs.getInt(SHARED_PREFERENCE_IMAGE_QUALITY_KEY, 100);
         resultMap.put(MAP_KEY_MAX_HEIGHT, imageQuality);
-      }else{
+      } else {
         resultMap.put(MAP_KEY_MAX_HEIGHT, 100);
       }
     }
