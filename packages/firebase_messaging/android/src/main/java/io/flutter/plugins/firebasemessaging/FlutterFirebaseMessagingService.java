@@ -67,15 +67,14 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
   public void onCreate() {
     super.onCreate();
 
-    Context context = getApplicationContext();
-    sBackgroundContext = context;
-    FlutterMain.ensureInitializationComplete(context, null);
+    sBackgroundContext = getApplicationContext();
+    FlutterMain.ensureInitializationComplete(sBackgroundContext, null);
 
     // If background isolate is not running start it.
     if (!sIsIsolateRunning.get()) {
-      SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
+      SharedPreferences p = sBackgroundContext.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
       long callbackHandle = p.getLong(BACKGROUND_SETUP_CALLBACK_HANDLE_KEY, 0);
-      startBackgroundIsolate(context, callbackHandle);
+      startBackgroundIsolate(sBackgroundContext, callbackHandle);
     }
   }
 
@@ -146,16 +145,13 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
     sBackgroundFlutterView = new FlutterNativeView(context, true);
     if (mAppBundlePath != null && !sIsIsolateRunning.get()) {
       if (sPluginRegistrantCallback == null) {
-        // throw new PluginRegistrantException();
-        Log.d(TAG, "Registrant callback is null");
-        return;
+        throw new RuntimeException("PluginRegistrantCallback is not set.");
       }
       FlutterRunArguments args = new FlutterRunArguments();
       args.bundlePath = mAppBundlePath;
       args.entrypoint = flutterCallback.callbackName;
       args.libraryPath = flutterCallback.callbackLibraryPath;
       sBackgroundFlutterView.runFromBundle(args);
-      Log.d(TAG, sBackgroundFlutterView.getPluginRegistry().toString());
       sPluginRegistrantCallback.registerWith(sBackgroundFlutterView.getPluginRegistry());
     }
   }
@@ -191,7 +187,7 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
   }
 
   public static void setBackgroundSetupHandle(Context context, long callbackHandle) {
-    // Store background message handle in shared preferences so it can be retrieved
+    // Store background setup handle in shared preferences so it can be retrieved
     // by other application instances.
     SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
     prefs.edit().putLong(BACKGROUND_SETUP_CALLBACK_HANDLE_KEY, callbackHandle).apply();
@@ -206,8 +202,8 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
   private static void executeDartCallbackInBackgroundIsolate(
       Context context, RemoteMessage remoteMessage, final CountDownLatch latch) {
     if (sBackgroundChannel == null) {
-      Log.e(TAG, "setBackgroundChannel was not called before messages came in, exiting.");
-      return;
+      throw new RuntimeException(
+          "setBackgroundChannel was not called before messages came in, exiting.");
     }
 
     // If another thread is waiting, then wake that thread when the callback returns a result.
@@ -234,11 +230,9 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
 
     Map<String, Object> args = new HashMap<>();
     Map<String, Object> messageData = new HashMap<>();
-    Log.d(TAG, "Sending background handle 1: " + sBackgroundMessageHandle);
     if (sBackgroundMessageHandle == null) {
       sBackgroundMessageHandle = getOnMessageCallbackHandle(context);
     }
-    Log.d(TAG, "Sending background handle 2: " + sBackgroundMessageHandle);
     args.put("handle", sBackgroundMessageHandle);
 
     if (remoteMessage.getData() != null) {

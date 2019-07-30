@@ -111,22 +111,22 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
     if ("FcmDartService.start".equals(call.method)) {
-      long callbackHandle = 0;
-      long onMessageHandle = 0;
+      long setupCallbackHandle = 0;
+      long backgroundMessageHandle = 0;
       try {
         List<Long> callbacks = ((ArrayList<Long>) call.arguments);
-        callbackHandle = callbacks.get(0);
-        onMessageHandle = callbacks.get(1);
+        setupCallbackHandle = callbacks.get(0);
+        backgroundMessageHandle = callbacks.get(1);
       } catch (Exception e) {
         Log.e(TAG, "There was an exception when getting callback handle from dart side");
         e.printStackTrace();
       }
       FlutterFirebaseMessagingService.setBackgroundSetupHandle(
-          this.registrar.context(), callbackHandle);
+          this.registrar.context(), setupCallbackHandle);
       FlutterFirebaseMessagingService.startBackgroundIsolate(
-          this.registrar.context(), callbackHandle);
+          this.registrar.context(), setupCallbackHandle);
       FlutterFirebaseMessagingService.setBackgroundMessageHandle(
-          this.registrar.context(), onMessageHandle);
+          this.registrar.context(), backgroundMessageHandle);
       result.success(true);
     } else if ("FcmDartService.initialized".equals(call.method)) {
       FlutterFirebaseMessagingService.onInitialized();
