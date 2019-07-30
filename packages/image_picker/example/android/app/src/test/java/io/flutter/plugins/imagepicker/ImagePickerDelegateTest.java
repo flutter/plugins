@@ -26,7 +26,7 @@ import org.mockito.MockitoAnnotations;
 public class ImagePickerDelegateTest {
   private static final double WIDTH = 10.0;
   private static final double HEIGHT = 10.0;
-  private static final int IMAGE_QUALITY = 70;
+  private static final int IMAGE_QUALITY = 100;
 
   @Mock Activity mockActivity;
   @Mock ImageResizer mockImageResizer;
@@ -36,6 +36,7 @@ public class ImagePickerDelegateTest {
   @Mock ImagePickerDelegate.IntentResolver mockIntentResolver;
   @Mock FileUtils mockFileUtils;
   @Mock Intent mockIntent;
+  @Mock ImagePickerCache cache;
 
   ImagePickerDelegate.FileUriResolver mockFileUriResolver;
 
@@ -61,13 +62,13 @@ public class ImagePickerDelegateTest {
     when(mockFileUtils.getPathFromUri(any(Context.class), any(Uri.class)))
         .thenReturn("pathFromUri");
 
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null, -1))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null, IMAGE_QUALITY))
         .thenReturn("originalPath");
     when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, HEIGHT, IMAGE_QUALITY))
         .thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null, -1))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null, IMAGE_QUALITY))
         .thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT, -1))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT, IMAGE_QUALITY))
         .thenReturn("scaledPath");
 
     mockFileUriResolver = new MockFileUriResolver();
@@ -377,6 +378,7 @@ public class ImagePickerDelegateTest {
         mockImageResizer,
         null,
         null,
+        cache,
         mockPermissionManager,
         mockIntentResolver,
         mockFileUriResolver,
@@ -390,6 +392,7 @@ public class ImagePickerDelegateTest {
         mockImageResizer,
         mockResult,
         mockMethodCall,
+        cache,
         mockPermissionManager,
         mockIntentResolver,
         mockFileUriResolver,
