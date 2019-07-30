@@ -8,7 +8,10 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 
 class SignInPage extends StatefulWidget {
+  const SignInPage({Key key}) : super(key: key);
+
   final String title = 'Registration';
+
   @override
   State<StatefulWidget> createState() => SignInPageState();
 }
@@ -46,12 +49,13 @@ class SignInPageState extends State<SignInPage> {
         return ListView(
           scrollDirection: Axis.vertical,
           children: <Widget>[
-            _EmailPasswordForm(),
-            _EmailLinkSignInSection(),
-            _AnonymouslySignInSection(),
-            _GoogleSignInSection(),
-            _PhoneSignInSection(Scaffold.of(context)),
-            _OtherProvidersSignInSection(),
+            const _EmailPasswordForm(),
+            const _EmailLinkSignInSection(),
+            const _AnonymouslySignInSection(),
+            const _GoogleSignInSection(),
+            _PhoneSignInSection(scaffold: Scaffold.of(context)),
+            const _OtherProvidersSignInSection(),
+            const _TokenSection(),
           ],
         );
       }),
@@ -65,6 +69,8 @@ class SignInPageState extends State<SignInPage> {
 }
 
 class _EmailPasswordForm extends StatefulWidget {
+  const _EmailPasswordForm({Key key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _EmailPasswordFormState();
 }
@@ -75,6 +81,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
   final TextEditingController _passwordController = TextEditingController();
   bool _success;
   String _userEmail;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -128,7 +135,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
                   : (_success
                       ? 'Successfully signed in ' + _userEmail
                       : 'Sign in failed'),
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(color: Colors.red),
             ),
           )
         ],
@@ -162,6 +169,8 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
 }
 
 class _EmailLinkSignInSection extends StatefulWidget {
+  const _EmailLinkSignInSection({Key key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _EmailLinkSignInSectionState();
 }
@@ -263,7 +272,7 @@ class _EmailLinkSignInSectionState extends State<_EmailLinkSignInSection>
                   : (_success
                       ? 'Successfully signed in, uid: ' + _userID
                       : 'Sign in failed'),
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(color: Colors.red),
             ),
           )
         ],
@@ -287,6 +296,8 @@ class _EmailLinkSignInSectionState extends State<_EmailLinkSignInSection>
 }
 
 class _AnonymouslySignInSection extends StatefulWidget {
+  const _AnonymouslySignInSection({Key key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _AnonymouslySignInSectionState();
 }
@@ -294,6 +305,7 @@ class _AnonymouslySignInSection extends StatefulWidget {
 class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
   bool _success;
   String _userID;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -323,7 +335,7 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
                 : (_success
                     ? 'Successfully signed in, uid: ' + _userID
                     : 'Sign in failed'),
-            style: TextStyle(color: Colors.red),
+            style: const TextStyle(color: Colors.red),
           ),
         )
       ],
@@ -364,6 +376,8 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
 }
 
 class _GoogleSignInSection extends StatefulWidget {
+  const _GoogleSignInSection({Key key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _GoogleSignInSectionState();
 }
@@ -371,6 +385,7 @@ class _GoogleSignInSection extends StatefulWidget {
 class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
   bool _success;
   String _userID;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -399,7 +414,7 @@ class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
                 : (_success
                     ? 'Successfully signed in, uid: ' + _userID
                     : 'Sign in failed'),
-            style: TextStyle(color: Colors.red),
+            style: const TextStyle(color: Colors.red),
           ),
         )
       ],
@@ -436,9 +451,13 @@ class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
 }
 
 class _PhoneSignInSection extends StatefulWidget {
-  _PhoneSignInSection(this._scaffold);
+  const _PhoneSignInSection({Key key, @required ScaffoldState scaffold})
+      : assert(scaffold != null),
+        _scaffold = scaffold,
+        super(key: key);
 
   final ScaffoldState _scaffold;
+
   @override
   State<StatefulWidget> createState() => _PhoneSignInSectionState();
 }
@@ -500,7 +519,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             _message,
-            style: TextStyle(color: Colors.red),
+            style: const TextStyle(color: Colors.red),
           ),
         )
       ],
@@ -572,7 +591,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
 }
 
 class _OtherProvidersSignInSection extends StatefulWidget {
-  _OtherProvidersSignInSection();
+  const _OtherProvidersSignInSection({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _OtherProvidersSignInSectionState();
@@ -609,7 +628,7 @@ class _OtherProvidersSignInSectionState
                 groupValue: _selection,
                 onChanged: _handleRadioButtonSelected,
               ),
-              Text(
+              const Text(
                 'Github',
                 style: TextStyle(fontSize: 16.0),
               ),
@@ -618,7 +637,7 @@ class _OtherProvidersSignInSectionState
                 groupValue: _selection,
                 onChanged: _handleRadioButtonSelected,
               ),
-              Text(
+              const Text(
                 'Facebook',
                 style: TextStyle(
                   fontSize: 16.0,
@@ -629,7 +648,7 @@ class _OtherProvidersSignInSectionState
                 groupValue: _selection,
                 onChanged: _handleRadioButtonSelected,
               ),
-              Text(
+              const Text(
                 'Twitter',
                 style: TextStyle(fontSize: 16.0),
               ),
@@ -763,6 +782,134 @@ class _OtherProvidersSignInSectionState
       } else {
         _message = 'Failed to sign in with Twitter. ';
       }
+    });
+  }
+}
+
+class _TokenSection extends StatefulWidget {
+  const _TokenSection({Key key}) : super(key: key);
+
+  @override
+  _TokenSectionState createState() => _TokenSectionState();
+}
+
+class _TokenSectionState extends State<_TokenSection> {
+  bool _success;
+  IdTokenResult _token;
+
+  TableRow buildRow(String key, String value) {
+    return TableRow(
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.0))),
+      children: <TableCell>[
+        TableCell(child: Text(key)),
+        TableCell(child: Text(value)),
+      ],
+    );
+  }
+
+  Widget _buildTokenTable() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Table(
+        children: <TableRow>[
+          TableRow(
+            decoration: BoxDecoration(border: Border(bottom: BorderSide())),
+            children: <TableCell>[
+              const TableCell(
+                child: Text(
+                  'token',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              TableCell(
+                child: Text(
+                  _token.token,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          buildRow('authTime', _token.authTime.toString()),
+          buildRow('expirationTime', _token.expirationTime.toString()),
+          buildRow('issuedAtTime', _token.issuedAtTime.toString()),
+          buildRow('signInProvider', _token.signInProvider.toString()),
+          TableRow(
+            decoration: BoxDecoration(border: Border(bottom: BorderSide())),
+            children: <TableCell>[
+              TableCell(
+                child: Container(
+                  margin: const EdgeInsetsDirectional.only(top: 16.0),
+                  child: Text(
+                    '${_token.claims?.length ?? 0} claims',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              TableCell(child: Container()),
+            ],
+          ),
+          if (_token.claims != null)
+            for (String key in _token.claims.keys)
+              buildRow(key, _token.claims[key].toString()),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          child: const Text('Test geting the ID Token'),
+          padding: const EdgeInsets.all(16),
+          alignment: Alignment.center,
+        ),
+        Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _success == null
+              ? null
+              : _success
+                  ? _buildTokenTable()
+                  : const Text(
+                      'Make sure you are logged in first.',
+                      style: TextStyle(color: Colors.red),
+                    ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          alignment: Alignment.center,
+          child: RaisedButton(
+            onPressed: () async {
+              _getIdToken();
+            },
+            child: const Text('Get ID Token'),
+          ),
+        )
+      ],
+    );
+  }
+
+  void _getIdToken() async {
+    final FirebaseUser user = await _auth.currentUser();
+    if (user == null) {
+      setState(() => _success = false);
+      return;
+    }
+
+    final IdTokenResult token = await user.getIdToken();
+    assert(token != null);
+
+    setState(() {
+      _success = true;
+      _token = token;
     });
   }
 }

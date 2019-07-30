@@ -13,39 +13,68 @@ part of firebase_auth;
 /// claims.
 class IdTokenResult {
   @visibleForTesting
-  IdTokenResult(this._data, this._app);
+  IdTokenResult(this.token, this._claims, this._app);
 
   final FirebaseApp _app;
 
-  final Map<dynamic, dynamic> _data;
+  final Map<dynamic, dynamic> _claims;
 
   /// The Firebase Auth ID token JWT string.
-  String get token => _data['token'];
+  final String token;
 
-  /// The time when the ID token expires.
-  DateTime get expirationTime =>
-      DateTime.fromMillisecondsSinceEpoch(_data['expirationTimestamp'] * 1000);
+  /// Returns the time at which this ID token will expire
+  DateTime get expirationTime {
+    final int milliseconds = _getValue('exp');
+    return DateTime.fromMillisecondsSinceEpoch(milliseconds);
+  }
 
-  /// The time the user authenticated (signed in).
+  /// Returns the authentication time.
   ///
-  /// Note that this is not the time the token was refreshed.
-  DateTime get authTime =>
-      DateTime.fromMillisecondsSinceEpoch(_data['authTimestamp'] * 1000);
+  /// This is the time the user authenticated (signed in) and not the time the
+  /// token was refreshed.
+  DateTime get authTime {
+    final int milliseconds = _getValue('auth_time');
+    return DateTime.fromMillisecondsSinceEpoch(milliseconds);
+  }
 
-  /// The time when ID token was issued.
-  DateTime get issuedAtTime =>
-      DateTime.fromMillisecondsSinceEpoch(_data['issuedAtTimestamp'] * 1000);
+  /// Returns the issued at time.
+  ///
+  /// This is the time the ID token was last refreshed and not the
+  /// authentication time.
+  DateTime get issuedAtTime {
+    final int milliseconds = _getValue('iat');
+    return DateTime.fromMillisecondsSinceEpoch(milliseconds);
+  }
 
-  /// The sign-in provider through which the ID token was obtained (anonymous,
-  /// custom, phone, password, etc). Note, this does not map to provider IDs.
-  String get signInProvider => _data['signInProvider'];
+  /// Returns the sign-in provider through which the ID token was obtained.
+  ///
+  /// This can be anonymous, custom, phone, password, etc. Note, this does not
+  /// map to provider IDs. For example, anonymous and custom authentications are
+  /// not considered providers. We chose the name here to map the name used in
+  /// the ID token.
+  String get signInProvider {
+    final Map<String, dynamic> firebaseClaims =
+        Map<String, dynamic>.from(_claims['firebase']);
+    return firebaseClaims == null ? null : firebaseClaims['sign_in_provider'];
+  }
 
-  /// The entire payload claims of the ID token including the standard reserved
-  /// claims as well as the custom claims.
-  Map<dynamic, dynamic> get claims => _data['claims'];
+  /// Returns the entire payload claims of the ID token.
+  ///
+  /// This including the standard reserved claims as well as the custom claims
+  /// (set by developer via Admin SDK). Developers should verify the ID token
+  /// and parse claims from its payload on the backend and never trust this
+  /// value on the client.
+  ///
+  /// Returns an empty map if no claims are present.
+  Map<String, dynamic> get claims => Map<String, dynamic>.from(_claims);
 
   @override
   String toString() {
-    return '$runtimeType($_data)';
+    return '$runtimeType($_claims)';
+  }
+
+  int _getValue(String key) {
+    final int value = _claims[key] ?? 0;
+    return value * 1000;
   }
 }

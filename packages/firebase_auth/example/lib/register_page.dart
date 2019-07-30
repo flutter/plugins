@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key key}) : super(key: key);
   final String title = 'Registration';
+
   @override
   State<StatefulWidget> createState() => RegisterPageState();
 }
@@ -15,6 +17,7 @@ class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _success;
   String _userEmail;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
