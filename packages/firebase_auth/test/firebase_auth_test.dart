@@ -25,19 +25,21 @@ const String kMockPhoneNumber = '5555555555';
 const String kMockVerificationId = '12345';
 const String kMockSmsCode = '123456';
 const String kMockLanguage = 'en';
-const String kMockIdTokenResultSignInProvider = 'password';
-const Map<dynamic, dynamic> kMockIdTokenResultClaims = <dynamic, dynamic>{
-  'claim1': 'value1',
-};
 const int kMockIdTokenResultExpirationTimestamp = 123456;
 const int kMockIdTokenResultAuthTimestamp = 1234567;
 const int kMockIdTokenResultIssuedAtTimestamp = 12345678;
+const String kMockIdTokenResultSignInProvider = 'password';
+const Map<dynamic, dynamic> kMockIdTokenResultClaims = <dynamic, dynamic>{
+  'claim1': 'value1',
+  'exp': kMockIdTokenResultExpirationTimestamp,
+  'auth_time': kMockIdTokenResultAuthTimestamp,
+  'iat': kMockIdTokenResultIssuedAtTimestamp,
+  'firebase': <String, dynamic>{
+    'sign_in_provider': kMockIdTokenResultSignInProvider,
+  },
+};
 const Map<String, dynamic> kMockIdTokenResult = <String, dynamic>{
   'token': kMockIdToken,
-  'expirationTimestamp': kMockIdTokenResultExpirationTimestamp,
-  'authTimestamp': kMockIdTokenResultAuthTimestamp,
-  'issuedAtTimestamp': kMockIdTokenResultIssuedAtTimestamp,
-  'signInProvider': kMockIdTokenResultSignInProvider,
   'claims': kMockIdTokenResultClaims,
 };
 

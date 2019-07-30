@@ -539,19 +539,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(
             new OnCompleteListener<GetTokenResult>() {
               public void onComplete(@NonNull Task<GetTokenResult> task) {
-                if (task.isSuccessful() && task.getResult() != null) {
-                  final Map<String, Object> map = new HashMap<>();
-                  map.put("token", task.getResult().getToken());
-                  map.put("expirationTimestamp", task.getResult().getExpirationTimestamp());
-                  map.put("authTimestamp", task.getResult().getAuthTimestamp());
-                  map.put("issuedAtTimestamp", task.getResult().getIssuedAtTimestamp());
-                  map.put("claims", task.getResult().getClaims());
-
-                  if (task.getResult().getSignInProvider() != null) {
-                    map.put("signInProvider", task.getResult().getSignInProvider());
+                if (task.isSuccessful()) {
+                  if (task.getResult() != null) {
+                    final Map<String, Object> map = new HashMap<>();
+                    map.put("token", task.getResult().getToken());
+                    map.put("claims", task.getResult().getClaims());
+                    result.success(Collections.unmodifiableMap(map));
+                  } else {
+                    result.success(null);
                   }
-
-                  result.success(Collections.unmodifiableMap(map));
                 } else {
                   reportException(result, task.getException());
                 }

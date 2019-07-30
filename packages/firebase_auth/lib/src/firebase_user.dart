@@ -40,7 +40,14 @@ class FirebaseUser extends UserInfo {
       'app': _app.name,
     });
 
-    return IdTokenResult(data, _app);
+    if (data != null) {
+      final String token = data['token'];
+      final Map<String, dynamic> claims =
+          Map<String, dynamic>.from(data['claims']);
+      return IdTokenResult(token, claims, _app);
+    }
+
+    return null;
   }
 
   /// Associates a user account from a third-party identity provider with this

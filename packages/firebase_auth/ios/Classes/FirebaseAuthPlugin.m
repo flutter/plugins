@@ -206,28 +206,13 @@ int nextHandle = 0;
         getIDTokenResultForcingRefresh:refresh
                             completion:^(FIRAuthTokenResult *_Nullable tokenResult,
                                          NSError *_Nullable error) {
-                              NSMutableDictionary *tokenData = nil;
+                              NSDictionary *tokenData = nil;
                               if (tokenResult != nil) {
-                                long expirationTimestamp =
-                                    [tokenResult.expirationDate timeIntervalSince1970];
-                                long authTimestamp = [tokenResult.authDate timeIntervalSince1970];
-                                long issuedAtTimestamp =
-                                    [tokenResult.issuedAtDate timeIntervalSince1970];
-
-                                tokenData = [[NSMutableDictionary alloc] initWithDictionary:@{
+                                tokenData = @{
                                   @"token" : tokenResult.token,
-                                  @"expirationTimestamp" :
-                                      [NSNumber numberWithInt:expirationTimestamp],
-                                  @"authTimestamp" : [NSNumber numberWithInt:authTimestamp],
-                                  @"issuedAtTimestamp" : [NSNumber numberWithInt:issuedAtTimestamp],
                                   @"claims" : tokenResult.claims,
-                                }];
-
-                                if (tokenResult.signInProvider != nil) {
-                                  tokenData[@"signInProvider"] = tokenResult.signInProvider;
-                                }
+                                };
                               }
-
                               [self sendResult:result forObject:tokenData error:error];
                             }];
   } else if ([@"reauthenticateWithCredential" isEqualToString:call.method]) {
