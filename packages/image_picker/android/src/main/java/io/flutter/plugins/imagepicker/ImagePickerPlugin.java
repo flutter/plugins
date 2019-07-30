@@ -80,18 +80,18 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
           }
 
           @Override
-          public void onActivityDestroyed(Activity activity) {}
+          public void onActivityDestroyed(Activity activity) {
+            if (activity == registrar.activity()) {
+              ((Application) registrar.context()).unregisterActivityLifecycleCallbacks(this);
+            }
+          }
 
           @Override
           public void onActivityStopped(Activity activity) {}
         };
 
-    if (this.registrar != null
-        && this.registrar.activity() != null
-        && this.registrar.activity().getApplication() != null) {
-      this.registrar
-          .activity()
-          .getApplication()
+    if (this.registrar != null) {
+      ((Application) this.registrar.context())
           .registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
     }
   }
