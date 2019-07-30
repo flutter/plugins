@@ -1,3 +1,7 @@
+## 0.14.0+1
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
 ## 0.14.0
 
 * Added new `IdTokenResult` class.
