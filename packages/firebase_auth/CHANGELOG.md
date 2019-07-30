@@ -1,5 +1,10 @@
 ## 0.14.0+1
 
+* Update example app to show token custom claims
+* Rely on custom claims to get the field from the IdTokenResult
+
+## 0.14.0+1
+
 * Add dependency on `androidx.annotation:annotation:1.0.0`.
 
 ## 0.14.0
