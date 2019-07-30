@@ -1,3 +1,8 @@
+## 0.14.0+1
+
+* Update example app to show token custom claims
+* Rely on custom claims to get the field from the IdTokenResult
+
 ## 0.14.0
 
 * Added new `IdTokenResult` class.
