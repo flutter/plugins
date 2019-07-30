@@ -526,6 +526,64 @@ void main() {
               'rightEye': <dynamic>[16.1, 17.1],
               'rightMouth': <dynamic>[18.1, 19.1],
             },
+            'contours': <dynamic, dynamic>{
+              'allPoints': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'face': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'leftEye': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'leftEyebrowBottom': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'leftEyebrowTop': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'lowerLipBottom': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'lowerLipTop': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'noseBottom': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'noseBridge': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'rightEye': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'rightEyebrowBottom': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'rightEyebrowTop': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'upperLipBottom': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+              'upperLipTop': <dynamic>[
+                <dynamic>[1.1, 2.2],
+                <dynamic>[3.3, 4.4],
+              ],
+            },
           },
         ];
       });
@@ -538,6 +596,7 @@ void main() {
             enableClassification: true,
             enableLandmarks: true,
             enableTracking: false,
+            enableContours: true,
             minFaceSize: 0.5,
             mode: FaceDetectorMode.accurate,
           ),
@@ -561,6 +620,7 @@ void main() {
               'options': <String, dynamic>{
                 'enableClassification': true,
                 'enableLandmarks': true,
+                'enableContours': true,
                 'enableTracking': false,
                 'minFaceSize': 0.5,
                 'mode': 'accurate',
@@ -598,6 +658,81 @@ void main() {
         expect(p(FaceLandmarkType.rightEar), const Offset(14.1, 15.1));
         expect(p(FaceLandmarkType.rightEye), const Offset(16.1, 17.1));
         expect(p(FaceLandmarkType.rightMouth), const Offset(18.1, 19.1));
+
+        List<Offset> c(FaceContourType type) {
+          return face.getContour(type).positionsList;
+        }
+
+        expect(
+          c(FaceContourType.allPoints),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.face),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.leftEye),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.leftEyebrowBottom),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.leftEyebrowTop),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.lowerLipBottom),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.lowerLipTop),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.noseBottom),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.noseBridge),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.rightEye),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.rightEyebrowBottom),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.rightEyebrowTop),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.upperLipBottom),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
+        expect(
+          c(FaceContourType.upperLipTop),
+          containsAllInOrder(
+              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+        );
       });
 
       test('processImage with null landmark', () async {

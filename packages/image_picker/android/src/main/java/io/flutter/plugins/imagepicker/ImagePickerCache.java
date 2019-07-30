@@ -67,7 +67,6 @@ class ImagePickerCache {
   }
 
   private void setMaxDimension(Double maxWidth, Double maxHeight, int imageQuality) {
-
     SharedPreferences.Editor editor = prefs.edit();
     if (maxWidth != null) {
       editor.putLong(SHARED_PREFERENCE_MAX_WIDTH_KEY, Double.doubleToRawLongBits(maxWidth));
