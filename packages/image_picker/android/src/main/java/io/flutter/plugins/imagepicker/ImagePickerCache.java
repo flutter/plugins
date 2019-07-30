@@ -77,6 +77,8 @@ class ImagePickerCache {
     }
     if (imageQuality > -1 && imageQuality < 101) {
       editor.putInt(SHARED_PREFERENCE_IMAGE_QUALITY_KEY, imageQuality);
+    }else{
+      editor.putInt(SHARED_PREFERENCE_IMAGE_QUALITY_KEY, 100);
     }
     editor.apply();
   }
@@ -141,12 +143,14 @@ class ImagePickerCache {
         resultMap.put(MAP_KEY_MAX_WIDTH, Double.longBitsToDouble(maxWidthValue));
       }
       if (prefs.contains(SHARED_PREFERENCE_MAX_HEIGHT_KEY)) {
-        final long maxHeighValue = prefs.getLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, 0);
-        resultMap.put(MAP_KEY_MAX_HEIGHT, Double.longBitsToDouble(maxHeighValue));
+        final long maxHeightValue = prefs.getLong(SHARED_PREFERENCE_MAX_HEIGHT_KEY, 0);
+        resultMap.put(MAP_KEY_MAX_HEIGHT, Double.longBitsToDouble(maxHeightValue));
       }
       if (prefs.contains(SHARED_PREFERENCE_IMAGE_QUALITY_KEY)) {
         final int imageQuality = prefs.getInt(SHARED_PREFERENCE_IMAGE_QUALITY_KEY, 100);
         resultMap.put(MAP_KEY_MAX_HEIGHT, imageQuality);
+      }else{
+        resultMap.put(MAP_KEY_MAX_HEIGHT, 100);
       }
     }
 
