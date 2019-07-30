@@ -683,7 +683,7 @@ class _OtherProvidersSignInSectionState
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             _message,
-            style: TextStyle(color: Colors.red),
+            style: const TextStyle(color: Colors.red),
           ),
         )
       ],
