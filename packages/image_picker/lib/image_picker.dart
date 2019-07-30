@@ -26,15 +26,17 @@ class ImagePicker {
 
   /// Returns a [File] object pointing to the image that was picked.
   ///
-  /// The [source] argument controls where the image comes from. This can
+  /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
-  /// If specified, the image will be at most [maxWidth] wide and
-  /// [maxHeight] tall. Otherwise the image will be returned at it's
+  /// If specified, the image will be at most `maxWidth` wide and
+  /// `maxHeight` tall. Otherwise the image will be returned at it's
   /// original width and height.
-  /// The [imageQuality] argument resize the image as per the input, ranging from 0-100 compression.
-  /// 0 meaning compress for small size, 100 meaning compress for max quality.
-  /// Some formats, like PNG which is loss less, will ignore the quality setting
+  /// The `imageQuality` argument modifies the quality of the image, ranging from 0-100
+  /// where 100 is the original/max quality. If `imageQuality` is null, the image with
+  /// the original quality will be returned. Compression is only supportted for certain
+  /// image types such as JPEG. If compression is not supported for the image that is picked,
+  /// an warning message will be logged.
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
