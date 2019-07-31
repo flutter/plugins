@@ -19,6 +19,8 @@ import 'camera_info.dart';
 class SupportAndroidConfigurator implements CameraConfigurator {
   SupportAndroidConfigurator(this.info) : assert(info != null);
 
+  static const String _isDisposedMessage = 'This controller has been disposed.';
+
   NativeTexture _texture;
   Camera _camera;
   bool _isDisposed = false;
@@ -29,7 +31,7 @@ class SupportAndroidConfigurator implements CameraConfigurator {
 
   @override
   Future<int> addPreviewTexture() {
-    assert(!_isDisposed);
+    assert(!_isDisposed, _isDisposedMessage);
 
     final Completer<int> completer = Completer<int>();
 
@@ -65,20 +67,20 @@ class SupportAndroidConfigurator implements CameraConfigurator {
 
   @override
   Future<void> start() {
-    assert(!_isDisposed);
+    assert(!_isDisposed, _isDisposedMessage);
     return _camera.startPreview();
   }
 
   @override
   Future<void> stop() {
-    assert(!_isDisposed);
+    assert(!_isDisposed, _isDisposedMessage);
     return _camera.stopPreview();
   }
 
   @override
   // ignore: missing_return
   Future<void> initialize() {
-    assert(!_isDisposed);
+    assert(!_isDisposed, _isDisposedMessage);
     _camera = Camera.open(info.id);
   }
 }
