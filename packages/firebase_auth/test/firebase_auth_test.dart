@@ -25,15 +25,30 @@ const String kMockPhoneNumber = '5555555555';
 const String kMockVerificationId = '12345';
 const String kMockSmsCode = '123456';
 const String kMockLanguage = 'en';
-const Map<String, dynamic> kMockAdditionalUserInfo = <String, dynamic>{
-  'isNewUser': false,
-  'username': 'flutterUser',
-  'providerId': 'testProvider',
-  'profile': <String, dynamic>{'foo': 'bar'},
+const String kMockIdTokenResultSignInProvider = 'password';
+const Map<dynamic, dynamic> kMockIdTokenResultClaims = <dynamic, dynamic>{
+  'claim1': 'value1',
 };
-const Map<String, dynamic> kMockUser = <String, dynamic>{
+const int kMockIdTokenResultExpirationTimestamp = 123456;
+const int kMockIdTokenResultAuthTimestamp = 1234567;
+const int kMockIdTokenResultIssuedAtTimestamp = 12345678;
+const Map<String, dynamic> kMockIdTokenResult = <String, dynamic>{
+  'token': kMockIdToken,
+  'expirationTimestamp': kMockIdTokenResultExpirationTimestamp,
+  'authTimestamp': kMockIdTokenResultAuthTimestamp,
+  'issuedAtTimestamp': kMockIdTokenResultIssuedAtTimestamp,
+  'signInProvider': kMockIdTokenResultSignInProvider,
+  'claims': kMockIdTokenResultClaims,
+};
+
+final int kMockCreationTimestamp = DateTime(2019, 1, 1).millisecondsSinceEpoch;
+final int kMockLastSignInTimestamp =
+    DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch;
+final Map<String, dynamic> kMockUser = <String, dynamic>{
   'isAnonymous': true,
   'isEmailVerified': false,
+  'creationTimestamp': kMockCreationTimestamp,
+  'lastSignInTimestamp': kMockLastSignInTimestamp,
   'providerData': <Map<String, String>>[
     <String, String>{
       'providerId': kMockProviderId,
@@ -43,6 +58,12 @@ const Map<String, dynamic> kMockUser = <String, dynamic>{
       'email': kMockEmail,
     },
   ],
+};
+const Map<String, dynamic> kMockAdditionalUserInfo = <String, dynamic>{
+  'isNewUser': false,
+  'username': 'flutterUser',
+  'providerId': 'testProvider',
+  'profile': <String, dynamic>{'foo': 'bar'},
 };
 
 void main() {
@@ -60,7 +81,7 @@ void main() {
         log.add(call);
         switch (call.method) {
           case "getIdToken":
-            return kMockIdToken;
+            return kMockIdTokenResult;
             break;
           case "isSignInWithEmailLink":
             return true;
@@ -103,6 +124,10 @@ void main() {
       expect(userInfo.displayName, kMockDisplayName);
       expect(userInfo.photoUrl, kMockPhotoUrl);
       expect(userInfo.email, kMockEmail);
+      expect(user.metadata.creationTime.millisecondsSinceEpoch,
+          kMockCreationTimestamp);
+      expect(user.metadata.lastSignInTime.millisecondsSinceEpoch,
+          kMockLastSignInTimestamp);
     }
 
     void verifyAuthResult(AuthResult result) {
@@ -117,9 +142,28 @@ void main() {
     }
 
     test('getIdToken', () async {
+      void verifyIdTokenResult(IdTokenResult idTokenResult) {
+        expect(idTokenResult.token, equals(kMockIdToken));
+        expect(
+            idTokenResult.expirationTime,
+            equals(DateTime.fromMillisecondsSinceEpoch(
+                kMockIdTokenResultExpirationTimestamp * 1000)));
+        expect(
+            idTokenResult.authTime,
+            equals(DateTime.fromMillisecondsSinceEpoch(
+                kMockIdTokenResultAuthTimestamp * 1000)));
+        expect(
+            idTokenResult.issuedAtTime,
+            equals(DateTime.fromMillisecondsSinceEpoch(
+                kMockIdTokenResultIssuedAtTimestamp * 1000)));
+        expect(idTokenResult.signInProvider,
+            equals(kMockIdTokenResultSignInProvider));
+        expect(idTokenResult.claims, equals(kMockIdTokenResultClaims));
+      }
+
       final FirebaseUser user = await auth.currentUser();
-      expect(await user.getIdToken(), equals(kMockIdToken));
-      expect(await user.getIdToken(refresh: true), equals(kMockIdToken));
+      verifyIdTokenResult(await user.getIdToken());
+      verifyIdTokenResult(await user.getIdToken(refresh: true));
       expect(
         log,
         <Matcher>[
