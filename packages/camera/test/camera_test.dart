@@ -95,7 +95,7 @@ class MockCameraDescription extends CameraDescription {
 
 class MockCameraConfigurator extends CameraConfigurator {
   @override
-  Future<int> addPreviewTexture() => Future<int>.value(7);
+  Future<int> getOrCreatePreviewTexture() => Future<int>.value(7);
 
   @override
   Future<void> dispose() => Future<void>.value();

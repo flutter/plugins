@@ -35,7 +35,8 @@ abstract class CameraDescription {
 abstract class CameraConfigurator {
   /// Texture id that can be used to send camera frames to a [Texture] widget.
   ///
-  /// You must call [addPreviewTexture] first or this will only return null.
+  /// You must call [getOrCreatePreviewTexture] first or this will only return
+  /// null.
   int get previewTextureId;
 
   /// Initializes the camera on the device.
@@ -52,6 +53,13 @@ abstract class CameraConfigurator {
   /// Dispose all resources and disables further use of this configurator.
   Future<void> dispose();
 
-  /// Retrieves a valid texture Id to be used with a [Texture] widget.
-  Future<int> addPreviewTexture();
+  /// Create a [NativeTexture] used to show a live preview.
+  ///
+  /// This returns the texture id that can be used with a [Texture] widget.
+  ///
+  /// A [CameraConfigurator] should only create one [NativeTexture] and will
+  /// return the same id if one has already been created.
+  ///
+  /// To access the texture id synchronously, use [previewTextureId].
+  Future<int> getOrCreatePreviewTexture();
 }

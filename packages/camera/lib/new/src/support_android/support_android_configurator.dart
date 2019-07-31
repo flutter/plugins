@@ -30,7 +30,7 @@ class SupportAndroidConfigurator implements CameraConfigurator {
   Camera get camera => _camera;
 
   @override
-  Future<int> addPreviewTexture() {
+  Future<int> getOrCreatePreviewTexture() {
     assert(!_isDisposed, _isDisposedMessage);
 
     final Completer<int> completer = Completer<int>();
