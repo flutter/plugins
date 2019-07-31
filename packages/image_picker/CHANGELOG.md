@@ -1,3 +1,12 @@
+## 0.6.1+1
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.6.1
+
+* New feature : Get images with custom quality. While picking images, user can pass `imageQuality`
+parameter to compress image.
+
 ## 0.6.0+20
 
 * Android: Migrated information cache methods to use instance methods.
