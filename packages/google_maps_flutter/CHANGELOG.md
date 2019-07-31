@@ -1,6 +1,6 @@
 ## 0.5.20+7
 
-* Don't recreate map elements if they didn't change since las widget build.
+* Don't recreate map elements if they didn't change since last widget build.
 
 ## 0.5.20+6
 

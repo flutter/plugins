@@ -36,13 +36,15 @@ class _PolygonUpdates {
         .map(idToCurrentPolygon)
         .toSet();
 
+    bool currentNotEqualsPrevious(Polygon _current) {
+      final Polygon _previous = previousPolygons[_current.polygonId];
+      return _current != _previous;
+    }
+
     final Set<Polygon> _polygonsToChange = currentPolygonIds
         .intersection(prevPolygonIds)
         .map(idToCurrentPolygon)
-        .where((Polygon _current) {
-          final Polygon _previous = previousPolygons[_current.polygonId];
-          return _current != _previous;
-        })
+        .where(currentNotEqualsPrevious)
         .toSet();
 
     polygonsToAdd = _polygonsToAdd;
