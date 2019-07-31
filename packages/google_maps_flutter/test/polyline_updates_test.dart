@@ -75,10 +75,10 @@ void main() {
 
     final Polyline addedPolyline = platformGoogleMap.polylinesToAdd.first;
     expect(addedPolyline, equals(p2));
+
     expect(platformGoogleMap.polylineIdsToRemove.isEmpty, true);
 
-    expect(platformGoogleMap.polylinesToChange.length, 1);
-    expect(platformGoogleMap.polylinesToChange.first, equals(p1));
+    expect(platformGoogleMap.polylinesToChange.isEmpty, true);
   });
 
   testWidgets("Removing a polyline", (WidgetTester tester) async {

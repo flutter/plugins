@@ -75,10 +75,10 @@ void main() {
 
     final Marker addedMarker = platformGoogleMap.markersToAdd.first;
     expect(addedMarker, equals(m2));
+
     expect(platformGoogleMap.markerIdsToRemove.isEmpty, true);
 
-    expect(platformGoogleMap.markersToChange.length, 1);
-    expect(platformGoogleMap.markersToChange.first, equals(m1));
+    expect(platformGoogleMap.markersToChange.isEmpty, true);
   });
 
   testWidgets("Removing a marker", (WidgetTester tester) async {

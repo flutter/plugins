@@ -75,10 +75,10 @@ void main() {
 
     final Circle addedCircle = platformGoogleMap.circlesToAdd.first;
     expect(addedCircle, equals(c2));
+
     expect(platformGoogleMap.circleIdsToRemove.isEmpty, true);
 
-    expect(platformGoogleMap.circlesToChange.length, 1);
-    expect(platformGoogleMap.circlesToChange.first, equals(c1));
+    expect(platformGoogleMap.circlesToChange.isEmpty, true);
   });
 
   testWidgets("Removing a circle", (WidgetTester tester) async {

@@ -75,10 +75,10 @@ void main() {
 
     final Polygon addedPolygon = platformGoogleMap.polygonsToAdd.first;
     expect(addedPolygon, equals(p2));
+
     expect(platformGoogleMap.polygonIdsToRemove.isEmpty, true);
 
-    expect(platformGoogleMap.polygonsToChange.length, 1);
-    expect(platformGoogleMap.polygonsToChange.first, equals(p1));
+    expect(platformGoogleMap.polygonsToChange.isEmpty, true);
   });
 
   testWidgets("Removing a polygon", (WidgetTester tester) async {
