@@ -1,3 +1,18 @@
+## 0.12.9
+
+* New optional `includeMetadataChanges` parameter added to `DocumentReference.snapshots()`
+ and `Query.snapshots()`
+* Fix example app crash when the `message` field was not a string
+* Internal renaming of method names.
+
+## 0.12.8+1
+
+* Add `metadata` to `QuerySnapshot`.
+
+## 0.12.8
+
+* Updated how document ids are generated to more closely match native implementations.
+
 ## 0.12.7+1
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
