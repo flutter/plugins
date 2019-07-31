@@ -1,3 +1,7 @@
+## 0.2.1
+
+* iOS: Add currencyCode to priceLocale on productDetails.
+
 ## 0.2.0+8
 
 * Add dependency on `androidx.annotation:annotation:1.0.0`.
