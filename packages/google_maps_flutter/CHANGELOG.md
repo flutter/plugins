@@ -1,3 +1,11 @@
+## 0.5.20+1
+
+* Android: Unregister ActivityLifecycleCallbacks on activity destroy (fixes a memory leak).
+
+## 0.5.20
+
+* Add map toolbar support
+
 ## 0.5.19+2
 
 * Fix polygons for iOS

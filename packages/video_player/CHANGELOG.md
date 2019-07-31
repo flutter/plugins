@@ -1,3 +1,15 @@
+## 0.10.1+6
+
+* [iOS] Fixed a memory leak with notification observing.
+
+## 0.10.1+5
+
+* Fix race condition while disposing the VideoController.
+
+## 0.10.1+4
+
+* Fixed syntax error in README.md.
+
 ## 0.10.1+3
 
 * Add missing template type parameter to `invokeMethod` calls.

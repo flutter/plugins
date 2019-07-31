@@ -1,3 +1,15 @@
+## 0.9.2
+
+* Add detection of `FaceContour`s when using the `FaceDetector`. See `README.md` for more information.
+
+## 0.9.1+1
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 0.9.1
+
+* Add support for cloud text recognizer.
+
 ## 0.9.0+3
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.

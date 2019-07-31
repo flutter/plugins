@@ -14,7 +14,7 @@ function check_changed_packages() {
   # We need this check because some CIs can do a single branch clones with a limited history of commits.
   local packages
   local branch_base_sha="$(get_branch_base_sha)"
-  if [[ "$?" == 0 ]]; then
+  if [[ "$branch_base_sha" != "" ]]; then
     echo "Checking for changed packages from $branch_base_sha"
     IFS=$'\n' packages=( $(git diff --name-only "$branch_base_sha" HEAD | grep -o "packages/[^/]*" | sed -e "s/packages\///g" | sort | uniq) )
   else
@@ -24,11 +24,12 @@ function check_changed_packages() {
   fi
 
   # Filter out any packages that don't have a pubspec.yaml: they have probably
-  # been deleted in this PR.
+  # been deleted in this PR. Also filter out `location_background` since it
+  # should be removed soon.
   CHANGED_PACKAGES=""
   CHANGED_PACKAGE_LIST=()
   for package in "${packages[@]}"; do
-    if [[ -f "$REPO_DIR/packages/$package/pubspec.yaml" ]]; then
+    if [ -f "$REPO_DIR/packages/$package/pubspec.yaml" ] && [ $package != "location_background" ]; then
       CHANGED_PACKAGES="${CHANGED_PACKAGES},$package"
       CHANGED_PACKAGE_LIST=("${CHANGED_PACKAGE_LIST[@]}" "$package")
     fi
