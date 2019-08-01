@@ -47,9 +47,6 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
       case "setAnalyticsCollectionEnabled":
         handleSetAnalyticsCollectionEnabled(call, result);
         break;
-      case "setMinimumSessionDuration":
-        handleSetMinimumSessionDuration(call, result);
-        break;
       case "setSessionTimeoutDuration":
         handleSetSessionTimeoutDuration(call, result);
         break;
@@ -57,7 +54,7 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
         handleSetUserProperty(call, result);
         break;
       case "resetAnalyticsData":
-        handleResetAnalyticsData(call, result);
+        handleResetAnalyticsData(result);
         break;
       default:
         result.notImplemented();
@@ -84,7 +81,6 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
   }
 
   private void handleSetCurrentScreen(MethodCall call, Result result) {
-    @SuppressWarnings("unchecked")
     Activity activity = registrar.activity();
     if (activity == null) {
       result.error("no_activity", "handleSetCurrentScreen requires a foreground activity", null);
@@ -104,12 +100,6 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void handleSetMinimumSessionDuration(MethodCall call, Result result) {
-    final Integer milliseconds = (Integer) call.arguments;
-    firebaseAnalytics.setMinimumSessionDuration(milliseconds);
-    result.success(null);
-  }
-
   private void handleSetSessionTimeoutDuration(MethodCall call, Result result) {
     final Integer milliseconds = (Integer) call.arguments;
     firebaseAnalytics.setSessionTimeoutDuration(milliseconds);
@@ -126,7 +116,7 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void handleResetAnalyticsData(MethodCall call, Result result) {
+  private void handleResetAnalyticsData(Result result) {
     firebaseAnalytics.resetAnalyticsData();
     result.success(null);
   }
