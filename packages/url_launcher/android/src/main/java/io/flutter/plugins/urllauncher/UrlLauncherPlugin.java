@@ -4,11 +4,9 @@
 
 package io.flutter.plugins.urllauncher;
 
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Browser;
@@ -25,7 +23,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
 
   public static void registerWith(Registrar registrar) {
     MethodChannel channel =
-      new MethodChannel(registrar.messenger(), "plugins.flutter.io/url_launcher");
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/url_launcher");
     UrlLauncherPlugin instance = new UrlLauncherPlugin(registrar);
     channel.setMethodCallHandler(instance);
   }
@@ -57,12 +55,12 @@ public class UrlLauncherPlugin implements MethodCallHandler {
     Intent launchIntent = new Intent(Intent.ACTION_VIEW);
     launchIntent.setData(Uri.parse(url));
     ComponentName componentName =
-      launchIntent.resolveActivity(mRegistrar.context().getPackageManager());
+        launchIntent.resolveActivity(mRegistrar.context().getPackageManager());
 
     boolean canLaunch =
-      componentName != null
-        && !"{com.android.fallback/com.android.fallback.Fallback}"
-              .equals(componentName.toShortString());
+        componentName != null
+            && !"{com.android.fallback/com.android.fallback.Fallback}"
+                .equals(componentName.toShortString());
     result.success(canLaunch);
   }
 
@@ -80,17 +78,15 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       return;
     }
 
-
     if (useWebView) {
-      launchIntent = WebViewActivity.createIntent(
-        context, url,
-        enableJavaScript, enableDomStorage,
-        headersBundle
-      );
+      launchIntent =
+          WebViewActivity.createIntent(
+              context, url, enableJavaScript, enableDomStorage, headersBundle);
     } else {
-      launchIntent = new Intent(Intent.ACTION_VIEW)
-                       .setData(Uri.parse(url))
-                       .putExtra(Browser.EXTRA_HEADERS, headersBundle);
+      launchIntent =
+          new Intent(Intent.ACTION_VIEW)
+              .setData(Uri.parse(url))
+              .putExtra(Browser.EXTRA_HEADERS, headersBundle);
     }
 
     context.startActivity(launchIntent);
