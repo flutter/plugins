@@ -44,6 +44,7 @@ public class PackageInfoPlugin implements MethodCallHandler {
         map.put("packageName", context.getPackageName());
         map.put("version", info.versionName);
         map.put("buildNumber", String.valueOf(getLongVersionCode(info)));
+        map.put("signatures", getSignatures(pm));
 
         result.success(map);
       } else {
@@ -60,5 +61,12 @@ public class PackageInfoPlugin implements MethodCallHandler {
       return info.getLongVersionCode();
     }
     return info.versionCode;
+  }
+  
+  private String getSignatures(PackageManager pm) throws PackageManager.NameNotFoundException {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      return pm.getPackageInfo(mRegistrar.context().getPackageName(), PackageManager.GET_SIGNING_CERTIFICATES).signingInfo.getApkContentsSigners()[0].toCharsString();
+    }
+    return pm.getPackageInfo(mRegistrar.context().getPackageName(), PackageManager.GET_SIGNATURES).signatures[0].toCharsString();
   }
 }
