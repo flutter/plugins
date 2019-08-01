@@ -1,4 +1,4 @@
-## 4.0.5+1
+## 4.0.6
 
 * Fixed the `PlatformException` leaking from `catchError()` in debug mode.
 
