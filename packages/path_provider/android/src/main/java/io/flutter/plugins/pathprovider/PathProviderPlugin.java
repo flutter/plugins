@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.pathprovider;
 
+import android.os.Build;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -36,7 +37,10 @@ public class PathProviderPlugin implements MethodCallHandler {
         result.success(getPathProviderApplicationDocumentsDirectory());
         break;
       case "getStorageDirectory":
-        result.success(getPathProviderStorageDirectory());
+        result.success(Environment.getExternalStorageDirectory().getAbsolutePath());
+        break;
+      case "getExternalFilesDir":
+        result.success(getPathProviderExternalFilesDirectory());
         break;
       case "getApplicationSupportDirectory":
         result.success(getApplicationSupportDirectory());
@@ -57,7 +61,7 @@ public class PathProviderPlugin implements MethodCallHandler {
     return PathUtils.getDataDirectory(mRegistrar.context());
   }
 
-  private String getPathProviderStorageDirectory() {
+  private String getPathProviderExternalFilesDirectory() {
     final File dir = mRegistrar.context().getExternalFilesDir(null);
     if (dir == null) {
       return null;
