@@ -1,3 +1,7 @@
+## 5.1.1
+
+* Suppress a handled deprecation warning on iOS
+
 ## 5.1.0
 
 * Add `headers` field to enable headers in the Android implementation.
