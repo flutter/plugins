@@ -1,4 +1,4 @@
-## 0.5.21
+## 0.5.20+2
 
 * Add toScreenLocation() and fromScreenLocation() to map controller. 
 
