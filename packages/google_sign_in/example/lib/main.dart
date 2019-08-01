@@ -54,7 +54,7 @@ class SignInDemoState extends State<SignInDemo> {
     });
     final http.Response response = await http.get(
       'https://people.googleapis.com/v1/people/me/connections'
-          '?requestMask.includeField=person.names',
+      '?requestMask.includeField=person.names',
       headers: await _currentUser.authHeaders,
     );
     if (response.statusCode != 200) {
@@ -115,11 +115,11 @@ class SignInDemoState extends State<SignInDemo> {
             leading: GoogleUserCircleAvatar(
               identity: _currentUser,
             ),
-            title: Text(_currentUser.displayName),
-            subtitle: Text(_currentUser.email),
+            title: Text(_currentUser.displayName ?? ''),
+            subtitle: Text(_currentUser.email ?? ''),
           ),
           const Text("Signed in successfully."),
-          Text(_contactText),
+          Text(_contactText ?? ''),
           RaisedButton(
             child: const Text('SIGN OUT'),
             onPressed: _handleSignOut,

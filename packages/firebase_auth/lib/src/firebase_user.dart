@@ -6,7 +6,7 @@ part of firebase_auth;
 
 /// Represents a user.
 class FirebaseUser extends UserInfo {
-  FirebaseUser._(Map<dynamic, dynamic> data, FirebaseApp app)
+  FirebaseUser._(Map<String, dynamic> data, FirebaseApp app)
       : providerData = data['providerData']
             .map<UserInfo>((dynamic item) => UserInfo._(item, app))
             .toList(),
@@ -26,30 +26,58 @@ class FirebaseUser extends UserInfo {
   /// Returns true if the user's email is verified.
   bool get isEmailVerified => _data['isEmailVerified'];
 
-  /// Obtains the id token for the current user, forcing a [refresh] if desired.
+  /// Obtains the id token result for the current user, forcing a [refresh] if desired.
   ///
   /// Useful when authenticating against your own backend. Use our server
   /// SDKs or follow the official documentation to securely verify the
   /// integrity and validity of this token.
   ///
   /// Completes with an error if the user is signed out.
-  Future<String> getIdToken({bool refresh = false}) async {
-    return await FirebaseAuth.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('getIdToken', <String, dynamic>{
+  Future<IdTokenResult> getIdToken({bool refresh = false}) async {
+    final Map<String, dynamic> data = await FirebaseAuth.channel
+        .invokeMapMethod<String, dynamic>('getIdToken', <String, dynamic>{
       'refresh': refresh,
       'app': _app.name,
     });
+
+    return IdTokenResult(data, _app);
+  }
+
+  /// Associates a user account from a third-party identity provider with this
+  /// user and returns additional identity provider data.
+  ///
+  /// This allows the user to sign in to this account in the future with
+  /// the given account.
+  ///
+  /// Errors:
+  ///   • `ERROR_WEAK_PASSWORD` - If the password is not strong enough.
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the credential is malformed or has expired.
+  ///   • `ERROR_EMAIL_ALREADY_IN_USE` - If the email is already in use by a different account.
+  ///   • `ERROR_CREDENTIAL_ALREADY_IN_USE` - If the account is already in use by a different account, e.g. with phone auth.
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
+  ///   • `ERROR_PROVIDER_ALREADY_LINKED` - If the current user already has an account of this type linked.
+  ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that this type of account is not enabled.
+  ///   • `ERROR_INVALID_ACTION_CODE` - If the action code in the link is malformed, expired, or has already been used.
+  ///       This can only occur when using [EmailAuthProvider.getCredentialWithLink] to obtain the credential.
+  Future<AuthResult> linkWithCredential(AuthCredential credential) async {
+    assert(credential != null);
+    final Map<String, dynamic> data =
+        await FirebaseAuth.channel.invokeMapMethod<String, dynamic>(
+      'linkWithCredential',
+      <String, dynamic>{
+        'app': _app.name,
+        'provider': credential._provider,
+        'data': credential._data,
+      },
+    );
+    final AuthResult result = AuthResult._(data, _app);
+    return result;
   }
 
   /// Initiates email verification for the user.
   Future<void> sendEmailVerification() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await FirebaseAuth.channel.invokeMethod(
+    await FirebaseAuth.channel.invokeMethod<void>(
         'sendEmailVerification', <String, String>{'app': _app.name});
   }
 
@@ -57,19 +85,19 @@ class FirebaseUser extends UserInfo {
   /// attached providers, display name, and so on).
   Future<void> reload() async {
     await FirebaseAuth.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('reload', <String, String>{'app': _app.name});
+        .invokeMethod<void>('reload', <String, String>{'app': _app.name});
   }
 
-  /// Deletes the user record from your Firebase project's database.
+  /// Deletes the current user (also signs out the user).
+  ///
+  /// Errors:
+  ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the credential is malformed or has expired.
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_USER_NOT_FOUND` - If the user has been deleted (for example, in the Firebase console)
   Future<void> delete() async {
     await FirebaseAuth.channel
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        .invokeMethod('delete', <String, String>{'app': _app.name});
+        .invokeMethod<void>('delete', <String, String>{'app': _app.name});
   }
 
   /// Updates the email address of the user.
@@ -90,12 +118,30 @@ class FirebaseUser extends UserInfo {
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
   Future<void> updateEmail(String email) async {
     assert(email != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return await FirebaseAuth.channel.invokeMethod(
+    return await FirebaseAuth.channel.invokeMethod<void>(
       'updateEmail',
       <String, String>{'email': email, 'app': _app.name},
+    );
+  }
+
+  /// Updates the phone number of the user.
+  ///
+  /// The new phone number credential corresponding to the phone number
+  /// to be added to the Firebase account, if a phone number is already linked to the account.
+  /// this new phone number will replace it.
+  ///
+  /// **Important**: This is a security sensitive operation that requires
+  /// the user to have recently signed in.
+  ///
+  Future<void> updatePhoneNumberCredential(AuthCredential credential) async {
+    assert(credential != null);
+    await FirebaseAuth.channel.invokeMethod<void>(
+      'updatePhoneNumberCredential',
+      <String, dynamic>{
+        'app': _app.name,
+        'provider': credential._provider,
+        'data': credential._data,
+      },
     );
   }
 
@@ -115,10 +161,7 @@ class FirebaseUser extends UserInfo {
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
   Future<void> updatePassword(String password) async {
     assert(password != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return await FirebaseAuth.channel.invokeMethod(
+    return await FirebaseAuth.channel.invokeMethod<void>(
       'updatePassword',
       <String, String>{'password': password, 'app': _app.name},
     );
@@ -133,10 +176,7 @@ class FirebaseUser extends UserInfo {
     assert(userUpdateInfo != null);
     final Map<String, String> data = userUpdateInfo._updateData;
     data['app'] = _app.name;
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return await FirebaseAuth.channel.invokeMethod(
+    return await FirebaseAuth.channel.invokeMethod<void>(
       'updateProfile',
       data,
     );
@@ -158,13 +198,11 @@ class FirebaseUser extends UserInfo {
   ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
   ///   • `ERROR_USER_NOT_FOUND` - If the user has been deleted (for example, in the Firebase console)
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
-  Future<FirebaseUser> reauthenticateWithCredential(
+  Future<AuthResult> reauthenticateWithCredential(
       AuthCredential credential) async {
     assert(credential != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await FirebaseAuth.channel.invokeMethod(
+    final Map<String, dynamic> data =
+        await FirebaseAuth.channel.invokeMapMethod<String, dynamic>(
       'reauthenticateWithCredential',
       <String, dynamic>{
         'app': _app.name,
@@ -172,7 +210,7 @@ class FirebaseUser extends UserInfo {
         'data': credential._data,
       },
     );
-    return this;
+    return AuthResult._(data, _app);
   }
 
   /// Detaches the [provider] account from the current user.
@@ -190,10 +228,7 @@ class FirebaseUser extends UserInfo {
   ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
   Future<void> unlinkFromProvider(String provider) async {
     assert(provider != null);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return await FirebaseAuth.channel.invokeMethod(
+    return await FirebaseAuth.channel.invokeMethod<void>(
       'unlinkFromProvider',
       <String, String>{'provider': provider, 'app': _app.name},
     );

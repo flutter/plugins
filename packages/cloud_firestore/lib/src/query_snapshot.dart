@@ -12,6 +12,10 @@ class QuerySnapshot {
           return DocumentSnapshot._(
             data['paths'][index],
             _asStringKeyedMap(data['documents'][index]),
+            SnapshotMetadata._(
+              data['metadatas'][index]['hasPendingWrites'],
+              data['metadatas'][index]['isFromCache'],
+            ),
             _firestore,
           );
         }),
@@ -21,7 +25,11 @@ class QuerySnapshot {
             data['documentChanges'][index],
             _firestore,
           );
-        });
+        }),
+        metadata = SnapshotMetadata._(
+          data['metadata']['hasPendingWrites'],
+          data['metadata']['isFromCache'],
+        );
 
   /// Gets a list of all the documents included in this snapshot
   final List<DocumentSnapshot> documents;
@@ -29,6 +37,8 @@ class QuerySnapshot {
   /// An array of the documents that changed since the last snapshot. If this
   /// is the first snapshot, all documents will be in the list as Added changes.
   final List<DocumentChange> documentChanges;
+
+  final SnapshotMetadata metadata;
 
   final Firestore _firestore;
 }

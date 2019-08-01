@@ -100,8 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _scaffoldKey.currentState.showSnackBar(SnackBar(
       content: Text(
         'Success!\n Downloaded $name \n from url: $url @ bucket: $bucket\n '
-            'at path: $path \n\nFile contents: "$fileContents" \n'
-            'Wrote "$tempFileContents" to tmp.txt',
+        'at path: $path \n\nFile contents: "$fileContents" \n'
+        'Wrote "$tempFileContents" to tmp.txt',
         style: const TextStyle(color: Color.fromARGB(255, 0, 155, 0)),
       ),
     ));

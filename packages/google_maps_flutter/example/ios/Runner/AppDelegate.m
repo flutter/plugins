@@ -4,10 +4,14 @@
 
 @implementation AppDelegate
 
-- (BOOL)application:(UIApplication *)application
-    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication*)application
+    didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
   // Provide the GoogleMaps API key.
-  [GMSServices provideAPIKey:@"YOUR KEY HERE"];
+  NSString* mapsApiKey = [[NSProcessInfo processInfo] environment][@"MAPS_API_KEY"];
+  if ([mapsApiKey length] == 0) {
+    mapsApiKey = @"YOUR KEY HERE";
+  }
+  [GMSServices provideAPIKey:mapsApiKey];
 
   // Register Flutter plugins.
   [GeneratedPluginRegistrant registerWithRegistry:self];

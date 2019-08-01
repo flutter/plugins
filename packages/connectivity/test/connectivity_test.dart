@@ -15,6 +15,8 @@ void main() {
             return 'wifi';
           case 'wifiName':
             return '1337wifi';
+          case 'wifiBSSID':
+            return 'c0:ff:33:c0:d3:55';
           case 'wifiIPAddress':
             return '127.0.0.1';
           default:
@@ -26,6 +28,9 @@ void main() {
           .setMockMethodCallHandler((MethodCall methodCall) async {
         switch (methodCall.method) {
           case 'listen':
+            // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+            // https://github.com/flutter/flutter/issues/33446
+            // ignore: deprecated_member_use
             await BinaryMessages.handlePlatformMessage(
               Connectivity.eventChannel.name,
               Connectivity.eventChannel.codec.encodeSuccessEnvelope('wifi'),
@@ -53,6 +58,20 @@ void main() {
         <Matcher>[
           isMethodCall(
             'wifiName',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
+    test('getWifiBSSID', () async {
+      final String result = await Connectivity().getWifiBSSID();
+      expect(result, 'c0:ff:33:c0:d3:55');
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'wifiBSSID',
             arguments: null,
           ),
         ],

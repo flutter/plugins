@@ -13,6 +13,9 @@ void main() {
     const StandardMethodCodec standardMethod = StandardMethodCodec();
 
     void emitEvent(ByteData event) {
+      // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+      // https://github.com/flutter/flutter/issues/33446
+      // ignore: deprecated_member_use
       BinaryMessages.handlePlatformMessage(
         channelName,
         event,
@@ -21,6 +24,9 @@ void main() {
     }
 
     bool isCanceled = false;
+    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+    // https://github.com/flutter/flutter/issues/33446
+    // ignore: deprecated_member_use
     BinaryMessages.setMockMessageHandler(channelName, (ByteData message) async {
       final MethodCall methodCall = standardMethod.decodeMethodCall(message);
       if (methodCall.method == 'listen') {

@@ -10,7 +10,7 @@ part of cloud_firestore;
 /// The data can be extracted with the data property or by using subscript
 /// syntax to access a specific field.
 class DocumentSnapshot {
-  DocumentSnapshot._(this._path, this.data, this._firestore);
+  DocumentSnapshot._(this._path, this.data, this.metadata, this._firestore);
 
   final String _path;
   final Firestore _firestore;
@@ -20,6 +20,10 @@ class DocumentSnapshot {
 
   /// Contains all the data of this snapshot
   final Map<String, dynamic> data;
+
+  /// Metadata about this snapshot concerning its source and if it has local
+  /// modifications.
+  final SnapshotMetadata metadata;
 
   /// Reads individual values from the snapshot
   dynamic operator [](String key) => data[key];
