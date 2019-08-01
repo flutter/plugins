@@ -87,23 +87,29 @@ public class LocalAuthPlugin implements MethodCallHandler {
       authenticationHelper.authenticate();
     } else if (call.method.equals("getAvailableBiometrics")) {
       try {
-        ArrayList<String> biometrics = new ArrayList<String>();
-        FingerprintManagerCompat fingerprintMgr =
-            FingerprintManagerCompat.from(registrar.activity());
-        if (fingerprintMgr.isHardwareDetected()) {
-          if (fingerprintMgr.hasEnrolledFingerprints()) {
-            biometrics.add("fingerprint");
-          } else {
-            biometrics.add("undefined");
-          }
-        }
-        result.success(biometrics);
+        // TODO(mehmetf): Add check using biometric manager when it is available in androidx.
+        checkUsingFingerPrintManager(result);
       } catch (Exception e) {
         result.error("no_biometrics_available", e.getMessage(), null);
       }
-
     } else {
       result.notImplemented();
     }
+  }
+
+  // We don't return an error here because the point is to check whether the device has
+  // any biometric detection available. If there is none, we return an empty set. If there's
+  // one but it is not setup correctly, we return "unknown".
+  private void checkUsingFingerPrintManager(final Result result) {
+    ArrayList<String> biometrics = new ArrayList<String>();
+    FingerprintManagerCompat fingerprintMgr = FingerprintManagerCompat.from(registrar.activity());
+    if (fingerprintMgr.isHardwareDetected()) {
+      if (fingerprintMgr.hasEnrolledFingerprints()) {
+        biometrics.add("fingerprint");
+      } else {
+        biometrics.add("unknown");
+      }
+    }
+    result.success(biometrics);
   }
 }
