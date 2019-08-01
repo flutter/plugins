@@ -508,11 +508,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
-      // value = value.copyWith(isRecordingVideo: false);
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      await _channel.invokeMethod(
+      await _channel.invokeMethod<void>(
         'pauseVideoRecording',
         <String, dynamic>{'textureId': _textureId},
       );
@@ -536,11 +532,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
-      // value = value.copyWith(isRecordingVideo: false);
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      await _channel.invokeMethod(
+      await _channel.invokeMethod<void>(
         'resumeVideoRecording',
         <String, dynamic>{'textureId': _textureId},
       );
