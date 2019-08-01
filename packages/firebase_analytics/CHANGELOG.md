@@ -1,3 +1,9 @@
+## 5.0.0
+
+* Android : Remove deprecated method `setMinimumSessionDuration`.
+* Android : AGP and gradle update.
+* Android : Remove redundant castings.
+
 ## 4.0.2
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
