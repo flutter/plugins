@@ -1,7 +1,3 @@
-## 0.5.20+2
-
-* Add toScreenLocation() and fromScreenLocation() to map controller. 
-
 ## 0.5.20+1
 
 * Android: Unregister ActivityLifecycleCallbacks on activity destroy (fixes a memory leak).
