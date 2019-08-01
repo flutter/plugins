@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Support for cloud functions emulators.
+
 ## 0.4.0+3
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
@@ -93,7 +97,7 @@
   [Callable functions](https://firebase.google.com/docs/functions/callable)
   are similar to other HTTP functions, with these additional features:
 
-    - With callables, Firebase Authentication and FCM tokens are
-      automatically included in requests.
-    - The functions.https.onCall trigger automatically deserializes
-      the request body and validates auth tokens.
+  - With callables, Firebase Authentication and FCM tokens are
+    automatically included in requests.
+  - The functions.https.onCall trigger automatically deserializes
+    the request body and validates auth tokens.

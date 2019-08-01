@@ -82,20 +82,22 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
 
-  [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
-                                                    object:[_player currentItem]
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  if (self->_isLooping) {
-                                                    AVPlayerItem* p = [note object];
-                                                    [p seekToTime:kCMTimeZero
-                                                        completionHandler:nil];
-                                                  } else {
-                                                    if (self->_eventSink) {
-                                                      self->_eventSink(@{@"event" : @"completed"});
-                                                    }
-                                                  }
-                                                }];
+  // Add an observer that will respond to itemDidPlayToEndTime
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(itemDidPlayToEndTime:)
+                                               name:AVPlayerItemDidPlayToEndTimeNotification
+                                             object:item];
+}
+
+- (void)itemDidPlayToEndTime:(NSNotification*)notification {
+  if (_isLooping) {
+    AVPlayerItem* p = [notification object];
+    [p seekToTime:kCMTimeZero completionHandler:nil];
+  } else {
+    if (_eventSink) {
+      _eventSink(@{@"event" : @"completed"});
+    }
+  }
 }
 
 static inline CGFloat radiansToDegrees(CGFloat radians) {

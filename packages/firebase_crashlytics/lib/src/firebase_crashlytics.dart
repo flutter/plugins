@@ -30,7 +30,10 @@ class Crashlytics {
     print('Flutter error caught by Crashlytics plugin:');
 
     _recordError(details.exceptionAsString(), details.stack,
-        context: details.context);
+        context: details.context,
+        information: details.informationCollector == null
+            ? null
+            : details.informationCollector());
   }
 
   /// Submits a report of a non-fatal error.
@@ -165,6 +168,12 @@ class Crashlytics {
           'line': lineNumber,
         };
 
+        // The next section would throw an exception in some cases if there was no stop here.
+        if (lineParts.length < 3) {
+          elements.add(element);
+          continue;
+        }
+
         if (lineParts[2].contains(".")) {
           final String className =
               lineParts[2].substring(0, lineParts[2].indexOf(".")).trim();
@@ -185,29 +194,65 @@ class Crashlytics {
     return elements;
   }
 
+  // On top of the default exception components, [information] can be passed as well.
+  // This allows the developer to get a better understanding of exceptions thrown
+  // by the Flutter framework. [FlutterErrorDetails] often explain why an exception
+  // occurred and give useful background information in [FlutterErrorDetails.informationCollector].
+  // Crashlytics will log this information in addition to the stack trace.
+  // If [information] is `null` or empty, it will be ignored.
   Future<void> _recordError(dynamic exception, StackTrace stack,
-      {dynamic context}) async {
+      {dynamic context, Iterable<DiagnosticsNode> information}) async {
     bool inDebugMode = false;
     if (!enableInDevMode) {
       assert(inDebugMode = true);
     }
 
+    final String _information = (information == null || information.isEmpty)
+        ? ''
+        : (StringBuffer()..writeAll(information, '\n')).toString();
+
     if (inDebugMode && !enableInDevMode) {
-      print(Trace.format(stack));
+      // If available, give context to the exception.
+      if (context != null)
+        print('The following exception was thrown $context:');
+
+      // Need to print the exception to explain why the exception was thrown.
+      print(exception);
+
+      // Print information provided by the Flutter framework about the exception.
+      if (_information.isNotEmpty) print('\n$_information');
+
+      // Not using Trace.format here to stick to the default stack trace format
+      // that Flutter developers are used to seeing.
+      if (stack != null) print('\n$stack');
     } else {
-      // Report error
+      // The stack trace can be null. To avoid the following exception:
+      // Invalid argument(s): Cannot create a Trace from null.
+      // To avoid that exception, we can check for null and provide an empty stack trace.
+      stack ??= StackTrace.fromString('');
+
+      // Report error.
       final List<String> stackTraceLines =
           Trace.format(stack).trimRight().split('\n');
       final List<Map<String, String>> stackTraceElements =
           getStackTraceElements(stackTraceLines);
-      await channel
-          .invokeMethod<dynamic>('Crashlytics#onError', <String, dynamic>{
+
+      // The context is a string that "should be in a form that will make sense in
+      // English when following the word 'thrown'" according to the documentation for
+      // [FlutterErrorDetails.context]. It is displayed to the user on Crashlytics
+      // as the "reason", which is forced by iOS, with the "thrown" prefix added.
+      final String result = await channel
+          .invokeMethod<String>('Crashlytics#onError', <String, dynamic>{
         'exception': "${exception.toString()}",
         'context': '$context',
+        'information': _information,
         'stackTraceElements': stackTraceElements,
         'logs': _logs.toList(),
         'keys': _prepareKeys(),
       });
+
+      // Print result.
+      print(result);
     }
   }
 }

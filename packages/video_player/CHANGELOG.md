@@ -1,6 +1,10 @@
-## 0.10.1+6
+## 0.10.1+7
 
 * iOS: fixed some videos being rendered black
+
+## 0.10.1+6
+
+* [iOS] Fixed a memory leak with notification observing.
 
 ## 0.10.1+5
 
