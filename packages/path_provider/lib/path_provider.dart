@@ -76,6 +76,18 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 /// to access outside the app's sandbox.
 ///
 /// On Android this uses the `getExternalFilesDir(null)`.
+Future<Directory> getExternalFilesDirectory() async {
+  if (Platform.isIOS)
+    throw UnsupportedError("Functionality not available on iOS");
+  final String path =
+      await _channel.invokeMethod<String>('getExternalFilesDir');
+  if (path == null) {
+    return null;
+  }
+  return Directory(path);
+}
+
+
 Future<Directory> getExternalStorageDirectory() async {
   if (Platform.isIOS)
     throw UnsupportedError("Functionality not available on iOS");
