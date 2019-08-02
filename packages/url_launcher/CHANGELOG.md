@@ -1,4 +1,4 @@
-## 5.1.1+1
+## 5.1.2
 
 * Update AGP and gradle.
 * Split plugin and WebViewActivity class files.
