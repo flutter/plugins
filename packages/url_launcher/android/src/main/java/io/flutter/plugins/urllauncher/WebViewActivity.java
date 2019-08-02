@@ -25,36 +25,36 @@ public class WebViewActivity extends Activity {
   public static String ACTION_CLOSE = "close action";
 
   private final BroadcastReceiver broadcastReceiver =
-    new BroadcastReceiver() {
-      @Override
-      public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
-        if (ACTION_CLOSE.equals(action)) {
-          finish();
+      new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+          String action = intent.getAction();
+          if (ACTION_CLOSE.equals(action)) {
+            finish();
+          }
         }
-      }
-    };
+      };
 
   private final WebViewClient webViewClient =
-    new WebViewClient() {
+      new WebViewClient() {
 
-      @Override
-      public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-          view.loadUrl(url);
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            view.loadUrl(url);
+            return false;
+          }
+          return super.shouldOverrideUrlLoading(view, url);
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.loadUrl(request.getUrl().toString());
+          }
           return false;
         }
-        return super.shouldOverrideUrlLoading(view, url);
-      }
-
-      @Override
-      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          view.loadUrl(request.getUrl().toString());
-        }
-        return false;
-      }
-    };
+      };
 
   private WebView webview;
 
@@ -115,15 +115,15 @@ public class WebViewActivity extends Activity {
 
   /* Hides the constants used to forward data to the Activity instance. */
   public static Intent createIntent(
-    Context context,
-    String url,
-    boolean enableJavaScript,
-    boolean enableDomStorage,
-    Bundle headersBundle) {
+      Context context,
+      String url,
+      boolean enableJavaScript,
+      boolean enableDomStorage,
+      Bundle headersBundle) {
     return new Intent(context, WebViewActivity.class)
-             .putExtra(URL_EXTRA, url)
-             .putExtra(ENABLE_JS_EXTRA, enableJavaScript)
-             .putExtra(ENABLE_DOM_EXTRA, enableDomStorage)
-             .putExtra(Browser.EXTRA_HEADERS, headersBundle);
+        .putExtra(URL_EXTRA, url)
+        .putExtra(ENABLE_JS_EXTRA, enableJavaScript)
+        .putExtra(ENABLE_DOM_EXTRA, enableDomStorage)
+        .putExtra(Browser.EXTRA_HEADERS, headersBundle);
   }
 }
