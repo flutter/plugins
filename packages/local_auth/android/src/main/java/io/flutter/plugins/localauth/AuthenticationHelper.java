@@ -95,13 +95,13 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   @Override
   public void onAuthenticationError(int errorCode, CharSequence errString) {
     switch (errorCode) {
-      // TODO(mehmetf): Re-enable when biometric alpha05 is released.
-      // https://developer.android.com/jetpack/androidx/releases/biometric
-      // case BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL:
-      //   completionHandler.onError(
-      //       "PasscodeNotSet",
-      //       "Phone not secured by PIN, pattern or password, or SIM is currently locked.");
-      //   break;
+        // TODO(mehmetf): Re-enable when biometric alpha05 is released.
+        // https://developer.android.com/jetpack/androidx/releases/biometric
+        // case BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL:
+        //   completionHandler.onError(
+        //       "PasscodeNotSet",
+        //       "Phone not secured by PIN, pattern or password, or SIM is currently locked.");
+        //   break;
       case BiometricPrompt.ERROR_NO_SPACE:
       case BiometricPrompt.ERROR_NO_BIOMETRICS:
         if (call.argument("useErrorDialogs")) {
