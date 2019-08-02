@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+* [iOS] Fixes crash when trying to report a crash without any context
+
 ## 0.1.0+1
 
 * Added additional exception information from the Flutter framework to the reports.

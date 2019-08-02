@@ -3,6 +3,10 @@
 * Add an optional `userAgent` property to set a custom User Agent.
   Add `getUserAgent` to WebViewController. 
 
+## 0.3.10+5
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
 ## 0.3.10+4
 
 * Add keyboard text to README.
