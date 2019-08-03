@@ -1,3 +1,7 @@
+## 0.9.0+4
+
+* Android : Update AGP, gradle and admob.
+
 ## 0.9.0+3
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
