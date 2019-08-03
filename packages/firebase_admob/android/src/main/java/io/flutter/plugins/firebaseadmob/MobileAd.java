@@ -6,7 +6,6 @@ package io.flutter.plugins.firebaseadmob;
 
 import android.app.Activity;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,14 +20,14 @@ import java.util.Map;
 
 abstract class MobileAd extends AdListener {
   private static final String TAG = "flutter";
-  private static SparseArray<MobileAd> allAds = new SparseArray<MobileAd>();
 
+  private final MethodChannel channel;
+  private final MobileAdRegistrar adRegistrar;
   final Activity activity;
-  final MethodChannel channel;
   final int id;
-  Status status;
   double anchorOffset;
   int anchorType;
+  Status status;
 
   enum Status {
     CREATED,
@@ -38,28 +37,16 @@ abstract class MobileAd extends AdListener {
     LOADED,
   }
 
-  private MobileAd(int id, Activity activity, MethodChannel channel) {
+  private MobileAd(
+      MobileAdRegistrar adRegistrar, int id, Activity activity, MethodChannel channel) {
     this.id = id;
     this.activity = activity;
     this.channel = channel;
     this.status = Status.CREATED;
     this.anchorOffset = 0.0;
     this.anchorType = Gravity.BOTTOM;
-    allAds.put(id, this);
-  }
-
-  static Banner createBanner(Integer id, AdSize adSize, Activity activity, MethodChannel channel) {
-    MobileAd ad = getAdForId(id);
-    return (ad != null) ? (Banner) ad : new Banner(id, adSize, activity, channel);
-  }
-
-  static Interstitial createInterstitial(Integer id, Activity activity, MethodChannel channel) {
-    MobileAd ad = getAdForId(id);
-    return (ad != null) ? (Interstitial) ad : new Interstitial(id, activity, channel);
-  }
-
-  static MobileAd getAdForId(Integer id) {
-    return allAds.get(id);
+    this.adRegistrar = adRegistrar;
+    adRegistrar.register(id, this);
   }
 
   Status getStatus() {
@@ -71,7 +58,7 @@ abstract class MobileAd extends AdListener {
   abstract void show();
 
   void dispose() {
-    allAds.remove(id);
+    adRegistrar.unregister(id);
   }
 
   private Map<String, Object> argumentsMap(Object... args) {
@@ -125,8 +112,13 @@ abstract class MobileAd extends AdListener {
     private AdView adView;
     private AdSize adSize;
 
-    private Banner(Integer id, AdSize adSize, Activity activity, MethodChannel channel) {
-      super(id, activity, channel);
+    Banner(
+        MobileAdRegistrar adRegistrar,
+        Integer id,
+        AdSize adSize,
+        Activity activity,
+        MethodChannel channel) {
+      super(adRegistrar, id, activity, channel);
       this.adSize = adSize;
     }
 
@@ -190,8 +182,8 @@ abstract class MobileAd extends AdListener {
   static class Interstitial extends MobileAd {
     private InterstitialAd interstitial = null;
 
-    private Interstitial(int id, Activity activity, MethodChannel channel) {
-      super(id, activity, channel);
+    Interstitial(MobileAdRegistrar adRegistrar, int id, Activity activity, MethodChannel channel) {
+      super(adRegistrar, id, activity, channel);
     }
 
     @Override

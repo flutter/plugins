@@ -20,6 +20,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
   private final Registrar registrar;
   private final MethodChannel channel;
+  private final MobileAdRegistrar adRegistrar;
 
   RewardedVideoAdWrapper rewardedWrapper;
 
@@ -31,12 +32,17 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     }
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_admob");
-    channel.setMethodCallHandler(new FirebaseAdMobPlugin(registrar, channel));
+
+    final MobileAdRegistrar adRegistry = new MobileAdRegistrar();
+
+    channel.setMethodCallHandler(new FirebaseAdMobPlugin(registrar, channel, adRegistry));
   }
 
-  private FirebaseAdMobPlugin(Registrar registrar, MethodChannel channel) {
+  private FirebaseAdMobPlugin(
+      Registrar registrar, MethodChannel channel, MobileAdRegistrar adRegistrar) {
     this.registrar = registrar;
     this.channel = channel;
+    this.adRegistrar = adRegistrar;
     FirebaseApp.initializeApp(registrar.context());
     rewardedWrapper = new RewardedVideoAdWrapper(registrar.activity(), channel);
   }
@@ -84,7 +90,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
       adSize = new AdSize(width, height);
     }
 
-    MobileAd.Banner banner = MobileAd.createBanner(id, adSize, activity, channel);
+    MobileAd.Banner banner = adRegistrar.createBanner(id, adSize, activity, channel);
 
     if (banner.status != MobileAd.Status.CREATED) {
       if (banner.status == MobileAd.Status.FAILED)
@@ -143,7 +149,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   }
 
   private void callShowAd(int id, MethodCall call, Result result) {
-    MobileAd ad = MobileAd.getAdForId(id);
+    MobileAd ad = adRegistrar.getAdForId(id);
     if (ad == null) {
       result.error("ad_not_loaded", "show failed, the specified ad was not loaded id=" + id, null);
       return;
@@ -160,7 +166,8 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   }
 
   private void callIsAdLoaded(int id, MethodCall call, Result result) {
-    MobileAd ad = MobileAd.getAdForId(id);
+    MobileAd ad = adRegistrar.getAdForId(id);
+
     if (ad == null) {
       result.error("no_ad_for_id", "isAdLoaded failed, no add exists for id=" + id, null);
       return;
@@ -178,7 +185,8 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   }
 
   private void callDisposeAd(int id, MethodCall call, Result result) {
-    MobileAd ad = MobileAd.getAdForId(id);
+    MobileAd ad = adRegistrar.getAdForId(id);
+
     if (ad == null) {
       result.error("no_ad_for_id", "dispose failed, no add exists for id=" + id, null);
       return;
@@ -208,7 +216,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
         callLoadBannerAd(id, activity, channel, call, result);
         break;
       case "loadInterstitialAd":
-        callLoadInterstitialAd(MobileAd.createInterstitial(id, activity, channel), call, result);
+        callLoadInterstitialAd(adRegistrar.createInterstitial(id, activity, channel), call, result);
         break;
       case "loadRewardedVideoAd":
         callLoadRewardedVideoAd(call, result);
