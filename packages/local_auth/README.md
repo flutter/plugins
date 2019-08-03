@@ -142,11 +142,11 @@ Update your project's `AndroidManifest.xml` file to include the
 <manifest>
 ```
 
-On Android, you can only check for existence of fingerprint hardware prior
+On Android, you can check only for existence of fingerprint hardware prior
 to API 29 (Android Q). Therefore, if you would like to support other biometrics
-types (such as face scanning), *do not* call `getAvailableBiometrics`. Simply call
-`authenticateWithBiometrics`. This will return an error if there was no hardware
-available.
+types (such as face scanning) and you want to support SDKs lower than Q,
+*do not* call `getAvailableBiometrics`. Simply call `authenticateWithBiometrics`.
+This will return an error if there was no hardware available.
 
 ## Sticky Auth
 

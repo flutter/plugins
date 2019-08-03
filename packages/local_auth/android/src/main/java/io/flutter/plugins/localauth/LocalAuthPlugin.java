@@ -5,7 +5,8 @@
 package io.flutter.plugins.localauth;
 
 import android.app.Activity;
-import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import androidx.fragment.app.FragmentActivity;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -87,29 +88,32 @@ public class LocalAuthPlugin implements MethodCallHandler {
       authenticationHelper.authenticate();
     } else if (call.method.equals("getAvailableBiometrics")) {
       try {
-        // TODO(mehmetf): Add check using biometric manager when it is available in androidx.
-        checkUsingFingerPrintManager(result);
+        Activity activity = registrar.activity();
+        if (activity == null || activity.isFinishing()) {
+          result.error("no_activity", "local_auth plugin requires a foreground activity", null);
+          return;
+        }
+        ArrayList<String> biometrics = new ArrayList<String>();
+        PackageManager packageManager = activity.getPackageManager();
+        if (Build.VERSION.SDK_INT >= 23) {
+          if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
+            biometrics.add("fingerprint");
+          }
+        }
+        if (Build.VERSION.SDK_INT >= 29) {
+          if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
+            biometrics.add("face");
+          }
+          if (packageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)) {
+            biometrics.add("iris");
+          }
+        }
+        result.success(biometrics);
       } catch (Exception e) {
         result.error("no_biometrics_available", e.getMessage(), null);
       }
     } else {
       result.notImplemented();
     }
-  }
-
-  // We don't return an error here because the point is to check whether the device has
-  // any biometric detection available. If there is none, we return an empty set. If there's
-  // one but it is not setup correctly, we return "unknown".
-  private void checkUsingFingerPrintManager(final Result result) {
-    ArrayList<String> biometrics = new ArrayList<String>();
-    FingerprintManagerCompat fingerprintMgr = FingerprintManagerCompat.from(registrar.activity());
-    if (fingerprintMgr.isHardwareDetected()) {
-      if (fingerprintMgr.hasEnrolledFingerprints()) {
-        biometrics.add("fingerprint");
-      } else {
-        biometrics.add("unknown");
-      }
-    }
-    result.success(biometrics);
   }
 }
