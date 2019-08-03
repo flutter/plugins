@@ -14,6 +14,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.util.Locale;
 import java.util.Map;
 
 public class FirebaseAdMobPlugin implements MethodCallHandler {
@@ -51,34 +52,41 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     result.success(Boolean.TRUE);
   }
 
-  private void callLoadBannerAd(
-      int id, Activity activity, MethodChannel channel, MethodCall call, Result result) {
+  private void callLoadBannerAd(Integer id, Activity activity, MethodCall call, Result result) {
     String adUnitId = call.argument("adUnitId");
     if (adUnitId == null || adUnitId.isEmpty()) {
       result.error("no_unit_id", "a null or empty adUnitId was provided for ad id=" + id, null);
       return;
     }
 
-    int width = call.argument("width");
-    int height = call.argument("height");
-    String adSizeType = call.argument("adSizeType");
+    final Integer width = call.argument("width");
+    final Integer height = call.argument("height");
+    final String adSizeType = call.argument("adSizeType");
 
-    if (!adSizeType.equals("AdSizeType.WidthAndHeight")
-        && !adSizeType.equals("AdSizeType.SmartBanner")) {
+    if (!"AdSizeType.WidthAndHeight".equals(adSizeType)
+        && !"AdSizeType.SmartBanner".equals(adSizeType)) {
       String errMsg =
-          String.format("an invalid adSizeType (%s) was provided for banner id=%d", adSizeType, id);
+          String.format(
+              Locale.ENGLISH,
+              "an invalid adSizeType (%s) was provided for banner id=%d",
+              adSizeType,
+              id);
       result.error("invalid_adsizetype", errMsg, null);
     }
 
-    if (adSizeType.equals("AdSizeType.WidthAndHeight") && (width <= 0 || height <= 0)) {
+    if ("AdSizeType.WidthAndHeight".equals(adSizeType) && (width <= 0 || height <= 0)) {
       String errMsg =
           String.format(
-              "an invalid AdSize (%d, %d) was provided for banner id=%d", width, height, id);
+              Locale.ENGLISH,
+              "an invalid AdSize (%d, %d) was provided for banner id=%d",
+              width,
+              height,
+              id);
       result.error("invalid_adsize", errMsg, null);
     }
 
     AdSize adSize;
-    if (adSizeType.equals("AdSizeType.SmartBanner")) {
+    if ("AdSizeType.SmartBanner".equals(adSizeType)) {
       adSize = AdSize.SMART_BANNER;
     } else {
       adSize = new AdSize(width, height);
@@ -142,24 +150,26 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     result.success(Boolean.TRUE);
   }
 
-  private void callShowAd(int id, MethodCall call, Result result) {
+  private void callShowAd(Integer id, MethodCall call, Result result) {
     MobileAd ad = MobileAd.getAdForId(id);
     if (ad == null) {
       result.error("ad_not_loaded", "show failed, the specified ad was not loaded id=" + id, null);
       return;
     }
-    if (call.argument("anchorOffset") != null) {
-      ad.anchorOffset = Double.parseDouble((String) call.argument("anchorOffset"));
+    final String anchorOffset = call.argument("anchorOffset");
+    final String anchorType = call.argument("anchorType");
+    if (anchorOffset != null) {
+      ad.anchorOffset = Double.parseDouble(anchorOffset);
     }
-    if (call.argument("anchorType") != null) {
-      ad.anchorType = call.argument("anchorType").equals("bottom") ? Gravity.BOTTOM : Gravity.TOP;
+    if (anchorType != null) {
+      ad.anchorType = "bottom".equals(anchorType) ? Gravity.BOTTOM : Gravity.TOP;
     }
 
     ad.show();
     result.success(Boolean.TRUE);
   }
 
-  private void callIsAdLoaded(int id, MethodCall call, Result result) {
+  private void callIsAdLoaded(Integer id, Result result) {
     MobileAd ad = MobileAd.getAdForId(id);
     if (ad == null) {
       result.error("no_ad_for_id", "isAdLoaded failed, no add exists for id=" + id, null);
@@ -168,7 +178,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     result.success(ad.status == MobileAd.Status.LOADED ? Boolean.TRUE : Boolean.FALSE);
   }
 
-  private void callShowRewardedVideoAd(MethodCall call, Result result) {
+  private void callShowRewardedVideoAd(Result result) {
     if (rewardedWrapper.getStatus() == RewardedVideoAdWrapper.Status.LOADED) {
       rewardedWrapper.show();
       result.success(Boolean.TRUE);
@@ -177,7 +187,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     }
   }
 
-  private void callDisposeAd(int id, MethodCall call, Result result) {
+  private void callDisposeAd(Integer id, Result result) {
     MobileAd ad = MobileAd.getAdForId(id);
     if (ad == null) {
       result.error("no_ad_for_id", "dispose failed, no add exists for id=" + id, null);
@@ -190,10 +200,6 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("initialize")) {
-      callInitialize(call, result);
-      return;
-    }
 
     Activity activity = registrar.activity();
     if (activity == null) {
@@ -204,8 +210,11 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     Integer id = call.argument("id");
 
     switch (call.method) {
+      case "initialize":
+        callInitialize(call, result);
+        break;
       case "loadBannerAd":
-        callLoadBannerAd(id, activity, channel, call, result);
+        callLoadBannerAd(id, activity, call, result);
         break;
       case "loadInterstitialAd":
         callLoadInterstitialAd(MobileAd.createInterstitial(id, activity, channel), call, result);
@@ -217,13 +226,13 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
         callShowAd(id, call, result);
         break;
       case "showRewardedVideoAd":
-        callShowRewardedVideoAd(call, result);
+        callShowRewardedVideoAd(result);
         break;
       case "disposeAd":
-        callDisposeAd(id, call, result);
+        callDisposeAd(id, result);
         break;
       case "isAdLoaded":
-        callIsAdLoaded(id, call, result);
+        callIsAdLoaded(id, result);
         break;
       default:
         result.notImplemented();

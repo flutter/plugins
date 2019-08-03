@@ -10,6 +10,7 @@ import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 class AdRequestBuilderFactory {
@@ -53,21 +54,20 @@ class AdRequestBuilderFactory {
     return (Integer) value;
   }
 
-  private ArrayList getTargetingInfoArrayList(String key, Object value) {
+  private List getTargetingInfoArrayList(String key, Object value) {
     if (value == null) return null;
     if (!(value instanceof ArrayList)) {
       Log.w(TAG, "targeting info " + key + ": expected an ArrayList");
       return null;
     }
-    return (ArrayList) value;
+    return (List) value;
   }
 
   AdRequest.Builder createAdRequestBuilder() {
     AdRequest.Builder builder = new AdRequest.Builder();
     if (targetingInfo == null) return builder;
 
-    ArrayList testDevices =
-        getTargetingInfoArrayList("testDevices", targetingInfo.get("testDevices"));
+    List testDevices = getTargetingInfoArrayList("testDevices", targetingInfo.get("testDevices"));
     if (testDevices != null) {
       for (Object deviceValue : testDevices) {
         String device = getTargetingInfoString("testDevices element", deviceValue);
@@ -75,7 +75,7 @@ class AdRequestBuilderFactory {
       }
     }
 
-    ArrayList keywords = getTargetingInfoArrayList("keywords", targetingInfo.get("keywords"));
+    List keywords = getTargetingInfoArrayList("keywords", targetingInfo.get("keywords"));
     if (keywords != null) {
       for (Object keywordValue : keywords) {
         String keyword = getTargetingInfoString("keywords element", keywordValue);

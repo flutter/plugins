@@ -17,10 +17,9 @@ import java.util.Map;
 public class RewardedVideoAdWrapper implements RewardedVideoAdListener {
   private static final String TAG = "flutter";
 
-  final RewardedVideoAd rewardedInstance;
-  final Activity activity;
-  final MethodChannel channel;
-  Status status;
+  private final RewardedVideoAd rewardedInstance;
+  private final MethodChannel channel;
+  private Status status;
 
   @Override
   public void onRewardedVideoAdLoaded() {
@@ -76,7 +75,6 @@ public class RewardedVideoAdWrapper implements RewardedVideoAdListener {
   }
 
   public RewardedVideoAdWrapper(Activity activity, MethodChannel channel) {
-    this.activity = activity;
     this.channel = channel;
     this.status = Status.CREATED;
     this.rewardedInstance = MobileAds.getRewardedVideoAdInstance(activity);

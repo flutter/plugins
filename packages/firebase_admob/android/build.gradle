@@ -21,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.4.2'
     }
 }
 
@@ -45,6 +45,6 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-ads:17.2.0'
+        api 'com.google.firebase:firebase-ads:18.1.1'
     }
 }
