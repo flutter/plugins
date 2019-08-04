@@ -56,7 +56,6 @@ abstract class StorageUploadTask {
 
   void _changeState(StorageTaskEvent event) {
     _resetState();
-    print('EVENT ${event.type}');
     switch (event.type) {
       case StorageTaskEventType.progress:
         isInProgress = true;
