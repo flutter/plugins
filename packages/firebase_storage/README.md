@@ -23,6 +23,11 @@ final StorageReference storageReference = FirebaseStorage().ref().child(path);
 final StorageUploadTask uploadTask = storageReference.putData(data);
 
 final StreamSubscription<StorageTaskEvent> streamSubscription = uploadTask.events.listen((event) {
+  // You can use this to notify yourself or your user in any kind of way.
+  // For example: you could use the uploadTask.events stream in a StreamBuilder instead
+  // to show your user what the current status is. In that case, you would not need to cancel any
+  // subscription as StreamBuilder handles this automatically.
+  // In this case, every StorageTaskEvent concerning the upload is printed to the logs.
   print('EVENT ${event.type}');
 });
 
