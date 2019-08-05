@@ -898,9 +898,7 @@ class FakePlatformWebView {
         if (call.arguments['debuggingEnabled'] != null) {
           debuggingEnabled = call.arguments['debuggingEnabled'];
         }
-        if (call.arguments['userAgent'] != null) {
-          userAgent = call.arguments['userAgent'];
-        }
+        userAgent = call.arguments['userAgent'];
         break;
       case 'canGoBack':
         return Future<bool>.sync(() => currentPosition > 0);
