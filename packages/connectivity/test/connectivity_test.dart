@@ -12,7 +12,9 @@ void main() {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'check':
-            return 'wifi';
+            return 'wifi,unknown';
+          case 'subtype':
+            return '3G';
           case 'wifiName':
             return '1337wifi';
           case 'wifiBSSID':
@@ -33,7 +35,7 @@ void main() {
             // ignore: deprecated_member_use
             await BinaryMessages.handlePlatformMessage(
               Connectivity.eventChannel.name,
-              Connectivity.eventChannel.codec.encodeSuccessEnvelope('wifi'),
+              Connectivity.eventChannel.codec.encodeSuccessEnvelope('mobile,2G'),
               (_) {},
             );
             break;
@@ -47,7 +49,8 @@ void main() {
     test('onConnectivityChanged', () async {
       final ConnectivityResult result =
           await Connectivity().onConnectivityChanged.first;
-      expect(result, ConnectivityResult.wifi);
+      expect(result.type, ConnectivityResult.mobile);
+      expect(result.subtype, ConnectionSubtype.EDGE);
     });
 
     test('getWifiName', () async {
@@ -95,7 +98,8 @@ void main() {
     test('checkConnectivity', () async {
       final ConnectivityResult result =
           await Connectivity().checkConnectivity();
-      expect(result, ConnectivityResult.wifi);
+      expect(result.type, ConnectivityResult.wifi);
+      expect(result.subtype, ConnectionSubtype.unknown);
       expect(
         log,
         <Matcher>[

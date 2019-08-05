@@ -13,7 +13,7 @@ import 'package:meta/meta.dart';
 /// Mobile: Device connected to cellular network
 /// None: Device not connected to any network
 enum ConnectionType { wifi, mobile, none }
-enum ConnectionSubtype { _2G, _3G, _4G, none, unknown }
+enum ConnectionSubtype { EDGE, HSDPA, LTE, none, unknown }
 
 class ConnectivityResult {
   static const ConnectionType wifi = ConnectionType.wifi;
@@ -24,6 +24,7 @@ class ConnectivityResult {
   final ConnectionSubtype subtype;
 
   ConnectivityResult(this.type, this.subtype);
+
 }
 
 class Connectivity {
@@ -138,13 +139,13 @@ ConnectivityResult _parseConnectivityResult(String state) {
   }
   switch (split[1]) {
     case '2G':
-      subType = ConnectionSubtype._2G;
+      subType = ConnectionSubtype.EDGE;
       break;
     case '3G':
-      subType = ConnectionSubtype._3G;
+      subType = ConnectionSubtype.HSDPA;
       break;
     case '4G':
-      subType = ConnectionSubtype._4G;
+      subType = ConnectionSubtype.LTE;
       break;
     case 'unknown':
       subType = ConnectionSubtype.unknown;
