@@ -256,16 +256,18 @@ class WebView extends StatefulWidget {
   /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
 
-  /// The User_Agent used for WebView requests.
+  /// The value used for the HTTP User-Agent: request header.
+  ///
+  /// Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.
+  ///
+  /// When null the platform's webview default is used for the User-Agent header.
+  /// Webview user agent for Android (https://developer.chrome.com/multidevice/user-agent)
+  ///
+  /// When the [WebView] is rebuilt with a new user agent, the page reloads and the request uses the new User Agent.
+  ///
+  /// When [WebViewController.goBack] is called after changing userAgent the previous userAgent value is used until the page is reloaded.
   ///
   /// By default `userAgent` is null.
-  /// If the `userAgent` is null, the default User Agent from the Android / iOS WebView is used.
-  /// WebView User Agent for Android (https://developer.chrome.com/multidevice/user-agent)
-  ///
-  /// When the WebView is rebuild with a new User Agent, the page reloads and the request uses the new User Agent.
-  ///
-  /// When [WebViewController.goBack] is called after changing the User Agent, the old User Agent is used.
-  /// Only after reloading the Page you went back to,the request uses the new User Agent.
   final String userAgent;
 
   @override

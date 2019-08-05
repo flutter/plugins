@@ -127,7 +127,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     _addIfNonNull('jsMode', settings.javascriptMode?.index);
     _addIfNonNull('hasNavigationDelegate', settings.hasNavigationDelegate);
     _addIfNonNull('debuggingEnabled', settings.debuggingEnabled);
-    _addIfNonNull('userAgent', settings.userAgent);
+    map['userAgent'] = settings.userAgent;
     return map;
   }
 

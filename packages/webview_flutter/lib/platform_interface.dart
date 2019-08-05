@@ -153,6 +153,7 @@ abstract class WebViewPlatformController {
         "WebView removeJavascriptChannels is not implemented on the current platform");
   }
 
+  /// Returns the current user agent used for the HTTP User-Agent: request header.
   Future<String> getUserAgent() {
     throw UnimplementedError(
         "WebView getUserAgent is not implemented on the current platform");
@@ -182,7 +183,7 @@ class WebSettings {
   /// See also: [WebView.debuggingEnabled].
   final bool debuggingEnabled;
 
-  /// The User Agent used for all following requests
+  /// The value used for the HTTP User-Agent: request header.
   ///
   /// See also [WebView.userAgent]
   final String userAgent;
@@ -224,9 +225,9 @@ class CreationParams {
   // to PlatformWebView.
   final Set<String> javascriptChannelNames;
 
-  /// The User Agent used for all following requests
+  /// The value used for the HTTP User-Agent: request header.
   ///
-  /// When null, the default User Agent of the Android/iOS WebView is used
+  /// When null the platform's webview default is used for the User-Agent header.
   final String userAgent;
 
   @override

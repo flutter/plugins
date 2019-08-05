@@ -133,14 +133,15 @@ void main() {
     expect(messagesReceived, equals(<String>['hello']));
   });
 
-  test('userAgent', () async {
+  test('set custom userAgent', () async {
     final Completer<WebViewController> controllerCompleter1 =
         Completer<WebViewController>();
+    final GlobalKey _globalKey = GlobalKey();
     await pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
         child: WebView(
-          key: GlobalKey(),
+          key: _globalKey,
           initialUrl: 'https://flutter.dev/',
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent1',
@@ -153,27 +154,71 @@ void main() {
     final WebViewController controller1 = await controllerCompleter1.future;
     final String customUserAgent1 = await controller1.getUserAgent();
     expect(customUserAgent1, 'Custom_User_Agent1');
-
-    // rebuilds a WebView with a different user agent.
-    final Completer<WebViewController> controllerCompleter2 =
-        Completer<WebViewController>();
+    // rebuild the WebView with a different user agent.
     await pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
         child: WebView(
-          key: GlobalKey(),
+          key: _globalKey,
           initialUrl: 'https://flutter.dev/',
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent2',
+        ),
+      ),
+    );
+
+    final String customUserAgent2 = await controller1.getUserAgent();
+    expect(customUserAgent2, 'Custom_User_Agent2');
+  });
+
+  test('use default platform userAgent after webView is rebuilt', () async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    final GlobalKey _globalKey = GlobalKey();
+    // Build the webView with no user agent to get the default platform user agent.
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: _globalKey,
+          initialUrl: 'https://flutter.dev/',
+          javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController controller) {
-            controllerCompleter2.complete(controller);
+            controllerCompleter.complete(controller);
           },
         ),
       ),
     );
-    final WebViewController controller2 = await controllerCompleter2.future;
-    final String customUserAgent2 = await controller2.getUserAgent();
-    expect(customUserAgent2, 'Custom_User_Agent2');
+    final WebViewController controller = await controllerCompleter.future;
+    final String defaultPlatformUserAgent = await controller.getUserAgent();
+    // rebuild the WebView with a custom user agent.
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: _globalKey,
+          initialUrl: 'https://flutter.dev/',
+          javascriptMode: JavascriptMode.unrestricted,
+          userAgent: 'Custom_User_Agent',
+        ),
+      ),
+    );
+    final String customUserAgent = await controller.getUserAgent();
+    expect(customUserAgent, 'Custom_User_Agent');
+    // rebuilds the WebView with no user agent.
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: _globalKey,
+          initialUrl: 'https://flutter.dev/',
+          javascriptMode: JavascriptMode.unrestricted,
+        ),
+      ),
+    );
+
+    final String customUserAgent2 = await controller.getUserAgent();
+    expect(customUserAgent2, defaultPlatformUserAgent);
   });
 }
 
