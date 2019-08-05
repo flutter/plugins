@@ -24,7 +24,7 @@ class FirebaseAnalytics {
   /// Example:
   ///
   ///     FirebaseAnalytics analytics = FirebaseAnalytics();
-  ///     analytics.android?.setAnalyticsCollectionEnabled(true);
+  ///     analytics.android?.setSessionTimeoutDuration(true);
   final FirebaseAnalyticsAndroid android =
       defaultTargetPlatform == TargetPlatform.android
           ? FirebaseAnalyticsAndroid()
@@ -870,16 +870,6 @@ class FirebaseAnalytics {
 /// Android-specific analytics API.
 class FirebaseAnalyticsAndroid {
   final MethodChannel _channel = firebaseChannel;
-
-  /// Sets whether analytics collection is enabled for this app on this device.
-  ///
-  /// This setting is persisted across app sessions. By default it is enabled.
-  Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
-    if (enabled == null) {
-      throw ArgumentError.notNull('enabled');
-    }
-    await _channel.invokeMethod<void>('setAnalyticsCollectionEnabled', enabled);
-  }
 
   /// Sets the duration of inactivity that terminates the current session.
   ///
