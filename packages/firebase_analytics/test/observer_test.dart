@@ -6,7 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:mockito/mockito.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flutter/widgets.dart';
 
@@ -53,6 +53,16 @@ void main() {
       when(route.settings).thenReturn(const RouteSettings(name: 'route'));
 
       observer.didPush(route, previousRoute);
+
+      verify(analytics.setCurrentScreen(screenName: 'route')).called(1);
+    });
+
+    test('setCurrentScreen on route pushReplacement', () {
+      final PageRoute<dynamic> route = MockPageRoute();
+      final PageRoute<dynamic> previousRoute = MockPageRoute();
+      when(route.settings).thenReturn(const RouteSettings(name: 'route'));
+
+      observer.didReplace(newRoute: route, oldRoute: previousRoute);
 
       verify(analytics.setCurrentScreen(screenName: 'route')).called(1);
     });

@@ -8,9 +8,15 @@ part of firebase_auth;
 class FirebaseUserMetadata {
   FirebaseUserMetadata._(this._data);
 
-  final Map<dynamic, dynamic> _data;
+  final Map<String, dynamic> _data;
 
-  int get creationTimestamp => _data['creationTimestamp'];
+  /// When this account was created as dictated by the server clock.
+  DateTime get creationTime =>
+      DateTime.fromMillisecondsSinceEpoch(_data['creationTimestamp']);
 
-  int get lastSignInTimestamp => _data['lastSignInTimestamp'];
+  /// When the user last signed in as dictated by the server clock.
+  ///
+  /// This is only accurate up to a granularity of 2 minutes for consecutive sign-in attempts.
+  DateTime get lastSignInTime =>
+      DateTime.fromMillisecondsSinceEpoch(_data['lastSignInTimestamp']);
 }

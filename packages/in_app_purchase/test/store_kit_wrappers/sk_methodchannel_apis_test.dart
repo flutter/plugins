@@ -30,9 +30,14 @@ void main() {
         productResponseWrapper.products.first.priceLocale.currencySymbol,
         '\$',
       );
+
       expect(
         productResponseWrapper.products.first.priceLocale.currencySymbol,
         isNot('A'),
+      );
+      expect(
+        productResponseWrapper.products.first.priceLocale.currencyCode,
+        'USD',
       );
       expect(
         productResponseWrapper.invalidProductIdentifiers,
@@ -173,11 +178,9 @@ class TestPaymentTransactionObserver extends SKTransactionObserverWrapper {
 
   void removedTransactions({List<SKPaymentTransactionWrapper> transactions}) {}
 
-  void restoreCompletedTransactions({Error error}) {}
+  void restoreCompletedTransactionsFailed({SKError error}) {}
 
   void paymentQueueRestoreCompletedTransactionsFinished() {}
-
-  void updatedDownloads({List<SKDownloadWrapper> downloads}) {}
 
   bool shouldAddStorePayment(
       {SKPaymentWrapper payment, SKProductWrapper product}) {

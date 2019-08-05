@@ -1,14 +1,12 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 package io.flutter.plugins.localauth;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Application;
-import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -20,12 +18,11 @@ import android.provider.Settings;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.core.content.ContextCompat;
-import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
-import androidx.core.os.CancellationSignal;
+import androidx.biometric.BiometricPrompt;
+import androidx.fragment.app.FragmentActivity;
 import io.flutter.plugin.common.MethodCall;
+import java.util.concurrent.Executor;
 
 /**
  * Authenticates the user with fingerprint and sends corresponding response back to Flutter.
@@ -33,19 +30,9 @@ import io.flutter.plugin.common.MethodCall;
  * <p>One instance per call is generated to ensure readable separation of executable paths across
  * method calls.
  */
-class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallback
+@SuppressWarnings("deprecation")
+class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     implements Application.ActivityLifecycleCallbacks {
-
-  /** How long will the fp dialog be delayed to dismiss. */
-  private static final long DISMISS_AFTER_MS = 300;
-
-  private static final String CANCEL_BUTTON = "cancelButton";
-
-  /** Captures the state of the fingerprint dialog. */
-  private enum DialogState {
-    SUCCESS,
-    FAILURE
-  }
 
   /** The callback that handles the result of this authentication process. */
   interface AuthCompletionHandler {
@@ -69,177 +56,124 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
     void onError(String code, String error);
   }
 
-  private final Activity activity;
+  private final FragmentActivity activity;
   private final AuthCompletionHandler completionHandler;
-  private final KeyguardManager keyguardManager;
-  private final FingerprintManagerCompat fingerprintManager;
   private final MethodCall call;
+  private final BiometricPrompt.PromptInfo promptInfo;
+  private final boolean isAuthSticky;
+  private final UiThreadExecutor uiThreadExecutor;
+  private boolean activityPaused = false;
 
-  /**
-   * The prominent UI element during this transaction. It is used to communicate the state of
-   * authentication to the user.
-   */
-  private AlertDialog fingerprintDialog;
-
-  private CancellationSignal cancellationSignal;
-
-  AuthenticationHelper(
-      Activity activity, MethodCall call, AuthCompletionHandler completionHandler) {
+  public AuthenticationHelper(
+      FragmentActivity activity, MethodCall call, AuthCompletionHandler completionHandler) {
     this.activity = activity;
     this.completionHandler = completionHandler;
     this.call = call;
-    this.keyguardManager = (KeyguardManager) activity.getSystemService(Context.KEYGUARD_SERVICE);
-    this.fingerprintManager = FingerprintManagerCompat.from(activity);
+    this.isAuthSticky = call.argument("stickyAuth");
+    this.uiThreadExecutor = new UiThreadExecutor();
+    this.promptInfo =
+        new BiometricPrompt.PromptInfo.Builder()
+            .setDescription((String) call.argument("localizedReason"))
+            .setTitle((String) call.argument("signInTitle"))
+            .setSubtitle((String) call.argument("fingerprintHint"))
+            .setNegativeButtonText((String) call.argument("cancelButton"))
+            .build();
   }
 
-  void authenticate() {
-    if (fingerprintManager.isHardwareDetected()) {
-      if (keyguardManager.isKeyguardSecure() && fingerprintManager.hasEnrolledFingerprints()) {
-        start();
-      } else {
+  /** Start the fingerprint listener. */
+  public void authenticate() {
+    activity.getApplication().registerActivityLifecycleCallbacks(this);
+    new BiometricPrompt(activity, uiThreadExecutor, this).authenticate(promptInfo);
+  }
+
+  /** Stops the fingerprint listener. */
+  private void stop() {
+    activity.getApplication().unregisterActivityLifecycleCallbacks(this);
+  }
+
+  @SuppressLint("SwitchIntDef")
+  @Override
+  public void onAuthenticationError(int errorCode, CharSequence errString) {
+    switch (errorCode) {
+        // TODO(mehmetf): Re-enable when biometric alpha05 is released.
+        // https://developer.android.com/jetpack/androidx/releases/biometric
+        // case BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL:
+        //   completionHandler.onError(
+        //       "PasscodeNotSet",
+        //       "Phone not secured by PIN, pattern or password, or SIM is currently locked.");
+        //   break;
+      case BiometricPrompt.ERROR_NO_SPACE:
+      case BiometricPrompt.ERROR_NO_BIOMETRICS:
         if (call.argument("useErrorDialogs")) {
           showGoToSettingsDialog();
-        } else if (!keyguardManager.isKeyguardSecure()) {
-          completionHandler.onError(
-              "PasscodeNotSet",
-              "Phone not secured by PIN, pattern or password, or SIM is currently locked.");
-        } else {
-          completionHandler.onError("NotEnrolled", "No fingerprint enrolled on this device.");
+          return;
         }
-      }
-    } else {
-      completionHandler.onError("NotAvailable", "Fingerprint is not available on this device.");
+        completionHandler.onError("NotEnrolled", "No Biometrics enrolled on this device.");
+        break;
+      case BiometricPrompt.ERROR_HW_UNAVAILABLE:
+      case BiometricPrompt.ERROR_HW_NOT_PRESENT:
+        completionHandler.onError("NotAvailable", "Biometrics is not available on this device.");
+        break;
+      case BiometricPrompt.ERROR_LOCKOUT:
+        completionHandler.onError(
+            "LockedOut",
+            "The operation was canceled because the API is locked out due to too many attempts. This occurs after 5 failed attempts, and lasts for 30 seconds.");
+        break;
+      case BiometricPrompt.ERROR_LOCKOUT_PERMANENT:
+        completionHandler.onError(
+            "PermanentlyLockedOut",
+            "The operation was canceled because ERROR_LOCKOUT occurred too many times. Biometric authentication is disabled until the user unlocks with strong authentication (PIN/Pattern/Password)");
+        break;
+      case BiometricPrompt.ERROR_CANCELED:
+        // If we are doing sticky auth and the activity has been paused,
+        // ignore this error. We will start listening again when resumed.
+        if (activityPaused && isAuthSticky) {
+          return;
+        } else {
+          completionHandler.onFailure();
+        }
+        break;
+      default:
+        completionHandler.onFailure();
     }
+    stop();
   }
 
-  private void start() {
-    activity.getApplication().registerActivityLifecycleCallbacks(this);
-    resume();
+  @Override
+  public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
+    completionHandler.onSuccess();
+    stop();
   }
 
-  private void resume() {
-    cancellationSignal = new CancellationSignal();
-    showFingerprintDialog();
-    fingerprintManager.authenticate(null, 0, cancellationSignal, this, null);
-  }
-
-  private void pause() {
-    if (cancellationSignal != null) {
-      cancellationSignal.cancel();
-    }
-    if (fingerprintDialog != null && fingerprintDialog.isShowing()) {
-      fingerprintDialog.dismiss();
-    }
-  }
+  @Override
+  public void onAuthenticationFailed() {}
 
   /**
-   * Stops the fingerprint listener and dismisses the fingerprint dialog.
-   *
-   * @param success If the authentication was successful.
-   */
-  private void stop(boolean success) {
-    pause();
-    activity.getApplication().unregisterActivityLifecycleCallbacks(this);
-    if (success) {
-      completionHandler.onSuccess();
-    } else {
-      completionHandler.onFailure();
-    }
-  }
-
-  /**
-   * If the activity is paused or stopped, we have to stop listening for fingerprint. Otherwise,
-   * user can still interact with fp reader in the background.. Sigh..
+   * If the activity is paused, we keep track because fingerprint dialog simply returns "User
+   * cancelled" when the activity is paused.
    */
   @Override
-  public void onActivityPaused(Activity activity) {
-    if (call.argument("stickyAuth")) {
-      pause();
-    } else {
-      stop(false);
+  public void onActivityPaused(Activity ignored) {
+    if (isAuthSticky) {
+      activityPaused = true;
     }
   }
 
   @Override
-  public void onActivityResumed(Activity activity) {
-    if (call.argument("stickyAuth")) {
-      resume();
+  public void onActivityResumed(Activity ignored) {
+    if (isAuthSticky) {
+      activityPaused = false;
+      final BiometricPrompt prompt = new BiometricPrompt(activity, uiThreadExecutor, this);
+      // When activity is resuming, we cannot show the prompt right away. We need to post it to the
+      // UI queue.
+      uiThreadExecutor.handler.post(
+          new Runnable() {
+            @Override
+            public void run() {
+              prompt.authenticate(promptInfo);
+            }
+          });
     }
-  }
-
-  @Override
-  public void onAuthenticationError(int errMsgId, CharSequence errString) {
-    updateFingerprintDialog(DialogState.FAILURE, errString.toString());
-  }
-
-  @Override
-  public void onAuthenticationHelp(int helpMsgId, CharSequence helpString) {
-    updateFingerprintDialog(DialogState.FAILURE, helpString.toString());
-  }
-
-  @Override
-  public void onAuthenticationFailed() {
-    updateFingerprintDialog(
-        DialogState.FAILURE, (String) call.argument("fingerprintNotRecognized"));
-  }
-
-  @Override
-  public void onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result) {
-    updateFingerprintDialog(DialogState.SUCCESS, (String) call.argument("fingerprintSuccess"));
-    new Handler(Looper.myLooper())
-        .postDelayed(
-            new Runnable() {
-              @Override
-              public void run() {
-                stop(true);
-              }
-            },
-            DISMISS_AFTER_MS);
-  }
-
-  private void updateFingerprintDialog(DialogState state, String message) {
-    if (cancellationSignal.isCanceled() || !fingerprintDialog.isShowing()) {
-      return;
-    }
-    TextView resultInfo = (TextView) fingerprintDialog.findViewById(R.id.fingerprint_status);
-    ImageView icon = (ImageView) fingerprintDialog.findViewById(R.id.fingerprint_icon);
-    switch (state) {
-      case FAILURE:
-        icon.setImageResource(R.drawable.fingerprint_warning_icon);
-        resultInfo.setTextColor(ContextCompat.getColor(activity, R.color.warning_color));
-        break;
-      case SUCCESS:
-        icon.setImageResource(R.drawable.fingerprint_success_icon);
-        resultInfo.setTextColor(ContextCompat.getColor(activity, R.color.success_color));
-        break;
-    }
-    resultInfo.setText(message);
-  }
-
-  // Suppress inflateParams lint because dialogs do not need to attach to a parent view.
-  @SuppressLint("InflateParams")
-  private void showFingerprintDialog() {
-    View view = LayoutInflater.from(activity).inflate(R.layout.scan_fp, null, false);
-    TextView fpDescription = (TextView) view.findViewById(R.id.fingerprint_description);
-    TextView title = (TextView) view.findViewById(R.id.fingerprint_signin);
-    TextView status = (TextView) view.findViewById(R.id.fingerprint_status);
-    fpDescription.setText((String) call.argument("localizedReason"));
-    title.setText((String) call.argument("signInTitle"));
-    status.setText((String) call.argument("fingerprintHint"));
-    Context context = new ContextThemeWrapper(activity, R.style.AlertDialogCustom);
-    OnClickListener cancelHandler =
-        new OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            stop(false);
-          }
-        };
-    fingerprintDialog =
-        new AlertDialog.Builder(context)
-            .setView(view)
-            .setNegativeButton((String) call.argument(CANCEL_BUTTON), cancelHandler)
-            .setCancelable(false)
-            .show();
   }
 
   // Suppress inflateParams lint because dialogs do not need to attach to a parent view.
@@ -255,7 +189,8 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            stop(false);
+            completionHandler.onFailure();
+            stop();
             activity.startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
           }
         };
@@ -263,13 +198,14 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            stop(false);
+            completionHandler.onFailure();
+            stop();
           }
         };
     new AlertDialog.Builder(context)
         .setView(view)
         .setPositiveButton((String) call.argument("goToSetting"), goToSettingHandler)
-        .setNegativeButton((String) call.argument(CANCEL_BUTTON), cancelHandler)
+        .setNegativeButton((String) call.argument("cancelButton"), cancelHandler)
         .setCancelable(false)
         .show();
   }
@@ -290,4 +226,13 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
 
   @Override
   public void onActivityDestroyed(Activity activity) {}
+
+  private static class UiThreadExecutor implements Executor {
+    public final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    public void execute(Runnable command) {
+      handler.post(command);
+    }
+  }
 }
