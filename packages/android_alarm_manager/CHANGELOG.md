@@ -1,6 +1,6 @@
 ## 0.4.2+1
 
-* Added oneShotAt method to run `callback` at given DateTime `time`.
+* Added oneShotAt method to run `callback` at a given DateTime `time`.
 
 ## 0.4.2
 
