@@ -24,6 +24,15 @@ class ConnectivityResult {
   final ConnectionSubtype subtype;
 
   ConnectivityResult(this.type, this.subtype);
+
+  @override
+  bool operator ==(Object object) {
+    if (!(object is ConnectionType)) return false;
+    return type == object;
+  }
+
+  @override
+  int get hashCode => type.hashCode;
 }
 
 class Connectivity {

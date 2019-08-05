@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart' as prefix0;
 
 void main() {
   group('$Connectivity', () {
@@ -98,6 +99,7 @@ void main() {
     test('checkConnectivity', () async {
       final ConnectivityResult result =
           await Connectivity().checkConnectivity();
+      expect(result == ConnectionType.wifi, true);
       expect(result.type, ConnectivityResult.wifi);
       expect(result.subtype, ConnectionSubtype.unknown);
       expect(
