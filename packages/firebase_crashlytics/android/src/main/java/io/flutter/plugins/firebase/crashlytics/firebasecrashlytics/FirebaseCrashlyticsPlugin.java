@@ -57,7 +57,8 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
       }
 
       // Report crash.
-      Exception exception = new Exception("Dart Error");
+      String dartExceptionMessage = (String) call.argument("exception");
+      Exception exception = new Exception(dartExceptionMessage);
       List<Map<String, String>> errorElements = call.argument("stackTraceElements");
       List<StackTraceElement> elements = new ArrayList<>();
       for (Map<String, String> errorElement : errorElements) {
@@ -69,6 +70,15 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
       exception.setStackTrace(elements.toArray(new StackTraceElement[elements.size()]));
 
       Crashlytics.setString("exception", (String) call.argument("exception"));
+
+      // Set a "reason" (to match iOS) to show where the exception was thrown.
+      final String context = call.argument("context");
+      if (context != null) Crashlytics.setString("reason", "thrown " + context);
+
+      // Log information.
+      final String information = call.argument("information");
+      if (information != null && !information.isEmpty()) Crashlytics.log(information);
+
       Crashlytics.logException(exception);
       result.success("Error reported to Crashlytics.");
     } else if (call.method.equals("Crashlytics#isDebuggable")) {
@@ -102,7 +112,8 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
       String className = errorElement.get("class");
       String methodName = errorElement.get("method");
 
-      return new StackTraceElement(className, methodName, fileName, Integer.parseInt(lineNumber));
+      return new StackTraceElement(
+          className == null ? "" : className, methodName, fileName, Integer.parseInt(lineNumber));
     } catch (Exception e) {
       Log.e(TAG, "Unable to generate stack trace element from Dart side error.");
       return null;

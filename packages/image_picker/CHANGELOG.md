@@ -1,3 +1,128 @@
+## 0.6.1+1
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.6.1
+
+* New feature : Get images with custom quality. While picking images, user can pass `imageQuality`
+parameter to compress image.
+
+## 0.6.0+20
+
+* Android: Migrated information cache methods to use instance methods.
+
+## 0.6.0+19
+
+* Android: Fix memory leak due not unregistering ActivityLifecycleCallbacks.
+
+## 0.6.0+18
+
+* Fix video play in example and update video_player plugin dependency.
+
+## 0.6.0+17
+
+* iOS: Fix a crash when user captures image from the camera with devices under iOS 11.
+
+## 0.6.0+16
+
+* iOS Simulator: fix hang after trying to take an image from the non-existent camera.
+
+## 0.6.0+15
+
+* Android: throws an exception when permissions denied instead of ignoring.
+
+## 0.6.0+14
+
+* Fix typo in README.
+
+## 0.6.0+13
+
+* Bugfix Android: Fix a crash occurs in some scenarios when user picks up image from gallery.
+
+## 0.6.0+12
+
+* Use class instead of struct for `GIFInfo` in iOS implementation.
+
+## 0.6.0+11
+
+* Don't use module imports.
+
+## 0.6.0+10
+
+* iOS: support picking GIF from gallery.
+
+## 0.6.0+9
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.6.0+8
+
+* Bugfix: Add missed return statement into the image_picker example.
+
+## 0.6.0+7
+
+* iOS: Rename objects to follow Objective-C naming convention to avoid conflicts with other iOS library/frameworks.
+
+## 0.6.0+6
+
+* iOS: Picked image now has all the correct meta data from the original image, includes GPS, orientation and etc.
+
+## 0.6.0+5
+
+* iOS: Add missing import.
+
+## 0.6.0+4
+
+* iOS: Using first byte to determine original image type.
+* iOS: Added XCTest target.
+* iOS: The picked image now has the correct EXIF data copied from the original image.
+
+## 0.6.0+3
+
+* Android: fixed assertion failures due to reply messages that were sent on the wrong thread.
+
+## 0.6.0+2
+
+* Android: images are saved with their real extension instead of always using `.jpg`.
+
+## 0.6.0+1
+
+* Android: Using correct suffix syntax when picking image from remote url.
+
+## 0.6.0
+
+* Breaking change iOS: Returned `File` objects when picking videos now always holds the correct path. Before this change, the path returned could have `file://` prepended to it.
+
+## 0.5.4+3
+
+* Fix the example app failing to load picked video.
+
+## 0.5.4+2
+
+* Request Camera permission if it present in Manifest on Android >= M.
+
+## 0.5.4+1
+
+* Bugfix iOS: Cancel button not visible in gallery, if camera was accessed first.
+
+## 0.5.4
+
+* Add `retrieveLostData` to retrieve lost data after MainActivity is killed.
+
+## 0.5.3+2
+
+* Android: fix a crash when the MainActivity is destroyed after selecting the image/video.
+
+## 0.5.3+1
+
+* Update minimum deploy iOS version to 8.0.
+
+## 0.5.3
+
+* Fixed incorrect path being returned from Google Photos on Android.
+
 ## 0.5.2
 
 * Check iOS camera authorizationStatus and return an error, if the access was

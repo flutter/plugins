@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_driver/driver_extension.dart';
@@ -60,6 +61,46 @@ void main() {
 
     compassEnabled = await inspector.isCompassEnabled();
     expect(compassEnabled, true);
+  });
+
+  test('testMapToolbarToggle', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        mapToolbarEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    bool mapToolbarEnabled = await inspector.isMapToolbarEnabled();
+    expect(mapToolbarEnabled, false);
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        mapToolbarEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
+
+    mapToolbarEnabled = await inspector.isMapToolbarEnabled();
+    expect(mapToolbarEnabled, Platform.isAndroid);
   });
 
   test('updateMinMaxZoomLevels', () async {
@@ -292,7 +333,7 @@ void main() {
     // still being investigated.
     // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
     // https://github.com/flutter/flutter/issues/27550
-    await Future<dynamic>.delayed(Duration(seconds: 3));
+    await Future<dynamic>.delayed(const Duration(seconds: 3));
 
     final LatLngBounds firstVisibleRegion =
         await mapController.getVisibleRegion();
@@ -332,5 +373,170 @@ void main() {
 
     expect(firstVisibleRegion, isNot(secondVisibleRegion));
     expect(secondVisibleRegion.contains(newCenter), isTrue);
+  });
+
+  test('testMyLocationButtonToggle', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        myLocationButtonEnabled: true,
+        myLocationEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    bool myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
+    expect(myLocationButtonEnabled, true);
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        myLocationButtonEnabled: false,
+        myLocationEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
+
+    myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
+    expect(myLocationButtonEnabled, false);
+  });
+
+  test('testMyLocationButton initial value false', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        myLocationButtonEnabled: false,
+        myLocationEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    final bool myLocationButtonEnabled =
+        await inspector.isMyLocationButtonEnabled();
+    expect(myLocationButtonEnabled, false);
+  });
+
+  test('testMyLocationButton initial value true', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        myLocationButtonEnabled: true,
+        myLocationEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    final bool myLocationButtonEnabled =
+        await inspector.isMyLocationButtonEnabled();
+    expect(myLocationButtonEnabled, true);
+  });
+
+  test('testSetMapStyle valid Json String', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+    final String mapStyle =
+        '[{"elementType":"geometry","stylers":[{"color":"#242f3e"}]}]';
+    await controller.setMapStyle(mapStyle);
+  });
+
+  test('testSetMapStyle invalid Json String', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+
+    try {
+      await controller.setMapStyle('invalid_value');
+      fail('expected MapStyleException');
+    } on MapStyleException catch (e) {
+      expect(e.cause,
+          'The data couldn’t be read because it isn’t in the correct format.');
+    }
+  });
+
+  test('testSetMapStyle null string', () async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+    await controller.setMapStyle(null);
   });
 }

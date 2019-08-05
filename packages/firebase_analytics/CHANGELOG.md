@@ -1,3 +1,60 @@
+## 4.0.2
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 4.0.1
+
+* Refactor unit tests to use `setMockMethodCallHandler`.
+
+## 4.0.0
+
+* Added new tracking events:
+  - `logLevelStart`
+  - `logLevelEnd`
+  - `logRemoveFromCart`
+  - `logSetCheckoutOption`
+* **Breaking change**. Add new required parameter `method` to `logShare` event tracking.
+* **Breaking change**. The following event names are reserved and cannot be used:
+  - `ad_activeview`
+  - `ad_click`
+  - `ad_exposure`
+  - `ad_impression`
+  - `ad_query`
+  - `adunit_exposure`
+  - `first_visit`
+  - `screen_view`
+
+## 3.0.3
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 3.0.2
+
+* Bump minimum Flutter version to 1.5.0.
+* Add missing template type parameter to `invokeMethod` calls.
+
+## 3.0.1
+
+* Switch to using the `FIRAnalytics` version of `setAnalyticsCollectionEnabled` for
+  compatibility with Firebase Analytics iOS CocoaPod version 6.0.
+* Update podspec to ensure availability of `setAnalyticsCollectionEnabled`.
+
+## 3.0.0
+
+* Update Android dependencies to latest.
+
+## 2.1.1+3
+
+* Added an initial integration test.
+
+## 2.1.1+2
+
+* Fixed errors in code sample for `FirebaseAnalyticsObserver`.
+
+## 2.1.1+1
+
+* Added hyperlinks to example app reference in README.md.
+
 ## 2.1.1
 
 * Added screen_view tracking of Navigator.pushReplacement

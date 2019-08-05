@@ -27,6 +27,14 @@ class DocumentReference {
   @override
   int get hashCode => hashList(_pathComponents);
 
+  /// Parent returns the containing [CollectionReference].
+  CollectionReference parent() {
+    return CollectionReference._(
+      firestore,
+      (List<String>.from(_pathComponents)..removeLast()),
+    );
+  }
+
   /// Slash-delimited path representing the database location of this query.
   String get path => _pathComponents.join('/');
 
@@ -71,11 +79,15 @@ class DocumentReference {
   /// Reads the document referenced by this [DocumentReference].
   ///
   /// If no document exists, the read will return null.
-  Future<DocumentSnapshot> get() async {
+  Future<DocumentSnapshot> get({Source source = Source.serverAndCache}) async {
     final Map<String, dynamic> data =
         await Firestore.channel.invokeMapMethod<String, dynamic>(
       'DocumentReference#get',
-      <String, dynamic>{'app': firestore.app.name, 'path': path},
+      <String, dynamic>{
+        'app': firestore.app.name,
+        'path': path,
+        'source': _getSourceString(source),
+      },
     );
     return DocumentSnapshot._(
       data['path'],
@@ -104,7 +116,8 @@ class DocumentReference {
 
   /// Notifies of documents at this location
   // TODO(jackson): Reduce code duplication with [Query]
-  Stream<DocumentSnapshot> snapshots() {
+  Stream<DocumentSnapshot> snapshots({bool includeMetadataChanges = false}) {
+    assert(includeMetadataChanges != null);
     Future<int> _handle;
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
@@ -112,10 +125,11 @@ class DocumentReference {
     controller = StreamController<DocumentSnapshot>.broadcast(
       onListen: () {
         _handle = Firestore.channel.invokeMethod<int>(
-          'Query#addDocumentListener',
+          'DocumentReference#addSnapshotListener',
           <String, dynamic>{
             'app': firestore.app.name,
             'path': path,
+            'includeMetadataChanges': includeMetadataChanges,
           },
         ).then<int>((dynamic result) => result);
         _handle.then((int handle) {
@@ -125,7 +139,7 @@ class DocumentReference {
       onCancel: () {
         _handle.then((int handle) async {
           await Firestore.channel.invokeMethod<void>(
-            'Query#removeListener',
+            'removeListener',
             <String, dynamic>{'handle': handle},
           );
           Firestore._documentObservers.remove(handle);

@@ -5,7 +5,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 
-typedef Future<void> AdditionalSteps(dynamic args);
+typedef void AdditionalSteps(dynamic args);
 
 class StubInAppPurchasePlatform {
   Map<String, dynamic> _expectedCalls = <String, dynamic>{};
@@ -35,7 +35,7 @@ class StubInAppPurchasePlatform {
     _previousCalls.add(call);
     if (_expectedCalls.containsKey(call.method)) {
       if (_additionalSteps[call.method] != null) {
-        await _additionalSteps[call.method](call.arguments);
+        _additionalSteps[call.method](call.arguments);
       }
       return Future<dynamic>.sync(() => _expectedCalls[call.method]);
     } else {

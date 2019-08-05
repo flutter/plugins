@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
 import 'package:collection/collection.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
 // below generated file. Run `flutter packages pub run build_runner watch` to
@@ -25,7 +25,7 @@ class SkProductResponseWrapper {
   ///
   /// This method should only be used with `map` values returned by [SKRequestMaker.startProductRequest].
   /// The `map` parameter must not be null.
-  factory SkProductResponseWrapper.fromJson(Map map) {
+  factory SkProductResponseWrapper.fromJson(Map<String, dynamic> map) {
     assert(map != null, 'Map must not be null.');
     return _$SkProductResponseWrapperFromJson(map);
   }
@@ -56,6 +56,9 @@ class SkProductResponseWrapper {
         DeepCollectionEquality().equals(
             typedOther.invalidProductIdentifiers, invalidProductIdentifiers);
   }
+
+  @override
+  int get hashCode => hashValues(this.products, this.invalidProductIdentifiers);
 }
 
 /// Dart wrapper around StoreKit's [SKProductPeriodUnit](https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc).
@@ -111,6 +114,9 @@ class SKProductSubscriptionPeriodWrapper {
     final SKProductSubscriptionPeriodWrapper typedOther = other;
     return typedOther.numberOfUnits == numberOfUnits && typedOther.unit == unit;
   }
+
+  @override
+  int get hashCode => hashValues(this.numberOfUnits, this.unit);
 }
 
 /// Dart wrapper around StoreKit's [SKProductDiscountPaymentMode](https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc).
@@ -188,6 +194,10 @@ class SKProductDiscountWrapper {
         typedOther.paymentMode == paymentMode &&
         typedOther.subscriptionPeriod == subscriptionPeriod;
   }
+
+  @override
+  int get hashCode => hashValues(this.price, this.priceLocale,
+      this.numberOfPeriods, this.paymentMode, this.subscriptionPeriod);
 }
 
 /// Dart wrapper around StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).
@@ -201,11 +211,8 @@ class SKProductWrapper {
     @required this.localizedTitle,
     @required this.localizedDescription,
     @required this.priceLocale,
-    @required this.downloadContentVersion,
     @required this.subscriptionGroupIdentifier,
     @required this.price,
-    @required this.downloadable,
-    @required this.downloadContentLengths,
     @required this.subscriptionPeriod,
     @required this.introductoryPrice,
   });
@@ -235,12 +242,6 @@ class SKProductWrapper {
   /// Includes locale information about the price, e.g. `$` as the currency symbol for US locale.
   final SKPriceLocaleWrapper priceLocale;
 
-  /// The version of the downloadable content.
-  ///
-  /// This is only available when [downloadable] is true.
-  /// It is formatted as a series of integers separated by periods.
-  final String downloadContentVersion;
-
   /// The subscription group identifier.
   ///
   /// A subscription group is a collection of subscription products.
@@ -249,17 +250,6 @@ class SKProductWrapper {
 
   /// The price of the product, in the currency that is defined in [priceLocale].
   final String price;
-
-  /// Whether the AppStore has downloadable content for this product.
-  ///
-  /// [downloadContentVersion] and [downloadContentLengths] become available if this is true.
-  final bool downloadable;
-
-  /// The length of the downloadable content.
-  ///
-  /// This is only available when [downloadable] is true.
-  /// Each element is the size of one of the downloadable files (in bytes).
-  final List<int> downloadContentLengths;
 
   /// The object represents the subscription period of the product.
   ///
@@ -288,26 +278,22 @@ class SKProductWrapper {
         typedOther.localizedTitle == localizedTitle &&
         typedOther.localizedDescription == localizedDescription &&
         typedOther.priceLocale == priceLocale &&
-        typedOther.downloadContentVersion == downloadContentVersion &&
         typedOther.subscriptionGroupIdentifier == subscriptionGroupIdentifier &&
         typedOther.price == price &&
-        typedOther.downloadable == downloadable &&
-        DeepCollectionEquality.unordered().equals(
-            typedOther.downloadContentLengths, downloadContentLengths) &&
         typedOther.subscriptionPeriod == subscriptionPeriod &&
         typedOther.introductoryPrice == introductoryPrice;
   }
 
-  /// Method to convert to the wrapper to the consolidated [ProductDetails] class.
-  ProductDetails toProductDetails() {
-    return ProductDetails(
-      id: productIdentifier,
-      title: localizedTitle,
-      description: localizedDescription,
-      price: priceLocale.currencySymbol + price,
-      skProduct: this,
-    );
-  }
+  @override
+  int get hashCode => hashValues(
+      this.productIdentifier,
+      this.localizedTitle,
+      this.localizedDescription,
+      this.priceLocale,
+      this.subscriptionGroupIdentifier,
+      this.price,
+      this.subscriptionPeriod,
+      this.introductoryPrice);
 }
 
 /// Object that indicates the locale of the price
@@ -318,7 +304,8 @@ class SKProductWrapper {
 //                 https://github.com/flutter/flutter/issues/26610
 @JsonSerializable()
 class SKPriceLocaleWrapper {
-  SKPriceLocaleWrapper({@required this.currencySymbol});
+  SKPriceLocaleWrapper(
+      {@required this.currencySymbol, @required this.currencyCode});
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
@@ -332,6 +319,9 @@ class SKPriceLocaleWrapper {
   ///The currency symbol for the locale, e.g. $ for US locale.
   final String currencySymbol;
 
+  ///The currency code for the locale, e.g. USD for US locale.
+  final String currencyCode;
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) {
@@ -341,6 +331,10 @@ class SKPriceLocaleWrapper {
       return false;
     }
     final SKPriceLocaleWrapper typedOther = other;
-    return typedOther.currencySymbol == currencySymbol;
+    return typedOther.currencySymbol == currencySymbol &&
+        typedOther.currencyCode == currencyCode;
   }
+
+  @override
+  int get hashCode => hashValues(this.currencySymbol, this.currencyCode);
 }

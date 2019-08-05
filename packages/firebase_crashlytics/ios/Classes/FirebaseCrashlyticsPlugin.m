@@ -1,4 +1,5 @@
 #import "FirebaseCrashlyticsPlugin.h"
+#import "UserAgent.h"
 
 #import <Firebase/Firebase.h>
 
@@ -15,6 +16,11 @@
   [registrar addMethodCallDelegate:instance channel:channel];
 
   [Fabric with:@[ [Crashlytics self] ]];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
 - (instancetype)init {
@@ -53,14 +59,32 @@
       }
     }
 
+    // Add additional information from the Flutter framework to the exception reported in
+    // Crashlytics. Using CLSLog instead of CLS_LOG to try to avoid the automatic inclusion of the
+    // line number. It also ensures that the log is only written to Crashlytics and not also to the
+    // offline log as explained here:
+    // https://support.crashlytics.com/knowledgebase/articles/92519-how-do-i-use-logging
+    // Although, that would only happen in debug mode, which this method call is never called in.
+    NSString *information = call.arguments[@"information"];
+    if ([information length] != 0) {
+      CLSLog(information);
+    }
+
     // Report crash.
     NSArray *errorElements = call.arguments[@"stackTraceElements"];
     NSMutableArray *frames = [NSMutableArray array];
     for (NSDictionary *errorElement in errorElements) {
       [frames addObject:[self generateFrame:errorElement]];
     }
+
+    NSString *context = call.arguments[@"context"];
+    NSString *reason;
+    if (context != nil) {
+      reason = [NSString stringWithFormat:@"thrown %@", context];
+    }
+
     [[Crashlytics sharedInstance] recordCustomExceptionName:call.arguments[@"exception"]
-                                                     reason:call.arguments[@"context"]
+                                                     reason:reason
                                                  frameArray:frames];
     result(@"Error reported to Crashlytics.");
   } else if ([@"Crashlytics#isDebuggable" isEqualToString:call.method]) {
@@ -74,7 +98,7 @@
     [[Crashlytics sharedInstance] setUserName:call.arguments[@"name"]];
     result(nil);
   } else if ([@"Crashlytics#setUserIdentifier" isEqualToString:call.method]) {
-    [[Crashlytics sharedInstance] setUserEmail:call.arguments[@"identifier"]];
+    [[Crashlytics sharedInstance] setUserIdentifier:call.arguments[@"identifier"]];
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);

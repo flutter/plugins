@@ -1,3 +1,47 @@
+## 0.5.0
+
+* **Breaking change**. Changed architecture and method names to be able to differentiate between
+the dynamic link which opened the app and links clicked during app execution (active and background).
+`retrieveDynamicLink` has been replaced with two different functions:
+- `getInitialLink` a future to retrieve the link that opened the app
+- `onLink` a callback to listen to links opened while the app is active or in background
+
+## 0.4.0+6
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 0.4.0+5
+
+* Fix the bug below properly by allowing the activity to be null (but still registering the plugin). If activity is null, we don't get a latestIntent, instead we expect the intent listener to grab it.
+
+## 0.4.0+4
+
+* Fixed bug on Android when a headless plugin tries to register this plugin causing a crash due no activity from the registrar.
+
+## 0.4.0+3
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 0.4.0+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.4.0+1
+
+* Fixed bug where link persists after starting an app with a Dynamic Link.
+* Fixed bug where retrieving a link would fail when app was already running.
+
+## 0.4.0
+
+* Update dependency on firebase_core to 0.4.0.
+
+## 0.3.0.
+
+* Update Android dependencies to 16.1.7.
+* **Breaking change**. Dynamic link parameter `domain` replaced with `uriPrefix`.
+
 ## 0.2.1
 
 * Throw `PlatformException` if there is an error retrieving dynamic link.

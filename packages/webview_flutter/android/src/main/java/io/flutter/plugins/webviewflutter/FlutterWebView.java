@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.webkit.WebStorage;
-import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -18,19 +17,26 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
-  private final WebView webView;
+  private final InputAwareWebView webView;
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
 
   @SuppressWarnings("unchecked")
-  FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
-    webView = new WebView(context);
+  FlutterWebView(
+      Context context,
+      BinaryMessenger messenger,
+      int id,
+      Map<String, Object> params,
+      final View containerView) {
+    webView = new InputAwareWebView(context, containerView);
+
     platformThreadHandler = new Handler(context.getMainLooper());
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
@@ -56,6 +62,26 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     return webView;
   }
 
+  // @Override
+  // This is overriding a method that hasn't rolled into stable Flutter yet. Including the
+  // annotation would cause compile time failures in versions of Flutter too old to include the new
+  // method. However leaving it raw like this means that the method will be ignored in old versions
+  // of Flutter but used as an override anyway wherever it's actually defined.
+  // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to stable.
+  public void onInputConnectionUnlocked() {
+    webView.unlockInputConnection();
+  }
+
+  // @Override
+  // This is overriding a method that hasn't rolled into stable Flutter yet. Including the
+  // annotation would cause compile time failures in versions of Flutter too old to include the new
+  // method. However leaving it raw like this means that the method will be ignored in old versions
+  // of Flutter but used as an override anyway wherever it's actually defined.
+  // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to stable.
+  public void onInputConnectionLocked() {
+    webView.lockInputConnection();
+  }
+
   @Override
   public void onMethodCall(MethodCall methodCall, Result result) {
     switch (methodCall.method) {
@@ -66,22 +92,22 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         updateSettings(methodCall, result);
         break;
       case "canGoBack":
-        canGoBack(methodCall, result);
+        canGoBack(result);
         break;
       case "canGoForward":
-        canGoForward(methodCall, result);
+        canGoForward(result);
         break;
       case "goBack":
-        goBack(methodCall, result);
+        goBack(result);
         break;
       case "goForward":
-        goForward(methodCall, result);
+        goForward(result);
         break;
       case "reload":
-        reload(methodCall, result);
+        reload(result);
         break;
       case "currentUrl":
-        currentUrl(methodCall, result);
+        currentUrl(result);
         break;
       case "evaluateJavascript":
         evaluateJavaScript(methodCall, result);
@@ -100,40 +126,46 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void loadUrl(MethodCall methodCall, Result result) {
-    String url = (String) methodCall.arguments;
-    webView.loadUrl(url);
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    String url = (String) request.get("url");
+    Map<String, String> headers = (Map<String, String>) request.get("headers");
+    if (headers == null) {
+      headers = Collections.emptyMap();
+    }
+    webView.loadUrl(url, headers);
     result.success(null);
   }
 
-  private void canGoBack(MethodCall methodCall, Result result) {
+  private void canGoBack(Result result) {
     result.success(webView.canGoBack());
   }
 
-  private void canGoForward(MethodCall methodCall, Result result) {
+  private void canGoForward(Result result) {
     result.success(webView.canGoForward());
   }
 
-  private void goBack(MethodCall methodCall, Result result) {
+  private void goBack(Result result) {
     if (webView.canGoBack()) {
       webView.goBack();
     }
     result.success(null);
   }
 
-  private void goForward(MethodCall methodCall, Result result) {
+  private void goForward(Result result) {
     if (webView.canGoForward()) {
       webView.goForward();
     }
     result.success(null);
   }
 
-  private void reload(MethodCall methodCall, Result result) {
+  private void reload(Result result) {
     webView.reload();
     result.success(null);
   }
 
-  private void currentUrl(MethodCall methodCall, Result result) {
+  private void currentUrl(Result result) {
     result.success(webView.getUrl());
   }
 
@@ -195,6 +227,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
           webView.setWebViewClient(webViewClient);
           break;
+        case "debuggingEnabled":
+          final boolean debuggingEnabled = (boolean) settings.get(key);
+
+          webView.setWebContentsDebuggingEnabled(debuggingEnabled);
+          break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
@@ -224,5 +261,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @Override
   public void dispose() {
     methodChannel.setMethodCallHandler(null);
+    webView.dispose();
   }
 }

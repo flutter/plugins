@@ -68,7 +68,7 @@ class BillingClient {
   /// [`BillingClient#isReady()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#isReady())
   /// to get the ready status of the BillingClient instance.
   Future<bool> isReady() async =>
-      await channel.invokeMethod('BillingClient#isReady()');
+      await channel.invokeMethod<bool>('BillingClient#isReady()');
 
   /// Calls
   /// [`BillingClient#startConnection(BillingClientStateListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#startconnection)
@@ -86,7 +86,7 @@ class BillingClient {
     List<Function> disconnectCallbacks =
         _callbacks[_kOnBillingServiceDisconnected] ??= [];
     disconnectCallbacks.add(onBillingServiceDisconnected);
-    return BillingResponseConverter().fromJson(await channel.invokeMethod(
+    return BillingResponseConverter().fromJson(await channel.invokeMethod<int>(
         "BillingClient#startConnection(BillingClientStateListener)",
         <String, dynamic>{'handle': disconnectCallbacks.length - 1}));
   }
@@ -99,7 +99,7 @@ class BillingClient {
   ///
   /// This triggers the destruction of the `BillingClient` instance in Java.
   Future<void> endConnection() async {
-    return channel.invokeMethod("BillingClient#endConnection()", null);
+    return channel.invokeMethod<void>("BillingClient#endConnection()", null);
   }
 
   /// Returns a list of [SkuDetailsWrapper]s that have [SkuDetailsWrapper.sku]
@@ -153,33 +153,35 @@ class BillingClient {
       'sku': sku,
       'accountId': accountId,
     };
-    return BillingResponseConverter().fromJson(await channel.invokeMethod(
+    return BillingResponseConverter().fromJson(await channel.invokeMethod<int>(
         'BillingClient#launchBillingFlow(Activity, BillingFlowParams)',
         arguments));
   }
 
   /// Fetches recent purchases for the given [SkuType].
   ///
-  /// This only fetches whatever purchase history Play happens to have cached
-  /// in memory.
+  /// Unlike [queryPurchaseHistory], This does not make a network request and
+  /// does not return items that are no longer owned.
   ///
-  /// All purchase information should also be verified manually, with your server
-  /// if at all possible. See ["Verify a
+  /// All purchase information should also be verified manually, with your
+  /// server if at all possible. See ["Verify a
   /// purchase"](https://developer.android.com/google/play/billing/billing_library_overview#Verify).
   ///
   /// This wraps [`BillingClient#queryPurchases(String
   /// skutype)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#querypurchases).
   Future<PurchasesResultWrapper> queryPurchases(SkuType skuType) async {
     assert(skuType != null);
-    return PurchasesResultWrapper.fromJson(await channel.invokeMapMethod(
-        'BillingClient#queryPurchases(String)',
-        <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
+    return PurchasesResultWrapper.fromJson(await channel
+        .invokeMapMethod<String, dynamic>(
+            'BillingClient#queryPurchases(String)',
+            <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
   }
 
   /// Fetches purchase history for the given [SkuType].
   ///
-  /// This makes a network request via Play and returns the most recent purchase
-  /// for each [SkuDetailsWrapper] of the given [SkuType].
+  /// Unlike [queryPurchases], this makes a network request via Play and returns
+  /// the most recent purchase for each [SkuDetailsWrapper] of the given
+  /// [SkuType] even if the item is no longer owned.
   ///
   /// All purchase information should also be verified manually, with your
   /// server if at all possible. See ["Verify a
@@ -190,9 +192,10 @@ class BillingClient {
   /// listener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#querypurchasehistoryasync).
   Future<PurchasesResultWrapper> queryPurchaseHistory(SkuType skuType) async {
     assert(skuType != null);
-    return PurchasesResultWrapper.fromJson(await channel.invokeMapMethod(
-        'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)',
-        <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
+    return PurchasesResultWrapper.fromJson(await channel
+        .invokeMapMethod<String, dynamic>(
+            'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)',
+            <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
   }
 
   /// Consumes a given in-app product.
@@ -203,7 +206,7 @@ class BillingClient {
   /// This wraps [`BillingClient#consumeAsync(String, ConsumeResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#consumeAsync(java.lang.String,%20com.android.billingclient.api.ConsumeResponseListener))
   Future<BillingResponse> consumeAsync(String purchaseToken) async {
     assert(purchaseToken != null);
-    return BillingResponseConverter().fromJson(await channel.invokeMethod(
+    return BillingResponseConverter().fromJson(await channel.invokeMethod<int>(
       'BillingClient#consumeAsync(String, ConsumeResponseListener)',
       <String, String>{'purchaseToken': purchaseToken},
     ));
@@ -217,7 +220,8 @@ class BillingClient {
         assert(_callbacks[kOnPurchasesUpdated].length == 1);
         final PurchasesUpdatedListener listener =
             _callbacks[kOnPurchasesUpdated].first;
-        listener(PurchasesResultWrapper.fromJson(call.arguments));
+        listener(PurchasesResultWrapper.fromJson(
+            call.arguments.cast<String, dynamic>()));
         break;
       case _kOnBillingServiceDisconnected:
         final int handle = call.arguments['handle'];

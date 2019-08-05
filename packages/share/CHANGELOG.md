@@ -1,3 +1,21 @@
+## 0.6.2+1
+
+* Specify explicit type for `invokeMethod`.
+* Use `const` for `Rect`.
+* Updated minimum Flutter SDK to 1.6.0.
+
+## 0.6.2
+
+* Add optional subject to fill email subject in case user selects email app.
+
+## 0.6.1+2
+
+* Update Dart code to conform to current Dart formatter.
+
+## 0.6.1+1
+
+* Fix analyzer warnings about `const Rect` in tests.
+
 ## 0.6.1
 
 * Updated Android compileSdkVersion to 28 to match other plugins.
