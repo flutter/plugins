@@ -13,10 +13,29 @@ Sample usage to check current status:
 import 'package:connectivity/connectivity.dart';
 
 var connectivityResult = await (Connectivity().checkConnectivity());
-if (connectivityResult == ConnectivityResult.mobile) {
+if (connectivityResult.type == ConnectivityResult.mobile) {
   // I am connected to a mobile network.
+  if(connectivityResult.subtype == ConnectionSubtype.HSDPA){
+    // I am on a 3G network
+  }
 } else if (connectivityResult == ConnectivityResult.wifi) {
   // I am connected to a wifi network.
+}
+```
+
+You can also check for a connection type when you are on mobile:
+
+```dart
+import 'package:connectivity/connectivity.dart';
+
+var connectivityResult = await (Connectivity().getNetworkSubtype());
+
+if(connectivityResult.subtype == ConnectionSubtype.EDGE){
+  // I am on a 2G network
+} else if(connectivityResult.subtype == ConnectionSubtype.HSDPA){
+  // I am on a 3G network
+} else if(connectivityResult.subtype == ConnectionSubtype.LTE){
+  // I am on a 4G network
 }
 ```
 
