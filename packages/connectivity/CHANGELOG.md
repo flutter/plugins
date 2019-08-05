@@ -1,3 +1,8 @@
+## 0.5.0
+
+* Change `ConnectionResult` type from enum to class with 2 fields. `type:ConnectionType` and `subtype:ConnectionSubtype`
+* Add `getNetworkSubtype` to get mobile connection subtype.
+
 ## 0.4.3+6
 
 * [Android] Fix the invalid suppression check (it should be "deprecation" not "deprecated").
