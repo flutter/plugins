@@ -1,6 +1,14 @@
-## 0.3.10+4
+## 0.3.10+6
 
 * Calling destroy on Android webview when flutter webview is getting disposed.
+
+## 0.3.10+5
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.3.10+4
+
+* Add keyboard text to README.
 
 ## 0.3.10+3
 
