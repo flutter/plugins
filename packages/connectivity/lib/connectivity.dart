@@ -24,7 +24,6 @@ class ConnectivityResult {
   final ConnectionSubtype subtype;
 
   ConnectivityResult(this.type, this.subtype);
-
 }
 
 class Connectivity {
@@ -74,20 +73,19 @@ class Connectivity {
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
   Future<ConnectivityResult> checkConnectivity({bool checkSubtype = false}) async {
     final String result = await methodChannel.invokeMethod<String>('check');
-    String subtype;
-    if (checkSubtype) subtype = await getNetworkSubtype();
     return _parseConnectivityResult(result);
   }
 
   /// Checks the network mobile connection subtype of the device.
-  /// Return 2G, 3G, 4G depending on the connection of the mobile connection
+  /// Return EDGE for 2G, HSDPA for 3G and LTE for 4G depending on the connection of the mobile connection
   /// if it is connected.
   ///
   /// Return none if there is no connections
   ///
   /// Return unknown if it is connected but there is not connection subtype info. eg. Wifi
-  Future<String> getNetworkSubtype() async {
-    return await methodChannel.invokeMethod<String>('subtype');
+  Future<ConnectionSubtype> getNetworkSubtype() async {
+    final String result = await methodChannel.invokeMethod<String>('subtype');
+    return _parseConnectionSubtype(result);
   }
 
   /// Obtains the wifi name (SSID) of the connected network
@@ -120,6 +118,22 @@ class Connectivity {
   }
 }
 
+ConnectionSubtype _parseConnectionSubtype(String state) {
+  switch (state) {
+    case '2G':
+      return ConnectionSubtype.EDGE;
+    case '3G':
+      return ConnectionSubtype.HSDPA;
+    case '4G':
+      return ConnectionSubtype.LTE;
+    case 'unknown':
+      return ConnectionSubtype.unknown;
+    case 'none':
+    default:
+      return ConnectionSubtype.none;
+  }
+}
+
 ConnectivityResult _parseConnectivityResult(String state) {
   ConnectionType type = ConnectionType.none;
   ConnectionSubtype subType = ConnectionSubtype.unknown;
@@ -137,22 +151,6 @@ ConnectivityResult _parseConnectivityResult(String state) {
     default:
       type = ConnectionType.none;
   }
-  switch (split[1]) {
-    case '2G':
-      subType = ConnectionSubtype.EDGE;
-      break;
-    case '3G':
-      subType = ConnectionSubtype.HSDPA;
-      break;
-    case '4G':
-      subType = ConnectionSubtype.LTE;
-      break;
-    case 'unknown':
-      subType = ConnectionSubtype.unknown;
-      break;
-    case 'none':
-    default:
-      subType = ConnectionSubtype.none;
-  }
+  subType = _parseConnectionSubtype(split[1]);
   return ConnectivityResult(type, subType);
 }

@@ -110,5 +110,21 @@ void main() {
         ],
       );
     });
+
+    test('subtype', () async {
+      final ConnectivityResult result =
+      await Connectivity().checkConnectivity();
+      expect(result.type, ConnectivityResult.wifi);
+      expect(result.subtype, ConnectionSubtype.unknown);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'subtype',
+            arguments: null,
+          ),
+        ],
+      );
+    });
   });
 }
