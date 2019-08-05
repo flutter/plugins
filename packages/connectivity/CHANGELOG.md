@@ -1,4 +1,4 @@
-## 0.5.0
+## 0.4.4
 
 * Change `ConnectionResult` type from enum to class with 2 fields. `type:ConnectionType` and `subtype:ConnectionSubtype`
 * Add `getNetworkSubtype` to get mobile connection subtype.
