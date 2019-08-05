@@ -44,8 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     initConnectivity();
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
   }
 
   @override
@@ -85,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    switch (result) {
+    switch (result.type) {
       case ConnectivityResult.wifi:
         String wifiName, wifiBSSID, wifiIP;
 
@@ -118,6 +117,11 @@ class _MyHomePageState extends State<MyHomePage> {
         });
         break;
       case ConnectivityResult.mobile:
+        setState(() {
+          _connectionStatus = '$result\n'
+              'Mobile Connection Type: ${result.subtype}\n';
+        });
+        break;
       case ConnectivityResult.none:
         setState(() => _connectionStatus = result.toString());
         break;

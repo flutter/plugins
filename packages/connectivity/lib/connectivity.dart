@@ -12,7 +12,19 @@ import 'package:meta/meta.dart';
 /// WiFi: Device connected via Wi-Fi
 /// Mobile: Device connected to cellular network
 /// None: Device not connected to any network
-enum ConnectivityResult { wifi, mobile, none }
+enum ConnectionType { wifi, mobile, none }
+enum ConnectionSubtype { _2G, _3G, _4G, none, unknown }
+
+class ConnectivityResult {
+  static const ConnectionType wifi = ConnectionType.wifi;
+  static const ConnectionType mobile = ConnectionType.mobile;
+  static const ConnectionType none = ConnectionType.none;
+
+  final ConnectionType type;
+  final ConnectionSubtype subtype;
+
+  ConnectivityResult(this.type, this.subtype);
+}
 
 class Connectivity {
   /// Constructs a singleton instance of [Connectivity].
@@ -47,9 +59,8 @@ class Connectivity {
   /// Fires whenever the connectivity state changes.
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (_onConnectivityChanged == null) {
-      _onConnectivityChanged = eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => _parseConnectivityResult(event));
+      _onConnectivityChanged =
+          eventChannel.receiveBroadcastStream().map((dynamic event) => _parseConnectivityResult(event));
     }
     return _onConnectivityChanged;
   }
@@ -60,9 +71,22 @@ class Connectivity {
   /// make a network request. It only gives you the radio status.
   ///
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
-  Future<ConnectivityResult> checkConnectivity() async {
+  Future<ConnectivityResult> checkConnectivity({bool checkSubtype = false}) async {
     final String result = await methodChannel.invokeMethod<String>('check');
+    String subtype;
+    if (checkSubtype) subtype = await getNetworkSubtype();
     return _parseConnectivityResult(result);
+  }
+
+  /// Checks the network mobile connection subtype of the device.
+  /// Return 2G, 3G, 4G depending on the connection of the mobile connection
+  /// if it is connected.
+  ///
+  /// Return none if there is no connections
+  ///
+  /// Return unknown if it is connected but there is not connection subtype info. eg. Wifi
+  Future<String> getNetworkSubtype() async {
+    return await methodChannel.invokeMethod<String>('subtype');
   }
 
   /// Obtains the wifi name (SSID) of the connected network
@@ -96,13 +120,38 @@ class Connectivity {
 }
 
 ConnectivityResult _parseConnectivityResult(String state) {
-  switch (state) {
+  ConnectionType type = ConnectionType.none;
+  ConnectionSubtype subType = ConnectionSubtype.unknown;
+
+  final List<String> split = state.split(",");
+
+  switch (split[0]) {
     case 'wifi':
-      return ConnectivityResult.wifi;
+      type = ConnectionType.wifi;
+      break;
     case 'mobile':
-      return ConnectivityResult.mobile;
+      type = ConnectionType.mobile;
+      break;
     case 'none':
     default:
-      return ConnectivityResult.none;
+      type = ConnectionType.none;
   }
+  switch (split[1]) {
+    case '2G':
+      subType = ConnectionSubtype._2G;
+      break;
+    case '3G':
+      subType = ConnectionSubtype._3G;
+      break;
+    case '4G':
+      subType = ConnectionSubtype._4G;
+      break;
+    case 'unknown':
+      subType = ConnectionSubtype.unknown;
+      break;
+    case 'none':
+    default:
+      subType = ConnectionSubtype.none;
+  }
+  return ConnectivityResult(type, subType);
 }

@@ -12,6 +12,8 @@
 
 #include <arpa/inet.h>
 
+#import<CoreTelephony/CTTelephonyNetworkInfo.h>
+
 @interface FLTConnectivityPlugin () <FlutterStreamHandler>
 @end
 
@@ -85,15 +87,48 @@
   return address;
 }
 
+
+- (NSString*)getConnectionSubtype:(Reachability*)reachability {
+  
+  CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
+  NSString *carrierType = netinfo.currentRadioAccessTechnology;
+  
+  if ([carrierType isEqualToString:CTRadioAccessTechnologyGPRS]) {
+    return @"2G";
+  } else if ([carrierType isEqualToString:CTRadioAccessTechnologyEdge]) {
+    return @"2G";
+  } else if ([carrierType isEqualToString:CTRadioAccessTechnologyWCDMA]) {
+    return @"3G";
+  } else if ([carrierType isEqualToString:CTRadioAccessTechnologyHSDPA]) {
+    return @"3G";
+  } else if ([carrierType isEqualToString:CTRadioAccessTechnologyHSUPA]) {
+    return @"3G";
+  } else if ([carrierType isEqualToString:CTRadioAccessTechnologyCDMA1x]) {
+    return @"2G";
+  } else if ([carrierType isEqualToString:CTRadioAccessTechnologyCDMAEVDORev0]) {
+    return @"3G";
+  } else if ([carrierType isEqualToString:CTRadioAccessTechnologyCDMAEVDORevA]) {
+    return @"3G";
+  } else if ([carrierType isEqualToString:CTRadioAccessTechnologyCDMAEVDORevB]) {
+    return @"3G";
+  } else if ([carrierType isEqualToString:CTRadioAccessTechnologyeHRPD]) {
+    return @"3G";
+  } else if ([carrierType isEqualToString:CTRadioAccessTechnologyLTE]) {
+    return @"4G";
+  }
+  return @"none";
+}
+
 - (NSString*)statusFromReachability:(Reachability*)reachability {
   NetworkStatus status = [reachability currentReachabilityStatus];
+  NSString *subtype = [self getConnectionSubtype:[Reachability reachabilityForInternetConnection]];
   switch (status) {
     case NotReachable:
-      return @"none";
+      return [NSString stringWithFormat:@"%@,%@", @"none" , subtype];
     case ReachableViaWiFi:
-      return @"wifi";
+      return [NSString stringWithFormat:@"%@,%@", @"wifi" , subtype];
     case ReachableViaWWAN:
-      return @"mobile";
+      return [NSString stringWithFormat:@"%@,%@", @"mobile" , subtype];
   }
 }
 
@@ -111,6 +146,9 @@
     result([self getBSSID]);
   } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
     result([self getWifiIP]);
+  }else if ([call.method isEqualToString:@"subtype"]) {
+    result([self getConnectionSubtype:[Reachability reachabilityForInternetConnection]]);
+    
   } else {
     result(FlutterMethodNotImplemented);
   }
