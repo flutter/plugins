@@ -16,14 +16,15 @@ enum ConnectionType { wifi, mobile, none }
 enum ConnectionSubtype { EDGE, HSDPA, LTE, none, unknown }
 
 class ConnectivityResult {
-  static const ConnectionType wifi = ConnectionType.wifi;
-  static const ConnectionType mobile = ConnectionType.mobile;
-  static const ConnectionType none = ConnectionType.none;
+
+  ConnectivityResult(this.type, this.subtype);
 
   final ConnectionType type;
   final ConnectionSubtype subtype;
 
-  ConnectivityResult(this.type, this.subtype);
+  static const ConnectionType wifi = ConnectionType.wifi;
+  static const ConnectionType mobile = ConnectionType.mobile;
+  static const ConnectionType none = ConnectionType.none;
 
   @override
   bool operator ==(Object object) {
