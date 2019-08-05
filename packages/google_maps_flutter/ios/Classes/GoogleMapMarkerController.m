@@ -220,10 +220,15 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
   return image;
 }
 
+@interface FLTMarkersController ()
+
+@property(weak, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
+
+@end
+
 @implementation FLTMarkersController {
   NSMutableDictionary* _markerIdToController;
   FlutterMethodChannel* _methodChannel;
-  NSObject<FlutterPluginRegistrar>* _registrar;
   GMSMapView* _mapView;
 }
 - (instancetype)init:(FlutterMethodChannel*)methodChannel
@@ -234,7 +239,7 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
     _methodChannel = methodChannel;
     _mapView = mapView;
     _markerIdToController = [NSMutableDictionary dictionaryWithCapacity:1];
-    _registrar = registrar;
+    self.registrar = registrar;
   }
   return self;
 }
@@ -246,7 +251,7 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
         [[FLTGoogleMapMarkerController alloc] initMarkerWithPosition:position
                                                             markerId:markerId
                                                              mapView:_mapView];
-    InterpretMarkerOptions(marker, controller, _registrar);
+    InterpretMarkerOptions(marker, controller, self.registrar);
     _markerIdToController[markerId] = controller;
   }
 }
@@ -257,7 +262,7 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
     if (!controller) {
       continue;
     }
-    InterpretMarkerOptions(marker, controller, _registrar);
+    InterpretMarkerOptions(marker, controller, self.registrar);
   }
 }
 - (void)removeMarkerIds:(NSArray*)markerIdsToRemove {

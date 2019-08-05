@@ -105,10 +105,15 @@ static void InterpretPolygonOptions(NSDictionary* data, id<FLTGoogleMapPolygonOp
   }
 }
 
+@interface FLTPolygonsController ()
+
+@property(weak, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
+
+@end
+
 @implementation FLTPolygonsController {
   NSMutableDictionary* _polygonIdToController;
   FlutterMethodChannel* _methodChannel;
-  NSObject<FlutterPluginRegistrar>* _registrar;
   GMSMapView* _mapView;
 }
 - (instancetype)init:(FlutterMethodChannel*)methodChannel
@@ -119,7 +124,7 @@ static void InterpretPolygonOptions(NSDictionary* data, id<FLTGoogleMapPolygonOp
     _methodChannel = methodChannel;
     _mapView = mapView;
     _polygonIdToController = [NSMutableDictionary dictionaryWithCapacity:1];
-    _registrar = registrar;
+    self.registrar = registrar;
   }
   return self;
 }
@@ -131,7 +136,7 @@ static void InterpretPolygonOptions(NSDictionary* data, id<FLTGoogleMapPolygonOp
         [[FLTGoogleMapPolygonController alloc] initPolygonWithPath:path
                                                          polygonId:polygonId
                                                            mapView:_mapView];
-    InterpretPolygonOptions(polygon, controller, _registrar);
+    InterpretPolygonOptions(polygon, controller, self.registrar);
     _polygonIdToController[polygonId] = controller;
   }
 }
@@ -142,7 +147,7 @@ static void InterpretPolygonOptions(NSDictionary* data, id<FLTGoogleMapPolygonOp
     if (!controller) {
       continue;
     }
-    InterpretPolygonOptions(polygon, controller, _registrar);
+    InterpretPolygonOptions(polygon, controller, self.registrar);
   }
 }
 - (void)removePolygonIds:(NSArray*)polygonIdsToRemove {

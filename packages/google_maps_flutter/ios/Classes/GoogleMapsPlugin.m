@@ -6,8 +6,13 @@
 
 #pragma mark - GoogleMaps plugin implementation
 
+@interface FLTGoogleMapsPlugin ()
+
+@property(weak, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
+
+@end
+
 @implementation FLTGoogleMapsPlugin {
-  NSObject<FlutterPluginRegistrar>* _registrar;
   FlutterMethodChannel* _channel;
   NSMutableDictionary* _mapControllers;
 }

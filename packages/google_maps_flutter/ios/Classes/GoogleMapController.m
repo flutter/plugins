@@ -16,14 +16,18 @@ static NSDictionary* GMSCoordinateBoundsToJson(GMSCoordinateBounds* bounds);
 static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> sink);
 static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
 
-@implementation FLTGoogleMapFactory {
-  NSObject<FlutterPluginRegistrar>* _registrar;
-}
+@interface FLTGoogleMapFactory ()
+
+@property(weak, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
+
+@end
+
+@implementation FLTGoogleMapFactory
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   self = [super init];
   if (self) {
-    _registrar = registrar;
+    self.registrar = registrar;
   }
   return self;
 }
@@ -38,8 +42,14 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   return [[FLTGoogleMapController alloc] initWithFrame:frame
                                         viewIdentifier:viewId
                                              arguments:args
-                                             registrar:_registrar];
+                                             registrar:self.registrar];
 }
+@end
+
+@interface FLTGoogleMapController ()
+
+@property(weak, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
+
 @end
 
 @implementation FLTGoogleMapController {
@@ -47,7 +57,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   int64_t _viewId;
   FlutterMethodChannel* _channel;
   BOOL _trackCameraPosition;
-  NSObject<FlutterPluginRegistrar>* _registrar;
   // Used for the temporary workaround for a bug that the camera is not properly positioned at
   // initialization. https://github.com/flutter/flutter/issues/24806
   // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
@@ -82,7 +91,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       }
     }];
     _mapView.delegate = weakSelf;
-    _registrar = registrar;
+    self.registrar = registrar;
     _cameraDidInitialSetup = NO;
     _markersController = [[FLTMarkersController alloc] init:_channel
                                                     mapView:_mapView

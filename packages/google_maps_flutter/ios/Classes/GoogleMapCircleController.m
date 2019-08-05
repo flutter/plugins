@@ -113,10 +113,15 @@ static void InterpretCircleOptions(NSDictionary* data, id<FLTGoogleMapCircleOpti
   }
 }
 
+@interface FLTCirclesController ()
+
+@property(weak, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
+
+@end
+
 @implementation FLTCirclesController {
   NSMutableDictionary* _circleIdToController;
   FlutterMethodChannel* _methodChannel;
-  NSObject<FlutterPluginRegistrar>* _registrar;
   GMSMapView* _mapView;
 }
 - (instancetype)init:(FlutterMethodChannel*)methodChannel
@@ -127,7 +132,7 @@ static void InterpretCircleOptions(NSDictionary* data, id<FLTGoogleMapCircleOpti
     _methodChannel = methodChannel;
     _mapView = mapView;
     _circleIdToController = [NSMutableDictionary dictionaryWithCapacity:1];
-    _registrar = registrar;
+    self.registrar = registrar;
   }
   return self;
 }
@@ -141,7 +146,7 @@ static void InterpretCircleOptions(NSDictionary* data, id<FLTGoogleMapCircleOpti
                                                               radius:radius
                                                             circleId:circleId
                                                              mapView:_mapView];
-    InterpretCircleOptions(circle, controller, _registrar);
+    InterpretCircleOptions(circle, controller, self.registrar);
     _circleIdToController[circleId] = controller;
   }
 }
@@ -152,7 +157,7 @@ static void InterpretCircleOptions(NSDictionary* data, id<FLTGoogleMapCircleOpti
     if (!controller) {
       continue;
     }
-    InterpretCircleOptions(circle, controller, _registrar);
+    InterpretCircleOptions(circle, controller, self.registrar);
   }
 }
 - (void)removeCircleIds:(NSArray*)circleIdsToRemove {

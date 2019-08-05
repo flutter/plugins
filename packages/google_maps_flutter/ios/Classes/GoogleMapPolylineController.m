@@ -97,10 +97,15 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
   }
 }
 
+@interface FLTPolylinesController ()
+
+@property(weak, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
+
+@end
+
 @implementation FLTPolylinesController {
   NSMutableDictionary* _polylineIdToController;
   FlutterMethodChannel* _methodChannel;
-  NSObject<FlutterPluginRegistrar>* _registrar;
   GMSMapView* _mapView;
 }
 - (instancetype)init:(FlutterMethodChannel*)methodChannel
@@ -111,7 +116,7 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
     _methodChannel = methodChannel;
     _mapView = mapView;
     _polylineIdToController = [NSMutableDictionary dictionaryWithCapacity:1];
-    _registrar = registrar;
+    self.registrar = registrar;
   }
   return self;
 }
@@ -123,7 +128,7 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
         [[FLTGoogleMapPolylineController alloc] initPolylineWithPath:path
                                                           polylineId:polylineId
                                                              mapView:_mapView];
-    InterpretPolylineOptions(polyline, controller, _registrar);
+    InterpretPolylineOptions(polyline, controller, self.registrar);
     _polylineIdToController[polylineId] = controller;
   }
 }
@@ -134,7 +139,7 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
     if (!controller) {
       continue;
     }
-    InterpretPolylineOptions(polyline, controller, _registrar);
+    InterpretPolylineOptions(polyline, controller, self.registrar);
   }
 }
 - (void)removePolylineIds:(NSArray*)polylineIdsToRemove {

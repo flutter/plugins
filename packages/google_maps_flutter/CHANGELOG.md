@@ -1,3 +1,7 @@
+## 0.5.20+2
+
+* iOS: Weakly refer to the FlutterPluginRegistrar to avoid retain cycle.
+
 ## 0.5.20+1
 
 * Android: Unregister ActivityLifecycleCallbacks on activity destroy (fixes a memory leak).
