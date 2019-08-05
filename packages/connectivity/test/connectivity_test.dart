@@ -7,8 +7,7 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
 
     setUp(() async {
-      Connectivity.methodChannel
-          .setMockMethodCallHandler((MethodCall methodCall) async {
+      Connectivity.methodChannel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'check':
@@ -26,8 +25,7 @@ void main() {
         }
       });
       log.clear();
-      MethodChannel(Connectivity.eventChannel.name)
-          .setMockMethodCallHandler((MethodCall methodCall) async {
+      MethodChannel(Connectivity.eventChannel.name).setMockMethodCallHandler((MethodCall methodCall) async {
         switch (methodCall.method) {
           case 'listen':
             // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
@@ -47,8 +45,7 @@ void main() {
     });
 
     test('onConnectivityChanged', () async {
-      final ConnectivityResult result =
-          await Connectivity().onConnectivityChanged.first;
+      final ConnectivityResult result = await Connectivity().onConnectivityChanged.first;
       expect(result.type, ConnectivityResult.mobile);
       expect(result.subtype, ConnectionSubtype.EDGE);
     });
@@ -96,8 +93,8 @@ void main() {
     });
 
     test('checkConnectivity', () async {
-      final ConnectivityResult result =
-          await Connectivity().checkConnectivity();
+      final ConnectivityResult result = await Connectivity().checkConnectivity();
+      // ignore: unrelated_type_equality_checks
       expect(result == ConnectionType.wifi, true);
       expect(result.type, ConnectivityResult.wifi);
       expect(result.subtype, ConnectionSubtype.unknown);
@@ -113,8 +110,7 @@ void main() {
     });
 
     test('subtype', () async {
-      final ConnectionSubtype result =
-      await Connectivity().getNetworkSubtype();
+      final ConnectionSubtype result = await Connectivity().getNetworkSubtype();
       expect(result, ConnectionSubtype.HSDPA);
       expect(
         log,
