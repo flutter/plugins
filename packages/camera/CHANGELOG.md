@@ -1,7 +1,3 @@
-## 0.5.3
-
-* Massive refactoring of Android Camera functionality to allow reuse of Camera class.
-
 ## 0.5.2+2
 
 * Fix memory leak related to not unregistering stream handler in FlutterEventChannel when disposing camera.
