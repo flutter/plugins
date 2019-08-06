@@ -50,6 +50,21 @@ void main() {
     }
   });
 
+  test('getLibraryDirectory', () async {
+    if (Platform.isIOS) {
+      final Directory result = await getLibraryDirectory();
+      final String uuid = Uuid().v1();
+      final File file = File('${result.path}/$uuid.txt');
+      file.writeAsStringSync('Hello world!');
+      expect(file.readAsStringSync(), 'Hello world!');
+      expect(result.listSync(), isNotEmpty);
+      file.deleteSync();
+    } else if (Platform.isAndroid) {
+      final Future<Directory> result = getLibraryDirectory();
+      expect(result, throwsA(isInstanceOf<UnsupportedError>()));
+    }
+  });
+
   test('getExternalStorageDirectory', () async {
     if (Platform.isIOS) {
       final Future<Directory> result = getExternalStorageDirectory();

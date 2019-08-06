@@ -50,6 +50,34 @@ Future<Directory> getApplicationSupportDirectory() async {
   return Directory(path);
 }
 
+/// Path to the directory where application can store
+/// `persistent, backed up, not visible to the user` files, such as sqlite.db.
+/// And others resource which want to keep and hide to user.
+///
+/// From link of [https://stackoverflow.com/questions/7268299/path-directory-usable-in-ios]:
+///   1. `NSDocumentDirectory` is `Documents/`
+///     (persistent, backed up, may be visible in iTunes)
+///   2. `NSLibraryDirectory` is `Library/`
+///     (persistent, backed up, not visible to the user)
+///   3. `NSCachesDirectory` is `Library/Caches/`
+///     (not backed up, may be cleared by system)
+///
+/// From iOS Frameworks:
+///   NSLibraryDirectory,   // various documentation, support,
+///                           and configuration files, resources (Library)
+///   NSApplicationSupportDirectory = 14, // location of application support
+///                        files (plug-ins, etc) (Library/Application Support)
+///
+///
+Future<Directory> getLibraryDirectory() async {
+  final String path =
+      await _channel.invokeMethod<String>('getLibraryDirectory');
+  if (path == null) {
+    return null;
+  }
+  return Directory(path);
+}
+
 /// Path to a directory where the application may place data that is
 /// user-generated, or that cannot otherwise be recreated by your application.
 ///

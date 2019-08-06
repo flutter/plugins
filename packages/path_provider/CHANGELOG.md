@@ -1,3 +1,10 @@
+## 1.2.1
+
+* On iOS, Added `getLibraryDirectory`.
+* Update integration tests and example test.
+* Update demo UI to use ListView show the long list of content.
+* Update .gitignore to include Xcode build output folder `**/DerivedData/`
+
 ## 1.2.0
 
 * On Android, `getApplicationSupportDirectory` is now supported using `getFilesDir`.
