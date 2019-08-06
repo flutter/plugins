@@ -1,6 +1,24 @@
-## 0.5.20
+## 0.5.21
 
 * Adds support for toggling zoom controls (Android only)
+
+## 0.5.20+1
+
+* Android: Unregister ActivityLifecycleCallbacks on activity destroy (fixes a memory leak).
+
+## 0.5.20
+
+* Add map toolbar support
+
+## 0.5.19+2
+
+* Fix polygons for iOS
+
+## 0.5.19+1
+
+* Fix polyline width according to device density
+
+## 0.5.19
 
 ## 0.5.19
 

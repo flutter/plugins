@@ -100,7 +100,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
     }
-    id polygonsToAdd = args[@"polygonToAdd"];
+    id polygonsToAdd = args[@"polygonsToAdd"];
     if ([polygonsToAdd isKindOfClass:[NSArray class]]) {
       [_polygonsController addPolygons:polygonsToAdd];
     }
@@ -208,6 +208,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isCompassEnabled"]) {
     NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
     result(isCompassEnabled);
+  } else if ([call.method isEqualToString:@"map#isMapToolbarEnabled"]) {
+    NSNumber* isMapToolbarEnabled = [NSNumber numberWithBool:NO];
+    result(isMapToolbarEnabled);
   } else if ([call.method isEqualToString:@"map#getMinMaxZoomLevels"]) {
     NSArray* zoomLevels = @[ @(_mapView.minZoom), @(_mapView.maxZoom) ];
     result(zoomLevels);

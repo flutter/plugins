@@ -37,7 +37,7 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
       // we stop the registering process immediately because the ImagePicker requires an activity.
       return;
     }
-    ImagePickerCache.setUpWithActivity(registrar.activity());
+    final ImagePickerCache cache = new ImagePickerCache(registrar.activity());
 
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
 
@@ -46,7 +46,7 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
     final ExifDataCopier exifDataCopier = new ExifDataCopier();
     final ImageResizer imageResizer = new ImageResizer(externalFilesDirectory, exifDataCopier);
     final ImagePickerDelegate delegate =
-        new ImagePickerDelegate(registrar.activity(), externalFilesDirectory, imageResizer);
+        new ImagePickerDelegate(registrar.activity(), externalFilesDirectory, imageResizer, cache);
 
     registrar.addActivityResultListener(delegate);
     registrar.addRequestPermissionsResultListener(delegate);
@@ -80,18 +80,18 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
           }
 
           @Override
-          public void onActivityDestroyed(Activity activity) {}
+          public void onActivityDestroyed(Activity activity) {
+            if (activity == registrar.activity()) {
+              ((Application) registrar.context()).unregisterActivityLifecycleCallbacks(this);
+            }
+          }
 
           @Override
           public void onActivityStopped(Activity activity) {}
         };
 
-    if (this.registrar != null
-        && this.registrar.activity() != null
-        && this.registrar.activity().getApplication() != null) {
-      this.registrar
-          .activity()
-          .getApplication()
+    if (this.registrar != null) {
+      ((Application) this.registrar.context())
           .registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
     }
   }

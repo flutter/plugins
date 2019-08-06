@@ -342,9 +342,13 @@ class _MethodCompleter {
   final Completer<GoogleSignInAccount> _completer =
       Completer<GoogleSignInAccount>();
 
-  void complete(FutureOr<GoogleSignInAccount> value) {
+  Future<void> complete(FutureOr<GoogleSignInAccount> value) async {
     if (value is Future<GoogleSignInAccount>) {
-      value.then(_completer.complete, onError: _completer.completeError);
+      try {
+        _completer.complete(await value);
+      } catch (e, stacktrace) {
+        _completer.completeError(e, stacktrace);
+      }
     } else {
       _completer.complete(value);
     }

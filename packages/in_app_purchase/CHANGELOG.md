@@ -1,3 +1,39 @@
+## 0.2.1
+
+* iOS: Add currencyCode to priceLocale on productDetails.
+
+## 0.2.0+8
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.2.0+7
+
+* Make Gradle version compatible with the Android Gradle plugin version.
+
+## 0.2.0+6
+
+* Add missing `hashCode` implementations.
+
+## 0.2.0+5
+
+* iOS: Support unsupported UserInfo value types on NSError.
+
+## 0.2.0+4
+
+* Fixed code error in `README.md` and adjusted links to work on Pub.
+
+## 0.2.0+3
+
+* Update the `README.md` so that the code samples compile with the latest Flutter/Dart version.
+
+## 0.2.0+2
+
+* Fix a google_play_connection purchase update listener regression introduced in 0.2.0+1.
+
+## 0.2.0+1
+
+* Fix an issue the type is not casted before passing to `PurchasesResultWrapper.fromJson`.
+
 ## 0.2.0
 
 * [Breaking Change] Rename 'PurchaseError' to 'IAPError'.

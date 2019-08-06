@@ -21,15 +21,40 @@ Check out the `example` directory for a sample app using Firebase Cloud Messagin
 
 To integrate your plugin into the Android part of your app, follow these steps:
 
-1. Using the [Firebase Console](https://console.firebase.google.com/) add an Android app to your project: Follow the assistant, download the generated `google-services.json` file and place it inside `android/app`. Next, modify the `android/build.gradle` file and the `android/app/build.gradle` file to add the Google services plugin as described by the Firebase assistant.
+1. Using the [Firebase Console](https://console.firebase.google.com/) add an Android app to your project: Follow the assistant, download the generated `google-services.json` file and place it inside `android/app`.
 
-1. (optional, but recommended) If want to be notified in your app (via `onResume` and `onLaunch`, see below) when the user clicks on a notification in the system tray include the following `intent-filter` within the `<activity>` tag of your `android/app/src/main/AndroidManifest.xml`:
+2. Add the classpath to the `[project]/android/build.gradle` file.
+```
+dependencies {
+  // Example existing classpath
+  classpath 'com.android.tools.build:gradle:3.2.1'
+  // Add the google services classpath
+  classpath 'com.google.gms:google-services:4.3.0'
+}
+```
+3. Add the apply plugin to the `[project]/android/app/build.gradle` file.
+```
+// ADD THIS AT THE BOTTOM
+apply plugin: 'com.google.gms.google-services'
+```
+
+Note: If this section is not completed you will get an error like this:
+```
+java.lang.IllegalStateException:
+Default FirebaseApp is not initialized in this process [package name].
+Make sure to call FirebaseApp.initializeApp(Context) first.
+```
+
+Note: When you are debugging on Android, use a device or AVD with Google Play services. Otherwise you will not be able to authenticate.
+
+4. (optional, but recommended) If want to be notified in your app (via `onResume` and `onLaunch`, see below) when the user clicks on a notification in the system tray include the following `intent-filter` within the `<activity>` tag of your `android/app/src/main/AndroidManifest.xml`:
   ```xml
   <intent-filter>
       <action android:name="FLUTTER_NOTIFICATION_CLICK" />
       <category android:name="android.intent.category.DEFAULT" />
   </intent-filter>
   ```
+
 
 ### iOS Integration
 
@@ -67,6 +92,21 @@ Messages are sent to your Flutter app via the `onMessage`, `onLaunch`, and `onRe
 | **Data Message on iOS**     | `onMessage` | Message is stored by FCM and delivered to app via `onMessage` when the app is brought back to foreground. | Message is stored by FCM and delivered to app via `onMessage` when the app is brought back to foreground. |
 
 Additional reading: Firebase's [About FCM Messages](https://firebase.google.com/docs/cloud-messaging/concept-options).
+
+## Notification messages with additional data
+It is possible to include additional data in notification messages by adding them to the `"data"`-field of the message.
+
+On Android, the message contains an additional field `data` containing the data. On iOS, the data is directly appended to the message and the additional `data`-field is omitted.
+
+To receive the data on both platforms:
+
+````dart
+Future<void> _handleNotification (Map<dynamic, dynamic> message, bool dialog) async {
+    var data = message['data'] ?? message;
+    String expectedAttribute = data['expectedAttribute'];
+    /// [...]
+}
+````
 
 ## Sending Messages
 Refer to the [Firebase documentation](https://firebase.google.com/docs/cloud-messaging/) about FCM for all the details about sending messages to your app. When sending a notification message to an Android device, you need to make sure to set the `click_action` property of the message to `FLUTTER_NOTIFICATION_CLICK`. Otherwise the plugin will be unable to deliver the notification to your app when the users clicks on it in the system tray.

@@ -31,6 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
@@ -129,7 +130,16 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     if (orderBy != null) {
       for (List<Object> order : orderBy) {
         String orderByFieldName = (String) order.get(0);
-        data.add(documentData.get(orderByFieldName));
+        if (orderByFieldName.contains(".")) {
+          String[] fieldNameParts = orderByFieldName.split("\\.");
+          Map<String, Object> current = (Map<String, Object>) documentData.get(fieldNameParts[0]);
+          for (int i = 1; i < fieldNameParts.length - 1; i++) {
+            current = (Map<String, Object>) current.get(fieldNameParts[i]);
+          }
+          data.add(current.get(fieldNameParts[fieldNameParts.length - 1]));
+        } else {
+          data.add(documentData.get(orderByFieldName));
+        }
       }
     }
     data.add((boolean) arguments.get("isCollectionGroup") ? document.get("path") : documentId);
@@ -182,6 +192,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       documentChanges.add(change);
     }
     data.put("documentChanges", documentChanges);
+
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put("hasPendingWrites", querySnapshot.getMetadata().hasPendingWrites());
+    metadata.put("isFromCache", querySnapshot.getMetadata().isFromCache());
+    data.put("metadata", metadata);
 
     return data;
   }
@@ -389,7 +404,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                                         String errorMessage,
                                         Object errorDetails) {
                                       transactionTCS.trySetException(
-                                          new Exception("Do transaction failed."));
+                                          new Exception("DoTransaction failed: " + errorMessage));
                                     }
 
                                     @Override
@@ -519,7 +534,6 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                   new Runnable() {
                     @Override
                     public void run() {
-                      Log.d(TAG, "sending set success");
                       result.success(null);
                     }
                   });
@@ -611,22 +625,32 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           int handle = nextListenerHandle++;
           EventObserver observer = new EventObserver(handle);
           observers.put(handle, observer);
-          listenerRegistrations.put(handle, getQuery(arguments).addSnapshotListener(observer));
+          MetadataChanges metadataChanges =
+              (Boolean) arguments.get("includeMetadataChanges")
+                  ? MetadataChanges.INCLUDE
+                  : MetadataChanges.EXCLUDE;
+          listenerRegistrations.put(
+              handle, getQuery(arguments).addSnapshotListener(metadataChanges, observer));
           result.success(handle);
           break;
         }
-      case "Query#addDocumentListener":
+      case "DocumentReference#addSnapshotListener":
         {
           Map<String, Object> arguments = call.arguments();
           int handle = nextListenerHandle++;
           DocumentObserver observer = new DocumentObserver(handle);
           documentObservers.put(handle, observer);
+          MetadataChanges metadataChanges =
+              (Boolean) arguments.get("includeMetadataChanges")
+                  ? MetadataChanges.INCLUDE
+                  : MetadataChanges.EXCLUDE;
           listenerRegistrations.put(
-              handle, getDocumentReference(arguments).addSnapshotListener(observer));
+              handle,
+              getDocumentReference(arguments).addSnapshotListener(metadataChanges, observer));
           result.success(handle);
           break;
         }
-      case "Query#removeListener":
+      case "removeListener":
         {
           Map<String, Object> arguments = call.arguments();
           int handle = (Integer) arguments.get("handle");

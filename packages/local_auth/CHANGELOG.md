@@ -1,3 +1,15 @@
+## 0.5.3
+
+* Add face id detection as well by not relying on FingerprintCompat.
+
+## 0.5.2+4
+
+* Update README to fix syntax error.
+
+## 0.5.2+3
+
+* Update documentation to clarify the need for FragmentActivity.
+
 ## 0.5.2+2
 
 * Add missing template type parameter to `invokeMethod` calls.

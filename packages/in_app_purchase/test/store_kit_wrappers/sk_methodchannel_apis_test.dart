@@ -30,9 +30,14 @@ void main() {
         productResponseWrapper.products.first.priceLocale.currencySymbol,
         '\$',
       );
+
       expect(
         productResponseWrapper.products.first.priceLocale.currencySymbol,
         isNot('A'),
+      );
+      expect(
+        productResponseWrapper.products.first.priceLocale.currencyCode,
+        'USD',
       );
       expect(
         productResponseWrapper.invalidProductIdentifiers,
