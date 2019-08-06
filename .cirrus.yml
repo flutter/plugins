@@ -1,3 +1,5 @@
+gcp_credentials: ENCRYPTED[7e11fd2d7fbe7656d724ba5aaa1c16ee8c6b9a094498b6532420d7c3e76b7d854ef97673818d6f9433857af2bcd3e701]
+
 task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   gke_container:
@@ -34,7 +36,7 @@ task:
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         CLOUDSDK_CORE_DISABLE_PROMPTS: 1
-        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[1c140257edc48f5578fa5a0e5038b84c8e53270c405efa5a8e35ea303a4e0d135853989f448f72136206de854d17fbec]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[39c6adf685d3ca9fa398722548588017b3ffd2c5bdc0ceeb437b7c03702f46dbc61124fb6283c0c01427cfd4761d97e5]
       create_device_script:
         echo no | avdmanager -v create avd -n test -k "system-images;android-21;default;armeabi-v7a"
       start_emulator_background_script:
