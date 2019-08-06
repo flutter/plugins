@@ -4,6 +4,16 @@ task:
     image: gcr.io/flutter-cirrus/build-flutter-image:latest
     cpu: 8
     memory: 16G
+  env:
+    # Name the SDK directory to include a space so that we constantly
+    # test path names with spaces in them.
+    CIRRUS_WORKING_DIR: "/tmp/flutter sdk"
+    PATH: "$CIRRUS_WORKING_DIR/bin:$CIRRUS_WORKING_DIR/bin/cache/dart-sdk/bin:$PATH"
+    ANDROID_SDK_ROOT: "/opt/android_sdk"
+  git_fetch_script:
+    - git clean -xfd
+    - git fetch origin
+    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
   upgrade_script:
     - flutter channel master
     - flutter upgrade
