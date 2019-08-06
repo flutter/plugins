@@ -12,13 +12,13 @@ Sample usage to check current status:
 ```dart
 import 'package:connectivity/connectivity.dart';
 
-var connectivityResult = await (Connectivity().checkConnectivity());
-if (connectivityResult == ConnectivityResult.mobile) {
+var connectivityInfo = await (Connectivity().checkConnectivityInfo());
+if (connectivityInfo.result == ConnectivityResult.mobile) {
   // I am connected to a mobile network.
-  if(connectivityResult.subtype == ConnectionSubtype.HSDPA){
-    // I am on a 3G network
+  if(connectivityInfo.subtype == ConnectionSubtype.HSDPA){
+    // I am on an HSDPA network
   }
-} else if (connectivityResult == ConnectivityResult.wifi) {
+} else if (connectivityInfo.result == ConnectivityResult.wifi) {
   // I am connected to a wifi network.
 }
 ```
@@ -30,12 +30,12 @@ import 'package:connectivity/connectivity.dart';
 
 var connectivityResult = await (Connectivity().getNetworkSubtype());
 
-if(connectivityResult.subtype == ConnectionSubtype.EDGE){
-  // I am on a 2G network
-} else if(connectivityResult.subtype == ConnectionSubtype.HSDPA){
-  // I am on a 3G network
-} else if(connectivityResult.subtype == ConnectionSubtype.LTE){
-  // I am on a 4G network
+if(connectivityResult.subtype == ConnectionSubtype.edge){
+  // I am on an edge network
+} else if(connectivityResult.subtype == ConnectionSubtype.hsdpa){
+  // I am on a hsdpa network
+} else if(connectivityResult.subtype == ConnectionSubtype.lte){
+  // I am on an lte network
 }
 ```
 
@@ -53,9 +53,11 @@ import 'package:connectivity/connectivity.dart';
 initState() {
   super.initState();
 
-  subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+  subscription = Connectivity().onConnectivityInfoChanged.listen((ConnectionInfo info) {
     // Got a new connectivity status!
-  })
+    info.result = // ConnectivityResult info
+    info.subtype = // Mobile Connectivity Subtype info
+  });
 }
 
 // Be sure to cancel subscription after you are done
