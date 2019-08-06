@@ -122,13 +122,13 @@ public class Camera {
     cameraEventChannel.setStreamHandler(
         new EventChannel.StreamHandler() {
           @Override
-          public void onListen(Object arguments, EventChannel.EventSink eventSink) {
-            Camera.this.eventSink = eventSink;
+          public void onListen(Object arguments, EventChannel.EventSink sink) {
+            eventSink = sink;
           }
 
           @Override
           public void onCancel(Object arguments) {
-            Camera.this.eventSink = null;
+            eventSink = null;
           }
         });
   }
@@ -236,7 +236,7 @@ public class Camera {
     }
   }
 
-  public SurfaceTextureEntry getFlutterTexture() {
+  SurfaceTextureEntry getFlutterTexture() {
     return flutterTexture;
   }
 

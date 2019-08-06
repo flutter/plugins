@@ -21,16 +21,16 @@ import java.util.List;
 import java.util.Map;
 
 /** Provides various utilities for camera. */
-final class CameraUtils {
+public final class CameraUtils {
 
   private CameraUtils() {}
 
-  public static Size[] computeBestPreviewAndRecordingSize(
-      Activity activity,
-      StreamConfigurationMap streamConfigurationMap,
-      int minHeight,
-      int orientation,
-      Size captureSize) {
+  static Size[] computeBestPreviewAndRecordingSize(
+          Activity activity,
+          StreamConfigurationMap streamConfigurationMap,
+          int minHeight,
+          int orientation,
+          Size captureSize) {
     Size previewSize, videoSize;
     Size[] sizes = streamConfigurationMap.getOutputSizes(SurfaceTexture.class);
 
@@ -82,7 +82,7 @@ final class CameraUtils {
     return new Size[] {videoSize, previewSize};
   }
 
-  public static Size computeBestCaptureSize(StreamConfigurationMap streamConfigurationMap) {
+  static Size computeBestCaptureSize(StreamConfigurationMap streamConfigurationMap) {
     // For still image captures, we use the largest available size.
     return Collections.max(
         Arrays.asList(streamConfigurationMap.getOutputSizes(ImageFormat.JPEG)),
