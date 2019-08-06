@@ -14,7 +14,7 @@ void main() {
           case 'check':
             return 'wifi,unknown';
           case 'subtype':
-            return '3G';
+            return 'evdo_b';
           case 'wifiName':
             return '1337wifi';
           case 'wifiBSSID':
@@ -36,7 +36,7 @@ void main() {
             await BinaryMessages.handlePlatformMessage(
               Connectivity.eventChannel.name,
               Connectivity.eventChannel.codec
-                  .encodeSuccessEnvelope('mobile,2G'),
+                  .encodeSuccessEnvelope('mobile,hsdpa'),
               (_) {},
             );
             break;
@@ -51,7 +51,7 @@ void main() {
       final ConnectivityResult result =
           await Connectivity().onConnectivityChanged.first;
       expect(result.type, ConnectivityResult.mobile);
-      expect(result.subtype, ConnectionSubtype.EDGE);
+      expect(result.subtype, ConnectionSubtype.hsdpa);
     });
 
     test('getWifiName', () async {
@@ -116,7 +116,7 @@ void main() {
 
     test('subtype', () async {
       final ConnectionSubtype result = await Connectivity().getNetworkSubtype();
-      expect(result, ConnectionSubtype.HSDPA);
+      expect(result, ConnectionSubtype.evdo_b);
       expect(
         log,
         <Matcher>[

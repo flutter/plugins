@@ -49,7 +49,7 @@ Map<String, ConnectionSubtype> connectionTypeMap = {
   "hspap": ConnectionSubtype.hspap, // ~ 10-20 Mbps
   "iden": ConnectionSubtype.iden, // ~25 kbps
   "lte": ConnectionSubtype.lte, // ~ 10+ Mbps
-  "unknown": ConnectionSubtype.none, // is connected but cannot tell the speed
+  "unknown": ConnectionSubtype.unknown, // is connected but cannot tell the speed
   "none": ConnectionSubtype.none
 };
 
