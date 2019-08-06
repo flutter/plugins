@@ -100,8 +100,6 @@ public class Camera {
     orientationEventListener.enable();
 
     CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
-    StreamConfigurationMap streamConfigurationMap =
-        characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
     //noinspection ConstantConditions
     sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
     //noinspection ConstantConditions
@@ -112,6 +110,7 @@ public class Camera {
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     previewSize = computeBestPreviewSize(cameraName, preset);
+    System.err.println("Video size is " + captureSize + " preview size is " + previewSize);
   }
 
   public void setupCameraEventChannel(EventChannel cameraEventChannel) {
@@ -392,9 +391,12 @@ public class Camera {
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
 
+  double numImages;
+
   public void startPreviewWithImageStream(EventChannel imageStreamChannel)
       throws CameraAccessException {
-    createCaptureSession(CameraDevice.TEMPLATE_STILL_CAPTURE, imageStreamReader.getSurface());
+    createCaptureSession(CameraDevice.TEMPLATE_RECORD, imageStreamReader.getSurface());
+    numImages = 0;
 
     imageStreamChannel.setStreamHandler(
         new EventChannel.StreamHandler() {
@@ -413,31 +415,31 @@ public class Camera {
   private void setImageStreamImageAvailableListener(final EventChannel.EventSink imageStreamSink) {
     imageStreamReader.setOnImageAvailableListener(
         reader -> {
+          numImages++;
           Image img = reader.acquireLatestImage();
           if (img == null) return;
-
-          List<Map<String, Object>> planes = new ArrayList<>();
-          for (Image.Plane plane : img.getPlanes()) {
-            ByteBuffer buffer = plane.getBuffer();
-
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes, 0, bytes.length);
-
-            Map<String, Object> planeBuffer = new HashMap<>();
-            planeBuffer.put("bytesPerRow", plane.getRowStride());
-            planeBuffer.put("bytesPerPixel", plane.getPixelStride());
-            planeBuffer.put("bytes", bytes);
-
-            planes.add(planeBuffer);
-          }
-
-          Map<String, Object> imageBuffer = new HashMap<>();
-          imageBuffer.put("width", img.getWidth());
-          imageBuffer.put("height", img.getHeight());
-          imageBuffer.put("format", img.getFormat());
-          imageBuffer.put("planes", planes);
-
-          imageStreamSink.success(imageBuffer);
+//          List<Map<String, Object>> planes = new ArrayList<>();
+//          for (Image.Plane plane : img.getPlanes()) {
+//            ByteBuffer buffer = plane.getBuffer();
+//
+//            byte[] bytes = new byte[buffer.remaining()];
+//            buffer.get(bytes, 0, bytes.length);
+//
+//            Map<String, Object> planeBuffer = new HashMap<>();
+//            planeBuffer.put("bytesPerRow", plane.getRowStride());
+//            planeBuffer.put("bytesPerPixel", plane.getPixelStride());
+//            planeBuffer.put("bytes", bytes);
+//
+//            planes.add(planeBuffer);
+//          }
+//
+//          Map<String, Object> imageBuffer = new HashMap<>();
+//          imageBuffer.put("width", img.getWidth());
+//          imageBuffer.put("height", img.getHeight());
+//          imageBuffer.put("format", img.getFormat());
+//          imageBuffer.put("planes", planes);
+//
+//          imageStreamSink.success(imageBuffer);
           img.close();
         },
         null);
