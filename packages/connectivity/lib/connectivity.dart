@@ -16,7 +16,6 @@ enum ConnectionType { wifi, mobile, none }
 enum ConnectionSubtype { EDGE, HSDPA, LTE, none, unknown }
 
 class ConnectivityResult {
-
   ConnectivityResult(this.type, this.subtype);
 
   final ConnectionType type;
@@ -69,8 +68,9 @@ class Connectivity {
   /// Fires whenever the connectivity state changes.
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (_onConnectivityChanged == null) {
-      _onConnectivityChanged =
-          eventChannel.receiveBroadcastStream().map((dynamic event) => _parseConnectivityResult(event));
+      _onConnectivityChanged = eventChannel
+          .receiveBroadcastStream()
+          .map((dynamic event) => _parseConnectivityResult(event));
     }
     return _onConnectivityChanged;
   }
@@ -81,7 +81,8 @@ class Connectivity {
   /// make a network request. It only gives you the radio status.
   ///
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
-  Future<ConnectivityResult> checkConnectivity({bool checkSubtype = false}) async {
+  Future<ConnectivityResult> checkConnectivity(
+      {bool checkSubtype = false}) async {
     final String result = await methodChannel.invokeMethod<String>('check');
     return _parseConnectivityResult(result);
   }

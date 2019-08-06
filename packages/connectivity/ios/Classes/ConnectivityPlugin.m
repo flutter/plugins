@@ -12,7 +12,7 @@
 
 #include <arpa/inet.h>
 
-#import<CoreTelephony/CTTelephonyNetworkInfo.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
 @interface FLTConnectivityPlugin () <FlutterStreamHandler>
 @end
@@ -87,12 +87,10 @@
   return address;
 }
 
-
 - (NSString*)getConnectionSubtype:(Reachability*)reachability {
-  
-  CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
-  NSString *carrierType = netinfo.currentRadioAccessTechnology;
-  
+  CTTelephonyNetworkInfo* netinfo = [[CTTelephonyNetworkInfo alloc] init];
+  NSString* carrierType = netinfo.currentRadioAccessTechnology;
+
   if ([carrierType isEqualToString:CTRadioAccessTechnologyGPRS]) {
     return @"2G";
   } else if ([carrierType isEqualToString:CTRadioAccessTechnologyEdge]) {
@@ -121,14 +119,14 @@
 
 - (NSString*)statusFromReachability:(Reachability*)reachability {
   NetworkStatus status = [reachability currentReachabilityStatus];
-  NSString *subtype = [self getConnectionSubtype:[Reachability reachabilityForInternetConnection]];
+  NSString* subtype = [self getConnectionSubtype:[Reachability reachabilityForInternetConnection]];
   switch (status) {
     case NotReachable:
-      return [NSString stringWithFormat:@"%@,%@", @"none" , subtype];
+      return [NSString stringWithFormat:@"%@,%@", @"none", subtype];
     case ReachableViaWiFi:
-      return [NSString stringWithFormat:@"%@,%@", @"wifi" , subtype];
+      return [NSString stringWithFormat:@"%@,%@", @"wifi", subtype];
     case ReachableViaWWAN:
-      return [NSString stringWithFormat:@"%@,%@", @"mobile" , subtype];
+      return [NSString stringWithFormat:@"%@,%@", @"mobile", subtype];
   }
 }
 
@@ -146,9 +144,9 @@
     result([self getBSSID]);
   } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
     result([self getWifiIP]);
-  }else if ([call.method isEqualToString:@"subtype"]) {
+  } else if ([call.method isEqualToString:@"subtype"]) {
     result([self getConnectionSubtype:[Reachability reachabilityForInternetConnection]]);
-    
+
   } else {
     result(FlutterMethodNotImplemented);
   }
