@@ -65,7 +65,9 @@ class ConnectivityResult {
 
   @override
   bool operator ==(Object object) {
-    if (!(object is ConnectionType)) return false;
+    if (!(object is ConnectionType)) {
+      return false;
+    }
     return type == object;
   }
 
@@ -118,18 +120,22 @@ class Connectivity {
   /// make a network request. It only gives you the radio status.
   ///
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
-  Future<ConnectivityResult> checkConnectivity({bool checkSubtype = false}) async {
+  ///
+  /// You can also check the mobile broadband connectivity subtype via [getNetworkSubtype]
+  Future<ConnectivityResult> checkConnectivity() async {
     final String result = await methodChannel.invokeMethod<String>('check');
     return _parseConnectivityResult(result);
   }
 
   /// Checks the network mobile connection subtype of the device.
-  /// Return EDGE for 2G, HSDPA for 3G and LTE for 4G depending on the connection of the mobile connection
-  /// if it is connected.
+  /// Returns the appropriate mobile connectivity subtype enum [ConnectionSubtype] such
+  /// as gprs, edge, hsdpa etc.
   ///
-  /// Return none if there is no connections
+  /// More information on mobile connectivity types can be found at
+  /// https://en.wikipedia.org/wiki/Mobile_broadband#Generations
   ///
-  /// Return unknown if it is connected but there is not connection subtype info. eg. Wifi
+  /// Return [ConnectionSubtype.unknown] if it is connected but there is not connection subtype info. eg. Wifi
+  /// Returns [ConnectionSubtype.none] if there is no connection
   Future<ConnectionSubtype> getNetworkSubtype() async {
     final String result = await methodChannel.invokeMethod<String>('subtype');
     return _parseConnectionSubtype(result);

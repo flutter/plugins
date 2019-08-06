@@ -16,6 +16,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
+
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.EventChannel.EventSink;
 import io.flutter.plugin.common.EventChannel.StreamHandler;
@@ -25,13 +26,17 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-/** ConnectivityPlugin */
+/**
+ * ConnectivityPlugin
+ */
 public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   private final Registrar registrar;
   private final ConnectivityManager manager;
   private BroadcastReceiver receiver;
 
-  /** Plugin registration. */
+  /**
+   * Plugin registration.
+   */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/connectivity");
@@ -110,51 +115,70 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
   private static String getNetworkSubType(ConnectivityManager manager) {
     NetworkInfo info = manager.getActiveNetworkInfo();
 
-    if (info == null || !info.isConnected()) return "none";
+    if (info == null || !info.isConnected()) {
+      return "none";
+    }
 
     /// Telephony Manager documentation  https://developer.android.com/reference/android/telephony/TelephonyManager
     /// Information about mobile broadband - https://en.wikipedia.org/wiki/Mobile_broadband#Generations
 
     switch (info.getSubtype()) {
-      case TelephonyManager.NETWORK_TYPE_1xRTT:
+      case TelephonyManager.NETWORK_TYPE_1xRTT: {
         return "1xRTT"; // ~ 50-100 kbps
-      case TelephonyManager.NETWORK_TYPE_CDMA:
+      }
+      case TelephonyManager.NETWORK_TYPE_CDMA: {
         return "cdma"; // ~ 14-64 kbps
-      case TelephonyManager.NETWORK_TYPE_EDGE:
+      }
+      case TelephonyManager.NETWORK_TYPE_EDGE: {
         return "edge"; // ~ 50-100 kbps
-      case TelephonyManager.NETWORK_TYPE_EVDO_0:
+      }
+      case TelephonyManager.NETWORK_TYPE_EVDO_0: {
         return "evdo_0"; // ~ 400-1000 kbps
-      case TelephonyManager.NETWORK_TYPE_EVDO_A:
+      }
+      case TelephonyManager.NETWORK_TYPE_EVDO_A: {
         return "evdo_a"; // ~ 600-1400 kbps
-      case TelephonyManager.NETWORK_TYPE_GPRS:
+      }
+      case TelephonyManager.NETWORK_TYPE_GPRS: {
         return "gprs"; // ~ 100 kbps
-      case TelephonyManager.NETWORK_TYPE_HSDPA:
+      }
+      case TelephonyManager.NETWORK_TYPE_HSDPA: {
         return "hsdpa"; // ~ 2-14 Mbps
-      case TelephonyManager.NETWORK_TYPE_HSPA:
+      }
+      case TelephonyManager.NETWORK_TYPE_HSPA: {
         return "hspa"; // ~ 700-1700 kbps
-      case TelephonyManager.NETWORK_TYPE_HSUPA:
+      }
+      case TelephonyManager.NETWORK_TYPE_HSUPA: {
         return "hsupa"; // ~ 1-23 Mbps
-      case TelephonyManager.NETWORK_TYPE_UMTS:
+      }
+      case TelephonyManager.NETWORK_TYPE_UMTS: {
         return "umts"; // ~ 400-7000 kbps
+      }
       /*
        * Above API level 7, make sure to set android:targetSdkVersion
        * to appropriate level to use these
        */
-      case TelephonyManager.NETWORK_TYPE_EHRPD: // API level 11
+      case TelephonyManager.NETWORK_TYPE_EHRPD: { // API level 11
         return "ehrpd"; // ~ 1-2 Mbps
-      case TelephonyManager.NETWORK_TYPE_EVDO_B: // API level 9
+      }
+      case TelephonyManager.NETWORK_TYPE_EVDO_B: { // API level 9
         return "evdo_b"; // ~ 5 Mbps
-      case TelephonyManager.NETWORK_TYPE_HSPAP: // API level 13
+      }
+      case TelephonyManager.NETWORK_TYPE_HSPAP: {// API level 13
         return "hspap"; // ~ 10-20 Mbps
-      case TelephonyManager.NETWORK_TYPE_IDEN: // API level 8
+      }
+      case TelephonyManager.NETWORK_TYPE_IDEN: { // API level 8
         return "iden"; // ~25 kbps
-      case TelephonyManager.NETWORK_TYPE_LTE: // API level 11
+      }
+      case TelephonyManager.NETWORK_TYPE_LTE: { // API level 11
         return "lte"; // ~ 10+ Mbps
+      }
       // Unknown
-      case TelephonyManager.NETWORK_TYPE_UNKNOWN:
+      case TelephonyManager.NETWORK_TYPE_UNKNOWN: {
         return "unknown"; // is connected but cannot tell the speed
-      default:
+      }
+      default: {
         return "none";
+      }
     }
   }
 
