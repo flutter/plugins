@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.4.2'
     }
 }
 
@@ -32,6 +32,6 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-inappmessaging-display:18.0.1'
+        api 'com.google.firebase:firebase-inappmessaging-display:18.0.2'
     }
 }
