@@ -66,7 +66,8 @@
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
     configuration.userContentController = userContentController;
-    [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"] inConfiguration:configuration];
+    [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
+                        inConfiguration:configuration];
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
@@ -274,7 +275,8 @@
   }
 }
 
-- (void)updateAutoMediaPlaybackPolicy:(NSNumber*)policy inConfiguration:(WKWebViewConfiguration*)configuration {
+- (void)updateAutoMediaPlaybackPolicy:(NSNumber*)policy
+                      inConfiguration:(WKWebViewConfiguration*)configuration {
   switch ([policy integerValue]) {
     case 0:  // require_user_action_for_all_media_types
       NSLog(@"requiring user action for all types");
