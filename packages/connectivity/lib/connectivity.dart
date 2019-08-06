@@ -49,13 +49,15 @@ Map<String, ConnectionSubtype> connectionTypeMap = <String, ConnectionSubtype>{
   "hspap": ConnectionSubtype.hspap, // ~ 10-20 Mbps
   "iden": ConnectionSubtype.iden, // ~25 kbps
   "lte": ConnectionSubtype.lte, // ~ 10+ Mbps
-  "unknown":
-      ConnectionSubtype.unknown, // is connected but cannot tell the speed
+  "unknown": ConnectionSubtype.unknown, // is connected but cannot tell the speed
   "none": ConnectionSubtype.none
 };
 
-class ConnectivityInfo {
-  ConnectivityInfo(this.result, this.subtype);
+class ConnectivityDetailedResult {
+  ConnectivityDetailedResult({
+    this.result = ConnectivityResult.none,
+    this.subtype = ConnectionSubtype.none,
+  });
 
   final ConnectivityResult result;
   final ConnectionSubtype subtype;
@@ -80,7 +82,7 @@ class Connectivity {
   static Connectivity _singleton;
 
   Stream<ConnectivityResult> _onConnectivityChanged;
-  Stream<ConnectivityInfo> _onConnectivityInfoChanged;
+  Stream<ConnectivityDetailedResult> _onConnectivityInfoChanged;
 
   @visibleForTesting
   static const MethodChannel methodChannel = MethodChannel(
@@ -95,19 +97,17 @@ class Connectivity {
   /// Fires whenever the connectivity state changes. Returns stream of [ConnectivityResult]
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (_onConnectivityChanged == null) {
-      _onConnectivityChanged = eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => _parseConnectivityResult(event).result);
+      _onConnectivityChanged =
+          eventChannel.receiveBroadcastStream().map((dynamic event) => _parseConnectivityDetailedResult(event).result);
     }
     return _onConnectivityChanged;
   }
 
-  /// Fires whenever the connectivity state changes. Return stream of [ConnectivityInfo]
-  Stream<ConnectivityInfo> get onConnectivityInfoChanged {
+  /// Fires whenever the connectivity state changes. Return stream of [ConnectivityDetailedResult]
+  Stream<ConnectivityDetailedResult> get onConnectivityInfoChanged {
     if (_onConnectivityInfoChanged == null) {
-      _onConnectivityInfoChanged = eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => _parseConnectivityResult(event));
+      _onConnectivityInfoChanged =
+          eventChannel.receiveBroadcastStream().map((dynamic event) => _parseConnectivityDetailedResult(event));
     }
     return _onConnectivityInfoChanged;
   }
@@ -122,13 +122,13 @@ class Connectivity {
   /// You can also check the mobile broadband connectivity subtype via [getNetworkSubtype]
   Future<ConnectivityResult> checkConnectivity() async {
     final String result = await methodChannel.invokeMethod<String>('check');
-    return _parseConnectivityResult(result).result;
+    return _parseConnectivityDetailedResult(result).result;
   }
 
-  /// Checks connectivity info, [ConnectivityInfo]
-  Future<ConnectivityInfo> checkConnectivityInfo() async {
+  /// Checks connectivity info, [ConnectivityDetailedResult]
+  Future<ConnectivityDetailedResult> checkConnectivityInfo() async {
     final String result = await methodChannel.invokeMethod<String>('check');
-    return _parseConnectivityResult(result);
+    return _parseConnectivityDetailedResult(result);
   }
 
   /// Checks the network mobile connection subtype of the device.
@@ -175,27 +175,26 @@ class Connectivity {
   }
 }
 
-ConnectionSubtype _parseConnectionSubtype(String state) {
-  return connectionTypeMap[state];
+ConnectivityDetailedResult _parseConnectivityDetailedResult(String state) {
+  final List<String> split = state.split(",");
+  return ConnectivityDetailedResult(
+    result: _parseConnectivityResult(split[0]),
+    subtype: _parseConnectionSubtype(split[1]),
+  );
 }
 
-ConnectivityInfo _parseConnectivityResult(String state) {
-  ConnectivityResult type = ConnectivityResult.none;
-  ConnectionSubtype subType = ConnectionSubtype.unknown;
+ConnectionSubtype _parseConnectionSubtype(String state) {
+  return connectionTypeMap[state] ?? ConnectionSubtype.unknown;
+}
 
-  final List<String> split = state.split(",");
-
-  switch (split[0]) {
+ConnectivityResult _parseConnectivityResult(String state) {
+  switch (state) {
     case 'wifi':
-      type = ConnectivityResult.wifi;
-      break;
+      return ConnectivityResult.wifi;
     case 'mobile':
-      type = ConnectivityResult.mobile;
-      break;
+      return ConnectivityResult.mobile;
     case 'none':
     default:
-      type = ConnectivityResult.none;
+      return ConnectivityResult.none;
   }
-  subType = _parseConnectionSubtype(split[1]);
-  return ConnectivityInfo(type, subType);
 }

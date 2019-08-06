@@ -16,7 +16,7 @@ void main() {
     });
 
     test('test connectivity info', () async {
-      final ConnectivityInfo info = await _connectivity.checkConnectivityInfo();
+      final ConnectivityDetailedResult info = await _connectivity.checkConnectivityInfo();
       expect(info, isNotNull);
       expect(info.subtype, ConnectionSubtype.unknown);
       switch (info.result) {

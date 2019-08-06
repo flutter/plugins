@@ -54,7 +54,7 @@ void main() {
     });
 
     test('onConnectivityInfoChanged', () async {
-      final ConnectivityInfo info =
+      final ConnectivityDetailedResult info =
           await Connectivity().onConnectivityInfoChanged.first;
       expect(info.result, ConnectivityResult.mobile);
       expect(info.subtype, ConnectionSubtype.hsdpa);
@@ -118,7 +118,7 @@ void main() {
     });
 
     test('checkConnectivityInfo', () async {
-      final ConnectivityInfo info =
+      final ConnectivityDetailedResult info =
           await Connectivity().checkConnectivityInfo();
       expect(info.result, ConnectivityResult.wifi);
       expect(info.subtype, ConnectionSubtype.unknown);
