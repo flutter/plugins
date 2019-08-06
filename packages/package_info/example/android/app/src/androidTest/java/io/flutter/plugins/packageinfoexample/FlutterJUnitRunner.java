@@ -27,18 +27,19 @@ public class FlutterJUnitRunner extends Runner {
         MethodChannel methodChannel = new MethodChannel(fv, CHANNEL);
         testResults = new CompletableFuture<>();
         methodChannel.setMethodCallHandler(
-                new MethodCallHandler() {
-                    @Override
-                    public void onMethodCall(MethodCall call, Result result) {
-                        if (call.method.equals("testFinished")) {
-                            Map<String, String> results = call.argument("results");
-                            testResults.complete(results);
-                            result.success(null);
-                        } else {
-                            result.notImplemented();
-                        }
+            new MethodCallHandler() {
+                @Override
+                public void onMethodCall(MethodCall call, Result result) {
+                    if (call.method.equals("testFinished")) {
+                        Map<String, String> results = call.argument("results");
+                        testResults.complete(results);
+                        result.success(null);
+                    } else {
+                        result.notImplemented();
                     }
-                });
+                }
+            }
+        );
     }
 
     @Override
