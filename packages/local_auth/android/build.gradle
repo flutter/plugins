@@ -35,7 +35,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 16
@@ -47,5 +47,7 @@ android {
 }
 
 dependencies {
-    api "androidx.core:core:1.1.0-alpha03"
+    api "androidx.core:core:1.1.0-beta01"
+    api "androidx.biometric:biometric:1.0.0-alpha04"
+    api "androidx.fragment:fragment:1.1.0-alpha06"
 }

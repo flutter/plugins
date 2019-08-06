@@ -1,3 +1,44 @@
+## 3.0.5
+* Removed automatic print statements for `StorageTaskEvent`'s.
+  If you want to see the event status in your logs now, you will have to use the following:
+  `storageReference.put{File/Data}(..).events.listen((event) => print('EVENT ${event.type}'));`
+* Updated `README.md` to explain the above.
+
+## 3.0.4
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 3.0.3
+
+* Fix inconsistency of `getPath`, on Android the path returned started with a `/` but on iOS it did not
+* Fix content-type auto-detection on Android
+
+## 3.0.2
+
+* Automatically use version from pubspec.yaml when reporting usage to Firebase.
+
+## 3.0.1
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 3.0.0
+
+* Update Android dependencies to latest.
+
+## 2.1.1+2
+
+* On iOS, use `putFile` instead of `putData` appropriately to detect `Content-Type`.
+
+## 2.1.1+1
+
+* On iOS, gracefully handle the case of uploading a nonexistent file without crashing.
+
+## 2.1.1
+
+* Added integration tests.
+
 ## 2.1.0+1
 
 * Reverting error.code casting/formatting to what it was until version 2.0.1.

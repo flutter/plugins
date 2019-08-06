@@ -18,7 +18,7 @@ To use this plugin, add `firebase_dynamic_links` as a [dependency in your pubspe
 
 ## Create Dynamic Links
 
-You create a Dynamic Link either by using the Firebase console, using a REST API, iOS or Android Builder API, Flutter API, or by forming a URL by adding Dynamic Link parameters to a domain specific to your app. These parameters specify the links you want to open, depending on the user's platform and whether your app is installed.
+You create a Dynamic Link either by using the Firebase console, using a REST API, iOS or Android Builder API, Flutter API, or by forming a URL by adding Dynamic Link parameters to a URI prefix specific to your app. These parameters specify the links you want to open, depending on the user's platform and whether your app is installed.
 
 Below are instructions to create Dynamic Links using Flutter with the Firebase Dynamic Links API. This API accepts either a long Dynamic Link or an object containing Dynamic Link parameters, and returns a URL like the following example:
 
@@ -30,7 +30,7 @@ You can create a Dynamic Link programmatically by setting the following paramete
 
 ```dart
 final DynamicLinkParameters parameters = DynamicLinkParameters(
-  domain: 'abc123.app.goo.gl',
+  uriPrefix: 'https://abc123.app.goo.gl',
   link: Uri.parse('https://example.com/'),
   androidParameters: AndroidParameters(
       packageName: 'com.example.android',
@@ -83,7 +83,7 @@ You can receive a Dynamic Link containing a deep link that takes the user to spe
 
 1. In the [Firebase Console](https://console.firebase.google.com), open the Dynamic Links section.
   - Accept the terms of service if you are prompted to do so.
-  - Take note of your project's Dynamic Links domain, which is displayed at the top of the Dynamic Links page. You need your project's Dynamic Links domain to programmatically create Dynamic Links. A Dynamic Links domain looks like `YOUR_SUBDOMAIN.page.link`.
+  - Take note of your project's Dynamic Links URL prefix, which is displayed at the top of the Dynamic Links page. You need your project's Dynamic Links URL prefix to programmatically create Dynamic Links. A Dynamic Links URL prefix looks like `https://YOUR_SUBDOMAIN.page.link`.
 
 Receiving dynamic links on *iOS* requires a couple more steps than *Android*. If you only want to receive dynamic links on *Android*, skip to step 4. You can also follow a video on the next two steps [here.](https://youtu.be/sFPo296OQqk?t=2m40s)
 
@@ -97,7 +97,8 @@ Receiving dynamic links on *iOS* requires a couple more steps than *Android*. If
 applinks:YOUR_SUBDOMAIN.page.link
 ```
 
-4. To receive a dynamic link, call the `retrieveDynamicLink()` method from `FirebaseDynamicLinks`:
+4. To receive a dynamic link, call the `getInitialLink()` method from `FirebaseDynamicLinks` which gets the link that opened the app (or null if it was not opened via a dynamic link)
+and configure listeners for link callbacks when the application is active or in background calling `onLink`.
 
 ```dart
 void main() {
@@ -117,16 +118,30 @@ class MyHomeWidgetState extends State<MyHomeWidget> {
   @override
   void initState() {
     super.initState();
-    _retrieveDynamicLink();
+    this.initDynamicLinks();
   }
 
-  Future<void> _retrieveDynamicLink() async {
-    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.retrieveDynamicLink();
+  void initDynamicLinks() async {
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
-      Navigator.pushNamed(context, deepLink.path); // deeplink.path == '/helloworld'
+      Navigator.pushNamed(context, deepLink.path);
     }
+
+    FirebaseDynamicLinks.instance.onLink(
+      onSuccess: (PendingDynamicLinkData dynamicLink) async {
+        final Uri deepLink = dynamicLink?.link;
+
+        if (deepLink != null) {
+          Navigator.pushNamed(context, deepLink.path);
+        }
+      },
+      onError: (OnLinkErrorException e) async {
+        print('onLinkError');
+        print(e.message);
+      }
+    );
   }
   .
   .
@@ -134,7 +149,7 @@ class MyHomeWidgetState extends State<MyHomeWidget> {
 }
 ```
 
-If your app did not open from a dynamic link, `retrieveDynamicLink()` will return `null`.
+If your app did not open from a dynamic link, `getInitialLink()` will return `null`.
 
 ## Getting Started
 

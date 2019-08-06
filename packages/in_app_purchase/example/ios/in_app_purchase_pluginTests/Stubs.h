@@ -42,10 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithState:(SKPaymentTransactionState)state;
 @end
 
-@interface SKDownloadStub : SKDownload
-- (instancetype)initWithMap:(NSDictionary *)map;
-@end
-
 @interface SKMutablePaymentStub : SKMutablePayment
 - (instancetype)initWithMap:(NSDictionary *)map;
 @end

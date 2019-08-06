@@ -25,14 +25,14 @@ public class FirebaseCorePlugin implements MethodCallHandler {
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_core");
-    channel.setMethodCallHandler(new FirebaseCorePlugin(registrar.activity()));
+    channel.setMethodCallHandler(new FirebaseCorePlugin(registrar.context()));
   }
 
   private FirebaseCorePlugin(Context context) {
     this.context = context;
   }
 
-  private Map asMap(FirebaseApp app) {
+  private Map<String, Object> asMap(FirebaseApp app) {
     Map<String, Object> appMap = new HashMap<>();
     appMap.put("name", app.getName());
     FirebaseOptions options = app.getOptions();
@@ -80,7 +80,7 @@ public class FirebaseCorePlugin implements MethodCallHandler {
         }
       case "FirebaseApp#appNamed":
         {
-          String name = (String) call.arguments();
+          String name = call.arguments();
           try {
             FirebaseApp app = FirebaseApp.getInstance(name);
             result.success(asMap(app));

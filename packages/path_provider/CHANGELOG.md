@@ -1,3 +1,32 @@
+## 1.2.0
+
+* On Android, `getApplicationSupportDirectory` is now supported using `getFilesDir`.
+* `getExternalStorageDirectory` now returns `null` instead of throwing an
+  exception if no external files directory is available.
+
+## 1.1.2
+
+* `getExternalStorageDirectory` now uses `getExternalFilesDir` on Android.
+
+## 1.1.1
+
+* Cast error codes as longs in iOS error strings to ensure compatibility
+  between arm32 and arm64.
+
+## 1.1.0
+
+* Added `getApplicationSupportDirectory`.
+* Updated documentation for `getApplicationDocumentsDirectory` to suggest
+  using `getApplicationSupportDirectory` on iOS and
+  `getExternalStorageDirectory` on Android.
+* Updated documentation for `getTemporaryDirectory` to suggest using it
+  for caches of files that do not need to be backed up.
+* Updated integration tests and example to reflect the above changes.
+
+## 1.0.0
+
+* Added integration tests.
+
 ## 0.5.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX

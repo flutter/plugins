@@ -18,14 +18,18 @@ class Firestore {
         final DocumentSnapshot snapshot = DocumentSnapshot._(
           call.arguments['path'],
           _asStringKeyedMap(call.arguments['data']),
+          SnapshotMetadata._(call.arguments['metadata']['hasPendingWrites'],
+              call.arguments['metadata']['isFromCache']),
           this,
         );
         _documentObservers[call.arguments['handle']].add(snapshot);
       } else if (call.method == 'DoTransaction') {
         final int transactionId = call.arguments['transactionId'];
-        return _transactionHandlers[transactionId](
-          Transaction(transactionId, this),
-        );
+        final Transaction transaction = Transaction(transactionId, this);
+        final dynamic result =
+            await _transactionHandlers[transactionId](transaction);
+        await transaction._finish();
+        return result;
       }
     });
     _initialized = true;
@@ -67,6 +71,17 @@ class Firestore {
   CollectionReference collection(String path) {
     assert(path != null);
     return CollectionReference._(this, path.split('/'));
+  }
+
+  /// Gets a [Query] for the specified collection group.
+  Query collectionGroup(String path) {
+    assert(path != null);
+    assert(!path.contains("/"), "Collection IDs must not contain '/'.");
+    return Query._(
+      firestore: this,
+      isCollectionGroup: true,
+      pathComponents: path.split('/'),
+    );
   }
 
   /// Gets a [DocumentReference] for the specified Firestore path.
@@ -134,13 +149,15 @@ class Firestore {
       {bool persistenceEnabled,
       String host,
       bool sslEnabled,
-      bool timestampsInSnapshotsEnabled}) async {
+      bool timestampsInSnapshotsEnabled,
+      int cacheSizeBytes}) async {
     await channel.invokeMethod<void>('Firestore#settings', <String, dynamic>{
       'app': app.name,
       'persistenceEnabled': persistenceEnabled,
       'host': host,
       'sslEnabled': sslEnabled,
       'timestampsInSnapshotsEnabled': timestampsInSnapshotsEnabled,
+      'cacheSizeBytes': cacheSizeBytes,
     });
   }
 }

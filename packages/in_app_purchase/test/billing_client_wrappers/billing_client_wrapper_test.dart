@@ -115,7 +115,7 @@ void main() {
       final String accountId = "hashedAccountId";
 
       final BillingResponse receivedCode = await billingClient
-          .launchBillingFlow(skuDetails: skuDetails, accountId: accountId);
+          .launchBillingFlow(sku: skuDetails.sku, accountId: accountId);
 
       expect(receivedCode, equals(sentCode));
       Map<dynamic, dynamic> arguments =
@@ -132,7 +132,7 @@ void main() {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
 
       final BillingResponse receivedCode =
-          await billingClient.launchBillingFlow(skuDetails: skuDetails);
+          await billingClient.launchBillingFlow(sku: skuDetails.sku);
 
       expect(receivedCode, equals(sentCode));
       Map<dynamic, dynamic> arguments =
@@ -230,6 +230,22 @@ void main() {
 
       expect(response.responseCode, equals(expectedCode));
       expect(response.purchasesList, isEmpty);
+    });
+  });
+
+  group('consume purchases', () {
+    const String consumeMethodName =
+        'BillingClient#consumeAsync(String, ConsumeResponseListener)';
+    test('consume purchase async success', () async {
+      final BillingResponse expectedCode = BillingResponse.ok;
+      stubPlatform.addResponse(
+          name: consumeMethodName,
+          value: BillingResponseConverter().toJson(expectedCode));
+
+      final BillingResponse responseCode =
+          await billingClient.consumeAsync('dummy token');
+
+      expect(responseCode, equals(expectedCode));
     });
   });
 }

@@ -40,7 +40,30 @@ void main() {
           'useSafariVC': true,
           'useWebView': false,
           'enableJavaScript': false,
+          'enableDomStorage': false,
           'universalLinksOnly': false,
+          'headers': <String, String>{},
+        })
+      ],
+    );
+  });
+
+  test('launch with headers', () async {
+    await launch(
+      'http://example.com/',
+      headers: <String, String>{'key': 'value'},
+    );
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('launch', arguments: <String, Object>{
+          'url': 'http://example.com/',
+          'useSafariVC': true,
+          'useWebView': false,
+          'enableJavaScript': false,
+          'enableDomStorage': false,
+          'universalLinksOnly': false,
+          'headers': <String, String>{'key': 'value'},
         })
       ],
     );
@@ -56,7 +79,9 @@ void main() {
           'useSafariVC': true,
           'useWebView': false,
           'enableJavaScript': false,
+          'enableDomStorage': false,
           'universalLinksOnly': false,
+          'headers': <String, String>{},
         })
       ],
     );
@@ -73,7 +98,9 @@ void main() {
           'useSafariVC': false,
           'useWebView': false,
           'enableJavaScript': false,
+          'enableDomStorage': false,
           'universalLinksOnly': true,
+          'headers': <String, String>{},
         })
       ],
     );
@@ -89,7 +116,9 @@ void main() {
           'useSafariVC': true,
           'useWebView': true,
           'enableJavaScript': false,
+          'enableDomStorage': false,
           'universalLinksOnly': false,
+          'headers': <String, String>{},
         })
       ],
     );
@@ -106,7 +135,28 @@ void main() {
           'useSafariVC': true,
           'useWebView': true,
           'enableJavaScript': true,
+          'enableDomStorage': false,
           'universalLinksOnly': false,
+          'headers': <String, String>{},
+        })
+      ],
+    );
+  });
+
+  test('launch force WebView enable DOM storage', () async {
+    await launch('http://example.com/',
+        forceWebView: true, enableDomStorage: true);
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('launch', arguments: <String, Object>{
+          'url': 'http://example.com/',
+          'useSafariVC': true,
+          'useWebView': true,
+          'enableJavaScript': false,
+          'enableDomStorage': true,
+          'universalLinksOnly': false,
+          'headers': <String, String>{},
         })
       ],
     );
@@ -122,7 +172,9 @@ void main() {
           'useSafariVC': false,
           'useWebView': false,
           'enableJavaScript': false,
+          'enableDomStorage': false,
           'universalLinksOnly': false,
+          'headers': <String, String>{},
         })
       ],
     );

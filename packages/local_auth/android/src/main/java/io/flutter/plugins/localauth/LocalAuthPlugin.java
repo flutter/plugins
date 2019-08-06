@@ -5,7 +5,9 @@
 package io.flutter.plugins.localauth;
 
 import android.app.Activity;
-import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import androidx.fragment.app.FragmentActivity;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** LocalAuthPlugin */
+@SuppressWarnings("deprecation")
 public class LocalAuthPlugin implements MethodCallHandler {
   private final Registrar registrar;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
@@ -42,14 +45,23 @@ public class LocalAuthPlugin implements MethodCallHandler {
         result.error("auth_in_progress", "Authentication in progress", null);
         return;
       }
+
       Activity activity = registrar.activity();
       if (activity == null || activity.isFinishing()) {
         result.error("no_activity", "local_auth plugin requires a foreground activity", null);
         return;
       }
+
+      if (!(activity instanceof FragmentActivity)) {
+        result.error(
+            "no_fragment_activity",
+            "local_auth plugin requires activity to be a FragmentActivity.",
+            null);
+        return;
+      }
       AuthenticationHelper authenticationHelper =
           new AuthenticationHelper(
-              activity,
+              (FragmentActivity) activity,
               call,
               new AuthCompletionHandler() {
                 @Override
@@ -76,21 +88,30 @@ public class LocalAuthPlugin implements MethodCallHandler {
       authenticationHelper.authenticate();
     } else if (call.method.equals("getAvailableBiometrics")) {
       try {
+        Activity activity = registrar.activity();
+        if (activity == null || activity.isFinishing()) {
+          result.error("no_activity", "local_auth plugin requires a foreground activity", null);
+          return;
+        }
         ArrayList<String> biometrics = new ArrayList<String>();
-        FingerprintManagerCompat fingerprintMgr =
-            FingerprintManagerCompat.from(registrar.activity());
-        if (fingerprintMgr.isHardwareDetected()) {
-          if (fingerprintMgr.hasEnrolledFingerprints()) {
+        PackageManager packageManager = activity.getPackageManager();
+        if (Build.VERSION.SDK_INT >= 23) {
+          if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
             biometrics.add("fingerprint");
-          } else {
-            biometrics.add("undefined");
+          }
+        }
+        if (Build.VERSION.SDK_INT >= 29) {
+          if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
+            biometrics.add("face");
+          }
+          if (packageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)) {
+            biometrics.add("iris");
           }
         }
         result.success(biometrics);
       } catch (Exception e) {
         result.error("no_biometrics_available", e.getMessage(), null);
       }
-
     } else {
       result.notImplemented();
     }

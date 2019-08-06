@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -46,6 +47,7 @@ class SignInPageState extends State<SignInPage> {
           scrollDirection: Axis.vertical,
           children: <Widget>[
             _EmailPasswordForm(),
+            _EmailLinkSignInSection(),
             _AnonymouslySignInSection(),
             _GoogleSignInSection(),
             _PhoneSignInSection(Scaffold.of(context)),
@@ -92,6 +94,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
               if (value.isEmpty) {
                 return 'Please enter some text';
               }
+              return null;
             },
           ),
           TextFormField(
@@ -101,6 +104,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
               if (value.isEmpty) {
                 return 'Please enter some text';
               }
+              return null;
             },
           ),
           Container(
@@ -141,10 +145,11 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
 
   // Example code of how to sign in with email and password.
   void _signInWithEmailAndPassword() async {
-    final FirebaseUser user = await _auth.signInWithEmailAndPassword(
+    final FirebaseUser user = (await _auth.signInWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
-    );
+    ))
+        .user;
     if (user != null) {
       setState(() {
         _success = true;
@@ -153,6 +158,131 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
     } else {
       _success = false;
     }
+  }
+}
+
+class _EmailLinkSignInSection extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _EmailLinkSignInSectionState();
+}
+
+class _EmailLinkSignInSectionState extends State<_EmailLinkSignInSection>
+    with WidgetsBindingObserver {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+
+  bool _success;
+  String _userEmail;
+  String _userID;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      final Uri link = await _retrieveDynamicLink();
+
+      if (link != null) {
+        final FirebaseUser user = (await _auth.signInWithEmailAndLink(
+          email: _userEmail,
+          link: link.toString(),
+        ))
+            .user;
+
+        if (user != null) {
+          _userID = user.uid;
+          _success = true;
+        } else {
+          _success = false;
+        }
+      } else {
+        _success = false;
+      }
+
+      setState(() {});
+    }
+  }
+
+  Future<Uri> _retrieveDynamicLink() async {
+    final PendingDynamicLinkData data =
+        await FirebaseDynamicLinks.instance.retrieveDynamicLink();
+    return data?.link;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            child: const Text('Test sign in with email and link'),
+            padding: const EdgeInsets.all(16),
+            alignment: Alignment.center,
+          ),
+          TextFormField(
+            controller: _emailController,
+            decoration: InputDecoration(labelText: 'Email'),
+            validator: (String value) {
+              if (value.isEmpty) {
+                return 'Please enter your email.';
+              }
+              return null;
+            },
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            alignment: Alignment.center,
+            child: RaisedButton(
+              onPressed: () async {
+                if (_formKey.currentState.validate()) {
+                  _signInWithEmailAndLink();
+                }
+              },
+              child: const Text('Submit'),
+            ),
+          ),
+          Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              _success == null
+                  ? ''
+                  : (_success
+                      ? 'Successfully signed in, uid: ' + _userID
+                      : 'Sign in failed'),
+              style: TextStyle(color: Colors.red),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<void> _signInWithEmailAndLink() async {
+    _userEmail = _emailController.text;
+
+    return await _auth.sendSignInWithEmailLink(
+      email: _userEmail,
+      url: '<Url with domain from your Firebase project>',
+      handleCodeInApp: true,
+      iOSBundleID: 'io.flutter.plugins.firebaseAuthExample',
+      androidPackageName: 'io.flutter.plugins.firebaseauthexample',
+      androidInstallIfNotAvailable: true,
+      androidMinimumVersion: "1",
+    );
   }
 }
 
@@ -202,7 +332,7 @@ class _AnonymouslySignInSectionState extends State<_AnonymouslySignInSection> {
 
   // Example code of how to sign in anonymously.
   void _signInAnonymously() async {
-    final FirebaseUser user = await _auth.signInAnonymously();
+    final FirebaseUser user = (await _auth.signInAnonymously()).user;
     assert(user != null);
     assert(user.isAnonymous);
     assert(!user.isEmailVerified);
@@ -285,7 +415,8 @@ class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    final FirebaseUser user =
+        (await _auth.signInWithCredential(credential)).user;
     assert(user.email != null);
     assert(user.displayName != null);
     assert(!user.isAnonymous);
@@ -337,6 +468,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
             if (value.isEmpty) {
               return 'Phone number (+x xxx-xxx-xxxx)';
             }
+            return null;
           },
         ),
         Container(
@@ -375,15 +507,16 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
     );
   }
 
-  // Exmaple code of how to veify phone number
+  // Example code of how to verify phone number
   void _verifyPhoneNumber() async {
     setState(() {
       _message = '';
     });
     final PhoneVerificationCompleted verificationCompleted =
-        (FirebaseUser user) {
+        (AuthCredential phoneAuthCredential) {
+      _auth.signInWithCredential(phoneAuthCredential);
       setState(() {
-        _message = 'signInWithPhoneNumber auto succeeded: $user';
+        _message = 'Received phone auth credential: $phoneAuthCredential';
       });
     };
 
@@ -424,7 +557,8 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
       verificationId: _verificationId,
       smsCode: _smsController.text,
     );
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    final FirebaseUser user =
+        (await _auth.signInWithCredential(credential)).user;
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
     setState(() {
@@ -568,7 +702,8 @@ class _OtherProvidersSignInSectionState
     final AuthCredential credential = GithubAuthProvider.getCredential(
       token: _tokenController.text,
     );
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    final FirebaseUser user =
+        (await _auth.signInWithCredential(credential)).user;
     assert(user.email != null);
     assert(user.displayName != null);
     assert(!user.isAnonymous);
@@ -590,7 +725,8 @@ class _OtherProvidersSignInSectionState
     final AuthCredential credential = FacebookAuthProvider.getCredential(
       accessToken: _tokenController.text,
     );
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    final FirebaseUser user =
+        (await _auth.signInWithCredential(credential)).user;
     assert(user.email != null);
     assert(user.displayName != null);
     assert(!user.isAnonymous);
@@ -612,7 +748,8 @@ class _OtherProvidersSignInSectionState
     final AuthCredential credential = TwitterAuthProvider.getCredential(
         authToken: _tokenController.text,
         authTokenSecret: _tokenSecretController.text);
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    final FirebaseUser user =
+        (await _auth.signInWithCredential(credential)).user;
     assert(user.email != null);
     assert(user.displayName != null);
     assert(!user.isAnonymous);

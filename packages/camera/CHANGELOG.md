@@ -1,9 +1,35 @@
-## 0.4.4
+## 0.5.3
 
 * Added 2 new quality presets (veryHigh and veryLow).
 * Now quality presets match on Android and iOS
 * Now quality presets can be used to control image capture quality.
 ** NOTE: ** Existing presets have been updated, this will affect the quality of pictures and videos in existing apps.
+
+## 0.5.2+2
+
+* Fix memory leak related to not unregistering stream handler in FlutterEventChannel when disposing camera.
+
+## 0.5.2+1
+
+* Fix bug that prevented video recording with audio.
+
+## 0.5.2
+
+* Added capability to disable audio for the `CameraController`. (e.g. `CameraController(_, _,
+ enableAudio: false);`)
+
+## 0.5.1
+
+* Can now be compiled with earlier Android sdks below 21 when
+`<uses-sdk tools:overrideLibrary="io.flutter.plugins.camera"/>` has been added to the project
+`AndroidManifest.xml`. For sdks below 21, the plugin won't be registered and calls to it will throw
+a `MissingPluginException.`
+
+## 0.5.0
+
+* **Breaking Change** This plugin no longer handles closing and opening the camera on Android
+  lifecycle changes. Please use `WidgetsBindingObserver` to control camera resources on lifecycle
+  changes. See example project for example using `WidgetsBindingObserver`.
 
 ## 0.4.3+2
 
