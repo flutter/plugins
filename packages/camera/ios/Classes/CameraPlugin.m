@@ -139,6 +139,7 @@ static FlutterError *getFlutterError(NSError *error) {
 @property(strong, nonatomic) AVCaptureVideoDataOutput *videoOutput;
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
 @property(assign, nonatomic) BOOL isRecording;
+@property(assign, nonatomic) BOOL isRecordingPaused;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(nonatomic) CMMotionManager *motionManager;
@@ -365,7 +366,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
     }
   }
-  if (_isRecording) {
+  if (_isRecording && !_isRecordingPaused) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
       _eventSink(@{
         @"event" : @"error",
@@ -474,6 +475,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       return;
     }
     _isRecording = YES;
+    _isRecordingPaused = NO;
     result(nil);
   } else {
     _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
@@ -502,6 +504,14 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                         userInfo:@{NSLocalizedDescriptionKey : @"Video is not recording!"}];
     result(getFlutterError(error));
   }
+}
+
+- (void)pauseVideoRecording {
+  _isRecordingPaused = YES;
+}
+
+- (void)resumeVideoRecording {
+  _isRecordingPaused = NO;
 }
 
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
@@ -725,6 +735,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
     result(nil);
+  } else if ([@"pauseVideoRecording" isEqualToString:call.method]) {
+    [_camera pauseVideoRecording];
+  } else if ([@"resumeVideoRecording" isEqualToString:call.method]) {
+    [_camera resumeVideoRecording];
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
