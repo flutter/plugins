@@ -25,7 +25,7 @@ void main() {
         expect(analytics.android, isNull);
       }
       if (Platform.isAndroid) {
-        await analytics.android.setMinimumSessionDuration(9000);
+        await analytics.android.setSessionTimeoutDuration(1000);
       }
     });
 

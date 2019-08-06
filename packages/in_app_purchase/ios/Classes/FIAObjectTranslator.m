@@ -109,6 +109,8 @@
   NSMutableDictionary *map = [[NSMutableDictionary alloc] init];
   [map setObject:[locale objectForKey:NSLocaleCurrencySymbol] ?: [NSNull null]
           forKey:@"currencySymbol"];
+  [map setObject:[locale objectForKey:NSLocaleCurrencyCode] ?: [NSNull null]
+          forKey:@"currencyCode"];
   return map;
 }
 

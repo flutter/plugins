@@ -1,3 +1,11 @@
+## 5.0.0
+
+* **Breaking change**. Remove deprecated method `setMinimumSessionDuration`.
+* **Breaking change**. Removed `FirebaseAnalyticsAndroid.setAnalyticsCollectionEnabled`. Use 
+  `FirebaseAnalytics.setAnalyticsCollectionEnabled` instead.
+* Update Android gradle plugin and gradle version.
+* Remove redundant casts on Android.
+
 ## 4.0.2
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.

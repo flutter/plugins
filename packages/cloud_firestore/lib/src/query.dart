@@ -50,7 +50,8 @@ class Query {
 
   /// Notifies of query results at this location
   // TODO(jackson): Reduce code duplication with [DocumentReference]
-  Stream<QuerySnapshot> snapshots() {
+  Stream<QuerySnapshot> snapshots({bool includeMetadataChanges = false}) {
+    assert(includeMetadataChanges != null);
     Future<int> _handle;
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
@@ -64,6 +65,7 @@ class Query {
             'path': _path,
             'isCollectionGroup': _isCollectionGroup,
             'parameters': _parameters,
+            'includeMetadataChanges': includeMetadataChanges,
           },
         ).then<int>((dynamic result) => result);
         _handle.then((int handle) {
@@ -73,7 +75,7 @@ class Query {
       onCancel: () {
         _handle.then((int handle) async {
           await Firestore.channel.invokeMethod<void>(
-            'Query#removeListener',
+            'removeListener',
             <String, dynamic>{'handle': handle},
           );
           Firestore._queryObservers.remove(handle);
