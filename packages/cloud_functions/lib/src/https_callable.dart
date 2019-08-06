@@ -34,6 +34,7 @@ class HttpsCallable {
           .invokeMethod<dynamic>('CloudFunctions#call', <String, dynamic>{
         'app': _cloudFunctions._app.name,
         'region': _cloudFunctions._region,
+        'origin': _cloudFunctions._origin,
         'timeoutMicroseconds': timeout?.inMicroseconds,
         'functionName': _functionName,
         'parameters': parameters,

@@ -4,6 +4,10 @@
 * On iOS, `myLocationEnabled` no longer affects the value of `myLocationButtonEnabled`
 * Added `isMyLocationEnabled` to `GoogleMapsInspector`.
 
+## 0.5.20+1
+
+* Android: Unregister ActivityLifecycleCallbacks on activity destroy (fixes a memory leak).
+
 ## 0.5.20
 
 * Add map toolbar support

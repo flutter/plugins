@@ -38,11 +38,15 @@ public class CloudFunctionsPlugin implements MethodCallHandler {
         String appName = call.argument("app");
         FirebaseApp app = FirebaseApp.getInstance(appName);
         String region = call.argument("region");
+        String origin = call.argument("origin");
         FirebaseFunctions functions;
         if (region != null) {
           functions = FirebaseFunctions.getInstance(app, region);
         } else {
           functions = FirebaseFunctions.getInstance(app);
+        }
+        if (origin != null) {
+          functions.useFunctionsEmulator(origin);
         }
         HttpsCallableReference httpsCallableReference = functions.getHttpsCallable(functionName);
         Number timeoutMilliseconds = call.argument("timeoutMilliseconds");

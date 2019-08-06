@@ -1,3 +1,7 @@
+## 0.5.3
+
+* Add face id detection as well by not relying on FingerprintCompat.
+
 ## 0.5.2+4
 
 * Update README to fix syntax error.
