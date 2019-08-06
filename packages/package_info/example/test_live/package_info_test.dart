@@ -10,7 +10,7 @@ import 'package_info.dart' as widget_test;
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
-//// TODO(jackson): Move this into a shared package
+// TODO(jackson): Move to a shared package
 class _InstrumentationTestFlutterBinding extends LiveTestWidgetsFlutterBinding {
   _InstrumentationTestFlutterBinding();
   static const MethodChannel _channel = const MethodChannel('dev.flutter/InstrumentationTestFlutterBinding');
@@ -19,6 +19,7 @@ class _InstrumentationTestFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   @override
   Future<void> runTest(Future<void> testBody(), VoidCallback invariantTester, { String description = '', Duration timeout }) async {
+    // TODO(jackson): Report the results individually instead of all at once
     reportTestException = (FlutterErrorDetails details, String testDescription) {
       _results[description] = 'failed';
     };
