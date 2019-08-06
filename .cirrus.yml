@@ -1,12 +1,7 @@
-gcp_credentials: ENCRYPTED[7e11fd2d7fbe7656d724ba5aaa1c16ee8c6b9a094498b6532420d7c3e76b7d854ef97673818d6f9433857af2bcd3e701]
-
 task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
-  gke_container:
-    image: gcr.io/flutter-cirrus/build-engine-image:latest
-    cluster_name: build-32-cluster
-    zone: us-central1-a
-    namespace: default
+  container:
+    image: gcr.io/flutter-cirrus/build-flutter-image:latest
     cpu: 8
     memory: 16G
   upgrade_script:
