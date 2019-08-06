@@ -176,7 +176,7 @@ class AndroidAlarmManager {
     bool wakeup = false,
     bool rescheduleOnReboot = false,
   }) async {
-    final int first = time.millisecondsSinceEpoch;
+    final int startMillis = time.millisecondsSinceEpoch;
     final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
     if (handle == null) {
       return false;
@@ -187,7 +187,7 @@ class AndroidAlarmManager {
       allowWhileIdle,
       exact,
       wakeup,
-      first,
+      startMillis,
       rescheduleOnReboot,
       handle.toRawHandle(),
     ]);
