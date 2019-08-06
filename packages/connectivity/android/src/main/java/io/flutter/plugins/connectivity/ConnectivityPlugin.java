@@ -112,42 +112,27 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
 
     if (info == null || !info.isConnected()) return "none";
 
+    /// Telephony Manager documentation  https://developer.android.com/reference/android/telephony/TelephonyManager
+    /// Information about mobile broadband - https://en.wikipedia.org/wiki/Mobile_broadband#Generations
     switch (info.getSubtype()) {
-      case TelephonyManager.NETWORK_TYPE_1xRTT:
-        return "2G"; // ~ 50-100 kbps
-      case TelephonyManager.NETWORK_TYPE_CDMA:
-        return "2G"; // ~ 14-64 kbps
-      case TelephonyManager.NETWORK_TYPE_EDGE:
-        return "2G"; // ~ 50-100 kbps
-      case TelephonyManager.NETWORK_TYPE_EVDO_0:
-        return "3G"; // ~ 400-1000 kbps
-      case TelephonyManager.NETWORK_TYPE_EVDO_A:
-        return "3G"; // ~ 600-1400 kbps
-      case TelephonyManager.NETWORK_TYPE_GPRS:
-        return "2G"; // ~ 100 kbps
-      case TelephonyManager.NETWORK_TYPE_HSDPA:
-        return "3G"; // ~ 2-14 Mbps
-      case TelephonyManager.NETWORK_TYPE_HSPA:
-        return "3G"; // ~ 700-1700 kbps
-      case TelephonyManager.NETWORK_TYPE_HSUPA:
-        return "3G"; // ~ 1-23 Mbps
-      case TelephonyManager.NETWORK_TYPE_UMTS:
-        return "3G"; // ~ 400-7000 kbps
-        /*
-         * Above API level 7, make sure to set android:targetSdkVersion
-         * to appropriate level to use these
-         */
-      case TelephonyManager.NETWORK_TYPE_EHRPD: // API level 11
-        return "3G"; // ~ 1-2 Mbps
-      case TelephonyManager.NETWORK_TYPE_EVDO_B: // API level 9
-        return "3G"; // ~ 5 Mbps
-      case TelephonyManager.NETWORK_TYPE_HSPAP: // API level 13
-        return "3G"; // ~ 10-20 Mbps
-      case TelephonyManager.NETWORK_TYPE_IDEN: // API level 8
-        return "2G"; // ~25 kbps
-      case TelephonyManager.NETWORK_TYPE_LTE: // API level 11
-        return "4G"; // ~ 10+ Mbps
-        // Unknown
+      case TelephonyManager.NETWORK_TYPE_1xRTT: // ~ 50-100 kbps
+      case TelephonyManager.NETWORK_TYPE_CDMA: // ~ 14-64 kbps
+      case TelephonyManager.NETWORK_TYPE_EDGE: // ~ 50-100 kbps
+      case TelephonyManager.NETWORK_TYPE_GPRS: // ~ 100 kbps
+      case TelephonyManager.NETWORK_TYPE_IDEN: // API level 8  ~25 kbps
+        return "2G";
+      case TelephonyManager.NETWORK_TYPE_EVDO_0: // ~ 400-1000 kbps
+      case TelephonyManager.NETWORK_TYPE_EVDO_A: // ~ 600-1400 kbps
+      case TelephonyManager.NETWORK_TYPE_HSDPA: // ~ 2-14 Mbps
+      case TelephonyManager.NETWORK_TYPE_HSPA: // ~ 700-1700 kbps
+      case TelephonyManager.NETWORK_TYPE_HSUPA: // ~ 1-23 Mbps
+      case TelephonyManager.NETWORK_TYPE_UMTS: // ~ 400-7000 kbps
+      case TelephonyManager.NETWORK_TYPE_EHRPD: // API level 11  ~ 1-2 Mbps
+      case TelephonyManager.NETWORK_TYPE_EVDO_B: // API level 9  ~ 5 Mbps
+      case TelephonyManager.NETWORK_TYPE_HSPAP: // API level 13  ~ 10-20 Mbps
+        return "3G";
+      case TelephonyManager.NETWORK_TYPE_LTE: // API level 11 ~ 10+ Mbps
+        return "4G";
       case TelephonyManager.NETWORK_TYPE_UNKNOWN:
         return "unknown"; // is connected but cannot tell the speed
       default:
