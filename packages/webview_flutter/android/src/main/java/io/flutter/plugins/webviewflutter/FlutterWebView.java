@@ -51,6 +51,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       registerJavaScriptChannelNames((List<String>) params.get(JS_CHANNEL_NAMES_FIELD));
     }
 
+    updateAutoMediaPlaybackPolicy((Integer) params.get("autoMediaPlaybackPolicy"));
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
@@ -249,6 +250,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       default:
         throw new IllegalArgumentException("Trying to set unknown JavaScript mode: " + mode);
     }
+  }
+
+  private void updateAutoMediaPlaybackPolicy(int mode) {
+    // This is the index of the AutoMediaPlaybackPolicy enum, index 1 is always_allow, for all
+    // other values we require a user gesture.
+    boolean requireUserGesture = mode != 1;
+    webView.getSettings().setMediaPlaybackRequiresUserGesture(requireUserGesture);
   }
 
   private void registerJavaScriptChannelNames(List<String> channelNames) {
