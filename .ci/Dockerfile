@@ -1,9 +1,6 @@
 
 FROM cirrusci/flutter:latest
 
-RUN apt-get update
-RUN apt-get install -y git wget curl unzip python lsb-release sudo apt-transport-https
-
 RUN yes | sdkmanager \
     "platforms;android-27" \
     "build-tools;27.0.3" \
