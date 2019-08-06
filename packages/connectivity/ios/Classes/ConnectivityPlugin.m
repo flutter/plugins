@@ -88,11 +88,10 @@
 }
 
 - (NSString*)getConnectionSubtype:(Reachability*)reachability {
-  
-  if([reachability currentReachabilityStatus] == NotReachable){
+  if ([reachability currentReachabilityStatus] == NotReachable) {
     return @"none";
   }
-  
+
   CTTelephonyNetworkInfo* netinfo = [[CTTelephonyNetworkInfo alloc] init];
   NSString* carrierType = netinfo.currentRadioAccessTechnology;
 

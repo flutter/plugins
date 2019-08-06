@@ -49,7 +49,8 @@ Map<String, ConnectionSubtype> connectionTypeMap = <String, ConnectionSubtype>{
   "hspap": ConnectionSubtype.hspap, // ~ 10-20 Mbps
   "iden": ConnectionSubtype.iden, // ~25 kbps
   "lte": ConnectionSubtype.lte, // ~ 10+ Mbps
-  "unknown": ConnectionSubtype.unknown, // is connected but cannot tell the speed
+  "unknown":
+      ConnectionSubtype.unknown, // is connected but cannot tell the speed
   "none": ConnectionSubtype.none
 };
 
@@ -94,8 +95,9 @@ class Connectivity {
   /// Fires whenever the connectivity state changes. Returns stream of [ConnectivityResult]
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (_onConnectivityChanged == null) {
-      _onConnectivityChanged =
-          eventChannel.receiveBroadcastStream().map((dynamic event) => _parseConnectivityResult(event).result);
+      _onConnectivityChanged = eventChannel
+          .receiveBroadcastStream()
+          .map((dynamic event) => _parseConnectivityResult(event).result);
     }
     return _onConnectivityChanged;
   }
@@ -103,8 +105,9 @@ class Connectivity {
   /// Fires whenever the connectivity state changes. Return stream of [ConnectivityInfo]
   Stream<ConnectivityInfo> get onConnectivityInfoChanged {
     if (_onConnectivityInfoChanged == null) {
-      _onConnectivityInfoChanged =
-          eventChannel.receiveBroadcastStream().map((dynamic event) => _parseConnectivityResult(event));
+      _onConnectivityInfoChanged = eventChannel
+          .receiveBroadcastStream()
+          .map((dynamic event) => _parseConnectivityResult(event));
     }
     return _onConnectivityInfoChanged;
   }

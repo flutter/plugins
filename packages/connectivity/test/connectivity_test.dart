@@ -7,7 +7,8 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
 
     setUp(() async {
-      Connectivity.methodChannel.setMockMethodCallHandler((MethodCall methodCall) async {
+      Connectivity.methodChannel
+          .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'check':
@@ -25,7 +26,8 @@ void main() {
         }
       });
       log.clear();
-      MethodChannel(Connectivity.eventChannel.name).setMockMethodCallHandler((MethodCall methodCall) async {
+      MethodChannel(Connectivity.eventChannel.name)
+          .setMockMethodCallHandler((MethodCall methodCall) async {
         switch (methodCall.method) {
           case 'listen':
             // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
@@ -33,7 +35,8 @@ void main() {
             // ignore: deprecated_member_use
             await BinaryMessages.handlePlatformMessage(
               Connectivity.eventChannel.name,
-              Connectivity.eventChannel.codec.encodeSuccessEnvelope('mobile,hsdpa'),
+              Connectivity.eventChannel.codec
+                  .encodeSuccessEnvelope('mobile,hsdpa'),
               (_) {},
             );
             break;
@@ -45,12 +48,14 @@ void main() {
     });
 
     test('onConnectivityChanged', () async {
-      final ConnectivityResult result = await Connectivity().onConnectivityChanged.first;
+      final ConnectivityResult result =
+          await Connectivity().onConnectivityChanged.first;
       expect(result, ConnectivityResult.mobile);
     });
 
     test('onConnectivityInfoChanged', () async {
-      final ConnectivityInfo info = await Connectivity().onConnectivityInfoChanged.first;
+      final ConnectivityInfo info =
+          await Connectivity().onConnectivityInfoChanged.first;
       expect(info.result, ConnectivityResult.mobile);
       expect(info.subtype, ConnectionSubtype.hsdpa);
     });
@@ -98,7 +103,8 @@ void main() {
     });
 
     test('checkConnectivity', () async {
-      final ConnectivityResult result = await Connectivity().checkConnectivity();
+      final ConnectivityResult result =
+          await Connectivity().checkConnectivity();
       expect(result, ConnectivityResult.wifi);
       expect(
         log,
@@ -111,9 +117,9 @@ void main() {
       );
     });
 
-
     test('checkConnectivityInfo', () async {
-      final ConnectivityInfo info = await Connectivity().checkConnectivityInfo();
+      final ConnectivityInfo info =
+          await Connectivity().checkConnectivityInfo();
       expect(info.result, ConnectivityResult.wifi);
       expect(info.subtype, ConnectionSubtype.unknown);
       expect(
