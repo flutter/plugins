@@ -20,10 +20,12 @@ public class CameraPermissions {
     }
     Activity activity = registrar.activity();
     if (!hasCameraPermission(activity) || (enableAudio && !hasAudioPermission(activity))) {
-      registrar.addRequestPermissionsResultListener(new CameraRequestPermissionsListener((String errorCode, String errorDescription) -> {
-        ongoing = false;
-        callback.onResult(errorCode, errorDescription);
-      }));
+      registrar.addRequestPermissionsResultListener(
+          new CameraRequestPermissionsListener(
+              (String errorCode, String errorDescription) -> {
+                ongoing = false;
+                callback.onResult(errorCode, errorDescription);
+              }));
       ongoing = true;
       ActivityCompat.requestPermissions(
           activity,

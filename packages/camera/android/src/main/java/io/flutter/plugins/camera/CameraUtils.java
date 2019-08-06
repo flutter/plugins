@@ -26,11 +26,11 @@ public final class CameraUtils {
   private CameraUtils() {}
 
   static Size[] computeBestPreviewAndRecordingSize(
-          Activity activity,
-          StreamConfigurationMap streamConfigurationMap,
-          int minHeight,
-          int orientation,
-          Size captureSize) {
+      Activity activity,
+      StreamConfigurationMap streamConfigurationMap,
+      int minHeight,
+      int orientation,
+      Size captureSize) {
     Size previewSize, videoSize;
     Size[] sizes = streamConfigurationMap.getOutputSizes(SurfaceTexture.class);
 
