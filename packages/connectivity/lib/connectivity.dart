@@ -13,7 +13,45 @@ import 'package:meta/meta.dart';
 /// Mobile: Device connected to cellular network
 /// None: Device not connected to any network
 enum ConnectionType { wifi, mobile, none }
-enum ConnectionSubtype { EDGE, HSDPA, LTE, none, unknown }
+enum ConnectionSubtype {
+  none,
+  unknown,
+  m1xRTT, // ~ 50-100 kbps
+  cdma, // ~ 14-64 kbps
+  edge, // ~ 50-100 kbps
+  evdo_0, // ~ 400-1000 kbps
+  evdo_a, // ~ 600-1400 kbps
+  gprs, // ~ 100 kbps
+  hsdpa, // ~ 2-14 Mbps
+  hspa, // ~ 700-1700 kbps
+  hsupa, // ~ 1-23 Mbps
+  umts, // ~ 400-7000 kbps
+  ehrpd, // ~ 1-2 Mbps
+  evdo_b, // ~ 5 Mbps
+  hspap, // ~ 10-20 Mbps
+  iden, // ~25 kbps
+  lte, // ~ 10+ Mbps
+}
+
+Map<String, ConnectionSubtype> connectionTypeMap = {
+  "1xRTT": ConnectionSubtype.m1xRTT, // ~ 50-100 kbps
+  "cdma": ConnectionSubtype.cdma, // ~ 14-64 kbps
+  "edge": ConnectionSubtype.edge, // ~ 50-100 kbps
+  "evdo_0": ConnectionSubtype.evdo_0, // ~ 400-1000 kbps
+  "evdo_a": ConnectionSubtype.evdo_a, // ~ 600-1400 kbps
+  "gprs": ConnectionSubtype.gprs, // ~ 100 kbps
+  "hsdpa": ConnectionSubtype.hsdpa, // ~ 2-14 Mbps
+  "hspa": ConnectionSubtype.hspa, // ~ 700-1700 kbps
+  "hsupa": ConnectionSubtype.hsupa, // ~ 1-23 Mbps
+  "umts": ConnectionSubtype.umts, // ~ 400-7000 kbps
+  "ehrpd": ConnectionSubtype.ehrpd, // ~ 1-2 Mbps
+  "evdo_b": ConnectionSubtype.evdo_b, // ~ 5 Mbps
+  "hspap": ConnectionSubtype.hspap, // ~ 10-20 Mbps
+  "iden": ConnectionSubtype.iden, // ~25 kbps
+  "lte": ConnectionSubtype.lte, // ~ 10+ Mbps
+  "unknown": ConnectionSubtype.none, // is connected but cannot tell the speed
+  "none": ConnectionSubtype.none
+};
 
 class ConnectivityResult {
   ConnectivityResult(this.type, this.subtype);
@@ -68,9 +106,8 @@ class Connectivity {
   /// Fires whenever the connectivity state changes.
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (_onConnectivityChanged == null) {
-      _onConnectivityChanged = eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => _parseConnectivityResult(event));
+      _onConnectivityChanged =
+          eventChannel.receiveBroadcastStream().map((dynamic event) => _parseConnectivityResult(event));
     }
     return _onConnectivityChanged;
   }
@@ -81,8 +118,7 @@ class Connectivity {
   /// make a network request. It only gives you the radio status.
   ///
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
-  Future<ConnectivityResult> checkConnectivity(
-      {bool checkSubtype = false}) async {
+  Future<ConnectivityResult> checkConnectivity({bool checkSubtype = false}) async {
     final String result = await methodChannel.invokeMethod<String>('check');
     return _parseConnectivityResult(result);
   }
@@ -130,19 +166,7 @@ class Connectivity {
 }
 
 ConnectionSubtype _parseConnectionSubtype(String state) {
-  switch (state) {
-    case '2G':
-      return ConnectionSubtype.EDGE;
-    case '3G':
-      return ConnectionSubtype.HSDPA;
-    case '4G':
-      return ConnectionSubtype.LTE;
-    case 'unknown':
-      return ConnectionSubtype.unknown;
-    case 'none':
-    default:
-      return ConnectionSubtype.none;
-  }
+  return connectionTypeMap[state];
 }
 
 ConnectivityResult _parseConnectivityResult(String state) {

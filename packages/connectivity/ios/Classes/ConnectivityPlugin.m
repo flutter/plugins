@@ -88,33 +88,38 @@
 }
 
 - (NSString*)getConnectionSubtype:(Reachability*)reachability {
+  
+  if([reachability currentReachabilityStatus] == NotReachable){
+    return @"none";
+  }
+  
   CTTelephonyNetworkInfo* netinfo = [[CTTelephonyNetworkInfo alloc] init];
   NSString* carrierType = netinfo.currentRadioAccessTechnology;
 
   if ([carrierType isEqualToString:CTRadioAccessTechnologyGPRS]) {
-    return @"2G";
+    return @"gprs";
   } else if ([carrierType isEqualToString:CTRadioAccessTechnologyEdge]) {
-    return @"2G";
+    return @"edge";
   } else if ([carrierType isEqualToString:CTRadioAccessTechnologyWCDMA]) {
-    return @"3G";
+    return @"cdma";
   } else if ([carrierType isEqualToString:CTRadioAccessTechnologyHSDPA]) {
-    return @"3G";
+    return @"hsdpa";
   } else if ([carrierType isEqualToString:CTRadioAccessTechnologyHSUPA]) {
-    return @"3G";
+    return @"hsupa";
   } else if ([carrierType isEqualToString:CTRadioAccessTechnologyCDMA1x]) {
-    return @"2G";
+    return @"cdma";
   } else if ([carrierType isEqualToString:CTRadioAccessTechnologyCDMAEVDORev0]) {
-    return @"3G";
+    return @"evdo_0";
   } else if ([carrierType isEqualToString:CTRadioAccessTechnologyCDMAEVDORevA]) {
-    return @"3G";
+    return @"evdo_a";
   } else if ([carrierType isEqualToString:CTRadioAccessTechnologyCDMAEVDORevB]) {
-    return @"3G";
+    return @"evdo_b";
   } else if ([carrierType isEqualToString:CTRadioAccessTechnologyeHRPD]) {
-    return @"3G";
+    return @"ehrpd";
   } else if ([carrierType isEqualToString:CTRadioAccessTechnologyLTE]) {
-    return @"4G";
+    return @"lte";
   }
-  return @"none";
+  return @"unknown";
 }
 
 - (NSString*)statusFromReachability:(Reachability*)reachability {
