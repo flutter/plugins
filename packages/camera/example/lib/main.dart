@@ -214,7 +214,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   controller.value.isRecordingVideo
               ? onStopButtonPressed
               : null,
-        )
+        ),
+        IconButton(
+          icon: const Icon(Icons.warning),
+          color: Colors.green,
+          onPressed: controller != null &&
+                  (controller.value.isInitialized || controller.value.isStreamingImages)
+              ? onStreamButtonPressed
+              : null,
+        ),
       ],
     );
   }
@@ -278,6 +286,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  void onStreamButtonPressed() {
+    if (controller.value.isStreamingImages) {
+      stopImageStream();
+    } else {
+      startImageStream();
     }
   }
 
@@ -370,6 +386,34 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       });
     }
     await vcontroller.play();
+  }
+
+  Stopwatch stopwatch = Stopwatch();
+  int numImages = 0;
+
+  Future<void> stopImageStream() async {
+    stopwatch.stop();
+    var capImages = numImages;
+    await controller.stopImageStream();
+    print('In ${(capImages * 1000) / stopwatch.elapsedMilliseconds} fps, we got $capImages');
+    stopwatch.reset();
+  }
+
+  Future<void> startImageStream() async {
+    if (!controller.value.isInitialized) {
+      showInSnackBar('Error: select a camera first.');
+      return null;
+    }
+    stopwatch.start();
+    numImages = 0;
+    try {
+      await controller.startImageStream((image) {
+        numImages++;
+      });
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      return null;
+    }
   }
 
   Future<String> takePicture() async {
