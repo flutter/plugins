@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 /// WiFi: Device connected via Wi-Fi
 /// Mobile: Device connected to cellular network
 /// None: Device not connected to any network
-enum ConnectionType { wifi, mobile, none }
+enum ConnectivityResult { wifi, mobile, none }
 enum ConnectionSubtype {
   none,
   unknown,
@@ -33,7 +33,7 @@ enum ConnectionSubtype {
   lte, // ~ 10+ Mbps
 }
 
-Map<String, ConnectionSubtype> connectionTypeMap = {
+Map<String, ConnectionSubtype> connectionTypeMap = <String, ConnectionSubtype>{
   "1xRTT": ConnectionSubtype.m1xRTT, // ~ 50-100 kbps
   "cdma": ConnectionSubtype.cdma, // ~ 14-64 kbps
   "edge": ConnectionSubtype.edge, // ~ 50-100 kbps
@@ -53,26 +53,11 @@ Map<String, ConnectionSubtype> connectionTypeMap = {
   "none": ConnectionSubtype.none
 };
 
-class ConnectivityResult {
-  ConnectivityResult(this.type, this.subtype);
+class ConnectivityInfo {
+  ConnectivityInfo(this.result, this.subtype);
 
-  final ConnectionType type;
+  final ConnectivityResult result;
   final ConnectionSubtype subtype;
-
-  static const ConnectionType wifi = ConnectionType.wifi;
-  static const ConnectionType mobile = ConnectionType.mobile;
-  static const ConnectionType none = ConnectionType.none;
-
-  @override
-  bool operator ==(Object object) {
-    if (!(object is ConnectionType)) {
-      return false;
-    }
-    return type == object;
-  }
-
-  @override
-  int get hashCode => type.hashCode;
 }
 
 class Connectivity {
@@ -94,6 +79,7 @@ class Connectivity {
   static Connectivity _singleton;
 
   Stream<ConnectivityResult> _onConnectivityChanged;
+  Stream<ConnectivityInfo> _onConnectivityInfoChanged;
 
   @visibleForTesting
   static const MethodChannel methodChannel = MethodChannel(
@@ -105,13 +91,22 @@ class Connectivity {
     'plugins.flutter.io/connectivity_status',
   );
 
-  /// Fires whenever the connectivity state changes.
+  /// Fires whenever the connectivity state changes. Returns stream of [ConnectivityResult]
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (_onConnectivityChanged == null) {
       _onConnectivityChanged =
-          eventChannel.receiveBroadcastStream().map((dynamic event) => _parseConnectivityResult(event));
+          eventChannel.receiveBroadcastStream().map((dynamic event) => _parseConnectivityResult(event).result);
     }
     return _onConnectivityChanged;
+  }
+
+  /// Fires whenever the connectivity state changes. Return stream of [ConnectivityInfo]
+  Stream<ConnectivityInfo> get onConnectivityInfoChanged {
+    if (_onConnectivityInfoChanged == null) {
+      _onConnectivityInfoChanged =
+          eventChannel.receiveBroadcastStream().map((dynamic event) => _parseConnectivityResult(event));
+    }
+    return _onConnectivityInfoChanged;
   }
 
   /// Checks the connection status of the device.
@@ -123,6 +118,12 @@ class Connectivity {
   ///
   /// You can also check the mobile broadband connectivity subtype via [getNetworkSubtype]
   Future<ConnectivityResult> checkConnectivity() async {
+    final String result = await methodChannel.invokeMethod<String>('check');
+    return _parseConnectivityResult(result).result;
+  }
+
+  /// Checks connectivity info, [ConnectivityInfo]
+  Future<ConnectivityInfo> checkConnectivityInfo() async {
     final String result = await methodChannel.invokeMethod<String>('check');
     return _parseConnectivityResult(result);
   }
@@ -175,23 +176,23 @@ ConnectionSubtype _parseConnectionSubtype(String state) {
   return connectionTypeMap[state];
 }
 
-ConnectivityResult _parseConnectivityResult(String state) {
-  ConnectionType type = ConnectionType.none;
+ConnectivityInfo _parseConnectivityResult(String state) {
+  ConnectivityResult type = ConnectivityResult.none;
   ConnectionSubtype subType = ConnectionSubtype.unknown;
 
   final List<String> split = state.split(",");
 
   switch (split[0]) {
     case 'wifi':
-      type = ConnectionType.wifi;
+      type = ConnectivityResult.wifi;
       break;
     case 'mobile':
-      type = ConnectionType.mobile;
+      type = ConnectivityResult.mobile;
       break;
     case 'none':
     default:
-      type = ConnectionType.none;
+      type = ConnectivityResult.none;
   }
   subType = _parseConnectionSubtype(split[1]);
-  return ConnectivityResult(type, subType);
+  return ConnectivityInfo(type, subType);
 }

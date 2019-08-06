@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    switch (result.type) {
+    switch (result) {
       case ConnectivityResult.wifi:
         String wifiName, wifiBSSID, wifiIP;
 
@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case ConnectivityResult.mobile:
         setState(() {
           _connectionStatus = '$result\n'
-              'Mobile Connection Type: ${result.subtype}\n';
+              'Mobile Connection Type: $result\n';
         });
         break;
       case ConnectivityResult.none:

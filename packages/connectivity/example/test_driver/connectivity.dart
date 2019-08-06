@@ -18,7 +18,7 @@ void main() {
     test('test connectivity result', () async {
       final ConnectivityResult result = await _connectivity.checkConnectivity();
       expect(result, isNotNull);
-      switch (result.type) {
+      switch (result) {
         case ConnectivityResult.wifi:
           expect(_connectivity.getWifiName(), completes);
           expect(_connectivity.getWifiBSSID(), completes);
