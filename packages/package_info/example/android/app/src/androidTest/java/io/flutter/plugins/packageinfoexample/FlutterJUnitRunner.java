@@ -15,7 +15,6 @@ import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
-// TODO(jackson): The test runner class should be included in Flutter engine.
 public class FlutterJUnitRunner extends Runner {
 
     private static final String CHANNEL = "dev.flutter/InstrumentationTestFlutterBinding";
@@ -44,7 +43,6 @@ public class FlutterJUnitRunner extends Runner {
 
     @Override
     public Description getDescription() {
-        // TODO(jackson): Expose an API that allows developers to specify a custom string.
         return Description.createTestDescription(MainActivity.class, "Flutter Tests");
     }
 
