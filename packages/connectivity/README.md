@@ -69,7 +69,7 @@ initState() {
 
 The methods `.getWifiBSSID()` and `.getWifiName()` utilize the [CNCopyCurrentNetworkInfo](https://developer.apple.com/documentation/systemconfiguration/1614126-cncopycurrentnetworkinfo) function on iOS.
 
-As of iOS 13 that api will no longer return valid information by default and will instead return the following:
+As of iOS 13, these APIs will no longer return valid information by default and will instead return the following:
 > SSID: "Wi-Fi" or "WLAN" ("WLAN" will be returned for the China SKU)  
 > BSSID: "00:00:00:00:00:00"
 
