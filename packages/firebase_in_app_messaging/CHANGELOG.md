@@ -1,3 +1,7 @@
+## 0.0.1+3
+
+* Update AGP, gradle and inappmessaging-display versions on Android.
+
 ## 0.0.1+2
 
 * Remove dependency `androidx.annotation:annotation:1.0.0`.
