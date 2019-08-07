@@ -487,7 +487,9 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
-  /// Pause recording.
+  /// Pause video recording.
+  ///
+  /// This feature is only available on iOS and Android sdk 24+.
   Future<void> pauseVideoRecording() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
@@ -512,7 +514,9 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
-  /// Resume recording.
+  /// Resume video recording after pausing.
+  ///
+  /// This feature is only available on iOS and Android sdk 24+.
   Future<void> resumeVideoRecording() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
