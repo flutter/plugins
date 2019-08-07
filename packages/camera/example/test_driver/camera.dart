@@ -15,7 +15,7 @@ void main() {
   enableFlutterDriverExtension(handler: (_) => completer.future);
 
   setUpAll(() async {
-    final Directory extDir = await getApplicationDocumentsDirectory();
+    final Directory extDir = await getTemporaryDirectory();
     testDir = await Directory('${extDir.path}/test').create(recursive: true);
   });
 
@@ -84,9 +84,7 @@ void main() {
         await controller.initialize();
         final bool presetExactlySupported =
             await testCaptureImageResolution(controller, preset.key);
-        assert(
-            !(!previousPresetExactlySupported &&
-                previousPresetExactlySupported),
+        assert(!(!previousPresetExactlySupported && presetExactlySupported),
             'The camera took higher resolution pictures at a lower resolution.');
         previousPresetExactlySupported = presetExactlySupported;
         await controller.dispose();
@@ -138,9 +136,7 @@ void main() {
         await controller.prepareForVideoRecording();
         final bool presetExactlySupported =
             await testCaptureVideoResolution(controller, preset.key);
-        assert(
-            !(!previousPresetExactlySupported &&
-                previousPresetExactlySupported),
+        assert(!(!previousPresetExactlySupported && presetExactlySupported),
             'The camera took higher resolution pictures at a lower resolution.');
         previousPresetExactlySupported = presetExactlySupported;
         await controller.dispose();
