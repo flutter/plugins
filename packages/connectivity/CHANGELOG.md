@@ -1,3 +1,7 @@
+## 0.4.3+7
+
+* Update README with iOS 13 known issue information
+
 ## 0.4.3+6
 
 * [Android] Fix the invalid suppression check (it should be "deprecation" not "deprecated").
