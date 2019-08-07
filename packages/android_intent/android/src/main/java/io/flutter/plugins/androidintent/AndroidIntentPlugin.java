@@ -40,6 +40,8 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     switch (action) {
       case "action_view":
         return Intent.ACTION_VIEW;
+      case "action_call":
+        return Intent.ACTION_CALL;
       case "action_voice":
         return Intent.ACTION_VOICE_COMMAND;
       case "settings":
