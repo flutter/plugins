@@ -21,9 +21,65 @@ public final class CameraUtils {
 
   private CameraUtils() {}
 
+<<<<<<< HEAD
   static Size computeBestPreviewSize(String cameraName, ResolutionPreset preset) {
     if (preset.ordinal() > ResolutionPreset.high.ordinal()) {
       preset = ResolutionPreset.high;
+=======
+  static Size[] computeBestPreviewAndRecordingSize(
+      Activity activity,
+      StreamConfigurationMap streamConfigurationMap,
+      int minHeight,
+      int orientation,
+      Size captureSize) {
+    Size previewSize, videoSize;
+    Size[] sizes = streamConfigurationMap.getOutputSizes(SurfaceTexture.class);
+
+    // Preview size and video size should not be greater than screen resolution or 1080.
+    Point screenResolution = new Point();
+
+    Display display = activity.getWindowManager().getDefaultDisplay();
+    display.getRealSize(screenResolution);
+
+    final boolean swapWH = orientation % 180 == 90;
+    int screenWidth = swapWH ? screenResolution.y : screenResolution.x;
+    int screenHeight = swapWH ? screenResolution.x : screenResolution.y;
+
+    List<Size> goodEnough = new ArrayList<>();
+    for (Size s : sizes) {
+      if (s.getHeight() >= minHeight
+          && s.getWidth() <= screenWidth
+          && s.getHeight() <= screenHeight
+          && s.getHeight() <= 1080) {
+        goodEnough.add(s);
+      }
+    }
+
+    Collections.sort(goodEnough, new CompareSizesByArea());
+
+    if (goodEnough.isEmpty()) {
+      previewSize = sizes[0];
+      videoSize = sizes[0];
+    } else {
+      float captureSizeRatio = (float) captureSize.getWidth() / captureSize.getHeight();
+
+      previewSize = goodEnough.get(0);
+      for (Size s : goodEnough) {
+        if ((float) s.getWidth() / s.getHeight() == captureSizeRatio) {
+          previewSize = s;
+          break;
+        }
+      }
+
+      Collections.reverse(goodEnough);
+      videoSize = goodEnough.get(0);
+      for (Size s : goodEnough) {
+        if ((float) s.getWidth() / s.getHeight() == captureSizeRatio) {
+          videoSize = s;
+          break;
+        }
+      }
+>>>>>>> a561997e... Experimental Changes
     }
 
     CamcorderProfile profile =

@@ -99,18 +99,46 @@ public class Camera {
         };
     orientationEventListener.enable();
 
+<<<<<<< HEAD
+=======
+    int minHeight;
+    switch (resolutionPreset) {
+      case "high":
+        minHeight = 720;
+        break;
+      case "medium":
+        minHeight = 480;
+        break;
+      case "low":
+        minHeight = 240;
+        break;
+      default:
+        throw new IllegalArgumentException("Unknown preset: " + resolutionPreset);
+    }
+
+>>>>>>> a561997e... Experimental Changes
     CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
     //noinspection ConstantConditions
     sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
     //noinspection ConstantConditions
     isFrontFacing =
         characteristics.get(CameraCharacteristics.LENS_FACING) == CameraMetadata.LENS_FACING_FRONT;
+<<<<<<< HEAD
     ResolutionPreset preset = ResolutionPreset.valueOf(resolutionPreset);
     recordingProfile =
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     previewSize = computeBestPreviewSize(cameraName, preset);
     System.err.println("Video size is " + captureSize + " preview size is " + previewSize);
+=======
+    captureSize = CameraUtils.computeBestCaptureSize(streamConfigurationMap);
+    Size[] sizes =
+        CameraUtils.computeBestPreviewAndRecordingSize(
+            activity, streamConfigurationMap, minHeight, getMediaOrientation(), captureSize);
+    videoSize = sizes[0];
+    previewSize = sizes[1];
+    System.err.println("Video size is " + videoSize + " preview size is " + previewSize);
+>>>>>>> a561997e... Experimental Changes
   }
 
   public void setupCameraEventChannel(EventChannel cameraEventChannel) {
@@ -418,28 +446,28 @@ public class Camera {
           numImages++;
           Image img = reader.acquireLatestImage();
           if (img == null) return;
-//          List<Map<String, Object>> planes = new ArrayList<>();
-//          for (Image.Plane plane : img.getPlanes()) {
-//            ByteBuffer buffer = plane.getBuffer();
-//
-//            byte[] bytes = new byte[buffer.remaining()];
-//            buffer.get(bytes, 0, bytes.length);
-//
-//            Map<String, Object> planeBuffer = new HashMap<>();
-//            planeBuffer.put("bytesPerRow", plane.getRowStride());
-//            planeBuffer.put("bytesPerPixel", plane.getPixelStride());
-//            planeBuffer.put("bytes", bytes);
-//
-//            planes.add(planeBuffer);
-//          }
-//
-//          Map<String, Object> imageBuffer = new HashMap<>();
-//          imageBuffer.put("width", img.getWidth());
-//          imageBuffer.put("height", img.getHeight());
-//          imageBuffer.put("format", img.getFormat());
-//          imageBuffer.put("planes", planes);
-//
-//          imageStreamSink.success(imageBuffer);
+          List<Map<String, Object>> planes = new ArrayList<>();
+          for (Image.Plane plane : img.getPlanes()) {
+            ByteBuffer buffer = plane.getBuffer();
+
+            byte[] bytes = new byte[buffer.remaining()];
+            buffer.get(bytes, 0, bytes.length);
+
+            Map<String, Object> planeBuffer = new HashMap<>();
+            planeBuffer.put("bytesPerRow", plane.getRowStride());
+            planeBuffer.put("bytesPerPixel", plane.getPixelStride());
+            planeBuffer.put("bytes", bytes);
+
+            planes.add(planeBuffer);
+          }
+
+          Map<String, Object> imageBuffer = new HashMap<>();
+          imageBuffer.put("width", img.getWidth());
+          imageBuffer.put("height", img.getHeight());
+          imageBuffer.put("format", img.getFormat());
+          imageBuffer.put("planes", planes);
+
+          imageStreamSink.success(imageBuffer);
           img.close();
         },
         null);
