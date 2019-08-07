@@ -53,14 +53,11 @@ dispose() {
 Additional methods available:
 
 ```dart
-@override
-initState() {
-  super.initState();
+import 'package:connectivity/connectivity.dart';
 
-  await Connectivity().getWifiBSSID(); // obtains the BSSID of the connected wifi network
-  await Connectivity().getWifiIP();    // obtains the IP address of the connected wifi network
-  await Connectivity().getWifiName();  // obtains the wifi name (SSID) of the connected wifi network
-}
+var wifiBSSID = await (Connectivity().getWifiBSSID()); // obtains the BSSID of the connected wifi network
+var wifiIP = await (Connectivity().getWifiIP());       // obtains the IP address of the connected wifi network
+var wifiName = await (Connectivity().getWifiName());   // obtains the wifi name (SSID) of the connected wifi network
 ```
 
 ### Known Issues
