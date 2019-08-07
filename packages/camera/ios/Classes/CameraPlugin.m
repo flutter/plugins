@@ -125,31 +125,30 @@ typedef enum {
   max,
 } ResolutionPreset;
 
-static ResolutionPreset getResolutionPresetForString(NSString * preset) {
-    if ([preset isEqualToString:@"veryLow"]) {
-        return veryLow;
-    } else if ([preset isEqualToString:@"low"]) {
-        return low;
-    } else if ([preset isEqualToString:@"medium"]) {
-        return medium;
-    } else if ([preset isEqualToString:@"high"]) {
-        return high;
-    } else if ([preset isEqualToString:@"veryHigh"]) {
-        return veryHigh;
-    } else if ([preset isEqualToString:@"ultraHigh"]) {
-        return ultraHigh;
-    } else if ([preset isEqualToString:@"max"]) {
-           return max;
-    } else {
-        NSError *error = [NSError
-            errorWithDomain:NSCocoaErrorDomain
-                       code:NSURLErrorUnknown
-                   userInfo:@{
-                     NSLocalizedDescriptionKey :
-                         [NSString stringWithFormat:@"Unknown resolution preset %@", preset]
-                   }];
-        @throw error;
-    }
+static ResolutionPreset getResolutionPresetForString(NSString *preset) {
+  if ([preset isEqualToString:@"veryLow"]) {
+    return veryLow;
+  } else if ([preset isEqualToString:@"low"]) {
+    return low;
+  } else if ([preset isEqualToString:@"medium"]) {
+    return medium;
+  } else if ([preset isEqualToString:@"high"]) {
+    return high;
+  } else if ([preset isEqualToString:@"veryHigh"]) {
+    return veryHigh;
+  } else if ([preset isEqualToString:@"ultraHigh"]) {
+    return ultraHigh;
+  } else if ([preset isEqualToString:@"max"]) {
+    return max;
+  } else {
+    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
+                                         code:NSURLErrorUnknown
+                                     userInfo:@{
+                                       NSLocalizedDescriptionKey : [NSString
+                                           stringWithFormat:@"Unknown resolution preset %@", preset]
+                                     }];
+    @throw error;
+  }
 }
 
 @interface FLTCam : NSObject <FlutterTexture,
@@ -279,7 +278,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     case max:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
         _captureSession.sessionPreset = AVCaptureSessionPresetHigh;
-        _previewSize = CGSizeMake(_captureDevice.activeFormat.highResolutionStillImageDimensions.width, _captureDevice.activeFormat.highResolutionStillImageDimensions.height);
+        _previewSize =
+            CGSizeMake(_captureDevice.activeFormat.highResolutionStillImageDimensions.width,
+                       _captureDevice.activeFormat.highResolutionStillImageDimensions.height);
         break;
       }
     case ultraHigh:

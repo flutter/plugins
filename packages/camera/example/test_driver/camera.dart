@@ -107,7 +107,7 @@ void main() {
     final String filePath =
         '${testDir.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
     await controller.startVideoRecording(filePath);
-    sleep(Duration(milliseconds: 300));
+    sleep(const Duration(milliseconds: 300));
     await controller.stopVideoRecording();
 
     // Load video metadata
