@@ -229,6 +229,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isMyLocationButtonEnabled"]) {
     NSNumber* isMyLocationButtonEnabled = @(_mapView.settings.myLocationButton);
     result(isMyLocationButtonEnabled);
+  } else if ([call.method isEqualToString:@"map#isTrafficEnabled"]) {
+    NSNumber* isTrafficEnabled = @(_mapView.trafficEnabled);
+    result(isTrafficEnabled);
   } else if ([call.method isEqualToString:@"map#setStyle"]) {
     NSString* mapStyle = [call arguments];
     NSString* error = [self setMapStyle:mapStyle];

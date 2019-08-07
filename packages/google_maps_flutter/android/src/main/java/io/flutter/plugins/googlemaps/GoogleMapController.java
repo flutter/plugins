@@ -329,6 +329,11 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isMyLocationButtonEnabled());
           break;
         }
+      case "map#isTrafficEnabled":
+        {
+          result.success(googleMap.isTrafficEnabled());
+          break;
+        }
       case "map#setStyle":
         {
           String mapStyle = (String) call.arguments;
