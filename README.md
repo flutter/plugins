@@ -77,3 +77,6 @@ These are the available plugins in this repository.
 | [firebase_storage](./packages/firebase_storage/) | [![pub package](https://img.shields.io/pub/v/firebase_storage.svg)](https://pub.dev/packages/firebase_storage) |
 
 Learn more about [FlutterFire](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
+
+Video Example:
+[![Youtube video](https://img.youtube.com/vi/SXMrLmlzpQI/0.jpg)](https://youtu.be/SXMrLmlzpQI)
