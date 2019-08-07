@@ -31,12 +31,22 @@ class CloudFunctions {
 
   final String _region;
 
-  /// Executes this Callable HTTPS trigger asynchronously.
+  String _origin;
+
+  /// Gets an instance of a Callable HTTPS trigger in Cloud Functions.
   ///
-  /// @param functionName The name of the callable function being triggered.
-  /// @param parameters Parameters to be passed to the callable function.
-  HttpsCallable getHttpsCallable(
-      {@required String functionName, Map<String, dynamic> parameters}) {
+  /// Can then be executed by calling `call()` on it.
+  ///
+  /// @param functionName The name of the callable function.
+  HttpsCallable getHttpsCallable({@required String functionName}) {
     return HttpsCallable._(this, functionName);
+  }
+
+  /// Changes this instance to point to a Cloud Functions emulator running locally.
+  ///
+  /// @param origin The origin of the local emulator, such as "//10.0.2.2:5005".
+  CloudFunctions useFunctionsEmulator({@required String origin}) {
+    _origin = origin;
+    return this;
   }
 }

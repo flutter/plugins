@@ -9,8 +9,10 @@ class Query {
   Query._(
       {@required this.firestore,
       @required List<String> pathComponents,
+      bool isCollectionGroup = false,
       Map<String, dynamic> parameters})
       : _pathComponents = pathComponents,
+        _isCollectionGroup = isCollectionGroup,
         _parameters = parameters ??
             Map<String, dynamic>.unmodifiable(<String, dynamic>{
               'where': List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
@@ -24,12 +26,14 @@ class Query {
 
   final List<String> _pathComponents;
   final Map<String, dynamic> _parameters;
+  final bool _isCollectionGroup;
 
   String get _path => _pathComponents.join('/');
 
   Query _copyWithParameters(Map<String, dynamic> parameters) {
     return Query._(
       firestore: firestore,
+      isCollectionGroup: _isCollectionGroup,
       pathComponents: _pathComponents,
       parameters: Map<String, dynamic>.unmodifiable(
         Map<String, dynamic>.from(_parameters)..addAll(parameters),
@@ -46,7 +50,8 @@ class Query {
 
   /// Notifies of query results at this location
   // TODO(jackson): Reduce code duplication with [DocumentReference]
-  Stream<QuerySnapshot> snapshots() {
+  Stream<QuerySnapshot> snapshots({bool includeMetadataChanges = false}) {
+    assert(includeMetadataChanges != null);
     Future<int> _handle;
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
@@ -58,7 +63,9 @@ class Query {
           <String, dynamic>{
             'app': firestore.app.name,
             'path': _path,
+            'isCollectionGroup': _isCollectionGroup,
             'parameters': _parameters,
+            'includeMetadataChanges': includeMetadataChanges,
           },
         ).then<int>((dynamic result) => result);
         _handle.then((int handle) {
@@ -68,7 +75,7 @@ class Query {
       onCancel: () {
         _handle.then((int handle) async {
           await Firestore.channel.invokeMethod<void>(
-            'Query#removeListener',
+            'removeListener',
             <String, dynamic>{'handle': handle},
           );
           Firestore._queryObservers.remove(handle);
@@ -79,14 +86,18 @@ class Query {
   }
 
   /// Fetch the documents for this query
-  Future<QuerySnapshot> getDocuments() async {
+  Future<QuerySnapshot> getDocuments(
+      {Source source = Source.serverAndCache}) async {
+    assert(source != null);
     final Map<dynamic, dynamic> data =
         await Firestore.channel.invokeMapMethod<String, dynamic>(
       'Query#getDocuments',
       <String, dynamic>{
         'app': firestore.app.name,
         'path': _path,
+        'isCollectionGroup': _isCollectionGroup,
         'parameters': _parameters,
+        'source': _getSourceString(source),
       },
     );
     return QuerySnapshot._(data, firestore);
@@ -168,7 +179,8 @@ class Query {
   /// this query.
   ///
   /// Cannot be used in combination with [startAtDocument], [startAt], or
-  /// [startAfter].
+  /// [startAfter], but can be used in combination with [endAt],
+  /// [endBefore], [endAtDocument] and [endBeforeDocument].
   ///
   /// See also:
   ///  * [endAfterDocument] for a query that ends after a document.
@@ -183,6 +195,7 @@ class Query {
     return _copyWithParameters(<String, dynamic>{
       'startAfterDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
+        'path': documentSnapshot.reference.path,
         'data': documentSnapshot.data
       }
     });
@@ -194,7 +207,8 @@ class Query {
   /// this query.
   ///
   /// Cannot be used in combination with [startAfterDocument], [startAfter], or
-  /// [startAt].
+  /// [startAt], but can be used in combination with [endAt],
+  /// [endBefore], [endAtDocument] and [endBeforeDocument].
   ///
   /// See also:
   ///  * [startAfterDocument] for a query that starts after a document.
@@ -209,6 +223,7 @@ class Query {
     return _copyWithParameters(<String, dynamic>{
       'startAtDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
+        'path': documentSnapshot.reference.path,
         'data': documentSnapshot.data
       },
     });
@@ -220,7 +235,8 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Cannot be used in combination with [startAt], [startAfterDocument], or
-  /// [startAtDocument].
+  /// [startAtDocument], but can be used in combination with [endAt],
+  /// [endBefore], [endAtDocument] and [endBeforeDocument].
   Query startAfter(List<dynamic> values) {
     assert(values != null);
     assert(!_parameters.containsKey('startAfter'));
@@ -236,7 +252,8 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Cannot be used in combination with [startAfter], [startAfterDocument],
-  /// or [startAtDocument].
+  /// or [startAtDocument], but can be used in combination with [endAt],
+  /// [endBefore], [endAtDocument] and [endBeforeDocument].
   Query startAt(List<dynamic> values) {
     assert(values != null);
     assert(!_parameters.containsKey('startAfter'));
@@ -252,7 +269,8 @@ class Query {
   /// this query.
   ///
   /// Cannot be used in combination with [endBefore], [endBeforeDocument], or
-  /// [endAt].
+  /// [endAt], but can be used in combination with [startAt],
+  /// [startAfter], [startAtDocument] and [startAfterDocument].
   ///
   /// See also:
   ///  * [startAfterDocument] for a query that starts after a document.
@@ -267,6 +285,7 @@ class Query {
     return _copyWithParameters(<String, dynamic>{
       'endAtDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
+        'path': documentSnapshot.reference.path,
         'data': documentSnapshot.data
       },
     });
@@ -278,7 +297,8 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Cannot be used in combination with [endBefore], [endBeforeDocument], or
-  /// [endAtDocument].
+  /// [endAtDocument], but can be used in combination with [startAt],
+  /// [startAfter], [startAtDocument] and [startAfterDocument].
   Query endAt(List<dynamic> values) {
     assert(values != null);
     assert(!_parameters.containsKey('endBefore'));
@@ -294,7 +314,8 @@ class Query {
   /// this query.
   ///
   /// Cannot be used in combination with [endAt], [endBefore], or
-  /// [endAtDocument].
+  /// [endAtDocument], but can be used in combination with [startAt],
+  /// [startAfter], [startAtDocument] and [startAfterDocument].
   ///
   /// See also:
   ///  * [startAfterDocument] for a query that starts after document.
@@ -309,6 +330,7 @@ class Query {
     return _copyWithParameters(<String, dynamic>{
       'endBeforeDocument': <String, dynamic>{
         'id': documentSnapshot.documentID,
+        'path': documentSnapshot.reference.path,
         'data': documentSnapshot.data,
       },
     });
@@ -320,7 +342,8 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Cannot be used in combination with [endAt], [endBeforeDocument], or
-  /// [endBeforeDocument]
+  /// [endBeforeDocument], but can be used in combination with [startAt],
+  /// [startAfter], [startAtDocument] and [startAfterDocument].
   Query endBefore(List<dynamic> values) {
     assert(values != null);
     assert(!_parameters.containsKey('endBefore'));

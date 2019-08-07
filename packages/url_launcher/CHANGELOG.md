@@ -1,4 +1,32 @@
+## 5.1.2
+
+* Update AGP and gradle.
+* Split plugin and WebViewActivity class files.
+
+## 5.1.1
+
+* Suppress a handled deprecation warning on iOS
+
+## 5.1.0
+
+* Add `headers` field to enable headers in the Android implementation.
+
+## 5.0.5
+
+* Add `enableDomStorage` field to `launch` to enable DOM storage in Android WebView.
+
+## 5.0.4
+
+* Update Dart code to conform to current Dart formatter.
+
+## 5.0.3
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
 ## 5.0.2
+
 * Fixes `closeWebView` failure on iOS.
 
 ## 5.0.1

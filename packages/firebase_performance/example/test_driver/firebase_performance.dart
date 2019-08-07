@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 
 import 'package:flutter_driver/driver_extension.dart';
@@ -9,60 +13,170 @@ void main() {
   enableFlutterDriverExtension(handler: (_) => completer.future);
   tearDownAll(() => completer.complete(null));
 
-  group('firebase_performance test driver', () {
+  group('firebase_performance', () {
     final FirebasePerformance performance = FirebasePerformance.instance;
 
-    setUp(() async {
-      await performance.setPerformanceCollectionEnabled(true);
+    group('$FirebasePerformance', () {
+      test('setPerformanceCollectionEnabled', () {
+        performance.setPerformanceCollectionEnabled(true);
+        expect(
+          performance.isPerformanceCollectionEnabled(),
+          completion(isTrue),
+        );
+
+        performance.setPerformanceCollectionEnabled(false);
+        expect(
+          performance.isPerformanceCollectionEnabled(),
+          completion(isFalse),
+        );
+      });
     });
 
-    test('setPerformanceCollectionEnabled', () async {
-      final bool enabled = await performance.isPerformanceCollectionEnabled();
-      expect(enabled, isTrue);
-
-      await performance.setPerformanceCollectionEnabled(false);
-      final bool disabled = await performance.isPerformanceCollectionEnabled();
-      expect(disabled, isFalse);
+    group('$HttpMethod', () {
+      test('test all values', () {
+        for (HttpMethod method in HttpMethod.values) {
+          final HttpMetric testMetric = performance.newHttpMetric(
+            'https://www.google.com/',
+            method,
+          );
+          testMetric.start();
+          testMetric.stop();
+        }
+      });
     });
 
-    test('trace', () async {
-      final Trace trace = performance.newTrace('test');
+    group('$Trace', () {
+      Trace testTrace;
 
-      await trace.start();
+      setUpAll(() {
+        performance.setPerformanceCollectionEnabled(true);
+      });
 
-      trace.putAttribute('testAttribute', 'foo');
-      final Map<String, String> attributes = await trace.getAttributes();
-      expect(attributes, <String, String>{'testAttribute': 'foo'});
+      setUp(() {
+        testTrace = performance.newTrace('test-trace');
+      });
 
-      trace.incrementMetric('testMetric', 22);
-      final int metric = await trace.getMetric('testMetric');
-      expect(metric, 22);
+      tearDown(() {
+        testTrace.stop();
+        testTrace = null;
+      });
 
-      trace.setMetric('testMetric2', 33);
-      final int metric2 = await trace.getMetric('testMetric2');
-      expect(metric2, 33);
+      test('incrementMetric', () {
+        testTrace.start();
 
-      await trace.stop();
+        testTrace.incrementMetric('metric', 14);
+        expectLater(testTrace.getMetric('metric'), completion(14));
+
+        testTrace.incrementMetric('metric', 45);
+        expect(testTrace.getMetric('metric'), completion(59));
+      });
+
+      test('setMetric', () {
+        testTrace.start();
+
+        testTrace.setMetric('metric2', 37);
+        expect(testTrace.getMetric('metric2'), completion(37));
+      });
+
+      test('putAttribute', () {
+        testTrace.putAttribute('apple', 'sauce');
+        testTrace.putAttribute('banana', 'pie');
+
+        expect(
+          testTrace.getAttributes(),
+          completion(<String, String>{'apple': 'sauce', 'banana': 'pie'}),
+        );
+      });
+
+      test('removeAttribute', () {
+        testTrace.putAttribute('sponge', 'bob');
+        testTrace.putAttribute('patrick', 'star');
+        testTrace.removeAttribute('sponge');
+
+        expect(
+          testTrace.getAttributes(),
+          completion(<String, String>{'patrick': 'star'}),
+        );
+      });
+
+      test('getAttributes', () {
+        testTrace.putAttribute('yugi', 'oh');
+
+        expect(
+          testTrace.getAttributes(),
+          completion(<String, String>{'yugi': 'oh'}),
+        );
+
+        testTrace.start();
+        testTrace.stop();
+        expect(
+          testTrace.getAttributes(),
+          completion(<String, String>{'yugi': 'oh'}),
+        );
+      });
     });
 
-    test('httpmetric', () async {
-      final HttpMetric httpMetric = performance.newHttpMetric(
-        'https://www.google.com',
-        HttpMethod.Connect,
-      );
+    group('$HttpMetric', () {
+      HttpMetric testMetric;
 
-      await httpMetric.start();
+      setUpAll(() {
+        performance.setPerformanceCollectionEnabled(true);
+      });
 
-      httpMetric.putAttribute('testAttribute', 'foo');
-      final Map<String, String> attributes = await httpMetric.getAttributes();
-      expect(attributes, <String, String>{'testAttribute': 'foo'});
+      setUp(() {
+        testMetric = performance.newHttpMetric(
+          'https://www.google.com/',
+          HttpMethod.Delete,
+        );
+      });
 
-      httpMetric.httpResponseCode = 45;
-      httpMetric.requestPayloadSize = 45;
-      httpMetric.responseContentType = 'testString';
-      httpMetric.responsePayloadSize = 45;
+      test('putAttribute', () {
+        testMetric.putAttribute('apple', 'sauce');
+        testMetric.putAttribute('banana', 'pie');
 
-      await httpMetric.stop();
+        expect(
+          testMetric.getAttributes(),
+          completion(<String, String>{'apple': 'sauce', 'banana': 'pie'}),
+        );
+      });
+
+      test('removeAttribute', () {
+        testMetric.putAttribute('sponge', 'bob');
+        testMetric.putAttribute('patrick', 'star');
+        testMetric.removeAttribute('sponge');
+
+        expect(
+          testMetric.getAttributes(),
+          completion(<String, String>{'patrick': 'star'}),
+        );
+      });
+
+      test('getAttributes', () {
+        testMetric.putAttribute('yugi', 'oh');
+
+        expect(
+          testMetric.getAttributes(),
+          completion(<String, String>{'yugi': 'oh'}),
+        );
+
+        testMetric.start();
+        testMetric.stop();
+        expect(
+          testMetric.getAttributes(),
+          completion(<String, String>{'yugi': 'oh'}),
+        );
+      });
+
+      test('http setters shouldn\'t cause a crash', () async {
+        testMetric.start();
+
+        testMetric.httpResponseCode = 443;
+        testMetric.requestPayloadSize = 56734;
+        testMetric.responseContentType = '1984';
+        testMetric.responsePayloadSize = 4949;
+
+        await pumpEventQueue();
+      });
     });
   });
 }

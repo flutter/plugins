@@ -1,3 +1,66 @@
+## 0.2.1
+
+* iOS: Add currencyCode to priceLocale on productDetails.
+
+## 0.2.0+8
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.2.0+7
+
+* Make Gradle version compatible with the Android Gradle plugin version.
+
+## 0.2.0+6
+
+* Add missing `hashCode` implementations.
+
+## 0.2.0+5
+
+* iOS: Support unsupported UserInfo value types on NSError.
+
+## 0.2.0+4
+
+* Fixed code error in `README.md` and adjusted links to work on Pub.
+
+## 0.2.0+3
+
+* Update the `README.md` so that the code samples compile with the latest Flutter/Dart version.
+
+## 0.2.0+2
+
+* Fix a google_play_connection purchase update listener regression introduced in 0.2.0+1.
+
+## 0.2.0+1
+
+* Fix an issue the type is not casted before passing to `PurchasesResultWrapper.fromJson`.
+
+## 0.2.0
+
+* [Breaking Change] Rename 'PurchaseError' to 'IAPError'.
+* [Breaking Change] Rename 'PurchaseSource' to 'IAPSource'.
+
+## 0.1.1+3
+
+* Expanded description in `pubspec.yaml` and fixed typo in `README.md`.
+
+## 0.1.1+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.1.1+1
+
+* Make `AdditionalSteps`(Used in the unit test) a void function.
+
+## 0.1.1
+
+* Some error messages from iOS are slightly changed.
+* `ProductDetailsResponse` returned by `queryProductDetails()` now contains an `PurchaseError` object that represents any error that might occurred during the request.
+* If the device is not connected to the internet, `queryPastPurchases()` on iOS now have the error stored in the response instead of throwing.
+* Clean up minor iOS warning.
+* Example app shows how to handle error when calling `queryProductDetails()` and `queryProductDetails()`.
+
 ## 0.1.0+4
 
 * Change the `buy` methods to return `Future<bool>` instead of `void` in order
@@ -14,11 +77,11 @@
 
 ## 0.1.0+1
 
-Add more consumable handling to the example app.
+* Add more consumable handling to the example app.
 
 ## 0.1.0
 
-Beta relase.
+Beta release.
 
 * Ability to list products, load previous purchases, and make purchases.
 * Simplified Dart API that's been unified for ease of use.

@@ -11,7 +11,7 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
 
 static FlutterError* getFlutterError(NSError* error) {
   if (error == nil) return nil;
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)error.code]
                              message:error.domain
                              details:error.localizedDescription];
 }

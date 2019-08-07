@@ -15,12 +15,24 @@ To use this plugin, add `firebase_ml_vision` as a [dependency in your pubspec.ya
 ### Android
 If you're using the on-device `ImageLabeler`, include the latest matching [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android) dependency in your app-level build.gradle file.
 
-```
+```xml
 android {
     dependencies {
         // ...
 
         api 'com.google.firebase:firebase-ml-vision-image-label-model:17.0.2'
+    }
+}
+```
+
+If you're using the on-device `Face Contour Detection`, include the latest matching [ML Kit: Face Detection Model](https://firebase.google.com/support/release-notes/android) dependency in your app-level build.gradle file.
+
+```
+android {
+    dependencies {
+        // ...
+
+        api 'com.google.firebase:firebase-ml-vision-face-model:17.0.2'
     }
 }
 ```
@@ -84,7 +96,7 @@ final ImageLabeler labeler = FirebaseVision.instance.imageLabler(
 );
 ```
 
-### 3. Call `detectInImage()` with `visionImage`.
+### 3. Call `detectInImage()` or `processImage()` with `visionImage`.
 
 ```dart
 final List<Barcode> barcodes = await barcodeDetector.detectInImage(visionImage);
@@ -177,6 +189,16 @@ for (TextBlock block in visionText.blocks) {
     }
   }
 }
+```
+
+### 5. Release resources with `close()`.
+
+```dart
+barcodeDetector.close();
+cloudLabeler.close();
+faceDetector.close();
+labeler.close();
+textRecognizer.close();
 ```
 
 ## Getting Started

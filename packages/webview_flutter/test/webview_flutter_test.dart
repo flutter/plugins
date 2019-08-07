@@ -66,7 +66,6 @@ void main() {
       initialUrl: 'https://youtube.com',
       javascriptMode: JavascriptMode.disabled,
     ));
-
     expect(platformWebView.javascriptMode, JavascriptMode.disabled);
   });
 
@@ -753,10 +752,10 @@ void main() {
 
   group('Custom platform implementation', () {
     setUpAll(() {
-      WebView.platformBuilder = MyWebViewBuilder();
+      WebView.platform = MyWebViewPlatform();
     });
     tearDownAll(() {
-      WebView.platformBuilder = null;
+      WebView.platform = null;
     });
 
     testWidgets('creation', (WidgetTester tester) async {
@@ -766,18 +765,22 @@ void main() {
         ),
       );
 
-      final MyWebViewBuilder builder = WebView.platformBuilder;
-      final MyWebViewPlatform platform = builder.lastPlatformBuilt;
+      final MyWebViewPlatform builder = WebView.platform;
+      final MyWebViewPlatformController platform = builder.lastPlatformBuilt;
 
-      expect(platform.creationParams, <String, dynamic>{
-        'initialUrl': 'https://youtube.com',
-        'settings': <String, dynamic>{
-          'jsMode': 0,
-          'hasNavigationDelegate': false,
-          'debuggingEnabled': false
-        },
-        'javascriptChannelNames': <String>[],
-      });
+      expect(
+          platform.creationParams,
+          MatchesCreationParams(CreationParams(
+            initialUrl: 'https://youtube.com',
+            webSettings: WebSettings(
+              javascriptMode: JavascriptMode.disabled,
+              hasNavigationDelegate: false,
+              debuggingEnabled: false,
+            ),
+            // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+            // ignore: prefer_collection_literals
+            javascriptChannelNames: Set<String>(),
+          )));
     });
 
     testWidgets('loadUrl', (WidgetTester tester) async {
@@ -791,8 +794,8 @@ void main() {
         ),
       );
 
-      final MyWebViewBuilder builder = WebView.platformBuilder;
-      final MyWebViewPlatform platform = builder.lastPlatformBuilt;
+      final MyWebViewPlatform builder = WebView.platform;
+      final MyWebViewPlatformController platform = builder.lastPlatformBuilt;
 
       final Map<String, String> headers = <String, String>{
         'header': 'value',
@@ -907,6 +910,9 @@ class FakePlatformWebView {
     };
     final ByteData data = codec
         .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
+    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+    // https://github.com/flutter/flutter/issues/33446
+    // ignore: deprecated_member_use
     BinaryMessages.handlePlatformMessage(
         channel.name, data, (ByteData data) {});
   }
@@ -926,6 +932,9 @@ class FakePlatformWebView {
     };
     final ByteData data =
         codec.encodeMethodCall(MethodCall('navigationRequest', arguments));
+    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+    // https://github.com/flutter/flutter/issues/33446
+    // ignore: deprecated_member_use
     BinaryMessages.handlePlatformMessage(channel.name, data, (ByteData data) {
       final bool allow = codec.decodeEnvelope(data);
       if (allow) {
@@ -942,6 +951,9 @@ class FakePlatformWebView {
       <dynamic, dynamic>{'url': currentUrl},
     ));
 
+    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+    // https://github.com/flutter/flutter/issues/33446
+    // ignore: deprecated_member_use
     BinaryMessages.handlePlatformMessage(
       channel.name,
       data,
@@ -1013,7 +1025,7 @@ class _FakeCookieManager {
         });
         break;
     }
-    return Future<bool>.sync(() {});
+    return Future<bool>.sync(() => null);
   }
 
   void reset() {
@@ -1021,27 +1033,36 @@ class _FakeCookieManager {
   }
 }
 
-class MyWebViewBuilder implements WebViewBuilder {
-  MyWebViewPlatform lastPlatformBuilt;
+class MyWebViewPlatform implements WebViewPlatform {
+  MyWebViewPlatformController lastPlatformBuilt;
 
   @override
   Widget build({
     BuildContext context,
-    Map<String, dynamic> creationParams,
+    CreationParams creationParams,
+    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
     @required WebViewPlatformCreatedCallback onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
   }) {
     assert(onWebViewPlatformCreated != null);
-    lastPlatformBuilt = MyWebViewPlatform(creationParams, gestureRecognizers);
+    lastPlatformBuilt = MyWebViewPlatformController(
+        creationParams, gestureRecognizers, webViewPlatformCallbacksHandler);
     onWebViewPlatformCreated(lastPlatformBuilt);
     return Container();
   }
+
+  @override
+  Future<bool> clearCookies() {
+    return Future<bool>.sync(() => null);
+  }
 }
 
-class MyWebViewPlatform extends WebViewPlatform {
-  MyWebViewPlatform(this.creationParams, this.gestureRecognizers);
+class MyWebViewPlatformController extends WebViewPlatformController {
+  MyWebViewPlatformController(this.creationParams, this.gestureRecognizers,
+      WebViewPlatformCallbacksHandler platformHandler)
+      : super(platformHandler);
 
-  Map<String, dynamic> creationParams;
+  CreationParams creationParams;
   Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
   String lastUrlLoaded;
@@ -1049,12 +1070,48 @@ class MyWebViewPlatform extends WebViewPlatform {
 
   @override
   Future<void> loadUrl(String url, Map<String, String> headers) {
+    equals(1, 1);
     lastUrlLoaded = url;
     lastRequestHeaders = headers;
     return null;
   }
+}
+
+class MatchesWebSettings extends Matcher {
+  MatchesWebSettings(this._webSettings);
+
+  final WebSettings _webSettings;
 
   @override
-  // TODO: implement id
-  int get id => 1;
+  Description describe(Description description) =>
+      description.add('$_webSettings');
+
+  @override
+  bool matches(
+      covariant WebSettings webSettings, Map<dynamic, dynamic> matchState) {
+    return _webSettings.javascriptMode == webSettings.javascriptMode &&
+        _webSettings.hasNavigationDelegate ==
+            webSettings.hasNavigationDelegate &&
+        _webSettings.debuggingEnabled == webSettings.debuggingEnabled;
+  }
+}
+
+class MatchesCreationParams extends Matcher {
+  MatchesCreationParams(this._creationParams);
+
+  final CreationParams _creationParams;
+
+  @override
+  Description describe(Description description) =>
+      description.add('$_creationParams');
+
+  @override
+  bool matches(covariant CreationParams creationParams,
+      Map<dynamic, dynamic> matchState) {
+    return _creationParams.initialUrl == creationParams.initialUrl &&
+        MatchesWebSettings(_creationParams.webSettings)
+            .matches(creationParams.webSettings, matchState) &&
+        orderedEquals(_creationParams.javascriptChannelNames)
+            .matches(creationParams.javascriptChannelNames, matchState);
+  }
 }

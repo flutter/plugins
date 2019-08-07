@@ -214,7 +214,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       case DataSourceType.file:
         dataSourceDescription = <String, dynamic>{'uri': dataSource};
     }
-    final Map<dynamic, dynamic> response = await _channel.invokeMapMethod<dynamic,dynamic>(
+    final Map<String, dynamic> response =
+        await _channel.invokeMapMethod<String, dynamic>(
       'create',
       dataSourceDescription,
     );
@@ -231,6 +232,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     void eventListener(dynamic event) {
+      if (_isDisposed) {
+        return;
+      }
+
       final Map<dynamic, dynamic> map = event;
       switch (map['event']) {
         case 'initialized':
