@@ -1,3 +1,7 @@
+## 0.5.3
+
+* Add feature to pause and resume video recording.
+
 ## 0.5.2+2
 
 * Fix memory leak related to not unregistering stream handler in FlutterEventChannel when disposing camera.
