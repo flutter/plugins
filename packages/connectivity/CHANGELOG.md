@@ -1,6 +1,6 @@
 ## 0.4.3+7
 
-* Update README with iOS 13 known issue information
+* Update README with the updated information about CNCopyCurrentNetworkInfo on iOS 13.
 
 ## 0.4.3+6
 
