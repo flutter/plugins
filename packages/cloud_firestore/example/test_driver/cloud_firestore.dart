@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'package:flutter_driver/driver_extension.dart';
-import 'package:flutter_test/flutter_test.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_driver/driver_extension.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final Completer<String> completer = Completer<String>();
@@ -51,6 +52,7 @@ void main() {
           .where('message', isEqualTo: 'Hello world!')
           .limit(1);
       final QuerySnapshot querySnapshot = await query.getDocuments();
+      expect(querySnapshot.metadata, isNotNull);
       expect(querySnapshot.documents.first['message'], 'Hello world!');
       final DocumentReference firstDoc =
           querySnapshot.documents.first.reference;
@@ -70,6 +72,7 @@ void main() {
           .limit(1);
       final QuerySnapshot querySnapshot = await query.getDocuments();
       expect(querySnapshot.documents.first['stars'], 5);
+      expect(querySnapshot.metadata, isNotNull);
     });
 
     test('increment', () async {
@@ -100,6 +103,36 @@ void main() {
       ));
       snapshot = await ref.get();
       expect(snapshot.data['message'], 45.1);
+      await ref.delete();
+    });
+
+    test('includeMetadataChanges', () async {
+      final DocumentReference ref = firestore.collection('messages').document();
+      final Stream<DocumentSnapshot> snapshotWithoutMetadataChanges =
+          ref.snapshots(includeMetadataChanges: false).take(1);
+      final Stream<DocumentSnapshot> snapshotsWithMetadataChanges =
+          ref.snapshots(includeMetadataChanges: true).take(3);
+
+      ref.setData(<String, dynamic>{'hello': 'world'});
+
+      final DocumentSnapshot snapshot =
+          await snapshotWithoutMetadataChanges.first;
+      expect(snapshot.metadata.hasPendingWrites, true);
+      expect(snapshot.metadata.isFromCache, true);
+      expect(snapshot.data['hello'], 'world');
+
+      final List<DocumentSnapshot> snapshots =
+          await snapshotsWithMetadataChanges.toList();
+      expect(snapshots[0].metadata.hasPendingWrites, true);
+      expect(snapshots[0].metadata.isFromCache, true);
+      expect(snapshots[0].data['hello'], 'world');
+      expect(snapshots[1].metadata.hasPendingWrites, true);
+      expect(snapshots[1].metadata.isFromCache, false);
+      expect(snapshots[1].data['hello'], 'world');
+      expect(snapshots[2].metadata.hasPendingWrites, false);
+      expect(snapshots[2].metadata.isFromCache, false);
+      expect(snapshots[2].data['hello'], 'world');
+
       await ref.delete();
     });
 

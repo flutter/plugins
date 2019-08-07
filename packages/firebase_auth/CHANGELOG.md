@@ -1,3 +1,44 @@
+## 0.14.0+1
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.14.0
+
+* Added new `IdTokenResult` class.
+* **Breaking Change**. `getIdToken()` method now returns `IdTokenResult` instead of a token `String`.
+  Use the `token` property of `IdTokenResult` to retrieve the token `String`.
+* Added integration testing for `getIdToken()`.
+
+## 0.13.1+1
+
+* Update authentication example in README.
+
+## 0.13.1
+
+* Fixed a crash on iOS when sign-in fails.
+* Additional integration testing.
+* Updated documentation for `FirebaseUser.delete()` to include error codes.
+* Updated Firebase project to match other Flutterfire apps.
+
+## 0.13.0
+
+* **Breaking change**: Replace `FirebaseUserMetadata.creationTimestamp` and
+  `FirebaseUserMetadata.lastSignInTimestamp` with `creationTime` and `lastSignInTime`.
+  Previously on iOS `creationTimestamp` and `lastSignInTimestamp` returned in
+  seconds and on Android in milliseconds. Now, both platforms provide values as a
+  `DateTime`.
+
+## 0.12.0+1
+
+* Fixes iOS sign-in exceptions when `additionalUserInfo` is `nil` or has `nil` fields.
+* Additional integration testing.
+
+## 0.12.0
+
+* Added new `AuthResult` and `AdditionalUserInfo` classes.
+* **Breaking Change**. Sign-in methods now return `AuthResult` instead of `FirebaseUser`.
+  Retrieve the `FirebaseUser` using the `user` property of `AuthResult`.
+
 ## 0.11.1+12
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
