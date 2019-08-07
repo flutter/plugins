@@ -75,6 +75,8 @@ typedef void PageFinishedCallback(String url);
 /// Specifies possible restrictions on automatic media playback.
 ///
 /// This is typically used in [WebView.initialMediaPlaybackPolicy].
+// The method channel implementation is marshalling this enum to the value's index, so the order
+// is important.
 enum AutoMediaPlaybackPolicy {
   /// Starting any kind of media playback requires a user action.
   ///
@@ -279,6 +281,8 @@ class WebView extends StatefulWidget {
   ///
   /// This initial value is applied to the platform's webview upon creation. Any following
   /// changes to this parameter are ignored (as long as the state of the [WebView] is preserved).
+  ///
+  /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
   @override

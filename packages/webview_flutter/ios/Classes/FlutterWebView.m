@@ -295,7 +295,7 @@
       }
       break;
     default:
-      NSLog(@"webview_flutter: unknown auto media plaback policy: %@", policy);
+      NSLog(@"webview_flutter: unknown auto media playback policy: %@", policy);
   }
 }
 
