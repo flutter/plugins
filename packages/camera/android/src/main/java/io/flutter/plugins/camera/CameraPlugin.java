@@ -55,9 +55,6 @@ public class CameraPlugin implements MethodCallHandler {
     camera.open(result);
   }
 
-  private double startTs;
-  private double stopTs;
-
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull final Result result) {
     switch (call.method) {
@@ -115,7 +112,6 @@ public class CameraPlugin implements MethodCallHandler {
         {
           try {
             camera.startPreviewWithImageStream(imageStreamChannel);
-            startTs = System.currentTimeMillis();
             result.success(null);
           } catch (Exception e) {
             handleException(e, result);
@@ -126,8 +122,6 @@ public class CameraPlugin implements MethodCallHandler {
         {
           try {
             camera.startPreview();
-            stopTs = System.currentTimeMillis();
-            System.err.println("Captured " + camera.numImages + " images at " + ((camera.numImages * 1000.0)/(stopTs - startTs)));
             result.success(null);
           } catch (Exception e) {
             handleException(e, result);

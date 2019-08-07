@@ -21,6 +21,9 @@ import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -60,6 +63,9 @@ public class Camera {
   private boolean recordingVideo;
   private CamcorderProfile recordingProfile;
   private int currentOrientation = ORIENTATION_UNKNOWN;
+  private HandlerThread backgroundThread;
+  private Handler backgroundHandler;
+  private Handler uiHandler;
 
   // Mirrors camera.dart
   public enum ResolutionPreset {
@@ -86,6 +92,7 @@ public class Camera {
     this.enableAudio = enableAudio;
     this.flutterTexture = flutterView.createSurfaceTexture();
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+    this.uiHandler = new Handler(Looper.getMainLooper());
     orientationEventListener =
         new OrientationEventListener(activity.getApplicationContext()) {
           @Override
@@ -137,8 +144,11 @@ public class Camera {
             activity, streamConfigurationMap, minHeight, getMediaOrientation(), captureSize);
     videoSize = sizes[0];
     previewSize = sizes[1];
+<<<<<<< HEAD
     System.err.println("Video size is " + videoSize + " preview size is " + previewSize);
 >>>>>>> a561997e... Experimental Changes
+=======
+>>>>>>> 80bd4370... Do camera operations in background thread.
   }
 
   public void setupCameraEventChannel(EventChannel cameraEventChannel) {
@@ -181,6 +191,9 @@ public class Camera {
 
   @SuppressLint("MissingPermission")
   public void open(@NonNull final Result result) throws CameraAccessException {
+    // Start background handler.
+    startBackgroundThread();
+
     pictureImageReader =
         ImageReader.newInstance(
             captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
@@ -199,7 +212,7 @@ public class Camera {
             try {
               startPreview();
             } catch (CameraAccessException e) {
-              result.error("CameraAccess", e.getMessage(), null);
+              postError(result, "CameraAccess", e.getMessage());
               close();
               return;
             }
@@ -207,7 +220,7 @@ public class Camera {
             reply.put("textureId", flutterTexture.id());
             reply.put("previewWidth", previewSize.getWidth());
             reply.put("previewHeight", previewSize.getHeight());
-            result.success(reply);
+            postSuccess(result, reply);
           }
 
           @Override
@@ -248,7 +261,7 @@ public class Camera {
             sendEvent(EventType.ERROR, errorDescription);
           }
         },
-        null);
+        backgroundHandler);
   }
 
   private void writeToFile(ByteBuffer buffer, File file) throws IOException {
@@ -267,8 +280,10 @@ public class Camera {
     final File file = new File(filePath);
 
     if (file.exists()) {
-      result.error(
-          "fileExists", "File at path '" + filePath + "' already exists. Cannot overwrite.", null);
+      postError(
+          result,
+          "fileExists",
+          "File at path '" + filePath + "' already exists. Cannot overwrite.");
       return;
     }
 
@@ -277,12 +292,12 @@ public class Camera {
           try (Image image = reader.acquireLatestImage()) {
             ByteBuffer buffer = image.getPlanes()[0].getBuffer();
             writeToFile(buffer, file);
-            result.success(null);
+            postSuccess(result, null);
           } catch (IOException e) {
-            result.error("IOError", "Failed saving image", null);
+            postError(result, "IOError", "Failed saving image");
           }
         },
-        null);
+        backgroundHandler);
 
     try {
       final CaptureRequest.Builder captureBuilder =
@@ -309,12 +324,12 @@ public class Camera {
                 default:
                   reason = "Unknown reason";
               }
-              result.error("captureFailure", reason, null);
+              postError(result, "captureFailure", reason);
             }
           },
-          null);
+          backgroundHandler);
     } catch (CameraAccessException e) {
-      result.error("cameraAccess", e.getMessage(), null);
+      postError(result, "cameraAccess", e.getMessage());
     }
   }
 
@@ -379,12 +394,12 @@ public class Camera {
     surfaceList.add(flutterSurface);
     surfaceList.addAll(remainingSurfaces);
     // Start the session
-    cameraDevice.createCaptureSession(surfaceList, callback, null);
+    cameraDevice.createCaptureSession(surfaceList, callback, backgroundHandler);
   }
 
   public void startVideoRecording(String filePath, Result result) {
     if (new File(filePath).exists()) {
-      result.error("fileExists", "File at path '" + filePath + "' already exists.", null);
+      postError(result, "fileExists", "File at path '" + filePath + "' already exists.");
       return;
     }
     try {
@@ -392,15 +407,15 @@ public class Camera {
       recordingVideo = true;
       createCaptureSession(
           CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
-      result.success(null);
+      postSuccess(result, null);
     } catch (CameraAccessException | IOException e) {
-      result.error("videoRecordingFailed", e.getMessage(), null);
+      postError(result, "videoRecordingFailed", e.getMessage());
     }
   }
 
   public void stopVideoRecording(@NonNull final Result result) {
     if (!recordingVideo) {
-      result.success(null);
+      postSuccess(result, null);
       return;
     }
 
@@ -409,9 +424,9 @@ public class Camera {
       mediaRecorder.stop();
       mediaRecorder.reset();
       startPreview();
-      result.success(null);
+      postSuccess(result, null);
     } catch (CameraAccessException | IllegalStateException e) {
-      result.error("videoRecordingFailed", e.getMessage(), null);
+      postError(result, "videoRecordingFailed", e.getMessage());
     }
   }
 
@@ -419,12 +434,9 @@ public class Camera {
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
 
-  double numImages;
-
   public void startPreviewWithImageStream(EventChannel imageStreamChannel)
       throws CameraAccessException {
     createCaptureSession(CameraDevice.TEMPLATE_RECORD, imageStreamReader.getSurface());
-    numImages = 0;
 
     imageStreamChannel.setStreamHandler(
         new EventChannel.StreamHandler() {
@@ -443,7 +455,6 @@ public class Camera {
   private void setImageStreamImageAvailableListener(final EventChannel.EventSink imageStreamSink) {
     imageStreamReader.setOnImageAvailableListener(
         reader -> {
-          numImages++;
           Image img = reader.acquireLatestImage();
           if (img == null) return;
           List<Map<String, Object>> planes = new ArrayList<>();
@@ -467,10 +478,10 @@ public class Camera {
           imageBuffer.put("format", img.getFormat());
           imageBuffer.put("planes", planes);
 
-          imageStreamSink.success(imageBuffer);
+          uiHandler.post(() -> imageStreamSink.success(imageBuffer));
           img.close();
         },
-        null);
+        backgroundHandler);
   }
 
   private void sendEvent(EventType eventType) {
@@ -485,7 +496,11 @@ public class Camera {
       if (eventType != EventType.ERROR) {
         event.put("errorDescription", description);
       }
-      eventSink.success(event);
+      if (Looper.myLooper() != Looper.getMainLooper()) {
+        uiHandler.post(() -> eventSink.success(event));
+      } else {
+        eventSink.success(event);
+      }
     }
   }
 
@@ -516,6 +531,9 @@ public class Camera {
       mediaRecorder.release();
       mediaRecorder = null;
     }
+    if (backgroundThread != null) {
+      stopBackgroundThread();
+    }
   }
 
   public void dispose() {
@@ -535,5 +553,42 @@ public class Camera {
   private enum EventType {
     ERROR,
     CAMERA_CLOSING,
+  }
+
+  /** Posts an error message safely to ui thread. */
+  private void postError(Result result, String error, String desc) {
+    if (Looper.myLooper() != Looper.getMainLooper()) {
+      uiHandler.post(() -> result.error(error, desc, null));
+    } else {
+      result.error(error, desc, null);
+    }
+  }
+
+  /** Posts a success message safely to ui thread. */
+  private void postSuccess(Result result, Object object) {
+    if (Looper.myLooper() != Looper.getMainLooper()) {
+      uiHandler.post(() -> result.success(object));
+    } else {
+      result.success(object);
+    }
+  }
+
+  /** Starts a background thread and its {@link Handler}. */
+  private void startBackgroundThread() {
+    backgroundThread = new HandlerThread("CameraBackground");
+    backgroundThread.start();
+    backgroundHandler = new Handler(backgroundThread.getLooper());
+  }
+
+  /** Stops the background thread and its {@link Handler}. */
+  private void stopBackgroundThread() {
+    backgroundThread.quitSafely();
+    try {
+      backgroundThread.join();
+      backgroundThread = null;
+      backgroundHandler = null;
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 }
