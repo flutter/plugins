@@ -1,6 +1,7 @@
 ## 0.9.0+4
 
-* Android : Update AGP, gradle and admob.
+* Update AGP, gradle and admob.
+* Fixes warnings about possible null pointer exception in the Android plugin.
 
 ## 0.9.0+3
 
