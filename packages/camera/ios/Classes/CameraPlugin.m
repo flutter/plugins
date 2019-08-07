@@ -114,6 +114,44 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 @end
 
+// Mirrors ResolutionPreset in camera.dart
+typedef enum {
+  veryLow,
+  low,
+  medium,
+  high,
+  veryHigh,
+  ultraHigh,
+  max,
+} ResolutionPreset;
+
+static ResolutionPreset getResolutionPresetForString(NSString * preset) {
+    if ([preset isEqualToString:@"veryLow"]) {
+        return veryLow;
+    } else if ([preset isEqualToString:@"low"]) {
+        return low;
+    } else if ([preset isEqualToString:@"medium"]) {
+        return medium;
+    } else if ([preset isEqualToString:@"high"]) {
+        return high;
+    } else if ([preset isEqualToString:@"veryHigh"]) {
+        return veryHigh;
+    } else if ([preset isEqualToString:@"ultraHigh"]) {
+        return ultraHigh;
+    } else if ([preset isEqualToString:@"max"]) {
+           return max;
+    } else {
+        NSError *error = [NSError
+            errorWithDomain:NSCocoaErrorDomain
+                       code:NSURLErrorUnknown
+                   userInfo:@{
+                     NSLocalizedDescriptionKey :
+                         [NSString stringWithFormat:@"Unknown resolution preset %@", preset]
+                   }];
+        @throw error;
+    }
+}
+
 @interface FLTCam : NSObject <FlutterTexture,
                               AVCaptureVideoDataOutputSampleBufferDelegate,
                               AVCaptureAudioDataOutputSampleBufferDelegate,
@@ -141,7 +179,7 @@ static FlutterError *getFlutterError(NSError *error) {
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
-@property(assign, nonatomic) NSString *resolutionPreset;
+@property(assign, nonatomic) ResolutionPreset resolutionPreset;
 @property(nonatomic) CMMotionManager *motionManager;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
@@ -171,7 +209,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                              error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
-  _resolutionPreset = resolutionPreset;
+  @try {
+    _resolutionPreset = getResolutionPresetForString(resolutionPreset);
+  } @catch (NSError *e) {
+    *error = e;
+  }
   _enableAudio = enableAudio;
   _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
@@ -207,11 +249,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   _motionManager = [[CMMotionManager alloc] init];
   [_motionManager startAccelerometerUpdates];
 
-  @try {
-    [self setCaptureSessionPreset:resolutionPreset];
-  } @catch (NSError *e) {
-    *error = e;
-  }
+  [self setCaptureSessionPreset:_resolutionPreset];
   return self;
 }
 
@@ -225,7 +263,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 - (void)captureToFile:(NSString *)path result:(FlutterResult)result {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
-  if ([_resolutionPreset isEqualToString:@"veryHigh"]) {
+  if (_resolutionPreset == max) {
     [settings setHighResolutionPhotoEnabled:YES];
   }
   [_capturePhotoOutput
@@ -236,55 +274,39 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                                                            cameraPosition:_captureDevice.position]];
 }
 
-- (void)setCaptureSessionPreset:(NSString *)resolutionPreset {
-  int presetIndex;
-  if ([resolutionPreset isEqualToString:@"veryHigh"]) {
-    presetIndex = 0;
-  } else if ([resolutionPreset isEqualToString:@"high"]) {
-    presetIndex = 1;
-  } else if ([resolutionPreset isEqualToString:@"medium"]) {
-    presetIndex = 2;
-  } else if ([resolutionPreset isEqualToString:@"low"]) {
-    presetIndex = 3;
-  } else if ([resolutionPreset isEqualToString:@"veryLow"]) {
-    presetIndex = 4;
-  } else {
-    NSError *error = [NSError
-        errorWithDomain:NSCocoaErrorDomain
-                   code:NSURLErrorUnknown
-               userInfo:@{
-                 NSLocalizedDescriptionKey :
-                     [NSString stringWithFormat:@"Unknown resolution preset %@", resolutionPreset]
-               }];
-    @throw error;
-  }
-
-  switch (presetIndex) {
-    case 0:
+- (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
+  switch (resolutionPreset) {
+    case max:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
+        _captureSession.sessionPreset = AVCaptureSessionPresetHigh;
+        _previewSize = CGSizeMake(_captureDevice.activeFormat.highResolutionStillImageDimensions.width, _captureDevice.activeFormat.highResolutionStillImageDimensions.height);
+        break;
+      }
+    case ultraHigh:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
         _previewSize = CGSizeMake(3840, 2160);
         break;
       }
-    case 1:
+    case veryHigh:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
         _previewSize = CGSizeMake(1920, 1080);
         break;
       }
-    case 2:
+    case high:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
         _previewSize = CGSizeMake(1280, 720);
         break;
       }
-    case 3:
+    case medium:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset640x480;
         _previewSize = CGSizeMake(640, 480);
         break;
       }
-    case 4:
+    case low:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset352x288;
         _previewSize = CGSizeMake(352, 288);

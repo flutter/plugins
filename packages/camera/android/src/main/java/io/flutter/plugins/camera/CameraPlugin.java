@@ -40,8 +40,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +58,16 @@ public class CameraPlugin implements MethodCallHandler {
   private Runnable cameraPermissionContinuation;
   private final OrientationEventListener orientationEventListener;
   private int currentOrientation = ORIENTATION_UNKNOWN;
+
+  // Mirrors camera.dart
+  private enum ResolutionPreset {
+    low,
+    medium,
+    high,
+    veryHigh,
+    ultraHigh,
+    max,
+  }
 
   private CameraPlugin(Registrar registrar, FlutterView view) {
     this.registrar = registrar;
@@ -276,9 +284,10 @@ public class CameraPlugin implements MethodCallHandler {
             characteristics.get(CameraCharacteristics.LENS_FACING)
                 == CameraMetadata.LENS_FACING_FRONT;
 
-        recordingProfile = getBestAvailableCamcorderProfileForResolutionPreset(resolutionPreset);
-        computeBestPreviewSize(recordingProfile);
-        computeBestCaptureSize(streamConfigurationMap, recordingProfile, resolutionPreset);
+        ResolutionPreset preset = ResolutionPreset.valueOf(resolutionPreset);
+        recordingProfile = getBestAvailableCamcorderProfileForResolutionPreset(preset);
+        computeBestPreviewSize(preset);
+        captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
 
         if (cameraPermissionContinuation != null) {
           result.error("cameraPermission", "Camera permission request ongoing", null);
@@ -364,30 +373,13 @@ public class CameraPlugin implements MethodCallHandler {
     }
 
     // The preview should never be bigger than 720p (1280 x 720) or it will mess up the recording.
-    private void computeBestPreviewSize(CamcorderProfile profile) {
-      float ratio = (float) profile.videoFrameWidth / profile.videoFrameHeight;
-      if (profile.videoFrameWidth > 1280) {
-        previewSize = new Size(1280, Math.round(1280 / ratio));
-      } else if (profile.videoFrameHeight > 1280) {
-        previewSize = new Size(Math.round(1280 * ratio), 1280);
-      } else {
-        previewSize = new Size(profile.videoFrameWidth, profile.videoFrameHeight);
+    private void computeBestPreviewSize(ResolutionPreset preset) {
+      if (preset.ordinal() > ResolutionPreset.high.ordinal()) {
+        preset = ResolutionPreset.high;
       }
-    }
 
-    private void computeBestCaptureSize(
-        StreamConfigurationMap streamConfigurationMap,
-        CamcorderProfile profile,
-        String resolutionPreset) {
-      // For still image captures, use the largest image size if resolutionPreset is veryHigh
-      if ("veryHigh".equals(resolutionPreset)) {
-        captureSize =
-            Collections.max(
-                Arrays.asList(streamConfigurationMap.getOutputSizes(ImageFormat.JPEG)),
-                new CompareSizesByArea());
-      } else {
-        captureSize = new Size(profile.videoFrameWidth, profile.videoFrameHeight);
-      }
+      CamcorderProfile profile = getBestAvailableCamcorderProfileForResolutionPreset(preset);
+      previewSize = new Size(profile.videoFrameWidth, profile.videoFrameHeight);
     }
 
     private void prepareMediaRecorder(String outputFilePath) throws IOException {
@@ -404,7 +396,8 @@ public class CameraPlugin implements MethodCallHandler {
       mediaRecorder.setVideoEncodingBitRate(recordingProfile.videoBitRate);
       if (enableAudio) mediaRecorder.setAudioSamplingRate(recordingProfile.audioSampleRate);
       mediaRecorder.setVideoFrameRate(recordingProfile.videoFrameRate);
-      mediaRecorder.setVideoSize(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
+      mediaRecorder.setVideoSize(
+          recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
       mediaRecorder.setOutputFile(outputFilePath);
       mediaRecorder.setOrientationHint(getMediaOrientation());
 
@@ -412,49 +405,33 @@ public class CameraPlugin implements MethodCallHandler {
     }
 
     private CamcorderProfile getBestAvailableCamcorderProfileForResolutionPreset(
-        String resolutionPreset) {
-      int camcorderProfileIndex;
-      switch (resolutionPreset) {
-        case "veryHigh":
-          camcorderProfileIndex = 0;
-          break;
-        case "high":
-          camcorderProfileIndex = 1;
-          break;
-        case "medium":
-          camcorderProfileIndex = 2;
-          break;
-        case "low":
-          camcorderProfileIndex = 3;
-          break;
-        case "veryLow":
-          camcorderProfileIndex = 4;
-          break;
-        default:
-          throw new IllegalArgumentException("Unknown resolution preset: " + resolutionPreset);
-      }
-
+        ResolutionPreset preset) {
       int cameraId = Integer.parseInt(cameraName);
-      switch (camcorderProfileIndex) {
-        case 0:
+      switch (preset) {
+          // All of these cases deliberately fall through to get the best available profile.
+        case max:
+          if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_HIGH)) {
+            return CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+          }
+        case ultraHigh:
           if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_2160P)) {
             return CamcorderProfile.get(CamcorderProfile.QUALITY_2160P);
           }
-        case 1:
+        case veryHigh:
           if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_1080P)) {
             return CamcorderProfile.get(CamcorderProfile.QUALITY_1080P);
           }
-        case 2:
+        case high:
           if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_720P)) {
             return CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
           }
-        case 3:
+        case medium:
           if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_480P)) {
             return CamcorderProfile.get(CamcorderProfile.QUALITY_480P);
           }
-        case 4:
-          if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_CIF)) {
-            return CamcorderProfile.get(CamcorderProfile.QUALITY_CIF);
+        case low:
+          if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_QVGA)) {
+            return CamcorderProfile.get(CamcorderProfile.QUALITY_QVGA);
           }
         default:
           if (CamcorderProfile.hasProfile(
