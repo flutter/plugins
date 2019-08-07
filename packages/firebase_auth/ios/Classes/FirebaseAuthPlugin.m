@@ -43,6 +43,7 @@ int nextHandle = 0;
   FLTFirebaseAuthPlugin *instance = [[FLTFirebaseAuthPlugin alloc] init];
   instance.channel = channel;
   instance.authStateChangeListeners = [[NSMutableDictionary alloc] init];
+  [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 
   SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
@@ -68,6 +69,25 @@ int nextHandle = 0;
   return [FIRAuth authWithApp:[FIRApp appNamed:appName]];
 }
 
+- (bool)application:(UIApplication *)application
+    didReceiveRemoteNotification:(NSDictionary *)notification
+          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+  if ([[FIRAuth auth] canHandleNotification:notification]) {
+    completionHandler(UIBackgroundFetchResultNoData);
+    return YES;
+  }
+  return NO;
+}
+
+- (void)application:(UIApplication *)application
+    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [[FIRAuth auth] setAPNSToken:deviceToken type:FIRAuthAPNSTokenTypeProd];
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
+  return [[FIRAuth auth] canHandleURL:url];
+}
+
 // TODO(jackson): We should use the renamed versions of the following methods
 // when they are available in the Firebase SDK that this plugin is dependent on.
 // * fetchSignInMethodsForEmail:completion:
@@ -87,13 +107,15 @@ int nextHandle = 0;
   } else if ([@"signInAnonymously" isEqualToString:call.method]) {
     [[self getAuth:call.arguments]
         signInAnonymouslyWithCompletion:^(FIRAuthDataResult *authResult, NSError *error) {
-          [self sendResult:result forUser:authResult.user error:error];
+          [self sendResult:result forAuthDataResult:authResult error:error];
         }];
   } else if ([@"signInWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments]
         signInAndRetrieveDataWithCredential:[self getCredential:call.arguments]
                                  completion:^(FIRAuthDataResult *authResult, NSError *error) {
-                                   [self sendResult:result forUser:authResult.user error:error];
+                                   [self sendResult:result
+                                       forAuthDataResult:authResult
+                                                   error:error];
                                  }];
   } else if ([@"createUserWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
@@ -102,7 +124,7 @@ int nextHandle = 0;
         createUserWithEmail:email
                    password:password
                  completion:^(FIRAuthDataResult *authResult, NSError *error) {
-                   [self sendResult:result forUser:authResult.user error:error];
+                   [self sendResult:result forAuthDataResult:authResult error:error];
                  }];
   } else if ([@"fetchSignInMethodsForEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
@@ -157,7 +179,7 @@ int nextHandle = 0;
         signInWithEmail:email
                    link:link
              completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
-               [self sendResult:result forUser:authResult.user error:error];
+               [self sendResult:result forAuthDataResult:authResult error:error];
              }];
   } else if ([@"signInWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
@@ -166,7 +188,7 @@ int nextHandle = 0;
         signInWithEmail:email
                password:password
              completion:^(FIRAuthDataResult *authResult, NSError *error) {
-               [self sendResult:result forUser:authResult.user error:error];
+               [self sendResult:result forAuthDataResult:authResult error:error];
              }];
   } else if ([@"signOut" isEqualToString:call.method]) {
     NSError *signOutError;
@@ -178,11 +200,36 @@ int nextHandle = 0;
       [self sendResult:result forObject:nil error:nil];
     }
   } else if ([@"getIdToken" isEqualToString:call.method]) {
+    NSDictionary *args = call.arguments;
+    BOOL refresh = [args objectForKey:@"refresh"];
     [[self getAuth:call.arguments].currentUser
-        getIDTokenForcingRefresh:YES
-                      completion:^(NSString *_Nullable token, NSError *_Nullable error) {
-                        [self sendResult:result forObject:token error:error];
-                      }];
+        getIDTokenResultForcingRefresh:refresh
+                            completion:^(FIRAuthTokenResult *_Nullable tokenResult,
+                                         NSError *_Nullable error) {
+                              NSMutableDictionary *tokenData = nil;
+                              if (tokenResult != nil) {
+                                long expirationTimestamp =
+                                    [tokenResult.expirationDate timeIntervalSince1970];
+                                long authTimestamp = [tokenResult.authDate timeIntervalSince1970];
+                                long issuedAtTimestamp =
+                                    [tokenResult.issuedAtDate timeIntervalSince1970];
+
+                                tokenData = [[NSMutableDictionary alloc] initWithDictionary:@{
+                                  @"token" : tokenResult.token,
+                                  @"expirationTimestamp" :
+                                      [NSNumber numberWithInt:expirationTimestamp],
+                                  @"authTimestamp" : [NSNumber numberWithInt:authTimestamp],
+                                  @"issuedAtTimestamp" : [NSNumber numberWithInt:issuedAtTimestamp],
+                                  @"claims" : tokenResult.claims,
+                                }];
+
+                                if (tokenResult.signInProvider != nil) {
+                                  tokenData[@"signInProvider"] = tokenResult.signInProvider;
+                                }
+                              }
+
+                              [self sendResult:result forObject:tokenData error:error];
+                            }];
   } else if ([@"reauthenticateWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
         reauthenticateAndRetrieveDataWithCredential:[self getCredential:call.arguments]
@@ -193,8 +240,8 @@ int nextHandle = 0;
   } else if ([@"linkWithCredential" isEqualToString:call.method]) {
     [[self getAuth:call.arguments].currentUser
         linkAndRetrieveDataWithCredential:[self getCredential:call.arguments]
-                               completion:^(FIRAuthDataResult *r, NSError *error) {
-                                 [self sendResult:result forUser:r.user error:error];
+                               completion:^(FIRAuthDataResult *authResult, NSError *error) {
+                                 [self sendResult:result forAuthDataResult:authResult error:error];
                                }];
   } else if ([@"unlinkFromProvider" isEqualToString:call.method]) {
     NSString *provider = call.arguments[@"provider"];
@@ -244,7 +291,7 @@ int nextHandle = 0;
     [[self getAuth:call.arguments]
         signInWithCustomToken:token
                    completion:^(FIRAuthDataResult *authResult, NSError *error) {
-                     [self sendResult:result forUser:authResult.user error:error];
+                     [self sendResult:result forAuthDataResult:authResult error:error];
                    }];
 
   } else if ([@"startListeningAuthState" isEqualToString:call.method]) {
@@ -307,8 +354,11 @@ int nextHandle = 0;
                                                      verificationCode:smsCode];
     [[self getAuth:call.arguments]
         signInAndRetrieveDataWithCredential:credential
-                                 completion:^(FIRAuthDataResult *r, NSError *_Nullable error) {
-                                   [self sendResult:result forUser:r.user error:error];
+                                 completion:^(FIRAuthDataResult *authResult,
+                                              NSError *_Nullable error) {
+                                   [self sendResult:result
+                                       forAuthDataResult:authResult
+                                                   error:error];
                                  }];
   } else if ([@"setLanguageCode" isEqualToString:call.method]) {
     NSString *language = call.arguments[@"language"];
@@ -326,18 +376,37 @@ int nextHandle = 0;
     [providerData addObject:toDictionary(userInfo)];
   }
 
-  long creationDate = [user.metadata.creationDate timeIntervalSince1970];
-  long lastSignInDate = [user.metadata.lastSignInDate timeIntervalSince1970];
+  long creationDate = [user.metadata.creationDate timeIntervalSince1970] * 1000;
+  long lastSignInDate = [user.metadata.lastSignInDate timeIntervalSince1970] * 1000;
 
   NSMutableDictionary *userData = [toDictionary(user) mutableCopy];
   userData[@"creationTimestamp"] = [NSNumber numberWithLong:creationDate];
-  userData[@"lastSignInTimestamp"] = [NSNumber numberWithInt:lastSignInDate];
+  userData[@"lastSignInTimestamp"] = [NSNumber numberWithLong:lastSignInDate];
   userData[@"isAnonymous"] = [NSNumber numberWithBool:user.isAnonymous];
   userData[@"isEmailVerified"] = [NSNumber numberWithBool:user.isEmailVerified];
   userData[@"providerData"] = providerData;
   return userData;
 }
 #pragma clang diagnostic pop
+
+- (void)sendResult:(FlutterResult)result
+    forAuthDataResult:(FIRAuthDataResult *)authResult
+                error:(NSError *)error {
+  FIRUser *user = authResult.user;
+  FIRAdditionalUserInfo *additionalUserInfo = authResult.additionalUserInfo;
+  [self sendResult:result
+         forObject:@{
+           @"user" : (user != nil ? [self dictionaryFromUser:user] : [NSNull null]),
+           @"additionalUserInfo" : additionalUserInfo ? @{
+             @"isNewUser" : [NSNumber numberWithBool:additionalUserInfo.isNewUser],
+             @"username" : additionalUserInfo.username ?: [NSNull null],
+             @"providerId" : additionalUserInfo.providerID ?: [NSNull null],
+             @"profile" : additionalUserInfo.profile ?: [NSNull null],
+           }
+                                                      : [NSNull null],
+         }
+             error:error];
+}
 
 - (void)sendResult:(FlutterResult)result forUser:(FIRUser *)user error:(NSError *)error {
   [self sendResult:result

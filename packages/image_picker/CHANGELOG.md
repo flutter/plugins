@@ -1,3 +1,52 @@
+## 0.6.1+1
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.6.1
+
+* New feature : Get images with custom quality. While picking images, user can pass `imageQuality`
+parameter to compress image.
+
+## 0.6.0+20
+
+* Android: Migrated information cache methods to use instance methods.
+
+## 0.6.0+19
+
+* Android: Fix memory leak due not unregistering ActivityLifecycleCallbacks.
+
+## 0.6.0+18
+
+* Fix video play in example and update video_player plugin dependency.
+
+## 0.6.0+17
+
+* iOS: Fix a crash when user captures image from the camera with devices under iOS 11.
+
+## 0.6.0+16
+
+* iOS Simulator: fix hang after trying to take an image from the non-existent camera.
+
+## 0.6.0+15
+
+* Android: throws an exception when permissions denied instead of ignoring.
+
+## 0.6.0+14
+
+* Fix typo in README.
+
+## 0.6.0+13
+
+* Bugfix Android: Fix a crash occurs in some scenarios when user picks up image from gallery.
+
+## 0.6.0+12
+
+* Use class instead of struct for `GIFInfo` in iOS implementation.
+
+## 0.6.0+11
+
+* Don't use module imports.
+
 ## 0.6.0+10
 
 * iOS: support picking GIF from gallery.

@@ -1,3 +1,34 @@
+## 0.12.9
+
+* New optional `includeMetadataChanges` parameter added to `DocumentReference.snapshots()`
+ and `Query.snapshots()`
+* Fix example app crash when the `message` field was not a string
+* Internal renaming of method names.
+
+## 0.12.8+1
+
+* Add `metadata` to `QuerySnapshot`.
+
+## 0.12.8
+
+* Updated how document ids are generated to more closely match native implementations.
+
+## 0.12.7+1
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 0.12.7
+
+* Methods of `Transaction` no longer require `await`.
+* Added documentation to methods of `Transaction`.
+* Removed an unnecessary log on Android.
+* Added an integration test for rapidly incrementing field value.
+
+## 0.12.6
+
+* Support for `orderBy` on map fields (e.g. `orderBy('cake.flavor')`) for
+  `startAtDocument`, `startAfterDocument`, `endAtDocument`, and `endBeforeDocument` added.
+
 ## 0.12.5+2
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.

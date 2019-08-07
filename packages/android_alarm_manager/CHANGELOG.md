@@ -1,3 +1,15 @@
+## 0.4.2
+
+* Added support for setting alarms which work when the phone is in doze mode.
+
+## 0.4.1+8
+
+* Remove dependency on google-services in the Android example.
+
+## 0.4.1+7
+
+* Fix possible crash on Android devices with APIs below 19.
+
 ## 0.4.1+6
 
 * Bump the minimum Flutter version to 1.2.0.

@@ -6,7 +6,7 @@
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 
-@import MobileCoreServices;
+#import <MobileCoreServices/MobileCoreServices.h>
 
 @implementation FLTImagePickerPhotoAssetUtil
 
@@ -15,6 +15,9 @@
     return [info objectForKey:UIImagePickerControllerPHAsset];
   }
   NSURL *referenceURL = [info objectForKey:UIImagePickerControllerReferenceURL];
+  if (!referenceURL) {
+    return nil;
+  }
   PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsWithALAssetURLs:@[ referenceURL ]
                                                                  options:nil];
   return result.firstObject;
@@ -23,7 +26,8 @@
 + (NSString *)saveImageWithOriginalImageData:(NSData *)originalImageData
                                        image:(UIImage *)image
                                     maxWidth:(NSNumber *)maxWidth
-                                   maxHeight:(NSNumber *)maxHeight {
+                                   maxHeight:(NSNumber *)maxHeight
+                                imageQuality:(NSNumber *)imageQuality {
   NSString *suffix = kFLTImagePickerDefaultSuffix;
   FLTImagePickerMIMEType type = kFLTImagePickerMIMETypeDefault;
   NSDictionary *metaData = nil;
@@ -35,26 +39,33 @@
     metaData = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:originalImageData];
   }
   if (type == FLTImagePickerMIMETypeGIF) {
-    GIFInfo gifInfo = [FLTImagePickerImageUtil scaledGIFImage:originalImageData
-                                                     maxWidth:maxWidth
-                                                    maxHeight:maxHeight];
+    GIFInfo *gifInfo = [FLTImagePickerImageUtil scaledGIFImage:originalImageData
+                                                      maxWidth:maxWidth
+                                                     maxHeight:maxHeight];
 
     return [self saveImageWithMetaData:metaData gifInfo:gifInfo suffix:suffix];
   } else {
-    return [self saveImageWithMetaData:metaData image:image suffix:suffix type:type];
+    return [self saveImageWithMetaData:metaData
+                                 image:image
+                                suffix:suffix
+                                  type:type
+                          imageQuality:imageQuality];
   }
 }
 
-+ (NSString *)saveImageWithPickerInfo:(nullable NSDictionary *)info image:(UIImage *)image {
++ (NSString *)saveImageWithPickerInfo:(nullable NSDictionary *)info
+                                image:(UIImage *)image
+                         imageQuality:(NSNumber *)imageQuality {
   NSDictionary *metaData = info[UIImagePickerControllerMediaMetadata];
   return [self saveImageWithMetaData:metaData
                                image:image
                               suffix:kFLTImagePickerDefaultSuffix
-                                type:kFLTImagePickerMIMETypeDefault];
+                                type:kFLTImagePickerMIMETypeDefault
+                        imageQuality:imageQuality];
 }
 
 + (NSString *)saveImageWithMetaData:(NSDictionary *)metaData
-                            gifInfo:(GIFInfo)gifInfo
+                            gifInfo:(GIFInfo *)gifInfo
                              suffix:(NSString *)suffix {
   NSString *path = [self temporaryFilePath:suffix];
   return [self saveImageWithMetaData:metaData gifInfo:gifInfo path:path];
@@ -63,7 +74,8 @@
 + (NSString *)saveImageWithMetaData:(NSDictionary *)metaData
                               image:(UIImage *)image
                              suffix:(NSString *)suffix
-                               type:(FLTImagePickerMIMEType)type {
+                               type:(FLTImagePickerMIMEType)type
+                       imageQuality:(NSNumber *)imageQuality {
   CGImagePropertyOrientation orientation = (CGImagePropertyOrientation)[metaData[(
       __bridge NSString *)kCGImagePropertyOrientation] integerValue];
   UIImage *newImage = [UIImage
@@ -73,7 +85,9 @@
                [FLTImagePickerMetaDataUtil
                    getNormalizedUIImageOrientationFromCGImagePropertyOrientation:orientation]];
 
-  NSData *data = [FLTImagePickerMetaDataUtil convertImage:newImage usingType:type quality:nil];
+  NSData *data = [FLTImagePickerMetaDataUtil convertImage:newImage
+                                                usingType:type
+                                                  quality:imageQuality];
   if (metaData) {
     data = [FLTImagePickerMetaDataUtil updateMetaData:metaData toImage:data];
   }
@@ -82,7 +96,7 @@
 }
 
 + (NSString *)saveImageWithMetaData:(NSDictionary *)metaData
-                            gifInfo:(GIFInfo)gifInfo
+                            gifInfo:(GIFInfo *)gifInfo
                                path:(NSString *)path {
   CGImageDestinationRef destination = CGImageDestinationCreateWithURL(
       (CFURLRef)[NSURL fileURLWithPath:path], kUTTypeGIF, gifInfo.images.count, NULL);

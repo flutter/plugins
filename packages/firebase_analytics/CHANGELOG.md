@@ -1,3 +1,37 @@
+## 5.0.0
+
+* **Breaking change**. Remove deprecated method `setMinimumSessionDuration`.
+* **Breaking change**. Removed `FirebaseAnalyticsAndroid.setAnalyticsCollectionEnabled`. Use 
+  `FirebaseAnalytics.setAnalyticsCollectionEnabled` instead.
+* Update Android gradle plugin and gradle version.
+* Remove redundant casts on Android.
+
+## 4.0.2
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 4.0.1
+
+* Refactor unit tests to use `setMockMethodCallHandler`.
+
+## 4.0.0
+
+* Added new tracking events:
+  - `logLevelStart`
+  - `logLevelEnd`
+  - `logRemoveFromCart`
+  - `logSetCheckoutOption`
+* **Breaking change**. Add new required parameter `method` to `logShare` event tracking.
+* **Breaking change**. The following event names are reserved and cannot be used:
+  - `ad_activeview`
+  - `ad_click`
+  - `ad_exposure`
+  - `ad_impression`
+  - `ad_query`
+  - `adunit_exposure`
+  - `first_visit`
+  - `screen_view`
+
 ## 3.0.3
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.
