@@ -50,14 +50,14 @@ dispose() {
 }
 ```
 
-Additional methods available:
+You can get WIFI related information using:
 
 ```dart
 import 'package:connectivity/connectivity.dart';
 
-var wifiBSSID = await (Connectivity().getWifiBSSID()); // obtains the BSSID of the connected wifi network
-var wifiIP = await (Connectivity().getWifiIP());       // obtains the IP address of the connected wifi network
-var wifiName = await (Connectivity().getWifiName());   // obtains the wifi name (SSID) of the connected wifi network
+var wifiBSSID = await (Connectivity().getWifiBSSID());
+var wifiIP = await (Connectivity().getWifiIP());network
+var wifiName = await (Connectivity().getWifiName());wifi network
 ```
 
 ### Known Issues
@@ -66,7 +66,7 @@ var wifiName = await (Connectivity().getWifiName());   // obtains the wifi name 
 
 The methods `.getWifiBSSID()` and `.getWifiName()` utilize the [CNCopyCurrentNetworkInfo](https://developer.apple.com/documentation/systemconfiguration/1614126-cncopycurrentnetworkinfo) function on iOS.
 
-As of iOS 13, these APIs will no longer return valid information by default and will instead return the following:
+As of iOS 13, Apple announced that these APIs will no longer return valid information by default and will instead return the following:
 > SSID: "Wi-Fi" or "WLAN" ("WLAN" will be returned for the China SKU)  
 > BSSID: "00:00:00:00:00:00"
 
