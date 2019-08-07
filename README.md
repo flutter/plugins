@@ -78,5 +78,6 @@ These are the available plugins in this repository.
 
 Learn more about [FlutterFire](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
 
-Video Example:
+## Video Example:
+
 [![Youtube video](https://img.youtube.com/vi/SXMrLmlzpQI/0.jpg)](https://youtu.be/SXMrLmlzpQI)
