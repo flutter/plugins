@@ -193,7 +193,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           color: Colors.blue,
           onPressed: controller != null &&
                   controller.value.isInitialized &&
-                  !controller.value.isRecordingVideo
+                  !controller.value.isRecordingVideo &&
+                  !controller.value.isStreamingImages
               ? onTakePictureButtonPressed
               : null,
         ),
@@ -202,7 +203,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           color: Colors.blue,
           onPressed: controller != null &&
                   controller.value.isInitialized &&
-                  !controller.value.isRecordingVideo
+                  !controller.value.isRecordingVideo &&
+                  !controller.value.isStreamingImages
               ? onVideoRecordButtonPressed
               : null,
         ),
@@ -217,7 +219,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         ),
         IconButton(
           icon: const Icon(Icons.warning),
-          color: Colors.green,
+          color: (controller?.value?.isStreamingImages ?? false)
+              ? Colors.red
+              : Colors.green,
           onPressed: controller != null &&
                   (controller.value.isInitialized ||
                       controller.value.isStreamingImages)
