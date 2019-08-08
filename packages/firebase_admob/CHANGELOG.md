@@ -1,7 +1,7 @@
 ## 0.9.0+4
 
 * Update Android gradle plugin, gradle, and Admob versions.
-* Fixes warnings about possible null pointer exception in the Android plugin.
+* Improvements to the Android implementation, fixing warnings about a possible null pointer exception.
 
 ## 0.9.0+3
 
