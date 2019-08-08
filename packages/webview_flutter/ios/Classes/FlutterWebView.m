@@ -77,14 +77,20 @@
       [weakSelf onMethodCall:call result:result];
     }];
 
-    [self applySettings:settings];
-    // TODO(amirh): return an error if apply settings failed once it's possible to do so.
-    // https://github.com/flutter/flutter/issues/36228
-
-    NSString* initialUrl = args[@"initialUrl"];
-    if ([initialUrl isKindOfClass:[NSString class]]) {
-      [self loadUrl:initialUrl];
-    }
+      [self applySettings:settings];
+      // TODO(amirh): return an error if apply settings failed once it's possible to do so.
+      // https://github.com/flutter/flutter/issues/36228
+      
+      NSString* initialUrl = args[@"initialUrl"];
+      if ([initialUrl isKindOfClass:[NSString class]]) {
+          NSMutableDictionary<NSString *, NSObject*>* initialPostParameters = args[@"initialPostParameters"];
+          if(initialPostParameters == nil || initialPostParameters == (id)[NSNull null]) {
+              [self loadUrl:initialUrl];
+          } else {
+              [self loadUrlPost:initialUrl withHeaders:[NSMutableDictionary dictionary] initialParams:initialPostParameters];
+          }
+          
+      }
   }
   return self;
 }
@@ -330,6 +336,40 @@
   [request setAllHTTPHeaderFields:headers];
   [_webView loadRequest:request];
   return true;
+}
+
+- (bool)loadUrlPost:(NSString*)url withHeaders:(NSDictionary<NSString*, NSString*>*)headers initialParams:(NSDictionary<NSString*, NSObject*>*)params {
+    
+    NSURL* nsUrl = [NSURL URLWithString:url];
+    if (!nsUrl) {
+        return false;
+    }
+
+    NSLog(@"got params %@", params);
+    NSMutableString *resultString = [NSMutableString string];
+    for (NSString* key in [params allKeys]){
+        if ([resultString length]>0)
+            [resultString appendString:@"&"];
+        [resultString appendFormat:@"%@=%@", key, [params objectForKey:key]];
+    }
+    
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
+
+
+    NSData *postData = [resultString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+    NSString *contentLength = [NSString stringWithFormat:@"%d", postData.length];
+    
+
+    [request setHTTPMethod:@"POST"];
+    [request setHTTPBody:postData];
+    [request setValue:contentLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+
+    
+
+    [request setAllHTTPHeaderFields:headers];
+    [_webView loadRequest:request];
+    return true;
 }
 
 - (void)registerJavaScriptChannels:(NSSet*)channelNames
