@@ -489,19 +489,18 @@ public class Camera {
   }
 
   private void sendEvent(EventType eventType, String description) {
-    if (eventSink != null) {
-      Map<String, String> event = new HashMap<>();
-      event.put("eventType", eventType.toString().toLowerCase());
-      // Only errors have description
-      if (eventType != EventType.ERROR) {
-        event.put("errorDescription", description);
-      }
-      if (Looper.myLooper() != Looper.getMainLooper()) {
-        uiHandler.post(() -> eventSink.success(event));
-      } else {
-        eventSink.success(event);
-      }
-    }
+    uiHandler.post(
+        () -> {
+          if (eventSink != null) {
+            Map<String, String> event = new HashMap<>();
+            event.put("eventType", eventType.toString().toLowerCase());
+            // Only errors have description
+            if (eventType != EventType.ERROR) {
+              event.put("errorDescription", description);
+            }
+            eventSink.success(event);
+          }
+        });
   }
 
   private void closeCaptureSession() {
