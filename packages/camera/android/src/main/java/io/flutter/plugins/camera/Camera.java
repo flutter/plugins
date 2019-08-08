@@ -19,6 +19,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -48,6 +49,8 @@ public class Camera {
   private final Size previewSize;
   private final Size videoSize;
   private final boolean enableAudio;
+  private final boolean enableTorch;
+  private final boolean enableAE;
 
   private CameraDevice cameraDevice;
   private CameraCaptureSession cameraCaptureSession;
@@ -64,7 +67,9 @@ public class Camera {
       final FlutterView flutterView,
       final String cameraName,
       final String resolutionPreset,
-      final boolean enableAudio)
+      final boolean enableAudio,
+      final boolean enableTorch,
+      final boolean enableAE)
       throws CameraAccessException {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
@@ -72,6 +77,8 @@ public class Camera {
 
     this.cameraName = cameraName;
     this.enableAudio = enableAudio;
+    this.enableTorch = enableTorch;
+    this.enableAE = enableAE;
     this.flutterTexture = flutterView.createSurfaceTexture();
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     orientationEventListener =
@@ -323,6 +330,16 @@ public class Camera {
       }
     }
 
+    // Torch
+    captureRequestBuilder.set(
+      CaptureRequest.FLASH_MODE, 
+      enableTorch ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+
+    // Auto Exposure
+    captureRequestBuilder.set(
+      CaptureRequest.CONTROL_AE_MODE, 
+      enableAE ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
+
     // Prepare the callback
     CameraCaptureSession.StateCallback callback =
         new CameraCaptureSession.StateCallback() {
@@ -335,7 +352,18 @@ public class Camera {
               }
               cameraCaptureSession = session;
               captureRequestBuilder.set(
-                  CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+                CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+
+              // // Torch
+              // captureRequestBuilder.set(
+              //   CaptureRequest.FLASH_MODE, 
+              //   enableTorch ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+
+              // // Auto Exposure
+              // captureRequestBuilder.set(
+              //   CaptureRequest.CONTROL_AE_MODE, 
+              //   enableAE ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
+
               cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               if (onSuccessCallback != null) {
                 onSuccessCallback.run();
@@ -445,6 +473,40 @@ public class Camera {
           img.close();
         },
         null);
+  }
+
+  // Torch
+  public void setTorchMode(@NonNull final Result result, boolean enable){
+    setTorchMode(result, enable, 1.0);
+  }
+
+  public void setTorchMode(@NonNull final Result result, boolean enable, double level){
+    try {
+      captureRequestBuilder.set(
+        CaptureRequest.FLASH_MODE, 
+        enable ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+    
+      cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+
+      result.success(null);
+    } catch (Exception e) {
+      result.error("cameraTorchFailed", e.getMessage(), null);
+    }
+  }
+
+  public void setAEMode(@NonNull final Result result, boolean enable){
+    try {
+      // Auto Exposure
+      captureRequestBuilder.set(
+        CaptureRequest.CONTROL_AE_MODE, 
+        enable ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
+    
+      cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+
+      result.success(null);
+    } catch (Exception e) {
+      result.error("cameraAEFailed", e.getMessage(), null);
+    }
   }
 
   private void sendEvent(EventType eventType) {

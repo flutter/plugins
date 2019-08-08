@@ -121,6 +121,8 @@ static FlutterError *getFlutterError(NSError *error) {
 @property(readonly, nonatomic) int64_t textureId;
 @property(nonatomic, copy) void (^onFrameAvailable)();
 @property BOOL enableAudio;
+@property BOOL enableTorch;
+@property BOOL enableAE;
 @property(nonatomic) FlutterEventChannel *eventChannel;
 @property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
 @property(nonatomic) FlutterEventSink eventSink;
@@ -145,6 +147,8 @@ static FlutterError *getFlutterError(NSError *error) {
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
+                       enableTorch:(BOOL)enableTorch
+                       enableAE:(BOOL)enableAE
                      dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error;
 
@@ -166,11 +170,15 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
+                       enableTorch:(BOOL)enableTorch
+                       enableAE:(BOOL)enableAE
                      dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _enableAudio = enableAudio;
+  _enableTorch = enableTorch;
+  _enableAE = enableAE;
   _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
 
@@ -206,6 +214,14 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [_motionManager startAccelerometerUpdates];
 
   [self setCaptureSessionPreset:resolutionPreset];
+
+  if(enableTorch) {
+    [self setTorchMode:enableTorch];
+  }
+
+  if(enableAE) {
+    [self setAEMode:enableAE];
+  }
 
   return self;
 }
@@ -530,6 +546,43 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   }
 }
 
+- (bool) hasTorch {
+  AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+  return ([device hasTorch] && [device hasFlash]);
+}
+
+- (void) setTorchMode:(NSNumber)enable
+                      (float)level {
+  AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+  if ([device hasTorch] && [device hasFlash]){
+      [device lockForConfiguration:nil];
+      if(enable){
+        NSError *error = nil;
+        float acceptedLevel = (level < AVCaptureMaxAvailableTorchLevel ? level : AVCaptureMaxAvailableTorchLevel);
+        NSLog(@"FLash level: %f", acceptedLevel);
+        [device setTorchModeOnWithLevel:acceptedLevel error:&error];
+      }else{
+        [device setTorchMode:AVCaptureTorchModeOff];
+      }
+      [device unlockForConfiguration];
+  }
+}
+
+- (void) setAEMode:(NSNumber)enable {
+  AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+  if ([device isExposureModeSupported:AVCaptureDevice.ExposureMode]){
+      [device lockForConfiguration:nil];
+      if(enable){
+        AVCaptureDevice.ExposureMode exposure = AVCaptureDevice.ExposureMode.continuousAutoExposure;
+        if(exposure && [device isExposureModeSupported: exposure])
+        [device exposureMode:exposure];
+      }else{
+        [device exposureMode:AVCaptureDevice.ExposureMode.autoExpose];
+      }
+      [device unlockForConfiguration];
+  }
+}
+
 - (BOOL)setupWriterForPath:(NSString *)path {
   NSError *error = nil;
   NSURL *outputURL;
@@ -686,10 +739,14 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     NSString *cameraName = call.arguments[@"cameraName"];
     NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
     NSNumber *enableAudio = call.arguments[@"enableAudio"];
+    NSNumber *enableTorch = call.arguments[@"enableTorch"];
+    NSNumber *enableAE = call.arguments[@"enableAE"];plop
     NSError *error;
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
                                          enableAudio:[enableAudio boolValue]
+                                         enableTorch:[enableTorch boolValue]
+                                         enableAE:[enableAE boolValue]
                                        dispatchQueue:_dispatchQueue
                                                error:&error];
     if (error) {
@@ -725,6 +782,15 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
     result(nil);
+  } else if ([@"hasTorch" isEqualToString:call.method]) {
+    result([NSNumber numberWithBool:[_camera hasTorch]]);
+  } else if ([@"torchOn" isEqualToString:call.method]) {
+     NSNumber *level = call.arguments[@"level"];
+     [_camera setTorchMode:true level.doubleValue];
+     result(nil);
+  } else if ([@"torchOff" isEqualToString:call.method]) {
+     [_camera setTorchMode:false];
+     result(nil);
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;

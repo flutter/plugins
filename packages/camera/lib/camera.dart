@@ -207,6 +207,8 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
+    this.enableTorch = false,
+    this.enableAE = true,
   }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
@@ -214,6 +216,13 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Whether to include audio when recording a video.
   final bool enableAudio;
+
+  // Torch
+  final bool enableTorch;
+
+  // Auto Exposure
+  final bool enableAE;
+
 
   int _textureId;
   bool _isDisposed = false;
@@ -237,6 +246,8 @@ class CameraController extends ValueNotifier<CameraValue> {
           'cameraName': description.name,
           'resolutionPreset': serializeResolutionPreset(resolutionPreset),
           'enableAudio': enableAudio,
+          'enableTorch': enableTorch,
+          'enableAE': enableAE,
         },
       );
       _textureId = reply['textureId'];
@@ -471,6 +482,97 @@ class CameraController extends ValueNotifier<CameraValue> {
       await _channel.invokeMethod<void>(
         'stopVideoRecording',
         <String, dynamic>{'textureId': _textureId},
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Switch ON the torch.
+  Future<void> torchOn({double level: 1.0}) async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController.',
+        'torchOn was called on uninitialized CameraController',
+      );
+    }
+    
+    try {
+      await _channel.invokeMethod<void>(
+        'torchOn', 
+        <String, dynamic>{'level': level}
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Switch OFF the torch.
+  Future<void> torchOff() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController.',
+        'torchOff was called on uninitialized CameraController',
+      );
+    }
+
+    try {
+      await _channel.invokeMethod<void>(
+        'torchOff'
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// check if the device has a torch.
+  Future<bool> get hasTorch async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController.',
+        'hasTorch was called on uninitialized CameraController',
+      );
+    }
+
+    try {
+      return await _channel.invokeMethod<bool>(
+        'hasTorch'
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Switch ON continuous Auto Exposure.
+  Future<void> aeOn() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController.',
+        'aeOn was called on uninitialized CameraController',
+      );
+    }
+    
+    try {
+      await _channel.invokeMethod<void>(
+        'aeOn'
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Switch OFF continuous Auto Exposure.
+  Future<void> aeOff() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController.',
+        'aeOff was called on uninitialized CameraController',
+      );
+    }
+
+    try {
+      await _channel.invokeMethod<void>(
+        'aeOff'
       );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);

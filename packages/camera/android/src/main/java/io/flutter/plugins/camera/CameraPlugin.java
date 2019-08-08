@@ -3,6 +3,7 @@ package io.flutter.plugins.camera;
 import android.hardware.camera2.CameraAccessException;
 import android.os.Build;
 import androidx.annotation.NonNull;
+import android.content.pm.PackageManager;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -44,7 +45,9 @@ public class CameraPlugin implements MethodCallHandler {
     String cameraName = call.argument("cameraName");
     String resolutionPreset = call.argument("resolutionPreset");
     boolean enableAudio = call.argument("enableAudio");
-    camera = new Camera(registrar.activity(), view, cameraName, resolutionPreset, enableAudio);
+    boolean enableTorch = call.argument("enableTorch");
+    boolean enableAE = call.argument("enableAE");
+    camera = new Camera(registrar.activity(), view, cameraName, resolutionPreset, enableAudio, enableTorch, enableAE);
 
     EventChannel cameraEventChannel =
         new EventChannel(
@@ -128,6 +131,31 @@ public class CameraPlugin implements MethodCallHandler {
           }
           break;
         }
+      case "torchOn":
+        {
+          camera.setTorchMode(result, true, call.argument("level"));
+          break;
+        }
+      case "torchOff":
+        {
+          camera.setTorchMode(result, false);
+          break;
+        }
+      case "hasTorch":
+        {
+          result.success(hasTorch());
+          break;
+        }
+      case "aeOn":
+        {
+          camera.setAEMode(result, true);
+          break;
+        }
+      case "aeOff":
+        {
+          camera.setAEMode(result, false);
+          break;
+        }
       case "dispose":
         {
           if (camera != null) {
@@ -140,6 +168,10 @@ public class CameraPlugin implements MethodCallHandler {
         result.notImplemented();
         break;
     }
+  }
+
+  private boolean hasTorch() {
+    return registrar.context().getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
   }
 
   // We move catching CameraAccessException out of onMethodCall because it causes a crash
