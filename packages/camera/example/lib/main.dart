@@ -219,7 +219,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           icon: const Icon(Icons.warning),
           color: Colors.green,
           onPressed: controller != null &&
-                  (controller.value.isInitialized || controller.value.isStreamingImages)
+                  (controller.value.isInitialized ||
+                      controller.value.isStreamingImages)
               ? onStreamButtonPressed
               : null,
         ),
@@ -399,7 +400,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     stopwatch.stop();
     var capImages = numImages;
     await controller.stopImageStream();
-    print('In ${(capImages * 1000) / stopwatch.elapsedMilliseconds} fps, we got $capImages');
+    print('FPS: ${(capImages * 1000) / stopwatch.elapsedMilliseconds} fps');
+    print('We got $capImages images.');
     stopwatch.reset();
   }
 
