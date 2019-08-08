@@ -21,7 +21,7 @@ class SharedPreferences {
   static Completer<SharedPreferences> _completer;
   static Future<SharedPreferences> getInstance() async {
     if (_completer == null) {
-      _completer = Completer();
+      _completer = Completer<SharedPreferences>();
       try {
         final Map<String, Object> preferencesMap =
             await _getSharedPreferencesMap();
@@ -30,7 +30,7 @@ class SharedPreferences {
         // If there's an error, explicitly return the future with an error.
         // then set the completer to null so we can retry.
         _completer.completeError(e);
-        Future<SharedPreferences> sharedPrefsFuture = _completer.future;
+        final Future<SharedPreferences> sharedPrefsFuture = _completer.future;
         _completer = null;
         return sharedPrefsFuture;
       }
