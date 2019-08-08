@@ -94,11 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setMessage('setAnalyticsCollectionEnabled succeeded');
   }
 
-  Future<void> _testSetMinimumSessionDuration() async {
-    await analytics.android?.setMinimumSessionDuration(20000);
-    setMessage('setMinimumSessionDuration succeeded');
-  }
-
   Future<void> _testSetSessionTimeoutDuration() async {
     await analytics.android?.setSessionTimeoutDuration(2000000);
     setMessage('setSessionTimeoutDuration succeeded');
@@ -297,10 +292,6 @@ class _MyHomePageState extends State<MyHomePage> {
           MaterialButton(
             child: const Text('Test setAnalyticsCollectionEnabled'),
             onPressed: _testSetAnalyticsCollectionEnabled,
-          ),
-          MaterialButton(
-            child: const Text('Test setMinimumSessionDuration'),
-            onPressed: _testSetMinimumSessionDuration,
           ),
           MaterialButton(
             child: const Text('Test setSessionTimeoutDuration'),

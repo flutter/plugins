@@ -39,7 +39,7 @@ public class PackageInfoPlugin implements MethodCallHandler {
         PackageManager pm = context.getPackageManager();
         PackageInfo info = pm.getPackageInfo(context.getPackageName(), 0);
 
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("appName", info.applicationInfo.loadLabel(pm).toString());
         map.put("packageName", context.getPackageName());
         map.put("version", info.versionName);
@@ -54,11 +54,11 @@ public class PackageInfoPlugin implements MethodCallHandler {
     }
   }
 
+  @SuppressWarnings("deprecation")
   private static long getLongVersionCode(PackageInfo info) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       return info.getLongVersionCode();
     }
-    //noinspection deprecation
     return info.versionCode;
   }
 }

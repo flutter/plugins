@@ -52,7 +52,7 @@ class Trace extends PerformanceAttributes {
 
     _hasStarted = true;
     return FirebasePerformance.channel.invokeMethod<void>(
-      '$Trace#start',
+      'Trace#start',
       <String, dynamic>{'handle': _handle},
     );
   }
@@ -70,7 +70,7 @@ class Trace extends PerformanceAttributes {
 
     _hasStopped = true;
     return FirebasePerformance.channel.invokeMethod<void>(
-      '$Trace#stop',
+      'Trace#stop',
       <String, dynamic>{'handle': _handle},
     );
   }
@@ -88,7 +88,7 @@ class Trace extends PerformanceAttributes {
     _metrics.putIfAbsent(name, () => 0);
     _metrics[name] += value;
     return FirebasePerformance.channel.invokeMethod<void>(
-      '$Trace#incrementMetric',
+      'Trace#incrementMetric',
       <String, dynamic>{'handle': _handle, 'name': name, 'value': value},
     );
   }
@@ -103,7 +103,7 @@ class Trace extends PerformanceAttributes {
 
     _metrics[name] = value;
     return FirebasePerformance.channel.invokeMethod<void>(
-      '$Trace#setMetric',
+      'Trace#setMetric',
       <String, dynamic>{'handle': _handle, 'name': name, 'value': value},
     );
   }
@@ -116,7 +116,7 @@ class Trace extends PerformanceAttributes {
     if (_hasStopped) return Future<int>.value(_metrics[name] ?? 0);
 
     return FirebasePerformance.channel.invokeMethod<int>(
-      '$Trace#getMetric',
+      'Trace#getMetric',
       <String, dynamic>{'handle': _handle, 'name': name},
     );
   }

@@ -21,7 +21,15 @@ public class TextRecognizer implements Detector {
   private final FirebaseVisionTextRecognizer recognizer;
 
   TextRecognizer(FirebaseVision vision, Map<String, Object> options) {
-    recognizer = vision.getOnDeviceTextRecognizer();
+    final String modelType = (String) options.get("modelType");
+    if (modelType.equals("onDevice")) {
+      recognizer = vision.getOnDeviceTextRecognizer();
+    } else if (modelType.equals("cloud")) {
+      recognizer = vision.getCloudTextRecognizer();
+    } else {
+      final String message = String.format("No model for type: %s", modelType);
+      throw new IllegalArgumentException(message);
+    }
   }
 
   @Override

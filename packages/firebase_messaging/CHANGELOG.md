@@ -1,3 +1,11 @@
+## 5.1.3
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 5.1.2
+
+* Updates to README and example with explanations of differences in data format.
+
 ## 5.1.1
 
 * Update README with more detailed integration instructions.
