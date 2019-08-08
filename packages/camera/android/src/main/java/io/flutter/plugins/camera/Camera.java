@@ -106,49 +106,18 @@ public class Camera {
         };
     orientationEventListener.enable();
 
-<<<<<<< HEAD
-=======
-    int minHeight;
-    switch (resolutionPreset) {
-      case "high":
-        minHeight = 720;
-        break;
-      case "medium":
-        minHeight = 480;
-        break;
-      case "low":
-        minHeight = 240;
-        break;
-      default:
-        throw new IllegalArgumentException("Unknown preset: " + resolutionPreset);
-    }
-
->>>>>>> a561997e... Experimental Changes
     CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
     //noinspection ConstantConditions
     sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
     //noinspection ConstantConditions
     isFrontFacing =
         characteristics.get(CameraCharacteristics.LENS_FACING) == CameraMetadata.LENS_FACING_FRONT;
-<<<<<<< HEAD
     ResolutionPreset preset = ResolutionPreset.valueOf(resolutionPreset);
     recordingProfile =
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     previewSize = computeBestPreviewSize(cameraName, preset);
     System.err.println("Video size is " + captureSize + " preview size is " + previewSize);
-=======
-    captureSize = CameraUtils.computeBestCaptureSize(streamConfigurationMap);
-    Size[] sizes =
-        CameraUtils.computeBestPreviewAndRecordingSize(
-            activity, streamConfigurationMap, minHeight, getMediaOrientation(), captureSize);
-    videoSize = sizes[0];
-    previewSize = sizes[1];
-<<<<<<< HEAD
-    System.err.println("Video size is " + videoSize + " preview size is " + previewSize);
->>>>>>> a561997e... Experimental Changes
-=======
->>>>>>> 80bd4370... Do camera operations in background thread.
   }
 
   public void setupCameraEventChannel(EventChannel cameraEventChannel) {
