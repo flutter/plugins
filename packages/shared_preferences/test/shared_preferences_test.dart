@@ -156,8 +156,8 @@ void main() {
     });
 
     test('back to back calls should return same instance.', () async {
-      Future<SharedPreferences> first = SharedPreferences.getInstance();
-      Future<SharedPreferences> second = SharedPreferences.getInstance();
+      final Future<SharedPreferences> first = SharedPreferences.getInstance();
+      final Future<SharedPreferences> second = SharedPreferences.getInstance();
       expect(await first, await second);
     });
 
