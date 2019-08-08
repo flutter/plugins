@@ -195,12 +195,17 @@ class WebSettings {
 }
 
 /// Configuration to use when creating a new [WebViewPlatformController].
+///
+/// The `autoMediaPlaybackPolicy` parameter must not be null.
 class CreationParams {
-  CreationParams(
-      {this.initialUrl,
-      this.webSettings,
-      this.javascriptChannelNames,
-      this.userAgent});
+  CreationParams({
+    this.initialUrl,
+    this.webSettings,
+    this.javascriptChannelNames,
+    this.userAgent,
+    this.autoMediaPlaybackPolicy =
+        AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+  }) : assert(autoMediaPlaybackPolicy != null);
 
   /// The initialUrl to load in the webview.
   ///
@@ -229,6 +234,9 @@ class CreationParams {
   ///
   /// When null the platform's webview default is used for the User-Agent header.
   final String userAgent;
+
+  /// Which restrictions apply on automatic media playback.
+  final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
 
   @override
   String toString() {

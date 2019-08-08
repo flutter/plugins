@@ -113,17 +113,6 @@ void main() {
       );
     });
 
-    test('setMinimumSessionDuration', () async {
-      await analytics.android.setMinimumSessionDuration(123);
-      expect(
-        methodCall,
-        isMethodCall(
-          'setMinimumSessionDuration',
-          arguments: 123,
-        ),
-      );
-    });
-
     test('setSessionTimeoutDuration', () async {
       await analytics.android.setSessionTimeoutDuration(234);
       expect(

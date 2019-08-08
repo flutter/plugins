@@ -1,7 +1,12 @@
-## 0.3.11
+## 0.3.12
 
 * Add an optional `userAgent` property to set a custom User Agent.
   Add `getUserAgent` to WebViewController. 
+
+## 0.3.11
+
+* Add an initialAutoMediaPlaybackPolicy setting for controlling how auto media
+  playback is restricted.
 
 ## 0.3.10+5
 

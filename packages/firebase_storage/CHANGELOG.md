@@ -1,3 +1,9 @@
+## 3.0.5
+* Removed automatic print statements for `StorageTaskEvent`'s.
+  If you want to see the event status in your logs now, you will have to use the following:
+  `storageReference.put{File/Data}(..).events.listen((event) => print('EVENT ${event.type}'));`
+* Updated `README.md` to explain the above.
+
 ## 3.0.4
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.

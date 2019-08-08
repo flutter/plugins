@@ -1,3 +1,8 @@
+## 5.1.2
+
+* Update AGP and gradle.
+* Split plugin and WebViewActivity class files.
+
 ## 5.1.1
 
 * Suppress a handled deprecation warning on iOS
