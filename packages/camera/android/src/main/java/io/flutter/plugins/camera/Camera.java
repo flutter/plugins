@@ -117,7 +117,6 @@ public class Camera {
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     previewSize = computeBestPreviewSize(cameraName, preset);
-    System.err.println("Video size is " + captureSize + " preview size is " + previewSize);
   }
 
   public void setupCameraEventChannel(EventChannel cameraEventChannel) {
