@@ -9,9 +9,11 @@ import java.util.List;
 class PolylineBuilder implements PolylineOptionsSink {
   private final PolylineOptions polylineOptions;
   private boolean consumeTapEvents;
+  private final float density;
 
-  PolylineBuilder() {
+  PolylineBuilder(float density) {
     this.polylineOptions = new PolylineOptions();
+    this.density = density;
   }
 
   PolylineOptions build() {
@@ -70,7 +72,7 @@ class PolylineBuilder implements PolylineOptionsSink {
 
   @Override
   public void setWidth(float width) {
-    polylineOptions.width(width);
+    polylineOptions.width(width * density);
   }
 
   @Override

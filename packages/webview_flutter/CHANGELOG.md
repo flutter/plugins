@@ -1,3 +1,8 @@
+## 0.3.11
+
+* Add an initialAutoMediaPlaybackPolicy setting for controlling how auto media
+  playback is restricted.
+
 ## 0.3.10+5
 
 * Add dependency on `androidx.annotation:annotation:1.0.0`.

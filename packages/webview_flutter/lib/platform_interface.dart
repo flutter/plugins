@@ -183,9 +183,16 @@ class WebSettings {
 }
 
 /// Configuration to use when creating a new [WebViewPlatformController].
+///
+/// The `autoMediaPlaybackPolicy` parameter must not be null.
 class CreationParams {
-  CreationParams(
-      {this.initialUrl, this.webSettings, this.javascriptChannelNames});
+  CreationParams({
+    this.initialUrl,
+    this.webSettings,
+    this.javascriptChannelNames,
+    this.autoMediaPlaybackPolicy =
+        AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+  }) : assert(autoMediaPlaybackPolicy != null);
 
   /// The initialUrl to load in the webview.
   ///
@@ -209,6 +216,9 @@ class CreationParams {
   // TODO(amirh): describe what should happen when postMessage is called once that code is migrated
   // to PlatformWebView.
   final Set<String> javascriptChannelNames;
+
+  /// Which restrictions apply on automatic media playback.
+  final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
 
   @override
   String toString() {
