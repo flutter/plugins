@@ -1,11 +1,8 @@
-<<<<<<< HEAD
 ## 0.5.3
 
 * Added new quality presets.
 * Now all quality presets can be used to control image capture quality.
 
-=======
->>>>>>> a99a9555... Revert Changelog and other unintended changes
 ## 0.5.2+2
 
 * Fix memory leak related to not unregistering stream handler in FlutterEventChannel when disposing camera.

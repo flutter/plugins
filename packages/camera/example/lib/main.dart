@@ -271,11 +271,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
     controller = CameraController(
       cameraDescription,
-<<<<<<< HEAD
       ResolutionPreset.medium,
-=======
-      ResolutionPreset.low,
->>>>>>> a561997e... Experimental Changes
       enableAudio: enableAudio,
     );
 
