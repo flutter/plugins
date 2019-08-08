@@ -5,6 +5,7 @@
 #import "SharedPreferencesPlugin.h"
 
 static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
+static NSString *_preferencesKeyPrefix;
 
 @implementation FLTSharedPreferencesPlugin
 
@@ -16,6 +17,7 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
     NSDictionary *arguments = [call arguments];
 
     if ([method isEqualToString:@"getAll"]) {
+      _preferencesKeyPrefix = arguments[@"prefix"];
       result(getAllPrefs());
     } else if ([method isEqualToString:@"setBool"]) {
       NSString *key = arguments[@"key"];
@@ -72,7 +74,7 @@ static NSMutableDictionary *getAllPrefs() {
   NSMutableDictionary *filteredPrefs = [NSMutableDictionary dictionary];
   if (prefs != nil) {
     for (NSString *candidateKey in prefs) {
-      if ([candidateKey hasPrefix:@"flutter."]) {
+      if ([_preferencesKeyPrefix length] == 0 || [candidateKey hasPrefix:_preferencesKeyPrefix]) {
         [filteredPrefs setObject:prefs[candidateKey] forKey:candidateKey];
       }
     }

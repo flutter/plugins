@@ -27,7 +27,6 @@ import java.util.Set;
 /** SharedPreferencesPlugin */
 @SuppressWarnings("unchecked")
 public class SharedPreferencesPlugin implements MethodCallHandler {
-  private static final String SHARED_PREFERENCES_NAME = "FlutterSharedPreferences";
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
 
   // Fun fact: The following is a base64 encoding of the string "This is the prefix for a list."
@@ -35,7 +34,11 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   private static final String BIG_INTEGER_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy";
   private static final String DOUBLE_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu";
 
-  private final android.content.SharedPreferences preferences;
+  private final Context context;
+  private android.content.SharedPreferences preferences;
+
+  private String preferencesName = "FlutterSharedPreferences";
+  private String preferencesKeyPrefix = "flutter.";
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
@@ -44,7 +47,8 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   }
 
   private SharedPreferencesPlugin(Context context) {
-    preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    this.context = context;
+    preferences = context.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
   }
 
   private List<String> decodeList(String encodedList) throws IOException {
@@ -81,7 +85,7 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
     Map<String, ?> allPrefs = preferences.getAll();
     Map<String, Object> filteredPrefs = new HashMap<>();
     for (String key : allPrefs.keySet()) {
-      if (key.startsWith("flutter.")) {
+      if (key.startsWith(preferencesKeyPrefix)) {
         Object value = allPrefs.get(key);
         if (value instanceof String) {
           String stringValue = (String) value;
@@ -179,6 +183,12 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           result.success(true);
           break;
         case "getAll":
+          String name = (String) call.argument("preferenceName");
+          if (!preferencesName.equals(name)) {
+            preferencesName = name;
+            preferences = context.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
+          }
+          preferencesKeyPrefix = (String) call.argument("prefix");
           result.success(getAllPrefs());
           return;
         case "remove":
