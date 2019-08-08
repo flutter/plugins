@@ -398,7 +398,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   Future<void> stopImageStream() async {
     stopwatch.stop();
-    var capImages = numImages;
+    final int capImages = numImages;
     await controller.stopImageStream();
     print('FPS: ${(capImages * 1000) / stopwatch.elapsedMilliseconds} fps');
     print('We got $capImages images.');
@@ -413,7 +413,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     stopwatch.start();
     numImages = 0;
     try {
-      await controller.startImageStream((image) {
+      await controller.startImageStream((CameraImage image) {
         numImages++;
       });
     } on CameraException catch (e) {
