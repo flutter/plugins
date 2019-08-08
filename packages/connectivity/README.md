@@ -60,17 +60,33 @@ var wifiIP = await (Connectivity().getWifiIP());network
 var wifiName = await (Connectivity().getWifiName());wifi network
 ```
 
-### Known Issues
+### iOS 12
 
-#### iOS 13
+To use `.getWifiBSSID()` and `.getWifiName()` on iOS >= 12, the `Access WiFi information capability` in XCode must be enabled. Otherwise, both method will return null.
+
+### iOS 13
 
 The methods `.getWifiBSSID()` and `.getWifiName()` utilize the [CNCopyCurrentNetworkInfo](https://developer.apple.com/documentation/systemconfiguration/1614126-cncopycurrentnetworkinfo) function on iOS.
 
-As of iOS 13, Apple announced that these APIs will no longer return valid information by default and will instead return the following:
-> SSID: "Wi-Fi" or "WLAN" ("WLAN" will be returned for the China SKU)  
-> BSSID: "00:00:00:00:00:00"
+As of iOS 13, Apple announced that these APIs will no longer return valid information.
+An App linked against iOS 12 or earlier receives pseudo-values such as:
 
-You can follow issue [#37804](https://github.com/flutter/flutter/issues/37804) for the changes required to return valid SSID and BSSID values with iOS 13.
+ * SSID: "Wi-Fi" or "WLAN" ("WLAN" will be returned for the China SKU).
+
+ * BSSID: "00:00:00:00:00:00"
+
+An App linked against iOS 13 or later receives null.
+
+The [CNCopyCurrentNetworkInfo] will work for Apps that:
+
+  * The app uses Core Location, and has the user’s authorization to use location information.
+
+  * The app uses the NEHotspotConfiguration API to configure the current Wi-Fi network.
+
+  * The app has active VPN configurations installed.
+
+If your app falls into the last two categories, it will work as it is. If your app doesn't fall into the last two categories,
+and you still need to access the wifi information, you should request user's authorization to use location information.
 
 ## Getting Started
 

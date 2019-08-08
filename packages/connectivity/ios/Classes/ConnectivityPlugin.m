@@ -7,12 +7,18 @@
 #import "Reachability/Reachability.h"
 
 #import "SystemConfiguration/CaptiveNetwork.h"
+#import <CoreLocation/CoreLocation.h>
+
 
 #include <ifaddrs.h>
 
 #include <arpa/inet.h>
 
-@interface FLTConnectivityPlugin () <FlutterStreamHandler>
+@interface FLTConnectivityPlugin () <FlutterStreamHandler, CLLocationManagerDelegate>
+
+@property (strong, nonatomic) CLLocationManager* locationManager;
+@property (copy, nonatomic) FlutterResult result;
+@property (strong, nonatomic) NSString *key;
 @end
 
 @implementation FLTConnectivityPlugin {
@@ -46,12 +52,29 @@
   return info;
 }
 
-- (NSString*)getWifiName {
-  return [self findNetworkInfo:@"SSID"];
+- (void)requetNetworkInfo:(NSString *)key result:(FlutterResult)result {
+
+  CLAuthorizationStatus status = CLLocationManager.authorizationStatus;
+  switch (status) {
+    case kCLAuthorizationStatusNotDetermined: {
+      self.key = key;
+      self.result = result;
+      [self.locationManager requestAlwaysAuthorization];
+      return;
+    }
+    default: {
+      result([self findNetworkInfo:key]);
+      break;
+    }
+  }
 }
 
-- (NSString*)getBSSID {
-  return [self findNetworkInfo:@"BSSID"];
+- (void)getWifiNameWithResult:(FlutterResult)result {
+  [self requetNetworkInfo:@"SSID" result:result];
+}
+
+- (void)getBSSIDWithResult:(FlutterResult)result {
+  [self requetNetworkInfo:@"BSSID" result:result];
 }
 
 - (NSString*)getWifiIP {
@@ -106,9 +129,9 @@
     // gets more involved. So for now, this will do.
     result([self statusFromReachability:[Reachability reachabilityForInternetConnection]]);
   } else if ([call.method isEqualToString:@"wifiName"]) {
-    result([self getWifiName]);
+    [self getWifiNameWithResult:result];
   } else if ([call.method isEqualToString:@"wifiBSSID"]) {
-    result([self getBSSID]);
+    [self getBSSIDWithResult:result];
   } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
     result([self getWifiIP]);
   } else {
@@ -138,6 +161,20 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   _eventSink = nil;
   return nil;
+}
+
+#pragma mark - CLLocationManagerDelegate
+
+- (CLLocationManager *)locationManager {
+ if (!_locationManager) {
+   _locationManager = [CLLocationManager new];
+   _locationManager.delegate = self;
+ }
+ return _locationManager;
+}
+
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+  self.result([self findNetworkInfo:self.key]);
 }
 
 @end
