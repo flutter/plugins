@@ -1,7 +1,7 @@
 
 FROM cirrusci/flutter:latest
 
-RUN apt-get install -y apt-transport-https
+RUN sudo apt-get install -y apt-transport-https
 
 # Add repo for gcloud sdk and install it
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | \
