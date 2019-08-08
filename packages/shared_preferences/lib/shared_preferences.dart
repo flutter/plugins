@@ -26,7 +26,7 @@ class SharedPreferences {
         final Map<String, Object> preferencesMap =
             await _getSharedPreferencesMap();
         _completer.complete(SharedPreferences._(preferencesMap));
-      } on Exception catch(e) {
+      } on Exception catch (e) {
         // If there's an error, explicitly return the future with an error.
         // then set the completer to null so we can retry.
         _completer.completeError(e);
@@ -178,7 +178,7 @@ class SharedPreferences {
 
   /// Initializes the shared preferences with mock values for testing.
   ///
-  /// If the singleton instance has been initialized already, it is automatically reloaded.
+  /// If the singleton instance has been initialized already, it is nullified.
   @visibleForTesting
   static void setMockInitialValues(Map<String, dynamic> values) {
     _kChannel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -187,6 +187,6 @@ class SharedPreferences {
       }
       return null;
     });
-    _completer?.future.then((SharedPreferences prefs) => prefs.reload());
+    _completer = null;
   }
 }
