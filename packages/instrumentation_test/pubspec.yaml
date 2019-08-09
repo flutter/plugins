@@ -1,5 +1,5 @@
 name: instrumentation_test
-description: A new flutter plugin project.
+description: Runs tests that use the flutter_test API as platform native instrumentation tests.
 version: 0.0.1
 author:
 homepage:
