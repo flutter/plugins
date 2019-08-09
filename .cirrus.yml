@@ -32,11 +32,6 @@ task:
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         CLOUDSDK_CORE_DISABLE_PROMPTS: 1
         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[39c6adf685d3ca9fa398722548588017b3ffd2c5bdc0ceeb437b7c03702f46dbc61124fb6283c0c01427cfd4761d97e5]
-      create_device_script:
-        echo no | avdmanager -v create avd -n test -k "system-images;android-21;default;armeabi-v7a"
-      start_emulator_background_script:
-      - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window
-      wait_for_emulator_script: adb wait-for-device
       script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
