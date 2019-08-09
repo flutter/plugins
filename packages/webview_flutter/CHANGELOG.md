@@ -1,3 +1,8 @@
+## 0.3.11+1
+
+* Work around a bug in old Android WebView versions that was causing a crash
+  when resizing the webview on old devices.
+
 ## 0.3.11
 
 * Add an initialAutoMediaPlaybackPolicy setting for controlling how auto media
