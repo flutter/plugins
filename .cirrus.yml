@@ -33,8 +33,9 @@ task:
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         CLOUDSDK_CORE_DISABLE_PROMPTS: 1
-        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[39c6adf685d3ca9fa398722548588017b3ffd2c5bdc0ceeb437b7c03702f46dbc61124fb6283c0c01427cfd4761d97e5]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[ae17cec7f4d708b1e5c2e841c3643006c2ef46f3745e28fd965bc26b224158f408a0c2da40a1beb0addb163fa4c11389]
       script:
+        - echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
         # See: https://github.com/flutter/flutter/issues/24935
