@@ -9,7 +9,7 @@ task:
     - flutter upgrade
     - git fetch origin master
   activate_script:
-    - git clone git@github.com:collinjackson/plugin_tools.git -b ftl_demo flutter_plugin_tools
+    - git clone https://github.com/collinjackson/plugin_tools.git -b ftl_demo flutter_plugin_tools
     - pub global activate flutter_plugin_tools -s path
   matrix:
 #    - name: publishable
