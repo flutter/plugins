@@ -112,6 +112,7 @@ class AndroidAlarmManager {
     bool allowWhileIdle = false,
     bool exact = false,
     bool wakeup = false,
+    bool next = false,
     bool rescheduleOnReboot = false,
   }) async {
     final int now = DateTime.now().millisecondsSinceEpoch;
