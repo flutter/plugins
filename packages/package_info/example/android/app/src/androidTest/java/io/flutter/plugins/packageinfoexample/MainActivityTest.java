@@ -4,9 +4,8 @@
 
 package io.flutter.plugins.packageinfoexample;
 
-import org.junit.runner.RunWith;
 import io.flutter.plugins.instrumentationtest.FlutterRunner;
+import org.junit.runner.RunWith;
 
 @RunWith(FlutterRunner.class)
-public class MainActivityTest extends MainActivity {
-}
+public class MainActivityTest extends MainActivity {}
