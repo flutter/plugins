@@ -10,6 +10,8 @@ dependencies:
 dev_dependencies:
   flutter_driver:
     sdk: flutter
+  instrumentation_test:
+    path: ../../instrumentation_test  # TODO(jackson): Point to published version when available
   test: any
 
 flutter:

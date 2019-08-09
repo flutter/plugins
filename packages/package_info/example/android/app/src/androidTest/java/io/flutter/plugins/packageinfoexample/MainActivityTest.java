@@ -5,8 +5,8 @@
 package io.flutter.plugins.packageinfoexample;
 
 import org.junit.runner.RunWith;
+import io.flutter.plugins.instrumentationtest.FlutterRunner;
 
-@RunWith(FlutterJUnitRunner.class)
-public class WidgetTests {
-  // This class is intentionally left blank.
+@RunWith(FlutterRunner.class)
+public class MainActivityTest extends MainActivity {
 }

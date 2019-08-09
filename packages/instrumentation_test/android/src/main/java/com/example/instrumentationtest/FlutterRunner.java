@@ -1,11 +1,14 @@
-package io.flutter.plugins.packageinfoexample;
+package io.flutter.plugins.instrumentationtest;
 
 import androidx.test.rule.ActivityTestRule;
+import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.view.FlutterView;
+import java.lang.reflect.Method;
+import java.lang.IllegalArgumentException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -15,16 +18,19 @@ import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
-public class FlutterJUnitRunner extends Runner {
+public class FlutterRunner extends Runner {
 
     private static final String CHANNEL = "dev.flutter/InstrumentationTestFlutterBinding";
     CompletableFuture<Map<String, String>> testResults;
 
-    public FlutterJUnitRunner(Class<?> klass) {
-        ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);
-        MainActivity fa = rule.launchActivity(null);
-        FlutterView fv = fa.getFlutterView();
-        MethodChannel methodChannel = new MethodChannel(fv, CHANNEL);
+    final Class activityClass;
+
+    public FlutterRunner(Class<?> klass) {
+        activityClass = klass;
+        ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(activityClass);
+        FlutterActivity activity = rule.launchActivity(null);
+        FlutterView view = activity.getFlutterView();
+        MethodChannel methodChannel = new MethodChannel(view, CHANNEL);
         testResults = new CompletableFuture<>();
         methodChannel.setMethodCallHandler(
             new MethodCallHandler() {
@@ -44,7 +50,7 @@ public class FlutterJUnitRunner extends Runner {
 
     @Override
     public Description getDescription() {
-        return Description.createTestDescription(MainActivity.class, "Flutter Tests");
+        return Description.createTestDescription(activityClass, "Flutter Tests");
     }
 
     @Override
@@ -59,7 +65,7 @@ public class FlutterJUnitRunner extends Runner {
         }
 
         for (String name : results.keySet()) {
-            Description d = Description.createTestDescription(MainActivity.class, name);
+            Description d = Description.createTestDescription(activityClass, name);
             notifier.fireTestStarted(d);
             String outcome = results.get(name);
             if (outcome.equals("failed")) {
