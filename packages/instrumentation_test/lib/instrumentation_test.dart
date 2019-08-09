@@ -7,11 +7,11 @@ import 'package:flutter/services.dart';
 class InstrumentationTestFlutterBinding extends LiveTestWidgetsFlutterBinding {
   InstrumentationTestFlutterBinding() {
     tearDownAll(() {
-      _channel.invokeMethod<void>('testFinished', {'results': _results});
+      _channel.invokeMethod<void>('testFinished', <String, dynamic>{'results': _results});
     });
   }
   static const MethodChannel _channel =
-      const MethodChannel('dev.flutter/InstrumentationTestFlutterBinding');
+      MethodChannel('dev.flutter/InstrumentationTestFlutterBinding');
 
   static Map<String, String> _results = <String, String>{};
 
