@@ -48,11 +48,12 @@ class DisplayListenerProxy {
 
   /** Should be called after the webview's initialization. */
   void onPostWebViewInitialization(final DisplayManager displayManager) {
-    final ArrayList<DisplayListener> listeners = yoinkDisplayListeners(displayManager);
-    // We recorded
-    listeners.removeAll(listenersBeforeWebView);
+    final ArrayList<DisplayListener> webViewListeners = yoinkDisplayListeners(displayManager);
+    // We recorded the list of listeners prior to initializing webview, any new listeners we see
+    // after initializing the webview are listeners added by the webview.
+    webViewListeners.removeAll(listenersBeforeWebView);
 
-    if (listeners.isEmpty()) {
+    if (webViewListeners.isEmpty()) {
       // The Android WebView registers a single display listener per process (even if there
       // are multiple WebView instances) so this list is expected to be non-empty only the
       // first time a webview is initialized.
@@ -66,7 +67,7 @@ class DisplayListenerProxy {
       return;
     }
 
-    for (DisplayListener webViewListener : listeners) {
+    for (DisplayListener webViewListener : webViewListeners) {
       // Note that while DisplayManager.unregisterDisplayListener throws when given an
       // unregistered listener, this isn't an issue as the WebView code never calls
       // unregisterDisplayListener.
@@ -78,14 +79,14 @@ class DisplayListenerProxy {
           new DisplayListener() {
             @Override
             public void onDisplayAdded(int displayId) {
-              for (DisplayListener webViewListener : listeners) {
+              for (DisplayListener webViewListener : webViewListeners) {
                 webViewListener.onDisplayAdded(displayId);
               }
             }
 
             @Override
             public void onDisplayRemoved(int displayId) {
-              for (DisplayListener webViewListener : listeners) {
+              for (DisplayListener webViewListener : webViewListeners) {
                 webViewListener.onDisplayRemoved(displayId);
               }
             }
@@ -95,7 +96,7 @@ class DisplayListenerProxy {
               if (displayManager.getDisplay(displayId) == null) {
                 return;
               }
-              for (DisplayListener webViewListener : listeners) {
+              for (DisplayListener webViewListener : webViewListeners) {
                 webViewListener.onDisplayChanged(displayId);
               }
             }
