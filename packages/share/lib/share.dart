@@ -39,7 +39,7 @@ class Share {
     assert(text.isNotEmpty);
     final Map<String, dynamic> params = <String, dynamic>{
       'text': text,
-      'subject': subject,
+      'subject': subject ?? '',
     };
 
     if (sharePositionOrigin != null) {
