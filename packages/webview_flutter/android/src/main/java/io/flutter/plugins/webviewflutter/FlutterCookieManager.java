@@ -34,6 +34,9 @@ class FlutterCookieManager implements MethodCallHandler {
       case "clearCookies":
         clearCookies(result);
         break;
+      case "setCookie":
+        setCookie(methodCall, result);
+        break;
       default:
         result.notImplemented();
     }
@@ -53,6 +56,21 @@ class FlutterCookieManager implements MethodCallHandler {
     } else {
       cookieManager.removeAllCookie();
       result.success(hasCookies);
+    }
+  }
+
+  private static void setCookie(final MethodCall methodCall, final Result result) {
+    String url = methodCall.argument("url");
+    String value = methodCall.argument("value");
+    if (url == null || value == null) {
+      result.error(null, null, null);
+      return;
+    }
+    CookieManager cookieManager = CookieManager.getInstance();
+    try {
+      cookieManager.setCookie(url, value);
+    } catch (Exception e) {
+      result.error(null, e.getMessage(), null);
     }
   }
 }
