@@ -1,0 +1,43 @@
+# instrumentation_test
+
+Adapts flutter_test results as Android instrumentation tests, making them usable for Firebase Test Lab and other Android CI providers.
+
+iOS support is not available yet, but is planned in the future.
+
+## Usage
+
+Use `InstrumentationTestFlutterBinding()` at the start of a test file.
+
+```dart
+import 'package:instrumentation_test/instrumentation_test.dart';
+import '../test/package_info.dart' as test;
+
+void main() {
+  InstrumentationTestFlutterBinding();
+  testWidgets("failing test example", (WidgetTester tester) async {
+    expect(2 + 2, equals(5));
+  });
+}
+```
+
+Use gradle commands to build an instrumentation test for Android.
+
+```
+pushd android
+./gradlew assembleAndroidTest
+./gradlew assembleDebug -Ptarget=<path_to_test>.dart
+popd
+```
+
+Upload to Firebase Test Lab, making sure to replace <PATH_TO_KEY_FILE>, <PROJECT_NAME>, <RESULTS_BUCKET>, and <RESULTS_DIRECTORY> with your values.
+
+```
+gcloud auth activate-service-account --key-file=<PATH_TO_KEY_FILE>
+gcloud --quiet config set project <PROJECT_NAME>
+gcloud firebase test android run --type instrumentation \
+  --app build/app/outputs/apk/debug/app-debug.apk \
+  --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk\
+  --timeout 2m \
+  --results-bucket=<RESULTS_BUCKET> \
+  --results-dir=<RESULTS_DIRECTORY>
+```
