@@ -268,4 +268,9 @@ abstract class WebViewPlatform {
     throw UnimplementedError(
         "WebView clearCookies is not implemented on the current platform");
   }
+
+  Future<bool> setCookie(String url, String value) {
+    throw UnimplementedError(
+        "WebView setCookie is not implemented on the current platform");
+  }
 }
