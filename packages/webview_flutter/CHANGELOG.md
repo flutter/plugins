@@ -1,3 +1,8 @@
+## 0.3.11+2
+
+* Add fix for input connection being dropped after a screen resize on certain
+  Android devices.
+
 ## 0.3.11+1
 
 * Work around a bug in old Android WebView versions that was causing a crash
