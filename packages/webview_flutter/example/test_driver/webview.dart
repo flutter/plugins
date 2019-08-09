@@ -137,6 +137,91 @@ void main() {
     expect(messagesReceived, equals(<String>['hello']));
   });
 
+  test('resize webview', () async {
+    final String resizeTest = '''
+        <!DOCTYPE html><html>
+        <head><title>Resize test</title>
+          <script type="text/javascript">
+            function onResize() {
+              Resize.postMessage("resize");
+            }
+            function onLoad() {
+              window.onresize = onResize;
+            }
+          </script>
+        </head>
+        <body onload="onLoad();" bgColor="blue">
+        </body>
+        </html>
+      ''';
+    final String resizeTestBase64 =
+        base64Encode(const Utf8Encoder().convert(resizeTest));
+    final Completer<void> resizeCompleter = Completer<void>();
+    final Completer<void> pageLoaded = Completer<void>();
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    final GlobalKey key = GlobalKey();
+
+    final WebView webView = WebView(
+      key: key,
+      initialUrl: 'data:text/html;charset=utf-8;base64,$resizeTestBase64',
+      onWebViewCreated: (WebViewController controller) {
+        controllerCompleter.complete(controller);
+      },
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // ignore: prefer_collection_literals
+      javascriptChannels: <JavascriptChannel>[
+        JavascriptChannel(
+          name: 'Resize',
+          onMessageReceived: (JavascriptMessage message) {
+            resizeCompleter.complete(true);
+          },
+        ),
+      ].toSet(),
+      onPageFinished: (String url) {
+        pageLoaded.complete(null);
+      },
+      javascriptMode: JavascriptMode.unrestricted,
+    );
+
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              width: 200,
+              height: 200,
+              child: webView,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    await controllerCompleter.future;
+    await pageLoaded.future;
+
+    expect(resizeCompleter.isCompleted, false);
+
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              width: 400,
+              height: 400,
+              child: webView,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    await resizeCompleter.future;
+  });
+
   group('Media playback policy', () {
     String audioTestBase64;
     setUpAll(() async {
