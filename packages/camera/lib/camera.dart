@@ -489,7 +489,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   /// Switch ON the torch.
-  Future<void> torchOn({double level: 1.0}) async {
+  Future<void> torchOn({double level = 1.0}) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController.',
