@@ -1,3 +1,8 @@
+## 0.1.0+2
+
+* Fix `Bad state: Future already completed` error when initially 
+  calling `RemoteConfig.instance` multiple times in parallel.
+
 ## 0.1.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
