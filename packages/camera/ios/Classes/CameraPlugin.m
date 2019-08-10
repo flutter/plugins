@@ -259,11 +259,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [self setCaptureSessionPreset:resolutionPreset];
 
   if (enableTorch) {
-    [self setTorchMode:enableTorch];
+    [self setTorchMode:[enableTorch boolValue]];
   }
 
   if (enableAE) {
-    [self setAEMode:enableAE];
+    [self setAEMode:[enableAE boolValue]];
   }
 
   return self;
@@ -600,7 +600,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   return ([device hasTorch] && [device hasFlash]);
 }
 
-- (void)setTorchMode:(NSNumber)enable(float)level {
+- (void)setTorchMode:(NSNumber *)enable
+               level:(float)level {
   AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
   if ([device hasTorch] && [device hasFlash]) {
     [device lockForConfiguration:nil];
@@ -617,18 +618,16 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   }
 }
 
-- (void)setAEMode:(NSNumber)enable {
+- (void)setAEMode:(NSNumber *)enable {
   AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-  if ([device isExposureModeSupported:AVCaptureDevice.ExposureMode]) {
-    [device lockForConfiguration:nil];
-    if (enable) {
-      AVCaptureDevice.ExposureMode exposure = AVCaptureDevice.ExposureMode.continuousAutoExposure;
-      if (exposure && [device isExposureModeSupported:exposure]) [device exposureMode:exposure];
-    } else {
-      [device exposureMode:AVCaptureDevice.ExposureMode.autoExpose];
-    }
-    [device unlockForConfiguration];
+  [device lockForConfiguration:nil];
+  if (enable) {
+    int exposure = AVCaptureDevice.ExposureMode.continuousAutoExposure;
+    if (exposure && [device isExposureModeSupported:exposure]) [device exposureMode:exposure];
+  } else {
+    [device exposureMode:AVCaptureDevice.ExposureMode.autoExpose];
   }
+  [device unlockForConfiguration];
 }
 
 - (BOOL)setupWriterForPath:(NSString *)path {
@@ -834,7 +833,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     result([NSNumber numberWithBool:[_camera hasTorch]]);
   } else if ([@"torchOn" isEqualToString:call.method]) {
     NSNumber *level = call.arguments[@"level"];
-    [_camera setTorchMode:true level.doubleValue];
+    [_camera setTorchMode:true level:doubleValue];
     result(nil);
   } else if ([@"torchOff" isEqualToString:call.method]) {
     [_camera setTorchMode:false];
