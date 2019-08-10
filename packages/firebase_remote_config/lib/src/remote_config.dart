@@ -52,7 +52,9 @@ class RemoteConfig extends ChangeNotifier {
     instance._remoteConfigSettings = remoteConfigSettings;
     instance._parameters =
         _parseRemoteConfigParameters(parameters: properties['parameters']);
-    _instanceCompleter.complete(instance);
+    if (!_instanceCompleter.isCompleted) {
+      _instanceCompleter.complete(instance);
+    }
   }
 
   static Map<String, RemoteConfigValue> _parseRemoteConfigParameters(
