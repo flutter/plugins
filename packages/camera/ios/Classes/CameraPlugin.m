@@ -197,6 +197,9 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 - (void)stopImageStream;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
+- (void)setTorchMode:(BOOL)enable level:(float)level;
+- (void)setTorchMode:(BOOL)enable;
+- (void)setAEMode:(BOOL)enable;
 @end
 
 @implementation FLTCam {
@@ -220,8 +223,6 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     *error = e;
   }
   _enableAudio = enableAudio;
-  _enableTorch = enableTorch;
-  _enableAE = enableAE;
   _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
 
@@ -600,7 +601,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   return ([device hasTorch] && [device hasFlash]);
 }
 
-- (void)setTorchMode:(NSNumber *)enable level:(float)level {
+- (void)setTorchMode:(BOOL)enable level:(float)level {
+  [self setTorchMode:enable level:1.0];
+}
+
+- (void)setTorchMode:(BOOL)enable level:(float)level {
   AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
   if ([device hasTorch] && [device hasFlash]) {
     [device lockForConfiguration:nil];
@@ -617,7 +622,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   }
 }
 
-- (void)setAEMode:(NSNumber *)enable {
+- (void)setAEMode:(BOOL)enable {
   AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
   [device lockForConfiguration:nil];
   if (enable) {
@@ -836,6 +841,12 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     result(nil);
   } else if ([@"torchOff" isEqualToString:call.method]) {
     [_camera setTorchMode:false];
+    result(nil);
+  } else if ([@"aeOn" isEqualToString:call.method]) {
+    [_camera setAEMode:true];
+    result(nil);
+  } else if ([@"aeOff" isEqualToString:call.method]) {
+    [_camera setAEMode:false];
     result(nil);
   } else {
     NSDictionary *argsMap = call.arguments;
