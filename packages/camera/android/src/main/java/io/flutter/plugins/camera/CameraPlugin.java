@@ -49,7 +49,7 @@ public class CameraPlugin implements MethodCallHandler {
     boolean enableAE = call.argument("enableAE");
     camera =
         new Camera(
-            registrar.activity(), 
+            registrar.activity(),
             view,
             cameraName,
             resolutionPreset,

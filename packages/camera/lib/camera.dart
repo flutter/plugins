@@ -573,7 +573,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         'aeOn was called on uninitialized CameraController',
       );
     }
-    
+
     try {
       await _channel.invokeMethod<void>('aeOn');
     } on PlatformException catch (e) {
@@ -592,9 +592,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     try {
       await _channel
-        .invokeMethod<void>(
-          'aeOff'
-        );
+        .invokeMethod<void>('aeOff');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

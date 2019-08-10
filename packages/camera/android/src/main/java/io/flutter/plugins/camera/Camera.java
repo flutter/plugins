@@ -474,7 +474,7 @@ public class Camera {
       captureRequestBuilder.set(
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
-    
+
       cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
       result.success(null);
     } catch (Exception e) {
@@ -488,7 +488,7 @@ public class Camera {
       captureRequestBuilder.set(
           CaptureRequest.CONTROL_AE_MODE,
           enable ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
-    
+
       cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
       result.success(null);
     } catch (Exception e) {

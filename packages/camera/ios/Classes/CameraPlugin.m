@@ -600,8 +600,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   return ([device hasTorch] && [device hasFlash]);
 }
 
-- (void)setTorchMode:(NSNumber)enable
-                      (float)level {
+- (void)setTorchMode:(NSNumber)enable(float)level {
   AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
   if ([device hasTorch] && [device hasFlash]) {
     [device lockForConfiguration:nil];
@@ -624,8 +623,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     [device lockForConfiguration:nil];
     if (enable) {
       AVCaptureDevice.ExposureMode exposure = AVCaptureDevice.ExposureMode.continuousAutoExposure;
-      if(exposure && [device isExposureModeSupported: exposure])
-      [device exposureMode:exposure];
+      if(exposure && [device isExposureModeSupported: exposure]) [device exposureMode:exposure];
     } else {
       [device exposureMode:AVCaptureDevice.ExposureMode.autoExpose];
     }
@@ -796,7 +794,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                                     resolutionPreset:resolutionPreset
                                          enableAudio:[enableAudio boolValue]
                                          enableTorch:[enableTorch boolValue]
-                                         enableAE:[enableAE boolValue]
+                                            enableAE:[enableAE boolValue]
                                        dispatchQueue:_dispatchQueue
                                                error:&error];
     if (error) {
