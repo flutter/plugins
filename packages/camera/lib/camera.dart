@@ -507,11 +507,10 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     try {
       value = value.copyWith(isRecordingVideo: false);
-      await _channel
-        .invokeMethod<void>(
-          'stopVideoRecording',
-          <String, dynamic>{'textureId': _textureId},
-        );
+      await _channel.invokeMethod<void>(
+        'stopVideoRecording',
+        <String, dynamic>{'textureId': _textureId},
+      );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -525,7 +524,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         'torchOn was called on uninitialized CameraController',
       );
     }
-    
+
     try {
       await _channel
           .invokeMethod<void>('torchOn', <String, dynamic>{'level': level});

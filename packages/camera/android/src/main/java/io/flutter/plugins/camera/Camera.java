@@ -327,12 +327,12 @@ public class Camera {
 
     // Torch
     captureRequestBuilder.set(
-        CaptureRequest.FLASH_MODE, 
+        CaptureRequest.FLASH_MODE,
         enableTorch ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
 
     // Auto Exposure
     captureRequestBuilder.set(
-        CaptureRequest.CONTROL_AE_MODE, 
+        CaptureRequest.CONTROL_AE_MODE,
         enableAE ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
 
     // Prepare the callback
@@ -468,11 +468,11 @@ public class Camera {
   public void setTorchMode(@NonNull final Result result, boolean enable, double level) {
     try {
       captureRequestBuilder.set(
-          CaptureRequest.FLASH_MODE, 
+          CaptureRequest.FLASH_MODE,
           enable ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
 
       captureRequestBuilder.set(
-          CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, 
+          CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
     
       cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
@@ -486,7 +486,7 @@ public class Camera {
     try {
       // Auto Exposure
       captureRequestBuilder.set(
-          CaptureRequest.CONTROL_AE_MODE, 
+          CaptureRequest.CONTROL_AE_MODE,
           enable ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
     
       cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);

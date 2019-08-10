@@ -265,7 +265,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   if (enableAE) {
     [self setAEMode:enableAE];
   }
-  
+
   return self;
 }
 
@@ -605,13 +605,13 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
   if ([device hasTorch] && [device hasFlash]) {
     [device lockForConfiguration:nil];
-    if(enable){
+    if (enable) {
       NSError *error = nil;
-      float acceptedLevel = 
+      float acceptedLevel =
           (level < AVCaptureMaxAvailableTorchLevel ? level : AVCaptureMaxAvailableTorchLevel);
       NSLog(@"FLash level: %f", acceptedLevel);
       [device setTorchModeOnWithLevel:acceptedLevel error:&error];
-    }else{
+    } else {
       [device setTorchMode:AVCaptureTorchModeOff];
     }
     [device unlockForConfiguration];
@@ -622,11 +622,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
   if ([device isExposureModeSupported:AVCaptureDevice.ExposureMode]) {
     [device lockForConfiguration:nil];
-    if(enable){
+    if (enable) {
       AVCaptureDevice.ExposureMode exposure = AVCaptureDevice.ExposureMode.continuousAutoExposure;
       if(exposure && [device isExposureModeSupported: exposure])
       [device exposureMode:exposure];
-    }else{
+    } else {
       [device exposureMode:AVCaptureDevice.ExposureMode.autoExpose];
     }
     [device unlockForConfiguration];

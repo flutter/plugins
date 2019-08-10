@@ -47,14 +47,14 @@ public class CameraPlugin implements MethodCallHandler {
     boolean enableAudio = call.argument("enableAudio");
     boolean enableTorch = call.argument("enableTorch");
     boolean enableAE = call.argument("enableAE");
-    camera = 
+    camera =
         new Camera(
             registrar.activity(), 
-            view, 
-            cameraName, 
-            resolutionPreset, 
-            enableAudio, 
-            enableTorch, 
+            view,
+            cameraName,
+            resolutionPreset,
+            enableAudio,
+            enableTorch,
             enableAE);
 
     EventChannel cameraEventChannel =
@@ -179,7 +179,8 @@ public class CameraPlugin implements MethodCallHandler {
   }
 
   private boolean hasTorch() {
-    return registrar.context()
+    return registrar
+        .context()
         .getApplicationContext()
         .getPackageManager()
         .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
