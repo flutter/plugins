@@ -600,8 +600,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   return ([device hasTorch] && [device hasFlash]);
 }
 
-- (void)setTorchMode:(NSNumber *)enable
-               level:(float)level {
+- (void)setTorchMode:(NSNumber *)enable level:(float)level {
   AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
   if ([device hasTorch] && [device hasFlash]) {
     [device lockForConfiguration:nil];
