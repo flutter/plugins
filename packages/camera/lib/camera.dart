@@ -591,8 +591,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
 
     try {
-      await _channel
-        .invokeMethod<void>('aeOff');
+      await _channel.invokeMethod<void>('aeOff');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

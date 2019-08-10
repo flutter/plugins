@@ -623,7 +623,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     [device lockForConfiguration:nil];
     if (enable) {
       AVCaptureDevice.ExposureMode exposure = AVCaptureDevice.ExposureMode.continuousAutoExposure;
-      if(exposure && [device isExposureModeSupported: exposure]) [device exposureMode:exposure];
+      if (exposure && [device isExposureModeSupported:exposure]) [device exposureMode:exposure];
     } else {
       [device exposureMode:AVCaptureDevice.ExposureMode.autoExpose];
     }
