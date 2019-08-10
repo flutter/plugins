@@ -250,7 +250,6 @@ class CameraController extends ValueNotifier<CameraValue> {
   // Auto Exposure
   final bool enableAE;
 
-
   int _textureId;
   bool _isDisposed = false;
   StreamSubscription<dynamic> _eventSubscription;
