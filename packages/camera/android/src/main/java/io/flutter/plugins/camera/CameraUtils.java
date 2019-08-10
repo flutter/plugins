@@ -3,15 +3,14 @@ package io.flutter.plugins.camera;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
-import android.graphics.Point;
-import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.CamcorderProfile;
 import android.util.Size;
-import android.view.Display;
+import io.flutter.plugins.camera.Camera.ResolutionPreset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,61 +24,14 @@ public final class CameraUtils {
 
   private CameraUtils() {}
 
-  static Size[] computeBestPreviewAndRecordingSize(
-      Activity activity,
-      StreamConfigurationMap streamConfigurationMap,
-      int minHeight,
-      int orientation,
-      Size captureSize) {
-    Size previewSize, videoSize;
-    Size[] sizes = streamConfigurationMap.getOutputSizes(SurfaceTexture.class);
-
-    // Preview size and video size should not be greater than screen resolution or 1080.
-    Point screenResolution = new Point();
-
-    Display display = activity.getWindowManager().getDefaultDisplay();
-    display.getRealSize(screenResolution);
-
-    final boolean swapWH = orientation % 180 == 90;
-    int screenWidth = swapWH ? screenResolution.y : screenResolution.x;
-    int screenHeight = swapWH ? screenResolution.x : screenResolution.y;
-
-    List<Size> goodEnough = new ArrayList<>();
-    for (Size s : sizes) {
-      if (minHeight <= s.getHeight()
-          && s.getWidth() <= screenWidth
-          && s.getHeight() <= screenHeight
-          && s.getHeight() <= 1080) {
-        goodEnough.add(s);
-      }
+  static Size computeBestPreviewSize(String cameraName, ResolutionPreset preset) {
+    if (preset.ordinal() > ResolutionPreset.high.ordinal()) {
+      preset = ResolutionPreset.high;
     }
 
-    Collections.sort(goodEnough, new CompareSizesByArea());
-
-    if (goodEnough.isEmpty()) {
-      previewSize = sizes[0];
-      videoSize = sizes[0];
-    } else {
-      float captureSizeRatio = (float) captureSize.getWidth() / captureSize.getHeight();
-
-      previewSize = goodEnough.get(0);
-      for (Size s : goodEnough) {
-        if ((float) s.getWidth() / s.getHeight() == captureSizeRatio) {
-          previewSize = s;
-          break;
-        }
-      }
-
-      Collections.reverse(goodEnough);
-      videoSize = goodEnough.get(0);
-      for (Size s : goodEnough) {
-        if ((float) s.getWidth() / s.getHeight() == captureSizeRatio) {
-          videoSize = s;
-          break;
-        }
-      }
-    }
-    return new Size[] {videoSize, previewSize};
+    CamcorderProfile profile =
+        getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
+    return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
   }
 
   static Size computeBestCaptureSize(StreamConfigurationMap streamConfigurationMap) {
@@ -116,6 +68,46 @@ public final class CameraUtils {
       cameras.add(details);
     }
     return cameras;
+  }
+
+  static CamcorderProfile getBestAvailableCamcorderProfileForResolutionPreset(
+      String cameraName, ResolutionPreset preset) {
+    int cameraId = Integer.parseInt(cameraName);
+    switch (preset) {
+        // All of these cases deliberately fall through to get the best available profile.
+      case max:
+        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_HIGH)) {
+          return CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+        }
+      case ultraHigh:
+        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_2160P)) {
+          return CamcorderProfile.get(CamcorderProfile.QUALITY_2160P);
+        }
+      case veryHigh:
+        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_1080P)) {
+          return CamcorderProfile.get(CamcorderProfile.QUALITY_1080P);
+        }
+      case high:
+        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_720P)) {
+          return CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
+        }
+      case medium:
+        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_480P)) {
+          return CamcorderProfile.get(CamcorderProfile.QUALITY_480P);
+        }
+      case low:
+        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_QVGA)) {
+          return CamcorderProfile.get(CamcorderProfile.QUALITY_QVGA);
+        }
+      default:
+        if (CamcorderProfile.hasProfile(
+            Integer.parseInt(cameraName), CamcorderProfile.QUALITY_LOW)) {
+          return CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
+        } else {
+          throw new IllegalArgumentException(
+              "No capture session available for current capture session.");
+        }
+    }
   }
 
   private static class CompareSizesByArea implements Comparator<Size> {
