@@ -1,4 +1,6 @@
 ## 0.5.3
+* Added new quality presets.
+* Now all quality presets can be used to control image capture quality.
 * Add support for Torch and Auto Exposure
 
 ## 0.5.2+2
