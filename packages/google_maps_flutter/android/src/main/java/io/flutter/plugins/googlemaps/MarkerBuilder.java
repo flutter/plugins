@@ -6,22 +6,22 @@ package io.flutter.plugins.googlemaps;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 class MarkerBuilder implements MarkerOptionsSink {
-  private final GoogleMapController mapController;
   private final MarkerOptions markerOptions;
-  private boolean consumesTapEvents;
+  private boolean consumeTapEvents;
 
-  MarkerBuilder(GoogleMapController mapController) {
-    this.mapController = mapController;
+  MarkerBuilder() {
     this.markerOptions = new MarkerOptions();
   }
 
-  String build() {
-    final Marker marker = mapController.addMarker(markerOptions, consumesTapEvents);
-    return marker.getId();
+  MarkerOptions build() {
+    return markerOptions;
+  }
+
+  boolean consumeTapEvents() {
+    return consumeTapEvents;
   }
 
   @Override
@@ -35,8 +35,8 @@ class MarkerBuilder implements MarkerOptionsSink {
   }
 
   @Override
-  public void setConsumeTapEvents(boolean consumesTapEvents) {
-    this.consumesTapEvents = consumesTapEvents;
+  public void setConsumeTapEvents(boolean consumeTapEvents) {
+    this.consumeTapEvents = consumeTapEvents;
   }
 
   @Override

@@ -32,9 +32,6 @@
     @"productIdentifier" : @"123",
     @"localizedTitle" : @"title",
     @"localizedDescription" : @"des",
-    @"downloadable" : @YES,
-    @"downloadContentLengths" : @1,
-    @"downloadContentVersion" : [NSNull null],  // not mockable
     @"subscriptionPeriod" : self.periodMap,
     @"introductoryPrice" : self.discountMap,
     @"subscriptionGroupIdentifier" : @"com.group"

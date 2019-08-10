@@ -22,7 +22,8 @@
 - (instancetype)initWithMap:(NSDictionary *)map {
   self = [super init];
   if (self) {
-    [self setValue:map[@"price"] ?: [NSNull null] forKey:@"price"];
+    [self setValue:[[NSDecimalNumber alloc] initWithString:map[@"price"]] ?: [NSNull null]
+            forKey:@"price"];
     NSLocale *locale = NSLocale.systemLocale;
     [self setValue:locale ?: [NSNull null] forKey:@"priceLocale"];
     [self setValue:map[@"numberOfPeriods"] ?: @(0) forKey:@"numberOfPeriods"];
@@ -45,7 +46,8 @@
     [self setValue:map[@"localizedDescription"] ?: [NSNull null] forKey:@"localizedDescription"];
     [self setValue:map[@"localizedTitle"] ?: [NSNull null] forKey:@"localizedTitle"];
     [self setValue:map[@"downloadable"] ?: @NO forKey:@"downloadable"];
-    [self setValue:map[@"price"] ?: [NSNull null] forKey:@"price"];
+    [self setValue:[[NSDecimalNumber alloc] initWithString:map[@"price"]] ?: [NSNull null]
+            forKey:@"price"];
     NSLocale *locale = NSLocale.systemLocale;
     [self setValue:locale ?: [NSNull null] forKey:@"priceLocale"];
     [self setValue:map[@"downloadContentLengths"] ?: @(0) forKey:@"downloadContentLengths"];
@@ -96,7 +98,6 @@
   } else {
     [self.delegate productsRequest:self didReceiveResponse:response];
   }
-  [self.delegate requestDidFinish:self];
 }
 
 @end
@@ -128,6 +129,14 @@
   return [[SKProductRequestStub alloc] initWithProductIdentifiers:identifiers];
 }
 
+- (SKProduct *)getProduct:(NSString *)productID {
+  return [SKProduct new];
+}
+
+- (SKReceiptRefreshRequestStub *)getRefreshReceiptRequest:(NSDictionary *)properties {
+  return [[SKReceiptRefreshRequestStub alloc] initWithReceiptProperties:properties];
+}
+
 @end
 
 @interface SKPaymentQueueStub ()
@@ -146,6 +155,10 @@
   SKPaymentTransactionStub *transaction =
       [[SKPaymentTransactionStub alloc] initWithState:self.testState];
   [self.observer paymentQueue:self updatedTransactions:@[ transaction ]];
+}
+
+- (void)restoreCompletedTransactions {
+  [self.observer paymentQueueRestoreCompletedTransactionsFinished:self];
 }
 
 @end
@@ -174,11 +187,6 @@
             forKey:@"error"];
     [self setValue:[NSDate dateWithTimeIntervalSince1970:[map[@"transactionTimeStamp"] doubleValue]]
             forKey:@"transactionDate"];
-    NSMutableArray *downloads = [NSMutableArray new];
-    for (NSDictionary *downloadMap in map[@"downloads"]) {
-      [downloads addObject:[[SKDownloadStub alloc] initWithMap:downloadMap]];
-    }
-    [self setValue:downloads forKey:@"downloads"];
   }
   return self;
 }
@@ -194,34 +202,46 @@
 
 @end
 
-@implementation SKDownloadStub
-
-- (instancetype)initWithMap:(NSDictionary *)map {
-  self = [super init];
-  if (self) {
-    [self setValue:map[@"state"] forKey:@"downloadState"];
-    [self setValue:map[@"contentIdentifier"] ?: [NSNull null] forKey:@"contentIdentifier"];
-    [self setValue:map[@"contentLength"] ?: [NSNull null] forKey:@"contentLength"];
-    [self setValue:[NSURL URLWithString:map[@"contentURL"]] ?: [NSNull null] forKey:@"contentURL"];
-    [self setValue:map[@"error"] ? [[NSErrorStub alloc] initWithMap:map[@"error"]] : [NSNull null]
-            forKey:@"error"];
-    [self setValue:map[@"progress"] ?: [NSNull null] forKey:@"progress"];
-    [self setValue:map[@"timeRemaining"] ?: [NSNull null] forKey:@"timeRemaining"];
-    [self setValue:[[SKPaymentTransactionStub alloc] initWithID:map[@"transactionID"]]
-                       ?: [NSNull null]
-            forKey:@"transaction"];
-  }
-  return self;
-}
-
-@end
-
 @implementation NSErrorStub
 
 - (instancetype)initWithMap:(NSDictionary *)map {
   return [self initWithDomain:[map objectForKey:@"domain"]
                          code:[[map objectForKey:@"code"] integerValue]
                      userInfo:[map objectForKey:@"userInfo"]];
+}
+
+@end
+
+@implementation FIAPReceiptManagerStub : FIAPReceiptManager
+
+- (NSData *)getReceiptData:(NSURL *)url {
+  NSString *originalString = [NSString stringWithFormat:@"test"];
+  return [[NSData alloc] initWithBase64EncodedString:originalString options:kNilOptions];
+}
+
+@end
+
+@implementation SKReceiptRefreshRequestStub {
+  NSError *_error;
+}
+
+- (instancetype)initWithReceiptProperties:(NSDictionary<NSString *, id> *)properties {
+  self = [super initWithReceiptProperties:properties];
+  return self;
+}
+
+- (instancetype)initWithFailureError:(NSError *)error {
+  self = [super init];
+  _error = error;
+  return self;
+}
+
+- (void)start {
+  if (_error) {
+    [self.delegate request:self didFailWithError:_error];
+  } else {
+    [self.delegate requestDidFinish:self];
+  }
 }
 
 @end

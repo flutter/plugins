@@ -47,8 +47,8 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
-}
-
-dependencies {
-    api 'androidx.legacy:legacy-support-v4:1.0.0'
+    dependencies {
+        implementation 'androidx.core:core:1.0.2'
+        implementation 'androidx.annotation:annotation:1.0.0'
+    }
 }

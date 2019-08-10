@@ -31,3 +31,5 @@ GeneratedPluginRegistrant.m
 GeneratedPluginRegistrant.java
 build/
 .flutter-plugins
+
+ios/Classes/UserAgent.h

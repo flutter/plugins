@@ -5,7 +5,7 @@ Demonstrates how to use the firebase_ml_vision plugin.
 ## Usage
 
 *Important* If using on-device detectors on `iOS`, see the plugin
-[README.md](https://github.com/flutter/plugins/blob/master/packages/camera/README.md) on including
+[README.md](https://github.com/flutter/plugins/blob/master/packages/firebase_ml_vision/README.md) on including
 ML Model pods into the example project.
 
 This example uses the *image_picker* plugin to get images from the device gallery. If using an iOS
