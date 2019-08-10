@@ -29,7 +29,7 @@ for it in the plugin and use an action constant to refer to it. For instance:
 
 `'action_location_source_settings'` translates to `android.settings.LOCATION_SOURCE_SETTINGS`
 
-This plugin brings a set of actions defined on the Android side so that you can call most of the android actions from this plugin as:
+Any of the Android intent constants can be used directly. Sample usage:
 
 ```dart
   final AndroidIntent intent = const AndroidIntent(
