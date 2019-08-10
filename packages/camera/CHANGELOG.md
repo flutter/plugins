@@ -1,3 +1,6 @@
+## 0.5.3
+* Add support for Torch and Auto Exposure
+
 ## 0.5.2+2
 
 * Fix memory leak related to not unregistering stream handler in FlutterEventChannel when disposing camera.
