@@ -1,7 +1,7 @@
-## 0.14.0+1
+## 0.14.0+2
 
 * Update example app to show token custom claims
-* Rely on custom claims to get the field from the IdTokenResult
+* Since firebase tokens comply with the OpenID Connect JWT spec, we can use the spec claims (`exp`, `auth_time`, `iat`) to retrieve the values we need for the `IdTokenResult` class.  
 
 ## 0.14.0+1
 
