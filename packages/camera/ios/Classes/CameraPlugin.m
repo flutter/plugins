@@ -186,7 +186,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
                        enableTorch:(BOOL)enableTorch
-                       enableAE:(BOOL)enableAE
+                          enableAE:(BOOL)enableAE
                      dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error;
 
@@ -209,7 +209,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
                        enableTorch:(BOOL)enableTorch
-                       enableAE:(BOOL)enableAE
+                          enableAE:(BOOL)enableAE
                      dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error {
   self = [super init];
@@ -258,11 +258,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [self setCaptureSessionPreset:_resolutionPreset];
   [self setCaptureSessionPreset:resolutionPreset];
 
-  if(enableTorch) {
+  if (enableTorch) {
     [self setTorchMode:enableTorch];
   }
 
-  if(enableAE) {
+  if (enableAE) {
     [self setAEMode:enableAE];
   }
   
@@ -595,40 +595,41 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   }
 }
 
-- (bool) hasTorch {
+- (bool)hasTorch {
   AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
   return ([device hasTorch] && [device hasFlash]);
 }
 
-- (void) setTorchMode:(NSNumber)enable
+- (void)setTorchMode:(NSNumber)enable
                       (float)level {
   AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-  if ([device hasTorch] && [device hasFlash]){
-      [device lockForConfiguration:nil];
-      if(enable){
-        NSError *error = nil;
-        float acceptedLevel = (level < AVCaptureMaxAvailableTorchLevel ? level : AVCaptureMaxAvailableTorchLevel);
-        NSLog(@"FLash level: %f", acceptedLevel);
-        [device setTorchModeOnWithLevel:acceptedLevel error:&error];
-      }else{
-        [device setTorchMode:AVCaptureTorchModeOff];
-      }
-      [device unlockForConfiguration];
+  if ([device hasTorch] && [device hasFlash]) {
+    [device lockForConfiguration:nil];
+    if(enable){
+      NSError *error = nil;
+      float acceptedLevel = 
+          (level < AVCaptureMaxAvailableTorchLevel ? level : AVCaptureMaxAvailableTorchLevel);
+      NSLog(@"FLash level: %f", acceptedLevel);
+      [device setTorchModeOnWithLevel:acceptedLevel error:&error];
+    }else{
+      [device setTorchMode:AVCaptureTorchModeOff];
+    }
+    [device unlockForConfiguration];
   }
 }
 
-- (void) setAEMode:(NSNumber)enable {
+- (void)setAEMode:(NSNumber)enable {
   AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-  if ([device isExposureModeSupported:AVCaptureDevice.ExposureMode]){
-      [device lockForConfiguration:nil];
-      if(enable){
-        AVCaptureDevice.ExposureMode exposure = AVCaptureDevice.ExposureMode.continuousAutoExposure;
-        if(exposure && [device isExposureModeSupported: exposure])
-        [device exposureMode:exposure];
-      }else{
-        [device exposureMode:AVCaptureDevice.ExposureMode.autoExpose];
-      }
-      [device unlockForConfiguration];
+  if ([device isExposureModeSupported:AVCaptureDevice.ExposureMode]) {
+    [device lockForConfiguration:nil];
+    if(enable){
+      AVCaptureDevice.ExposureMode exposure = AVCaptureDevice.ExposureMode.continuousAutoExposure;
+      if(exposure && [device isExposureModeSupported: exposure])
+      [device exposureMode:exposure];
+    }else{
+      [device exposureMode:AVCaptureDevice.ExposureMode.autoExpose];
+    }
+    [device unlockForConfiguration];
   }
 }
 
@@ -789,7 +790,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
     NSNumber *enableAudio = call.arguments[@"enableAudio"];
     NSNumber *enableTorch = call.arguments[@"enableTorch"];
-    NSNumber *enableAE = call.arguments[@"enableAE"];plop
+    NSNumber *enableAE = call.arguments[@"enableAE"];
     NSError *error;
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
@@ -834,12 +835,12 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   } else if ([@"hasTorch" isEqualToString:call.method]) {
     result([NSNumber numberWithBool:[_camera hasTorch]]);
   } else if ([@"torchOn" isEqualToString:call.method]) {
-     NSNumber *level = call.arguments[@"level"];
-     [_camera setTorchMode:true level.doubleValue];
-     result(nil);
+    NSNumber *level = call.arguments[@"level"];
+    [_camera setTorchMode:true level.doubleValue];
+    result(nil);
   } else if ([@"torchOff" isEqualToString:call.method]) {
-     [_camera setTorchMode:false];
-     result(nil);
+    [_camera setTorchMode:false];
+    result(nil);
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;

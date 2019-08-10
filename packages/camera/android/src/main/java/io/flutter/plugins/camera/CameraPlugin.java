@@ -1,9 +1,9 @@
 package io.flutter.plugins.camera;
 
+import android.content.pm.PackageManager;
 import android.hardware.camera2.CameraAccessException;
 import android.os.Build;
 import androidx.annotation.NonNull;
-import android.content.pm.PackageManager;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -47,7 +47,15 @@ public class CameraPlugin implements MethodCallHandler {
     boolean enableAudio = call.argument("enableAudio");
     boolean enableTorch = call.argument("enableTorch");
     boolean enableAE = call.argument("enableAE");
-    camera = new Camera(registrar.activity(), view, cameraName, resolutionPreset, enableAudio, enableTorch, enableAE);
+    camera = 
+        new Camera(
+            registrar.activity(), 
+            view, 
+            cameraName, 
+            resolutionPreset, 
+            enableAudio, 
+            enableTorch, 
+            enableAE);
 
     EventChannel cameraEventChannel =
         new EventChannel(
@@ -171,7 +179,10 @@ public class CameraPlugin implements MethodCallHandler {
   }
 
   private boolean hasTorch() {
-    return registrar.context().getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+    return registrar.context()
+        .getApplicationContext()
+        .getPackageManager()
+        .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
   }
 
   // We move catching CameraAccessException out of onMethodCall because it causes a crash

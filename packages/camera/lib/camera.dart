@@ -504,12 +504,14 @@ class CameraController extends ValueNotifier<CameraValue> {
         'stopVideoRecording was called when no video is recording.',
       );
     }
+
     try {
       value = value.copyWith(isRecordingVideo: false);
-      await _channel.invokeMethod<void>(
-        'stopVideoRecording',
-        <String, dynamic>{'textureId': _textureId},
-      );
+      await _channel
+        .invokeMethod<void>(
+          'stopVideoRecording',
+          <String, dynamic>{'textureId': _textureId},
+        );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -525,10 +527,8 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     
     try {
-      await _channel.invokeMethod<void>(
-        'torchOn', 
-        <String, dynamic>{'level': level}
-      );
+      await _channel
+          .invokeMethod<void>('torchOn', <String, dynamic>{'level': level});
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -544,9 +544,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
 
     try {
-      await _channel.invokeMethod<void>(
-        'torchOff'
-      );
+      await _channel.invokeMethod<void>('torchOff');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -562,9 +560,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
 
     try {
-      return await _channel.invokeMethod<bool>(
-        'hasTorch'
-      );
+      return await _channel.invokeMethod<bool>('hasTorch');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -580,9 +576,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     
     try {
-      await _channel.invokeMethod<void>(
-        'aeOn'
-      );
+      await _channel.invokeMethod<void>('aeOn');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -598,9 +592,10 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
 
     try {
-      await _channel.invokeMethod<void>(
-        'aeOff'
-      );
+      await _channel
+        .invokeMethod<void>(
+          'aeOff'
+        );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

@@ -21,7 +21,6 @@ import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
-import android.os.Build;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -328,13 +327,13 @@ public class Camera {
 
     // Torch
     captureRequestBuilder.set(
-      CaptureRequest.FLASH_MODE, 
-      enableTorch ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+        CaptureRequest.FLASH_MODE, 
+        enableTorch ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
 
     // Auto Exposure
     captureRequestBuilder.set(
-      CaptureRequest.CONTROL_AE_MODE, 
-      enableAE ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
+        CaptureRequest.CONTROL_AE_MODE, 
+        enableAE ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
 
     // Prepare the callback
     CameraCaptureSession.StateCallback callback =
@@ -348,17 +347,7 @@ public class Camera {
               }
               cameraCaptureSession = session;
               captureRequestBuilder.set(
-                CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-
-              // // Torch
-              // captureRequestBuilder.set(
-              //   CaptureRequest.FLASH_MODE, 
-              //   enableTorch ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
-
-              // // Auto Exposure
-              // captureRequestBuilder.set(
-              //   CaptureRequest.CONTROL_AE_MODE, 
-              //   enableAE ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
+                  CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
               cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               if (onSuccessCallback != null) {
@@ -472,36 +461,35 @@ public class Camera {
   }
 
   // Torch
-  public void setTorchMode(@NonNull final Result result, boolean enable){
+  public void setTorchMode(@NonNull final Result result, boolean enable) {
     setTorchMode(result, enable, 1.0);
   }
 
-  public void setTorchMode(@NonNull final Result result, boolean enable, double level){
+  public void setTorchMode(@NonNull final Result result, boolean enable, double level) {
     try {
       captureRequestBuilder.set(
-        CaptureRequest.FLASH_MODE, 
-        enable ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+          CaptureRequest.FLASH_MODE, 
+          enable ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
 
       captureRequestBuilder.set(
-        CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+          CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, 
+          CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
     
       cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
-
       result.success(null);
     } catch (Exception e) {
       result.error("cameraTorchFailed", e.getMessage(), null);
     }
   }
 
-  public void setAEMode(@NonNull final Result result, boolean enable){
+  public void setAEMode(@NonNull final Result result, boolean enable) {
     try {
       // Auto Exposure
       captureRequestBuilder.set(
-        CaptureRequest.CONTROL_AE_MODE, 
-        enable ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
+          CaptureRequest.CONTROL_AE_MODE, 
+          enable ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
     
       cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
-
       result.success(null);
     } catch (Exception e) {
       result.error("cameraAEFailed", e.getMessage(), null);
