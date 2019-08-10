@@ -485,6 +485,9 @@ public class Camera {
       captureRequestBuilder.set(
         CaptureRequest.FLASH_MODE, 
         enable ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+
+      captureRequestBuilder.set(
+        CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
     
       cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
 
