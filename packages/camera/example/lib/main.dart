@@ -98,7 +98,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           ),
           _captureControlRowWidget(),
           Row(
-            children: [
+            children: <Widget>[
               _toggleAudioWidget(),
               _toggleTorchWidget(),
             ],
@@ -165,10 +165,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       child: Row(
         children: <Widget>[
           const Text('Enable Torch:'),
-          Switch(
-            value: enableTorch,
-            onChanged: _toggleTorch
-          ),
+          Switch(value: enableTorch, onChanged: _toggleTorch),
         ],
       ),
     );
@@ -178,15 +175,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Future<void> _toggleTorch(bool value) async {
     bool hasTorch = false;
 
-    if(controller != null) {
+    if (controller != null) {
       hasTorch = await controller.hasTorch;
     }
 
     if (hasTorch) {
       enableTorch = value;
-      if(enableTorch){
+      if (enableTorch) {
         controller.torchOn();
-      }else{
+      } else {
         controller.torchOff();
       }
     }
