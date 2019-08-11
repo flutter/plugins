@@ -37,6 +37,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
+  bool enableTorch = false;
 
   @override
   void initState() {
@@ -96,7 +97,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
           ),
           _captureControlRowWidget(),
-          _toggleAudioWidget(),
+          Row(
+            children: [
+              _toggleAudioWidget(),
+              _toggleTorchWidget(),
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
@@ -150,6 +156,42 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         ],
       ),
     );
+  }
+
+  /// Display the Torch Switch
+  Widget _toggleTorchWidget() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 25),
+      child: Row(
+        children: <Widget>[
+          const Text('Enable Torch:'),
+          Switch(
+            value: enableTorch,
+            onChanged: _toggleTorch
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Toggle Torch
+  Future<void> _toggleTorch(bool value) async {
+    bool hasTorch = false;
+
+    if(controller != null) {
+      hasTorch = await controller.hasTorch;
+    }
+
+    if (hasTorch) {
+      enableTorch = value;
+      if(enableTorch){
+        controller.torchOn();
+      }else{
+        controller.torchOff();
+      }
+    }
+
+    setState(() {});
   }
 
   /// Display the thumbnail of the captured image or video.
