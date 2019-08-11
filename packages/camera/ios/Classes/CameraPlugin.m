@@ -260,11 +260,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [self setCaptureSessionPreset:_resolutionPreset];
 
   if (enableTorch) {
-    [self setTorchMode:[enableTorch boolValue]];
+    [self setTorchMode:enableTorch];
   }
 
   if (enableAE) {
-    [self setAEMode:[enableAE boolValue]];
+    [self setAEMode:enableAE];
   }
 
   return self;
@@ -626,10 +626,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
   [device lockForConfiguration:nil];
   if (enable) {
-    int exposure = AVCaptureDevice.ExposureMode.continuousAutoExposure;
+    int exposure = AVCaptureExposureModeContinuousAutoExposure;
     if (exposure && [device isExposureModeSupported:exposure]) device.exposureMode = exposure;
   } else {
-    device.exposureMode = AVCaptureDevice.ExposureMode.autoExpose;
+    device.exposureMode = AVCaptureExposureModeAutoExpose;
   }
   [device unlockForConfiguration];
 }
