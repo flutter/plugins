@@ -837,7 +837,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     result([NSNumber numberWithBool:[_camera hasTorch]]);
   } else if ([@"torchOn" isEqualToString:call.method]) {
     NSNumber *level = call.arguments[@"level"];
-    [_camera setTorchMode:true level:level];
+    [_camera setTorchMode:true level:[level floatValue]];
     result(nil);
   } else if ([@"torchOff" isEqualToString:call.method]) {
     [_camera setTorchMode:false];
