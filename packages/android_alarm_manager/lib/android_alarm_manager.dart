@@ -173,7 +173,8 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    final bool r = await _channel.invokeMethod<bool>('Alarm.oneShotAt', <dynamic>[
+    final bool r =
+        await _channel.invokeMethod<bool>('Alarm.oneShotAt', <dynamic>[
       id,
       alarmClock,
       allowWhileIdle,
