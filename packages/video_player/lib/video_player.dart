@@ -416,8 +416,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
 
-    // On iOS setting the speed will start playing the video automatically
-    // Do not change the video speed until after the video is played
+    // On iOS setting the speed on an AVPlayer starts playing
+    // the video straightaway. We avoid this surprising behaviour
+    // by not changing the speed of the player until after the video
+    // starts playing
     if (!value.isPlaying) {
       return;
     }
@@ -432,6 +434,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// [speed] can be 0.5x, 1x, 2x
   /// by default speed value is 1.0
+  ///
+  /// Negative speeds are not supported
+  /// speeds above 2x are not supported on iOS
   Future<void> setSpeed(double speed) async {
     value = value.copyWith(speed: speed);
     await _applySpeed();

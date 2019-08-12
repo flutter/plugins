@@ -354,16 +354,28 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
 }
 
-- (void)setSpeed:(double)speed {
+- (void)setSpeed:(double)speed result:(FlutterResult)result {
   if (speed == 1.0 || speed == 0.0) {
     _player.rate = speed;
+    result(nil);
   } else if (speed < 0 || speed > 2.0) {
-    NSLog(@"Speed outside supported range %f", speed);
+    result([FlutterError errorWithCode:@"unsupported_speed"
+                               message:@"Speed must be >= 0.0 and <= 2.0"
+                               details:nil]);
   } else if ((speed > 1.0 && _player.currentItem.canPlayFastForward) ||
              (speed < 1.0 && _player.currentItem.canPlaySlowForward)) {
     _player.rate = speed;
+    result(nil);
   } else {
-    NSLog(@"Unsupported speed. Cannot play fast/slow forward: %f", speed);
+    if (speed > 1.0) {
+      result([FlutterError errorWithCode:@"unsupported_fast_forward"
+                                 message:@"This video cannot be played fast forward"
+                                 details:nil]);
+    } else {
+      result([FlutterError errorWithCode:@"unsupported_slow_forward"
+                                 message:@"This video cannot be played slow forward"
+                                 details:nil]);
+    }
   }
 }
 
@@ -520,8 +532,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       [player pause];
       result(nil);
     } else if ([@"setSpeed" isEqualToString:call.method]) {
-      [player setSpeed:[[argsMap objectForKey:@"speed"] doubleValue]];
-      result(nil);
+      [player setSpeed:[[argsMap objectForKey:@"speed"] doubleValue] result:result];
+      return;
     } else {
       result(FlutterMethodNotImplemented);
     }
