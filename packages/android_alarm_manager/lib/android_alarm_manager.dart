@@ -113,20 +113,17 @@ class AndroidAlarmManager {
     bool exact = false,
     bool wakeup = false,
     bool rescheduleOnReboot = false,
-  }) {
-    final DateTime now = DateTime.now();
-    final DateTime time = now.add(delay);
-    return oneShotAt(
-      time,
-      id,
-      callback,
-      alarmClock: alarmClock,
-      allowWhileIdle: allowWhileIdle,
-      exact: exact,
-      wakeup: wakeup,
-      rescheduleOnReboot: rescheduleOnReboot,
-    );
-  }
+  }) =>
+      oneShotAt(
+        DateTime.now().add(delay),
+        id,
+        callback,
+        alarmClock: alarmClock,
+        allowWhileIdle: allowWhileIdle,
+        exact: exact,
+        wakeup: wakeup,
+        rescheduleOnReboot: rescheduleOnReboot,
+      );
 
   /// Schedules a one-shot timer to run `callback` at `time`.
   ///
@@ -176,7 +173,7 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    final bool r = await _channel.invokeMethod<bool>('Alarm.oneShot', <dynamic>[
+    final bool r = await _channel.invokeMethod<bool>('Alarm.oneShotAt', <dynamic>[
       id,
       alarmClock,
       allowWhileIdle,
