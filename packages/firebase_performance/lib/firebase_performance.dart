@@ -4,12 +4,6 @@
 
 library firebase_performance;
 
-import 'dart:async';
-
-import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
-
-part 'src/firebase_performance.dart';
-part 'src/http_metric.dart';
-part 'src/performance_attributes.dart';
-part 'src/trace.dart';
+export 'android/firebase_performance.dart';
+export 'android/trace.dart';
+export 'android/http_metric.dart';

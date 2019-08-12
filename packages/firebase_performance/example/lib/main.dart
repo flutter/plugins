@@ -23,8 +23,8 @@ class _MetricHttpClient extends BaseClient {
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
-    final HttpMetric metric = FirebasePerformance.instance
-        .newHttpMetric(request.url.toString(), HttpMethod.Get);
+    final HttpMetric metric = FirebasePerformance.getInstance()
+        .newHttpMetric(request.url.toString(), 'GET');
 
     await metric.start();
 
@@ -32,10 +32,10 @@ class _MetricHttpClient extends BaseClient {
     try {
       response = await _inner.send(request);
       metric
-        ..responsePayloadSize = response.contentLength
-        ..responseContentType = response.headers['Content-Type']
-        ..requestPayloadSize = request.contentLength
-        ..httpResponseCode = response.statusCode;
+        ..setResponsePayloadSize(response.contentLength)
+        ..setResponseContentType(response.headers['Content-Type'])
+        ..setRequestPayloadSize(request.contentLength)
+        ..setHttpResponseCode(response.statusCode);
     } finally {
       await metric.stop();
     }
@@ -45,7 +45,7 @@ class _MetricHttpClient extends BaseClient {
 }
 
 class _MyAppState extends State<MyApp> {
-  FirebasePerformance _performance = FirebasePerformance.instance;
+  FirebasePerformance _performance = FirebasePerformance.getInstance();
   bool _isPerformanceCollectionEnabled = false;
   String _performanceCollectionMessage =
       'Unknown status of performance collection.';

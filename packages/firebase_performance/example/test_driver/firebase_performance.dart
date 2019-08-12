@@ -14,7 +14,7 @@ void main() {
   tearDownAll(() => completer.complete(null));
 
   group('firebase_performance', () {
-    final FirebasePerformance performance = FirebasePerformance.instance;
+    final FirebasePerformance performance = FirebasePerformance.getInstance();
 
     group('$FirebasePerformance', () {
       test('setPerformanceCollectionEnabled', () {
@@ -32,18 +32,18 @@ void main() {
       });
     });
 
-    group('$HttpMethod', () {
-      test('test all values', () {
-        for (HttpMethod method in HttpMethod.values) {
-          final HttpMetric testMetric = performance.newHttpMetric(
-            'https://www.google.com/',
-            method,
-          );
-          testMetric.start();
-          testMetric.stop();
-        }
-      });
-    });
+//    group('$HttpMethod', () {
+//      test('test all values', () {
+//        for (HttpMethod method in HttpMethod.values) {
+//          final HttpMetric testMetric = performance.newHttpMetric(
+//            'https://www.google.com/',
+//            method,
+//          );
+//          testMetric.start();
+//          testMetric.stop();
+//        }
+//      });
+//    });
 
     group('$Trace', () {
       Trace testTrace;
@@ -65,17 +65,17 @@ void main() {
         testTrace.start();
 
         testTrace.incrementMetric('metric', 14);
-        expectLater(testTrace.getMetric('metric'), completion(14));
+        expectLater(testTrace.getLongMetric('metric'), completion(14));
 
         testTrace.incrementMetric('metric', 45);
-        expect(testTrace.getMetric('metric'), completion(59));
+        expect(testTrace.getLongMetric('metric'), completion(59));
       });
 
       test('setMetric', () {
         testTrace.start();
 
-        testTrace.setMetric('metric2', 37);
-        expect(testTrace.getMetric('metric2'), completion(37));
+        testTrace.putMetric('metric2', 37);
+        expect(testTrace.getLongMetric('metric2'), completion(37));
       });
 
       test('putAttribute', () {
@@ -126,7 +126,7 @@ void main() {
       setUp(() {
         testMetric = performance.newHttpMetric(
           'https://www.google.com/',
-          HttpMethod.Delete,
+          'DELETE',
         );
       });
 
@@ -170,10 +170,10 @@ void main() {
       test('http setters shouldn\'t cause a crash', () async {
         testMetric.start();
 
-        testMetric.httpResponseCode = 443;
-        testMetric.requestPayloadSize = 56734;
-        testMetric.responseContentType = '1984';
-        testMetric.responsePayloadSize = 4949;
+        testMetric.setHttpResponseCode(443);
+        testMetric.setRequestPayloadSize(56734);
+        testMetric.setResponseContentType('1984');
+        testMetric.setResponsePayloadSize(4949);
 
         await pumpEventQueue();
       });

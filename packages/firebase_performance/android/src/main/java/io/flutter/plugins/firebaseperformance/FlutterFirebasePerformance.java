@@ -1,107 +1,90 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 package io.flutter.plugins.firebaseperformance;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.HttpMetric;
 import com.google.firebase.perf.metrics.Trace;
 import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 
-public class FlutterFirebasePerformance implements MethodChannel.MethodCallHandler {
-  private static String parseHttpMethod(String httpMethod) {
-    switch (httpMethod) {
-      case "HttpMethod.Connect":
-        return FirebasePerformance.HttpMethod.CONNECT;
-      case "HttpMethod.Delete":
-        return FirebasePerformance.HttpMethod.DELETE;
-      case "HttpMethod.Get":
-        return FirebasePerformance.HttpMethod.GET;
-      case "HttpMethod.Head":
-        return FirebasePerformance.HttpMethod.HEAD;
-      case "HttpMethod.Options":
-        return FirebasePerformance.HttpMethod.OPTIONS;
-      case "HttpMethod.Patch":
-        return FirebasePerformance.HttpMethod.PATCH;
-      case "HttpMethod.Post":
-        return FirebasePerformance.HttpMethod.POST;
-      case "HttpMethod.Put":
-        return FirebasePerformance.HttpMethod.PUT;
-      case "HttpMethod.Trace":
-        return FirebasePerformance.HttpMethod.TRACE;
+final class FlutterFirebasePerformance implements FlutterWrapper {
+  private final String handle;
+
+  public final FirebasePerformance firebaseperformance;
+
+  FlutterFirebasePerformance(String handle, FirebasePerformance firebaseperformance) {
+    this.handle = handle;
+    this.firebaseperformance = firebaseperformance;
+    FirebasePerformancePlugin.addInvokerWrapper(handle, this);
+  }
+
+  static Object onStaticMethodCall(MethodCall call) {
+    switch(call.method) {
+      case "FirebasePerformance#getInstance":
+        return getInstance(call);
+      case "FirebasePerformance#startTrace":
+        return startTrace(call);
       default:
-        throw new IllegalArgumentException(String.format("No HttpMethod for: %s", httpMethod));
+        return new FlutterWrapper.MethodNotImplemented();
     }
-  }
-
-  private final FirebasePerformance performance;
-
-  @SuppressWarnings("ConstantConditions")
-  static void getInstance(MethodCall call, MethodChannel.Result result) {
-    final Integer handle = call.argument("handle");
-    FirebasePerformancePlugin.addHandler(handle, new FlutterFirebasePerformance());
-    result.success(null);
-  }
-
-  private FlutterFirebasePerformance() {
-    this.performance = FirebasePerformance.getInstance();
   }
 
   @Override
-  public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    switch (call.method) {
+  public Object onMethodCall(MethodCall call) {
+    switch(call.method) {
       case "FirebasePerformance#isPerformanceCollectionEnabled":
-        isPerformanceCollectionEnabled(result);
-        break;
-      case "FirebasePerformance#setPerformanceCollectionEnabled":
-        setPerformanceCollectionEnabled(call, result);
-        break;
-      case "FirebasePerformance#newTrace":
-        newTrace(call, result);
-        break;
+        return isPerformanceCollectionEnabled();
       case "FirebasePerformance#newHttpMetric":
-        newHttpMetric(call, result);
-        break;
+        return newHttpMetric(call);
+      case "FirebasePerformance#newTrace":
+        return newTrace(call);
+      case "FirebasePerformance#setPerformanceCollectionEnabled":
+        return setPerformanceCollectionEnabled(call);
       default:
-        result.notImplemented();
+        return new FlutterWrapper.MethodNotImplemented();
     }
   }
 
-  private void isPerformanceCollectionEnabled(MethodChannel.Result result) {
-    result.success(performance.isPerformanceCollectionEnabled());
+  private static Object getInstance(final MethodCall call) {
+    final String handle = call.argument("__createdObjectHandle");
+    final FirebasePerformance value = FirebasePerformance.getInstance();
+    new FlutterFirebasePerformance(handle, value);
+    return null;
   }
 
-  @SuppressWarnings("ConstantConditions")
-  private void setPerformanceCollectionEnabled(MethodCall call, MethodChannel.Result result) {
-    final Boolean enable = call.argument("enable");
-    performance.setPerformanceCollectionEnabled(enable);
-
-    result.success(null);
+  private Object isPerformanceCollectionEnabled() {
+    return firebaseperformance.isPerformanceCollectionEnabled();
   }
 
-  @SuppressWarnings("ConstantConditions")
-  private void newTrace(MethodCall call, MethodChannel.Result result) {
-    final String name = call.argument("name");
-    final Trace trace = performance.newTrace(name);
-
-    final Integer handle = call.argument("traceHandle");
-    FirebasePerformancePlugin.addHandler(handle, new FlutterTrace(trace));
-
-    result.success(null);
-  }
-
-  @SuppressWarnings("ConstantConditions")
-  private void newHttpMetric(MethodCall call, MethodChannel.Result result) {
+  private Object newHttpMetric(final MethodCall call) {
     final String url = call.argument("url");
     final String httpMethod = call.argument("httpMethod");
+    final String handle = call.argument("__createdObjectHandle");
+    final HttpMetric value = firebaseperformance.newHttpMetric(url, httpMethod);
+    new FlutterHttpMetric(handle, value);
+    return null;
+  }
 
-    final HttpMetric metric = performance.newHttpMetric(url, parseHttpMethod(httpMethod));
+  private Object newTrace(final MethodCall call) {
+    final String traceName = call.argument("traceName");
+    final String handle = call.argument("__createdObjectHandle");
+    final Trace value = firebaseperformance.newTrace(traceName);
+    new FlutterTrace(handle, value);
+    return null;
+  }
 
-    final Integer handle = call.argument("httpMetricHandle");
-    FirebasePerformancePlugin.addHandler(handle, new FlutterHttpMetric(metric));
+  private Object setPerformanceCollectionEnabled(final MethodCall call) {
+    final Boolean enable = call.argument("enable");
+    firebaseperformance.setPerformanceCollectionEnabled(enable);
+    return null;
+  }
 
-    result.success(null);
+  private static Object startTrace(final MethodCall call) {
+    final String traceName = call.argument("traceName");
+    final String handle = call.argument("__createdObjectHandle");
+    final Trace value = FirebasePerformance.startTrace(traceName);
+    new FlutterTrace(handle, value);
+    return null;
   }
 }

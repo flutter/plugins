@@ -1,116 +1,107 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 package io.flutter.plugins.firebaseperformance;
 
 import com.google.firebase.perf.metrics.HttpMetric;
 import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 
-public class FlutterHttpMetric implements MethodChannel.MethodCallHandler {
-  private final HttpMetric httpMetric;
+final class FlutterHttpMetric implements FlutterWrapper {
+  private final String handle;
 
-  FlutterHttpMetric(final HttpMetric metric) {
-    this.httpMetric = metric;
+  public final HttpMetric httpmetric;
+
+  FlutterHttpMetric(String handle, HttpMetric httpmetric) {
+    this.handle = handle;
+    this.httpmetric = httpmetric;
+    FirebasePerformancePlugin.addInvokerWrapper(handle, this);
   }
 
   @Override
-  public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    switch (call.method) {
+  public Object onMethodCall(MethodCall call) {
+    switch(call.method) {
+      case "HttpMetric#getAttribute":
+        return getAttribute(call);
+      case "HttpMetric#getAttributes":
+        return getAttributes();
+      case "HttpMetric#putAttribute":
+        return putAttribute(call);
+      case "HttpMetric#removeAttribute":
+        return removeAttribute(call);
       case "HttpMetric#start":
-        start(result);
-        break;
+        return start();
       case "HttpMetric#stop":
-        stop(call, result);
-        break;
-      case "HttpMetric#httpResponseCode":
-        setHttpResponseCode(call, result);
-        break;
-      case "HttpMetric#requestPayloadSize":
-        setRequestPayloadSize(call, result);
-        break;
-      case "HttpMetric#responseContentType":
-        setResponseContentType(call, result);
-        break;
-      case "HttpMetric#responsePayloadSize":
-        setResponsePayloadSize(call, result);
-        break;
-      case "PerformanceAttributes#putAttribute":
-        putAttribute(call, result);
-        break;
-      case "PerformanceAttributes#removeAttribute":
-        removeAttribute(call, result);
-        break;
-      case "PerformanceAttributes#getAttributes":
-        getAttributes(result);
-        break;
+        return stop();
+      case "HttpMetric#setHttpResponseCode":
+        return setHttpResponseCode(call);
+      case "HttpMetric#setRequestPayloadSize":
+        return setRequestPayloadSize(call);
+      case "HttpMetric#setResponseContentType":
+        return setResponseContentType(call);
+      case "HttpMetric#setResponsePayloadSize":
+        return setResponsePayloadSize(call);
       default:
-        result.notImplemented();
+        return new FlutterWrapper.MethodNotImplemented();
     }
   }
 
-  private void start(MethodChannel.Result result) {
-    httpMetric.start();
-    result.success(null);
+  private Object getAttribute(final MethodCall call) {
+    final String attribute = call.argument("attribute");
+    return httpmetric.getAttribute(attribute);
   }
 
-  @SuppressWarnings("ConstantConditions")
-  private void stop(MethodCall call, MethodChannel.Result result) {
-    httpMetric.stop();
-
-    final Integer handle = call.argument("handle");
-    FirebasePerformancePlugin.removeHandler(handle);
-
-    result.success(null);
+  private Object getAttributes() {
+    return httpmetric.getAttributes();
   }
 
-  @SuppressWarnings("ConstantConditions")
-  private void setHttpResponseCode(MethodCall call, MethodChannel.Result result) {
-    final Integer httpResponseCode = call.argument("httpResponseCode");
-    httpMetric.setHttpResponseCode(httpResponseCode);
-    result.success(null);
-  }
-
-  @SuppressWarnings("ConstantConditions")
-  private void setRequestPayloadSize(MethodCall call, MethodChannel.Result result) {
-    final Number payloadSize = call.argument("requestPayloadSize");
-    httpMetric.setRequestPayloadSize(payloadSize.longValue());
-    result.success(null);
-  }
-
-  private void setResponseContentType(MethodCall call, MethodChannel.Result result) {
-    final String contentType = call.argument("responseContentType");
-    httpMetric.setResponseContentType(contentType);
-    result.success(null);
-  }
-
-  @SuppressWarnings("ConstantConditions")
-  private void setResponsePayloadSize(MethodCall call, MethodChannel.Result result) {
-    final Number payloadSize = call.argument("responsePayloadSize");
-    httpMetric.setResponsePayloadSize(payloadSize.longValue());
-    result.success(null);
-  }
-
-  @SuppressWarnings("ConstantConditions")
-  private void putAttribute(MethodCall call, MethodChannel.Result result) {
-    final String name = call.argument("name");
+  private Object putAttribute(final MethodCall call) {
+    final String attribute = call.argument("attribute");
     final String value = call.argument("value");
-
-    httpMetric.putAttribute(name, value);
-
-    result.success(null);
+    httpmetric.putAttribute(attribute, value);
+    return null;
   }
 
-  @SuppressWarnings("ConstantConditions")
-  private void removeAttribute(MethodCall call, MethodChannel.Result result) {
-    final String name = call.argument("name");
-    httpMetric.removeAttribute(name);
-
-    result.success(null);
+  private Object removeAttribute(final MethodCall call) {
+    final String attribute = call.argument("attribute");
+    httpmetric.removeAttribute(attribute);
+    return null;
   }
 
-  private void getAttributes(MethodChannel.Result result) {
-    result.success(httpMetric.getAttributes());
+  private Object start() {
+    httpmetric.start();
+    if (!FirebasePerformancePlugin.allocated(handle)) {
+      FirebasePerformancePlugin.addWrapper(handle, this);
+    }
+    return null;
+  }
+
+  private Object stop() {
+    httpmetric.stop();
+    FirebasePerformancePlugin.removeWrapper(handle);
+    return null;
+  }
+
+  private Object setHttpResponseCode(final MethodCall call) {
+    final Integer responseCode = call.argument("responseCode");
+    httpmetric.setHttpResponseCode(responseCode);
+    return null;
+  }
+
+  private Object setRequestPayloadSize(final MethodCall call) {
+    final Integer bytes = call.argument("bytes");
+    httpmetric.setRequestPayloadSize(bytes);
+    return null;
+  }
+
+  private Object setResponseContentType(final MethodCall call) {
+    final String contentType = call.argument("contentType");
+    httpmetric.setResponseContentType(contentType);
+    return null;
+  }
+
+  private Object setResponsePayloadSize(final MethodCall call) {
+    final Integer bytes = call.argument("bytes");
+    httpmetric.setResponsePayloadSize(bytes);
+    return null;
   }
 }

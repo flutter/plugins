@@ -1,111 +1,106 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 package io.flutter.plugins.firebaseperformance;
 
 import com.google.firebase.perf.metrics.Trace;
 import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 
-public class FlutterTrace implements MethodChannel.MethodCallHandler {
-  private final Trace trace;
+final class FlutterTrace implements FlutterWrapper {
+  private final String handle;
 
-  FlutterTrace(final Trace trace) {
+  public final Trace trace;
+
+  FlutterTrace(String handle, Trace trace) {
+    this.handle = handle;
     this.trace = trace;
+    FirebasePerformancePlugin.addInvokerWrapper(handle, this);
   }
 
   @Override
-  public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    switch (call.method) {
-      case "Trace#start":
-        start(result);
-        break;
-      case "Trace#stop":
-        stop(call, result);
-        break;
-      case "Trace#setMetric":
-        setMetric(call, result);
-        break;
+  public Object onMethodCall(MethodCall call) {
+    switch(call.method) {
+      case "Trace#describeContents":
+        return describeContents();
+      case "Trace#getAttribute":
+        return getAttribute(call);
+      case "Trace#getAttributes":
+        return getAttributes();
+      case "Trace#getLongMetric":
+        return getLongMetric(call);
       case "Trace#incrementMetric":
-        incrementMetric(call, result);
-        break;
-      case "Trace#getMetric":
-        getMetric(call, result);
-        break;
-      case "PerformanceAttributes#putAttribute":
-        putAttribute(call, result);
-        break;
-      case "PerformanceAttributes#removeAttribute":
-        removeAttribute(call, result);
-        break;
-      case "PerformanceAttributes#getAttributes":
-        getAttributes(result);
-        break;
+        return incrementMetric(call);
+      case "Trace#putAttribute":
+        return putAttribute(call);
+      case "Trace#putMetric":
+        return putMetric(call);
+      case "Trace#removeAttribute":
+        return removeAttribute(call);
+      case "Trace#start":
+        return start();
+      case "Trace#stop":
+        return stop();
       default:
-        result.notImplemented();
+        return new FlutterWrapper.MethodNotImplemented();
     }
   }
 
-  private void start(MethodChannel.Result result) {
-    trace.start();
-    result.success(null);
+  private Object describeContents() {
+    return trace.describeContents();
   }
 
-  @SuppressWarnings("ConstantConditions")
-  private void stop(MethodCall call, MethodChannel.Result result) {
-    trace.stop();
-
-    final Integer handle = call.argument("handle");
-    FirebasePerformancePlugin.removeHandler(handle);
-
-    result.success(null);
+  private Object getAttribute(final MethodCall call) {
+    final String attribute = call.argument("attribute");
+    return trace.getAttribute(attribute);
   }
 
-  @SuppressWarnings("ConstantConditions")
-  private void setMetric(MethodCall call, MethodChannel.Result result) {
-    final String name = call.argument("name");
-    final Number value = call.argument("value");
-    trace.putMetric(name, value.longValue());
-
-    result.success(null);
+  private Object getAttributes() {
+    return trace.getAttributes();
   }
 
-  @SuppressWarnings("ConstantConditions")
-  private void incrementMetric(MethodCall call, MethodChannel.Result result) {
-    final String name = call.argument("name");
-    final Number value = call.argument("value");
-    trace.incrementMetric(name, value.longValue());
-
-    result.success(null);
+  private Object getLongMetric(final MethodCall call) {
+    final String metricName = call.argument("metricName");
+    return trace.getLongMetric(metricName);
   }
 
-  @SuppressWarnings("ConstantConditions")
-  private void getMetric(MethodCall call, MethodChannel.Result result) {
-    final String name = call.argument("name");
-
-    result.success(trace.getLongMetric(name));
+  private Object incrementMetric(final MethodCall call) {
+    final String metricName = call.argument("metricName");
+    final Integer incrementBy = call.argument("incrementBy");
+    trace.incrementMetric(metricName, incrementBy);
+    return null;
   }
 
-  @SuppressWarnings("ConstantConditions")
-  private void putAttribute(MethodCall call, MethodChannel.Result result) {
-    final String name = call.argument("name");
+  private Object putAttribute(final MethodCall call) {
+    final String attribute = call.argument("attribute");
     final String value = call.argument("value");
-
-    trace.putAttribute(name, value);
-
-    result.success(null);
+    trace.putAttribute(attribute, value);
+    return null;
   }
 
-  @SuppressWarnings("ConstantConditions")
-  private void removeAttribute(MethodCall call, MethodChannel.Result result) {
-    final String name = call.argument("name");
-    trace.removeAttribute(name);
-
-    result.success(null);
+  private Object putMetric(final MethodCall call) {
+    final String metricName = call.argument("metricName");
+    final Integer value = call.argument("value");
+    trace.putMetric(metricName, value);
+    return null;
   }
 
-  private void getAttributes(MethodChannel.Result result) {
-    result.success(trace.getAttributes());
+  private Object removeAttribute(final MethodCall call) {
+    final String attribute = call.argument("attribute");
+    trace.removeAttribute(attribute);
+    return null;
+  }
+
+  private Object start() {
+    trace.start();
+    if (!FirebasePerformancePlugin.allocated(handle)) {
+      FirebasePerformancePlugin.addWrapper(handle, this);
+    }
+    return null;
+  }
+
+  private Object stop() {
+    trace.stop();
+    FirebasePerformancePlugin.removeWrapper(handle);
+    return null;
   }
 }
