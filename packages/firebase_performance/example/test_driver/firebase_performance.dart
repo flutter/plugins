@@ -101,7 +101,6 @@ void main() {
 
       test('getAttributes', () {
         testTrace.putAttribute('yugi', 'oh');
-
         expect(
           testTrace.getAttributes(),
           completion(<String, String>{'yugi': 'oh'}),

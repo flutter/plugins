@@ -2,8 +2,8 @@ import 'method_call_invoker.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 
-abstract class Trace {
-  Trace.internal(MethodCallInvokerNode creatorNode, String handle, Map source)
+abstract class _Trace {
+  _Trace.internal(MethodCallInvokerNode creatorNode, String handle, Map source)
       : _invokerNode = creatorNode,
         handle = handle;
 
@@ -148,5 +148,33 @@ abstract class Trace {
       return;
     }
     _invokerNode = newNode;
+  }
+}
+
+abstract class Trace extends _Trace {
+  Trace.internal(MethodCallInvokerNode creatorNode, String handle, Map source)
+      : super.internal(creatorNode, handle, source);
+
+  final Map<String, String> _attributes = <String, String>{};
+
+  bool _stopped = false;
+
+  @override
+  Future<void> stop() {
+    if (_stopped) return Future<void>.value();
+    _stopped = true;
+    return super.stop();
+  }
+
+  @override
+  Future<void> putAttribute(String attribute, String value) {
+    _attributes[attribute] = value;
+    return super.putAttribute(attribute, value);
+  }
+
+  @override
+  Future<Map<String, String>> getAttributes() {
+    if (_stopped) return Future<Map<String, String>>.value(_attributes);
+    return super.getAttributes();
   }
 }
