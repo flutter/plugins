@@ -18,7 +18,6 @@ Trace newTrace(String traceName) { final  String newHandle = Channel.nextHandle(
 final  MethodCallInvokerNode newNode = MethodCallInvokerNode(MethodCall('FirebasePerformance#newTrace', <String, dynamic>{'traceName': traceName, 'handle': handle, '__createdObjectHandle': newHandle}), <MethodCallInvokerNode>[invokerNode], NodeType.regular);
 return  _TraceImpl(newNode, newHandle, null); } 
 Future<void> setPerformanceCollectionEnabled(bool enable) { final  MethodCallInvokerNode newNode = MethodCallInvokerNode(MethodCall('FirebasePerformance#setPerformanceCollectionEnabled', <String, dynamic>{'enable': enable, 'handle': handle}), <MethodCallInvokerNode>[invokerNode], NodeType.regular);
-if (invokerNode.type == NodeType.allocator) return newNode.invoke<void>();
 _invokerNode = newNode;
 return  Future<void>.value(); } 
 static Trace startTrace(String traceName) { final  String newHandle = Channel.nextHandle();

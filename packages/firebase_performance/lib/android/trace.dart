@@ -20,6 +20,7 @@ abstract class Trace {
             'Trace#describeContents', <String, dynamic>{'handle': handle}),
         <MethodCallInvokerNode>[invokerNode],
         NodeType.regular);
+    _updateInvokerNode(newNode);
     return newNode.invoke<int>();
   }
 
@@ -31,6 +32,7 @@ abstract class Trace {
             <String, dynamic>{'attribute': attribute, 'handle': handle}),
         <MethodCallInvokerNode>[invokerNode],
         NodeType.regular);
+    _updateInvokerNode(newNode);
     return newNode.invoke<String>();
   }
 
@@ -41,6 +43,7 @@ abstract class Trace {
         MethodCall('Trace#getAttributes', <String, dynamic>{'handle': handle}),
         <MethodCallInvokerNode>[invokerNode],
         NodeType.regular);
+    _updateInvokerNode(newNode);
     return newNode.invokeMap<String, String>();
   }
 
@@ -52,6 +55,7 @@ abstract class Trace {
             <String, dynamic>{'metricName': metricName, 'handle': handle}),
         <MethodCallInvokerNode>[invokerNode],
         NodeType.regular);
+    _updateInvokerNode(newNode);
     return newNode.invoke<int>();
   }
 
@@ -66,9 +70,9 @@ abstract class Trace {
         }),
         <MethodCallInvokerNode>[invokerNode],
         NodeType.regular);
-    if (invokerNode.type == NodeType.allocator) return newNode.invoke<void>();
-    _invokerNode = newNode;
-    return Future<void>.value();
+    _updateInvokerNode(newNode);
+    if (invokerNode.type != NodeType.allocator) return Future<void>.value();
+    return newNode.invoke<void>();
   }
 
   Future<void> putAttribute(String attribute, String value) {
@@ -82,9 +86,9 @@ abstract class Trace {
         }),
         <MethodCallInvokerNode>[invokerNode],
         NodeType.regular);
-    if (invokerNode.type == NodeType.allocator) return newNode.invoke<void>();
-    _invokerNode = newNode;
-    return Future<void>.value();
+    _updateInvokerNode(newNode);
+    if (invokerNode.type != NodeType.allocator) return Future<void>.value();
+    return newNode.invoke<void>();
   }
 
   Future<void> putMetric(String metricName, int value) {
@@ -98,9 +102,9 @@ abstract class Trace {
         }),
         <MethodCallInvokerNode>[invokerNode],
         NodeType.regular);
-    if (invokerNode.type == NodeType.allocator) return newNode.invoke<void>();
-    _invokerNode = newNode;
-    return Future<void>.value();
+    _updateInvokerNode(newNode);
+    if (invokerNode.type != NodeType.allocator) return Future<void>.value();
+    return newNode.invoke<void>();
   }
 
   Future<void> removeAttribute(String attribute) {
@@ -111,9 +115,9 @@ abstract class Trace {
             <String, dynamic>{'attribute': attribute, 'handle': handle}),
         <MethodCallInvokerNode>[invokerNode],
         NodeType.regular);
-    if (invokerNode.type == NodeType.allocator) return newNode.invoke<void>();
-    _invokerNode = newNode;
-    return Future<void>.value();
+    _updateInvokerNode(newNode);
+    if (invokerNode.type != NodeType.allocator) return Future<void>.value();
+    return newNode.invoke<void>();
   }
 
   Future<void> start() {
@@ -123,8 +127,7 @@ abstract class Trace {
         MethodCall('Trace#start', <String, dynamic>{'handle': handle}),
         <MethodCallInvokerNode>[invokerNode],
         NodeType.allocator);
-    if (invokerNode.type == NodeType.allocator) return newNode.invoke<void>();
-    _invokerNode = newNode;
+    _updateInvokerNode(newNode);
     return newNode.invoke<void>();
   }
 
@@ -135,7 +138,15 @@ abstract class Trace {
         MethodCall('Trace#stop', <String, dynamic>{'handle': handle}),
         <MethodCallInvokerNode>[invokerNode],
         NodeType.disposer);
-    _invokerNode = newNode;
+    _updateInvokerNode(newNode);
     return newNode.invoke<void>();
+  }
+
+  void _updateInvokerNode(MethodCallInvokerNode newNode) {
+    if (newNode.type != NodeType.disposer &&
+        _invokerNode.type == NodeType.allocator) {
+      return;
+    }
+    _invokerNode = newNode;
   }
 }
