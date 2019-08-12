@@ -155,6 +155,12 @@ void main() {
       expect(preferences.getString('String'), kTestValues2['flutter.String']);
     });
 
+    test('back to back calls should return same instance.', () async {
+      final Future<SharedPreferences> first = SharedPreferences.getInstance();
+      final Future<SharedPreferences> second = SharedPreferences.getInstance();
+      expect(await first, await second);
+    });
+
     group('mocking', () {
       const String _key = 'dummy';
       const String _prefixedKey = 'flutter.' + _key;

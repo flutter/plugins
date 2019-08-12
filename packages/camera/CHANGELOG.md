@@ -1,6 +1,11 @@
-## 0.5.3
+## 0.5.4
 
 * Add feature to pause and resume video recording.
+
+## 0.5.3
+
+* Added new quality presets.
+* Now all quality presets can be used to control image capture quality.
 
 ## 0.5.2+2
 
