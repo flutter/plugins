@@ -113,24 +113,19 @@ class AndroidAlarmManager {
     bool exact = false,
     bool wakeup = false,
     bool rescheduleOnReboot = false,
-  }) async {
-    final int now = DateTime.now().millisecondsSinceEpoch;
-    final int first = now + delay.inMilliseconds;
-    final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
-    if (handle == null) {
-      return false;
-    }
-    final bool r = await _channel.invokeMethod<bool>('Alarm.oneShot', <dynamic>[
+  }) {
+    final DateTime now = DateTime.now();
+    final DateTime time = now.add(delay);
+    return oneShotAt(
+      time,
       id,
-      alarmClock,
-      allowWhileIdle,
-      exact,
-      wakeup,
-      first,
-      rescheduleOnReboot,
-      handle.toRawHandle(),
-    ]);
-    return (r == null) ? false : r;
+      callback,
+      alarmClock: alarmClock,
+      allowWhileIdle: allowWhileIdle,
+      exact: exact,
+      wakeup: wakeup,
+      rescheduleOnReboot: rescheduleOnReboot,
+    );
   }
 
   /// Schedules a one-shot timer to run `callback` at `time`.
