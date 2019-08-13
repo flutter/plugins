@@ -10,7 +10,7 @@ import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 public class CameraPermissions {
-  private static final int CAMERA_REQUEST_ID = 513469796;
+  private static final int CAMERA_REQUEST_ID = 9796;
   private boolean ongoing = false;
 
   public void requestPermissions(
