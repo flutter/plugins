@@ -88,10 +88,10 @@ _handleSignIn()
 ### Register a user
 
 ```dart
-final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
+final FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
       email: 'an email',
       password: 'a password',
-    );
+    )).user;
 ```
 
 ### Supported Firebase authentication methods
