@@ -147,7 +147,17 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         intent.setPackage(null);
       }
     }
-
+    
+    String selfPackageName = context.getPackageName();
+    ComponentName componentName =
+      intent.resolveActivity(context.getPackageManager());
+    String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
+    // If we are launching to a different package we need to set
+    // the FLAG_ACTIVITY_NEW_TASK flag
+    if (!selfPackageName.equals(otherPackageName)) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+    
     Log.i(TAG, "Sending intent " + intent);
     context.startActivity(intent);
 
