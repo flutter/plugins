@@ -1,3 +1,7 @@
+## 0.14.0+2
+
+* Reduce compiler warnings on iOS port by replacing `int` with `long` backing in returned timestamps.
+
 ## 0.14.0+1
 
 * Add dependency on `androidx.annotation:annotation:1.0.0`.
