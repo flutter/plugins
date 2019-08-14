@@ -277,6 +277,10 @@ class WebView extends StatefulWidget {
   ///
   /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
+  
+  /// Controls whether WebView have bounce effect in iOS
+  ///
+  /// By default `scrollViewBounces` is true.
   final bool scrollViewBounces;
 
   /// Which restrictions apply on automatic media playback.
