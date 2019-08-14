@@ -250,6 +250,9 @@
       _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
     } else if ([key isEqualToString:@"debuggingEnabled"]) {
       // no-op debugging is always enabled on iOS.
+    } else if ([key isEqualToString:@"scrollViewBounces"]) {
+      NSNumber* scrollViewBounces = settings[key];
+      _webView.scrollView.bounces = [scrollViewBounces boolValue];
     } else {
       [unknownKeys addObject:key];
     }
