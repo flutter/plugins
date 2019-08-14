@@ -29,6 +29,10 @@ rootProject.allprojects {
     repositories {
         google()
         jcenter()
+        flatDir {
+            dirs project(':video_player').file('libs').path
+        }
+
     }
 }
 
@@ -55,7 +59,9 @@ android {
         api(name: 'library-core-release', ext: 'aar')
         api(name: 'library-dash-release', ext: 'aar')
         api(name: 'library-hls-release', ext: 'aar')
+        api(name: 'library-rtp-release', ext: 'aar')
         api(name: 'library-rtsp-release', ext: 'aar')
+        api(name: 'library-sdp-release', ext: 'aar')
         api(name: 'library-smoothstreaming-release', ext: 'aar')
 
 //        implementation 'com.google.android.exoplayer:exoplayer-core:2.9.6'

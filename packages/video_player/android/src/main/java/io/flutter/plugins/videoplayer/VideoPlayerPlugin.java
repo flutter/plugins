@@ -20,14 +20,21 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.EventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
+import com.google.android.exoplayer2.database.DatabaseProvider;
+import com.google.android.exoplayer2.database.ExoDatabaseProvider;
+import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
+import com.google.android.exoplayer2.drm.DrmSessionManager;
+import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.rtsp.RtspDefaultClient;
 import com.google.android.exoplayer2.source.rtsp.RtspMediaSource;
+import com.google.android.exoplayer2.source.rtsp.core.Client;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -36,6 +43,13 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
+import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.google.android.exoplayer2.upstream.cache.Cache;
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
+import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory;
+import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor;
+import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
@@ -46,6 +60,8 @@ import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.FlutterNativeView;
 import io.flutter.view.TextureRegistry;
+
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,6 +71,9 @@ import java.util.Map;
 public class VideoPlayerPlugin implements MethodCallHandler {
 
   private static class VideoPlayer {
+    private static final String DOWNLOAD_ACTION_FILE = "actions";
+    private static final String DOWNLOAD_TRACKER_ACTION_FILE = "tracked_actions";
+    private static final String DOWNLOAD_CONTENT_DIRECTORY = "downloads";
 
     private SimpleExoPlayer exoPlayer;
 
@@ -68,6 +87,12 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
     private boolean isInitialized = false;
 
+    private final String userAgent;
+
+    private DatabaseProvider databaseProvider;
+    private File downloadDirectory;
+    private static Cache downloadCache;
+
     VideoPlayer(
         Context context,
         EventChannel eventChannel,
@@ -77,31 +102,95 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       this.eventChannel = eventChannel;
       this.textureEntry = textureEntry;
 
+      downloadDirectory = context.getExternalFilesDir(null);
+      if (downloadDirectory == null) {
+        downloadDirectory = context.getFilesDir();
+      }
+
+      databaseProvider = new ExoDatabaseProvider(context);
+
       TrackSelector trackSelector = new DefaultTrackSelector();
       exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+      userAgent = Util.getUserAgent(context, "ExoPlayerDemo");
 
       Uri uri = Uri.parse(dataSource);
 
-      DataSource.Factory dataSourceFactory;
-      if (isFileOrAsset(uri)) {
-        dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
-      } else if (isRtsp(uri)) {
-        dataSourceFactory = new RtspMediaSource.Factory(RtspDefaultClient.factory()).createMediaSource(uri);
-      } else {
-        dataSourceFactory =
-            new DefaultHttpDataSourceFactory(
-                "ExoPlayer",
-                null,
-                DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-                DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
-                true);
-      }
-
-      MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, context);
+      MediaSource mediaSource = createLeafMediaSource(uri, buildDataSourceFactory(context), null, DrmSessionManager.getDummyDrmSessionManager());
       exoPlayer.prepare(mediaSource);
 
       setupVideoPlayer(eventChannel, textureEntry, result);
     }
+
+
+    private MediaSource createLeafMediaSource(
+            Uri uri, DataSource.Factory dataSourceFactory, String extension, DrmSessionManager<FrameworkMediaCrypto> drmSessionManager) {
+      @C.ContentType int type = Util.inferContentType(uri, extension);
+      switch (type) {
+        case C.TYPE_DASH:
+          return new DashMediaSource.Factory(dataSourceFactory)
+                  .setDrmSessionManager(drmSessionManager)
+                  .createMediaSource(uri);
+        case C.TYPE_SS:
+          return new SsMediaSource.Factory(dataSourceFactory)
+                  .setDrmSessionManager(drmSessionManager)
+                  .createMediaSource(uri);
+        case C.TYPE_HLS:
+          return new HlsMediaSource.Factory(dataSourceFactory)
+                  .setDrmSessionManager(drmSessionManager)
+                  .createMediaSource(uri);
+        case C.TYPE_OTHER:
+          if (Util.isRtspUri(uri)) {
+            return new RtspMediaSource.Factory(RtspDefaultClient.factory()
+                    .setFlags(Client.FLAG_ENABLE_RTCP_SUPPORT)
+                    .setNatMethod(Client.RTSP_AUTO_DETECT))
+                    .setIsLive(true)
+
+                    .createMediaSource(uri);
+          } else {
+            return new ProgressiveMediaSource.Factory(dataSourceFactory)
+                    .setDrmSessionManager(drmSessionManager)
+                    .createMediaSource(uri);
+          }
+        default:
+          return new ProgressiveMediaSource.Factory(dataSourceFactory)
+                  .setDrmSessionManager(drmSessionManager)
+                  .createMediaSource(uri);
+      }
+    }
+
+
+    /** Returns a {@link DataSource.Factory}. */
+    public DataSource.Factory buildDataSourceFactory(Context context) {
+      DefaultDataSourceFactory upstreamFactory =
+              new DefaultDataSourceFactory(context, buildHttpDataSourceFactory());
+      return buildReadOnlyCacheDataSource(upstreamFactory, getDownloadCache());
+    }
+
+    /** Returns a {@link HttpDataSource.Factory}. */
+    public HttpDataSource.Factory buildHttpDataSourceFactory() {
+      return new DefaultHttpDataSourceFactory(userAgent);
+    }
+
+    protected static CacheDataSourceFactory buildReadOnlyCacheDataSource(
+            DataSource.Factory upstreamFactory, Cache cache) {
+      return new CacheDataSourceFactory(
+              cache,
+              upstreamFactory,
+              new FileDataSourceFactory(),
+              /* cacheWriteDataSinkFactory= */ null,
+              CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR,
+              /* eventListener= */ null);
+    }
+
+    protected synchronized Cache getDownloadCache() {
+      if (downloadCache == null) {
+        File downloadContentDirectory = new File(downloadDirectory, DOWNLOAD_CONTENT_DIRECTORY);
+        downloadCache =
+                new SimpleCache(downloadContentDirectory, new NoOpCacheEvictor(), databaseProvider);
+      }
+      return downloadCache;
+    }
+
 
     private static boolean isFileOrAsset(Uri uri) {
       if (uri == null || uri.getScheme() == null) {
@@ -283,6 +372,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       }
     }
   }
+
 
   public static void registerWith(Registrar registrar) {
     final VideoPlayerPlugin plugin = new VideoPlayerPlugin(registrar);
