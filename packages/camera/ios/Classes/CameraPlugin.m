@@ -177,9 +177,13 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isRecordingPaused;
+@property(assign, nonatomic) BOOL recordingIsDiconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
+@property(assign, nonatomic) CMTime lastVideoSampleTime;
+@property(assign, nonatomic) CMTime lastAudioSampleTime;
+@property(assign, nonatomic) CMTime timeOffset;
 @property(nonatomic) CMMotionManager *motionManager;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
@@ -422,7 +426,44 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       });
       return;
     }
+    if (_recordingIsDiconnected) {
+      if (output == _captureVideoOutput) return;
+      _recordingIsDiconnected = NO;
+
+      CMTime timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+      if (_lastAudioSampleTime.flags & kCMTimeFlags_Valid) {
+        if (_timeOffset.flags & kCMTimeFlags_Valid) {
+          timestamp = CMTimeSubtract(timestamp, _timeOffset);
+        }
+        CMTime offset = CMTimeSubtract(timestamp, _lastAudioSampleTime);
+
+        // this stops us having to set a scale for _timeOffset before we see the first video time
+        if (_timeOffset.value == 0) {
+          _timeOffset = offset;
+        } else {
+          _timeOffset = CMTimeAdd(_timeOffset, offset);
+        }
+      }
+      _lastVideoSampleTime.flags = 0;
+      _lastAudioSampleTime.flags = 0;
+    }
+
+    CFRetain(sampleBuffer);
+
+    if (_timeOffset.value > 0) {
+      CFRelease(sampleBuffer);
+      sampleBuffer = [self adjustTime:sampleBuffer by:_timeOffset];
+    }
+
     CMTime lastSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+    CMTime dur = CMSampleBufferGetDuration(sampleBuffer);
+
+    if (output == _captureVideoOutput) {
+      _lastVideoSampleTime = CMTimeAdd(lastSampleTime, dur);
+    } else {
+      _lastAudioSampleTime = CMTimeAdd(lastSampleTime, dur);
+    }
+
     if (_videoWriter.status != AVAssetWriterStatusWriting) {
       [_videoWriter startWriting];
       [_videoWriter startSessionAtSourceTime:lastSampleTime];
@@ -432,7 +473,24 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     } else if (output == _audioOutput) {
       [self newAudioSample:sampleBuffer];
     }
+    CFRelease(sampleBuffer);
   }
+}
+
+- (CMSampleBufferRef) adjustTime:(CMSampleBufferRef) sample by:(CMTime) offset
+{
+  CMItemCount count;
+  CMSampleBufferGetSampleTimingInfoArray(sample, 0, nil, &count);
+  CMSampleTimingInfo* pInfo = malloc(sizeof(CMSampleTimingInfo) * count);
+  CMSampleBufferGetSampleTimingInfoArray(sample, count, pInfo, &count);
+  for (CMItemCount i = 0; i < count; i++) {
+    pInfo[i].decodeTimeStamp = CMTimeSubtract(pInfo[i].decodeTimeStamp, offset);
+    pInfo[i].presentationTimeStamp = CMTimeSubtract(pInfo[i].presentationTimeStamp, offset);
+  }
+  CMSampleBufferRef sout;
+  CMSampleBufferCreateCopyWithNewTiming(nil, sample, count, pInfo, &sout);
+  free(pInfo);
+  return sout;
 }
 
 - (void)newVideoSample:(CMSampleBufferRef)sampleBuffer {
@@ -524,6 +582,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     }
     _isRecording = YES;
     _isRecordingPaused = NO;
+    _timeOffset = CMTimeMake(0, 0);
+    _recordingIsDiconnected = NO;
     result(nil);
   } else {
     _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
@@ -556,6 +616,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 - (void)pauseVideoRecording {
   _isRecordingPaused = YES;
+  _recordingIsDiconnected = YES;
 }
 
 - (void)resumeVideoRecording {
