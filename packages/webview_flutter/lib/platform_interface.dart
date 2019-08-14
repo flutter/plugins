@@ -160,17 +160,66 @@ abstract class WebViewPlatformController {
   }
 }
 
+/// A single setting for configuring a WebViewPlatform which may be absent.
+class WebSetting<T> {
+  /// Constructs an absent setting instance.
+  ///
+  /// The [isPresent] field for the instance will be false.
+  ///
+  /// Accessing [value] for an absent instance will throw.
+  WebSetting.absent()
+      : _value = null,
+        isPresent = false;
+
+  /// Constructs a setting of the given `value`.
+  ///
+  /// The [isPresent] field for the instance will be true.
+  WebSetting.of(T value)
+      : _value = value,
+        isPresent = true;
+
+  final T _value;
+
+  /// The setting's value.
+  ///
+  /// Throws if [WebSetting.isPresent] is false.
+  T get value {
+    if (!isPresent) {
+      throw StateError('Cannot access a value of an absent WebSetting');
+    }
+    assert(isPresent);
+    return _value;
+  }
+
+  /// True when this web setting instance contains a value.
+  ///
+  /// When false the [WebSetting.value] getter throws.
+  final bool isPresent;
+
+  @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType) return false;
+    final WebSetting<T> typedOther = other;
+    return typedOther.isPresent == isPresent && typedOther._value == _value;
+  }
+
+  @override
+  int get hashCode => hashValues(_value, isPresent);
+}
+
 /// Settings for configuring a WebViewPlatform.
 ///
 /// Initial settings are passed as part of [CreationParams], settings updates are sent with
 /// [WebViewPlatform#updateSettings].
+///
+/// The `userAgent` parameter must not be null.
 class WebSettings {
   WebSettings({
     this.javascriptMode,
     this.hasNavigationDelegate,
     this.debuggingEnabled,
-    this.userAgent,
-  });
+    @required this.userAgent,
+  }) : assert(userAgent != null);
 
   /// The JavaScript execution mode to be used by the webview.
   final JavascriptMode javascriptMode;
@@ -183,10 +232,15 @@ class WebSettings {
   /// See also: [WebView.debuggingEnabled].
   final bool debuggingEnabled;
 
-  /// The value used for the HTTP User-Agent: request header.
+  /// The value used for the HTTP `User-Agent:` request header.
   ///
-  /// See also [WebView.userAgent]
-  final String userAgent;
+  /// If [userAgent.value] is null the platform's default user agent should be used.
+  ///
+  /// An absent value ([userAgent.isPresent] is false) represents no change to this setting from the
+  /// last time it was set.
+  ///
+  /// See also [WebView.userAgent].
+  final WebSetting<String> userAgent;
 
   @override
   String toString() {

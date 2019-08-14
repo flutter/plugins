@@ -372,23 +372,26 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     javascriptMode: widget.javascriptMode,
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
-    userAgent: widget.userAgent,
+    userAgent: WebSetting<String>.of(widget.userAgent),
   );
 }
 
-// This method assumes that no fields, except userAgent (see WebView.userAgent), in `currentValue` are null.
+// This method assumes that no fields in `currentValue` are null.
 WebSettings _clearUnchangedWebSettings(
     WebSettings currentValue, WebSettings newValue) {
   assert(currentValue.javascriptMode != null);
   assert(currentValue.hasNavigationDelegate != null);
   assert(currentValue.debuggingEnabled != null);
+  assert(currentValue.userAgent.isPresent);
   assert(newValue.javascriptMode != null);
   assert(newValue.hasNavigationDelegate != null);
   assert(newValue.debuggingEnabled != null);
+  assert(newValue.userAgent.isPresent);
+
   JavascriptMode javascriptMode;
   bool hasNavigationDelegate;
   bool debuggingEnabled;
-  String userAgent;
+  WebSetting<String> userAgent = WebSetting<String>.absent();
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }

@@ -776,6 +776,7 @@ void main() {
               javascriptMode: JavascriptMode.disabled,
               hasNavigationDelegate: false,
               debuggingEnabled: false,
+              userAgent: WebSetting<String>.of(null),
             ),
             // TODO(iskakaushik): Remove this when collection literals makes it to stable.
             // ignore: prefer_collection_literals
