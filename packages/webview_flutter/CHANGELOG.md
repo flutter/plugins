@@ -1,3 +1,8 @@
+## 0.3.11+4
+
+* Reduce compiler warnings regarding iOS9 compatibility by moving a single
+  method back into a `@available` block.
+
 ## 0.3.11+3
 
 * Apply the display listeners workaround that was shipped in 0.3.11+1 on
