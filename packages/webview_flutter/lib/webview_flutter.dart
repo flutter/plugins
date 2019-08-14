@@ -138,6 +138,7 @@ class WebView extends StatefulWidget {
     this.javascriptChannels,
     this.navigationDelegate,
     this.gestureRecognizers,
+    this.scrollViewBounces = true,
     this.onPageFinished,
     this.debuggingEnabled = false,
     this.initialMediaPlaybackPolicy =
@@ -276,6 +277,7 @@ class WebView extends StatefulWidget {
   ///
   /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
+  final bool scrollViewBounces;
 
   /// Which restrictions apply on automatic media playback.
   ///
@@ -356,6 +358,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     javascriptMode: widget.javascriptMode,
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
+    scrollViewBounces: widget.scrollViewBounces,
   );
 }
 
@@ -371,6 +374,7 @@ WebSettings _clearUnchangedWebSettings(
   JavascriptMode javascriptMode;
   bool hasNavigationDelegate;
   bool debuggingEnabled;
+  bool scrollViewBounces;
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }
@@ -380,11 +384,15 @@ WebSettings _clearUnchangedWebSettings(
   if (currentValue.debuggingEnabled != newValue.debuggingEnabled) {
     debuggingEnabled = newValue.debuggingEnabled;
   }
+  if (currentValue.scrollViewBounces != newValue.scrollViewBounces) {
+    scrollViewBounces = newValue.scrollViewBounces;
+  }
 
   return WebSettings(
     javascriptMode: javascriptMode,
     hasNavigationDelegate: hasNavigationDelegate,
     debuggingEnabled: debuggingEnabled,
+    scrollViewBounces: scrollViewBounces,
   );
 }
 
