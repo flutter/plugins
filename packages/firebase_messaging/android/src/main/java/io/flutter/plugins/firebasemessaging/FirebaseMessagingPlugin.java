@@ -124,7 +124,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
         setupCallbackHandle = callbacks.get("setupHandle");
         backgroundMessageHandle = callbacks.get("backgroundHandle");
       } catch (Exception e) {
-        Log.e(TAG, "There was an exception when getting callback handle from dart side");
+        Log.e(TAG, "There was an exception when getting callback handle from Dart side");
         e.printStackTrace();
       }
       FlutterFirebaseMessagingService.setBackgroundSetupHandle(
