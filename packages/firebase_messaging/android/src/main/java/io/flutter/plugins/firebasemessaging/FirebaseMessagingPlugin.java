@@ -19,7 +19,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
-import io.flutter.plugin.common.JSONMethodCodec;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -27,9 +26,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /** FirebaseMessagingPlugin */
@@ -47,8 +44,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
     final MethodChannel backgroundCallbackChannel =
         new MethodChannel(
             registrar.messenger(),
-            "plugins.flutter.io/android_fcm_background",
-            JSONMethodCodec.INSTANCE);
+            "plugins.flutter.io/android_fcm_background");
     final FirebaseMessagingPlugin plugin = new FirebaseMessagingPlugin(registrar, channel);
     registrar.addNewIntentListener(plugin);
     channel.setMethodCallHandler(plugin);
@@ -110,13 +106,25 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
 
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
-    if ("FcmDartService.start".equals(call.method)) {
+    /*  Even when the app is not active the `FirebaseMessagingService` extended by
+     *  `FlutterFirebaseMessagingService` allows incoming FCM messages to be handled.
+     *
+     *  `FcmDartService#start` and `FcmDartService#initialized` are the two methods used
+     *  to optionally setup handling messages received while the app is not active.
+     *
+     *  `FcmDartService#start` sets up the plumbing that allows messages received while
+     *  the app is not active to be handled by a background isolate.
+     *
+     *  `FcmDartService#initialized` is called by the Dart side when the plumbing for
+     *  background message handling is complete.
+     */
+    if ("FcmDartService#start".equals(call.method)) {
       long setupCallbackHandle = 0;
       long backgroundMessageHandle = 0;
       try {
-        List<Long> callbacks = ((ArrayList<Long>) call.arguments);
-        setupCallbackHandle = callbacks.get(0);
-        backgroundMessageHandle = callbacks.get(1);
+        Map<String, Long> callbacks = ((Map<String, Long>) call.arguments);
+        setupCallbackHandle = callbacks.get("setupHandle");
+        backgroundMessageHandle = callbacks.get("backgroundHandle");
       } catch (Exception e) {
         Log.e(TAG, "There was an exception when getting callback handle from dart side");
         e.printStackTrace();
@@ -128,7 +136,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
       FlutterFirebaseMessagingService.setBackgroundMessageHandle(
           this.registrar.context(), backgroundMessageHandle);
       result.success(true);
-    } else if ("FcmDartService.initialized".equals(call.method)) {
+    } else if ("FcmDartService#initialized".equals(call.method)) {
       FlutterFirebaseMessagingService.onInitialized();
       result.success(true);
     } else if ("configure".equals(call.method)) {

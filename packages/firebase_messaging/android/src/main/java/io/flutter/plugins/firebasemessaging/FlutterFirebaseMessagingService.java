@@ -129,9 +129,18 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
     LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
   }
 
+  /**
+   * Setup the background isolate that would allow background messages to be handled
+   * on the Dart side. Called either by the plugin when the app is starting up or when
+   * the app receives a message while it is inactive.
+   *
+   * @param context Registrar or FirebaseMessagingService context.
+   * @param callbackHandle Handle used to retrieve the Dart function that sets up
+   *                       background handling on the dart side.
+   */
   public static void startBackgroundIsolate(Context context, long callbackHandle) {
     FlutterMain.ensureInitializationComplete(context, null);
-    String mAppBundlePath = FlutterMain.findAppBundlePath(context);
+    String appBundlePath = FlutterMain.findAppBundlePath();
     FlutterCallbackInformation flutterCallback =
         FlutterCallbackInformation.lookupCallbackInformation(callbackHandle);
     if (flutterCallback == null) {
@@ -143,12 +152,12 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
     // FlutterNativeView constructor. This specifies the FlutterNativeView
     // as a background view and does not create a drawing surface.
     sBackgroundFlutterView = new FlutterNativeView(context, true);
-    if (mAppBundlePath != null && !sIsIsolateRunning.get()) {
+    if (appBundlePath != null && !sIsIsolateRunning.get()) {
       if (sPluginRegistrantCallback == null) {
         throw new RuntimeException("PluginRegistrantCallback is not set.");
       }
       FlutterRunArguments args = new FlutterRunArguments();
-      args.bundlePath = mAppBundlePath;
+      args.bundlePath = appBundlePath;
       args.entrypoint = flutterCallback.callbackName;
       args.libraryPath = flutterCallback.callbackLibraryPath;
       sBackgroundFlutterView.runFromBundle(args);
@@ -156,6 +165,11 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
     }
   }
 
+  /**
+   * Acknowledge that background message handling on the Dart side is ready. This is
+   * called by the Dart side once all background initialization is complete via
+   * `FcmDartService#initialized`.
+   */
   public static void onInitialized() {
     sIsIsolateRunning.set(true);
     synchronized (sBackgroundMessageQueue) {
@@ -169,14 +183,26 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
     }
   }
 
+  /**
+   * Set the method channel that is used for handling background messages. This method is only
+   * called when the plugin registers.
+   *
+   * @param channel Background method channel.
+   */
   public static void setBackgroundChannel(MethodChannel channel) {
     sBackgroundChannel = channel;
   }
 
-  public static void setPluginRegistrant(PluginRegistry.PluginRegistrantCallback callback) {
-    sPluginRegistrantCallback = callback;
-  }
-
+  /**
+   * Set the background message handle for future use. When background messages need
+   * to be handled on the Dart side the handler must be retrieved in the background
+   * isolate to allow processing of the incoming message. This method is called by
+   * the Dart side via `FcmDartService#start`.
+   *
+   * @param context Registrar context.
+   * @param handle Handle representing the Dart side method that will handle background
+   *               messages.
+   */
   public static void setBackgroundMessageHandle(Context context, Long handle) {
     sBackgroundMessageHandle = handle;
 
@@ -186,19 +212,51 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
     prefs.edit().putLong(BACKGROUND_MESSAGE_CALLBACK_HANDLE_KEY, handle).apply();
   }
 
-  public static void setBackgroundSetupHandle(Context context, long callbackHandle) {
+  /**
+   * Set the background message setup handle for future use. The Dart side of this plugin
+   * has a method that sets up the background method channel. When ready to setup the
+   * background channel the Dart side needs to be able to retrieve the setup method.
+   * This method is called by the Dart side via `FcmDartService#start`.
+   *
+   * @param context Registrar context.
+   * @param setupBackgroundHandle Handle representing the dart side method that will setup
+   *                              the background method channel.
+   */
+  public static void setBackgroundSetupHandle(Context context, long setupBackgroundHandle) {
     // Store background setup handle in shared preferences so it can be retrieved
     // by other application instances.
     SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
-    prefs.edit().putLong(BACKGROUND_SETUP_CALLBACK_HANDLE_KEY, callbackHandle).apply();
+    prefs.edit().putLong(BACKGROUND_SETUP_CALLBACK_HANDLE_KEY, setupBackgroundHandle).apply();
   }
 
-  public static Long getOnMessageCallbackHandle(Context context) {
+  /**
+   * Retrieve the background message handle. When a background message is received and
+   * must be processed on the dart side the handle representing the Dart side handle is
+   * retrieved so the appropriate method can be called to process the message on the
+   * Dart side. This method is called by FlutterFirebaseMessagingServcie either when a new
+   * background message is received or if background messages were queued up while background
+   * message handling was being setup.
+   *
+   * @param context Application context.
+   * @return Dart side background message handle.
+   */
+  public static Long getBackgroundMessageHandle(Context context) {
     return context
         .getSharedPreferences(SHARED_PREFERENCES_KEY, 0)
         .getLong(BACKGROUND_MESSAGE_CALLBACK_HANDLE_KEY, 0);
   }
 
+  /**
+   * Process the incoming message in the background isolate. This method is called only after
+   * background method channel is setup, it is called by FlutterFirebaseMessagingServcie either
+   * when a new background message is received or after background method channel setup for
+   * queued messages received during setup.
+   *
+   * @param context Application or FirebaseMessagingService context.
+   * @param remoteMessage Message received from Firebase Cloud Messaging.
+   * @param latch If set will count down when the Dart side message processing is complete.
+   *              Allowing any waiting threads to continue.
+   */
   private static void executeDartCallbackInBackgroundIsolate(
       Context context, RemoteMessage remoteMessage, final CountDownLatch latch) {
     if (sBackgroundChannel == null) {
@@ -231,7 +289,7 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
     Map<String, Object> args = new HashMap<>();
     Map<String, Object> messageData = new HashMap<>();
     if (sBackgroundMessageHandle == null) {
-      sBackgroundMessageHandle = getOnMessageCallbackHandle(context);
+      sBackgroundMessageHandle = getBackgroundMessageHandle(context);
     }
     args.put("handle", sBackgroundMessageHandle);
 
@@ -244,11 +302,20 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
 
     args.put("message", messageData);
 
-    sBackgroundChannel.invokeMethod("", args, result);
+    sBackgroundChannel.invokeMethod("handleBackgroundMessage", args, result);
   }
 
+  /**
+   * Identify if the application is currently in a state where user interaction is possible.
+   * This method is only called by FlutterFirebaseMessagingService when a message is received
+   * to determine how the incoming message should be handled.
+   *
+   * @param context FlutterFirebaseMessagingService context.
+   * @return True if the application is currently in a state where user interaction is possible,
+   *         false otherwise.
+   */
   // TODO(kroikie): Find a better way to determine application state.
-  public static boolean isApplicationForeground(Context context) {
+  private static boolean isApplicationForeground(Context context) {
     KeyguardManager keyguardManager =
         (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
 

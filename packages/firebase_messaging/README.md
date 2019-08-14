@@ -60,68 +60,73 @@ By default background messaging is not enabled. To handle messages in the backgr
 
 1. Add an Application.java class to your app
 
-```
-package io.flutter.plugins.firebasemessagingexample;
-
-import io.flutter.app.FlutterApplication;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
-import io.flutter.plugins.GeneratedPluginRegistrant;
-import io.flutter.plugins.firebasemessaging.FlutterFirebaseMessagingService;
-
-public class Application extends FlutterApplication implements PluginRegistrantCallback {
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    FlutterFirebaseMessagingService.setPluginRegistrant(this);
-  }
-
-  @Override
-  public void registerWith(PluginRegistry registry) {
-    GeneratedPluginRegistrant.registerWith(registry);
-  }
-}
-```
+    ```
+    package io.flutter.plugins.firebasemessagingexample;
+    
+    import io.flutter.app.FlutterApplication;
+    import io.flutter.plugin.common.PluginRegistry;
+    import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
+    import io.flutter.plugins.GeneratedPluginRegistrant;
+    import io.flutter.plugins.firebasemessaging.FlutterFirebaseMessagingService;
+    
+    public class Application extends FlutterApplication implements PluginRegistrantCallback {
+      @Override
+      public void onCreate() {
+        super.onCreate();
+        FlutterFirebaseMessagingService.setPluginRegistrant(this);
+      }
+    
+      @Override
+      public void registerWith(PluginRegistry registry) {
+        GeneratedPluginRegistrant.registerWith(registry);
+      }
+    }
+    ```
 1. Set name property of application in `AndroidManifest.xml`
-```
-<application android:name=".Application" ...>
-```
-1. Define a top level method to handle background messages
-```
-Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
-  if (message.containsKey('data')) {
-    // Handle data message
-    dynamic data = message['data'];
-  }
-
-  if (message.containsKey('notification')) {
-    // Handle notification message
-    dynamic notification = message['notification'];
-  }
-
-  // Or do work with other plugins, eg: write to RTDB.
-  FirebaseDatabase.instance.reference().child('foo').set('bar');
-  return Future<void>.value();
-}
-```
+    ```
+    <application android:name=".Application" ...>
+    ```
+1. Define a top level Dart method to handle background messages
+    ```
+    Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
+      if (message.containsKey('data')) {
+        // Handle data message
+        dynamic data = message['data'];
+      }
+    
+      if (message.containsKey('notification')) {
+        // Handle notification message
+        dynamic notification = message['notification'];
+      }
+    
+      // Or do work with other plugins, eg: write to RTDB.
+      FirebaseDatabase.instance.reference().child('foo').set('bar');
+      return Future<void>.value();
+    }
+    ```
+   Note: the protocol of `data` and `notification` are in line with the
+   fields defined by a [RemoteMessage](https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/RemoteMessage). 
 1. Set `onBackgroundMessage` handler when calling `configure`
-```
-_firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-        _showItemDialog(message);
-      },
-      onBackgroundMessage: myBackgroundMessageHandler,
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
-        _navigateToItemDetail(message);
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
-        _navigateToItemDetail(message);
-      },
-    );
-```
+    ```
+    _firebaseMessaging.configure(
+          onMessage: (Map<String, dynamic> message) async {
+            print("onMessage: $message");
+            _showItemDialog(message);
+          },
+          onBackgroundMessage: myBackgroundMessageHandler,
+          onLaunch: (Map<String, dynamic> message) async {
+            print("onLaunch: $message");
+            _navigateToItemDetail(message);
+          },
+          onResume: (Map<String, dynamic> message) async {
+            print("onResume: $message");
+            _navigateToItemDetail(message);
+          },
+        );
+    ```
+   Note: `configure` should be called early in the lifecycle of your application
+   so that it can be ready to receive messages as early as possible. See the
+   example app for a demonstration.
 
 ### iOS Integration
 

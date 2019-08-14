@@ -12,10 +12,12 @@ import 'package:test/test.dart';
 
 void main() {
   MockMethodChannel mockChannel;
+  MockMethodChannel mockBackgroundChannel;
   FirebaseMessaging firebaseMessaging;
 
   setUp(() {
     mockChannel = MockMethodChannel();
+    mockBackgroundChannel = MockMethodChannel();
     firebaseMessaging = FirebaseMessaging.private(
         mockChannel, FakePlatform(operatingSystem: 'ios'));
   });
@@ -162,6 +164,11 @@ void main() {
     firebaseMessaging.setAutoInitEnabled(false);
 
     verify(mockChannel.invokeMethod<void>('setAutoInitEnabled', false));
+  });
+
+  test('setupBackgroundCallback', () {
+    FirebaseMessaging.fcmSetupBackgroundChannel(mockBackgroundChannel);
+    verify(mockBackgroundChannel.invokeMethod<void>('FcmDartService#initialized'));
   });
 }
 
