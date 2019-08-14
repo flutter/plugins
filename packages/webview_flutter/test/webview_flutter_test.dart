@@ -750,6 +750,50 @@ void main() {
     });
   });
 
+  group('scrollViewBounces', () {
+    testWidgets('enable scrollView bounce', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        scrollViewBounces: true,
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      expect(platformWebView.scrollViewBounces, true);
+    });
+
+    testWidgets('defaults to true', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      expect(platformWebView.scrollViewBounces, true);
+    });
+
+    testWidgets('can be changed', (WidgetTester tester) async {
+      final GlobalKey key = GlobalKey();
+      await tester.pumpWidget(WebView(key: key));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      await tester.pumpWidget(WebView(
+        key: key,
+        scrollViewBounces: false,
+      ));
+
+      expect(platformWebView.scrollViewBounces, false);
+
+      await tester.pumpWidget(WebView(
+        key: key,
+        scrollViewBounces: true,
+      ));
+
+      expect(platformWebView.scrollViewBounces, true);
+    });
+  });
+
   group('Custom platform implementation', () {
     setUpAll(() {
       WebView.platform = MyWebViewPlatform();
@@ -776,6 +820,7 @@ void main() {
               javascriptMode: JavascriptMode.disabled,
               hasNavigationDelegate: false,
               debuggingEnabled: false,
+              scrollViewBounces: true,
             ),
             // TODO(iskakaushik): Remove this when collection literals makes it to stable.
             // ignore: prefer_collection_literals
@@ -826,6 +871,7 @@ class FakePlatformWebView {
     hasNavigationDelegate =
         params['settings']['hasNavigationDelegate'] ?? false;
     debuggingEnabled = params['settings']['debuggingEnabled'];
+    scrollViewBounces = params['settings']['scrollViewBounces'];
 
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
@@ -845,6 +891,7 @@ class FakePlatformWebView {
 
   bool hasNavigationDelegate;
   bool debuggingEnabled;
+  bool scrollViewBounces;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -861,6 +908,9 @@ class FakePlatformWebView {
         }
         if (call.arguments['debuggingEnabled'] != null) {
           debuggingEnabled = call.arguments['debuggingEnabled'];
+        }
+        if (call.arguments['scrollViewBounces'] != null) {
+          scrollViewBounces = call.arguments['scrollViewBounces'];
         }
         break;
       case 'canGoBack':
@@ -1092,7 +1142,8 @@ class MatchesWebSettings extends Matcher {
     return _webSettings.javascriptMode == webSettings.javascriptMode &&
         _webSettings.hasNavigationDelegate ==
             webSettings.hasNavigationDelegate &&
-        _webSettings.debuggingEnabled == webSettings.debuggingEnabled;
+        _webSettings.debuggingEnabled == webSettings.debuggingEnabled &&
+        _webSettings.scrollViewBounces == webSettings.scrollViewBounces;
   }
 }
 
