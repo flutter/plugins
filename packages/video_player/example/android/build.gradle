@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.4.2'
     }
 }
 
@@ -15,6 +15,9 @@ allprojects {
         jcenter()
         maven {
             url 'https://google.bintray.com/exoplayer/'
+        }
+        flatDir {
+            dirs project(':video_player').file('libs').path
         }
     }
 }

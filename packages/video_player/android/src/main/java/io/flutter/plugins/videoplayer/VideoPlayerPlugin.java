@@ -26,6 +26,8 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.source.rtsp.RtspDefaultClient;
+import com.google.android.exoplayer2.source.rtsp.RtspMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -83,6 +85,8 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       DataSource.Factory dataSourceFactory;
       if (isFileOrAsset(uri)) {
         dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
+      } else if (isRtsp(uri)) {
+        dataSourceFactory = new RtspMediaSource.Factory(RtspDefaultClient.factory()).createMediaSource(uri);
       } else {
         dataSourceFactory =
             new DefaultHttpDataSourceFactory(
@@ -105,6 +109,15 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       }
       String scheme = uri.getScheme();
       return scheme.equals("file") || scheme.equals("asset");
+    }
+
+    private static boolean isRtsp(Uri uri) {
+      if (uri == null || uri.getScheme() == null) {
+        return false;
+      }
+
+      String scheme = uri.getScheme();
+      return scheme.equals("rtsp");
     }
 
     private MediaSource buildMediaSource(

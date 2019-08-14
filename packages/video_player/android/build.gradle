@@ -21,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.4.2'
     }
 }
 
@@ -52,9 +52,15 @@ android {
     }
 
     dependencies {
-        implementation 'com.google.android.exoplayer:exoplayer-core:2.9.6'
-        implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.6'
-        implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.6'
-        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.6'
+        api(name: 'library-core-release', ext: 'aar')
+        api(name: 'library-dash-release', ext: 'aar')
+        api(name: 'library-hls-release', ext: 'aar')
+        api(name: 'library-rtsp-release', ext: 'aar')
+        api(name: 'library-smoothstreaming-release', ext: 'aar')
+
+//        implementation 'com.google.android.exoplayer:exoplayer-core:2.9.6'
+//        implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.6'
+//        implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.6'
+//        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.6'
     }
 }
