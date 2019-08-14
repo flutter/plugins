@@ -163,6 +163,7 @@ class WebSettings {
     this.javascriptMode,
     this.hasNavigationDelegate,
     this.debuggingEnabled,
+    this.scrollViewBounces,
   });
 
   /// The JavaScript execution mode to be used by the webview.
@@ -175,6 +176,7 @@ class WebSettings {
   ///
   /// See also: [WebView.debuggingEnabled].
   final bool debuggingEnabled;
+  final bool scrollViewBounces;
 
   @override
   String toString() {
