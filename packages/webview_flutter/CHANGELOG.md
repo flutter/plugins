@@ -1,3 +1,7 @@
+## 0.3.12
+
+* Added a getTitle getter to WebViewController.
+
 ## 0.3.11+4
 
 * Removed noisy log messages on iOS.
