@@ -26,7 +26,7 @@
 
 - (void)clearCookies:(FlutterResult)result {
   if (@available(iOS 9.0, *)) {
-    NSSet *websiteDataTypes = [NSSet setWithArray:@[ WKWebsiteDataTypeCookies ]];
+    NSSet<NSString *> *websiteDataTypes = [NSSet setWithObject:WKWebsiteDataTypeCookies];
     WKWebsiteDataStore *dataStore = [WKWebsiteDataStore defaultDataStore];
 
     void (^deleteAndNotify)(NSArray<WKWebsiteDataRecord *> *) =
