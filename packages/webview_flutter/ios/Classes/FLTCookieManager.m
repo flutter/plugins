@@ -30,14 +30,14 @@
     WKWebsiteDataStore *dataStore = [WKWebsiteDataStore defaultDataStore];
 
     void (^deleteAndNotify)(NSArray<WKWebsiteDataRecord *> *) =
-      ^(NSArray<WKWebsiteDataRecord *> *cookies) {
+        ^(NSArray<WKWebsiteDataRecord *> *cookies) {
           BOOL hasCookies = cookies.count > 0;
           [dataStore removeDataOfTypes:websiteDataTypes
                         forDataRecords:cookies
                      completionHandler:^{
                        result(@(hasCookies));
                      }];
-    };
+        };
 
     [dataStore fetchDataRecordsOfTypes:websiteDataTypes completionHandler:deleteAndNotify];
   } else {
