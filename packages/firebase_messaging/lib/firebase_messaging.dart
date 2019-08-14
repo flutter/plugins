@@ -26,7 +26,8 @@ class FirebaseMessaging {
   /// Your app should never call this method directly, this is only for use
   /// by the firebase_messaging plugin to setup background message handling.
   @visibleForTesting
-  static Future<void> fcmSetupBackgroundChannel(MethodChannel backgroundChannel) async {
+  static Future<void> fcmSetupBackgroundChannel(
+      MethodChannel backgroundChannel) async {
     // Setup Flutter state needed for MethodChannels.
     WidgetsFlutterBinding.ensureInitialized();
 
@@ -35,9 +36,9 @@ class FirebaseMessaging {
     backgroundChannel.setMethodCallHandler((MethodCall call) async {
       if (call.method == 'handleBackgroundMessage') {
         final CallbackHandle handle =
-        CallbackHandle.fromRawHandle(call.arguments['handle']);
+            CallbackHandle.fromRawHandle(call.arguments['handle']);
         final Function handlerFunction =
-        PluginUtilities.getCallbackFromHandle(handle);
+            PluginUtilities.getCallbackFromHandle(handle);
         await handlerFunction(call.arguments['message']);
         return Future<void>.value();
       }
@@ -106,8 +107,9 @@ class FirebaseMessaging {
       _onBackgroundMessage = onBackgroundMessage;
       final CallbackHandle backgroundSetupHandle =
           PluginUtilities.getCallbackHandle(() {
-            fcmSetupBackgroundChannel(const MethodChannel('plugins.flutter.io/android_fcm_background'));
-          });
+        fcmSetupBackgroundChannel(
+            const MethodChannel('plugins.flutter.io/android_fcm_background'));
+      });
       final CallbackHandle backgroundMessageHandle =
           PluginUtilities.getCallbackHandle(_onBackgroundMessage);
       _channel.invokeMethod<bool>(
