@@ -177,14 +177,17 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isRecordingPaused;
-@property(assign, nonatomic) BOOL recordingIsDiconnected;
+@property(assign, nonatomic) BOOL videoIsDiconnected;
+@property(assign, nonatomic) BOOL audioIsDiconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
-@property(assign, nonatomic) CMTime timeOffset;
+@property(assign, nonatomic) CMTime videoTimeOffset;
+@property(assign, nonatomic) CMTime audioTimeOffset;
 @property(nonatomic) CMMotionManager *motionManager;
+@property AVAssetWriterInputPixelBufferAdaptor *videoAdaptor;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
@@ -426,59 +429,70 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       });
       return;
     }
-    if (_recordingIsDiconnected) {
-      if (output == _captureVideoOutput) return;
-      _recordingIsDiconnected = NO;
-
-      CMTime timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
-      if (_lastAudioSampleTime.flags & kCMTimeFlags_Valid) {
-        if (_timeOffset.flags & kCMTimeFlags_Valid) {
-          timestamp = CMTimeSubtract(timestamp, _timeOffset);
-        }
-        CMTime offset = CMTimeSubtract(timestamp, _lastAudioSampleTime);
-
-        // this stops us having to set a scale for _timeOffset before we see the first video time
-        if (_timeOffset.value == 0) {
-          _timeOffset = offset;
-        } else {
-          _timeOffset = CMTimeAdd(_timeOffset, offset);
-        }
-      }
-      _lastVideoSampleTime.flags = 0;
-      _lastAudioSampleTime.flags = 0;
-    }
 
     CFRetain(sampleBuffer);
-
-    if (_timeOffset.value > 0) {
-      CFRelease(sampleBuffer);
-      sampleBuffer = [self adjustTime:sampleBuffer by:_timeOffset];
-    }
-
-    CMTime lastSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+    CMTime currentSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
     CMTime dur = CMSampleBufferGetDuration(sampleBuffer);
-
-    if (output == _captureVideoOutput) {
-      _lastVideoSampleTime = CMTimeAdd(lastSampleTime, dur);
-    } else {
-      _lastAudioSampleTime = CMTimeAdd(lastSampleTime, dur);
-    }
 
     if (_videoWriter.status != AVAssetWriterStatusWriting) {
       [_videoWriter startWriting];
-      [_videoWriter startSessionAtSourceTime:lastSampleTime];
+      [_videoWriter startSessionAtSourceTime:currentSampleTime];
     }
+
     if (output == _captureVideoOutput) {
-      [self newVideoSample:sampleBuffer];
-    } else if (output == _audioOutput) {
+      if (_videoIsDiconnected) {
+        _videoIsDiconnected = NO;
+
+        if (_videoTimeOffset.value == 0) {
+          _videoTimeOffset = CMTimeSubtract(currentSampleTime, _lastVideoSampleTime);
+        } else {
+          CMTime adjustedSampleTime = CMTimeSubtract(currentSampleTime, _videoTimeOffset);
+          CMTime offset = CMTimeSubtract(adjustedSampleTime, _lastVideoSampleTime);
+          _videoTimeOffset = CMTimeAdd(_videoTimeOffset, offset);
+        }
+      }
+
+      if (dur.value > 0) {
+        _lastVideoSampleTime = CMTimeAdd(currentSampleTime, dur);
+      } else {
+        _lastVideoSampleTime = currentSampleTime;
+      }
+
+      CVPixelBufferRef nextBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+      CMTime nextSampleTime = CMTimeSubtract(_lastVideoSampleTime, _videoTimeOffset);
+      [_videoAdaptor appendPixelBuffer:nextBuffer withPresentationTime:nextSampleTime];
+    } else {
+      if (_audioIsDiconnected) {
+        _audioIsDiconnected = NO;
+
+        if (_audioTimeOffset.value == 0) {
+          _audioTimeOffset = CMTimeSubtract(currentSampleTime, _lastAudioSampleTime);
+        } else {
+          CMTime adjustedSampleTime = CMTimeSubtract(currentSampleTime, _audioTimeOffset);
+          CMTime offset = CMTimeSubtract(adjustedSampleTime, _lastAudioSampleTime);
+          _audioTimeOffset = CMTimeAdd(_audioTimeOffset, offset);
+        }
+      }
+
+      if (dur.value > 0) {
+        _lastAudioSampleTime = CMTimeAdd(currentSampleTime, dur);
+      } else {
+        _lastAudioSampleTime = currentSampleTime;
+      }
+
+      if (_audioTimeOffset.value != 0) {
+        CFRelease(sampleBuffer);
+        sampleBuffer = [self adjustTime:sampleBuffer by:_audioTimeOffset];
+      }
+
       [self newAudioSample:sampleBuffer];
     }
+
     CFRelease(sampleBuffer);
   }
 }
 
-- (CMSampleBufferRef) adjustTime:(CMSampleBufferRef) sample by:(CMTime) offset
-{
+- (CMSampleBufferRef) adjustTime:(CMSampleBufferRef) sample by:(CMTime) offset {
   CMItemCount count;
   CMSampleBufferGetSampleTimingInfoArray(sample, 0, nil, &count);
   CMSampleTimingInfo* pInfo = malloc(sizeof(CMSampleTimingInfo) * count);
@@ -582,8 +596,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     }
     _isRecording = YES;
     _isRecordingPaused = NO;
-    _timeOffset = CMTimeMake(0, 0);
-    _recordingIsDiconnected = NO;
+    _videoTimeOffset = CMTimeMake(0, 1);
+    _audioTimeOffset = CMTimeMake(0, 1);
+    _videoIsDiconnected = NO;
+    _audioIsDiconnected = NO;
     result(nil);
   } else {
     _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
@@ -616,7 +632,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 - (void)pauseVideoRecording {
   _isRecordingPaused = YES;
-  _recordingIsDiconnected = YES;
+  _videoIsDiconnected = YES;
+  _audioIsDiconnected = YES;
 }
 
 - (void)resumeVideoRecording {
@@ -675,6 +692,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                                    nil];
   _videoWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo
                                                          outputSettings:videoSettings];
+
+  _videoAdaptor = [AVAssetWriterInputPixelBufferAdaptor
+                   assetWriterInputPixelBufferAdaptorWithAssetWriterInput:_videoWriterInput
+                   sourcePixelBufferAttributes:@{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)}];
+
   NSParameterAssert(_videoWriterInput);
   _videoWriterInput.expectsMediaDataInRealTime = YES;
 
