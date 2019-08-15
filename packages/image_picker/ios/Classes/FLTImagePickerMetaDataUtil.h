@@ -29,9 +29,6 @@ extern const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault;
 
 + (NSData *)updateMetaData:(NSDictionary *)metaData toImage:(NSData *)imageData;
 
-+ (UIImageOrientation)getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-    (CGImagePropertyOrientation)cgImageOrientation;
-
 // Converting UIImage to a NSData with the type proveide.
 //
 // The quality is for JPEG type only, it defaults to 1. It throws exception if setting a non-nil
