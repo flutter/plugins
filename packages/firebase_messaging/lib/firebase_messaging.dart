@@ -18,6 +18,18 @@ typedef Future<dynamic> MessageHandler(Map<String, dynamic> message);
 /// Your app should call [requestNotificationPermissions] first and then
 /// register handlers for incoming messages with [configure].
 class FirebaseMessaging {
+
+  factory FirebaseMessaging() => _instance;
+
+  @visibleForTesting
+  FirebaseMessaging.private(MethodChannel channel, Platform platform)
+      : _channel = channel,
+        _platform = platform;
+
+  static final FirebaseMessaging _instance = FirebaseMessaging.private(
+      const MethodChannel('plugins.flutter.io/firebase_messaging'),
+      const LocalPlatform());
+
   /// Setup method channel to handle Firebase Cloud Messages received while
   /// the Flutter app is not active. The handle for this method is generated
   /// and passed to the Android side so that the background isolate knows where
@@ -36,9 +48,9 @@ class FirebaseMessaging {
     backgroundChannel.setMethodCallHandler((MethodCall call) async {
       if (call.method == 'handleBackgroundMessage') {
         final CallbackHandle handle =
-            CallbackHandle.fromRawHandle(call.arguments['handle']);
+        CallbackHandle.fromRawHandle(call.arguments['handle']);
         final Function handlerFunction =
-            PluginUtilities.getCallbackFromHandle(handle);
+        PluginUtilities.getCallbackFromHandle(handle);
         await handlerFunction(call.arguments['message']);
         return Future<void>.value();
       }
@@ -48,17 +60,6 @@ class FirebaseMessaging {
     // know that it can start scheduling handling messages.
     await backgroundChannel.invokeMethod<void>('FcmDartService#initialized');
   }
-
-  factory FirebaseMessaging() => _instance;
-
-  @visibleForTesting
-  FirebaseMessaging.private(MethodChannel channel, Platform platform)
-      : _channel = channel,
-        _platform = platform;
-
-  static final FirebaseMessaging _instance = FirebaseMessaging.private(
-      const MethodChannel('plugins.flutter.io/firebase_messaging'),
-      const LocalPlatform());
 
   final MethodChannel _channel;
   final Platform _platform;
