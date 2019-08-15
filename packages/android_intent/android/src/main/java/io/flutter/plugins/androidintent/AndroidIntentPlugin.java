@@ -38,16 +38,16 @@ public class AndroidIntentPlugin implements MethodCallHandler {
 
   private String convertAction(String action) {
     switch (action) {
-      case "action_view":
-        return Intent.ACTION_VIEW;
-      case "action_voice":
-        return Intent.ACTION_VOICE_COMMAND;
-      case "settings":
-        return Settings.ACTION_SETTINGS;
-      case "action_location_source_settings":
-        return Settings.ACTION_LOCATION_SOURCE_SETTINGS;
-      default:
-        return action;
+    case "action_view":
+      return Intent.ACTION_VIEW;
+    case "action_voice":
+      return Intent.ACTION_VOICE_COMMAND;
+    case "settings":
+      return Settings.ACTION_SETTINGS;
+    case "action_location_source_settings":
+      return Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+    default:
+      return action;
     }
   }
 
@@ -146,6 +146,9 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
         intent.setPackage(null);
       }
+    }
+    if (call.argument("type") != null) {
+      intent.setType((String) call.argument("type"));
     }
 
     Log.i(TAG, "Sending intent " + intent);

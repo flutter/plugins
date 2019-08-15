@@ -22,6 +22,7 @@ class AndroidIntent {
   /// [package] refers to the package parameter of the intent, can be null.
   /// [componentName] refers to the component name of the intent, can be null.
   /// If not null, then [package] but also be provided.
+  /// [type] refers to the type of the intent, can be null.
   const AndroidIntent({
     @required this.action,
     this.category,
@@ -30,6 +31,7 @@ class AndroidIntent {
     this.package,
     this.componentName,
     Platform platform,
+    this.type,
   })  : assert(action != null),
         _channel = const MethodChannel(kChannelName),
         _platform = platform ?? const LocalPlatform();
@@ -42,6 +44,7 @@ class AndroidIntent {
   final String componentName;
   final MethodChannel _channel;
   final Platform _platform;
+  final String type;
 
   /// Launch the intent.
   ///
@@ -64,6 +67,9 @@ class AndroidIntent {
       if (componentName != null) {
         args['componentName'] = componentName;
       }
+    }
+    if (type != null) {
+      args['type'] = type;
     }
     await _channel.invokeMethod<void>('launch', args);
   }
