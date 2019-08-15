@@ -2,6 +2,10 @@
 
 * Add an optional `userAgent` property to set a custom User Agent.
   
+## 0.3.11+4
+
+* Removed noisy log messages on iOS.
+
 ## 0.3.11+3
 
 * Apply the display listeners workaround that was shipped in 0.3.11+1 on
@@ -29,7 +33,6 @@
 ## 0.3.10+4
 
 * Add keyboard text to README.
-
 
 ## 0.3.10+3
 
