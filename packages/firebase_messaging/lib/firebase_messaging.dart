@@ -18,7 +18,6 @@ typedef Future<dynamic> MessageHandler(Map<String, dynamic> message);
 /// Your app should call [requestNotificationPermissions] first and then
 /// register handlers for incoming messages with [configure].
 class FirebaseMessaging {
-
   factory FirebaseMessaging() => _instance;
 
   @visibleForTesting
@@ -48,9 +47,9 @@ class FirebaseMessaging {
     backgroundChannel.setMethodCallHandler((MethodCall call) async {
       if (call.method == 'handleBackgroundMessage') {
         final CallbackHandle handle =
-        CallbackHandle.fromRawHandle(call.arguments['handle']);
+            CallbackHandle.fromRawHandle(call.arguments['handle']);
         final Function handlerFunction =
-        PluginUtilities.getCallbackFromHandle(handle);
+            PluginUtilities.getCallbackFromHandle(handle);
         await handlerFunction(call.arguments['message']);
         return Future<void>.value();
       }
