@@ -2,6 +2,10 @@
 
 * Added a getTitle getter to WebViewController.
 
+## 0.3.11+6
+
+* Calling destroy on Android webview when flutter webview is getting disposed.
+
 ## 0.3.11+5
 
 * Reduce compiler warnings regarding iOS9 compatibility by moving a single
