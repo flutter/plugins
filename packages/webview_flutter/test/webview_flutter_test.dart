@@ -827,22 +827,6 @@ void main() {
 
     expect(platformWebView.userAgent, 'UA');
   });
-
-  testWidgets('Get UserAgent', (WidgetTester tester) async {
-    WebViewController controller;
-    await tester.pumpWidget(
-      WebView(
-        initialUrl: 'https://youtube.com',
-        javascriptMode: JavascriptMode.unrestricted,
-        userAgent: 'UA',
-        onWebViewCreated: (WebViewController webViewController) {
-          controller = webViewController;
-        },
-      ),
-    );
-    expect(controller, isNotNull);
-    expect(await controller.getUserAgent(), 'UA');
-  });
 }
 
 class FakePlatformWebView {
@@ -936,8 +920,6 @@ class FakePlatformWebView {
       case 'clearCache':
         hasCache = false;
         return Future<void>.sync(() {});
-      case 'getUserAgent':
-        return Future<String>.value(userAgent);
     }
     return Future<void>.sync(() {});
   }

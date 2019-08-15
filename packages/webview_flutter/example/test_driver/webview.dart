@@ -241,7 +241,7 @@ void main() {
       ),
     );
     final WebViewController controller1 = await controllerCompleter1.future;
-    final String customUserAgent1 = await controller1.getUserAgent();
+    final String customUserAgent1 = await _getUserAgent(controller1);
     expect(customUserAgent1, 'Custom_User_Agent1');
     // rebuild the WebView with a different user agent.
     await pumpWidget(
@@ -256,7 +256,7 @@ void main() {
       ),
     );
 
-    final String customUserAgent2 = await controller1.getUserAgent();
+    final String customUserAgent2 = await _getUserAgent(controller1);
     expect(customUserAgent2, 'Custom_User_Agent2');
   });
 
@@ -279,7 +279,7 @@ void main() {
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
-    final String defaultPlatformUserAgent = await controller.getUserAgent();
+    final String defaultPlatformUserAgent = await _getUserAgent(controller);
     // rebuild the WebView with a custom user agent.
     await pumpWidget(
       Directionality(
@@ -288,12 +288,12 @@ void main() {
           key: _globalKey,
           initialUrl: 'https://flutter.dev/',
           javascriptMode: JavascriptMode.unrestricted,
-          userAgent: 'Custom_User_Agent',
+          userAgent: 'Custom"_User_"Agent',
         ),
       ),
     );
-    final String customUserAgent = await controller.getUserAgent();
-    expect(customUserAgent, 'Custom_User_Agent');
+    final String customUserAgent = await _getUserAgent(controller);
+    expect(customUserAgent, 'Custom"_User_"Agent');
     // rebuilds the WebView with no user agent.
     await pumpWidget(
       Directionality(
@@ -306,7 +306,7 @@ void main() {
       ),
     );
 
-    final String customUserAgent2 = await controller.getUserAgent();
+    final String customUserAgent2 = await _getUserAgent(controller);
     expect(customUserAgent2, defaultPlatformUserAgent);
   });
 
@@ -471,4 +471,10 @@ String _webviewBool(bool value) {
     return value ? '1' : '0';
   }
   return value ? 'true' : 'false';
+}
+
+/// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
+Future<String> _getUserAgent(WebViewController controller) async {
+  return await controller.evaluateJavascript('navigator.userAgent;')
+    ..toString();
 }

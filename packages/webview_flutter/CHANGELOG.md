@@ -1,7 +1,6 @@
 ## 0.3.12
 
 * Add an optional `userAgent` property to set a custom User Agent.
-* Add `getUserAgent` to WebViewController. 
   
 ## 0.3.11+3
 

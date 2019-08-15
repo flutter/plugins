@@ -625,11 +625,6 @@ class WebViewController {
     // ignore: strong_mode_implicit_dynamic_method
     return _webViewPlatformController.evaluateJavascript(javascriptString);
   }
-
-  /// Returns the User Agent value that will be used for subsequent HTTP requests.
-  Future<String> getUserAgent() async {
-    return _webViewPlatformController.getUserAgent();
-  }
 }
 
 /// Manages cookies pertaining to all [WebView]s.

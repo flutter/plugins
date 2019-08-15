@@ -152,12 +152,6 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView removeJavascriptChannels is not implemented on the current platform");
   }
-
-  /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
-  Future<String> getUserAgent() {
-    throw UnimplementedError(
-        "WebView getUserAgent is not implemented on the current platform");
-  }
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.
