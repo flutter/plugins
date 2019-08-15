@@ -293,7 +293,7 @@ void main() {
       ),
     );
     final String customUserAgent = await _getUserAgent(controller);
-    expect(customUserAgent, 'Custom"_User_"Agent');
+    expect(customUserAgent, 'Custom_User_Agent');
     // rebuilds the WebView with no user agent.
     await pumpWidget(
       Directionality(
