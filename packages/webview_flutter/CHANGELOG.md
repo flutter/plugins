@@ -1,3 +1,7 @@
+## 0.3.12
+
+* Added a getTitle getter to WebViewController.
+
 ## 0.3.11+6
 
 * Calling destroy on Android webview when flutter webview is getting disposed.

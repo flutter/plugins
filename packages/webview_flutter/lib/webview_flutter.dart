@@ -600,6 +600,11 @@ class WebViewController {
     // ignore: strong_mode_implicit_dynamic_method
     return _webViewPlatformController.evaluateJavascript(javascriptString);
   }
+
+  /// Returns the title of the currently loaded page.
+  Future<String> getTitle() {
+    return _webViewPlatformController.getTitle();
+  }
 }
 
 /// Manages cookies pertaining to all [WebView]s.
