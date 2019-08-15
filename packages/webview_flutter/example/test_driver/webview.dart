@@ -288,7 +288,7 @@ void main() {
           key: _globalKey,
           initialUrl: 'https://flutter.dev/',
           javascriptMode: JavascriptMode.unrestricted,
-          userAgent: 'Custom"_User_"Agent',
+          userAgent: 'Custom_User_Agent',
         ),
       ),
     );
@@ -475,6 +475,9 @@ String _webviewBool(bool value) {
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
 Future<String> _getUserAgent(WebViewController controller) async {
-  return await controller.evaluateJavascript('navigator.userAgent;')
-    ..toString();
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    return await controller.evaluateJavascript('navigator.userAgent;');
+  }
+  return jsonDecode(
+      await controller.evaluateJavascript('navigator.userAgent;'));
 }
