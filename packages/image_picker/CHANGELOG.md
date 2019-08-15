@@ -1,3 +1,7 @@
+## 0.6.1+2
+
+* Replace dependency on `androidx.legacy:legacy-support-v4:1.0.0` with `androidx.core:core:1.0.2`
+
 ## 0.6.1+1
 
 * Add dependency on `androidx.annotation:annotation:1.0.0`.

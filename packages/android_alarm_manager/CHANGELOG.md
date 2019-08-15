@@ -1,3 +1,7 @@
+## 0.4.3
+
+* Added `oneShotAt` method to run `callback` at a given DateTime `time`.
+
 ## 0.4.2
 
 * Added support for setting alarms which work when the phone is in doze mode.
