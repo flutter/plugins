@@ -122,6 +122,23 @@ myBanner
   ..show(
     // Positions the banner ad 60 pixels from the bottom of the screen
     anchorOffset: 60.0,
+    // Positions the banner ad 10 pixels from the center of the screen to the right
+    horizontalCenterOffset: 10.0,
+    // Banner Position
+    anchorType: AnchorType.bottom,
+  );
+```
+
+Ads must be loaded before they're shown.
+```dart
+myBanner
+  // typically this happens well before the ad is shown
+  ..load()
+  ..show(
+    // Positions the banner ad 60 pixels from the bottom of the screen
+    anchorOffset: 60.0,
+    // Positions the banner ad 10 pixels from the center of the screen to the left
+    horizontalCenterOffset: -10.0,
     // Banner Position
     anchorType: AnchorType.bottom,
   );
@@ -133,6 +150,7 @@ myInterstitial
   ..show(
     anchorType: AnchorType.bottom,
     anchorOffset: 0.0,
+    horizontalCenterOffset: 0.0,
   );
 ```
 
@@ -186,7 +204,6 @@ method.
 This is just an initial version of the plugin. There are still some
 limitations:
 
-- Banner ads have limited positioning functionality. They can be positioned at the top or the bottom of the screen and at a logical pixel offset from the edge.
 - Banner ads cannot be animated into view.
 - It's not possible to specify a banner ad's size.
 - There's no support for native ads.
