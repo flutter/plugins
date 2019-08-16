@@ -333,7 +333,9 @@ public class Camera {
     // Request initial Auto Exposure mode
     captureRequestBuilder.set(
         CaptureRequest.CONTROL_AE_MODE,
-        enableAutoExposure ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
+        enableAutoExposure
+            ? CaptureRequest.CONTROL_AE_MODE_ON
+            : CaptureRequest.CONTROL_AE_MODE_OFF);
 
     // Prepare the callback
     CameraCaptureSession.StateCallback callback =
