@@ -32,15 +32,15 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @SuppressWarnings("unchecked")
   FlutterWebView(
-      final Context context,
-      BinaryMessenger messenger,
-      int id,
-      Map<String, Object> params,
-      final View containerView) {
+          final Context context,
+          BinaryMessenger messenger,
+          int id,
+          Map<String, Object> params,
+          final View containerView) {
 
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
     DisplayManager displayManager =
-        (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
+            (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
     webView = new InputAwareWebView(context, containerView);
     displayListenerProxy.onPostWebViewInitialization(displayManager);
@@ -76,29 +76,21 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   // @Override
-  // This is overriding a method that hasn't rolled into stable Flutter yet.
-  // Including the
-  // annotation would cause compile time failures in versions of Flutter too old
-  // to include the new
-  // method. However leaving it raw like this means that the method will be
-  // ignored in old versions
+  // This is overriding a method that hasn't rolled into stable Flutter yet. Including the
+  // annotation would cause compile time failures in versions of Flutter too old to include the new
+  // method. However leaving it raw like this means that the method will be ignored in old versions
   // of Flutter but used as an override anyway wherever it's actually defined.
-  // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to
-  // stable.
+  // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to stable.
   public void onInputConnectionUnlocked() {
     webView.unlockInputConnection();
   }
 
   // @Override
-  // This is overriding a method that hasn't rolled into stable Flutter yet.
-  // Including the
-  // annotation would cause compile time failures in versions of Flutter too old
-  // to include the new
-  // method. However leaving it raw like this means that the method will be
-  // ignored in old versions
+  // This is overriding a method that hasn't rolled into stable Flutter yet. Including the
+  // annotation would cause compile time failures in versions of Flutter too old to include the new
+  // method. However leaving it raw like this means that the method will be ignored in old versions
   // of Flutter but used as an override anyway wherever it's actually defined.
-  // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to
-  // stable.
+  // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to stable.
   public void onInputConnectionLocked() {
     webView.lockInputConnection();
   }
@@ -203,13 +195,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       throw new UnsupportedOperationException("JavaScript string cannot be null");
     }
     webView.evaluateJavascript(
-        jsString,
-        new android.webkit.ValueCallback<String>() {
-          @Override
-          public void onReceiveValue(String value) {
-            result.success(value);
-          }
-        });
+            jsString,
+            new android.webkit.ValueCallback<String>() {
+              @Override
+              public void onReceiveValue(String value) {
+                result.success(value);
+              }
+            });
   }
 
   @SuppressWarnings("unchecked")
@@ -244,7 +236,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           final boolean hasNavigationDelegate = (boolean) settings.get(key);
 
           final WebViewClient webViewClient =
-              flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
+                  flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
 
           webView.setWebViewClient(webViewClient);
           break;
@@ -276,8 +268,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void updateAutoMediaPlaybackPolicy(int mode) {
-    // This is the index of the AutoMediaPlaybackPolicy enum, index 1 is
-    // always_allow, for all
+    // This is the index of the AutoMediaPlaybackPolicy enum, index 1 is always_allow, for all
     // other values we require a user gesture.
     boolean requireUserGesture = mode != 1;
     webView.getSettings().setMediaPlaybackRequiresUserGesture(requireUserGesture);
@@ -286,7 +277,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private void registerJavaScriptChannelNames(List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.addJavascriptInterface(
-          new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
+              new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
     }
   }
 
