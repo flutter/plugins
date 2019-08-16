@@ -24,7 +24,7 @@ class FirebaseAnalytics {
   /// Example:
   ///
   ///     FirebaseAnalytics analytics = FirebaseAnalytics();
-  ///     analytics.android?.setMinimumSessionDuration(200000);
+  ///     analytics.android?.setSessionTimeoutDuration(true);
   final FirebaseAnalyticsAndroid android =
       defaultTargetPlatform == TargetPlatform.android
           ? FirebaseAnalyticsAndroid()
@@ -870,29 +870,6 @@ class FirebaseAnalytics {
 /// Android-specific analytics API.
 class FirebaseAnalyticsAndroid {
   final MethodChannel _channel = firebaseChannel;
-
-  /// Sets whether analytics collection is enabled for this app on this device.
-  ///
-  /// This setting is persisted across app sessions. By default it is enabled.
-  /// Deprecated: Use [FirebaseAnalytics.setAnalyticsCollectionEnabled] instead.
-  @deprecated
-  Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
-    if (enabled == null) {
-      throw ArgumentError.notNull('enabled');
-    }
-    await _channel.invokeMethod<void>('setAnalyticsCollectionEnabled', enabled);
-  }
-
-  /// Sets the minimum engagement time required before starting a session.
-  ///
-  /// The default value is 10000 (10 seconds).
-  Future<void> setMinimumSessionDuration(int milliseconds) async {
-    if (milliseconds == null) {
-      throw ArgumentError.notNull('milliseconds');
-    }
-    await _channel.invokeMethod<void>(
-        'setMinimumSessionDuration', milliseconds);
-  }
 
   /// Sets the duration of inactivity that terminates the current session.
   ///

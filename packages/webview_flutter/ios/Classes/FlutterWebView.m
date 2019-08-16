@@ -62,8 +62,12 @@
       [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
     }
 
+    NSDictionary<NSString*, id>* settings = args[@"settings"];
+
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
     configuration.userContentController = userContentController;
+    [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
+                        inConfiguration:configuration];
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
@@ -72,7 +76,7 @@
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
     }];
-    NSDictionary<NSString*, id>* settings = args[@"settings"];
+
     [self applySettings:settings];
     // TODO(amirh): return an error if apply settings failed once it's possible to do so.
     // https://github.com/flutter/flutter/issues/36228
@@ -268,6 +272,30 @@
       break;
     default:
       NSLog(@"webview_flutter: unknown JavaScript mode: %@", mode);
+  }
+}
+
+- (void)updateAutoMediaPlaybackPolicy:(NSNumber*)policy
+                      inConfiguration:(WKWebViewConfiguration*)configuration {
+  switch ([policy integerValue]) {
+    case 0:  // require_user_action_for_all_media_types
+      NSLog(@"requiring user action for all types");
+      if (@available(iOS 10.0, *)) {
+        configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeAll;
+      } else {
+        configuration.mediaPlaybackRequiresUserAction = true;
+      }
+      break;
+    case 1:  // always_allow
+      NSLog(@"allowing auto playback");
+      if (@available(iOS 10.0, *)) {
+        configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
+      } else {
+        configuration.mediaPlaybackRequiresUserAction = false;
+      }
+      break;
+    default:
+      NSLog(@"webview_flutter: unknown auto media playback policy: %@", policy);
   }
 }
 
