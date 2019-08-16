@@ -27,8 +27,7 @@ public class AndroidIntentPlugin implements MethodCallHandler {
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/android_intent");
+    final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/android_intent");
     channel.setMethodCallHandler(new AndroidIntentPlugin(registrar));
   }
 
@@ -129,8 +128,14 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     if (call.argument("category") != null) {
       intent.addCategory((String) call.argument("category"));
     }
-    if (call.argument("data") != null) {
+    if (call.argument("data") != null && call.argument("type") == null) {
       intent.setData(Uri.parse((String) call.argument("data")));
+    }
+    if (call.argument("type") != null && call.argument("data") == null) {
+      intent.setType((String) call.argument("type"));
+    }
+    if (call.argument("type") != null && call.argument("data") != null) {
+      intent.setDataAndType(Uri.parse((String) call.argument("data")), (String) call.argument("type"));
     }
     if (call.argument("arguments") != null) {
       intent.putExtras(convertArguments((Map) call.argument("arguments")));
@@ -139,16 +144,12 @@ public class AndroidIntentPlugin implements MethodCallHandler {
       String packageName = (String) call.argument("package");
       intent.setPackage(packageName);
       if (call.argument("componentName") != null) {
-        intent.setComponent(
-            new ComponentName(packageName, (String) call.argument("componentName")));
+        intent.setComponent(new ComponentName(packageName, (String) call.argument("componentName")));
       }
       if (intent.resolveActivity(context.getPackageManager()) == null) {
         Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
         intent.setPackage(null);
       }
-    }
-    if (call.argument("type") != null) {
-      intent.setType((String) call.argument("type"));
     }
 
     Log.i(TAG, "Sending intent " + intent);
