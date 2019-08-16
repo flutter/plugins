@@ -302,6 +302,16 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
   }
 
   /**
+   * Set the registrant callback. This is called by the app's Application class if
+   * background message handling is enabled.
+   *
+   * @param callback Application class which implements PluginRegistrantCallback.
+   */
+  public static void setPluginRegistrant(PluginRegistry.PluginRegistrantCallback callback) {
+    sPluginRegistrantCallback = callback;
+  }
+
+  /**
    * Identify if the application is currently in a state where user interaction is possible. This
    * method is only called by FlutterFirebaseMessagingService when a message is received to
    * determine how the incoming message should be handled.

@@ -13,6 +13,44 @@ import 'package:platform/platform.dart';
 
 typedef Future<dynamic> MessageHandler(Map<String, dynamic> message);
 
+/// Setup method channel to handle Firebase Cloud Messages received while
+/// the Flutter app is not active. The handle for this method is generated
+/// and passed to the Android side so that the background isolate knows where
+/// to send background messages for processing.
+///
+/// Your app should never call this method directly, this is only for use
+/// by the firebase_messaging plugin to setup background message handling.
+@visibleForTesting
+Future<void> fcmSetupBackgroundChannel(
+    {MethodChannel backgroundChannel = const MethodChannel(
+        'plugins.flutter.io/android_fcm_background')}) async {
+  // Setup Flutter state needed for MethodChannels.
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // This is where the magic happens and we handle background events from the
+  // native portion of the plugin.
+  backgroundChannel.setMethodCallHandler((MethodCall call) async {
+    if (call.method == 'handleBackgroundMessage') {
+      final CallbackHandle handle =
+          CallbackHandle.fromRawHandle(call.arguments['handle']);
+      final Function handlerFunction =
+          PluginUtilities.getCallbackFromHandle(handle);
+      try {
+        await handlerFunction(
+            Map<String, dynamic>.from(call.arguments['message']));
+      } catch (e) {
+        print('Unable to handle incoming background message.');
+        print(e);
+      }
+      return Future<void>.value();
+    }
+  });
+
+// Once we've finished initializing, let the native portion of the plugin
+// know that it can start scheduling handling messages.
+  await backgroundChannel.invokeMethod<void>('FcmDartService#initialized');
+}
+
 /// Implementation of the Firebase Cloud Messaging API for Flutter.
 ///
 /// Your app should call [requestNotificationPermissions] first and then
@@ -28,37 +66,6 @@ class FirebaseMessaging {
   static final FirebaseMessaging _instance = FirebaseMessaging.private(
       const MethodChannel('plugins.flutter.io/firebase_messaging'),
       const LocalPlatform());
-
-  /// Setup method channel to handle Firebase Cloud Messages received while
-  /// the Flutter app is not active. The handle for this method is generated
-  /// and passed to the Android side so that the background isolate knows where
-  /// to send background messages for processing.
-  ///
-  /// Your app should never call this method directly, this is only for use
-  /// by the firebase_messaging plugin to setup background message handling.
-  @visibleForTesting
-  static Future<void> fcmSetupBackgroundChannel(
-      MethodChannel backgroundChannel) async {
-    // Setup Flutter state needed for MethodChannels.
-    WidgetsFlutterBinding.ensureInitialized();
-
-    // This is where the magic happens and we handle background events from the
-    // native portion of the plugin.
-    backgroundChannel.setMethodCallHandler((MethodCall call) async {
-      if (call.method == 'handleBackgroundMessage') {
-        final CallbackHandle handle =
-            CallbackHandle.fromRawHandle(call.arguments['handle']);
-        final Function handlerFunction =
-            PluginUtilities.getCallbackFromHandle(handle);
-        await handlerFunction(call.arguments['message']);
-        return Future<void>.value();
-      }
-    });
-
-    // Once we've finished initializing, let the native portion of the plugin
-    // know that it can start scheduling handling messages.
-    await backgroundChannel.invokeMethod<void>('FcmDartService#initialized');
-  }
 
   final MethodChannel _channel;
   final Platform _platform;
@@ -103,13 +110,10 @@ class FirebaseMessaging {
     _onResume = onResume;
     _channel.setMethodCallHandler(_handleMethod);
     _channel.invokeMethod<void>('configure');
-    if (_onBackgroundMessage != null) {
+    if (onBackgroundMessage != null) {
       _onBackgroundMessage = onBackgroundMessage;
       final CallbackHandle backgroundSetupHandle =
-          PluginUtilities.getCallbackHandle(() {
-        fcmSetupBackgroundChannel(
-            const MethodChannel('plugins.flutter.io/android_fcm_background'));
-      });
+          PluginUtilities.getCallbackHandle(fcmSetupBackgroundChannel);
       final CallbackHandle backgroundMessageHandle =
           PluginUtilities.getCallbackHandle(_onBackgroundMessage);
       _channel.invokeMethod<bool>(
