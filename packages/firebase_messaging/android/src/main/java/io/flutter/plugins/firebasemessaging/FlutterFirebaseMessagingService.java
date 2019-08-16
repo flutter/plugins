@@ -140,7 +140,7 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
    */
   public static void startBackgroundIsolate(Context context, long callbackHandle) {
     FlutterMain.ensureInitializationComplete(context, null);
-    String appBundlePath = FlutterMain.findAppBundlePath();
+    String appBundlePath = FlutterMain.findAppBundlePath(context);
     FlutterCallbackInformation flutterCallback =
         FlutterCallbackInformation.lookupCallbackInformation(callbackHandle);
     if (flutterCallback == null) {
