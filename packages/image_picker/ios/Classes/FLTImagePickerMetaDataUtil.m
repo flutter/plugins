@@ -84,29 +84,4 @@ const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIME
   }
 }
 
-+ (UIImageOrientation)getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-    (CGImagePropertyOrientation)cgImageOrientation {
-  switch (cgImageOrientation) {
-    case kCGImagePropertyOrientationUp:
-      return UIImageOrientationUp;
-    case kCGImagePropertyOrientationDown:
-      return UIImageOrientationDown;
-    case kCGImagePropertyOrientationLeft:
-      return UIImageOrientationRight;
-    case kCGImagePropertyOrientationRight:
-      return UIImageOrientationLeft;
-    case kCGImagePropertyOrientationUpMirrored:
-      return UIImageOrientationUpMirrored;
-    case kCGImagePropertyOrientationDownMirrored:
-      return UIImageOrientationDownMirrored;
-    case kCGImagePropertyOrientationLeftMirrored:
-      return UIImageOrientationRightMirrored;
-    case kCGImagePropertyOrientationRightMirrored:
-      return UIImageOrientationLeftMirrored;
-    default:
-      return UIImageOrientationUp;
-  }
-  return UIImageOrientationUp;
-}
-
 @end
