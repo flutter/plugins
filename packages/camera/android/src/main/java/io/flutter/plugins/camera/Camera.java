@@ -328,7 +328,9 @@ public class Camera {
     // Request initial Flash mode
     captureRequestBuilder.set(
         CaptureRequest.FLASH_MODE,
-        enableFlash ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+        enableFlash
+            ? CaptureRequest.FLASH_MODE_TORCH
+            : CaptureRequest.FLASH_MODE_OFF);
 
     // Request initial Auto Exposure mode
     captureRequestBuilder.set(
