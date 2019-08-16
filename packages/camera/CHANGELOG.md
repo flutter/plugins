@@ -1,5 +1,10 @@
 ## 0.5.4
+
 * Add support for Flash and Auto Exposure
+
+## 0.5.3+1
+
+* Fix too large request code for FragmentActivity users.
 
 ## 0.5.3
 * Added new quality presets.
