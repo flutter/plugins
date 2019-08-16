@@ -3,7 +3,7 @@ description: Flutter plugin for Firebase AdMob, supporting
   banner, interstitial (full-screen), and rewarded video ads
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_admob
-version: 0.9.0+3
+version: 0.9.0+4
 
 flutter:
   plugin:
