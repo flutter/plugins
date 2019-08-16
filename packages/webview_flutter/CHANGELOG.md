@@ -1,3 +1,7 @@
+## 0.3.13
+
+* Add an optional `userAgent` property to set a custom User Agent.
+  
 ## 0.3.12+1
 
 * Temporarily revert getTitle (doing this as a patch bump shortly after publishing).
