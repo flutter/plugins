@@ -27,7 +27,8 @@ public class AndroidIntentPlugin implements MethodCallHandler {
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/android_intent");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/android_intent");
     channel.setMethodCallHandler(new AndroidIntentPlugin(registrar));
   }
 
@@ -37,16 +38,16 @@ public class AndroidIntentPlugin implements MethodCallHandler {
 
   private String convertAction(String action) {
     switch (action) {
-    case "action_view":
-      return Intent.ACTION_VIEW;
-    case "action_voice":
-      return Intent.ACTION_VOICE_COMMAND;
-    case "settings":
-      return Settings.ACTION_SETTINGS;
-    case "action_location_source_settings":
-      return Settings.ACTION_LOCATION_SOURCE_SETTINGS;
-    default:
-      return action;
+      case "action_view":
+        return Intent.ACTION_VIEW;
+      case "action_voice":
+        return Intent.ACTION_VOICE_COMMAND;
+      case "settings":
+        return Settings.ACTION_SETTINGS;
+      case "action_location_source_settings":
+        return Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+      default:
+        return action;
     }
   }
 
@@ -135,7 +136,8 @@ public class AndroidIntentPlugin implements MethodCallHandler {
       intent.setType((String) call.argument("type"));
     }
     if (call.argument("type") != null && call.argument("data") != null) {
-      intent.setDataAndType(Uri.parse((String) call.argument("data")), (String) call.argument("type"));
+      intent.setDataAndType(
+	      Uri.parse((String) call.argument("data")), (String) call.argument("type"));
     }
     if (call.argument("arguments") != null) {
       intent.putExtras(convertArguments((Map) call.argument("arguments")));
@@ -144,7 +146,8 @@ public class AndroidIntentPlugin implements MethodCallHandler {
       String packageName = (String) call.argument("package");
       intent.setPackage(packageName);
       if (call.argument("componentName") != null) {
-        intent.setComponent(new ComponentName(packageName, (String) call.argument("componentName")));
+        intent.setComponent(
+            new ComponentName(packageName, (String) call.argument("componentName")));
       }
       if (intent.resolveActivity(context.getPackageManager()) == null) {
         Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
