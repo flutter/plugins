@@ -31,6 +31,12 @@ abstract class WebViewPlatformCallbacksHandler {
 ///
 /// An instance implementing this interface is passed to the `onWebViewPlatformCreated` callback that is
 /// passed to [WebViewPlatformBuilder#onWebViewPlatformCreated].
+///
+/// Platform implementations that live in a separate package should extend this class rather than
+/// implement it as webview_flutter does not consider newly added methods to be breaking changes.
+/// Extending this class (using `extends`) ensures that the subclass will get the default
+/// implementation, while platform implementations that `implements` this interface will be broken
+/// by newly added [WebViewPlatformController] methods.
 abstract class WebViewPlatformController {
   /// Creates a new WebViewPlatform.
   ///
