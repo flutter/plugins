@@ -37,7 +37,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
-  bool enableTorch = false;
+  bool enableFlash = false;
 
   @override
   void initState() {
@@ -100,7 +100,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           Row(
             children: <Widget>[
               _toggleAudioWidget(),
-              _toggleTorchWidget(),
+              _toggleFlashWidget(),
             ],
           ),
           Padding(
@@ -158,33 +158,33 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     );
   }
 
-  /// Display the Torch Switch
-  Widget _toggleTorchWidget() {
+  /// Display the Flash Switch
+  Widget _toggleFlashWidget() {
     return Padding(
       padding: const EdgeInsets.only(left: 25),
       child: Row(
         children: <Widget>[
-          const Text('Enable Torch:'),
-          Switch(value: enableTorch, onChanged: _toggleTorch),
+          const Text('Enable Flash:'),
+          Switch(value: enableFlash, onChanged: _toggleFlash),
         ],
       ),
     );
   }
 
-  /// Toggle Torch
-  Future<void> _toggleTorch(bool value) async {
-    bool hasTorch = false;
+  /// Toggle Flash
+  Future<void> _toggleFlash(bool value) async {
+    bool hasFlash = false;
 
     if (controller != null) {
-      hasTorch = await controller.hasTorch;
+      hasFlash = await controller.hasFlash;
     }
 
-    if (hasTorch) {
-      enableTorch = value;
-      if (enableTorch) {
-        controller.torchOn();
+    if (hasFlash) {
+      enableFlash = value;
+      if (enableFlash) {
+        controller.flashOn();
       } else {
-        controller.torchOff();
+        controller.flashOff();
       }
     }
 

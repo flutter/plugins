@@ -234,8 +234,8 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
-    this.enableTorch = false,
-    this.enableAE = true,
+    this.enableFlash = false,
+    this.enableAutoExposure = true,
   }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
@@ -244,11 +244,11 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Whether to include audio when recording a video.
   final bool enableAudio;
 
-  // Torch
-  final bool enableTorch;
+  /// Switch ON the flash when a camera is initialized
+  final bool enableFlash;
 
-  // Auto Exposure
-  final bool enableAE;
+  /// Switch ON the Auto Exposure when a camera is initialized
+  final bool enableAutoExposure;
 
   int _textureId;
   bool _isDisposed = false;
@@ -272,8 +272,8 @@ class CameraController extends ValueNotifier<CameraValue> {
           'cameraName': description.name,
           'resolutionPreset': serializeResolutionPreset(resolutionPreset),
           'enableAudio': enableAudio,
-          'enableTorch': enableTorch,
-          'enableAE': enableAE,
+          'enableFlash': enableFlash,
+          'enableAutoExposure': enableAutoExposure,
         },
       );
       _textureId = reply['textureId'];
@@ -515,82 +515,82 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
-  /// Switch ON the torch.
-  Future<void> torchOn({double level = 1.0}) async {
+  /// Switch ON the flash.
+  Future<void> flashOn({double level = 1.0}) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController.',
-        'torchOn was called on uninitialized CameraController',
+        'flashOn was called on uninitialized CameraController',
       );
     }
 
     try {
       await _channel
-          .invokeMethod<void>('torchOn', <String, dynamic>{'level': level});
+          .invokeMethod<void>('flashOn', <String, dynamic>{'level': level});
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
   }
 
-  /// Switch OFF the torch.
-  Future<void> torchOff() async {
+  /// Switch OFF the flash.
+  Future<void> flashOff() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController.',
-        'torchOff was called on uninitialized CameraController',
+        'flashOff was called on uninitialized CameraController',
       );
     }
 
     try {
-      await _channel.invokeMethod<void>('torchOff');
+      await _channel.invokeMethod<void>('flashOff');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
   }
 
-  /// check if the device has a torch.
-  Future<bool> get hasTorch async {
+  /// check if the device has a flash.
+  Future<bool> get hasFlash async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController.',
-        'hasTorch was called on uninitialized CameraController',
+        'hasFlash was called on uninitialized CameraController',
       );
     }
 
     try {
-      return await _channel.invokeMethod<bool>('hasTorch');
+      return await _channel.invokeMethod<bool>('hasFlash');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
   }
 
   /// Switch ON continuous Auto Exposure.
-  Future<void> aeOn() async {
+  Future<void> autoExposureOn() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController.',
-        'aeOn was called on uninitialized CameraController',
+        'autoExposureOn was called on uninitialized CameraController',
       );
     }
 
     try {
-      await _channel.invokeMethod<void>('aeOn');
+      await _channel.invokeMethod<void>('autoExposureOn');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
   }
 
   /// Switch OFF continuous Auto Exposure.
-  Future<void> aeOff() async {
+  Future<void> autoExposureOff() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController.',
-        'aeOff was called on uninitialized CameraController',
+        'autoExposureOff was called on uninitialized CameraController',
       );
     }
 
     try {
-      await _channel.invokeMethod<void>('aeOff');
+      await _channel.invokeMethod<void>('autoExposureOff');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

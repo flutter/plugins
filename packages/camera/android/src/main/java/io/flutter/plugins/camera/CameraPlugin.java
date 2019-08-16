@@ -45,8 +45,8 @@ public class CameraPlugin implements MethodCallHandler {
     String cameraName = call.argument("cameraName");
     String resolutionPreset = call.argument("resolutionPreset");
     boolean enableAudio = call.argument("enableAudio");
-    boolean enableTorch = call.argument("enableTorch");
-    boolean enableAE = call.argument("enableAE");
+    boolean enableFlash = call.argument("enableFlash");
+    boolean enableAutoExposure = call.argument("enableAutoExposure");
     camera =
         new Camera(
             registrar.activity(),
@@ -54,8 +54,8 @@ public class CameraPlugin implements MethodCallHandler {
             cameraName,
             resolutionPreset,
             enableAudio,
-            enableTorch,
-            enableAE);
+            enableFlash,
+            enableAutoExposure);
 
     EventChannel cameraEventChannel =
         new EventChannel(
@@ -139,29 +139,29 @@ public class CameraPlugin implements MethodCallHandler {
           }
           break;
         }
-      case "torchOn":
+      case "flashOn":
         {
-          camera.setTorchMode(result, true, call.argument("level"));
+          camera.setFlashMode(result, true, call.argument("level"));
           break;
         }
-      case "torchOff":
+      case "flashOff":
         {
-          camera.setTorchMode(result, false);
+          camera.setFlashMode(result, false);
           break;
         }
-      case "hasTorch":
+      case "hasFlash":
         {
-          result.success(hasTorch());
+          result.success(hasFlash());
           break;
         }
-      case "aeOn":
+      case "autoExposureOn":
         {
-          camera.setAEMode(result, true);
+          camera.setAutoExposureMode(result, true);
           break;
         }
-      case "aeOff":
+      case "autoExposureOff":
         {
-          camera.setAEMode(result, false);
+          camera.setAutoExposureMode(result, false);
           break;
         }
       case "dispose":
@@ -178,7 +178,7 @@ public class CameraPlugin implements MethodCallHandler {
     }
   }
 
-  private boolean hasTorch() {
+  private boolean hasFlash() {
     return registrar
         .context()
         .getApplicationContext()

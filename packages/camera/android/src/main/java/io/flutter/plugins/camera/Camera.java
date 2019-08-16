@@ -49,8 +49,8 @@ public class Camera {
   private final Size captureSize;
   private final Size previewSize;
   private final boolean enableAudio;
-  private final boolean enableTorch;
-  private final boolean enableAE;
+  private final boolean enableFlash;
+  private final boolean enableAutoExposure;
 
   private CameraDevice cameraDevice;
   private CameraCaptureSession cameraCaptureSession;
@@ -79,8 +79,8 @@ public class Camera {
       final String cameraName,
       final String resolutionPreset,
       final boolean enableAudio,
-      final boolean enableTorch,
-      final boolean enableAE)
+      final boolean enableFlash,
+      final boolean enableAutoExposure)
       throws CameraAccessException {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
@@ -88,8 +88,8 @@ public class Camera {
 
     this.cameraName = cameraName;
     this.enableAudio = enableAudio;
-    this.enableTorch = enableTorch;
-    this.enableAE = enableAE;
+    this.enableFlash = enableFlash;
+    this.enableAutoExposure = enableAutoExposure;
     this.flutterTexture = flutterView.createSurfaceTexture();
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     orientationEventListener =
@@ -325,15 +325,15 @@ public class Camera {
       }
     }
 
-    // Torch
+    // Request initial Flash mode
     captureRequestBuilder.set(
         CaptureRequest.FLASH_MODE,
-        enableTorch ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+        enableFlash ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
 
-    // Auto Exposure
+    // Request initial Auto Exposure mode
     captureRequestBuilder.set(
         CaptureRequest.CONTROL_AE_MODE,
-        enableAE ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
+        enableAutoExposure ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
 
     // Prepare the callback
     CameraCaptureSession.StateCallback callback =
@@ -460,17 +460,20 @@ public class Camera {
         null);
   }
 
-  // Torch
-  public void setTorchMode(@NonNull final Result result, boolean enable) {
-    setTorchMode(result, enable, 1.0);
+  public void setFlashMode(@NonNull final Result result, boolean enable) {
+    setFlashMode(result, enable, 1.0);
   }
 
-  public void setTorchMode(@NonNull final Result result, boolean enable, double level) {
+  public void setFlashMode(@NonNull final Result result, boolean enable, double level) {
     try {
+      // Request Flash mode
       captureRequestBuilder.set(
           CaptureRequest.FLASH_MODE,
           enable ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
 
+      // Request Auto Exposure mode as recommended when you switch the Flash
+      // more information:
+      // https://developer.android.com/reference/android/hardware/camera2/CaptureRequest.html#FLASH_MODE
       captureRequestBuilder.set(
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
@@ -478,13 +481,13 @@ public class Camera {
       cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
       result.success(null);
     } catch (Exception e) {
-      result.error("cameraTorchFailed", e.getMessage(), null);
+      result.error("cameraFlashFailed", e.getMessage(), null);
     }
   }
 
-  public void setAEMode(@NonNull final Result result, boolean enable) {
+  public void setAutoExposureMode(@NonNull final Result result, boolean enable) {
     try {
-      // Auto Exposure
+      // Request Auto Exposure mode
       captureRequestBuilder.set(
           CaptureRequest.CONTROL_AE_MODE,
           enable ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
@@ -492,7 +495,7 @@ public class Camera {
       cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
       result.success(null);
     } catch (Exception e) {
-      result.error("cameraAEFailed", e.getMessage(), null);
+      result.error("cameraAutoExposureFailed", e.getMessage(), null);
     }
   }
 
