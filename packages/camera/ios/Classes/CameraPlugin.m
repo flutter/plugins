@@ -177,8 +177,8 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isRecordingPaused;
-@property(assign, nonatomic) BOOL videoIsDiconnected;
-@property(assign, nonatomic) BOOL audioIsDiconnected;
+@property(assign, nonatomic) BOOL videoIsDisconnected;
+@property(assign, nonatomic) BOOL audioIsDisconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
@@ -439,8 +439,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     }
 
     if (output == _captureVideoOutput) {
-      if (_videoIsDiconnected) {
-        _videoIsDiconnected = NO;
+      if (_videoIsDisconnected) {
+        _videoIsDisconnected = NO;
 
         if (_videoTimeOffset.value == 0) {
           _videoTimeOffset = CMTimeSubtract(currentSampleTime, _lastVideoSampleTime);
@@ -464,8 +464,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
         currentSampleTime = CMTimeAdd(currentSampleTime, dur);
       }
 
-      if (_audioIsDiconnected) {
-        _audioIsDiconnected = NO;
+      if (_audioIsDisconnected) {
+        _audioIsDisconnected = NO;
 
         if (_audioTimeOffset.value == 0) {
           _audioTimeOffset = CMTimeSubtract(currentSampleTime, _lastAudioSampleTime);
@@ -491,10 +491,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   }
 }
 
-- (CMSampleBufferRef) adjustTime:(CMSampleBufferRef) sample by:(CMTime) offset {
+- (CMSampleBufferRef)adjustTime:(CMSampleBufferRef)sample by:(CMTime) offset {
   CMItemCount count;
   CMSampleBufferGetSampleTimingInfoArray(sample, 0, nil, &count);
-  CMSampleTimingInfo* pInfo = malloc(sizeof(CMSampleTimingInfo) * count);
+  CMSampleTimingInfo *pInfo = malloc(sizeof(CMSampleTimingInfo) * count);
   CMSampleBufferGetSampleTimingInfoArray(sample, count, pInfo, &count);
   for (CMItemCount i = 0; i < count; i++) {
     pInfo[i].decodeTimeStamp = CMTimeSubtract(pInfo[i].decodeTimeStamp, offset);
@@ -597,8 +597,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     _isRecordingPaused = NO;
     _videoTimeOffset = CMTimeMake(0, 1);
     _audioTimeOffset = CMTimeMake(0, 1);
-    _videoIsDiconnected = NO;
-    _audioIsDiconnected = NO;
+    _videoIsDisconnected = NO;
+    _audioIsDisconnected = NO;
     result(nil);
   } else {
     _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
@@ -631,8 +631,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 - (void)pauseVideoRecording {
   _isRecordingPaused = YES;
-  _videoIsDiconnected = YES;
-  _audioIsDiconnected = YES;
+  _videoIsDisconnected = YES;
+  _audioIsDisconnected = YES;
 }
 
 - (void)resumeVideoRecording {
@@ -693,8 +693,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                                                          outputSettings:videoSettings];
 
   _videoAdaptor = [AVAssetWriterInputPixelBufferAdaptor
-                   assetWriterInputPixelBufferAdaptorWithAssetWriterInput:_videoWriterInput
-                   sourcePixelBufferAttributes:@{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)}];
+      assetWriterInputPixelBufferAdaptorWithAssetWriterInput:_videoWriterInput
+                                 sourcePixelBufferAttributes:@{
+                                   (NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)
+                                 }];
 
   NSParameterAssert(_videoWriterInput);
   _videoWriterInput.expectsMediaDataInRealTime = YES;
