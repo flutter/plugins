@@ -1,3 +1,7 @@
+## 0.3.3
+
+* In Android, added "FLAG_ACTIVITY_NEW_TASK" flag when launching to a different package.
+
 ## 0.3.2
 
 * Added "action_location_source_settings" action to start Location Settings Activity.
