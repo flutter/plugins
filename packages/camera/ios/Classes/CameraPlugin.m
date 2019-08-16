@@ -432,7 +432,6 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
     CFRetain(sampleBuffer);
     CMTime currentSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
-    CMTime dur = CMSampleBufferGetDuration(sampleBuffer);
 
     if (_videoWriter.status != AVAssetWriterStatusWriting) {
       [_videoWriter startWriting];
@@ -446,39 +445,39 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
         if (_videoTimeOffset.value == 0) {
           _videoTimeOffset = CMTimeSubtract(currentSampleTime, _lastVideoSampleTime);
         } else {
-          CMTime adjustedSampleTime = CMTimeSubtract(currentSampleTime, _videoTimeOffset);
-          CMTime offset = CMTimeSubtract(adjustedSampleTime, _lastVideoSampleTime);
+          CMTime offset = CMTimeSubtract(currentSampleTime, _lastVideoSampleTime);
           _videoTimeOffset = CMTimeAdd(_videoTimeOffset, offset);
         }
+
+        return;
       }
 
-      if (dur.value > 0) {
-        _lastVideoSampleTime = CMTimeAdd(currentSampleTime, dur);
-      } else {
-        _lastVideoSampleTime = currentSampleTime;
-      }
+      _lastVideoSampleTime = currentSampleTime;
 
       CVPixelBufferRef nextBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       CMTime nextSampleTime = CMTimeSubtract(_lastVideoSampleTime, _videoTimeOffset);
       [_videoAdaptor appendPixelBuffer:nextBuffer withPresentationTime:nextSampleTime];
     } else {
+      CMTime dur = CMSampleBufferGetDuration(sampleBuffer);
+
+      if (dur.value > 0) {
+        currentSampleTime = CMTimeAdd(currentSampleTime, dur);
+      }
+
       if (_audioIsDiconnected) {
         _audioIsDiconnected = NO;
 
         if (_audioTimeOffset.value == 0) {
           _audioTimeOffset = CMTimeSubtract(currentSampleTime, _lastAudioSampleTime);
         } else {
-          CMTime adjustedSampleTime = CMTimeSubtract(currentSampleTime, _audioTimeOffset);
-          CMTime offset = CMTimeSubtract(adjustedSampleTime, _lastAudioSampleTime);
+          CMTime offset = CMTimeSubtract(currentSampleTime, _lastAudioSampleTime);
           _audioTimeOffset = CMTimeAdd(_audioTimeOffset, offset);
         }
+
+        return;
       }
 
-      if (dur.value > 0) {
-        _lastAudioSampleTime = CMTimeAdd(currentSampleTime, dur);
-      } else {
-        _lastAudioSampleTime = currentSampleTime;
-      }
+      _lastAudioSampleTime = currentSampleTime;
 
       if (_audioTimeOffset.value != 0) {
         CFRelease(sampleBuffer);
