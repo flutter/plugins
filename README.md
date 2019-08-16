@@ -19,6 +19,8 @@ These plugins are also available on
 Please file any issues, bugs, or feature requests in the [main flutter
 repo](https://github.com/flutter/flutter/issues/new).
 
+Firebase plugins are maintained in a separate repository. Learn more about [FlutterFire](https://github.com/FirebaseExtended/flutterfire/blob/master/README.md).
+
 ## Contributing
 
 If you wish to contribute a new plugin to the Flutter ecosystem, please
@@ -34,7 +36,7 @@ please review our [contribution guide](https://github.com/flutter/plugins/blob/m
 and send a [pull request](https://github.com/flutter/plugins/pulls).
 
 ## Plugins
-These are the available plugins in this repository.
+The following plugins are maintained by the Flutter team:
 
 | Plugin | Pub |
 |--------|-----|
@@ -76,4 +78,3 @@ These are the available plugins in this repository.
 | [firebase_remote_config](./packages/firebase_remote_config/) | [![pub package](https://img.shields.io/pub/v/firebase_remote_config.svg)](https://pub.dev/packages/firebase_remote_config) |
 | [firebase_storage](./packages/firebase_storage/) | [![pub package](https://img.shields.io/pub/v/firebase_storage.svg)](https://pub.dev/packages/firebase_storage) |
 
-Learn more about [FlutterFire](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
