@@ -616,11 +616,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     if (enable) {
       NSError *error = nil;
       float acceptedLevel =
-          (level < AVCaptureMaxAvailableFlashLevel ? level : AVCaptureMaxAvailableFlashLevel);
+          (level < AVCaptureMaxAvailableTorchLevel ? level : AVCaptureMaxAvailableTorchLevel);
       NSLog(@"FLash level: %f", acceptedLevel);
-      [device setFlashModeOnWithLevel:acceptedLevel error:&error];
+      [device setTorchModeOnWithLevel:acceptedLevel error:&error];
     } else {
-      [device setFlashMode:AVCaptureFlashModeOff];
+      [device setTorchMode:AVCaptureFlashModeOff];
     }
     [device unlockForConfiguration];
   }
