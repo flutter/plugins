@@ -1,3 +1,7 @@
+## 0.4.4
+
+* Now `id` will passed to `callback` if it is of type `Function(int)`
+
 ## 0.4.3
 
 * Added `oneShotAt` method to run `callback` at a given DateTime `time`.
