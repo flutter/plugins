@@ -89,7 +89,7 @@ class AndroidAlarmManager {
   /// `callback` can be `Function()` or `Function(int)`
   ///
   /// The timer is uniquely identified by `id`. Calling this function again
-  /// again with the same `id` will cancel and replace the existing timer.
+  /// with the same `id` will cancel and replace the existing timer.
   ///
   /// `id` will passed to `callback` if it is of type `Function(int)`
   ///
@@ -147,7 +147,7 @@ class AndroidAlarmManager {
   /// `callback` can be `Function()` or `Function(int)`
   ///
   /// The timer is uniquely identified by `id`. Calling this function again
-  /// again with the same `id` will cancel and replace the existing timer.
+  /// with the same `id` will cancel and replace the existing timer.
   ///
   /// `id` will passed to `callback` if it is of type `Function(int)`
   ///
@@ -214,7 +214,7 @@ class AndroidAlarmManager {
   ///
   /// `callback` can be `Function()` or `Function(int)`
   ///
-  /// The timer is uniquely identified by `id`. Calling this function again
+  /// The repeating timer is uniquely identified by `id`. Calling this function
   /// again with the same `id` will cancel and replace the existing timer.
   ///
   /// `id` will passed to `callback` if it is of type `Function(int)`
