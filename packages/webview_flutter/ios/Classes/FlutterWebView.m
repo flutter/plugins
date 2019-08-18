@@ -128,6 +128,8 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"loadData"]) {
+    [self onLoadData:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -177,6 +179,17 @@
     result([FlutterError
         errorWithCode:@"loadUrl_failed"
               message:@"Failed parsing the URL"
+              details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
+  } else {
+    result(nil);
+  }
+}
+
+- (void)onLoadData:(FlutterMethodCall*)call result:(FlutterResult)result {
+  if (![self loadData:[call arguments]]) {
+    result([FlutterError
+        errorWithCode:@"loadData_failed"
+              message:@"Failed parsing the data"
               details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
   } else {
     result(nil);
@@ -410,6 +423,20 @@
   [request setAllHTTPHeaderFields:headers];
   [_webView loadRequest:request];
   return true;
+}
+
+- (bool)loadData:(NSDictionary<NSString*, id>*)request {
+  if (!request) {
+    return false;
+  }
+
+  NSString* data = request[@"data"];
+  NSString* baseUrl = request[@"baseUrl"];
+  NSString* mimeType = request[@"mimeType"];
+  NSString* encoding = request[@"encoding"];
+  NSData* nsData = [data dataUsingEncoding:NSUTF8StringEncoding];
+  NSURL* nsUrl = [NSURL URLWithString:baseUrl];
+  return [_webView loadData:nsData MIMEType:mimeType characterEncodingName:encoding baseURL:nsUrl];
 }
 
 - (void)registerJavaScriptChannels:(NSSet*)channelNames
