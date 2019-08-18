@@ -169,7 +169,11 @@ void main() {
       });
     }
 
-    smokeTest('add_payment_info', () => analytics.logAddPaymentInfo());
+    smokeTest(
+        'add_payment_info',
+        () => analytics.logAddPaymentInfo(
+              customParameters: <String, dynamic>{"customKey": "customValue"},
+            ));
 
     smokeTest(
         'add_to_cart',
@@ -178,6 +182,7 @@ void main() {
               itemName: 'test-name',
               itemCategory: 'test-category',
               quantity: 5,
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
@@ -187,11 +192,20 @@ void main() {
               itemName: 'test-name',
               itemCategory: 'test-category',
               quantity: 5,
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
-    smokeTest('app_open', () => analytics.logAppOpen());
+    smokeTest(
+        'app_open',
+        () => analytics.logAppOpen(
+              customParameters: <String, dynamic>{"customKey": "customValue"},
+            ));
 
-    smokeTest('begin_checkout', () => analytics.logBeginCheckout());
+    smokeTest(
+        'begin_checkout',
+        () => analytics.logBeginCheckout(
+              customParameters: <String, dynamic>{"customKey": "customValue"},
+            ));
 
     smokeTest(
         'campaign_details',
@@ -199,6 +213,7 @@ void main() {
               source: 'test-source',
               medium: 'test-medium',
               campaign: 'test-campaign',
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
@@ -206,28 +221,40 @@ void main() {
         () => analytics.logEarnVirtualCurrency(
               virtualCurrencyName: 'bitcoin',
               value: 34,
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
-    smokeTest('ecommerce_purchase', () => analytics.logEcommercePurchase());
+    smokeTest(
+        'ecommerce_purchase',
+        () => analytics.logEcommercePurchase(
+              customParameters: <String, dynamic>{"customKey": "customValue"},
+            ));
 
-    smokeTest('generate_lead', () => analytics.logGenerateLead());
+    smokeTest(
+        'generate_lead',
+        () => analytics.logGenerateLead(
+              customParameters: <String, dynamic>{"customKey": "customValue"},
+            ));
 
     smokeTest(
         'join_group',
         () => analytics.logJoinGroup(
               groupId: 'test-group-id',
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
         'level_up',
         () => analytics.logLevelUp(
               level: 56,
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
         'level_start',
         () => analytics.logLevelStart(
               levelName: 'level-name',
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
@@ -235,20 +262,27 @@ void main() {
         () => analytics.logLevelEnd(
               levelName: 'level-name',
               success: 1,
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
-    smokeTest('login', () => analytics.logLogin());
+    smokeTest(
+        'login',
+        () => analytics.logLogin(
+              customParameters: <String, dynamic>{"customKey": "customValue"},
+            ));
 
     smokeTest(
         'login',
         () => analytics.logLogin(
               loginMethod: 'email',
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
         'post_score',
         () => analytics.logPostScore(
               score: 34,
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
@@ -258,14 +292,20 @@ void main() {
               itemName: 'test-name',
               itemCategory: 'test-category',
               quantity: 5,
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
-    smokeTest('purchase_refund', () => analytics.logPurchaseRefund());
+    smokeTest(
+        'purchase_refund',
+        () => analytics.logPurchaseRefund(
+              customParameters: <String, dynamic>{"customKey": "customValue"},
+            ));
 
     smokeTest(
         'search',
         () => analytics.logSearch(
               searchTerm: 'test search term',
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
@@ -273,6 +313,7 @@ void main() {
         () => analytics.logSelectContent(
               contentType: 'test content type',
               itemId: 'test item id',
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
@@ -281,12 +322,14 @@ void main() {
               contentType: 'test content type',
               itemId: 'test item id',
               method: 'test method',
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
         'sign_up',
         () => analytics.logSignUp(
               signUpMethod: 'test sign-up method',
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
@@ -295,16 +338,26 @@ void main() {
               itemName: 'test-item-name',
               virtualCurrencyName: 'bitcoin',
               value: 345,
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
-    smokeTest('tutorial_begin', () => analytics.logTutorialBegin());
+    smokeTest(
+        'tutorial_begin',
+        () => analytics.logTutorialBegin(
+              customParameters: <String, dynamic>{"customKey": "customValue"},
+            ));
 
-    smokeTest('tutorial_complete', () => analytics.logTutorialComplete());
+    smokeTest(
+        'tutorial_complete',
+        () => analytics.logTutorialComplete(
+              customParameters: <String, dynamic>{"customKey": "customValue"},
+            ));
 
     smokeTest(
         'unlock_achievement',
         () => analytics.logUnlockAchievement(
               id: 'firebase analytics api coverage',
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
@@ -313,23 +366,29 @@ void main() {
               itemId: 'test-id',
               itemName: 'test-name',
               itemCategory: 'test-category',
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
         'view_item_list',
         () => analytics.logViewItemList(
               itemCategory: 'test-category',
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest(
         'view_search_results',
         () => analytics.logViewSearchResults(
               searchTerm: 'test search term',
+              customParameters: <String, dynamic>{"customKey": "customValue"},
             ));
 
     smokeTest('set_checkout_option', () {
       return analytics.logSetCheckoutOption(
-          checkoutStep: 1, checkoutOption: 'some credit card');
+        checkoutStep: 1,
+        checkoutOption: 'some credit card',
+        customParameters: <String, dynamic>{"customKey": "customValue"},
+      );
     });
 
     void testRequiresValueAndCurrencyTogether(
