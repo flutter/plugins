@@ -42,6 +42,7 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        playServicesVersion 17.0.0
     }
 
     buildTypes {
@@ -59,6 +60,7 @@ flutter {
 
 dependencies {
     testImplementation 'junit:junit:4.12'
+    implementation 'com.google.guava:guava:27.0.1-android'
     androidTestImplementation 'androidx.test:runner:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     api 'androidx.exifinterface:exifinterface:1.0.0'
