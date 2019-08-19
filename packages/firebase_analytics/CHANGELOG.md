@@ -1,3 +1,7 @@
+## 5.0.0+1
+
+* Add `customParameters` option for every predefined event to allow specifying additional event parameters.
+
 ## 5.0.0
 
 * **Breaking change**. Remove deprecated method `setMinimumSessionDuration`.
