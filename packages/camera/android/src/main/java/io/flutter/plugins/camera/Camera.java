@@ -396,10 +396,12 @@ public class Camera {
 
     try {
       mediaRecorder.pause();
-      result.success(null);
     } catch (IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
+      return;
     }
+
+    result.success(null);
   }
 
   public void resumeVideoRecording(@NonNull final Result result) {
@@ -410,10 +412,12 @@ public class Camera {
 
     try {
       mediaRecorder.resume();
-      result.success(null);
     } catch (IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
+      return;
     }
+
+    result.success(null);
   }
 
   public void startPreview() throws CameraAccessException {
