@@ -491,7 +491,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   }
 }
 
-- (CMSampleBufferRef)adjustTime:(CMSampleBufferRef)sample by:(CMTime) offset {
+- (CMSampleBufferRef)adjustTime:(CMSampleBufferRef)sample by:(CMTime)offset {
   CMItemCount count;
   CMSampleBufferGetSampleTimingInfoArray(sample, 0, nil, &count);
   CMSampleTimingInfo *pInfo = malloc(sizeof(CMSampleTimingInfo) * count);
