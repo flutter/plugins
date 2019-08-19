@@ -1,3 +1,7 @@
+## 0.5.20+4
+
+* Marker drag event
+
 ## 0.5.20+3
 
 * Update Android play-services-maps to 17.0.0
