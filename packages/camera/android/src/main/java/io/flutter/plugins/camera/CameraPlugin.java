@@ -112,6 +112,16 @@ public class CameraPlugin implements MethodCallHandler {
           camera.stopVideoRecording(result);
           break;
         }
+      case "pauseVideoRecording":
+        {
+          camera.pauseVideoRecording(result);
+          break;
+        }
+      case "resumeVideoRecording":
+        {
+          camera.resumeVideoRecording(result);
+          break;
+        }
       case "startImageStream":
         {
           try {
