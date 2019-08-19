@@ -1,3 +1,7 @@
+## 0.9.0+5
+  
+* Handle exception in `BannerAd.dispose()` call for `no_ad_for_id` scenario.
+
 ## 0.9.0+4
 
 * Add the ability to horizontally adjust the ads banner location by specifying a pixel offset from the centre.
