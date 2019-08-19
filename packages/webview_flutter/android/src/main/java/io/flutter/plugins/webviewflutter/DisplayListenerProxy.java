@@ -107,9 +107,10 @@ class DisplayListenerProxy {
 
   @SuppressWarnings({"unchecked", "PrivateApi"})
   private static ArrayList<DisplayListener> yoinkDisplayListeners(DisplayManager displayManager) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      // We cannot use reflection on Android O, but it shouldn't matter as it shipped
-      // with a WebView version that has the bug this code is working around fixed.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      // We cannot use reflection on Android P, but it shouldn't matter as it shipped
+      // with WebView 66.0.3359.158 and the WebView version the bug this code is working around was
+      // fixed in 61.0.3116.0.
       return new ArrayList<>();
     }
     try {
