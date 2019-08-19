@@ -2,6 +2,10 @@
 
 * Add feature to pause and resume video recording.
 
+## 0.5.3+1
+
+* Fix too large request code for FragmentActivity users.
+
 ## 0.5.3
 
 * Added new quality presets.
