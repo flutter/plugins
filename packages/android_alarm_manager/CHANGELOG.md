@@ -1,6 +1,6 @@
 ## 0.4.4
 
-* Now `id` will passed to `callback` if it is of type `Function(int)`
+* Add `id` to `callback` if it is of type `Function(int)`
 
 ## 0.4.3
 
