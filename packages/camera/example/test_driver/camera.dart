@@ -153,6 +153,7 @@ void main() {
     final CameraController controller = CameraController(
       cameras[0],
       ResolutionPreset.low,
+      enableAudio: false,
     );
 
     await controller.initialize();
