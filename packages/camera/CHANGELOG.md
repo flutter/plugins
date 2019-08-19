@@ -1,3 +1,16 @@
+## 0.5.3+1
+
+* Fix too large request code for FragmentActivity users.
+
+## 0.5.3
+
+* Added new quality presets.
+* Now all quality presets can be used to control image capture quality.
+
+## 0.5.2+2
+
+* Fix memory leak related to not unregistering stream handler in FlutterEventChannel when disposing camera.
+
 ## 0.5.2+1
 
 * Fix bug that prevented video recording with audio.

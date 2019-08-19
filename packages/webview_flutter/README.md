@@ -18,6 +18,15 @@ To use this plugin on iOS you need to opt-in for the embedded views preview by
 adding a boolean property to the app's `Info.plist` file, with the key `io.flutter.embedded_views_preview`
 and the value `YES`.
 
+Keyboard support within webviews is also experimental. The above tags also
+surface known issues with keyboard input. Some currently known keyboard issues,
+as of `webview_flutter` version `0.3.10+4`:
+
+* [Keyboard persists after tapping outside text
+  field](https://github.com/flutter/flutter/issues/36478)
+* [WebView's text selection dialog is not responding to touch
+  events](https://github.com/flutter/flutter/issues/24585)
+
 ## Setup
 
 ### iOS

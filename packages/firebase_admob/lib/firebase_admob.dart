@@ -1,11 +1,13 @@
-// ignore_for_file: deprecated_member_use_from_same_package
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'dart:async';
 import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
@@ -220,11 +222,14 @@ abstract class MobileAd {
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
   /// anchorType place advert at top or bottom of screen (default bottom)
   Future<bool> show(
-      {double anchorOffset = 0.0, AnchorType anchorType = AnchorType.bottom}) {
+      {double anchorOffset = 0.0,
+      double horizontalCenterOffset = 0.0,
+      AnchorType anchorType = AnchorType.bottom}) {
     return _invokeBooleanMethod("showAd", <String, dynamic>{
       'id': id,
       'anchorOffset': anchorOffset.toString(),
-      'anchorType': anchorType == AnchorType.top ? "top" : "bottom"
+      'horizontalCenterOffset': horizontalCenterOffset.toString(),
+      'anchorType': describeEnum(anchorType)
     });
   }
 

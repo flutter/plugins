@@ -93,6 +93,14 @@ class _MyAppState extends State<MyApp> {
                         ..show();
                     }),
                 RaisedButton(
+                    child: const Text('SHOW BANNER WITH OFFSET'),
+                    onPressed: () {
+                      _bannerAd ??= createBannerAd();
+                      _bannerAd
+                        ..load()
+                        ..show(horizontalCenterOffset: -50, anchorOffset: 100);
+                    }),
+                RaisedButton(
                     child: const Text('REMOVE BANNER'),
                     onPressed: () {
                       _bannerAd?.dispose();

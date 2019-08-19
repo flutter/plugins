@@ -73,6 +73,7 @@ void main() {
         isMethodCall('showAd', arguments: <String, dynamic>{
           'id': id,
           'anchorOffset': '0.0',
+          'horizontalCenterOffset': '0.0',
           'anchorType': 'bottom',
         }),
         isMethodCall('disposeAd', arguments: <String, dynamic>{
@@ -92,7 +93,9 @@ void main() {
       expect(await interstitial.load(), true);
       expect(
           await interstitial.show(
-              anchorOffset: 60.0, anchorType: AnchorType.top),
+              anchorOffset: 60.0,
+              horizontalCenterOffset: 10.0,
+              anchorType: AnchorType.top),
           true);
       expect(await interstitial.dispose(), true);
 
@@ -105,6 +108,7 @@ void main() {
         isMethodCall('showAd', arguments: <String, dynamic>{
           'id': id,
           'anchorOffset': '60.0',
+          'horizontalCenterOffset': '10.0',
           'anchorType': 'top',
         }),
         isMethodCall('disposeAd', arguments: <String, dynamic>{

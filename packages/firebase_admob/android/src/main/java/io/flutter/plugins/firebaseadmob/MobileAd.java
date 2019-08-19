@@ -28,6 +28,7 @@ abstract class MobileAd extends AdListener {
   final int id;
   Status status;
   double anchorOffset;
+  double horizontalCenterOffset;
   int anchorType;
 
   enum Status {
@@ -44,6 +45,7 @@ abstract class MobileAd extends AdListener {
     this.channel = channel;
     this.status = Status.CREATED;
     this.anchorOffset = 0.0;
+    this.horizontalCenterOffset = 0.0;
     this.anchorType = Gravity.BOTTOM;
     allAds.put(id, this);
   }
@@ -160,10 +162,13 @@ abstract class MobileAd extends AdListener {
         content.addView(adView);
         final float scale = activity.getResources().getDisplayMetrics().density;
 
+        int left = horizontalCenterOffset > 0 ? (int) (horizontalCenterOffset * scale) : 0;
+        int right =
+            horizontalCenterOffset < 0 ? (int) (Math.abs(horizontalCenterOffset) * scale) : 0;
         if (anchorType == Gravity.BOTTOM) {
-          content.setPadding(0, 0, 0, (int) (anchorOffset * scale));
+          content.setPadding(left, 0, right, (int) (anchorOffset * scale));
         } else {
-          content.setPadding(0, (int) (anchorOffset * scale), 0, 0);
+          content.setPadding(left, (int) (anchorOffset * scale), right, 0);
         }
 
         activity.addContentView(
