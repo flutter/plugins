@@ -44,7 +44,12 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
     dependencies {
         implementation 'androidx.annotation:annotation:1.0.0'
+        implementation 'androidx.core:core:1.0.0'
     }
 }

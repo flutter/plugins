@@ -24,6 +24,11 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   RewardedVideoAdWrapper rewardedWrapper;
 
   public static void registerWith(Registrar registrar) {
+    if (registrar.activity() == null) {
+      // If a background Flutter view tries to register the plugin, there will be no activity from the registrar.
+      // We stop the registering process immediately because the firebase_admob requires an activity.
+      return;
+    }
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_admob");
     channel.setMethodCallHandler(new FirebaseAdMobPlugin(registrar, channel));
@@ -145,6 +150,10 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     }
     if (call.argument("anchorOffset") != null) {
       ad.anchorOffset = Double.parseDouble((String) call.argument("anchorOffset"));
+    }
+    if (call.argument("horizontalCenterOffset") != null) {
+      ad.horizontalCenterOffset =
+          Double.parseDouble((String) call.argument("horizontalCenterOffset"));
     }
     if (call.argument("anchorType") != null) {
       ad.anchorType = call.argument("anchorType").equals("bottom") ? Gravity.BOTTOM : Gravity.TOP;

@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -82,10 +86,11 @@ class RegisterPageState extends State<RegisterPage> {
 
   // Example code for registration.
   void _register() async {
-    final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
+    final FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
-    );
+    ))
+        .user;
     if (user != null) {
       setState(() {
         _success = true;

@@ -1,6 +1,6 @@
-// Copyright 2018, the Flutter project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 part of firebase_performance;
 
@@ -48,7 +48,7 @@ abstract class PerformanceAttributes {
 
     _attributes[name] = value;
     return FirebasePerformance.channel.invokeMethod<void>(
-      '$PerformanceAttributes#putAttribute',
+      'PerformanceAttributes#putAttribute',
       <String, dynamic>{
         'handle': _handle,
         'name': name,
@@ -66,7 +66,7 @@ abstract class PerformanceAttributes {
 
     _attributes.remove(name);
     return FirebasePerformance.channel.invokeMethod<void>(
-      '$PerformanceAttributes#removeAttribute',
+      'PerformanceAttributes#removeAttribute',
       <String, dynamic>{'handle': _handle, 'name': name},
     );
   }
@@ -85,7 +85,7 @@ abstract class PerformanceAttributes {
     }
 
     return FirebasePerformance.channel.invokeMapMethod<String, String>(
-      '$PerformanceAttributes#getAttributes',
+      'PerformanceAttributes#getAttributes',
       <String, dynamic>{'handle': _handle},
     );
   }

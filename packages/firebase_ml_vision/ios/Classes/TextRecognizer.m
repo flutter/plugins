@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #import "FirebaseMlVisionPlugin.h"
 
 @interface TextRecognizer ()
@@ -8,7 +12,17 @@
 - (instancetype)initWithVision:(FIRVision *)vision options:(NSDictionary *)options {
   self = [super init];
   if (self) {
-    _recognizer = [vision onDeviceTextRecognizer];
+    if ([@"onDevice" isEqualToString:options[@"modelType"]]) {
+      _recognizer = [vision onDeviceTextRecognizer];
+    } else if ([@"cloud" isEqualToString:options[@"modelType"]]) {
+      _recognizer = [vision cloudTextRecognizer];
+    } else {
+      NSString *reason =
+          [NSString stringWithFormat:@"Invalid model type: %@", options[@"modelType"]];
+      @throw [[NSException alloc] initWithName:NSInvalidArgumentException
+                                        reason:reason
+                                      userInfo:nil];
+    }
   }
   return self;
 }

@@ -1,3 +1,9 @@
+## 1.2.0
+
+* On Android, `getApplicationSupportDirectory` is now supported using `getFilesDir`.
+* `getExternalStorageDirectory` now returns `null` instead of throwing an
+  exception if no external files directory is available.
+
 ## 1.1.2
 
 * `getExternalStorageDirectory` now uses `getExternalFilesDir` on Android.

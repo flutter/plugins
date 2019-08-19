@@ -49,11 +49,19 @@ class QuickActions {
   /// Initializes this plugin.
   ///
   /// Call this once before any further interaction with the the plugin.
-  void initialize(QuickActionHandler handler) {
+  void initialize(QuickActionHandler handler) async {
     channel.setMethodCallHandler((MethodCall call) async {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
+    runLaunchAction(handler);
+  }
+
+  void runLaunchAction(QuickActionHandler handler) async {
+    final String action = await channel.invokeMethod<String>('getLaunchAction');
+    if (action != null) {
+      handler(action);
+    }
   }
 
   /// Sets the [ShortcutItem]s to become the app's quick actions.

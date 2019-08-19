@@ -1,3 +1,16 @@
+## 5.1.2
+
+* Update AGP and gradle.
+* Split plugin and WebViewActivity class files.
+
+## 5.1.1
+
+* Suppress a handled deprecation warning on iOS
+
+## 5.1.0
+
+* Add `headers` field to enable headers in the Android implementation.
+
 ## 5.0.5
 
 * Add `enableDomStorage` field to `launch` to enable DOM storage in Android WebView.

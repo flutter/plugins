@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 part of firebase_remote_config;
 
 /// The entry point for accessing Remote Config.
@@ -59,7 +63,7 @@ class RemoteConfig extends ChangeNotifier {
     parameters.forEach((dynamic key, dynamic value) {
       final ValueSource valueSource = _parseValueSource(value['source']);
       final RemoteConfigValue remoteConfigValue =
-          RemoteConfigValue._(value['value'].cast<int>(), valueSource);
+          RemoteConfigValue._(value['value']?.cast<int>(), valueSource);
       parsedParameters[key] = remoteConfigValue;
     });
     return parsedParameters;
@@ -67,14 +71,14 @@ class RemoteConfig extends ChangeNotifier {
 
   static ValueSource _parseValueSource(String sourceStr) {
     switch (sourceStr) {
-      case 'valueStatic':
+      case 'static':
         return ValueSource.valueStatic;
-      case 'valueDefault':
+      case 'default':
         return ValueSource.valueDefault;
-      case 'valueRemote':
+      case 'remote':
         return ValueSource.valueRemote;
       default:
-        return ValueSource.valueStatic;
+        return null;
     }
   }
 
@@ -153,13 +157,13 @@ class RemoteConfig extends ChangeNotifier {
   /// Default config parameters should be set then when changes are needed the
   /// parameters should be updated in the Firebase console.
   Future<void> setDefaults(Map<String, dynamic> defaults) async {
+    assert(defaults != null);
     // Make defaults available even if fetch fails.
     defaults.forEach((String key, dynamic value) {
       if (!_parameters.containsKey(key)) {
-        final ValueSource valueSource = ValueSource.valueDefault;
         final RemoteConfigValue remoteConfigValue = RemoteConfigValue._(
           const Utf8Codec().encode(value.toString()),
-          valueSource,
+          ValueSource.valueDefault,
         );
         _parameters[key] = remoteConfigValue;
       }
@@ -226,5 +230,12 @@ class RemoteConfig extends ChangeNotifier {
     } else {
       return RemoteConfigValue._(null, ValueSource.valueStatic);
     }
+  }
+
+  /// Gets all [RemoteConfigValue].
+  ///
+  /// This includes all remote and default values
+  Map<String, RemoteConfigValue> getAll() {
+    return Map<String, RemoteConfigValue>.unmodifiable(_parameters);
   }
 }

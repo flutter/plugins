@@ -1,8 +1,16 @@
+## 4.0.6
+
+* Fixed the `PlatformException` leaking from `catchError()` in debug mode.
+
+## 4.0.5
+
+* Update README with solution to `APIException` errors.
+
 ## 4.0.4
 
 * Revert changes in 4.0.3.
 
-## 4.0.3	
+## 4.0.3
 
 * Update guava to `27.0.1-android`.	
 * Add correct @NonNull annotations to reduce compiler warnings.	
