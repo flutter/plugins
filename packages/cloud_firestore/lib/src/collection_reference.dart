@@ -40,7 +40,7 @@ class CollectionReference extends Query {
   DocumentReference document([String path]) {
     List<String> childPath;
     if (path == null) {
-      final String key = PushIdGenerator.generatePushChildName();
+      final String key = AutoIdGenerator.autoId();
       childPath = List<String>.from(_pathComponents)..add(key);
     } else {
       childPath = List<String>.from(_pathComponents)..addAll(path.split(('/')));

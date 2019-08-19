@@ -132,9 +132,14 @@ Map<String, dynamic> _$SKProductWrapperToJson(SKProductWrapper instance) =>
     };
 
 SKPriceLocaleWrapper _$SKPriceLocaleWrapperFromJson(Map json) {
-  return SKPriceLocaleWrapper(currencySymbol: json['currencySymbol'] as String);
+  return SKPriceLocaleWrapper(
+      currencySymbol: json['currencySymbol'] as String,
+      currencyCode: json['currencyCode'] as String);
 }
 
 Map<String, dynamic> _$SKPriceLocaleWrapperToJson(
         SKPriceLocaleWrapper instance) =>
-    <String, dynamic>{'currencySymbol': instance.currencySymbol};
+    <String, dynamic>{
+      'currencySymbol': instance.currencySymbol,
+      'currencyCode': instance.currencyCode
+    };

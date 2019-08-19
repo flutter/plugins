@@ -1,3 +1,15 @@
+## 0.5.20+3
+
+* Update Android play-services-maps to 17.0.0
+
+## 0.5.20+2
+
+* Android: Fix polyline width in building phase.
+
+## 0.5.20+1
+
+* Android: Unregister ActivityLifecycleCallbacks on activity destroy (fixes a memory leak).
+
 ## 0.5.20
 
 * Add map toolbar support

@@ -1,3 +1,11 @@
+## 0.4.0+8
+
+* Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
+
+## 0.4.0+7
+
+* Fix Android compilation warning.
+
 ## 0.4.0+6
 
 * Automatically use version from pubspec.yaml when reporting usage to Firebase.

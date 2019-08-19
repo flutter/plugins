@@ -7,6 +7,8 @@ This plugin works for iOS and Android.
 > Note that on Android, this does not guarantee connection to Internet. For instance,
 the app might have wifi access but it might be a VPN or a hotel WiFi with no access.
 
+## Usage
+
 Sample usage to check current status:
 
 ```dart
@@ -47,6 +49,28 @@ dispose() {
   subscription.cancel();
 }
 ```
+
+You can get WIFI related information using:
+
+```dart
+import 'package:connectivity/connectivity.dart';
+
+var wifiBSSID = await (Connectivity().getWifiBSSID());
+var wifiIP = await (Connectivity().getWifiIP());network
+var wifiName = await (Connectivity().getWifiName());wifi network
+```
+
+### Known Issues
+
+#### iOS 13
+
+The methods `.getWifiBSSID()` and `.getWifiName()` utilize the [CNCopyCurrentNetworkInfo](https://developer.apple.com/documentation/systemconfiguration/1614126-cncopycurrentnetworkinfo) function on iOS.
+
+As of iOS 13, Apple announced that these APIs will no longer return valid information by default and will instead return the following:
+> SSID: "Wi-Fi" or "WLAN" ("WLAN" will be returned for the China SKU)  
+> BSSID: "00:00:00:00:00:00"
+
+You can follow issue [#37804](https://github.com/flutter/flutter/issues/37804) for the changes required to return valid SSID and BSSID values with iOS 13.
 
 ## Getting Started
 

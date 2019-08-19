@@ -125,6 +125,13 @@ class ExplicitIntentsWidget extends StatelessWidget {
     intent.launch();
   }
 
+  void _openLocationSettingsConfiguration() {
+    final AndroidIntent intent = const AndroidIntent(
+      action: 'action_location_source_settings',
+    );
+    intent.launch();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -160,6 +167,12 @@ class ExplicitIntentsWidget extends StatelessWidget {
                     'Tap here to test explicit intent fallback to implicit.'),
                 onPressed: _testExplicitIntentFallback,
               ),
+              RaisedButton(
+                child: const Text(
+                  'Tap here to open Location Settings Configuration',
+                ),
+                onPressed: _openLocationSettingsConfiguration,
+              )
             ],
           ),
         ),

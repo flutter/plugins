@@ -1,3 +1,15 @@
+## 0.2.1
+
+* iOS: Add currencyCode to priceLocale on productDetails.
+
+## 0.2.0+8
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.2.0+7
+
+* Make Gradle version compatible with the Android Gradle plugin version.
+
 ## 0.2.0+6
 
 * Add missing `hashCode` implementations.

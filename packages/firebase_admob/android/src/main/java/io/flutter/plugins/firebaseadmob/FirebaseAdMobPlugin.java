@@ -151,6 +151,10 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     if (call.argument("anchorOffset") != null) {
       ad.anchorOffset = Double.parseDouble((String) call.argument("anchorOffset"));
     }
+    if (call.argument("horizontalCenterOffset") != null) {
+      ad.horizontalCenterOffset =
+          Double.parseDouble((String) call.argument("horizontalCenterOffset"));
+    }
     if (call.argument("anchorType") != null) {
       ad.anchorType = call.argument("anchorType").equals("bottom") ? Gravity.BOTTOM : Gravity.TOP;
     }
