@@ -192,7 +192,7 @@ class _GoogleMapState extends State<GoogleMap> {
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> creationParams = <String, dynamic>{
-      'initialCameraPosition': widget.initialCameraPosition?._toMap(),
+      'initialCameraPosition': widget.initialCameraPosition?.toMap(),
       'options': _googleMapOptions.toMap(),
       'markersToAdd': _serializeMarkerSet(widget.markers),
       'polygonsToAdd': _serializePolygonSet(widget.polygons),
