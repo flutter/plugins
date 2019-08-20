@@ -1,3 +1,7 @@
+## 1.2.0+1
+
+* Correct the integration test for Androids `getApplicationSupportDirectory` call.
+
 ## 1.2.0
 
 * On Android, `getApplicationSupportDirectory` is now supported using `getFilesDir`.
