@@ -14,6 +14,7 @@ const String kChannelName = 'plugins.flutter.io/android_intent';
 class AndroidIntent {
   /// Builds an Android intent with the following parameters
   /// [action] refers to the action parameter of the intent.
+  /// [flags] is the list of strings that will be converted to the flags. 
   /// [category] refers to the category of the intent, can be null.
   /// [data] refers to the string format of the URI that will be passed to
   /// intent.
@@ -24,6 +25,7 @@ class AndroidIntent {
   /// If not null, then [package] but also be provided.
   const AndroidIntent({
     @required this.action,
+    this.flags,
     this.category,
     this.data,
     this.arguments,
@@ -35,6 +37,7 @@ class AndroidIntent {
         _platform = platform ?? const LocalPlatform();
 
   final String action;
+  final List<String> flags;
   final String category;
   final String data;
   final Map<String, dynamic> arguments;
@@ -50,6 +53,9 @@ class AndroidIntent {
   Future<void> launch() async {
     assert(_platform.isAndroid);
     final Map<String, dynamic> args = <String, dynamic>{'action': action};
+    if (flags != null) {
+      args['flags'] = flags;
+    }
     if (category != null) {
       args['category'] = category;
     }

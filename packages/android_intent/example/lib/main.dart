@@ -117,6 +117,14 @@ class ExplicitIntentsWidget extends StatelessWidget {
     intent.launch();
   }
 
+  void _openLinkInDefaultBrowserInSeperatedWindow() {
+    final AndroidIntent intent = AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull('https://flutter.io'),
+        flags: ['new_task']);
+    intent.launch();
+  }
+
   void _testExplicitIntentFallback() {
     final AndroidIntent intent = AndroidIntent(
         action: 'action_view',
@@ -161,6 +169,10 @@ class ExplicitIntentsWidget extends StatelessWidget {
               RaisedButton(
                 child: const Text('Tap here to open link in Google Chrome.'),
                 onPressed: _openLinkInGoogleChrome,
+              ),
+              RaisedButton(
+                child: const Text('Tap here to open link in browser in a seperated window.'),
+                onPressed: _openLinkInDefaultBrowserInSeperatedWindow,
               ),
               RaisedButton(
                 child: const Text(

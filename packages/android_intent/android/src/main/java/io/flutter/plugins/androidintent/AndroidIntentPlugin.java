@@ -50,6 +50,27 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         return action;
     }
   }
+  private int convertFlag(String flag){
+      switch (flag) {
+          case "new_task":
+              return Intent.FLAG_ACTIVITY_NEW_TASK;
+          case "no_history":
+              return Intent.FLAG_ACTIVITY_NO_HISTORY;
+          case "exclude_from_recents":
+              return Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS;
+          case "grant_read_uri_permission":
+              return Intent.FLAG_GRANT_READ_URI_PERMISSION;
+          default:
+              return 0;
+      }
+  }
+  private int convertFlags(ArrayList<String> flags) {
+      int finalValue = 0;
+      for(int i = 0; i < flags.size(); i++){
+          finalValue |= convertFlag(flags.get(i));
+      }
+    return finalValue;
+  }
 
   private Bundle convertArguments(Map<String, ?> arguments) {
     Bundle bundle = new Bundle();
@@ -126,6 +147,9 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     if (mRegistrar.activity() == null) {
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
+    if (call.argument("flags") != null) {
+      intent.addFlags(convertFlags((ArrayList<String>) call.argument("flags")));
+    }
     if (call.argument("category") != null) {
       intent.addCategory((String) call.argument("category"));
     }
@@ -146,15 +170,6 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
         intent.setPackage(null);
       }
-    }
-
-    String selfPackageName = context.getPackageName();
-    ComponentName componentName = intent.resolveActivity(context.getPackageManager());
-    String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
-    // If we are launching to a different package we need to set
-    // the FLAG_ACTIVITY_NEW_TASK flag
-    if (!selfPackageName.equals(otherPackageName)) {
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
     Log.i(TAG, "Sending intent " + intent);
