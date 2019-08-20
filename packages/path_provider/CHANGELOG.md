@@ -1,8 +1,8 @@
-## 1.2.1
+## 1.2.2
 
 * Support Android devices with multiple external storage options.
 
-## 1.2.0+1
+## 1.2.1
 
 * Correct the integration test for Androids `getApplicationSupportDirectory` call.
 
