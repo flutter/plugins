@@ -4,9 +4,12 @@
 
 package io.flutter.plugins.battery;
 
+import static android.app.Application.ActivityLifecycleCallbacks;
+
+import android.app.Activity;
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
@@ -36,18 +39,31 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler {
   }
 
   BatteryPlugin(PluginRegistry.Registrar registrar) {
-    this.registrar = registrar;
+    this.application = ((Application) registrar.context());
+    application.registerActivityLifecycleCallbacks(lifecycleCallbacks);
   }
 
-  private final PluginRegistry.Registrar registrar;
+  private final Application application;
+  private final IntentFilter chargedFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
   private BroadcastReceiver chargingStateChangeReceiver;
+
+  private final ActivityLifecycleCallbacks lifecycleCallbacks =
+      new EmptyActivityLifecycleCallbacks() {
+        @Override
+        public void onActivityDestroyed(Activity activity) {
+          application.unregisterActivityLifecycleCallbacks(lifecycleCallbacks);
+          if (chargingStateChangeReceiver != null) {
+            application.unregisterReceiver(chargingStateChangeReceiver);
+          }
+        }
+      };
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     if (call.method.equals("getBatteryLevel")) {
       int batteryLevel = getBatteryLevel();
 
-      if (batteryLevel != -1) {
+      if (batteryLevel > 0) {
         result.success(batteryLevel);
       } else {
         result.error("UNAVAILABLE", "Battery level not available.", null);
@@ -60,35 +76,38 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler {
   @Override
   public void onListen(Object arguments, EventSink events) {
     chargingStateChangeReceiver = createChargingStateChangeReceiver(events);
-    registrar
-        .context()
-        .registerReceiver(
-            chargingStateChangeReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+    application.registerReceiver(chargingStateChangeReceiver, chargedFilter);
   }
 
   @Override
   public void onCancel(Object arguments) {
-    registrar.context().unregisterReceiver(chargingStateChangeReceiver);
+    application.unregisterReceiver(chargingStateChangeReceiver);
     chargingStateChangeReceiver = null;
   }
 
   private int getBatteryLevel() {
-    int batteryLevel = -1;
-    Context context = registrar.context();
+    int batteryCapacity;
     if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
       BatteryManager batteryManager =
-          (BatteryManager) context.getSystemService(context.BATTERY_SERVICE);
-      batteryLevel = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+          (BatteryManager) application.getSystemService(Context.BATTERY_SERVICE);
+      // getIntProperty will return 0 or Integer.MIN_VALUE if it fail to read a property
+      // it will depend of the targetSdk.
+      // See also : https://developer.android.com/reference/android/os/BatteryManager#getIntProperty(int)
+      batteryCapacity = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
     } else {
-      Intent intent =
-          new ContextWrapper(context)
-              .registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-      batteryLevel =
-          (intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) * 100)
-              / intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+      Intent intent = application.registerReceiver(null, chargedFilter);
+
+      final int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+      final int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+
+      if (scale == 0) {
+        // avoids zero divisor.
+        return 0;
+      }
+      batteryCapacity = (level * 100) / scale;
     }
 
-    return batteryLevel;
+    return batteryCapacity;
   }
 
   private BroadcastReceiver createChargingStateChangeReceiver(final EventSink events) {

@@ -1,3 +1,8 @@
+## 0.3.0+6
+
+* Fixed memory leak due not unregistering receiver on flutter activity destruction.
+* Fixed bug that would allow invalid readings to be send to flutter from the Android side.
+
 ## 0.3.0+5
 
 * Fix Gradle version.
