@@ -180,10 +180,18 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(strong, nonatomic) AVCaptureVideoDataOutput *videoOutput;
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
 @property(assign, nonatomic) BOOL isRecording;
+@property(assign, nonatomic) BOOL isRecordingPaused;
+@property(assign, nonatomic) BOOL videoIsDisconnected;
+@property(assign, nonatomic) BOOL audioIsDisconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
+@property(assign, nonatomic) CMTime lastVideoSampleTime;
+@property(assign, nonatomic) CMTime lastAudioSampleTime;
+@property(assign, nonatomic) CMTime videoTimeOffset;
+@property(assign, nonatomic) CMTime audioTimeOffset;
 @property(nonatomic) CMMotionManager *motionManager;
+@property AVAssetWriterInputPixelBufferAdaptor *videoAdaptor;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
@@ -417,7 +425,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
     }
   }
-  if (_isRecording) {
+  if (_isRecording && !_isRecordingPaused) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
       _eventSink(@{
         @"event" : @"error",
@@ -425,17 +433,81 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       });
       return;
     }
-    CMTime lastSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+
+    CFRetain(sampleBuffer);
+    CMTime currentSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+
     if (_videoWriter.status != AVAssetWriterStatusWriting) {
       [_videoWriter startWriting];
-      [_videoWriter startSessionAtSourceTime:lastSampleTime];
+      [_videoWriter startSessionAtSourceTime:currentSampleTime];
     }
+
     if (output == _captureVideoOutput) {
-      [self newVideoSample:sampleBuffer];
-    } else if (output == _audioOutput) {
+      if (_videoIsDisconnected) {
+        _videoIsDisconnected = NO;
+
+        if (_videoTimeOffset.value == 0) {
+          _videoTimeOffset = CMTimeSubtract(currentSampleTime, _lastVideoSampleTime);
+        } else {
+          CMTime offset = CMTimeSubtract(currentSampleTime, _lastVideoSampleTime);
+          _videoTimeOffset = CMTimeAdd(_videoTimeOffset, offset);
+        }
+
+        return;
+      }
+
+      _lastVideoSampleTime = currentSampleTime;
+
+      CVPixelBufferRef nextBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+      CMTime nextSampleTime = CMTimeSubtract(_lastVideoSampleTime, _videoTimeOffset);
+      [_videoAdaptor appendPixelBuffer:nextBuffer withPresentationTime:nextSampleTime];
+    } else {
+      CMTime dur = CMSampleBufferGetDuration(sampleBuffer);
+
+      if (dur.value > 0) {
+        currentSampleTime = CMTimeAdd(currentSampleTime, dur);
+      }
+
+      if (_audioIsDisconnected) {
+        _audioIsDisconnected = NO;
+
+        if (_audioTimeOffset.value == 0) {
+          _audioTimeOffset = CMTimeSubtract(currentSampleTime, _lastAudioSampleTime);
+        } else {
+          CMTime offset = CMTimeSubtract(currentSampleTime, _lastAudioSampleTime);
+          _audioTimeOffset = CMTimeAdd(_audioTimeOffset, offset);
+        }
+
+        return;
+      }
+
+      _lastAudioSampleTime = currentSampleTime;
+
+      if (_audioTimeOffset.value != 0) {
+        CFRelease(sampleBuffer);
+        sampleBuffer = [self adjustTime:sampleBuffer by:_audioTimeOffset];
+      }
+
       [self newAudioSample:sampleBuffer];
     }
+
+    CFRelease(sampleBuffer);
   }
+}
+
+- (CMSampleBufferRef)adjustTime:(CMSampleBufferRef)sample by:(CMTime)offset {
+  CMItemCount count;
+  CMSampleBufferGetSampleTimingInfoArray(sample, 0, nil, &count);
+  CMSampleTimingInfo *pInfo = malloc(sizeof(CMSampleTimingInfo) * count);
+  CMSampleBufferGetSampleTimingInfoArray(sample, count, pInfo, &count);
+  for (CMItemCount i = 0; i < count; i++) {
+    pInfo[i].decodeTimeStamp = CMTimeSubtract(pInfo[i].decodeTimeStamp, offset);
+    pInfo[i].presentationTimeStamp = CMTimeSubtract(pInfo[i].presentationTimeStamp, offset);
+  }
+  CMSampleBufferRef sout;
+  CMSampleBufferCreateCopyWithNewTiming(nil, sample, count, pInfo, &sout);
+  free(pInfo);
+  return sout;
 }
 
 - (void)newVideoSample:(CMSampleBufferRef)sampleBuffer {
@@ -526,6 +598,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       return;
     }
     _isRecording = YES;
+    _isRecordingPaused = NO;
+    _videoTimeOffset = CMTimeMake(0, 1);
+    _audioTimeOffset = CMTimeMake(0, 1);
+    _videoIsDisconnected = NO;
+    _audioIsDisconnected = NO;
     result(nil);
   } else {
     _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
@@ -554,6 +631,16 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                         userInfo:@{NSLocalizedDescriptionKey : @"Video is not recording!"}];
     result(getFlutterError(error));
   }
+}
+
+- (void)pauseVideoRecording {
+  _isRecordingPaused = YES;
+  _videoIsDisconnected = YES;
+  _audioIsDisconnected = YES;
+}
+
+- (void)resumeVideoRecording {
+  _isRecordingPaused = NO;
 }
 
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
@@ -608,6 +695,13 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                                    nil];
   _videoWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo
                                                          outputSettings:videoSettings];
+
+  _videoAdaptor = [AVAssetWriterInputPixelBufferAdaptor
+      assetWriterInputPixelBufferAdaptorWithAssetWriterInput:_videoWriterInput
+                                 sourcePixelBufferAttributes:@{
+                                   (NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)
+                                 }];
+
   NSParameterAssert(_videoWriterInput);
   _videoWriterInput.expectsMediaDataInRealTime = YES;
 
@@ -776,6 +870,12 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     result(nil);
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
+    result(nil);
+  } else if ([@"pauseVideoRecording" isEqualToString:call.method]) {
+    [_camera pauseVideoRecording];
+    result(nil);
+  } else if ([@"resumeVideoRecording" isEqualToString:call.method]) {
+    [_camera resumeVideoRecording];
     result(nil);
   } else {
     NSDictionary *argsMap = call.arguments;

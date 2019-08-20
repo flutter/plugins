@@ -301,6 +301,14 @@ class _GoogleMapState extends State<GoogleMap> {
     }
   }
 
+  void onMarkerDragEnd(String markerIdParam, LatLng position) {
+    assert(markerIdParam != null);
+    final MarkerId markerId = MarkerId(markerIdParam);
+    if (_markers[markerId]?.onDragEnd != null) {
+      _markers[markerId].onDragEnd(position);
+    }
+  }
+
   void onPolygonTap(String polygonIdParam) {
     assert(polygonIdParam != null);
     final PolygonId polygonId = PolygonId(polygonIdParam);
