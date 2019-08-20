@@ -50,7 +50,9 @@ void main() {
     final Directory directory = await getApplicationDocumentsDirectory();
     expect(
       log,
-      <Matcher>[isMethodCall('getApplicationDocumentsDirectory', arguments: null)],
+      <Matcher>[
+        isMethodCall('getApplicationDocumentsDirectory', arguments: null)
+      ],
     );
     expect(directory, isNull);
   });
