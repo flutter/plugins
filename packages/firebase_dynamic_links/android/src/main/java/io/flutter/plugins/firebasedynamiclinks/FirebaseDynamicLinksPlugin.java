@@ -41,7 +41,6 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler, NewIntentL
     FirebaseDynamicLinks.getInstance()
         .getDynamicLink(intent)
         .addOnSuccessListener(
-            registrar.activity(),
             new OnSuccessListener<PendingDynamicLinkData>() {
               @Override
               public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
@@ -53,7 +52,6 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler, NewIntentL
               }
             })
         .addOnFailureListener(
-            registrar.activity(),
             new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception e) {
@@ -117,6 +115,11 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler, NewIntentL
   }
 
   private void handleGetInitialDynamicLink(final Result result) {
+    if (registrar.activity() == null) {
+      result.success(null);
+      return;
+    }
+
     FirebaseDynamicLinks.getInstance()
         .getDynamicLink(registrar.activity().getIntent())
         .addOnSuccessListener(
