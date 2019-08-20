@@ -134,6 +134,11 @@ class FirebaseMessaging {
         throw UnsupportedError("Unrecognized JSON message");
     }
   }
+
+  Future<IosNotificationSettings> checkIosNotificationSettings() async {
+    return IosNotificationSettings._fromMap(
+        await _channel.invokeMapMethod<String, bool>('iosCheckPermissions'));
+  }
 }
 
 class IosNotificationSettings {
@@ -159,4 +164,14 @@ class IosNotificationSettings {
 
   @override
   String toString() => 'PushNotificationSettings ${toMap()}';
+
+  @override
+  int get hashCode => sound.hashCode ^ alert.hashCode ^ badge.hashCode;
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is IosNotificationSettings &&
+      other.sound == sound &&
+      other.alert == alert &&
+      other.badge == badge;
 }

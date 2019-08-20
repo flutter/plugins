@@ -163,6 +163,19 @@ void main() {
 
     verify(mockChannel.invokeMethod<void>('setAutoInitEnabled', false));
   });
+
+  test('checkIosNotificationSettings', () async {
+    when(mockChannel.invokeMapMethod<String, bool>('iosCheckPermissions'))
+        .thenAnswer((_) async =>
+            const IosNotificationSettings(sound: true, alert: true, badge: true)
+                .toMap());
+
+    expect(await firebaseMessaging.checkIosNotificationSettings(),
+        const IosNotificationSettings(sound: true, alert: true, badge: true));
+    verify(mockChannel.invokeMapMethod<String, bool>(captureAny))
+        .captured
+        .single;
+  });
 }
 
 class MockMethodChannel extends Mock implements MethodChannel {}

@@ -122,6 +122,15 @@ static FlutterError *getFlutterError(NSError *error) {
     NSNumber *value = call.arguments;
     [FIRMessaging messaging].autoInitEnabled = value.boolValue;
     result(nil);
+  } else if ([@"iosCheckPermissions" isEqualToString:method]) {
+    UIUserNotificationSettings *currentSettings =
+        [[UIApplication sharedApplication] currentUserNotificationSettings];
+    NSDictionary *settingsDictionary = @{
+      @"sound" : [NSNumber numberWithBool:currentSettings.types & UIUserNotificationTypeSound],
+      @"badge" : [NSNumber numberWithBool:currentSettings.types & UIUserNotificationTypeBadge],
+      @"alert" : [NSNumber numberWithBool:currentSettings.types & UIUserNotificationTypeAlert],
+    };
+    result(settingsDictionary);
   } else {
     result(FlutterMethodNotImplemented);
   }
