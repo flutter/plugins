@@ -58,4 +58,40 @@ void main() {
     final Directory directory = await getApplicationDocumentsDirectory();
     expect(directory.path, equals(fakePath));
   });
+
+  test('getExternalStorageDirectory test', () async {
+    response = null;
+    final Directory directory = await getExternalStorageDirectory();
+    expect(
+      log,
+      <Matcher>[isMethodCall('getStorageDirectory', arguments: null)],
+    );
+    expect(directory, isNull);
+  });
+
+  test('getExternalCacheDirectories test', () async {
+    response = null;
+    final List<Directory> directories = await getExternalCacheDirectories();
+    expect(
+      log,
+      <Matcher>[isMethodCall('getExternalCacheDirectories', arguments: null)],
+    );
+    expect(directories, <Directory>[]);
+  });
+
+  test('getExternalStorageDirectories test', () async {
+    response = null;
+    final List<Directory> directories =
+        await getExternalStorageDirectories("music");
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall(
+          'getExternalStorageDirectories',
+          arguments: const <String, String>{'type': 'music'},
+        )
+      ],
+    );
+    expect(directories, <Directory>[]);
+  });
 }

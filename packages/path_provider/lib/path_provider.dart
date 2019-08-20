@@ -102,10 +102,12 @@ Future<Directory> getExternalStorageDirectory() async {
 Future<List<Directory>> getExternalCacheDirectories() async {
   if (Platform.isIOS)
     throw UnsupportedError("Functionality not available on iOS");
-  final List<dynamic> paths =
-      await _channel.invokeMethod('getExternalCacheDirectories');
+  final List<String> paths =
+      await _channel.invokeListMethod<String>('getExternalCacheDirectories');
 
-  return paths.map((dynamic path) => Directory(path)).toList();
+  return (paths ?? const <String>[])
+      .map((String path) => Directory(path))
+      .toList();
 }
 
 /// Paths to directories where application specific data can be stored.
@@ -127,10 +129,10 @@ Future<List<Directory>> getExternalCacheDirectories() async {
 Future<List<Directory>> getExternalStorageDirectories(String type) async {
   if (Platform.isIOS)
     throw UnsupportedError("Functionality not available on iOS");
-  final List<dynamic> paths = await _channel.invokeMethod(
+  final List<String> paths = await _channel.invokeListMethod<String>(
     'getExternalStorageDirectories',
     <String, String>{"type": type},
   );
 
-  return paths.map((dynamic path) => Directory(path)).toList();
+  return (paths ?? <String>[]).map((String path) => Directory(path)).toList();
 }
