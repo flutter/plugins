@@ -57,6 +57,25 @@ Specify your API key in the application delegate `ios/Runner/AppDelegate.m`:
 @end
 ```
 
+Or in your swift code, specify your API key in the application delegate `ios/Runner/AppDelegate.swift`:
+
+```swift
+import UIKit
+import Flutter
+import GoogleMaps
+
+@UIApplicationMain
+@objc class AppDelegate: FlutterAppDelegate {
+  override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
+  ) -> Bool {
+    GMSServices.provideAPIKey("YOUR KEY HERE")
+    GeneratedPluginRegistrant.register(with: self)
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+}
+```
 Opt-in to the embedded views preview by adding a boolean property to the app's `Info.plist` file
 with the key `io.flutter.embedded_views_preview` and the value `YES`.
 
@@ -68,64 +87,66 @@ You can now add a `GoogleMap` widget to your widget tree.
 The map view can be controlled with the `GoogleMapController` that is passed to
 the `GoogleMap`'s `onMapCreated` callback.
 
+### Sample Usage
+
 ```dart
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-void main() {
-  runApp(MaterialApp(
-    home: Scaffold(
-      appBar: AppBar(title: const Text('Google Maps demo')),
-      body: MapsDemo(),
-    ),
-  ));
-}
+void main() => runApp(MyApp());
 
-class MapsDemo extends StatefulWidget {
+class MyApp extends StatelessWidget {
   @override
-  State createState() => MapsDemoState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Google Maps Demo',
+      home: MapSample(),
+    );
+  }
 }
 
-class MapsDemoState extends State<MapsDemo> {
+class MapSample extends StatefulWidget {
+  @override
+  State<MapSample> createState() => MapSampleState();
+}
 
-  GoogleMapController mapController;
+class MapSampleState extends State<MapSample> {
+  Completer<GoogleMapController> _controller = Completer();
+
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
+
+  static final CameraPosition _kLake = CameraPosition(
+      bearing: 192.8334901395799,
+      target: LatLng(37.43296265331129, -122.08832357078792),
+      tilt: 59.440717697143555,
+      zoom: 19.151926040649414);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(15.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Center(
-            child: SizedBox(
-              width: 300.0,
-              height: 200.0,
-              child: GoogleMap(
-                onMapCreated: _onMapCreated,
-              ),
-            ),
-          ),
-          RaisedButton(
-            child: const Text('Go to London'),
-            onPressed: mapController == null ? null : () {
-              mapController.animateCamera(CameraUpdate.newCameraPosition(
-                const CameraPosition(
-                  bearing: 270.0,
-                  target: LatLng(51.5160895, -0.1294527),
-                  tilt: 30.0,
-                  zoom: 17.0,
-                ),
-              ));
-            },
-          ),
-        ],
+    return new Scaffold(
+      body: GoogleMap(
+        mapType: MapType.hybrid,
+        initialCameraPosition: _kGooglePlex,
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _goToTheLake,
+        label: Text('To the lake!'),
+        icon: Icon(Icons.directions_boat),
       ),
     );
   }
 
-  void _onMapCreated(GoogleMapController controller) {
-    setState(() { mapController = controller; });
+  Future<void> _goToTheLake() async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 }
 ```

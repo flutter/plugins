@@ -1,6 +1,6 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 part of firebase_database;
 
@@ -47,7 +47,7 @@ class Query {
     StreamController<Event> controller; // ignore: close_sinks
     controller = StreamController<Event>.broadcast(
       onListen: () {
-        _handle = _database._channel.invokeMethod(
+        _handle = _database._channel.invokeMethod<int>(
           'Query#observe',
           <String, dynamic>{
             'app': _database.app?.name,
@@ -63,7 +63,7 @@ class Query {
       },
       onCancel: () {
         _handle.then((int handle) async {
-          await _database._channel.invokeMethod(
+          await _database._channel.invokeMethod<int>(
             'Query#removeObserver',
             <String, dynamic>{
               'app': _database.app?.name,
@@ -206,7 +206,7 @@ class Query {
   /// attached for that location. Additionally, while a location is kept synced,
   /// it will not be evicted from the persistent disk cache.
   Future<void> keepSynced(bool value) {
-    return _database._channel.invokeMethod(
+    return _database._channel.invokeMethod<void>(
       'Query#keepSynced',
       <String, dynamic>{
         'app': _database.app?.name,

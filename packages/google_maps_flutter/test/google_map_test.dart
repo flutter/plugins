@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:typed_data';
-
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'fake_maps_controllers.dart';
+
 void main() {
-  final _FakePlatformViewsController fakePlatformViewsController =
-      _FakePlatformViewsController();
+  final FakePlatformViewsController fakePlatformViewsController =
+      FakePlatformViewsController();
 
   setUpAll(() {
     SystemChannels.platform_views.setMockMethodCallHandler(
@@ -93,6 +93,35 @@ void main() {
     );
 
     expect(platformGoogleMap.compassEnabled, true);
+  });
+
+  testWidgets('Can update mapToolbarEnabled', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          mapToolbarEnabled: false,
+        ),
+      ),
+    );
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.mapToolbarEnabled, false);
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          mapToolbarEnabled: true,
+        ),
+      ),
+    );
+
+    expect(platformGoogleMap.mapToolbarEnabled, true);
   });
 
   testWidgets('Can update cameraTargetBounds', (WidgetTester tester) async {
@@ -303,7 +332,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          trackCameraPosition: false,
         ),
       ),
     );
@@ -314,11 +342,12 @@ void main() {
     expect(platformGoogleMap.trackCameraPosition, false);
 
     await tester.pumpWidget(
-      const Directionality(
+      Directionality(
         textDirection: TextDirection.ltr,
         child: GoogleMap(
-          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          trackCameraPosition: true,
+          initialCameraPosition:
+              const CameraPosition(target: LatLng(10.0, 15.0)),
+          onCameraMove: (CameraPosition position) {},
         ),
       ),
     );
@@ -383,117 +412,90 @@ void main() {
 
     expect(platformGoogleMap.myLocationEnabled, true);
   });
-}
 
-class FakePlatformGoogleMap {
-  FakePlatformGoogleMap(int id, Map<dynamic, dynamic> params) {
-    cameraPosition = CameraPosition.fromMap(params['initialCameraPosition']);
-    channel = MethodChannel(
-        'plugins.flutter.io/google_maps_$id', const StandardMethodCodec());
-    channel.setMockMethodCallHandler(onMethodCall);
-    updateOptions(params['options']);
-  }
+  testWidgets('Can update myLocationButtonEnabled',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          myLocationEnabled: false,
+        ),
+      ),
+    );
 
-  MethodChannel channel;
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
 
-  CameraPosition cameraPosition;
+    expect(platformGoogleMap.myLocationButtonEnabled, true);
 
-  bool compassEnabled;
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          myLocationButtonEnabled: false,
+        ),
+      ),
+    );
 
-  CameraTargetBounds cameraTargetBounds;
+    expect(platformGoogleMap.myLocationButtonEnabled, false);
+  });
 
-  MapType mapType;
+  testWidgets('Is default padding 0', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+        ),
+      ),
+    );
 
-  MinMaxZoomPreference minMaxZoomPreference;
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
 
-  bool rotateGesturesEnabled;
+    expect(platformGoogleMap.padding, <double>[0, 0, 0, 0]);
+  });
 
-  bool scrollGesturesEnabled;
+  testWidgets('Can update padding', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+        ),
+      ),
+    );
 
-  bool tiltGesturesEnabled;
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
 
-  bool zoomGesturesEnabled;
+    expect(platformGoogleMap.padding, <double>[0, 0, 0, 0]);
 
-  bool trackCameraPosition;
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          padding: EdgeInsets.fromLTRB(10, 20, 30, 40),
+        ),
+      ),
+    );
 
-  bool myLocationEnabled;
+    expect(platformGoogleMap.padding, <double>[20, 10, 40, 30]);
 
-  Future<dynamic> onMethodCall(MethodCall call) {
-    switch (call.method) {
-      case 'map#update':
-        updateOptions(call.arguments['options']);
-        return Future<void>.sync(() {});
-    }
-    return Future<void>.sync(() {});
-  }
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          padding: EdgeInsets.fromLTRB(50, 60, 70, 80),
+        ),
+      ),
+    );
 
-  void updateOptions(Map<dynamic, dynamic> options) {
-    if (options.containsKey('compassEnabled')) {
-      compassEnabled = options['compassEnabled'];
-    }
-    if (options.containsKey('cameraTargetBounds')) {
-      final List<dynamic> boundsList = options['cameraTargetBounds'];
-      cameraTargetBounds = boundsList[0] == null
-          ? CameraTargetBounds.unbounded
-          : CameraTargetBounds(LatLngBounds.fromList(boundsList[0]));
-    }
-    if (options.containsKey('mapType')) {
-      mapType = MapType.values[options['mapType']];
-    }
-    if (options.containsKey('minMaxZoomPreference')) {
-      final List<dynamic> minMaxZoomList = options['minMaxZoomPreference'];
-      minMaxZoomPreference =
-          MinMaxZoomPreference(minMaxZoomList[0], minMaxZoomList[1]);
-    }
-    if (options.containsKey('rotateGesturesEnabled')) {
-      rotateGesturesEnabled = options['rotateGesturesEnabled'];
-    }
-    if (options.containsKey('scrollGesturesEnabled')) {
-      scrollGesturesEnabled = options['scrollGesturesEnabled'];
-    }
-    if (options.containsKey('tiltGesturesEnabled')) {
-      tiltGesturesEnabled = options['tiltGesturesEnabled'];
-    }
-    if (options.containsKey('trackCameraPosition')) {
-      trackCameraPosition = options['trackCameraPosition'];
-    }
-    if (options.containsKey('zoomGesturesEnabled')) {
-      zoomGesturesEnabled = options['zoomGesturesEnabled'];
-    }
-    if (options.containsKey('myLocationEnabled')) {
-      myLocationEnabled = options['myLocationEnabled'];
-    }
-  }
-}
-
-class _FakePlatformViewsController {
-  FakePlatformGoogleMap lastCreatedView;
-
-  Future<dynamic> fakePlatformViewsMethodHandler(MethodCall call) {
-    switch (call.method) {
-      case 'create':
-        final Map<dynamic, dynamic> args = call.arguments;
-        final Map<dynamic, dynamic> params = _decodeParams(args['params']);
-        lastCreatedView = FakePlatformGoogleMap(
-          args['id'],
-          params,
-        );
-        return Future<int>.sync(() => 1);
-      default:
-        return Future<void>.sync(() {});
-    }
-  }
-
-  void reset() {
-    lastCreatedView = null;
-  }
-}
-
-Map<dynamic, dynamic> _decodeParams(Uint8List paramsMessage) {
-  final ByteBuffer buffer = paramsMessage.buffer;
-  final ByteData messageBytes = buffer.asByteData(
-    paramsMessage.offsetInBytes,
-    paramsMessage.lengthInBytes,
-  );
-  return const StandardMessageCodec().decodeMessage(messageBytes);
+    expect(platformGoogleMap.padding, <double>[60, 50, 80, 70]);
+  });
 }

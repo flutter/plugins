@@ -33,7 +33,7 @@ class Battery {
 
   /// Returns the current battery level in percent.
   Future<int> get batteryLevel => _methodChannel
-      .invokeMethod('getBatteryLevel')
+      .invokeMethod<int>('getBatteryLevel')
       .then<int>((dynamic result) => result);
 
   /// Fires whenever the battery state changes.

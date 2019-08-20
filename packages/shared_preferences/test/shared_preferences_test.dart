@@ -125,6 +125,15 @@ void main() {
           ));
     });
 
+    test('containsKey', () async {
+      const String key = 'testKey';
+
+      expect(false, preferences.containsKey(key));
+
+      preferences.setString(key, 'test');
+      expect(true, preferences.containsKey(key));
+    });
+
     test('clearing', () async {
       await preferences.clear();
       expect(preferences.getString('String'), null);
@@ -135,10 +144,55 @@ void main() {
       expect(log, <Matcher>[isMethodCall('clear', arguments: null)]);
     });
 
-    test('mocking', () async {
-      expect(await channel.invokeMethod('getAll'), kTestValues);
+    test('reloading', () async {
+      await preferences.setString('String', kTestValues['flutter.String']);
+      expect(preferences.getString('String'), kTestValues['flutter.String']);
+
       SharedPreferences.setMockInitialValues(kTestValues2);
-      expect(await channel.invokeMethod('getAll'), kTestValues2);
+      expect(preferences.getString('String'), kTestValues['flutter.String']);
+
+      await preferences.reload();
+      expect(preferences.getString('String'), kTestValues2['flutter.String']);
+    });
+
+    test('back to back calls should return same instance.', () async {
+      final Future<SharedPreferences> first = SharedPreferences.getInstance();
+      final Future<SharedPreferences> second = SharedPreferences.getInstance();
+      expect(await first, await second);
+    });
+
+    group('mocking', () {
+      const String _key = 'dummy';
+      const String _prefixedKey = 'flutter.' + _key;
+
+      test('test 1', () async {
+        SharedPreferences.setMockInitialValues(
+            <String, dynamic>{_prefixedKey: 'my string'});
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final String value = prefs.getString(_key);
+        expect(value, 'my string');
+      });
+
+      test('test 2', () async {
+        SharedPreferences.setMockInitialValues(
+            <String, dynamic>{_prefixedKey: 'my other string'});
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final String value = prefs.getString(_key);
+        expect(value, 'my other string');
+      });
+    });
+
+    test('writing copy of strings list', () async {
+      final List<String> myList = <String>[];
+      await preferences.setStringList("myList", myList);
+      myList.add("foobar");
+
+      final List<String> cachedList = preferences.getStringList('myList');
+      expect(cachedList, <String>[]);
+
+      cachedList.add("foobar2");
+
+      expect(preferences.getStringList('myList'), <String>[]);
     });
   });
 }

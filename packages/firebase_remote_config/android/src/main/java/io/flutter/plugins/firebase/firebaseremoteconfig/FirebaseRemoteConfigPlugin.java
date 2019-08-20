@@ -1,8 +1,12 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.firebase.firebaseremoteconfig;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -29,17 +33,12 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
   public static final String DEFAULT_PREF_KEY = "default_keys";
 
   private static SharedPreferences sharedPreferences;
-  private final MethodChannel channel;
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_remote_config");
-    channel.setMethodCallHandler(new FirebaseRemoteConfigPlugin(channel));
+    channel.setMethodCallHandler(new FirebaseRemoteConfigPlugin());
     sharedPreferences = registrar.context().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-  }
-
-  private FirebaseRemoteConfigPlugin(MethodChannel channel) {
-    this.channel = channel;
   }
 
   @Override

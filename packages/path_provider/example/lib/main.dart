@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<Directory> _tempDirectory;
+  Future<Directory> _appSupportDirectory;
   Future<Directory> _appDocumentsDirectory;
   Future<Directory> _externalDocumentsDirectory;
   Future<List<Directory>> _externalStorageDirectories;
@@ -81,6 +82,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void _requestAppDocumentsDirectory() {
     setState(() {
       _appDocumentsDirectory = getApplicationDocumentsDirectory();
+    });
+  }
+
+  void _requestAppSupportDirectory() {
+    setState(() {
+      _appSupportDirectory = getApplicationSupportDirectory();
     });
   }
 
@@ -138,6 +145,25 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             FutureBuilder<Directory>(
                 future: _appDocumentsDirectory, builder: _buildDirectory),
+            Expanded(
+              child: FutureBuilder<Directory>(
+                  future: _appDocumentsDirectory, builder: _buildDirectory),
+            ),
+            Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: RaisedButton(
+                    child: const Text('Get Application Support Directory'),
+                    onPressed: _requestAppSupportDirectory,
+                  ),
+                ),
+              ],
+            ),
+            Expanded(
+              child: FutureBuilder<Directory>(
+                  future: _appSupportDirectory, builder: _buildDirectory),
+            ),
             Column(children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(16.0),

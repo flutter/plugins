@@ -47,14 +47,14 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
       case "setAnalyticsCollectionEnabled":
         handleSetAnalyticsCollectionEnabled(call, result);
         break;
-      case "setMinimumSessionDuration":
-        handleSetMinimumSessionDuration(call, result);
-        break;
       case "setSessionTimeoutDuration":
         handleSetSessionTimeoutDuration(call, result);
         break;
       case "setUserProperty":
         handleSetUserProperty(call, result);
+        break;
+      case "resetAnalyticsData":
+        handleResetAnalyticsData(result);
         break;
       default:
         result.notImplemented();
@@ -63,13 +63,10 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
   }
 
   private void handleLogEvent(MethodCall call, Result result) {
-    @SuppressWarnings("unchecked")
-    Map<String, Object> arguments = (Map<String, Object>) call.arguments;
-    final String eventName = (String) arguments.get("name");
 
-    @SuppressWarnings("unchecked")
-    final Bundle parameterBundle =
-        createBundleFromMap((Map<String, Object>) arguments.get("parameters"));
+    final String eventName = call.argument("name");
+    final Map<String, Object> map = call.argument("parameters");
+    final Bundle parameterBundle = createBundleFromMap(map);
     firebaseAnalytics.logEvent(eventName, parameterBundle);
     result.success(null);
   }
@@ -81,45 +78,41 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
   }
 
   private void handleSetCurrentScreen(MethodCall call, Result result) {
-    @SuppressWarnings("unchecked")
     Activity activity = registrar.activity();
     if (activity == null) {
       result.error("no_activity", "handleSetCurrentScreen requires a foreground activity", null);
       return;
     }
-    Map<String, Object> arguments = (Map<String, Object>) call.arguments;
-    final String screenName = (String) arguments.get("screenName");
-    final String screenClassOverride = (String) arguments.get("screenClassOverride");
+
+    final String screenName = call.argument("screenName");
+    final String screenClassOverride = call.argument("screenClassOverride");
 
     firebaseAnalytics.setCurrentScreen(activity, screenName, screenClassOverride);
     result.success(null);
   }
 
   private void handleSetAnalyticsCollectionEnabled(MethodCall call, Result result) {
-    final Boolean enabled = (Boolean) call.arguments;
+    final Boolean enabled = call.arguments();
     firebaseAnalytics.setAnalyticsCollectionEnabled(enabled);
     result.success(null);
   }
 
-  private void handleSetMinimumSessionDuration(MethodCall call, Result result) {
-    final Integer milliseconds = (Integer) call.arguments;
-    firebaseAnalytics.setMinimumSessionDuration(milliseconds);
-    result.success(null);
-  }
-
   private void handleSetSessionTimeoutDuration(MethodCall call, Result result) {
-    final Integer milliseconds = (Integer) call.arguments;
+    final Integer milliseconds = call.arguments();
     firebaseAnalytics.setSessionTimeoutDuration(milliseconds);
     result.success(null);
   }
 
   private void handleSetUserProperty(MethodCall call, Result result) {
-    @SuppressWarnings("unchecked")
-    Map<String, Object> arguments = (Map<String, Object>) call.arguments;
-    final String name = (String) arguments.get("name");
-    final String value = (String) arguments.get("value");
+    final String name = call.argument("name");
+    final String value = call.argument("value");
 
     firebaseAnalytics.setUserProperty(name, value);
+    result.success(null);
+  }
+
+  private void handleResetAnalyticsData(Result result) {
+    firebaseAnalytics.resetAnalyticsData();
     result.success(null);
   }
 

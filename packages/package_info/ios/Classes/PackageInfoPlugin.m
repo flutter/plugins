@@ -15,17 +15,14 @@
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"getAll"]) {
-    NSString* displayName =
-        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-    // Cannot put nil into a map so return an empty string.
-    if (displayName == nil) {
-      displayName = @"";
-    }
     result(@{
-      @"appName" : displayName,
-      @"packageName" : [[NSBundle mainBundle] bundleIdentifier],
-      @"version" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
+      @"appName" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+          ?: [NSNull null],
+      @"packageName" : [[NSBundle mainBundle] bundleIdentifier] ?: [NSNull null],
+      @"version" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]
+          ?: [NSNull null],
       @"buildNumber" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]
+          ?: [NSNull null],
     });
   } else {
     result(FlutterMethodNotImplemented);

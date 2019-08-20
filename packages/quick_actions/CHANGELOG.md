@@ -1,3 +1,39 @@
+## 0.3.2+2
+* Fix bug that would make the shortcut not open on Android.
+* Report shortcut used on Android.
+* Improves example.
+
+## 0.3.2+1
+
+* Update usage example in README.
+
+## 0.3.2
+
+* Fixed the quick actions launch on Android when the app is killed. 
+
+## 0.3.1
+
+* Added unit tests.
+
+## 0.3.0+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.3.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.3.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
 ## 0.2.2
 
 * Allow to register more than once.

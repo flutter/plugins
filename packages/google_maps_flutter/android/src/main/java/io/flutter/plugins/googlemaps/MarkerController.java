@@ -10,22 +10,15 @@ import com.google.android.gms.maps.model.Marker;
 
 /** Controller of a single Marker on the map. */
 class MarkerController implements MarkerOptionsSink {
+
   private final Marker marker;
-  private final OnMarkerTappedListener onTappedListener;
+  private final String googleMapsMarkerId;
   private boolean consumeTapEvents;
 
-  MarkerController(
-      Marker marker, boolean consumeTapEvents, OnMarkerTappedListener onTappedListener) {
+  MarkerController(Marker marker, boolean consumeTapEvents) {
     this.marker = marker;
     this.consumeTapEvents = consumeTapEvents;
-    this.onTappedListener = onTappedListener;
-  }
-
-  boolean onTap() {
-    if (onTappedListener != null) {
-      onTappedListener.onMarkerTapped(marker);
-    }
-    return consumeTapEvents;
+    this.googleMapsMarkerId = marker.getId();
   }
 
   void remove() {
@@ -91,5 +84,13 @@ class MarkerController implements MarkerOptionsSink {
   @Override
   public void setZIndex(float zIndex) {
     marker.setZIndex(zIndex);
+  }
+
+  String getGoogleMapsMarkerId() {
+    return googleMapsMarkerId;
+  }
+
+  boolean consumeTapEvents() {
+    return consumeTapEvents;
   }
 }

@@ -1,11 +1,17 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.firebasemlvision;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.common.FirebaseVisionPoint;
 import com.google.firebase.ml.vision.face.FirebaseVisionFace;
+import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceLandmark;
@@ -17,35 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 class FaceDetector implements Detector {
-  static final FaceDetector instance = new FaceDetector();
+  private final FirebaseVisionFaceDetector detector;
 
-  private FaceDetector() {}
-
-  private FirebaseVisionFaceDetector detector;
-  private Map<String, Object> lastOptions;
+  FaceDetector(FirebaseVision vision, Map<String, Object> options) {
+    detector = vision.getVisionFaceDetector(parseOptions(options));
+  }
 
   @Override
-  public void handleDetection(
-      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-
-    // Use instantiated detector if the options are the same. Otherwise, close and instantiate new
-    // options.
-
-    if (detector == null) {
-      lastOptions = options;
-      detector = FirebaseVision.getInstance().getVisionFaceDetector(parseOptions(lastOptions));
-    } else if (!options.equals(lastOptions)) {
-      try {
-        detector.close();
-      } catch (IOException e) {
-        result.error("faceDetectorIOError", e.getLocalizedMessage(), null);
-        return;
-      }
-
-      lastOptions = options;
-      detector = FirebaseVision.getInstance().getVisionFaceDetector(parseOptions(lastOptions));
-    }
-
+  public void handleDetection(final FirebaseVisionImage image, final MethodChannel.Result result) {
     detector
         .detectInImage(image)
         .addOnSuccessListener(
@@ -56,10 +41,10 @@ class FaceDetector implements Detector {
                 for (FirebaseVisionFace face : firebaseVisionFaces) {
                   Map<String, Object> faceData = new HashMap<>();
 
-                  faceData.put("left", face.getBoundingBox().left);
-                  faceData.put("top", face.getBoundingBox().top);
-                  faceData.put("width", face.getBoundingBox().width());
-                  faceData.put("height", face.getBoundingBox().height());
+                  faceData.put("left", (double) face.getBoundingBox().left);
+                  faceData.put("top", (double) face.getBoundingBox().top);
+                  faceData.put("width", (double) face.getBoundingBox().width());
+                  faceData.put("height", (double) face.getBoundingBox().height());
 
                   faceData.put("headEulerAngleY", face.getHeadEulerAngleY());
                   faceData.put("headEulerAngleZ", face.getHeadEulerAngleZ());
@@ -84,6 +69,8 @@ class FaceDetector implements Detector {
 
                   faceData.put("landmarks", getLandmarkData(face));
 
+                  faceData.put("contours", getContourData(face));
+
                   faces.add(faceData);
                 }
 
@@ -102,24 +89,68 @@ class FaceDetector implements Detector {
   private Map<String, double[]> getLandmarkData(FirebaseVisionFace face) {
     Map<String, double[]> landmarks = new HashMap<>();
 
-    landmarks.put("bottomMouth", landmarkPosition(face, FirebaseVisionFaceLandmark.BOTTOM_MOUTH));
+    landmarks.put("bottomMouth", landmarkPosition(face, FirebaseVisionFaceLandmark.MOUTH_BOTTOM));
     landmarks.put("leftCheek", landmarkPosition(face, FirebaseVisionFaceLandmark.LEFT_CHEEK));
     landmarks.put("leftEar", landmarkPosition(face, FirebaseVisionFaceLandmark.LEFT_EAR));
     landmarks.put("leftEye", landmarkPosition(face, FirebaseVisionFaceLandmark.LEFT_EYE));
-    landmarks.put("leftMouth", landmarkPosition(face, FirebaseVisionFaceLandmark.LEFT_MOUTH));
+    landmarks.put("leftMouth", landmarkPosition(face, FirebaseVisionFaceLandmark.MOUTH_LEFT));
     landmarks.put("noseBase", landmarkPosition(face, FirebaseVisionFaceLandmark.NOSE_BASE));
     landmarks.put("rightCheek", landmarkPosition(face, FirebaseVisionFaceLandmark.RIGHT_CHEEK));
     landmarks.put("rightEar", landmarkPosition(face, FirebaseVisionFaceLandmark.RIGHT_EAR));
     landmarks.put("rightEye", landmarkPosition(face, FirebaseVisionFaceLandmark.RIGHT_EYE));
-    landmarks.put("rightMouth", landmarkPosition(face, FirebaseVisionFaceLandmark.RIGHT_MOUTH));
+    landmarks.put("rightMouth", landmarkPosition(face, FirebaseVisionFaceLandmark.MOUTH_RIGHT));
 
     return landmarks;
+  }
+
+  private Map<String, List<double[]>> getContourData(FirebaseVisionFace face) {
+    Map<String, List<double[]>> contours = new HashMap<>();
+
+    contours.put("allPoints", contourPosition(face, FirebaseVisionFaceContour.ALL_POINTS));
+    contours.put("face", contourPosition(face, FirebaseVisionFaceContour.FACE));
+    contours.put("leftEye", contourPosition(face, FirebaseVisionFaceContour.LEFT_EYE));
+    contours.put(
+        "leftEyebrowBottom", contourPosition(face, FirebaseVisionFaceContour.LEFT_EYEBROW_BOTTOM));
+    contours.put(
+        "leftEyebrowTop", contourPosition(face, FirebaseVisionFaceContour.LEFT_EYEBROW_TOP));
+    contours.put(
+        "lowerLipBottom", contourPosition(face, FirebaseVisionFaceContour.LOWER_LIP_BOTTOM));
+    contours.put("lowerLipTop", contourPosition(face, FirebaseVisionFaceContour.LOWER_LIP_TOP));
+    contours.put("noseBottom", contourPosition(face, FirebaseVisionFaceContour.NOSE_BOTTOM));
+    contours.put("noseBridge", contourPosition(face, FirebaseVisionFaceContour.NOSE_BRIDGE));
+    contours.put("rightEye", contourPosition(face, FirebaseVisionFaceContour.RIGHT_EYE));
+    contours.put(
+        "rightEyebrowBottom",
+        contourPosition(face, FirebaseVisionFaceContour.RIGHT_EYEBROW_BOTTOM));
+    contours.put(
+        "rightEyebrowTop", contourPosition(face, FirebaseVisionFaceContour.RIGHT_EYEBROW_TOP));
+    contours.put(
+        "upperLipBottom", contourPosition(face, FirebaseVisionFaceContour.UPPER_LIP_BOTTOM));
+    contours.put("upperLipTop", contourPosition(face, FirebaseVisionFaceContour.UPPER_LIP_TOP));
+
+    return contours;
   }
 
   private double[] landmarkPosition(FirebaseVisionFace face, int landmarkInt) {
     FirebaseVisionFaceLandmark landmark = face.getLandmark(landmarkInt);
     if (landmark != null) {
       return new double[] {landmark.getPosition().getX(), landmark.getPosition().getY()};
+    }
+
+    return null;
+  }
+
+  private List<double[]> contourPosition(FirebaseVisionFace face, int contourInt) {
+    FirebaseVisionFaceContour contour = face.getContour(contourInt);
+    if (contour != null) {
+      List<FirebaseVisionPoint> contourPoints = contour.getPoints();
+      List<double[]> result = new ArrayList<double[]>();
+
+      for (int i = 0; i < contourPoints.size(); i++) {
+        result.add(new double[] {contourPoints.get(i).getX(), contourPoints.get(i).getY()});
+      }
+
+      return result;
     }
 
     return null;
@@ -136,24 +167,40 @@ class FaceDetector implements Detector {
             ? FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS
             : FirebaseVisionFaceDetectorOptions.NO_LANDMARKS;
 
+    int contours =
+        (boolean) options.get("enableContours")
+            ? FirebaseVisionFaceDetectorOptions.ALL_CONTOURS
+            : FirebaseVisionFaceDetectorOptions.NO_CONTOURS;
+
     int mode;
     switch ((String) options.get("mode")) {
       case "accurate":
-        mode = FirebaseVisionFaceDetectorOptions.ACCURATE_MODE;
+        mode = FirebaseVisionFaceDetectorOptions.ACCURATE;
         break;
       case "fast":
-        mode = FirebaseVisionFaceDetectorOptions.FAST_MODE;
+        mode = FirebaseVisionFaceDetectorOptions.FAST;
         break;
       default:
         throw new IllegalArgumentException("Not a mode:" + options.get("mode"));
     }
 
-    return new FirebaseVisionFaceDetectorOptions.Builder()
-        .setClassificationType(classification)
-        .setLandmarkType(landmark)
-        .setMinFaceSize((float) ((double) options.get("minFaceSize")))
-        .setModeType(mode)
-        .setTrackingEnabled((boolean) options.get("enableTracking"))
-        .build();
+    FirebaseVisionFaceDetectorOptions.Builder builder =
+        new FirebaseVisionFaceDetectorOptions.Builder()
+            .setClassificationMode(classification)
+            .setLandmarkMode(landmark)
+            .setContourMode(contours)
+            .setMinFaceSize((float) ((double) options.get("minFaceSize")))
+            .setPerformanceMode(mode);
+
+    if ((boolean) options.get("enableTracking")) {
+      builder.enableTracking();
+    }
+
+    return builder.build();
+  }
+
+  @Override
+  public void close() throws IOException {
+    detector.close();
   }
 }

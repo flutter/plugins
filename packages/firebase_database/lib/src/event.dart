@@ -1,6 +1,6 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 part of firebase_database;
 
@@ -67,4 +67,7 @@ class DatabaseError {
 
   /// Human-readable details on the error and additional information.
   String get details => _data['details'];
+
+  @override
+  String toString() => "$runtimeType($code, $message, $details)";
 }

@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 part of firebase_database;
 
 class OnDisconnect {
@@ -8,7 +12,7 @@ class OnDisconnect {
   final String path;
 
   Future<void> set(dynamic value, {dynamic priority}) {
-    return _database._channel.invokeMethod(
+    return _database._channel.invokeMethod<void>(
       'OnDisconnect#set',
       <String, dynamic>{
         'app': _database.app?.name,
@@ -23,7 +27,7 @@ class OnDisconnect {
   Future<void> remove() => set(null);
 
   Future<void> cancel() {
-    return _database._channel.invokeMethod(
+    return _database._channel.invokeMethod<void>(
       'OnDisconnect#cancel',
       <String, dynamic>{
         'app': _database.app?.name,
@@ -34,7 +38,7 @@ class OnDisconnect {
   }
 
   Future<void> update(Map<String, dynamic> value) {
-    return _database._channel.invokeMethod(
+    return _database._channel.invokeMethod<void>(
       'OnDisconnect#update',
       <String, dynamic>{
         'app': _database.app?.name,

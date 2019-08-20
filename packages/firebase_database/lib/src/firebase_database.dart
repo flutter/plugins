@@ -1,6 +1,6 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 part of firebase_database;
 
@@ -88,7 +88,7 @@ class FirebaseDatabase {
   /// thus be available again when the app is restarted (even when there is no
   /// network connectivity at that time).
   Future<bool> setPersistenceEnabled(bool enabled) async {
-    final bool result = await _channel.invokeMethod(
+    final bool result = await _channel.invokeMethod<bool>(
       'FirebaseDatabase#setPersistenceEnabled',
       <String, dynamic>{
         'app': app?.name,
@@ -117,7 +117,7 @@ class FirebaseDatabase {
   /// on disk may temporarily exceed it at times. Cache sizes smaller than 1 MB
   /// or greater than 100 MB are not supported.
   Future<bool> setPersistenceCacheSizeBytes(int cacheSize) async {
-    final bool result = await _channel.invokeMethod(
+    final bool result = await _channel.invokeMethod<bool>(
       'FirebaseDatabase#setPersistenceCacheSizeBytes',
       <String, dynamic>{
         'app': app?.name,
@@ -131,7 +131,7 @@ class FirebaseDatabase {
   /// Resumes our connection to the Firebase Database backend after a previous
   /// [goOffline] call.
   Future<void> goOnline() {
-    return _channel.invokeMethod(
+    return _channel.invokeMethod<void>(
       'FirebaseDatabase#goOnline',
       <String, dynamic>{
         'app': app?.name,
@@ -143,7 +143,7 @@ class FirebaseDatabase {
   /// Shuts down our connection to the Firebase Database backend until
   /// [goOnline] is called.
   Future<void> goOffline() {
-    return _channel.invokeMethod(
+    return _channel.invokeMethod<void>(
       'FirebaseDatabase#goOffline',
       <String, dynamic>{
         'app': app?.name,
@@ -163,7 +163,7 @@ class FirebaseDatabase {
   /// affected event listeners, and the client will not (re-)send them to the
   /// Firebase Database backend.
   Future<void> purgeOutstandingWrites() {
-    return _channel.invokeMethod(
+    return _channel.invokeMethod<void>(
       'FirebaseDatabase#purgeOutstandingWrites',
       <String, dynamic>{
         'app': app?.name,

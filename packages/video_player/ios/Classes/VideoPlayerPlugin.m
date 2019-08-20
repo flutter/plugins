@@ -4,8 +4,12 @@
 
 #import "VideoPlayerPlugin.h"
 #import <AVFoundation/AVFoundation.h>
+#import <GLKit/GLKit.h>
 
-int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timescale; }
+int64_t FLTCMTimeToMillis(CMTime time) {
+  if (time.timescale == 0) return 0;
+  return time.value * 1000 / time.timescale;
+}
 
 @interface FLTFrameUpdater : NSObject
 @property(nonatomic) int64_t textureId;
@@ -32,9 +36,10 @@ int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timesca
 @property(readonly, nonatomic) CADisplayLink* displayLink;
 @property(nonatomic) FlutterEventChannel* eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
+@property(nonatomic) CGAffineTransform preferredTransform;
 @property(nonatomic, readonly) bool disposed;
 @property(nonatomic, readonly) bool isPlaying;
-@property(nonatomic, readonly) bool isLooping;
+@property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
 - (void)play;
@@ -55,14 +60,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
 }
 
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
-  self = [super init];
-  NSAssert(self, @"super init cannot be nil");
-  _isInitialized = false;
-  _isPlaying = false;
-  _disposed = false;
-
-  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
+- (void)addObservers:(AVPlayerItem*)item {
   [item addObserver:self
          forKeyPath:@"loadedTimeRanges"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
@@ -84,40 +82,137 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
 
-  _player = [AVPlayer playerWithPlayerItem:item];
-  _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-  [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
-                                                    object:[_player currentItem]
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  if (_isLooping) {
-                                                    AVPlayerItem* p = [note object];
-                                                    [p seekToTime:kCMTimeZero];
-                                                  } else {
-                                                    if (_eventSink) {
-                                                      _eventSink(@{@"event" : @"completed"});
-                                                    }
-                                                  }
-                                                }];
+  // Add an observer that will respond to itemDidPlayToEndTime
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(itemDidPlayToEndTime:)
+                                               name:AVPlayerItemDidPlayToEndTimeNotification
+                                             object:item];
+}
+
+- (void)itemDidPlayToEndTime:(NSNotification*)notification {
+  if (_isLooping) {
+    AVPlayerItem* p = [notification object];
+    [p seekToTime:kCMTimeZero completionHandler:nil];
+  } else {
+    if (_eventSink) {
+      _eventSink(@{@"event" : @"completed"});
+    }
+  }
+}
+
+static inline CGFloat radiansToDegrees(CGFloat radians) {
+  // Input range [-pi, pi] or [-180, 180]
+  CGFloat degrees = GLKMathRadiansToDegrees((float)radians);
+  if (degrees < 0) {
+    // Convert -90 to 270 and -180 to 180
+    return degrees + 360;
+  }
+  // Output degrees in between [0, 360[
+  return degrees;
+};
+
+- (AVMutableVideoComposition*)getVideoCompositionWithTransform:(CGAffineTransform)transform
+                                                     withAsset:(AVAsset*)asset
+                                                withVideoTrack:(AVAssetTrack*)videoTrack {
+  AVMutableVideoCompositionInstruction* instruction =
+      [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+  instruction.timeRange = CMTimeRangeMake(kCMTimeZero, [asset duration]);
+  AVMutableVideoCompositionLayerInstruction* layerInstruction =
+      [AVMutableVideoCompositionLayerInstruction
+          videoCompositionLayerInstructionWithAssetTrack:videoTrack];
+  [layerInstruction setTransform:_preferredTransform atTime:kCMTimeZero];
+
+  AVMutableVideoComposition* videoComposition = [AVMutableVideoComposition videoComposition];
+  instruction.layerInstructions = @[ layerInstruction ];
+  videoComposition.instructions = @[ instruction ];
+
+  // If in portrait mode, switch the width and height of the video
+  CGFloat width = videoTrack.naturalSize.width;
+  CGFloat height = videoTrack.naturalSize.height;
+  NSInteger rotationDegrees =
+      (NSInteger)round(radiansToDegrees(atan2(_preferredTransform.b, _preferredTransform.a)));
+  if (rotationDegrees == 90 || rotationDegrees == 270) {
+    width = videoTrack.naturalSize.height;
+    height = videoTrack.naturalSize.width;
+  }
+  videoComposition.renderSize = CGSizeMake(width, height);
+
+  // TODO(@recastrodiaz): should we use videoTrack.nominalFrameRate ?
+  // Currently set at a constant 30 FPS
+  videoComposition.frameDuration = CMTimeMake(1, 30);
+
+  return videoComposition;
+}
+
+- (void)createVideoOutputAndDisplayLink:(FLTFrameUpdater*)frameUpdater {
   NSDictionary* pixBuffAttributes = @{
     (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA),
     (id)kCVPixelBufferIOSurfacePropertiesKey : @{}
   };
   _videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
 
+  _displayLink = [CADisplayLink displayLinkWithTarget:frameUpdater
+                                             selector:@selector(onDisplayLink:)];
+  [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+  _displayLink.paused = YES;
+}
+
+- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
+  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
+  return [self initWithPlayerItem:item frameUpdater:frameUpdater];
+}
+
+- (CGAffineTransform)fixTransform:(AVAssetTrack*)videoTrack {
+  CGAffineTransform transform = videoTrack.preferredTransform;
+  // TODO(@recastrodiaz): why do we need to do this? Why is the preferredTransform incorrect?
+  // At least 2 user videos show a black screen when in portrait mode if we directly use the
+  // videoTrack.preferredTransform Setting tx to the height of the video instead of 0, properly
+  // displays the video https://github.com/flutter/flutter/issues/17606#issuecomment-413473181
+  if (transform.tx == 0 && transform.ty == 0) {
+    NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
+    NSLog(@"TX and TY are 0. Rotation: %ld. Natural width,height: %f, %f", (long)rotationDegrees,
+          videoTrack.naturalSize.width, videoTrack.naturalSize.height);
+    if (rotationDegrees == 90) {
+      NSLog(@"Setting transform tx");
+      transform.tx = videoTrack.naturalSize.height;
+      transform.ty = 0;
+    } else if (rotationDegrees == 270) {
+      NSLog(@"Setting transform ty");
+      transform.tx = 0;
+      transform.ty = videoTrack.naturalSize.width;
+    }
+  }
+  return transform;
+}
+
+- (instancetype)initWithPlayerItem:(AVPlayerItem*)item frameUpdater:(FLTFrameUpdater*)frameUpdater {
+  self = [super init];
+  NSAssert(self, @"super init cannot be nil");
+  _isInitialized = false;
+  _isPlaying = false;
+  _disposed = false;
+
   AVAsset* asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
     if ([asset statusOfValueForKey:@"tracks" error:nil] == AVKeyValueStatusLoaded) {
       NSArray* tracks = [asset tracksWithMediaType:AVMediaTypeVideo];
       if ([tracks count] > 0) {
-        AVAssetTrack* videoTrack = [tracks objectAtIndex:0];
+        AVAssetTrack* videoTrack = tracks[0];
         void (^trackCompletionHandler)(void) = ^{
-          if (_disposed) return;
+          if (self->_disposed) return;
           if ([videoTrack statusOfValueForKey:@"preferredTransform"
                                         error:nil] == AVKeyValueStatusLoaded) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-              [_player replaceCurrentItemWithPlayerItem:item];
-            });
+            // Rotate the video by using a videoComposition and the preferredTransform
+            self->_preferredTransform = [self fixTransform:videoTrack];
+            // Note:
+            // https://developer.apple.com/documentation/avfoundation/avplayeritem/1388818-videocomposition
+            // Video composition can only be used with file-based media and is not supported for
+            // use with media served using HTTP Live Streaming.
+            AVMutableVideoComposition* videoComposition =
+                [self getVideoCompositionWithTransform:self->_preferredTransform
+                                             withAsset:asset
+                                        withVideoTrack:videoTrack];
+            item.videoComposition = videoComposition;
           }
         };
         [videoTrack loadValuesAsynchronouslyForKeys:@[ @"preferredTransform" ]
@@ -125,11 +220,16 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       }
     }
   };
+
+  _player = [AVPlayer playerWithPlayerItem:item];
+  _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+
+  [self createVideoOutputAndDisplayLink:frameUpdater];
+
+  [self addObservers:item];
+
   [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
-  _displayLink = [CADisplayLink displayLinkWithTarget:frameUpdater
-                                             selector:@selector(onDisplayLink:)];
-  [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-  _displayLink.paused = YES;
+
   return self;
 }
 
@@ -150,7 +250,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   } else if (context == statusContext) {
     AVPlayerItem* item = (AVPlayerItem*)object;
     switch (item.status) {
-      case AVPlayerStatusFailed:
+      case AVPlayerItemStatusFailed:
         if (_eventSink != nil) {
           _eventSink([FlutterError
               errorWithCode:@"VideoError"
@@ -162,7 +262,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       case AVPlayerItemStatusUnknown:
         break;
       case AVPlayerItemStatusReadyToPlay:
-        _isInitialized = true;
         [item addOutput:_videoOutput];
         [self sendInitialized];
         [self updatePlayingState];
@@ -199,13 +298,26 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 }
 
 - (void)sendInitialized {
-  if (_eventSink && _isInitialized) {
+  if (_eventSink && !_isInitialized) {
     CGSize size = [self.player currentItem].presentationSize;
+    CGFloat width = size.width;
+    CGFloat height = size.height;
+
+    // The player has not yet initialized.
+    if (height == CGSizeZero.height && width == CGSizeZero.width) {
+      return;
+    }
+    // The player may be initialized but still needs to determine the duration.
+    if ([self duration] == 0) {
+      return;
+    }
+
+    _isInitialized = true;
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
-      @"width" : @(size.width),
-      @"height" : @(size.height),
+      @"width" : @(width),
+      @"height" : @(height)
     });
   }
 }
@@ -239,7 +351,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 }
 
 - (void)setVolume:(double)volume {
-  _player.volume = (volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume);
+  _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
@@ -259,6 +371,11 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 - (FlutterError* _Nullable)onListenWithArguments:(id _Nullable)arguments
                                        eventSink:(nonnull FlutterEventSink)events {
   _eventSink = events;
+  // TODO(@recastrodiaz): remove the line below when the race condition is resolved:
+  // https://github.com/flutter/flutter/issues/21483
+  // This line ensures the 'initialized' event is sent when the event
+  // 'AVPlayerItemStatusReadyToPlay' fires before _eventSink is set (this function
+  // onListenWithArguments is called)
   [self sendInitialized];
   return nil;
 }
@@ -313,6 +430,21 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   return self;
 }
 
+- (void)onPlayerSetup:(FLTVideoPlayer*)player
+         frameUpdater:(FLTFrameUpdater*)frameUpdater
+               result:(FlutterResult)result {
+  int64_t textureId = [_registry registerTexture:player];
+  frameUpdater.textureId = textureId;
+  FlutterEventChannel* eventChannel = [FlutterEventChannel
+      eventChannelWithName:[NSString stringWithFormat:@"flutter.io/videoPlayer/videoEvents%lld",
+                                                      textureId]
+           binaryMessenger:_messenger];
+  [eventChannel setStreamHandler:player];
+  player.eventChannel = eventChannel;
+  _players[@(textureId)] = player;
+  result(@{@"textureId" : @(textureId)});
+}
+
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([@"init" isEqualToString:call.method]) {
     // Allow audio playback when the Ring/Silent switch is set to silent
@@ -320,39 +452,34 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 
     for (NSNumber* textureId in _players) {
       [_registry unregisterTexture:[textureId unsignedIntegerValue]];
-      [[_players objectForKey:textureId] dispose];
+      [_players[textureId] dispose];
     }
     [_players removeAllObjects];
     result(nil);
   } else if ([@"create" isEqualToString:call.method]) {
     NSDictionary* argsMap = call.arguments;
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
-    NSString* dataSource = argsMap[@"asset"];
+    NSString* assetArg = argsMap[@"asset"];
+    NSString* uriArg = argsMap[@"uri"];
     FLTVideoPlayer* player;
-    if (dataSource) {
+    if (assetArg) {
       NSString* assetPath;
       NSString* package = argsMap[@"package"];
       if (![package isEqual:[NSNull null]]) {
-        assetPath = [_registrar lookupKeyForAsset:dataSource fromPackage:package];
+        assetPath = [_registrar lookupKeyForAsset:assetArg fromPackage:package];
       } else {
-        assetPath = [_registrar lookupKeyForAsset:dataSource];
+        assetPath = [_registrar lookupKeyForAsset:assetArg];
       }
       player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
-    } else {
-      dataSource = argsMap[@"uri"];
-      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource]
+      [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
+    } else if (uriArg) {
+      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
                                       frameUpdater:frameUpdater];
+      [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
+    } else {
+      result(FlutterMethodNotImplemented);
     }
-    int64_t textureId = [_registry registerTexture:player];
-    frameUpdater.textureId = textureId;
-    FlutterEventChannel* eventChannel = [FlutterEventChannel
-        eventChannelWithName:[NSString stringWithFormat:@"flutter.io/videoPlayer/videoEvents%lld",
-                                                        textureId]
-             binaryMessenger:_messenger];
-    [eventChannel setStreamHandler:player];
-    player.eventChannel = eventChannel;
-    _players[@(textureId)] = player;
-    result(@{@"textureId" : @(textureId)});
+
   } else {
     NSDictionary* argsMap = call.arguments;
     int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;
@@ -363,10 +490,10 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       [player dispose];
       result(nil);
     } else if ([@"setLooping" isEqualToString:call.method]) {
-      [player setIsLooping:[[argsMap objectForKey:@"looping"] boolValue]];
+      [player setIsLooping:[argsMap[@"looping"] boolValue]];
       result(nil);
     } else if ([@"setVolume" isEqualToString:call.method]) {
-      [player setVolume:[[argsMap objectForKey:@"volume"] doubleValue]];
+      [player setVolume:[argsMap[@"volume"] doubleValue]];
       result(nil);
     } else if ([@"play" isEqualToString:call.method]) {
       [player play];
@@ -374,7 +501,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
     } else if ([@"position" isEqualToString:call.method]) {
       result(@([player position]));
     } else if ([@"seekTo" isEqualToString:call.method]) {
-      [player seekTo:[[argsMap objectForKey:@"location"] intValue]];
+      [player seekTo:[argsMap[@"location"] intValue]];
       result(nil);
     } else if ([@"pause" isEqualToString:call.method]) {
       [player pause];

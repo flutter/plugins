@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -47,7 +51,7 @@ void main() {
 
     controller.textureId = 123;
     controller.value = controller.value.copyWith(
-      duration: Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 100),
     );
 
     await tester.pump();

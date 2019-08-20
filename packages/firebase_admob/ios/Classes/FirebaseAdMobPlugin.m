@@ -1,6 +1,6 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #import "FirebaseAdMobPlugin.h"
 
@@ -9,18 +9,6 @@
 #import "FLTMobileAd.h"
 #import "FLTRewardedVideoAdWrapper.h"
 #import "Firebase/Firebase.h"
-
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@end
-
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", (long)self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
-}
-@end
 
 @interface FLTFirebaseAdMobPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
@@ -40,9 +28,10 @@
 
 - (instancetype)init {
   self = [super init];
-  if (self && ![FIRApp defaultApp]) {
-    FLTLogWarning(@"[FIRApp configure]");
+  if (self && ![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+    NSLog(@"Configuring the default Firebase app...");
     [FIRApp configure];
+    NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
   }
   return self;
 }
@@ -198,15 +187,19 @@
   }
 
   double offset = 0.0;
+  double horizontalCenterOffset = 0.0;
   int type = 0;
   if (call.arguments[@"anchorOffset"] != nil) {
     offset = [call.arguments[@"anchorOffset"] doubleValue];
+  }
+  if (call.arguments[@"horizontalCenterOffset"] != nil) {
+    horizontalCenterOffset = [call.arguments[@"horizontalCenterOffset"] doubleValue];
   }
   if (call.arguments[@"anchorType"] != nil) {
     type = [call.arguments[@"anchorType"] isEqualToString:@"bottom"] ? 0 : 1;
   }
 
-  [ad showAtOffset:offset fromAnchor:type];
+  [ad showAtOffset:offset hCenterOffset:horizontalCenterOffset fromAnchor:type];
   result([NSNumber numberWithBool:YES]);
 }
 

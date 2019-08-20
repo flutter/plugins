@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 part of firebase_remote_config;
 
 /// The entry point for accessing Remote Config.
@@ -35,8 +39,8 @@ class RemoteConfig extends ChangeNotifier {
   }
 
   static void _getRemoteConfigInstance() async {
-    final Map<dynamic, dynamic> properties =
-        await channel.invokeMethod('RemoteConfig#instance');
+    final Map<String, dynamic> properties =
+        await channel.invokeMapMethod<String, dynamic>('RemoteConfig#instance');
 
     final RemoteConfig instance = RemoteConfig();
 
@@ -59,7 +63,7 @@ class RemoteConfig extends ChangeNotifier {
     parameters.forEach((dynamic key, dynamic value) {
       final ValueSource valueSource = _parseValueSource(value['source']);
       final RemoteConfigValue remoteConfigValue =
-          RemoteConfigValue._(value['value'].cast<int>(), valueSource);
+          RemoteConfigValue._(value['value']?.cast<int>(), valueSource);
       parsedParameters[key] = remoteConfigValue;
     });
     return parsedParameters;
@@ -67,14 +71,14 @@ class RemoteConfig extends ChangeNotifier {
 
   static ValueSource _parseValueSource(String sourceStr) {
     switch (sourceStr) {
-      case 'valueStatic':
+      case 'static':
         return ValueSource.valueStatic;
-      case 'valueDefault':
+      case 'default':
         return ValueSource.valueDefault;
-      case 'valueRemote':
+      case 'remote':
         return ValueSource.valueRemote;
       default:
-        return ValueSource.valueStatic;
+        return null;
     }
   }
 
@@ -99,7 +103,7 @@ class RemoteConfig extends ChangeNotifier {
   Future<void> setConfigSettings(
       RemoteConfigSettings remoteConfigSettings) async {
     await channel
-        .invokeMethod('RemoteConfig#setConfigSettings', <String, dynamic>{
+        .invokeMethod<void>('RemoteConfig#setConfigSettings', <String, dynamic>{
       'debugMode': remoteConfigSettings.debugMode,
     });
     _remoteConfigSettings = remoteConfigSettings;
@@ -113,9 +117,9 @@ class RemoteConfig extends ChangeNotifier {
   /// Expiration must be defined in seconds.
   Future<void> fetch({Duration expiration = const Duration(hours: 12)}) async {
     try {
-      final Map<dynamic, dynamic> properties = await channel.invokeMethod(
-          'RemoteConfig#fetch',
-          <dynamic, dynamic>{'expiration': expiration.inSeconds});
+      final Map<String, dynamic> properties = await channel
+          .invokeMapMethod<String, dynamic>('RemoteConfig#fetch',
+              <dynamic, dynamic>{'expiration': expiration.inSeconds});
       _lastFetchTime =
           DateTime.fromMillisecondsSinceEpoch(properties['lastFetchTime']);
       _lastFetchStatus = _parseLastFetchStatus(properties['lastFetchStatus']);
@@ -137,8 +141,8 @@ class RemoteConfig extends ChangeNotifier {
   /// The returned Future completes true if the fetched config is different
   /// from the currently activated config, it contains false otherwise.
   Future<bool> activateFetched() async {
-    final Map<dynamic, dynamic> properties =
-        await channel.invokeMethod('RemoteConfig#activate');
+    final Map<String, dynamic> properties =
+        await channel.invokeMapMethod<String, dynamic>('RemoteConfig#activate');
     final Map<dynamic, dynamic> rawParameters = properties['parameters'];
     final bool newConfig = properties['newConfig'];
     final Map<String, RemoteConfigValue> fetchedParameters =
@@ -153,18 +157,18 @@ class RemoteConfig extends ChangeNotifier {
   /// Default config parameters should be set then when changes are needed the
   /// parameters should be updated in the Firebase console.
   Future<void> setDefaults(Map<String, dynamic> defaults) async {
+    assert(defaults != null);
     // Make defaults available even if fetch fails.
     defaults.forEach((String key, dynamic value) {
       if (!_parameters.containsKey(key)) {
-        final ValueSource valueSource = ValueSource.valueDefault;
         final RemoteConfigValue remoteConfigValue = RemoteConfigValue._(
           const Utf8Codec().encode(value.toString()),
-          valueSource,
+          ValueSource.valueDefault,
         );
         _parameters[key] = remoteConfigValue;
       }
     });
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
         'RemoteConfig#setDefaults', <String, dynamic>{'defaults': defaults});
   }
 
@@ -226,5 +230,12 @@ class RemoteConfig extends ChangeNotifier {
     } else {
       return RemoteConfigValue._(null, ValueSource.valueStatic);
     }
+  }
+
+  /// Gets all [RemoteConfigValue].
+  ///
+  /// This includes all remote and default values
+  Map<String, RemoteConfigValue> getAll() {
+    return Map<String, RemoteConfigValue>.unmodifiable(_parameters);
   }
 }

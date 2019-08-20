@@ -1,6 +1,6 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 part of firebase_core;
 
@@ -24,7 +24,8 @@ class FirebaseApp {
   /// This getter is asynchronous because apps can also be configured by native
   /// code.
   Future<FirebaseOptions> get options async {
-    final Map<dynamic, dynamic> app = await channel.invokeMethod(
+    final Map<String, dynamic> app =
+        await channel.invokeMapMethod<String, dynamic>(
       'FirebaseApp#appNamed',
       name,
     );
@@ -35,7 +36,11 @@ class FirebaseApp {
   /// Returns a previously created FirebaseApp instance with the given name,
   /// or null if no such app exists.
   static Future<FirebaseApp> appNamed(String name) async {
-    final Map<dynamic, dynamic> app = await channel.invokeMethod(
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    final Map<String, dynamic> app =
+        await channel.invokeMapMethod<String, dynamic>(
       'FirebaseApp#appNamed',
       name,
     );
@@ -51,8 +56,7 @@ class FirebaseApp {
   /// can interact with the default app should configure it automatically at
   /// plugin registration time.
   ///
-  /// Changing the options of a configured app is not supported. Reconfiguring
-  /// an existing app will assert that the options haven't changed.
+  /// Changing the options of a configured app is not supported.
   static Future<FirebaseApp> configure({
     @required String name,
     @required FirebaseOptions options,
@@ -63,10 +67,9 @@ class FirebaseApp {
     assert(options.googleAppID != null);
     final FirebaseApp existingApp = await FirebaseApp.appNamed(name);
     if (existingApp != null) {
-      assert(await existingApp.options == options);
       return existingApp;
     }
-    await channel.invokeMethod(
+    await channel.invokeMethod<void>(
       'FirebaseApp#configure',
       <String, dynamic>{'name': name, 'options': options.asMap},
     );
@@ -76,7 +79,7 @@ class FirebaseApp {
   /// Returns a list of all extant FirebaseApp instances, or null if there are
   /// no FirebaseApp instances.
   static Future<List<FirebaseApp>> allApps() async {
-    final List<dynamic> result = await channel.invokeMethod(
+    final List<dynamic> result = await channel.invokeListMethod<dynamic>(
       'FirebaseApp#allApps',
     );
     return result

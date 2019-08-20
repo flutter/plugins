@@ -13,7 +13,7 @@ interface MarkerOptionsSink {
 
   void setAnchor(float u, float v);
 
-  void setConsumeTapEvents(boolean consumesTapEvents);
+  void setConsumeTapEvents(boolean consumeTapEvents);
 
   void setDraggable(boolean draggable);
 

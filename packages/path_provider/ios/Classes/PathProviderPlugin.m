@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,13 @@
 NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
   NSArray* paths = NSSearchPathForDirectoriesInDomains(dir, NSUserDomainMask, YES);
   return paths.firstObject;
+}
+
+static FlutterError* getFlutterError(NSError* error) {
+  if (error == nil) return nil;
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
 }
 
 @implementation FLTPathProviderPlugin
@@ -20,6 +27,21 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
       result([self getTemporaryDirectory]);
     } else if ([@"getApplicationDocumentsDirectory" isEqualToString:call.method]) {
       result([self getApplicationDocumentsDirectory]);
+    } else if ([@"getApplicationSupportDirectory" isEqualToString:call.method]) {
+      NSString* path = [self getApplicationSupportDirectory];
+
+      // Create the path if it doesn't exist
+      NSError* error;
+      NSFileManager* fileManager = [NSFileManager defaultManager];
+      BOOL success = [fileManager createDirectoryAtPath:path
+                            withIntermediateDirectories:YES
+                                             attributes:nil
+                                                  error:&error];
+      if (!success) {
+        result(getFlutterError(error));
+      } else {
+        result(path);
+      }
     } else {
       result(FlutterMethodNotImplemented);
     }
@@ -32,6 +54,10 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
 
 + (NSString*)getApplicationDocumentsDirectory {
   return GetDirectoryOfType(NSDocumentDirectory);
+}
+
++ (NSString*)getApplicationSupportDirectory {
+  return GetDirectoryOfType(NSApplicationSupportDirectory);
 }
 
 @end

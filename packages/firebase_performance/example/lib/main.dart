@@ -1,6 +1,6 @@
-// Copyright 2018, the Flutter project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import 'dart:async';
 
@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
     });
 
     final Trace trace = _performance.newTrace("test");
-    trace.incrementCounter("counter1", 16);
+    trace.incrementMetric("metric1", 16);
     trace.putAttribute("favorite_color", "blue");
 
     await trace.start();

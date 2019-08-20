@@ -1,21 +1,51 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #import "FirebaseDynamicLinksPlugin.h"
+#import "UserAgent.h"
 
 #import "Firebase/Firebase.h"
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@end
-
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
+static FlutterError *getFlutterError(NSError *error) {
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
 }
-@end
+
+static NSMutableDictionary *getDictionaryFromDynamicLink(FIRDynamicLink *dynamicLink) {
+  if (dynamicLink != nil) {
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    dictionary[@"link"] = dynamicLink.url.absoluteString;
+
+    NSMutableDictionary *iosData = [[NSMutableDictionary alloc] init];
+    if (dynamicLink.minimumAppVersion) {
+      iosData[@"minimumVersion"] = dynamicLink.minimumAppVersion;
+    }
+    dictionary[@"ios"] = iosData;
+    return dictionary;
+  } else {
+    return nil;
+  }
+}
+
+static NSMutableDictionary *getDictionaryFromFlutterError(FlutterError *error) {
+  if (error == nil) {
+    return nil;
+  }
+
+  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+  dictionary[@"code"] = error.code;
+  dictionary[@"message"] = error.message;
+  dictionary[@"details"] = error.details;
+  return dictionary;
+}
 
 @interface FLTFirebaseDynamicLinksPlugin ()
-@property(nonatomic, retain) FIRDynamicLink *dynamicLink;
+@property(nonatomic, retain) FlutterMethodChannel *channel;
+@property(nonatomic, retain) FIRDynamicLink *initialLink;
+@property(nonatomic, retain) FlutterError *flutterError;
+@property(nonatomic) BOOL initiated;
 @end
 
 @implementation FLTFirebaseDynamicLinksPlugin
@@ -23,16 +53,26 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_dynamic_links"
                                   binaryMessenger:[registrar messenger]];
-  FLTFirebaseDynamicLinksPlugin *instance = [[FLTFirebaseDynamicLinksPlugin alloc] init];
+  FLTFirebaseDynamicLinksPlugin *instance =
+      [[FLTFirebaseDynamicLinksPlugin alloc] initWithChannel:channel];
   [registrar addMethodCallDelegate:instance channel:channel];
   [registrar addApplicationDelegate:instance];
+
+  SEL sel = NSSelectorFromString(@"registerLibrary:withVersion:");
+  if ([FIRApp respondsToSelector:sel]) {
+    [FIRApp performSelector:sel withObject:LIBRARY_NAME withObject:LIBRARY_VERSION];
+  }
 }
 
-- (instancetype)init {
+- (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    _initiated = NO;
+    _channel = channel;
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
+      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
   }
   return self;
@@ -51,28 +91,21 @@
     [FIRDynamicLinkComponents shortenURL:url
                                  options:options
                               completion:[self createShortLinkCompletion:result]];
-  } else if ([@"FirebaseDynamicLinks#retrieveDynamicLink" isEqualToString:call.method]) {
-    result([self retrieveDynamicLink]);
+  } else if ([@"FirebaseDynamicLinks#getInitialLink" isEqualToString:call.method]) {
+    _initiated = YES;
+    NSMutableDictionary *dict = [self getInitialLink];
+    if (dict == nil && self.flutterError) {
+      result(self.flutterError);
+    } else {
+      result(dict);
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-- (NSMutableDictionary *)retrieveDynamicLink {
-  if (_dynamicLink != nil) {
-    NSMutableDictionary *dynamicLink = [[NSMutableDictionary alloc] init];
-    dynamicLink[@"link"] = _dynamicLink.url.absoluteString;
-
-    NSMutableDictionary *iosData = [[NSMutableDictionary alloc] init];
-    if (_dynamicLink.minimumAppVersion) {
-      iosData[@"minimumVersion"] = _dynamicLink.minimumAppVersion;
-    }
-    _dynamicLink = nil;
-    dynamicLink[@"ios"] = iosData;
-    return dynamicLink;
-  } else {
-    return nil;
-  }
+- (NSMutableDictionary *)getInitialLink {
+  return getDictionaryFromDynamicLink(_initialLink);
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -91,28 +124,57 @@
 - (BOOL)checkForDynamicLink:(NSURL *)url {
   FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
   if (dynamicLink) {
-    if (dynamicLink.url) _dynamicLink = dynamicLink;
+    if (dynamicLink.url) _initialLink = dynamicLink;
     return YES;
   }
   return NO;
 }
 
-- (BOOL)application:(UIApplication *)application
-    continueUserActivity:(NSUserActivity *)userActivity
-      restorationHandler:(void (^)(NSArray *))restorationHandler {
+- (BOOL)onLink:(NSUserActivity *)userActivity {
   BOOL handled = [[FIRDynamicLinks dynamicLinks]
       handleUniversalLink:userActivity.webpageURL
                completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
-                 self.dynamicLink = dynamicLink;
+                 if (error) {
+                   FlutterError *flutterError = getFlutterError(error);
+                   [self.channel invokeMethod:@"onLinkError"
+                                    arguments:getDictionaryFromFlutterError(flutterError)];
+                 } else {
+                   NSMutableDictionary *dictionary = getDictionaryFromDynamicLink(dynamicLink);
+                   [self.channel invokeMethod:@"onLinkSuccess" arguments:dictionary];
+                 }
                }];
   return handled;
+}
+
+- (BOOL)onInitialLink:(NSUserActivity *)userActivity {
+  BOOL handled = [[FIRDynamicLinks dynamicLinks]
+      handleUniversalLink:userActivity.webpageURL
+               completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
+                 if (error) {
+                   self.flutterError = getFlutterError(error);
+                 }
+                 self.initialLink = dynamicLink;
+               }];
+  return handled;
+}
+
+- (BOOL)application:(UIApplication *)application
+    continueUserActivity:(NSUserActivity *)userActivity
+      restorationHandler:(void (^)(NSArray *))restorationHandler {
+  if (_initiated) {
+    return [self onLink:userActivity];
+  }
+  return [self onInitialLink:userActivity];
 }
 
 - (FIRDynamicLinkShortenerCompletion)createShortLinkCompletion:(FlutterResult)result {
   return ^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings, NSError *_Nullable error) {
     if (error) {
-      result([error flutterError]);
+      result(getFlutterError(error));
     } else {
+      if (warnings == nil) {
+        warnings = [NSMutableArray array];
+      }
       result(@{@"url" : [shortURL absoluteString], @"warnings" : warnings});
     }
   };
@@ -145,10 +207,10 @@
 
 - (FIRDynamicLinkComponents *)setupParameters:(NSDictionary *)arguments {
   NSURL *link = [NSURL URLWithString:arguments[@"link"]];
-  NSString *domain = arguments[@"domain"];
+  NSString *uriPrefix = arguments[@"uriPrefix"];
 
   FIRDynamicLinkComponents *components = [FIRDynamicLinkComponents componentsWithLink:link
-                                                                               domain:domain];
+                                                                      domainURIPrefix:uriPrefix];
 
   if (![arguments[@"androidParameters"] isEqual:[NSNull null]]) {
     NSDictionary *params = arguments[@"androidParameters"];
