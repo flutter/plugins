@@ -33,14 +33,34 @@ void main() {
     expect(directory, isNull);
   });
 
+  test('getApplicationSupportDirectory test', () async {
+    response = null;
+    final Directory directory = await getApplicationSupportDirectory();
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('getApplicationSupportDirectory', arguments: null)
+      ],
+    );
+    expect(directory, isNull);
+  });
+
   test('getApplicationDocumentsDirectory test', () async {
     response = null;
     final Directory directory = await getApplicationDocumentsDirectory();
     expect(
       log,
-      <Matcher>[
-        isMethodCall('getApplicationDocumentsDirectory', arguments: null)
-      ],
+      <Matcher>[isMethodCall('getApplicationDocumentsDirectory', arguments: null)],
+    );
+    expect(directory, isNull);
+  });
+
+  test('getExternalStorageDirectory test', () async {
+    response = null;
+    final Directory directory = await getExternalStorageDirectory();
+    expect(
+      log,
+      <Matcher>[isMethodCall('getStorageDirectory', arguments: null)],
     );
     expect(directory, isNull);
   });
@@ -52,10 +72,24 @@ void main() {
     expect(directory.path, equals(fakePath));
   });
 
+  test('ApplicationSupportDirectory path test', () async {
+    final String fakePath = "/foo/bar/baz";
+    response = fakePath;
+    final Directory directory = await getApplicationSupportDirectory();
+    expect(directory.path, equals(fakePath));
+  });
+
   test('ApplicationDocumentsDirectory path test', () async {
     final String fakePath = "/foo/bar/baz";
     response = fakePath;
     final Directory directory = await getApplicationDocumentsDirectory();
+    expect(directory.path, equals(fakePath));
+  });
+
+  test('ExternalStorageDirectory path test', () async {
+    final String fakePath = "/foo/bar/baz";
+    response = fakePath;
+    final Directory directory = await getExternalStorageDirectory();
     expect(directory.path, equals(fakePath));
   });
 }
