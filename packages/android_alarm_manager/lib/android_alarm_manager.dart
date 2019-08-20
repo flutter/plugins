@@ -38,7 +38,13 @@ void _alarmManagerCallbackDispatcher() {
       print('Fatal: could not find callback');
       exit(-1);
     }
-    closure();
+
+    if (closure is Function()) {
+      closure();
+    } else if (closure is Function(int)) {
+      final int id = args[1];
+      closure(id);
+    }
   });
 
   // Once we've finished initializing, let the native portion of the plugin
@@ -80,8 +86,12 @@ class AndroidAlarmManager {
   /// `callback` must be either a top-level function or a static method from a
   /// class.
   ///
+  /// `callback` can be `Function()` or `Function(int)`
+  ///
   /// The timer is uniquely identified by `id`. Calling this function again
-  /// again with the same `id` will cancel and replace the existing timer.
+  /// with the same `id` will cancel and replace the existing timer.
+  ///
+  /// `id` will passed to `callback` if it is of type `Function(int)`
   ///
   /// If `alarmClock` is passed as `true`, the timer will be created with
   /// Android's `AlarmManagerCompat.setAlarmClock`.
@@ -107,7 +117,7 @@ class AndroidAlarmManager {
   static Future<bool> oneShot(
     Duration delay,
     int id,
-    dynamic Function() callback, {
+    Function callback, {
     bool alarmClock = false,
     bool allowWhileIdle = false,
     bool exact = false,
@@ -134,8 +144,12 @@ class AndroidAlarmManager {
   /// `callback` must be either a top-level function or a static method from a
   /// class.
   ///
+  /// `callback` can be `Function()` or `Function(int)`
+  ///
   /// The timer is uniquely identified by `id`. Calling this function again
-  /// again with the same `id` will cancel and replace the existing timer.
+  /// with the same `id` will cancel and replace the existing timer.
+  ///
+  /// `id` will passed to `callback` if it is of type `Function(int)`
   ///
   /// If `alarmClock` is passed as `true`, the timer will be created with
   /// Android's `AlarmManagerCompat.setAlarmClock`.
@@ -161,13 +175,15 @@ class AndroidAlarmManager {
   static Future<bool> oneShotAt(
     DateTime time,
     int id,
-    dynamic Function() callback, {
+    Function callback, {
     bool alarmClock = false,
     bool allowWhileIdle = false,
     bool exact = false,
     bool wakeup = false,
     bool rescheduleOnReboot = false,
   }) async {
+    assert(callback is Function() || callback is Function(int));
+    assert(id.bitLength < 32);
     final int startMillis = time.millisecondsSinceEpoch;
     final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
     if (handle == null) {
@@ -196,8 +212,12 @@ class AndroidAlarmManager {
   /// `callback` must be either a top-level function or a static method from a
   /// class.
   ///
+  /// `callback` can be `Function()` or `Function(int)`
+  ///
   /// The repeating timer is uniquely identified by `id`. Calling this function
   /// again with the same `id` will cancel and replace the existing timer.
+  ///
+  /// `id` will passed to `callback` if it is of type `Function(int)`
   ///
   /// If `startAt` is passed, the timer will first go off at that time and
   /// subsequently run with period `duration`.
@@ -219,12 +239,14 @@ class AndroidAlarmManager {
   static Future<bool> periodic(
     Duration duration,
     int id,
-    dynamic Function() callback, {
+    Function callback, {
     DateTime startAt,
     bool exact = false,
     bool wakeup = false,
     bool rescheduleOnReboot = false,
   }) async {
+    assert(callback is Function() || callback is Function(int));
+    assert(id.bitLength < 32);
     final int now = DateTime.now().millisecondsSinceEpoch;
     final int period = duration.inMilliseconds;
     final int first =

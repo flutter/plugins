@@ -1,6 +1,7 @@
 ## 0.5.4
 
-* Add support for Flash and Auto Exposure
+* Add support for Flash and Auto Exposure.
+* Add feature to pause and resume video recording.
 
 ## 0.5.3+1
 
