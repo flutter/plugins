@@ -1,3 +1,7 @@
+## 5.1.4
+
+* Add checkIosNotificationSettings method to check whether the user has previously accepted or declined the push notifications on iOS devices.
+
 ## 5.1.3
 
 * Update google-services Android gradle plugin to 4.3.0 in documentation and examples.
