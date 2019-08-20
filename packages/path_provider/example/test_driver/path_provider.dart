@@ -59,4 +59,40 @@ void main() {
       file.deleteSync();
     }
   });
+
+  test('getExternalCacheDirectories', () async {
+    if (Platform.isIOS) {
+      final Future<List<Directory>> result = getExternalCacheDirectories();
+      expect(result, throwsA(isInstanceOf<UnsupportedError>()));
+    } else if (Platform.isAndroid) {
+      final List<Directory> directories = await getExternalCacheDirectories();
+      for (Directory result in directories) {
+        final String uuid = Uuid().v1();
+        final File file = File('${result.path}/$uuid.txt');
+        file.writeAsStringSync('Hello world!');
+        expect(file.readAsStringSync(), 'Hello world!');
+        expect(result.listSync(), isNotEmpty);
+        file.deleteSync();
+      }
+    }
+  });
+
+  test('getExternalStorageDirectories', () async {
+    if (Platform.isIOS) {
+      final Future<List<Directory>> result =
+          getExternalStorageDirectories("music");
+      expect(result, throwsA(isInstanceOf<UnsupportedError>()));
+    } else if (Platform.isAndroid) {
+      final List<Directory> directories =
+          await getExternalStorageDirectories("music");
+      for (Directory result in directories) {
+        final String uuid = Uuid().v1();
+        final File file = File('${result.path}/$uuid.txt');
+        file.writeAsStringSync('Hello world!');
+        expect(file.readAsStringSync(), 'Hello world!');
+        expect(result.listSync(), isNotEmpty);
+        file.deleteSync();
+      }
+    }
+  });
 }
