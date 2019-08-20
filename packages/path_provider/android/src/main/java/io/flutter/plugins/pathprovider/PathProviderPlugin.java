@@ -40,6 +40,7 @@ public class PathProviderPlugin implements MethodCallHandler {
         break;
       case "getApplicationSupportDirectory":
         result.success(getApplicationSupportDirectory());
+        break;
       default:
         result.notImplemented();
     }
