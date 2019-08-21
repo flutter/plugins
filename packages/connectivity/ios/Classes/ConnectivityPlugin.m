@@ -18,7 +18,7 @@
 
 @property (strong, nonatomic) CLLocationManager* locationManager;
 @property (copy, nonatomic) FlutterResult result;
-@property (strong, nonatomic) NSString *key;
+
 @end
 
 @implementation FLTConnectivityPlugin {
