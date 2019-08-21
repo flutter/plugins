@@ -1,4 +1,4 @@
-# instrumentation_test
+# instrumentation_adapter
 
 Adapts flutter_test results as Android instrumentation tests, making them usable for Firebase Test Lab and other Android CI providers.
 
@@ -6,14 +6,16 @@ iOS support is not available yet, but is planned in the future.
 
 ## Usage
 
-Use `InstrumentationTestFlutterBinding()` at the start of a test file.
+Add a dependency on the `instrumentation_adapter` package in the `dev_dependencies` section of pubspec.yaml. For plugins, do this in the pubspec.yaml of the example app.
+
+Invoke `InstrumentationAdapterFlutterBinding()` at the start of a test file.
 
 ```dart
-import 'package:instrumentation_test/instrumentation_test.dart';
+import 'package:instrumentation_adapter/instrumentation_adapter.dart';
 import '../test/package_info.dart' as test;
 
 void main() {
-  InstrumentationTestFlutterBinding();
+  InstrumentationAdapterFlutterBinding();
   testWidgets("failing test example", (WidgetTester tester) async {
     expect(2 + 2, equals(5));
   });

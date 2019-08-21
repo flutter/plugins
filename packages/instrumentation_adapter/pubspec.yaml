@@ -1,4 +1,4 @@
-name: instrumentation_test
+name: instrumentation_adapter
 description: Runs tests that use the flutter_test API as platform native instrumentation tests.
 version: 0.0.1
 author:
@@ -15,5 +15,5 @@ dependencies:
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.instrumentationtest
-    pluginClass: InstrumentationTestPlugin
+    androidPackage: io.flutter.plugins.instrumentationadapter
+    pluginClass: InstrumentationAdapterPlugin

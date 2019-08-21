@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
-class InstrumentationTestFlutterBinding extends LiveTestWidgetsFlutterBinding {
-  InstrumentationTestFlutterBinding() {
+class InstrumentationAdapterFlutterBinding extends LiveTestWidgetsFlutterBinding {
+  InstrumentationAdapterFlutterBinding() {
     tearDownAll(() {
       _channel.invokeMethod<void>('testFinished', <String, dynamic>{'results': _results});
     });

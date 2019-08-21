@@ -23,7 +23,7 @@ public class FlutterRunner extends Runner {
   final Class activityClass;
 
   public FlutterRunner(Class<?> klass) {
-    activityClass = klass;
+    activityClass = klass.newInstance().getActivityClass();
     ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(activityClass);
     FlutterActivity activity = rule.launchActivity(null);
     FlutterView view = activity.getFlutterView();
@@ -33,13 +33,6 @@ public class FlutterRunner extends Runner {
         new MethodCallHandler() {
           @Override
           public void onMethodCall(MethodCall call, Result result) {
-            if (call.method.equals("testFinished")) {
-              Map<String, String> results = call.argument("results");
-              testResults.complete(results);
-              result.success(null);
-            } else {
-              result.notImplemented();
-            }
           }
         });
   }
