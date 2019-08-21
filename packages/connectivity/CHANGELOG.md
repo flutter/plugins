@@ -1,3 +1,7 @@
+## 0.4.4
+
+* Add `requestLocationServiceAuthorizationIfUndetermined` to get location information on iOS.
+
 ## 0.4.3+7
 
 * Update README with the updated information about CNCopyCurrentNetworkInfo on iOS 13.
