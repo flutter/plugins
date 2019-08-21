@@ -246,21 +246,24 @@ Widget buildCard(String title) {
           leading: const Icon(Icons.airline_seat_flat_angled),
           title: Text(title),
         ),
-        ButtonBar(
-          children: <Widget>[
-            FlatButton(
-              child: const Text('BUY TICKETS'),
-              onPressed: () {
-                /* ... */
-              },
-            ),
-            FlatButton(
-              child: const Text('SELL TICKETS'),
-              onPressed: () {
-                /* ... */
-              },
-            ),
-          ],
+        // ignore: deprecated_member_use
+        ButtonTheme.bar(
+          child: ButtonBar(
+            children: <Widget>[
+              FlatButton(
+                child: const Text('BUY TICKETS'),
+                onPressed: () {
+                  /* ... */
+                },
+              ),
+              FlatButton(
+                child: const Text('SELL TICKETS'),
+                onPressed: () {
+                  /* ... */
+                },
+              ),
+            ],
+          ),
         ),
       ],
     ),
