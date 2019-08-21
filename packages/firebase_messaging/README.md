@@ -99,9 +99,7 @@ By default background messaging is not enabled. To handle messages in the backgr
         dynamic notification = message['notification'];
       }
     
-      // Or do work with other plugins, eg: write to RTDB.
-      FirebaseDatabase.instance.reference().child('foo').set('bar');
-      return Future<void>.value();
+      // Or do work other work.
     }
     ```
    Note: the protocol of `data` and `notification` are in line with the
