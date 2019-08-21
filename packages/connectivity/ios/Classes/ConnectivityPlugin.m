@@ -52,29 +52,12 @@
   return info;
 }
 
-- (void)requetNetworkInfo:(NSString *)key result:(FlutterResult)result {
-
-  CLAuthorizationStatus status = CLLocationManager.authorizationStatus;
-  switch (status) {
-    case kCLAuthorizationStatusNotDetermined: {
-      self.key = key;
-      self.result = result;
-      [self.locationManager requestAlwaysAuthorization];
-      return;
-    }
-    default: {
-      result([self findNetworkInfo:key]);
-      break;
-    }
-  }
+- (NSString*)getWifiName {
+  return [self findNetworkInfo:@"SSID"];
 }
 
-- (void)getWifiNameWithResult:(FlutterResult)result {
-  [self requetNetworkInfo:@"SSID" result:result];
-}
-
-- (void)getBSSIDWithResult:(FlutterResult)result {
-  [self requetNetworkInfo:@"BSSID" result:result];
+- (NSString*)getBSSID {
+  return [self findNetworkInfo:@"BSSID"];
 }
 
 - (NSString*)getWifiIP {
@@ -120,6 +103,41 @@
   }
 }
 
+- (void)requestLocationServiceAuthorizationIfUndetermined:(FlutterResult)result always:(NSNumber *)always {
+  CLAuthorizationStatus status = CLLocationManager.authorizationStatus;
+  switch (status) {
+    case kCLAuthorizationStatusNotDetermined: {
+      self.result = result;
+      if (always.boolValue) {
+        [self.locationManager requestAlwaysAuthorization];
+      } else {
+        [self.locationManager requestWhenInUseAuthorization];
+      }
+      return;
+    }
+    case kCLAuthorizationStatusRestricted: {
+      result(@"restricted");
+      break;
+    }
+    case kCLAuthorizationStatusDenied: {
+      result(@"denied");
+      break;
+    }
+    case kCLAuthorizationStatusAuthorizedAlways: {
+      result(@"authorizedAlways");
+      break;
+    }
+    case kCLAuthorizationStatusAuthorizedWhenInUse: {
+      result(@"authorizedWhenInUse");
+      break;
+    }
+    default: {
+      result(@"unknown");
+      break;
+    }
+  }
+}
+
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"check"]) {
     // This is supposed to be quick. Another way of doing this would be to
@@ -129,11 +147,14 @@
     // gets more involved. So for now, this will do.
     result([self statusFromReachability:[Reachability reachabilityForInternetConnection]]);
   } else if ([call.method isEqualToString:@"wifiName"]) {
-    [self getWifiNameWithResult:result];
+    result([self getWifiName]);
   } else if ([call.method isEqualToString:@"wifiBSSID"]) {
-    [self getBSSIDWithResult:result];
+    result([self getBSSID]);
   } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
     result([self getWifiIP]);
+  } else if ([call.method isEqualToString:@"requestLocationServiceAuthorizationIfUndetermined"]) {
+    NSArray *arguments = call.arguments;
+    [self requestLocationServiceAuthorizationIfUndetermined:result always:arguments.firstObject];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -174,7 +195,7 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-  self.result([self findNetworkInfo:self.key]);
+  [self requestLocationServiceAuthorizationIfUndetermined:self.result always:nil];
 }
 
 @end

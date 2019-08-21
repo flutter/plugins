@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -90,14 +91,34 @@ class _MyHomePageState extends State<MyHomePage> {
         String wifiName, wifiBSSID, wifiIP;
 
         try {
-          wifiName = await _connectivity.getWifiName();
+          if (Platform.isIOS) {
+            LocationAuthorizationStatus status = await _connectivity.requestLocationServiceAuthorizationIfUndetermined();
+            if (status == LocationAuthorizationStatus.authorizedAlways || status == LocationAuthorizationStatus.authorizedWhenInUse) {
+              wifiBSSID = await _connectivity.getWifiName();
+            } else {
+              print('location service is not authorized, the data might not be correct');
+              wifiBSSID = await _connectivity.getWifiName();
+            }
+          } else {
+            wifiBSSID = await _connectivity.getWifiName();
+          }
         } on PlatformException catch (e) {
           print(e.toString());
           wifiName = "Failed to get Wifi Name";
         }
 
         try {
-          wifiBSSID = await _connectivity.getWifiBSSID();
+          if (Platform.isIOS) {
+            LocationAuthorizationStatus status = await _connectivity.requestLocationServiceAuthorizationIfUndetermined();
+            if (status == LocationAuthorizationStatus.authorizedAlways || status == LocationAuthorizationStatus.authorizedWhenInUse) {
+              wifiBSSID = await _connectivity.getWifiBSSID();
+            } else {
+              print('location service is not authorized, the data might not be correct');
+              wifiBSSID = await _connectivity.getWifiBSSID();
+            }
+          } else {
+            wifiBSSID = await _connectivity.getWifiBSSID();
+          }
         } on PlatformException catch (e) {
           print(e.toString());
           wifiBSSID = "Failed to get Wifi BSSID";

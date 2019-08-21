@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
@@ -93,6 +94,69 @@ class Connectivity {
   Future<String> getWifiIP() async {
     return await methodChannel.invokeMethod<String>('wifiIPAddress');
   }
+
+  /// Request to authorize the location service. Only on iOS.
+  ///
+  /// Returns a [LocationAuthorizationStatus] if the location service has already been authorized or user authorized the location on
+  /// This request.
+  ///
+  /// if the location information needs to be accessible all the time, set `requestAlwaysLocationUsage` to true. Note that the status
+  /// returned might not be [LocationAuthorizationStatus.authorizedAlways] even you requested it. User might have already chosen a location authorization
+  /// to this app.
+  ///
+  /// It will show a platform standard window of requesting a location service.
+  ///
+  /// If the user declined the location service, it will never show the window to request the authorization again.
+  /// The user has to go to the setting app in the phone to enable authorization.
+  ///
+  /// This method is a helper to get the location authorization that is necessary for certain functionalities in this plugin.
+  /// It can be replaced with other permission handling code/plugin if preferred.
+  /// To request location authorization, make sure to add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
+  /// * `NSLocationAlwaysAndWhenInUseUsageDescription` - describe why the app needs access to the user’s location information
+  /// all the time (foreground and background). This is called _Privacy - Location Always and When In Use Usage Description_ in the visual editor.
+  /// * `NSLocationWhenInUseUsageDescription` - describe why the app needs access to the user’s location information when the app is
+  /// running in the foreground. This is called _Privacy - Location When In Use Usage Description_ in the visual editor.
+  ///
+  /// Starting from iOS 13, `getWifiBSSID` and `getWifiIP` will only work properly if:
+  ///
+  /// * The app uses Core Location, and has the user’s authorization to use location information.
+  /// * The app uses the NEHotspotConfiguration API to configure the current Wi-Fi network.
+  /// * The app has active VPN configurations installed.
+  ///
+  /// If the app falls into the first category, call this method before calling `getWifiBSSID` or `getWifiIP`.
+  /// For example,
+  /// ```dart
+  /// if (Platform.isIOS) {
+  ///   LocationAuthorizationStatus status = await _connectivity.requestLocationServiceAuthorizationIfUndetermined();
+  ///   if (status == LocationAuthorizationStatus.authorizedAlways || status == LocationAuthorizationStatus.authorizedWhenInUse) {
+  ///     wifiBSSID = await _connectivity.getWifiBSSID();
+  ///   } else {
+  ///     print('location service is not authorized');
+  ///   }
+  /// }
+  /// ```
+  /// This method will throw on Android.
+  Future<LocationAuthorizationStatus> requestLocationServiceAuthorizationIfUndetermined({bool requestAlwaysLocationUsage = false}) async {
+    //Just `assert(Platform.isIOS)` will disable us to do dart side unit testing.
+    if (Platform.isAndroid) {
+      throw UnsupportedError(
+          'The method requestLocationServiceIfUndetermined is not supported on android');
+    }
+    final String result = await methodChannel
+        .invokeMethod<String>('requestLocationServiceAuthorizationIfUndetermined', <bool>[requestAlwaysLocationUsage]);
+    switch (result) {
+      case 'restricted':
+        return LocationAuthorizationStatus.restricted;
+      case 'denied':
+        return LocationAuthorizationStatus.denied;
+      case 'authorizedAlways':
+        return LocationAuthorizationStatus.authorizedAlways;
+      case 'authorizedWhenInUse':
+        return LocationAuthorizationStatus.authorizedWhenInUse;
+      default:
+        return LocationAuthorizationStatus.unknown;
+    }
+  }
 }
 
 ConnectivityResult _parseConnectivityResult(String state) {
@@ -105,4 +169,23 @@ ConnectivityResult _parseConnectivityResult(String state) {
     default:
       return ConnectivityResult.none;
   }
+}
+
+/// The status of the location service authorization.
+enum LocationAuthorizationStatus {
+
+  /// This app is not authorized to use location.
+  restricted,
+
+  /// User explicitly denied the location service.
+  denied,
+
+  /// User authorized the app to access the location at any time.
+  authorizedAlways,
+
+  /// User authorized the app to access the location when the app is visible to them.
+  authorizedWhenInUse,
+
+  /// Status unknown.
+  unknown
 }
