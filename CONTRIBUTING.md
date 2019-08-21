@@ -57,7 +57,7 @@ cd example
 flutter drive test/<name_of_plugin>.dart
 ```
 
-To run integration tests as an instrumentation tests on a local Android device:
+To run integration tests as instrumentation tests on a local Android device:
 
 ```
 cd example

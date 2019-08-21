@@ -19,6 +19,7 @@ class InstrumentationTestFlutterBinding extends LiveTestWidgetsFlutterBinding {
   Future<void> runTest(Future<void> testBody(), VoidCallback invariantTester,
       {String description = '', Duration timeout}) async {
     // TODO(jackson): Report the results individually instead of all at once
+    // See https://github.com/flutter/flutter/issues/38985
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
       _results[description] = 'failed';

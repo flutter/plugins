@@ -15,5 +15,5 @@ dependencies:
 
 flutter:
   plugin:
-    androidPackage: com.example.instrumentationtest
+    androidPackage: io.flutter.plugins.instrumentationtest
     pluginClass: InstrumentationTestPlugin
