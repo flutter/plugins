@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:instrumentation_test/instrumentation_test.dart';
+import 'package:instrumentation_adapter/instrumentation_adapter.dart';
 import '../test/package_info.dart' as test;
 
 void main() {
-  InstrumentationTestFlutterBinding();
+  InstrumentationAdapterFlutterBinding();
   test.main();
 }

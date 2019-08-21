@@ -1,4 +1,4 @@
-package io.flutter.plugins.instrumentationtest;
+package io.flutter.plugins.instrumentationadapter;
 
 import androidx.test.rule.ActivityTestRule;
 import io.flutter.app.FlutterActivity;

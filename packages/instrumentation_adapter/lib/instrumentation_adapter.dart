@@ -11,7 +11,7 @@ class InstrumentationAdapterFlutterBinding extends LiveTestWidgetsFlutterBinding
     });
   }
   static const MethodChannel _channel =
-      MethodChannel('dev.flutter/InstrumentationTestFlutterBinding');
+      MethodChannel('dev.flutter/InstrumentationAdapterFlutterBinding');
 
   static Map<String, String> _results = <String, String>{};
 

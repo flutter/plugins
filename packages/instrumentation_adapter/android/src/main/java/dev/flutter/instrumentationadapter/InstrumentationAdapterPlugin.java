@@ -7,14 +7,14 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** InstrumentationAdapterPlugin */
-public class InstrumentationTestPlugin implements MethodCallHandler {
+public class InstrumentationAdapterPlugin implements MethodCallHandler {
 
-  private static final String CHANNEL = "dev.flutter/InstrumentationTestFlutterBinding";
+  private static final String CHANNEL = "dev.flutter/InstrumentationAdapterFlutterBinding";
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-    channel.setMethodCallHandler(new InstrumentationTestPlugin());
+    channel.setMethodCallHandler(new InstrumentationAdapterPlugin());
   }
 
   @Override
