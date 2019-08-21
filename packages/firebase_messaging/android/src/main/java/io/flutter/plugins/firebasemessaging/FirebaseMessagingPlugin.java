@@ -42,7 +42,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_messaging");
     final MethodChannel backgroundCallbackChannel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/android_fcm_background");
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_messaging_background");
     final FirebaseMessagingPlugin plugin = new FirebaseMessagingPlugin(registrar, channel);
     registrar.addNewIntentListener(plugin);
     channel.setMethodCallHandler(plugin);

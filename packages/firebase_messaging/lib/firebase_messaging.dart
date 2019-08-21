@@ -23,7 +23,7 @@ typedef Future<dynamic> MessageHandler(Map<String, dynamic> message);
 @visibleForTesting
 Future<void> fcmSetupBackgroundChannel(
     {MethodChannel backgroundChannel = const MethodChannel(
-        'plugins.flutter.io/android_fcm_background')}) async {
+        'plugins.flutter.io/firebase_messaging_background')}) async {
   // Setup Flutter state needed for MethodChannels.
   WidgetsFlutterBinding.ensureInitialized();
 
