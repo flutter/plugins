@@ -1,4 +1,4 @@
-## 0.3.14
+## 0.3.13+1
 
 * Allow underscores anywhere for Javascript Channel name.
 
