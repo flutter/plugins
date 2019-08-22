@@ -99,7 +99,7 @@ By default background messaging is not enabled. To handle messages in the backgr
         dynamic notification = message['notification'];
       }
     
-      // Or do work other work.
+      // Or do other work.
     }
     ```
    Note: the protocol of `data` and `notification` are in line with the
