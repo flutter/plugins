@@ -25,7 +25,7 @@ static FIRDocumentReference *getDocumentReference(NSDictionary *arguments) {
 }
 
 static NSArray *getDocumentValues(NSDictionary *document, NSArray *orderBy,
-                                  BOOL *isCollectionGroup) {
+                                  BOOL isCollectionGroup) {
   NSMutableArray *values = [[NSMutableArray alloc] init];
   NSDictionary *documentData = document[@"data"];
   if (orderBy) {

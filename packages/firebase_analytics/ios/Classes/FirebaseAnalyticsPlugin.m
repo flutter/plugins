@@ -62,7 +62,7 @@
     [FIRAnalytics setUserPropertyString:value forName:name];
     result(nil);
   } else if ([@"setAnalyticsCollectionEnabled" isEqualToString:call.method]) {
-    NSNumber *enabled = [NSNumber numberWithBool:call.arguments];
+    NSNumber *enabled = [NSNumber numberWithBool:call.arguments] != nil;
     [FIRAnalytics setAnalyticsCollectionEnabled:[enabled boolValue]];
     result(nil);
   } else if ([@"resetAnalyticsData" isEqualToString:call.method]) {
