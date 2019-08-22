@@ -117,9 +117,10 @@ class FirebaseAuth {
   }) async {
     assert(email != null);
     return await channel.invokeListMethod<String>(
-      'fetchSignInMethodsForEmail',
-      <String, String>{'email': email, 'app': app.name},
-    ) ?? <List<String>>[];
+          'fetchSignInMethodsForEmail',
+          <String, String>{'email': email, 'app': app.name},
+        ) ??
+        <List<String>>[];
   }
 
   /// Triggers the Firebase Authentication backend to send a password-reset
