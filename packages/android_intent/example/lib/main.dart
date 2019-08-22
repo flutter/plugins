@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:android_intent/android_intent.dart';
+import 'package:android_intent/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:platform/platform.dart';
 
@@ -117,6 +118,15 @@ class ExplicitIntentsWidget extends StatelessWidget {
     intent.launch();
   }
 
+  void _startActivityInNewTask() {
+    final AndroidIntent intent = AndroidIntent(
+      action: 'action_view',
+      data: Uri.encodeFull('https://flutter.io'),
+      flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
+    );
+    intent.launch();
+  }
+
   void _testExplicitIntentFallback() {
     final AndroidIntent intent = AndroidIntent(
         action: 'action_view',
@@ -161,6 +171,10 @@ class ExplicitIntentsWidget extends StatelessWidget {
               RaisedButton(
                 child: const Text('Tap here to open link in Google Chrome.'),
                 onPressed: _openLinkInGoogleChrome,
+              ),
+              RaisedButton(
+                child: const Text('Tap here to start activity in new task.'),
+                onPressed: _startActivityInNewTask,
               ),
               RaisedButton(
                 child: const Text(
