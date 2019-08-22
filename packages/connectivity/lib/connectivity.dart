@@ -138,10 +138,7 @@ class Connectivity {
   /// This method will throw on Android.
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorizationIfUndetermined({bool requestAlwaysLocationUsage = false}) async {
     //Just `assert(Platform.isIOS)` will disable us to do dart side unit testing.
-    if (Platform.isAndroid) {
-      throw UnsupportedError(
-          'The method requestLocationServiceIfUndetermined is not supported on android');
-    }
+    assert(!Platform.isAndroid);
     final String result = await methodChannel
         .invokeMethod<String>('requestLocationServiceAuthorizationIfUndetermined', <bool>[requestAlwaysLocationUsage]);
     switch (result) {
