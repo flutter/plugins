@@ -32,6 +32,8 @@ class DurationRange {
   String toString() => '$runtimeType(start: $start, end: $end)';
 }
 
+enum VideoFormat { dash, hls, ss, other }
+
 /// The duration, current position, buffering state, error state and settings
 /// of a [VideoPlayerController].
 class VideoPlayerValue {
@@ -148,6 +150,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// package and null otherwise.
   VideoPlayerController.asset(this.dataSource, {this.package})
       : dataSourceType = DataSourceType.asset,
+        formatHint = null,
         super(VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from obtained from
@@ -155,7 +158,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// The URI for the video is given by the [dataSource] argument and must not be
   /// null.
-  VideoPlayerController.network(this.dataSource)
+  VideoPlayerController.network(this.dataSource, {this.formatHint})
       : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: null));
@@ -168,10 +171,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
+        formatHint = null,
         super(VideoPlayerValue(duration: null));
 
   int _textureId;
   final String dataSource;
+  final VideoFormat formatHint;
 
   /// Describes the type of data source this [VideoPlayerController]
   /// is constructed with.
@@ -203,7 +208,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         dataSourceDescription = <String, dynamic>{'uri': dataSource};
         break;
       case DataSourceType.file:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource};
+        dataSourceDescription = <String, dynamic>{
+          'uri': dataSource,
+          'formatHint': _nameOf(formatHint)
+        };
     }
     final Map<String, dynamic> response =
         await _channel.invokeMapMethod<String, dynamic>(
@@ -396,6 +404,21 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Future<void> setVolume(double volume) async {
     value = value.copyWith(volume: volume.clamp(0.0, 1.0));
     await _applyVolume();
+  }
+
+  static String _nameOf(VideoFormat format) {
+    switch (format) {
+      case VideoFormat.ss:
+        return 'ss';
+      case VideoFormat.hls:
+        return 'hls';
+      case VideoFormat.dash:
+        return 'dash';
+      case VideoFormat.other:
+        return 'other';
+      default:
+        return null;
+    }
   }
 }
 
