@@ -1,3 +1,7 @@
+## 0.14.0+3
+
+* Handle incorrect response from native iOS SDK. 
+
 ## 0.14.0+2
 
 * Reduce compiler warnings on iOS port by replacing `int` with `long` backing in returned timestamps.
