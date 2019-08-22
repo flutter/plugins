@@ -217,9 +217,10 @@ int nextHandle = 0;
                                 tokenData = [[NSMutableDictionary alloc] initWithDictionary:@{
                                   @"token" : tokenResult.token,
                                   @"expirationTimestamp" :
-                                      [NSNumber numberWithInt:expirationTimestamp],
-                                  @"authTimestamp" : [NSNumber numberWithInt:authTimestamp],
-                                  @"issuedAtTimestamp" : [NSNumber numberWithInt:issuedAtTimestamp],
+                                      [NSNumber numberWithLong:expirationTimestamp],
+                                  @"authTimestamp" : [NSNumber numberWithLong:authTimestamp],
+                                  @"issuedAtTimestamp" :
+                                      [NSNumber numberWithLong:issuedAtTimestamp],
                                   @"claims" : tokenResult.claims,
                                 }];
 

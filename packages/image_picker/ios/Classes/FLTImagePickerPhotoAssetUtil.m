@@ -76,16 +76,7 @@
                              suffix:(NSString *)suffix
                                type:(FLTImagePickerMIMEType)type
                        imageQuality:(NSNumber *)imageQuality {
-  CGImagePropertyOrientation orientation = (CGImagePropertyOrientation)[metaData[(
-      __bridge NSString *)kCGImagePropertyOrientation] integerValue];
-  UIImage *newImage = [UIImage
-      imageWithCGImage:[image CGImage]
-                 scale:1.0
-           orientation:
-               [FLTImagePickerMetaDataUtil
-                   getNormalizedUIImageOrientationFromCGImagePropertyOrientation:orientation]];
-
-  NSData *data = [FLTImagePickerMetaDataUtil convertImage:newImage
+  NSData *data = [FLTImagePickerMetaDataUtil convertImage:image
                                                 usingType:type
                                                   quality:imageQuality];
   if (metaData) {
@@ -118,19 +109,9 @@
 
   CGImageDestinationSetProperties(destination, (CFDictionaryRef)gifMetaProperties);
 
-  CGImagePropertyOrientation orientation = (CGImagePropertyOrientation)[metaData[(
-      __bridge NSString *)kCGImagePropertyOrientation] integerValue];
-
   for (NSInteger index = 0; index < gifInfo.images.count; index++) {
     UIImage *image = (UIImage *)[gifInfo.images objectAtIndex:index];
-    UIImage *newImage = [UIImage
-        imageWithCGImage:[image CGImage]
-                   scale:1.0
-             orientation:
-                 [FLTImagePickerMetaDataUtil
-                     getNormalizedUIImageOrientationFromCGImagePropertyOrientation:orientation]];
-
-    CGImageDestinationAddImage(destination, newImage.CGImage, (CFDictionaryRef)frameProperties);
+    CGImageDestinationAddImage(destination, image.CGImage, (CFDictionaryRef)frameProperties);
   }
 
   CGImageDestinationFinalize(destination);

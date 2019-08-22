@@ -1,6 +1,6 @@
 ## 0.3.3
 
-* In Android, added "FLAG_ACTIVITY_NEW_TASK" flag when launching to a different package.
+* Added "flags" option to call intent.addFlags(int) in native. 
 
 ## 0.3.2
 

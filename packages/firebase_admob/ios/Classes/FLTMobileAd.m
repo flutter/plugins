@@ -14,6 +14,7 @@ NSNumber *_mobileAdId;
 FlutterMethodChannel *_channel;
 FLTMobileAdStatus _status;
 double _anchorOffset;
+double _horizontalCenterOffset;
 int _anchorType;
 
 + (void)initialize {
@@ -22,6 +23,7 @@ int _anchorType;
   }
   _anchorType = 0;
   _anchorOffset = 0;
+  _horizontalCenterOffset = 0;
 
   if (statusToString == nil) {
     statusToString = @{
@@ -53,6 +55,7 @@ int _anchorType;
     _channel = channel;
     _status = CREATED;
     _anchorOffset = 0;
+    _horizontalCenterOffset = 0;
     _anchorType = 0;
     allAds[mobileAdId] = self;
   }
@@ -67,12 +70,15 @@ int _anchorType;
   // Implemented by the Banner and Interstitial subclasses
 }
 
-- (void)showAtOffset:(double)anchorOffset fromAnchor:(int)anchorType {
+- (void)showAtOffset:(double)anchorOffset
+       hCenterOffset:(double)horizontalCenterOffset
+          fromAnchor:(int)anchorType {
   _anchorType = anchorType;
   _anchorOffset = anchorOffset;
   if (_anchorType == 0) {
     _anchorOffset = -_anchorOffset;
   }
+  _horizontalCenterOffset = horizontalCenterOffset;
   [self show];
 }
 
@@ -146,7 +152,8 @@ GADAdSize _adSize;
   if (@available(ios 11.0, *)) {
     UILayoutGuide *guide = screen.safeAreaLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[
-      [_banner.centerXAnchor constraintEqualToAnchor:guide.centerXAnchor],
+      [_banner.centerXAnchor constraintEqualToAnchor:guide.centerXAnchor
+                                            constant:_horizontalCenterOffset],
       [_banner.bottomAnchor
           constraintEqualToAnchor:_anchorType == 0 ? guide.bottomAnchor : guide.topAnchor
                          constant:_anchorOffset]
@@ -161,7 +168,7 @@ GADAdSize _adSize;
 
 - (void)placeBannerPreIos11 {
   UIView *screen = [FLTMobileAd rootViewController].view;
-  CGFloat x = screen.frame.size.width / 2 - _banner.frame.size.width / 2;
+  CGFloat x = screen.frame.size.width / 2 - _banner.frame.size.width / 2 + _horizontalCenterOffset;
   CGFloat y;
   if (_anchorType == 0) {
     y = screen.frame.size.height - _banner.frame.size.height + _anchorOffset;

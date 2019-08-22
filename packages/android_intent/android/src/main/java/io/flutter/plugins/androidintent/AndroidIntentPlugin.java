@@ -50,27 +50,6 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         return action;
     }
   }
-  private int convertFlag(String flag){
-      switch (flag) {
-          case "new_task":
-              return Intent.FLAG_ACTIVITY_NEW_TASK;
-          case "no_history":
-              return Intent.FLAG_ACTIVITY_NO_HISTORY;
-          case "exclude_from_recents":
-              return Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS;
-          case "grant_read_uri_permission":
-              return Intent.FLAG_GRANT_READ_URI_PERMISSION;
-          default:
-              return 0;
-      }
-  }
-  private int convertFlags(ArrayList<String> flags) {
-      int finalValue = 0;
-      for(int i = 0; i < flags.size(); i++){
-          finalValue |= convertFlag(flags.get(i));
-      }
-    return finalValue;
-  }
 
   private Bundle convertArguments(Map<String, ?> arguments) {
     Bundle bundle = new Bundle();
@@ -147,8 +126,8 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     if (mRegistrar.activity() == null) {
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
-    if (call.argument("flags") != null) {
-      intent.addFlags(convertFlags((ArrayList<String>) call.argument("flags")));
+    if (call.argument("flag") != null) {
+      intent.addFlags((Integer) call.argument("flags")));
     }
     if (call.argument("category") != null) {
       intent.addCategory((String) call.argument("category"));
