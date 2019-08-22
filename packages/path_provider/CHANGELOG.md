@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## 1.2.2
 
 * Support Android devices with multiple external storage options.
@@ -5,6 +6,10 @@
 ## 1.2.1
 
 * Correct the integration test for Androids `getApplicationSupportDirectory` call.
+
+## 1.2.1
+
+* Fix fall through bug.
 
 ## 1.2.0
 

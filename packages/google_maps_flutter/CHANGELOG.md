@@ -1,3 +1,7 @@
+## 0.5.20+5
+
+* Allow (de-)serialization of CameraPosition
+
 ## 0.5.20+4
 
 * Marker drag event
