@@ -821,6 +821,7 @@ void main() {
               hasNavigationDelegate: false,
               debuggingEnabled: false,
               scrollViewBounces: true,
+              userAgent: WebSetting<String>.of(null),
             ),
             // TODO(iskakaushik): Remove this when collection literals makes it to stable.
             // ignore: prefer_collection_literals
@@ -852,6 +853,25 @@ void main() {
       expect(platform.lastRequestHeaders, headers);
     });
   });
+  testWidgets('Set UserAgent', (WidgetTester tester) async {
+    await tester.pumpWidget(const WebView(
+      initialUrl: 'https://youtube.com',
+      javascriptMode: JavascriptMode.unrestricted,
+    ));
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.userAgent, isNull);
+
+    await tester.pumpWidget(const WebView(
+      initialUrl: 'https://youtube.com',
+      javascriptMode: JavascriptMode.unrestricted,
+      userAgent: 'UA',
+    ));
+
+    expect(platformWebView.userAgent, 'UA');
+  });
 }
 
 class FakePlatformWebView {
@@ -872,7 +892,7 @@ class FakePlatformWebView {
         params['settings']['hasNavigationDelegate'] ?? false;
     debuggingEnabled = params['settings']['debuggingEnabled'];
     scrollViewBounces = params['settings']['scrollViewBounces'];
-
+    userAgent = params['settings']['userAgent'];
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
@@ -892,6 +912,7 @@ class FakePlatformWebView {
   bool hasNavigationDelegate;
   bool debuggingEnabled;
   bool scrollViewBounces;
+  String userAgent;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -912,6 +933,7 @@ class FakePlatformWebView {
         if (call.arguments['scrollViewBounces'] != null) {
           scrollViewBounces = call.arguments['scrollViewBounces'];
         }
+        userAgent = call.arguments['userAgent'];
         break;
       case 'canGoBack':
         return Future<bool>.sync(() => currentPosition > 0);
@@ -1143,7 +1165,8 @@ class MatchesWebSettings extends Matcher {
         _webSettings.hasNavigationDelegate ==
             webSettings.hasNavigationDelegate &&
         _webSettings.debuggingEnabled == webSettings.debuggingEnabled &&
-        _webSettings.scrollViewBounces == webSettings.scrollViewBounces;
+        _webSettings.scrollViewBounces == webSettings.scrollViewBounces &&
+        _webSettings.userAgent == webSettings.userAgent;
   }
 }
 

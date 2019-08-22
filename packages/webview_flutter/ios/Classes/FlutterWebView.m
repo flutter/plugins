@@ -253,6 +253,9 @@
     } else if ([key isEqualToString:@"scrollViewBounces"]) {
       NSNumber* scrollViewBounces = settings[key];
       _webView.scrollView.bounces = [scrollViewBounces boolValue];
+    } else if ([key isEqualToString:@"userAgent"]) {
+      NSString* userAgent = settings[key];
+      [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
     } else {
       [unknownKeys addObject:key];
     }
@@ -282,7 +285,6 @@
                       inConfiguration:(WKWebViewConfiguration*)configuration {
   switch ([policy integerValue]) {
     case 0:  // require_user_action_for_all_media_types
-      NSLog(@"requiring user action for all types");
       if (@available(iOS 10.0, *)) {
         configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeAll;
       } else {
@@ -290,7 +292,6 @@
       }
       break;
     case 1:  // always_allow
-      NSLog(@"allowing auto playback");
       if (@available(iOS 10.0, *)) {
         configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
       } else {
@@ -349,6 +350,14 @@
                                injectionTime:WKUserScriptInjectionTimeAtDocumentStart
                             forMainFrameOnly:NO];
     [userContentController addUserScript:wrapperScript];
+  }
+}
+
+- (void)updateUserAgent:(NSString*)userAgent {
+  if (@available(iOS 9.0, *)) {
+    [_webView setCustomUserAgent:userAgent];
+  } else {
+    NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
   }
 }
 
