@@ -241,6 +241,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
           webView.setWebContentsDebuggingEnabled(debuggingEnabled);
           break;
+        case "scrollViewBounces":
+          // ignore
+          break;
+          
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
