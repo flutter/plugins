@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:platform/platform.dart';
 
 void main() {
   const MethodChannel channel =
@@ -17,6 +18,10 @@ void main() {
   channel.setMockMethodCallHandler((MethodCall methodCall) async {
     log.add(methodCall);
     return response;
+  });
+
+  setUp(() {
+    pathProviderPrivate(FakePlatform(operatingSystem: 'android'));
   });
 
   tearDown(() {
@@ -65,6 +70,18 @@ void main() {
       <Matcher>[isMethodCall('getStorageDirectory', arguments: null)],
     );
     expect(directory, isNull);
+  });
+
+  test('getExternalStorageDirectory iOS test', () async {
+    pathProviderPrivate(FakePlatform(operatingSystem: 'ios'));
+
+    response = null;
+    try {
+      await getExternalStorageDirectory();
+      fail('should throw UnsupportedError');
+    } catch (e) {
+      expect(e, isUnsupportedError);
+    }
   });
 
   test('TemporaryDirectory path test', () async {
