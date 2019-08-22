@@ -1,6 +1,11 @@
-## 1.2.1
+## 1.2.2
 
 * Correct the integration test for Androids `getApplicationSupportDirectory` call.
+* Adds missing unit & integration tests.
+
+## 1.2.1
+
+* Fix fall through bug.
 
 ## 1.2.0
 
