@@ -115,26 +115,49 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
     private MediaSource buildMediaSource(
         Uri uri, DataSource.Factory mediaDataSourceFactory, String formatHint, Context context) {
-      int type = Util.inferContentType(uri.getLastPathSegment());
-      if (type == C.TYPE_SS || FORMAT_SS.equals(formatHint)) {
-        return new SsMediaSource.Factory(
-                new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-                new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
-            .createMediaSource(uri);
-      } else if (type == C.TYPE_DASH || FORMAT_DASH.equals(formatHint)) {
-        return new DashMediaSource.Factory(
-                new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-                new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
-            .createMediaSource(uri);
-
-      } else if (type == C.TYPE_HLS || FORMAT_HLS.equals(formatHint)) {
-        return new HlsMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
-      } else if (type == C.TYPE_OTHER || FORMAT_OTHER.equals(formatHint)) {
-        return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
-            .setExtractorsFactory(new DefaultExtractorsFactory())
-            .createMediaSource(uri);
+      int type;
+      if (formatHint == null) {
+        type = Util.inferContentType(uri.getLastPathSegment());
       } else {
-        throw new IllegalStateException("Unsupported type: " + type);
+        switch (formatHint) {
+          case FORMAT_SS:
+            type = C.TYPE_SS;
+            break;
+          case FORMAT_DASH:
+            type = C.TYPE_DASH;
+            break;
+          case FORMAT_HLS:
+            type = C.TYPE_HLS;
+            break;
+          case FORMAT_OTHER:
+            type = C.TYPE_OTHER;
+            break;
+          default:
+            type = -1;
+            break;
+        }
+      }
+      switch (type) {
+        case C.TYPE_SS:
+          return new SsMediaSource.Factory(
+                  new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
+                  new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
+              .createMediaSource(uri);
+        case C.TYPE_DASH:
+          return new DashMediaSource.Factory(
+                  new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
+                  new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
+              .createMediaSource(uri);
+        case C.TYPE_HLS:
+          return new HlsMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
+        case C.TYPE_OTHER:
+          return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
+              .setExtractorsFactory(new DefaultExtractorsFactory())
+              .createMediaSource(uri);
+        default:
+          {
+            throw new IllegalStateException("Unsupported type: " + type);
+          }
       }
     }
 
