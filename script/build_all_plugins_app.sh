@@ -10,8 +10,6 @@ REPO_DIR="$(dirname "$SCRIPT_DIR")"
 source "$SCRIPT_DIR/common.sh"
 check_changed_packages > /dev/null
 
-cd $REPO_DIR/examples/all_plugins
-flutter clean > /dev/null
 (cd "$REPO_DIR" && pub global run flutter_plugin_tools gen-pubspec)
 
 function error() {
@@ -21,7 +19,7 @@ function error() {
 failures=0
 
 for version in "debug" "release"; do
-  (flutter build $@ --$version > /dev/null)
+  (cd $REPO_DIR/all_plugins && flutter build $@ --$version)
 
   if [ $? -eq 0 ]; then
     echo "Successfully built $version all_plugins app."
@@ -41,4 +39,5 @@ for version in "debug" "release"; do
   fi
 done
 
+rm -rf $REPO_DIR/all_plugins/
 exit $failures
