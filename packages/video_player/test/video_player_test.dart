@@ -41,6 +41,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<void> play() async {}
   @override
   Future<void> setLooping(bool looping) async {}
+
+  @override
+  VideoFormat get formatHint => null;
 }
 
 void main() {
