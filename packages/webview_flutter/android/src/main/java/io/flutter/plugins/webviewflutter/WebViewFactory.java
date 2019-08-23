@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
 import android.view.View;
+import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
@@ -13,12 +14,12 @@ import io.flutter.plugin.platform.PlatformViewFactory;
 import java.util.Map;
 
 public final class WebViewFactory extends PlatformViewFactory {
-  private final BinaryMessenger messenger;
+  private final Registrar registrar;
   private final View containerView;
 
-  WebViewFactory(BinaryMessenger messenger, View containerView) {
+  WebViewFactory(Registrar registrar, View containerView) {
     super(StandardMessageCodec.INSTANCE);
-    this.messenger = messenger;
+    this.registrar = registrar;
     this.containerView = containerView;
   }
 
@@ -26,6 +27,6 @@ public final class WebViewFactory extends PlatformViewFactory {
   @Override
   public PlatformView create(Context context, int id, Object args) {
     Map<String, Object> params = (Map<String, Object>) args;
-    return new FlutterWebView(context, messenger, id, params, containerView);
+    return new FlutterWebView(context, registrar, id, params, containerView);
   }
 }

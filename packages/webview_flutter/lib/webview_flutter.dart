@@ -503,6 +503,16 @@ class WebViewController {
     return _webViewPlatformController.loadUrl(url, headers);
   }
 
+  /// Loads the specified asset file.
+  ///
+  /// `path` must not be null.
+  ///
+  /// Throws an ArgumentError if `path` is not a valid URL string.
+  Future<void> loadAsset(String path) async {
+    assert(path != null);
+    return _webViewPlatformController.loadAsset(path);
+  }
+
   /// Accessor to the current URL that the WebView is displaying.
   ///
   /// If [WebView.initialUrl] was never specified, returns `null`.
