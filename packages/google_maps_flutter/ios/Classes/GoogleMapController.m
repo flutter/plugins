@@ -229,6 +229,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isMyLocationButtonEnabled"]) {
     NSNumber* isMyLocationButtonEnabled = @(_mapView.settings.myLocationButton);
     result(isMyLocationButtonEnabled);
+  } else if ([call.method isEqualToString:@"map#isTrafficEnabled"]) {
+    NSNumber* isTrafficEnabled = @(_mapView.trafficEnabled);
+    result(isTrafficEnabled);
   } else if ([call.method isEqualToString:@"map#setStyle"]) {
     NSString* mapStyle = [call arguments];
     NSString* error = [self setMapStyle:mapStyle];
@@ -284,6 +287,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)setIndoorEnabled:(BOOL)enabled {
   _mapView.indoorEnabled = enabled;
+}
+
+- (void)setTrafficEnabled:(BOOL)enabled {
+  _mapView.trafficEnabled = enabled;
 }
 
 - (void)setMapType:(GMSMapViewType)mapType {
@@ -508,6 +515,10 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   id indoorEnabled = data[@"indoorEnabled"];
   if (indoorEnabled) {
     [sink setIndoorEnabled:ToBool(indoorEnabled)];
+  }
+  id trafficEnabled = data[@"trafficEnabled"];
+  if (trafficEnabled) {
+    [sink setTrafficEnabled:ToBool(trafficEnabled)];
   }
   id mapType = data[@"mapType"];
   if (mapType) {

@@ -74,6 +74,7 @@ final class GoogleMapController
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
   private boolean indoorEnabled = true;
+  private boolean trafficEnabled = false;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
@@ -169,6 +170,7 @@ final class GoogleMapController
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
     this.googleMap.setIndoorEnabled(this.indoorEnabled);
+    this.googleMap.setTrafficEnabled(this.trafficEnabled);
     googleMap.setOnInfoWindowClickListener(this);
     if (mapReadyResult != null) {
       mapReadyResult.success(null);
@@ -325,6 +327,11 @@ final class GoogleMapController
       case "map#isMyLocationButtonEnabled":
         {
           result.success(googleMap.getUiSettings().isMyLocationButtonEnabled());
+          break;
+        }
+      case "map#isTrafficEnabled":
+        {
+          result.success(googleMap.isTrafficEnabled());
           break;
         }
       case "map#setStyle":
@@ -663,5 +670,9 @@ final class GoogleMapController
 
   public void setIndoorEnabled(boolean indoorEnabled) {
     this.indoorEnabled = indoorEnabled;
+  }
+
+  public void setTrafficEnabled(boolean trafficEnabled) {
+    this.trafficEnabled = trafficEnabled;
   }
 }
