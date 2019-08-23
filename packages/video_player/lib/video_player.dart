@@ -157,8 +157,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// the network.
   ///
   /// The URI for the video is given by the [dataSource] argument and must not be
-  /// null. The [formatHint] option allows the caller to specify the video
-  /// format in the case where it cannot be detected via url (Android only).
+  /// null.
+  /// **Android only**: The [formatHint] option allows the caller to override
+  /// the video format detection code.
   VideoPlayerController.network(this.dataSource, {this.formatHint})
       : dataSourceType = DataSourceType.network,
         package = null,
