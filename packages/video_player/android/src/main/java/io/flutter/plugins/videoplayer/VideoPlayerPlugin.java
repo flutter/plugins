@@ -53,6 +53,10 @@ import java.util.Map;
 public class VideoPlayerPlugin implements MethodCallHandler {
 
   private static class VideoPlayer {
+    private static final String FORMAT_SS = "ss";
+    private static final String FORMAT_DASH = "dash";
+    private static final String FORMAT_HLS = "hls";
+    private static final String FORMAT_OTHER = "other";
 
     private SimpleExoPlayer exoPlayer;
 
@@ -107,11 +111,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       String scheme = uri.getScheme();
       return scheme.equals("file") || scheme.equals("asset");
     }
-
-    private static final FORMAT_SS = "ss";
-    private static final FORMAT_DASH = "dash";
-    private static final FORMAT_HLS = "hls";
-    private static final FORMAT_OTHER = "other";
 
     private MediaSource buildMediaSource(
         Uri uri, DataSource.Factory mediaDataSourceFactory, String formatHint, Context context) {
@@ -330,7 +329,8 @@ public class VideoPlayerPlugin implements MethodCallHandler {
   }
 
   private void onDestroy() {
-    // The whole FlutterView is being destroyed. Here we release resources acquired for all instances
+    // The whole FlutterView is being destroyed. Here we release resources acquired for all
+    // instances
     // of VideoPlayer. Once https://github.com/flutter/flutter/issues/19358 is resolved this may
     // be replaced with just asserting that videoPlayers.isEmpty().
     // https://github.com/flutter/flutter/issues/20989 tracks this.
