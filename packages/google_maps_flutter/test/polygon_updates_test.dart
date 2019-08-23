@@ -34,6 +34,8 @@ Widget _mapWithPolygons(Set<Polygon> polygons) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final FakePlatformViewsController fakePlatformViewsController =
       FakePlatformViewsController();
 
