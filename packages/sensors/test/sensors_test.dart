@@ -10,6 +10,8 @@ import 'package:sensors/sensors.dart';
 import 'package:test/test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   test('$accelerometerEvents are streamed', () async {
     const String channelName = 'plugins.flutter.io/sensors/accelerometer';
     const List<double> sensorData = <double>[1.0, 2.0, 3.0];
