@@ -108,23 +108,28 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       return scheme.equals("file") || scheme.equals("asset");
     }
 
+    private static final FORMAT_SS = "ss";
+    private static final FORMAT_DASH = "dash";
+    private static final FORMAT_HLS = "hls";
+    private static final FORMAT_OTHER = "other";
+
     private MediaSource buildMediaSource(
         Uri uri, DataSource.Factory mediaDataSourceFactory, String formatHint, Context context) {
       int type = Util.inferContentType(uri.getLastPathSegment());
-      if (type == C.TYPE_SS || "ss".equals(formatHint)) {
+      if (type == C.TYPE_SS || FORMAT_SS.equals(formatHint)) {
         return new SsMediaSource.Factory(
                 new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
                 new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
             .createMediaSource(uri);
-      } else if (type == C.TYPE_DASH || "dash".equals(formatHint)) {
+      } else if (type == C.TYPE_DASH || FORMAT_DASH.equals(formatHint)) {
         return new DashMediaSource.Factory(
                 new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
                 new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
             .createMediaSource(uri);
 
-      } else if (type == C.TYPE_HLS || "hsl".equals(formatHint)) {
+      } else if (type == C.TYPE_HLS || FORMAT_HLS.equals(formatHint)) {
         return new HlsMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
-      } else if (type == C.TYPE_OTHER || "other".equals(formatHint)) {
+      } else if (type == C.TYPE_OTHER || FORMAT_OTHER.equals(formatHint)) {
         return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
             .setExtractorsFactory(new DefaultExtractorsFactory())
             .createMediaSource(uri);

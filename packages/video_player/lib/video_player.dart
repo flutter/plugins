@@ -157,7 +157,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// the network.
   ///
   /// The URI for the video is given by the [dataSource] argument and must not be
-  /// null.
+  /// null. The [formatHint] option allows the caller to specify the video
+  /// format in the case where it cannot be detected via url (Android only).
   VideoPlayerController.network(this.dataSource, {this.formatHint})
       : dataSourceType = DataSourceType.network,
         package = null,
@@ -210,7 +211,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       case DataSourceType.file:
         dataSourceDescription = <String, dynamic>{
           'uri': dataSource,
-          'formatHint': _nameOf(formatHint)
+          'formatHint': _videoFormatStringMap[formatHint]
         };
     }
     final Map<String, dynamic> response =
@@ -406,20 +407,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _applyVolume();
   }
 
-  static String _nameOf(VideoFormat format) {
-    switch (format) {
-      case VideoFormat.ss:
-        return 'ss';
-      case VideoFormat.hls:
-        return 'hls';
-      case VideoFormat.dash:
-        return 'dash';
-      case VideoFormat.other:
-        return 'other';
-      default:
-        return null;
-    }
-  }
+  static const Map<VideoFormat, String> _videoFormatStringMap =
+      <VideoFormat, String>{
+    VideoFormat.ss: 'ss',
+    VideoFormat.hls: 'hls',
+    VideoFormat.dash: 'dash',
+    VideoFormat.other: 'other',
+  };
 }
 
 class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
