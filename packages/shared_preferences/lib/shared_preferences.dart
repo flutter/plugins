@@ -148,8 +148,11 @@ class SharedPreferences {
 
   /// Completes with true once the user preferences for the app has been cleared.
   Future<bool> clear() async {
+    final Map<String, dynamic> params = <String, dynamic>{
+      'prefix': '$_prefix',
+    };
     _preferenceCache.clear();
-    return await _kChannel.invokeMethod<bool>('clear');
+    return await _kChannel.invokeMethod<bool>('clear', params);
   }
 
   /// Fetches the latest values from the host platform.
@@ -164,8 +167,11 @@ class SharedPreferences {
   }
 
   static Future<Map<String, Object>> _getSharedPreferencesMap() async {
+    final Map<String, dynamic> params = <String, dynamic>{
+      'prefix': '$_prefix',
+    };
     final Map<String, Object> fromSystem =
-        await _kChannel.invokeMapMethod<String, Object>('getAll');
+        await _kChannel.invokeMapMethod<String, Object>('getAll', params);
     assert(fromSystem != null);
     // Strip the flutter. prefix from the returned preferences.
     final Map<String, Object> preferencesMap = <String, Object>{};

@@ -77,11 +77,11 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   }
 
   // Filter preferences to only those set by the flutter app.
-  private Map<String, Object> getAllPrefs() throws IOException {
+  private Map<String, Object> getAllPrefs(String prefix) throws IOException {
     Map<String, ?> allPrefs = preferences.getAll();
     Map<String, Object> filteredPrefs = new HashMap<>();
     for (String key : allPrefs.keySet()) {
-      if (key.startsWith("flutter.")) {
+      if (key.startsWith(prefix)) {
         Object value = allPrefs.get(key);
         if (value instanceof String) {
           String stringValue = (String) value;
@@ -179,13 +179,13 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           result.success(true);
           break;
         case "getAll":
-          result.success(getAllPrefs());
+          result.success(getAllPrefs((String) call.argument("prefix")));
           return;
         case "remove":
           commitAsync(preferences.edit().remove(key), result);
           break;
         case "clear":
-          Set<String> keySet = getAllPrefs().keySet();
+          Set<String> keySet = getAllPrefs((String) call.argument("prefix")).keySet();
           Editor clearEditor = preferences.edit();
           for (String keyToDelete : keySet) {
             clearEditor.remove(keyToDelete);

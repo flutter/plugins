@@ -16,7 +16,8 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
     NSDictionary *arguments = [call arguments];
 
     if ([method isEqualToString:@"getAll"]) {
-      result(getAllPrefs());
+      NSString *prefix = arguments[@"prefix"];
+      result(getAllPrefs(prefix));
     } else if ([method isEqualToString:@"setBool"]) {
       NSString *key = arguments[@"key"];
       NSNumber *value = arguments[@"value"];
@@ -54,7 +55,8 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
       result(@YES);
     } else if ([method isEqualToString:@"clear"]) {
       NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-      for (NSString *key in getAllPrefs()) {
+      NSString *prefix = arguments[@"prefix"];
+      for (NSString *key in getAllPrefs(prefix)) {
         [defaults removeObjectForKey:key];
       }
       result(@YES);
@@ -66,13 +68,13 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
 
 #pragma mark - Private
 
-static NSMutableDictionary *getAllPrefs() {
+static NSMutableDictionary *getAllPrefs(NSString *prefix) {
   NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
   NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:appDomain];
   NSMutableDictionary *filteredPrefs = [NSMutableDictionary dictionary];
   if (prefs != nil) {
     for (NSString *candidateKey in prefs) {
-      if ([candidateKey hasPrefix:@"flutter."]) {
+      if ([candidateKey hasPrefix:prefix]) {
         [filteredPrefs setObject:prefs[candidateKey] forKey:candidateKey];
       }
     }
