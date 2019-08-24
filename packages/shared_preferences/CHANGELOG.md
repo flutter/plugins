@@ -1,3 +1,7 @@
+## 0.5.4
+
+* Remove hardcoded prefix from internal platform calls
+
 ## 0.5.3+4
 
 * Copy `List` instances when reading and writing values to prevent mutations from propagating.
