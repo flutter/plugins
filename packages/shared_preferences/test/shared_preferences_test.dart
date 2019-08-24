@@ -143,7 +143,11 @@ void main() {
       expect(preferences.getInt('int'), null);
       expect(preferences.getDouble('double'), null);
       expect(preferences.getStringList('List'), null);
-      expect(log, <Matcher>[isMethodCall('clear', arguments: null)]);
+      expect(log, <Matcher>[
+        isMethodCall('clear', arguments: <String, dynamic>{
+          'prefix': 'flutter.',
+        })
+      ]);
     });
 
     test('reloading', () async {
