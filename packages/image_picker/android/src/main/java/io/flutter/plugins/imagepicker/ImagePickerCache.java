@@ -29,14 +29,12 @@ class ImagePickerCache {
   private static final String SHARED_PREFERENCE_ERROR_MESSAGE_KEY =
       "flutter_image_picker_error_message";
 
-  @VisibleForTesting
-  static final String SHARED_PREFERENCE_MAX_WIDTH_KEY = "flutter_image_picker_max_width";
+  private static final String SHARED_PREFERENCE_MAX_WIDTH_KEY = "flutter_image_picker_max_width";
 
-  @VisibleForTesting
-  static final String SHARED_PREFERENCE_MAX_HEIGHT_KEY = "flutter_image_picker_max_height";
+  private static final String SHARED_PREFERENCE_MAX_HEIGHT_KEY = "flutter_image_picker_max_height";
 
-  @VisibleForTesting
-  static final String SHARED_PREFERENCE_IMAGE_QUALITY_KEY = "flutter_image_picker_image_quality";
+  private static final String SHARED_PREFERENCE_IMAGE_QUALITY_KEY =
+      "flutter_image_picker_image_quality";
 
   private static final String SHARED_PREFERENCE_TYPE_KEY = "flutter_image_picker_type";
   private static final String SHARED_PREFERENCE_PENDING_IMAGE_URI_PATH_KEY =
