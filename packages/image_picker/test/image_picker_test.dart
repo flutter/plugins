@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('$ImagePicker', () {
     const MethodChannel channel =
         MethodChannel('plugins.flutter.io/image_picker');

@@ -388,6 +388,38 @@ public class Camera {
     }
   }
 
+  public void pauseVideoRecording(@NonNull final Result result) {
+    if (!recordingVideo) {
+      result.success(null);
+      return;
+    }
+
+    try {
+      mediaRecorder.pause();
+    } catch (IllegalStateException e) {
+      result.error("videoRecordingFailed", e.getMessage(), null);
+      return;
+    }
+
+    result.success(null);
+  }
+
+  public void resumeVideoRecording(@NonNull final Result result) {
+    if (!recordingVideo) {
+      result.success(null);
+      return;
+    }
+
+    try {
+      mediaRecorder.resume();
+    } catch (IllegalStateException e) {
+      result.error("videoRecordingFailed", e.getMessage(), null);
+      return;
+    }
+
+    result.success(null);
+  }
+
   public void startPreview() throws CameraAccessException {
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
