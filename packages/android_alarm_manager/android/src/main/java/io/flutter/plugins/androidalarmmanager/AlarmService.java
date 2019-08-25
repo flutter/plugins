@@ -176,7 +176,16 @@ public class AlarmService extends JobIntentService {
     // Grab the handle for the callback associated with this alarm. Pay close
     // attention to the type of the callback handle as storing this value in a
     // variable of the wrong size will cause the callback lookup to fail.
-    long callbackHandle = intent.getLongExtra("callbackHandle", 0);
+    String method = "";
+    if (intent.hasExtra("method")){
+      method = intent.getStringExtra("method");
+    }
+
+    String arguments = "";
+    if (intent.hasExtra("arguments")){
+      arguments = intent.getStringExtra("arguments");
+    }
+
     if (sBackgroundChannel == null) {
       Log.e(
           TAG,
@@ -206,12 +215,9 @@ public class AlarmService extends JobIntentService {
           };
     }
 
-    // Handle the alarm event in Dart. Note that for this plugin, we don't
-    // care about the method name as we simply lookup and invoke the callback
-    // provided.
-    // TODO(mattcarroll): consider giving a method name anyway for the purpose of developer discoverability
-    //                    when reading the source code. Especially on the Dart side.
-    sBackgroundChannel.invokeMethod("", new Object[] {callbackHandle}, result);
+    // Handle the alarm event in Dart. This plugin takes the intent's action name and invokes
+    // it on the dart side.
+    sBackgroundChannel.invokeMethod(method, new Object[] {arguments}, result);
   }
 
   private static void scheduleAlarm(
@@ -224,8 +230,7 @@ public class AlarmService extends JobIntentService {
       boolean wakeup,
       long startMillis,
       long intervalMillis,
-      boolean rescheduleOnReboot,
-      long callbackHandle) {
+      boolean rescheduleOnReboot) {
     if (rescheduleOnReboot) {
       addPersistentAlarm(
           context,
@@ -236,13 +241,12 @@ public class AlarmService extends JobIntentService {
           exact,
           wakeup,
           startMillis,
-          intervalMillis,
-          callbackHandle);
+          intervalMillis);
     }
 
     // Create an Intent for the alarm and set the desired Dart callback handle.
     Intent alarm = new Intent(context, AlarmBroadcastReceiver.class);
-    alarm.putExtra("callbackHandle", callbackHandle);
+    alarm.putExtra("method", "background");
     PendingIntent pendingIntent =
         PendingIntent.getBroadcast(context, requestCode, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -295,8 +299,7 @@ public class AlarmService extends JobIntentService {
         request.wakeup,
         request.startMillis,
         0,
-        request.rescheduleOnReboot,
-        request.callbackHandle);
+        request.rescheduleOnReboot);
   }
 
   public static void setPeriodic(
@@ -314,8 +317,7 @@ public class AlarmService extends JobIntentService {
         request.wakeup,
         request.startMillis,
         request.intervalMillis,
-        request.rescheduleOnReboot,
-        request.callbackHandle);
+        request.rescheduleOnReboot);
   }
 
   public static void cancel(Context context, int requestCode) {
@@ -347,8 +349,7 @@ public class AlarmService extends JobIntentService {
       boolean exact,
       boolean wakeup,
       long startMillis,
-      long intervalMillis,
-      long callbackHandle) {
+      long intervalMillis) {
     HashMap<String, Object> alarmSettings = new HashMap<>();
     alarmSettings.put("alarmClock", alarmClock);
     alarmSettings.put("allowWhileIdle", allowWhileIdle);
@@ -357,7 +358,6 @@ public class AlarmService extends JobIntentService {
     alarmSettings.put("wakeup", wakeup);
     alarmSettings.put("startMillis", startMillis);
     alarmSettings.put("intervalMillis", intervalMillis);
-    alarmSettings.put("callbackHandle", callbackHandle);
     JSONObject obj = new JSONObject(alarmSettings);
     String key = getPersistentAlarmKey(requestCode);
     SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
@@ -424,7 +424,6 @@ public class AlarmService extends JobIntentService {
           boolean wakeup = alarm.getBoolean("wakeup");
           long startMillis = alarm.getLong("startMillis");
           long intervalMillis = alarm.getLong("intervalMillis");
-          long callbackHandle = alarm.getLong("callbackHandle");
           scheduleAlarm(
               context,
               requestCode,
@@ -435,8 +434,7 @@ public class AlarmService extends JobIntentService {
               wakeup,
               startMillis,
               intervalMillis,
-              false,
-              callbackHandle);
+              false);
         } catch (JSONException e) {
           Log.e(TAG, "Data for alarm request code " + requestCode + " is invalid: " + json);
         }

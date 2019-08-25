@@ -9,43 +9,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-const String _backgroundName =
-    'plugins.flutter.io/android_alarm_manager_background';
-
-// This is the entrypoint for the background isolate. Since we can only enter
-// an isolate once, we setup a MethodChannel to listen for method invokations
-// from the native portion of the plugin. This allows for the plugin to perform
-// any necessary processing in Dart (e.g., populating a custom object) before
-// invoking the provided callback.
-void _alarmManagerCallbackDispatcher() {
-  const MethodChannel _channel =
-      MethodChannel(_backgroundName, JSONMethodCodec());
-
-  // Setup Flutter state needed for MethodChannels.
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // This is where the magic happens and we handle background events from the
-  // native portion of the plugin.
-  _channel.setMethodCallHandler((MethodCall call) async {
-    final dynamic args = call.arguments;
-    final CallbackHandle handle = CallbackHandle.fromRawHandle(args[0]);
-
-    // PluginUtilities.getCallbackFromHandle performs a lookup based on the
-    // callback handle and returns a tear-off of the original callback.
-    final Function closure = PluginUtilities.getCallbackFromHandle(handle);
-
-    if (closure == null) {
-      print('Fatal: could not find callback');
-      exit(-1);
-    }
-    closure();
-  });
-
-  // Once we've finished initializing, let the native portion of the plugin
-  // know that it can start scheduling alarms.
-  _channel.invokeMethod<void>('AlarmService.initialized');
-}
-
 /// A Flutter plugin for registering Dart callbacks with the Android
 /// AlarmManager service.
 ///
@@ -60,9 +23,11 @@ class AndroidAlarmManager {
   ///
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
-  static Future<bool> initialize() async {
-    final CallbackHandle handle =
-        PluginUtilities.getCallbackHandle(_alarmManagerCallbackDispatcher);
+  /// 
+  /// Set [handle] with your [backgroundCallbackDispatcher] method.
+  ///   final CallbackHandle handle =
+  ///      PluginUtilities.getCallbackHandle(backgroundCallbackDispatcher);
+  static Future<bool> initialize(CallbackHandle handle) async {
     if (handle == null) {
       return false;
     }
@@ -106,8 +71,7 @@ class AndroidAlarmManager {
   /// failure.
   static Future<bool> oneShot(
     Duration delay,
-    int id,
-    dynamic Function() callback, {
+    int id, {
     bool alarmClock = false,
     bool allowWhileIdle = false,
     bool exact = false,
@@ -116,10 +80,6 @@ class AndroidAlarmManager {
   }) async {
     final int now = DateTime.now().millisecondsSinceEpoch;
     final int first = now + delay.inMilliseconds;
-    final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
-    if (handle == null) {
-      return false;
-    }
     final bool r = await _channel.invokeMethod<bool>('Alarm.oneShot', <dynamic>[
       id,
       alarmClock,
@@ -128,7 +88,6 @@ class AndroidAlarmManager {
       wakeup,
       first,
       rescheduleOnReboot,
-      handle.toRawHandle(),
     ]);
     return (r == null) ? false : r;
   }
@@ -164,8 +123,7 @@ class AndroidAlarmManager {
   /// failure.
   static Future<bool> periodic(
     Duration duration,
-    int id,
-    dynamic Function() callback, {
+    int id, {
     DateTime startAt,
     bool exact = false,
     bool wakeup = false,
@@ -175,10 +133,7 @@ class AndroidAlarmManager {
     final int period = duration.inMilliseconds;
     final int first =
         startAt != null ? startAt.millisecondsSinceEpoch : now + period;
-    final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
-    if (handle == null) {
-      return false;
-    }
+
     final bool r = await _channel.invokeMethod<bool>(
         'Alarm.periodic', <dynamic>[
       id,
@@ -187,7 +142,6 @@ class AndroidAlarmManager {
       first,
       period,
       rescheduleOnReboot,
-      handle.toRawHandle()
     ]);
     return (r == null) ? false : r;
   }

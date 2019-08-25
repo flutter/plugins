@@ -172,7 +172,6 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
       boolean wakeup = json.getBoolean(4);
       long startMillis = json.getLong(5);
       boolean rescheduleOnReboot = json.getBoolean(6);
-      long callbackHandle = json.getLong(7);
 
       return new OneShotRequest(
           requestCode,
@@ -181,8 +180,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
           exact,
           wakeup,
           startMillis,
-          rescheduleOnReboot,
-          callbackHandle);
+          rescheduleOnReboot);
     }
 
     final int requestCode;
@@ -192,7 +190,6 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     final boolean wakeup;
     final long startMillis;
     final boolean rescheduleOnReboot;
-    final long callbackHandle;
 
     OneShotRequest(
         int requestCode,
@@ -201,8 +198,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
         boolean exact,
         boolean wakeup,
         long startMillis,
-        boolean rescheduleOnReboot,
-        long callbackHandle) {
+        boolean rescheduleOnReboot) {
       this.requestCode = requestCode;
       this.alarmClock = alarmClock;
       this.allowWhileIdle = allowWhileIdle;
@@ -210,7 +206,6 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
       this.wakeup = wakeup;
       this.startMillis = startMillis;
       this.rescheduleOnReboot = rescheduleOnReboot;
-      this.callbackHandle = callbackHandle;
     }
   }
 
@@ -223,7 +218,6 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
       long startMillis = json.getLong(3);
       long intervalMillis = json.getLong(4);
       boolean rescheduleOnReboot = json.getBoolean(5);
-      long callbackHandle = json.getLong(6);
 
       return new PeriodicRequest(
           requestCode,
@@ -231,8 +225,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
           wakeup,
           startMillis,
           intervalMillis,
-          rescheduleOnReboot,
-          callbackHandle);
+          rescheduleOnReboot);
     }
 
     final int requestCode;
@@ -241,7 +234,6 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     final long startMillis;
     final long intervalMillis;
     final boolean rescheduleOnReboot;
-    final long callbackHandle;
 
     PeriodicRequest(
         int requestCode,
@@ -249,15 +241,13 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
         boolean wakeup,
         long startMillis,
         long intervalMillis,
-        boolean rescheduleOnReboot,
-        long callbackHandle) {
+        boolean rescheduleOnReboot) {
       this.requestCode = requestCode;
       this.exact = exact;
       this.wakeup = wakeup;
       this.startMillis = startMillis;
       this.intervalMillis = intervalMillis;
       this.rescheduleOnReboot = rescheduleOnReboot;
-      this.callbackHandle = callbackHandle;
     }
   }
 }
