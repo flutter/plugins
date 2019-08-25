@@ -114,6 +114,9 @@ enum MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  showAlert,
+  showConfirm,
+  showPrompt,
 }
 
 class SampleMenu extends StatelessWidget {
@@ -152,6 +155,15 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data, context);
                 break;
+              case MenuOptions.showAlert:
+                _onShowAlert(controller.data);
+                break;
+              case MenuOptions.showConfirm:
+                _onShowConfirm(controller.data);
+                break;
+              case MenuOptions.showPrompt:
+                _onShowPrompt(controller.data);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
@@ -183,6 +195,18 @@ class SampleMenu extends StatelessWidget {
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.showAlert,
+              child: Text('Show alert'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.showConfirm,
+              child: Text('Show confirm'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.showPrompt,
+              child: Text('Show Prompt'),
             ),
           ],
         );
@@ -251,6 +275,22 @@ class SampleMenu extends StatelessWidget {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  void _onShowAlert(WebViewController controller) async {
+    controller.evaluateJavascript('alert("Hello World");');
+  }
+
+  void _onShowConfirm(WebViewController controller) async {
+    final String res = await controller.evaluateJavascript('confirm("Hello, Are you sure ?");');
+    print(res);
+    controller.evaluateJavascript('alert("You chose $res");');
+  }
+
+  void _onShowPrompt(WebViewController controller) async {
+    final String res = await controller.evaluateJavascript('prompt("Hello, input your name ?","Your name");');
+    print(res);
+    controller.evaluateJavascript('alert("Hello: $res");');
   }
 
   Widget _getCookieList(String cookies) {
