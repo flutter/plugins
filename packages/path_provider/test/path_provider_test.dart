@@ -9,6 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   const MethodChannel channel =
       MethodChannel('plugins.flutter.io/path_provider');
   final List<MethodCall> log = <MethodCall>[];

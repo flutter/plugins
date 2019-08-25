@@ -16,6 +16,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 typedef void VoidCallback();
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final _FakePlatformViewsController fakePlatformViewsController =
       _FakePlatformViewsController();
 
@@ -776,6 +778,7 @@ void main() {
               javascriptMode: JavascriptMode.disabled,
               hasNavigationDelegate: false,
               debuggingEnabled: false,
+              userAgent: WebSetting<String>.of(null),
             ),
             // TODO(iskakaushik): Remove this when collection literals makes it to stable.
             // ignore: prefer_collection_literals
@@ -807,6 +810,25 @@ void main() {
       expect(platform.lastRequestHeaders, headers);
     });
   });
+  testWidgets('Set UserAgent', (WidgetTester tester) async {
+    await tester.pumpWidget(const WebView(
+      initialUrl: 'https://youtube.com',
+      javascriptMode: JavascriptMode.unrestricted,
+    ));
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.userAgent, isNull);
+
+    await tester.pumpWidget(const WebView(
+      initialUrl: 'https://youtube.com',
+      javascriptMode: JavascriptMode.unrestricted,
+      userAgent: 'UA',
+    ));
+
+    expect(platformWebView.userAgent, 'UA');
+  });
 }
 
 class FakePlatformWebView {
@@ -826,7 +848,7 @@ class FakePlatformWebView {
     hasNavigationDelegate =
         params['settings']['hasNavigationDelegate'] ?? false;
     debuggingEnabled = params['settings']['debuggingEnabled'];
-
+    userAgent = params['settings']['userAgent'];
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
@@ -845,6 +867,7 @@ class FakePlatformWebView {
 
   bool hasNavigationDelegate;
   bool debuggingEnabled;
+  String userAgent;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -862,6 +885,7 @@ class FakePlatformWebView {
         if (call.arguments['debuggingEnabled'] != null) {
           debuggingEnabled = call.arguments['debuggingEnabled'];
         }
+        userAgent = call.arguments['userAgent'];
         break;
       case 'canGoBack':
         return Future<bool>.sync(() => currentPosition > 0);
@@ -1092,7 +1116,8 @@ class MatchesWebSettings extends Matcher {
     return _webSettings.javascriptMode == webSettings.javascriptMode &&
         _webSettings.hasNavigationDelegate ==
             webSettings.hasNavigationDelegate &&
-        _webSettings.debuggingEnabled == webSettings.debuggingEnabled;
+        _webSettings.debuggingEnabled == webSettings.debuggingEnabled &&
+        _webSettings.userAgent == webSettings.userAgent;
   }
 }
 
