@@ -1,8 +1,3 @@
-## 0.5.3+1
-
-* Switch from using `api` to `implementation` for dependency on `androidx`,
-  preventing version mismatch build failures in some Android configurations.
-
 ## 0.5.3
 
 * Add face id detection as well by not relying on FingerprintCompat.
