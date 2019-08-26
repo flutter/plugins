@@ -14,7 +14,7 @@ const String kChannelName = 'plugins.flutter.io/android_intent';
 class AndroidIntent {
   /// Builds an Android intent with the following parameters
   /// [action] refers to the action parameter of the intent.
-  /// [flags] is the list of strings that will be converted to the flags.
+  /// [flags] is the list of int that will be converted to native flags.
   /// [category] refers to the category of the intent, can be null.
   /// [data] refers to the string format of the URI that will be passed to
   /// intent.
