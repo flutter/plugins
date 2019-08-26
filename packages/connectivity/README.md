@@ -66,7 +66,7 @@ To use `.getWifiBSSID()` and `.getWifiName()` on iOS >= 12, the `Access WiFi inf
 
 ### iOS 13
 
-The methods `.getWifiBSSID()` and `.getWifiName()` utilize the [CNCopyCurrentNetworkInfo](https://developer.apple.com/documentation/systemconfiguration/1614126-cncopycurrentnetworkinfo) function on iOS.
+The methods `.getWifiBSSID()` and `.getWifiName()` utilize the [`CNCopyCurrentNetworkInfo`](https://developer.apple.com/documentation/systemconfiguration/1614126-cncopycurrentnetworkinfo) function on iOS.
 
 As of iOS 13, Apple announced that these APIs will no longer return valid information.
 An app linked against iOS 12 or earlier receives pseudo-values such as:
