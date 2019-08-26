@@ -2,68 +2,65 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:android_intent/flag.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:android_intent/android_intent.dart';
+import 'package:mockito/mockito.dart';
+import 'package:platform/platform.dart';
 
 void main() {
   AndroidIntent androidIntent;
-  const MethodChannel channel =
-      MethodChannel('plugins.flutter.io/android_intent');
+  MockMethodChannel mockChannel;
+  // const MethodChannel channel =
+  //     MethodChannel('plugins.flutter.io/android_intent');
   final List<MethodCall> log = <MethodCall>[];
   setUp(() {
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      log.add(methodCall);
-      return '';
-    });
+    mockChannel = MockMethodChannel();
+
+    // channel.setMockMethodCallHandler((MethodCall methodCall) async {
+    //   log.add(methodCall);
+    //   return '';
+    // });
     log.clear();
   });
   group('AndroidIntent', () {
     test('pass right params', () async {
-      if (Platform.isIOS) {
-      } else if (Platform.isAndroid) {
-        androidIntent = AndroidIntent(
+      androidIntent = AndroidIntent.private(
           action: 'action_view',
           data: Uri.encodeFull('https://flutter.io'),
           flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
-        );
-        androidIntent.launch();
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('launch', arguments: <String, Object>{
-              'action': 'action_view',
-              'data': Uri.encodeFull('https://flutter.io'),
-              'flags': androidIntent
-                  .convertFlags(<int>[Flag.FLAG_ACTIVITY_NEW_TASK]),
-            })
-          ],
-        );
-      }
+          channel: mockChannel,
+          platform: FakePlatform(operatingSystem: 'android'));
+      androidIntent.launch();
+      verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
+        'action': 'action_view',
+        'data': Uri.encodeFull('https://flutter.io'),
+        'flags': androidIntent.convertFlags(<int>[Flag.FLAG_ACTIVITY_NEW_TASK]),
+      }));
     });
-    test('pass wrong params', () async {
-      if (Platform.isIOS) {
-      } else if (Platform.isAndroid) {
-        androidIntent = AndroidIntent(
+    test('pass null value to action param', () async {
+      androidIntent = AndroidIntent.private(
           action: null,
-        );
-        androidIntent.launch();
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('launch', arguments: <String, Object>{
-              'action': null,
-            })
-          ],
-        );
-      }
+          channel: mockChannel,
+          platform: FakePlatform(operatingSystem: 'android'));
+      androidIntent.launch();
+      verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
+        'action': null,
+      }));
+    });
+
+    test('call in ios platform', () async {
+      androidIntent = AndroidIntent.private(
+          action: null,
+          channel: mockChannel,
+          platform: FakePlatform(operatingSystem: 'ios'));
+      androidIntent.launch();
+      verifyZeroInteractions(mockChannel);
     });
   });
-  group('Flags: ', () {
-    androidIntent = AndroidIntent(
+  group('convertFlags ', () {
+    androidIntent = const AndroidIntent(
       action: 'action_view',
     );
     test('add filled flag list', () async {
@@ -93,3 +90,5 @@ void main() {
     });
   });
 }
+
+class MockMethodChannel extends Mock implements MethodChannel {}
