@@ -119,9 +119,17 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       map[key] = value;
     }
 
+    void _addSettingIfPresent<T>(String key, WebSetting<T> setting) {
+      if (!setting.isPresent) {
+        return;
+      }
+      map[key] = setting.value;
+    }
+
     _addIfNonNull('jsMode', settings.javascriptMode?.index);
     _addIfNonNull('hasNavigationDelegate', settings.hasNavigationDelegate);
     _addIfNonNull('debuggingEnabled', settings.debuggingEnabled);
+    _addSettingIfPresent('userAgent', settings.userAgent);
     return map;
   }
 
@@ -135,6 +143,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'initialUrl': creationParams.initialUrl,
       'settings': _webSettingsToMap(creationParams.webSettings),
       'javascriptChannelNames': creationParams.javascriptChannelNames.toList(),
+      'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
     };
   }

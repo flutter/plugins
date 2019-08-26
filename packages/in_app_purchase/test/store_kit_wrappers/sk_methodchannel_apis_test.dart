@@ -9,6 +9,8 @@ import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'sk_test_stub_objects.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final FakeIOSPlatform fakeIOSPlatform = FakeIOSPlatform();
 
   setUpAll(() {

@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:io';
 
@@ -211,6 +215,19 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               : null,
         ),
         IconButton(
+          icon: controller != null && controller.value.isRecordingPaused
+              ? Icon(Icons.play_arrow)
+              : Icon(Icons.pause),
+          color: Colors.blue,
+          onPressed: controller != null &&
+                  controller.value.isInitialized &&
+                  controller.value.isRecordingVideo
+              ? (controller != null && controller.value.isRecordingPaused
+                  ? onResumeButtonPressed
+                  : onPauseButtonPressed)
+              : null,
+        ),
+        IconButton(
           icon: const Icon(Icons.stop),
           color: Colors.red,
           onPressed: controller != null &&
@@ -312,6 +329,20 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     });
   }
 
+  void onPauseButtonPressed() {
+    pauseVideoRecording().then((_) {
+      if (mounted) setState(() {});
+      showInSnackBar('Video recording paused');
+    });
+  }
+
+  void onResumeButtonPressed() {
+    resumeVideoRecording().then((_) {
+      if (mounted) setState(() {});
+      showInSnackBar('Video recording resumed');
+    });
+  }
+
   Future<String> startVideoRecording() async {
     if (!controller.value.isInitialized) {
       showInSnackBar('Error: select a camera first.');
@@ -351,6 +382,32 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
 
     await _startVideoPlayer();
+  }
+
+  Future<void> pauseVideoRecording() async {
+    if (!controller.value.isRecordingVideo) {
+      return null;
+    }
+
+    try {
+      await controller.pauseVideoRecording();
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      return null;
+    }
+  }
+
+  Future<void> resumeVideoRecording() async {
+    if (!controller.value.isRecordingVideo) {
+      return null;
+    }
+
+    try {
+      await controller.resumeVideoRecording();
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      return null;
+    }
   }
 
   Future<void> _startVideoPlayer() async {

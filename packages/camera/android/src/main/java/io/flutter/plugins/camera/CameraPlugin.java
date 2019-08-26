@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera;
 
 import android.hardware.camera2.CameraAccessException;
@@ -106,6 +110,16 @@ public class CameraPlugin implements MethodCallHandler {
       case "stopVideoRecording":
         {
           camera.stopVideoRecording(result);
+          break;
+        }
+      case "pauseVideoRecording":
+        {
+          camera.pauseVideoRecording(result);
+          break;
+        }
+      case "resumeVideoRecording":
+        {
+          camera.resumeVideoRecording(result);
           break;
         }
       case "startImageStream":
