@@ -36,6 +36,20 @@ class AndroidIntent {
         _channel = const MethodChannel(kChannelName),
         _platform = platform ?? const LocalPlatform();
 
+  @visibleForTesting
+  AndroidIntent.private({
+    @required this.action,
+    @required Platform platform,
+    @required MethodChannel channel,
+    this.flags,
+    this.category,
+    this.data,
+    this.arguments,
+    this.package,
+    this.componentName,
+  })  : _channel = channel,
+        _platform = platform;
+
   final String action;
   final List<int> flags;
   final String category;
@@ -65,10 +79,11 @@ class AndroidIntent {
 
   /// Launch the intent.
   ///
-  /// This works only on Android platforms. Please guard the call so that your
-  /// iOS app does not crash. Checked mode will throw an assert exception.
+  /// This works only on Android platforms.
   Future<void> launch() async {
-    assert(_platform.isAndroid);
+    if (!_platform.isAndroid) {
+      return;
+    }
     final Map<String, dynamic> args = <String, dynamic>{'action': action};
     if (flags != null) {
       args['flags'] = convertFlags(flags);
