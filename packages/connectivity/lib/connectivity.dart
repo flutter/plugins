@@ -98,7 +98,7 @@ class Connectivity {
   /// Request to authorize the location service. Only on iOS.
   ///
   /// Returns a [LocationAuthorizationStatus] if the location service has already been authorized or user authorized the location on
-  /// This request.
+  /// this request.
   ///
   /// if the location information needs to be accessible all the time, set `requestAlwaysLocationUsage` to true. Note that the status
   /// returned might not be [LocationAuthorizationStatus.authorizedAlways] even if you requested it. The user might have already chosen a location authorization
