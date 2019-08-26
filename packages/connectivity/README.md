@@ -77,7 +77,7 @@ An app linked against iOS 12 or earlier receives pseudo-values such as:
 
 An app linked against iOS 13 or later receives `null`.
 
-The [CNCopyCurrentNetworkInfo] will work for Apps that:
+The `CNCopyCurrentNetworkInfo` will work for Apps that:
 
   * The app uses Core Location, and has the user’s authorization to use location information.
 
