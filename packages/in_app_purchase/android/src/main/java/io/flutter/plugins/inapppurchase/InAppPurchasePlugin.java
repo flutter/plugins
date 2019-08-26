@@ -9,7 +9,6 @@ import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesResult;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -19,7 +18,6 @@ import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
-import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
@@ -37,8 +35,8 @@ import java.util.Map;
 public class InAppPurchasePlugin implements MethodCallHandler {
   private static final String TAG = "InAppPurchasePlugin";
   private @Nullable BillingClient billingClient;
+  private BillingClientFactory factory;
   private final Activity activity;
-  private final Context context;
   private final MethodChannel channel;
 
   @VisibleForTesting
@@ -73,11 +71,14 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     }
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/in_app_purchase");
-    channel.setMethodCallHandler(new InAppPurchasePlugin(registrar.context(), activity, channel));
+    final BillingClientFactory factory = new BillingClientFactory();
+    final InAppPurchasePlugin plugin = new InAppPurchasePlugin(factory, activity, channel);
+    channel.setMethodCallHandler(plugin);
   }
 
-  public InAppPurchasePlugin(Context context, Activity activity, MethodChannel channel) {
-    this.context = context;
+  public InAppPurchasePlugin(
+      BillingClientFactory factory, Activity activity, MethodChannel channel) {
+    this.factory = factory;
     this.activity = activity;
     this.channel = channel;
   }
@@ -116,17 +117,9 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     }
   }
 
-  @VisibleForTesting
-  /*package*/ InAppPurchasePlugin(@Nullable BillingClient billingClient, MethodChannel channel) {
-    this.billingClient = billingClient;
-    this.channel = channel;
-    this.context = null;
-    this.activity = null;
-  }
-
   private void startConnection(final int handle, final Result result) {
     if (billingClient == null) {
-      billingClient = buildBillingClient(context, channel);
+      billingClient = factory.createBillingClient(activity, channel);
     }
 
     billingClient.startConnection(
@@ -273,28 +266,5 @@ public class InAppPurchasePlugin implements MethodCallHandler {
 
     result.error("UNAVAILABLE", "BillingClient is unset. Try reconnecting.", null);
     return true;
-  }
-
-  private static BillingClient buildBillingClient(Context context, MethodChannel channel) {
-    return BillingClient.newBuilder(context)
-        .setListener(new PluginPurchaseListener(channel))
-        .build();
-  }
-
-  @VisibleForTesting
-  /*package*/ static class PluginPurchaseListener implements PurchasesUpdatedListener {
-    private final MethodChannel channel;
-
-    PluginPurchaseListener(MethodChannel channel) {
-      this.channel = channel;
-    }
-
-    @Override
-    public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> purchases) {
-      final Map<String, Object> callbackArgs = new HashMap<>();
-      callbackArgs.put("responseCode", responseCode);
-      callbackArgs.put("purchasesList", fromPurchasesList(purchases));
-      channel.invokeMethod(MethodNames.ON_PURCHASES_UPDATED, callbackArgs);
-    }
   }
 }

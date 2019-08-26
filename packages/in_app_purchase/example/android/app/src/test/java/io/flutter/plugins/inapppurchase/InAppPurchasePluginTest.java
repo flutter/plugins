@@ -47,7 +47,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugins.inapppurchase.InAppPurchasePlugin.PluginPurchaseListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,11 +65,14 @@ public class InAppPurchasePluginTest {
   @Mock PluginRegistry.Registrar registrar;
   @Mock Activity activity;
   @Mock BinaryMessenger messenger;
+  @Mock BillingClientFactory factory;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    plugin = new InAppPurchasePlugin(mockBillingClient, mockMethodChannel);
+    when(factory.createBillingClient(any(), any())).thenReturn(mockBillingClient);
+
+    plugin = new InAppPurchasePlugin(factory, activity, mockMethodChannel);
   }
 
   @Test
@@ -96,6 +98,7 @@ public class InAppPurchasePluginTest {
 
   @Test
   public void isReady_true() {
+    mockStartConnection();
     MethodCall call = new MethodCall(IS_READY, null);
     when(mockBillingClient.isReady()).thenReturn(true);
     plugin.onMethodCall(call, result);
@@ -104,6 +107,7 @@ public class InAppPurchasePluginTest {
 
   @Test
   public void isReady_false() {
+    mockStartConnection();
     MethodCall call = new MethodCall(IS_READY, null);
     when(mockBillingClient.isReady()).thenReturn(false);
     plugin.onMethodCall(call, result);
@@ -124,14 +128,7 @@ public class InAppPurchasePluginTest {
 
   @Test
   public void startConnection() {
-    Map<String, Integer> arguments = new HashMap<>();
-    arguments.put("handle", 1);
-    MethodCall call = new MethodCall(START_CONNECTION, arguments);
-    ArgumentCaptor<BillingClientStateListener> captor =
-        ArgumentCaptor.forClass(BillingClientStateListener.class);
-    doNothing().when(mockBillingClient).startConnection(captor.capture());
-
-    plugin.onMethodCall(call, result);
+    ArgumentCaptor<BillingClientStateListener> captor = mockStartConnection();
     verify(result, never()).success(any());
     captor.getValue().onBillingSetupFinished(100);
 
@@ -441,6 +438,18 @@ public class InAppPurchasePluginTest {
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
     verify(result, times(1)).success(responseCode);
+  }
+
+  private ArgumentCaptor<BillingClientStateListener> mockStartConnection() {
+    Map<String, Integer> arguments = new HashMap<>();
+    arguments.put("handle", 1);
+    MethodCall call = new MethodCall(START_CONNECTION, arguments);
+    ArgumentCaptor<BillingClientStateListener> captor =
+        ArgumentCaptor.forClass(BillingClientStateListener.class);
+    doNothing().when(mockBillingClient).startConnection(captor.capture());
+
+    plugin.onMethodCall(call, result);
+    return captor;
   }
 
   private void establishConnectedBillingClient(
