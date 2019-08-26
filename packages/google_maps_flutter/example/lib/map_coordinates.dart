@@ -34,8 +34,8 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
     southwest: const LatLng(0, 0),
     northeast: const LatLng(0, 0),
   );
-  Point _point = const Point(100, 100);
-  LatLng _location = const LatLng(0.0, 0.0);
+  Point _point = const Point(100,100);
+  LatLng _location = const LatLng(0.0,0.0);
 
   @override
   Widget build(BuildContext context) {
@@ -64,14 +64,10 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
           '\nsouthwest: ${_visibleRegion.southwest}';
       columnChildren.add(Center(child: Text(currentVisibleRegion)));
       columnChildren.add(_getVisibleRegionButton());
-      final String screenLocation =
-          'Screen location: x: ${_point.x}, y: ${_point.y}';
-      columnChildren.add(
-          Center(child: const Text("\nClick on map to select a location\n")));
+      final String screenLocation = 'Screen location: x: ${_point.x}, y: ${_point.y}';
       columnChildren.add(Center(child: Text(screenLocation)));
       columnChildren.add(_toScreenLocationButton(_location));
-      final String location =
-          'location: x: ${_location.latitude}, y: ${_location.longitude}';
+      final String location = 'location: x: ${_location.latitude}, y: ${_location.longitude}';
       columnChildren.add(Center(child: Text(location)));
       columnChildren.add(_fromScreenLocationButton(_point));
     }
@@ -91,7 +87,7 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
     });
   }
 
-  void onTap(LatLng location) async {
+  void onTap( LatLng location ) async {
     final Point point = await mapController.toScreenLocation(location);
 
     setState(() {
@@ -116,7 +112,7 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
     );
   }
 
-  Widget _fromScreenLocationButton(Point point) {
+  Widget _fromScreenLocationButton( Point point ) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: RaisedButton(
@@ -131,7 +127,7 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
     );
   }
 
-  Widget _toScreenLocationButton(LatLng location) {
+  Widget _toScreenLocationButton( LatLng location ) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: RaisedButton(

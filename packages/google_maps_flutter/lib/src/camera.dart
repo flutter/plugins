@@ -51,14 +51,13 @@ class CameraPosition {
   /// will be silently clamped to the supported range.
   final double zoom;
 
-  dynamic _toMap() => <String, dynamic>{
+  dynamic toMap() => <String, dynamic>{
         'bearing': bearing,
         'target': target._toJson(),
         'tilt': tilt,
         'zoom': zoom,
       };
 
-  @visibleForTesting
   static CameraPosition fromMap(dynamic json) {
     if (json == null) {
       return null;
@@ -98,7 +97,7 @@ class CameraUpdate {
   /// Returns a camera update that moves the camera to the specified position.
   static CameraUpdate newCameraPosition(CameraPosition cameraPosition) {
     return CameraUpdate._(
-      <dynamic>['newCameraPosition', cameraPosition._toMap()],
+      <dynamic>['newCameraPosition', cameraPosition.toMap()],
     );
   }
 
