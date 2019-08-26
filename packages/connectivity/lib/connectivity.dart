@@ -101,7 +101,7 @@ class Connectivity {
   /// This request.
   ///
   /// if the location information needs to be accessible all the time, set `requestAlwaysLocationUsage` to true. Note that the status
-  /// returned might not be [LocationAuthorizationStatus.authorizedAlways] even you requested it. User might have already chosen a location authorization
+  /// returned might not be [LocationAuthorizationStatus.authorizedAlways] even if you requested it. The user might have already chosen a location authorization
   /// to this app.
   ///
   /// It will show a platform standard window of requesting a location service.
