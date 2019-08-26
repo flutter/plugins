@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+## 0.6.1+4
+
+* Android: Fix a regression where the `retrieveLostImage` does not work anymore.
+* Set up Android unit test to test `ImagePickerCache` and added image quality caching tests.
+
+>>>>>>> e168ef575a5b5add8b3619b8b6c1fea09b81d19b
 ## 0.6.1+3
 
 * Bugfix iOS: Fix orientation of the picked image after scaling.

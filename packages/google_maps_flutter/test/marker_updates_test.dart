@@ -34,6 +34,8 @@ Widget _mapWithMarkers(Set<Marker> markers) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final FakePlatformViewsController fakePlatformViewsController =
       FakePlatformViewsController();
 

@@ -34,6 +34,8 @@ Widget _mapWithCircles(Set<Circle> circles) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final FakePlatformViewsController fakePlatformViewsController =
       FakePlatformViewsController();
 

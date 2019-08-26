@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+## 0.5.20+6
+
+* Adds support for toggling the traffic layer
+
+>>>>>>> e168ef575a5b5add8b3619b8b6c1fea09b81d19b
 ## 0.5.20+5
 
 * Allow (de-)serialization of CameraPosition
