@@ -127,7 +127,7 @@ public class AndroidIntentPlugin implements MethodCallHandler {
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
     if (call.argument("flag") != null) {
-      intent.addFlags((Integer) call.argument("flags")));
+      intent.addFlags((Integer) call.argument("flags"));
     }
     if (call.argument("category") != null) {
       intent.addCategory((String) call.argument("category"));
