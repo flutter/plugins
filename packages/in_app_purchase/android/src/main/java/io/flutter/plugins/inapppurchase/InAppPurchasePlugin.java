@@ -11,6 +11,7 @@ import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
@@ -67,10 +68,13 @@ public class InAppPurchasePlugin implements MethodCallHandler {
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
+    final Activity activity = registrar.activity();
+    if (activity == null) {
+      return;
+    }
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/in_app_purchase");
-    channel.setMethodCallHandler(
-        new InAppPurchasePlugin(registrar.context(), registrar.activity(), channel));
+    channel.setMethodCallHandler(new InAppPurchasePlugin(registrar.context(), activity, channel));
   }
 
   public InAppPurchasePlugin(Context context, Activity activity, MethodChannel channel) {
@@ -80,33 +84,37 @@ public class InAppPurchasePlugin implements MethodCallHandler {
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(MethodCall call, @NonNull Result result) {
+    final String skuType = call.argument("skuType");
     switch (call.method) {
       case MethodNames.IS_READY:
         isReady(result);
         break;
       case MethodNames.START_CONNECTION:
-        startConnection((int) call.argument("handle"), result);
+        final Integer handle = call.argument("handle");
+        startConnection(handle, result);
         break;
       case MethodNames.END_CONNECTION:
         endConnection(result);
         break;
       case MethodNames.QUERY_SKU_DETAILS:
-        querySkuDetailsAsync(
-            (String) call.argument("skuType"), (List<String>) call.argument("skusList"), result);
+        final List<String> skusList = call.argument("skusList");
+        querySkuDetailsAsync(skuType, skusList, result);
         break;
       case MethodNames.LAUNCH_BILLING_FLOW:
-        launchBillingFlow(
-            (String) call.argument("sku"), (String) call.argument("accountId"), result);
+        final String sku = call.argument("sku");
+        final String accountId = call.argument("accountId");
+        launchBillingFlow(sku, accountId, result);
         break;
       case MethodNames.QUERY_PURCHASES:
-        queryPurchases((String) call.argument("skuType"), result);
+        queryPurchases(skuType, result);
         break;
       case MethodNames.QUERY_PURCHASE_HISTORY_ASYNC:
-        queryPurchaseHistoryAsync((String) call.argument("skuType"), result);
+        queryPurchaseHistoryAsync(skuType, result);
         break;
       case MethodNames.CONSUME_PURCHASE_ASYNC:
-        consumeAsync((String) call.argument("purchaseToken"), result);
+        final String purchaseToken = call.argument("purchaseToken");
+        consumeAsync(purchaseToken, result);
         break;
       default:
         result.notImplemented();
@@ -121,7 +129,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     this.activity = null;
   }
 
-  private void startConnection(final int handle, final Result result) {
+  private void startConnection(final Integer handle, final Result result) {
     if (billingClient == null) {
       billingClient = buildBillingClient(context, channel);
     }

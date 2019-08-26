@@ -1,3 +1,7 @@
+## 0.2.1+1
+
+* Android: Do not register if Activity is null.
+
 ## 0.2.1
 
 * iOS: Add currencyCode to priceLocale on productDetails.
