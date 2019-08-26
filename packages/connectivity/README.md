@@ -62,7 +62,7 @@ var wifiName = await (Connectivity().getWifiName());wifi network
 
 ### iOS 12
 
-To use `.getWifiBSSID()` and `.getWifiName()` on iOS >= 12, the `Access WiFi information capability` in XCode must be enabled. Otherwise, both method will return null.
+To use `.getWifiBSSID()` and `.getWifiName()` on iOS >= 12, the `Access WiFi information capability` in XCode must be enabled. Otherwise, both methods will return null.
 
 ### iOS 13
 
