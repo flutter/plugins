@@ -1,3 +1,7 @@
+## 0.2.1+2
+
+* Android : Improved testability.
+
 ## 0.2.1+1
 
 * Android: Do not register if Activity is null.
