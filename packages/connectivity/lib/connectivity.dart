@@ -109,7 +109,7 @@ class Connectivity {
   /// If the user declined the location service, it will never show the window to request the authorization again.
   /// The user has to go to the settings app in the phone to enable authorization.
   ///
-  /// This method is a helper to get the location authorization that is necessary for certain functionalities in this plugin.
+  /// This method is a helper to get the location authorization that is necessary for certain functionality of this plugin.
   /// It can be replaced with other permission handling code/plugin if preferred.
   /// To request location authorization, make sure to add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
   /// * `NSLocationAlwaysAndWhenInUseUsageDescription` - describe why the app needs access to the user’s location information
