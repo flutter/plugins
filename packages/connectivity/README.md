@@ -75,7 +75,7 @@ An App linked against iOS 12 or earlier receives pseudo-values such as:
 
  * BSSID: "00:00:00:00:00:00"
 
-An App linked against iOS 13 or later receives null.
+An app linked against iOS 13 or later receives `null`.
 
 The [CNCopyCurrentNetworkInfo] will work for Apps that:
 
