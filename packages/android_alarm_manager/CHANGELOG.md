@@ -1,3 +1,8 @@
+## 0.4.4+1
+
+* Switch from using `api` to `implementation` for dependency on `androidx`,
+  preventing version mismatch build failures in some Android configurations.
+
 ## 0.4.4
 
 * Add `id` to `callback` if it is of type `Function(int)`
