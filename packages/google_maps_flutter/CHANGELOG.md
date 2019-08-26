@@ -1,7 +1,3 @@
-## 0.5.20+7
-
-* Adds support for map controller's toScreenLocation and fromScreenLocation 
-
 ## 0.5.20+6
 
 * Adds support for toggling the traffic layer
