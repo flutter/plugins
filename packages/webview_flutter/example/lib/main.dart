@@ -282,13 +282,15 @@ class SampleMenu extends StatelessWidget {
   }
 
   void _onShowConfirm(WebViewController controller) async {
-    final String res = await controller.evaluateJavascript('confirm("Hello, Are you sure ?");');
+    final String res = await controller
+        .evaluateJavascript('confirm("Hello, Are you sure ?");');
     print(res);
     controller.evaluateJavascript('alert("You chose $res");');
   }
 
   void _onShowPrompt(WebViewController controller) async {
-    final String res = await controller.evaluateJavascript('prompt("Hello, input your name ?","Your name");');
+    final String res = await controller
+        .evaluateJavascript('prompt("Hello, input your name ?","Your name");');
     print(res);
     controller.evaluateJavascript('alert("Hello: $res");');
   }
