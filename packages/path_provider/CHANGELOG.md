@@ -1,6 +1,6 @@
 ## 1.3.0
 
-* On iOS, Added `getLibraryDirectory`.
+* Added iOS-only support for `getLibraryDirectory`.
 * Update integration tests and example test.
 * Update example app UI to use a `ListView` show the list of content.
 * Update .gitignore to include Xcode build output folder `**/DerivedData/`
