@@ -107,7 +107,7 @@ class Connectivity {
   /// It will show a platform standard window of requesting a location service.
   ///
   /// If the user declined the location service, it will never show the window to request the authorization again.
-  /// The user has to go to the setting app in the phone to enable authorization.
+  /// The user has to go to the settings app in the phone to enable authorization.
   ///
   /// This method is a helper to get the location authorization that is necessary for certain functionalities in this plugin.
   /// It can be replaced with other permission handling code/plugin if preferred.
