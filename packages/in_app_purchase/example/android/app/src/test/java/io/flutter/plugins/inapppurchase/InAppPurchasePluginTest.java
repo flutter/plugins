@@ -28,6 +28,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import androidx.annotation.Nullable;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
@@ -41,9 +42,11 @@ import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugins.inapppurchase.InAppPurchasePlugin.PluginPurchaseListener;
 import java.util.HashMap;
 import java.util.List;
@@ -60,11 +63,28 @@ public class InAppPurchasePluginTest {
   @Mock BillingClient mockBillingClient;
   @Mock MethodChannel mockMethodChannel;
   @Spy Result result;
+  @Mock PluginRegistry.Registrar registrar;
+  @Mock Activity activity;
+  @Mock BinaryMessenger messenger;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     plugin = new InAppPurchasePlugin(mockBillingClient, mockMethodChannel);
+  }
+
+  @Test
+  public void doNotRegisterWithoutActivityAvailable() {
+    InAppPurchasePlugin.registerWith(registrar);
+    verify(registrar, never()).messenger();
+  }
+
+  @Test
+  public void registerWithoutActivityAvailable() {
+    when(registrar.messenger()).thenReturn(messenger);
+    when(registrar.activity()).thenReturn(activity);
+    InAppPurchasePlugin.registerWith(registrar);
+    verify(registrar).messenger();
   }
 
   @Test
