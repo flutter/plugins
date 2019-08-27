@@ -22,9 +22,10 @@ void main() {
 }
 ```
 
-Create a file at
-example/android/app/src/androidTest/java/com/example/myapp/MainActivityTest.java
-with the following contents, replacing com, example, and myapp with your values:
+Create an instrumentation file in your application's
+android/app/src/androidTest/java/com/example/myapp/ directory
+(replacing com, example, and myapp with your values). You can
+call this file MainActivityTest.java or another name of your choice.
 
 ```
 package com.example.myapp;
