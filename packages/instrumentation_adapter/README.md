@@ -22,15 +22,16 @@ void main() {
 }
 ```
 
-Create an instrumentation file in your application's
+Create an instrumentation test file in your application's
 android/app/src/androidTest/java/com/example/myapp/ directory
-(replacing com, example, and myapp with your values). You can
-call this file MainActivityTest.java or another name of your choice.
+(replacing com, example, and myapp with values from your app's
+package name). You can name this test file MainActivityTest.java
+or another name of your choice.
 
 ```
 package com.example.myapp;
 
- import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.ActivityTestRule;
 import dev.flutter.plugins.instrumentationadapter.FlutterRunner;
 import dev.flutter.plugins.instrumentationadapter.FlutterTest;
 import org.junit.runner.RunWith;
