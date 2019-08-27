@@ -73,7 +73,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
   }
 
   public InAppPurchasePlugin(Registrar registrar, MethodChannel channel) {
-    this.applicationContext = registrar.context().getApplicationContext();
+    this.applicationContext = registrar.context();
     this.registrar = registrar;
     this.channel = channel;
   }
@@ -113,11 +113,12 @@ public class InAppPurchasePlugin implements MethodCallHandler {
   }
 
   @VisibleForTesting
-  /*package*/ InAppPurchasePlugin(@Nullable BillingClient billingClient, MethodChannel channel) {
+  /*package*/ InAppPurchasePlugin(
+      Registrar registrar, @Nullable BillingClient billingClient, MethodChannel channel) {
     this.billingClient = billingClient;
     this.channel = channel;
-    this.applicationContext = null;
-    this.registrar = null;
+    this.applicationContext = registrar.context();
+    this.registrar = registrar;
   }
 
   private void startConnection(final int handle, final Result result) {
@@ -204,9 +205,11 @@ public class InAppPurchasePlugin implements MethodCallHandler {
 
     if (activity == null) {
       result.error(
-              "UNAVAILABLE",
-              "Details for sku " + sku + " are not available. This method requires to be run with the app in foreground.",
-              null);
+          "ACTIVITY_UNAVAILABLE",
+          "Details for sku "
+              + sku
+              + " are not available. This method requires to be run with the app in foreground.",
+          null);
       return;
     }
 
