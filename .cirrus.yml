@@ -8,8 +8,7 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
-  activate_script:
-    - pub global activate flutter_plugin_tools
+  activate_script: pub global activate flutter_plugin_tools
   matrix:
     - name: publishable
       script: ./script/check_publish.sh
@@ -31,10 +30,12 @@ task:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-        CLOUDSDK_CORE_DISABLE_PROMPTS: 1
-        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[ae17cec7f4d708b1e5c2e841c3643006c2ef46f3745e28fd965bc26b224158f408a0c2da40a1beb0addb163fa4c11389]
+      create_device_script:
+        echo no | avdmanager -v create avd -n test -k "system-images;android-21;default;armeabi-v7a"
+      start_emulator_background_script:
+      - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window
+      wait_for_emulator_script: adb wait-for-device
       script:
-        - echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
         # See: https://github.com/flutter/flutter/issues/24935
@@ -47,6 +48,9 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=""
         - ./script/incremental_build.sh build-examples --apk
         - ./script/incremental_build.sh java-test  # must come after apk build
+        # TODO(jackson): Re-enable once Android emulators support Firebase
+        # https://github.com/flutter/flutter/issues/29571
+        # - ./script/incremental_build.sh drive-examples
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
 
