@@ -22,6 +22,30 @@ void main() {
 }
 ```
 
+Create an instrumentation test file in your application's
+android/app/src/androidTest/java/com/example/myapp/ directory
+(replacing com, example, and myapp with values from your app's
+package name). You can name this test file MainActivityTest.java
+or another name of your choice.
+
+```
+package com.example.myapp;
+
+import androidx.test.rule.ActivityTestRule;
+import dev.flutter.plugins.instrumentationadapter.FlutterRunner;
+import dev.flutter.plugins.instrumentationadapter.FlutterTest;
+import java.lang.Override;
+import org.junit.runner.RunWith;
+
+@RunWith(FlutterRunner.class)
+public class MainActivityTest extends FlutterTest {
+  @Override
+  public void launchActivity() {
+    ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);
+    rule.launchActivity(null);
+  }
+}```
+
 Use gradle commands to build an instrumentation test for Android.
 
 ```
