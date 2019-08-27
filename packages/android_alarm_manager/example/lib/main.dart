@@ -23,9 +23,6 @@ Future<void> main() async {
 
   printMessage("main run");
   runApp(MaterialApp(home: App()));
-
-//  await AndroidAlarmManager.oneShot(
-//      const Duration(seconds: 5), oneShotID, printOneShot);
 }
 
 class App extends StatefulWidget {
@@ -45,13 +42,13 @@ class AppState extends State<App> {
     // TODO: implement initState
     super.initState();
 
-    AndroidAlarmManager.isAlarmActive(periodicID).then((value) {
+    AndroidAlarmManager.isAlarmActive(periodicID).then((bool value) {
       setState(() {
         isPeriodicActive = value;
       });
     });
 
-    AndroidAlarmManager.isAlarmActive(oneShotID).then((value) {
+    AndroidAlarmManager.isAlarmActive(oneShotID).then((bool value) {
       setState(() {
         isOneShotActive = value;
       });
@@ -66,7 +63,7 @@ class AppState extends State<App> {
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 Text("Periodic Alarm Status: $isPeriodicActive"),
                 Text("OneShot Alarm Status: $isOneShotActive"),
                 RaisedButton(
@@ -74,7 +71,8 @@ class AppState extends State<App> {
                     await AndroidAlarmManager.periodic(
                         const Duration(seconds: 5), periodicID, printPeriodic,
                         wakeup: true);
-                    AndroidAlarmManager.isAlarmActive(periodicID).then((value) {
+                    AndroidAlarmManager.isAlarmActive(periodicID)
+                        .then((bool value) {
                       setState(() {
                         isPeriodicActive = value;
                       });
@@ -87,7 +85,8 @@ class AppState extends State<App> {
                     await AndroidAlarmManager.oneShot(
                         const Duration(seconds: 5), oneShotID, printOneShot,
                         wakeup: true);
-                    AndroidAlarmManager.isAlarmActive(oneShotID).then((value) {
+                    AndroidAlarmManager.isAlarmActive(oneShotID)
+                        .then((bool value) {
                       setState(() {
                         isOneShotActive = value;
                       });
