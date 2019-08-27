@@ -16,7 +16,6 @@
 
 @interface FLTConnectivityPlugin () <FlutterStreamHandler, CLLocationManagerDelegate>
 
-@property(copy, nonatomic) FlutterResult result;
 @property(strong, nonatomic) FLTConnectivityLocationHandler* locationHandler;
 
 @end
