@@ -1,6 +1,6 @@
 ## 0.2.1+1
 
-* Android: Require Activity only to use launchBillingFlow method.
+* Android: Require a non-null Activity to use the `launchBillingFlow` method.
 
 ## 0.2.1
 
