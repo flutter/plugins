@@ -4,16 +4,16 @@ version: 0.0.1
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/instrumentation_adapter
 
-  environment:
-    sdk: ">=2.1.0 <3.0.0"
+environment:
+  sdk: ">=2.1.0 <3.0.0"
 
-  dependencies:
-    flutter:
-      sdk: flutter
-    flutter_test:
-      sdk: flutter
-
+dependencies:
   flutter:
-    plugin:
-      androidPackage: io.flutter.plugins.instrumentationtest
-      pluginClass: InstrumentationTestPlugin
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.instrumentationtest
+    pluginClass: InstrumentationTestPlugin
