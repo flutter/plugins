@@ -246,6 +246,8 @@ Widget buildCard(String title) {
           leading: const Icon(Icons.airline_seat_flat_angled),
           title: Text(title),
         ),
+        // TODO(jackson): Remove when deprecation is on stable branch
+        // ignore: deprecated_member_use
         ButtonTheme.bar(
           child: ButtonBar(
             children: <Widget>[

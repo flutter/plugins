@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   const MethodChannel channel =
       MethodChannel('plugins.flutter.io/url_launcher');
   final List<MethodCall> log = <MethodCall>[];
