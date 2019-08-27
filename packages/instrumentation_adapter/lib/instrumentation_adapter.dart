@@ -1,12 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
 class InstrumentationAdapterFlutterBinding
     extends LiveTestWidgetsFlutterBinding {
-  InstrumentationAdapter._() {
+  InstrumentationAdapterFlutterBinding() {
     tearDownAll(() async {
       await _channel.invokeMethod<void>('allTestsFinished');
     });
@@ -14,9 +15,9 @@ class InstrumentationAdapterFlutterBinding
 
   static WidgetsBinding ensureInitialized() {
     if (WidgetsBinding.instance == null) {
-      InstrumentationAdapter();
+      InstrumentationAdapterFlutterBinding();
     }
-    assert(WidgetsBinding.instance is InstrumentationAdapter);
+    assert(WidgetsBinding.instance is InstrumentationAdapterFlutterBinding);
     return WidgetsBinding.instance;
   }
 
