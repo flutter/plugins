@@ -2,9 +2,9 @@
 
 @implementation InstrumentationAdapterPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"instrumentation_adapter"
-            binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel* channel =
+      [FlutterMethodChannel methodChannelWithName:@"instrumentation_adapter"
+                                  binaryMessenger:[registrar messenger]];
   InstrumentationAdapterPlugin* instance = [[InstrumentationAdapterPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }

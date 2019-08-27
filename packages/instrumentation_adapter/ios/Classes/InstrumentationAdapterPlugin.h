@@ -1,4 +1,4 @@
 #import <Flutter/Flutter.h>
 
-@interface InstrumentationAdapterPlugin : NSObject<FlutterPlugin>
+@interface InstrumentationAdapterPlugin : NSObject <FlutterPlugin>
 @end

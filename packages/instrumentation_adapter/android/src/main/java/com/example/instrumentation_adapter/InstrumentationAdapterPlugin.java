@@ -10,7 +10,8 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class InstrumentationAdapterPlugin implements MethodCallHandler {
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "instrumentation_adapter");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "instrumentation_adapter");
     channel.setMethodCallHandler(new InstrumentationAdapterPlugin());
   }
 
