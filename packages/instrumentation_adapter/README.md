@@ -34,10 +34,12 @@ package com.example.myapp;
 import androidx.test.rule.ActivityTestRule;
 import dev.flutter.plugins.instrumentationadapter.FlutterRunner;
 import dev.flutter.plugins.instrumentationadapter.FlutterTest;
+import java.lang.Override;
 import org.junit.runner.RunWith;
 
 @RunWith(FlutterRunner.class)
 public class MainActivityTest extends FlutterTest {
+  @Override
   public void launchActivity() {
     ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);
     rule.launchActivity(null);
