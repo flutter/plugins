@@ -80,7 +80,7 @@ class AppState extends State<App> {
                       });
                     });
                   },
-                  child: Text("Start Periodic Alarm"),
+                  child: const Text("Start Periodic Alarm"),
                 ),
                 RaisedButton(
                   onPressed: () async {
@@ -93,7 +93,7 @@ class AppState extends State<App> {
                       });
                     });
                   },
-                  child: Text("Start One Shot Alarm"),
+                  child: const Text("Start One Shot Alarm"),
                 )
               ]),
         ),
