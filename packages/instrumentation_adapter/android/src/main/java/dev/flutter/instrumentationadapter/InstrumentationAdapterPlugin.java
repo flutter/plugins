@@ -12,7 +12,7 @@ import java.util.Map;
 /** InstrumentationAdapterPlugin */
 public class InstrumentationAdapterPlugin implements MethodCallHandler {
 
-  static CompletableFuture<Map<String, String>> testResults = new CompletableFuture<>();
+  public static CompletableFuture<Map<String, String>> testResults = new CompletableFuture<>();
 
   private static final String CHANNEL = "dev.flutter/InstrumentationAdapterFlutterBinding";
 
