@@ -8,8 +8,11 @@ import 'package:flutter/widgets.dart';
 class InstrumentationAdapterFlutterBinding
     extends LiveTestWidgetsFlutterBinding {
   InstrumentationAdapterFlutterBinding() {
+    // TODO(jackson): Report test results as they arrive
     tearDownAll(() async {
-      await _channel.invokeMethod<void>('allTestsFinished');
+      await _channel.invokeMethod<void>(
+        'allTestsFinished', { 'results': _results }
+      );
     });
   }
 

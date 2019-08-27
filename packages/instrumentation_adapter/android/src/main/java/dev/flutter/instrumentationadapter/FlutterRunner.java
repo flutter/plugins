@@ -17,14 +17,8 @@ import org.junit.runner.notification.RunNotifier;
 
 public class FlutterRunner extends Runner {
 
-  private static final String CHANNEL = "dev.flutter/InstrumentationAdapterFlutterBinding";
-  static CompletableFuture<Map<String, String>> testResults = new CompletableFuture<>();
-
-  final Class activityClass;
-
   public FlutterRunner(Class<FlutterActivity> activityClass) {
     super();
-    this.activityClass = activityClass;
     Class mainClass = activityClass.getSuperclass();
     ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(mainClass);
     FlutterActivity activity = rule.launchActivity(null);
@@ -32,22 +26,20 @@ public class FlutterRunner extends Runner {
 
   @Override
   public Description getDescription() {
-    return Description.createTestDescription(activityClass, "Flutter Tests");
+    return Description.createTestDescription(FlutterRunner.class, "Flutter Tests");
   }
 
   @Override
   public void run(RunNotifier notifier) {
     Map<String, String> results = null;
     try {
-      results = testResults.get();
-    } catch (ExecutionException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+      results = InstrumentationAdapterPlugin.testResults.get();
+    } catch (ExecutionException | InterruptedException e) {
+      throw new IllegalThreadStateException("Unable to get test results");
     }
 
     for (String name : results.keySet()) {
-      Description d = Description.createTestDescription(activityClass, name);
+      Description d = Description.createTestDescription(FlutterRunner.class, name);
       notifier.fireTestStarted(d);
       String outcome = results.get(name);
       if (outcome.equals("failed")) {

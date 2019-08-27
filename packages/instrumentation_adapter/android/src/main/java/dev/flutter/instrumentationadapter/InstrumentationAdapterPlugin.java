@@ -12,6 +12,8 @@ import java.util.Map;
 /** InstrumentationAdapterPlugin */
 public class InstrumentationAdapterPlugin implements MethodCallHandler {
 
+  static CompletableFuture<Map<String, String>> testResults = new CompletableFuture<>();
+
   private static final String CHANNEL = "dev.flutter/InstrumentationAdapterFlutterBinding";
 
   /** Plugin registration. */
@@ -24,7 +26,7 @@ public class InstrumentationAdapterPlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     if (call.method.equals("allTestsFinished")) {
       Map<String, String> results = call.argument("results");
-      FlutterRunner.testResults.complete(results);
+      testResults.complete(results);
       result.success(null);
     } else {
       result.notImplemented();
