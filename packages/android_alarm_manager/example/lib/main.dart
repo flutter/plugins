@@ -5,27 +5,99 @@
 import 'dart:async';
 
 import 'package:android_alarm_manager/android_alarm_manager.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 void printMessage(String msg) => print('[${DateTime.now()}] $msg');
 
 void printPeriodic() => printMessage("Periodic!");
+
 void printOneShot() => printMessage("One shot!");
 
-Future<void> main() async {
-  final int periodicID = 0;
-  final int oneShotID = 1;
+final int periodicID = 0;
+final int oneShotID = 1;
 
+Future<void> main() async {
   // Start the AlarmManager service.
   await AndroidAlarmManager.initialize();
 
   printMessage("main run");
-  runApp(const Center(
-      child:
-          Text('See device log for output', textDirection: TextDirection.ltr)));
-  await AndroidAlarmManager.periodic(
-      const Duration(seconds: 5), periodicID, printPeriodic,
-      wakeup: true);
-  await AndroidAlarmManager.oneShot(
-      const Duration(seconds: 5), oneShotID, printOneShot);
+  runApp(MaterialApp(home: App()));
+
+//  await AndroidAlarmManager.oneShot(
+//      const Duration(seconds: 5), oneShotID, printOneShot);
+}
+
+class App extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return AppState();
+  }
+}
+
+class AppState extends State<App> {
+  bool isPeriodicActive = false;
+  bool isOneShotActive = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    AndroidAlarmManager.isAlarmActive(periodicID).then((value) {
+      setState(() {
+        isPeriodicActive = value;
+      });
+    });
+
+    AndroidAlarmManager.isAlarmActive(oneShotID).then((value) {
+      setState(() {
+        isOneShotActive = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Periodic Alarm Status: $isPeriodicActive"),
+                Text("OneShot Alarm Status: $isOneShotActive"),
+                RaisedButton(
+                  onPressed: () async {
+                    await AndroidAlarmManager.periodic(
+                        const Duration(seconds: 5), periodicID, printPeriodic,
+                        wakeup: true);
+                    AndroidAlarmManager.isAlarmActive(periodicID).then((value) {
+                      setState(() {
+                        isPeriodicActive = value;
+                      });
+                    });
+                  },
+                  child: Text("Start Periodic Alarm"),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    await AndroidAlarmManager.oneShot(
+                        const Duration(seconds: 5), oneShotID, printOneShot,
+                        wakeup: true);
+                    AndroidAlarmManager.isAlarmActive(oneShotID).then((value) {
+                      setState(() {
+                        isOneShotActive = value;
+                      });
+                    });
+                  },
+                  child: Text("Start One Shot Alarm"),
+                )
+              ]),
+        ),
+      ),
+    );
+  }
 }
