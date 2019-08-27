@@ -208,7 +208,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
           "ACTIVITY_UNAVAILABLE",
           "Details for sku "
               + sku
-              + " are not available. This method requires to be run with the app in foreground.",
+              + " are not available. This method must be run with the app in foreground.",
           null);
       return;
     }
