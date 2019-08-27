@@ -34,6 +34,8 @@ Widget _mapWithPolylines(Set<Polyline> polylines) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final FakePlatformViewsController fakePlatformViewsController =
       FakePlatformViewsController();
 

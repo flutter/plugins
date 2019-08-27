@@ -1,11 +1,18 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
 import 'package:sensors/sensors.dart';
 import 'package:test/test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   test('$accelerometerEvents are streamed', () async {
     const String channelName = 'plugins.flutter.io/sensors/accelerometer';
     const List<double> sensorData = <double>[1.0, 2.0, 3.0];

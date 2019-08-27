@@ -1,3 +1,19 @@
+## 0.5.20+6
+
+* Adds support for toggling the traffic layer
+
+## 0.5.20+5
+
+* Allow (de-)serialization of CameraPosition
+
+## 0.5.20+4
+
+* Marker drag event
+
+## 0.5.20+3
+
+* Update Android play-services-maps to 17.0.0
+
 ## 0.5.20+2
 
 * Android: Fix polyline width in building phase.
