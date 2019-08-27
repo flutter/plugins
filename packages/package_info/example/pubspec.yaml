@@ -10,8 +10,6 @@ dependencies:
 dev_dependencies:
   flutter_driver:
     sdk: flutter
-  instrumentation_adapter:
-    path: ../../instrumentation_adapter # TODO(jackson): Point to published version when available
   test: any
 
 flutter:
