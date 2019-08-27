@@ -92,15 +92,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
         try {
           if (Platform.isIOS) {
-            LocationAuthorizationStatus status = await _connectivity.requestLocationServiceAuthorizationIfUndetermined();
-            if (status == LocationAuthorizationStatus.authorizedAlways || status == LocationAuthorizationStatus.authorizedWhenInUse) {
-              wifiBSSID = await _connectivity.getWifiName();
+            LocationAuthorizationStatus status =
+                await _connectivity.getLocationServiceAuthorization();
+            if (status == LocationAuthorizationStatus.notDetermined) {
+              status =
+                  await _connectivity.requestLocationServiceAuthorization();
+            }
+            if (status == LocationAuthorizationStatus.authorizedAlways ||
+                status == LocationAuthorizationStatus.authorizedWhenInUse) {
+              wifiName = await _connectivity.getWifiName();
             } else {
-              print('location service is not authorized, the data might not be correct');
-              wifiBSSID = await _connectivity.getWifiName();
+              print(
+                  'location service is not authorized, wifiName might not be correct');
+              wifiName = await _connectivity.getWifiName();
             }
           } else {
-            wifiBSSID = await _connectivity.getWifiName();
+            wifiName = await _connectivity.getWifiName();
           }
         } on PlatformException catch (e) {
           print(e.toString());
@@ -109,11 +116,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
         try {
           if (Platform.isIOS) {
-            LocationAuthorizationStatus status = await _connectivity.requestLocationServiceAuthorizationIfUndetermined();
-            if (status == LocationAuthorizationStatus.authorizedAlways || status == LocationAuthorizationStatus.authorizedWhenInUse) {
+            LocationAuthorizationStatus status =
+                await _connectivity.getLocationServiceAuthorization();
+            if (status == LocationAuthorizationStatus.notDetermined) {
+              status =
+                  await _connectivity.requestLocationServiceAuthorization();
+            }
+            if (status == LocationAuthorizationStatus.authorizedAlways ||
+                status == LocationAuthorizationStatus.authorizedWhenInUse) {
               wifiBSSID = await _connectivity.getWifiBSSID();
             } else {
-              print('location service is not authorized, the data might not be correct');
+              print(
+                  'location service is not authorized, WIFIBSSID might not be correct');
               wifiBSSID = await _connectivity.getWifiBSSID();
             }
           } else {

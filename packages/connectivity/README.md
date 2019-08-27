@@ -88,7 +88,7 @@ The `CNCopyCurrentNetworkInfo` will work for Apps that:
 If your app falls into the last two categories, it will work as it is. If your app doesn't fall into the last two categories,
 and you still need to access the wifi information, you should request user's authorization to use location information.
 
-There is a helper method provided in this plugin to request the location authorization: `requestLocationServiceAuthorizationIfUndetermined`.
+There is a helper method provided in this plugin to request the location authorization: `requestLocationServiceAuthorization`.
 To request location authorization, make sure to add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
 
 * `NSLocationAlwaysAndWhenInUseUsageDescription` - describe why the app needs access to the user’s location information all the time (foreground and background). _Privacy - Location Always and When In Use Usage Description_ in the visual editor.

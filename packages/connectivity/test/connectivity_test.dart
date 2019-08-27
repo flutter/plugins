@@ -19,7 +19,9 @@ void main() {
             return 'c0:ff:33:c0:d3:55';
           case 'wifiIPAddress':
             return '127.0.0.1';
-          case 'requestLocationServiceAuthorizationIfUndetermined':
+          case 'requestLocationServiceAuthorization':
+            return 'authorizedAlways';
+          case 'getLocationServiceAuthorization':
             return 'authorizedAlways';
           default:
             return null;
@@ -94,14 +96,30 @@ void main() {
       );
     });
 
-    test('requestLocationServiceAuthorizationIfUndetermined', () async {
-      final LocationAuthorizationStatus result = await Connectivity().requestLocationServiceAuthorizationIfUndetermined();
+    test('requestLocationServiceAuthorization', () async {
+      final LocationAuthorizationStatus result =
+          await Connectivity().requestLocationServiceAuthorization();
       expect(result, LocationAuthorizationStatus.authorizedAlways);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'requestLocationServiceAuthorizationIfUndetermined',
+            'requestLocationServiceAuthorization',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
+    test('getLocationServiceAuthorization', () async {
+      final LocationAuthorizationStatus result =
+          await Connectivity().getLocationServiceAuthorization();
+      expect(result, LocationAuthorizationStatus.authorizedAlways);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'getLocationServiceAuthorization',
             arguments: null,
           ),
         ],

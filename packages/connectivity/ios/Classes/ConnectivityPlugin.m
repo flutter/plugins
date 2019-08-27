@@ -6,9 +6,9 @@
 
 #import "Reachability/Reachability.h"
 
-#import "SystemConfiguration/CaptiveNetwork.h"
 #import <CoreLocation/CoreLocation.h>
-
+#import "FLTConnectivityLocationHandler.h"
+#import "SystemConfiguration/CaptiveNetwork.h"
 
 #include <ifaddrs.h>
 
@@ -16,8 +16,8 @@
 
 @interface FLTConnectivityPlugin () <FlutterStreamHandler, CLLocationManagerDelegate>
 
-@property (strong, nonatomic) CLLocationManager* locationManager;
-@property (copy, nonatomic) FlutterResult result;
+@property(copy, nonatomic) FlutterResult result;
+@property(strong, nonatomic) FLTConnectivityLocationHandler* locationHandler;
 
 @end
 
@@ -103,41 +103,6 @@
   }
 }
 
-- (void)requestLocationServiceAuthorizationIfUndetermined:(FlutterResult)result always:(NSNumber *)always {
-  CLAuthorizationStatus status = CLLocationManager.authorizationStatus;
-  switch (status) {
-    case kCLAuthorizationStatusNotDetermined: {
-      self.result = result;
-      if (always.boolValue) {
-        [self.locationManager requestAlwaysAuthorization];
-      } else {
-        [self.locationManager requestWhenInUseAuthorization];
-      }
-      return;
-    }
-    case kCLAuthorizationStatusRestricted: {
-      result(@"restricted");
-      break;
-    }
-    case kCLAuthorizationStatusDenied: {
-      result(@"denied");
-      break;
-    }
-    case kCLAuthorizationStatusAuthorizedAlways: {
-      result(@"authorizedAlways");
-      break;
-    }
-    case kCLAuthorizationStatusAuthorizedWhenInUse: {
-      result(@"authorizedWhenInUse");
-      break;
-    }
-    default: {
-      result(@"unknown");
-      break;
-    }
-  }
-}
-
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"check"]) {
     // This is supposed to be quick. Another way of doing this would be to
@@ -152,9 +117,18 @@
     result([self getBSSID]);
   } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
     result([self getWifiIP]);
-  } else if ([call.method isEqualToString:@"requestLocationServiceAuthorizationIfUndetermined"]) {
-    NSArray *arguments = call.arguments;
-    [self requestLocationServiceAuthorizationIfUndetermined:result always:arguments.firstObject];
+  } else if ([call.method isEqualToString:@"getLocationServiceAuthorization"]) {
+    result([self convertCLAuthorizationStatusToString:[FLTConnectivityLocationHandler
+                                                          locationAuthorizationStatus]]);
+  } else if ([call.method isEqualToString:@"requestLocationServiceAuthorization"]) {
+    NSArray* arguments = call.arguments;
+    BOOL always = [arguments.firstObject boolValue];
+    __weak typeof(self) weakSelf = self;
+    [self.locationHandler
+        requestLocationAuthorization:always
+                          completion:^(CLAuthorizationStatus status) {
+                            result([weakSelf convertCLAuthorizationStatusToString:status]);
+                          }];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -163,6 +137,34 @@
 - (void)onReachabilityDidChange:(NSNotification*)notification {
   Reachability* curReach = [notification object];
   _eventSink([self statusFromReachability:curReach]);
+}
+
+- (NSString*)convertCLAuthorizationStatusToString:(CLAuthorizationStatus)status {
+  switch (status) {
+    case kCLAuthorizationStatusNotDetermined: {
+      return @"notDetermined";
+    }
+    case kCLAuthorizationStatusRestricted: {
+      return @"restricted";
+    }
+    case kCLAuthorizationStatusDenied: {
+      return @"denied";
+    }
+    case kCLAuthorizationStatusAuthorizedAlways: {
+      return @"authorizedAlways";
+    }
+    case kCLAuthorizationStatusAuthorizedWhenInUse: {
+      return @"authorizedWhenInUse";
+    }
+    default: { return @"unknown"; }
+  }
+}
+
+- (FLTConnectivityLocationHandler*)locationHandler {
+  if (!_locationHandler) {
+    _locationHandler = [FLTConnectivityLocationHandler new];
+  }
+  return _locationHandler;
 }
 
 #pragma mark FlutterStreamHandler impl
@@ -182,20 +184,6 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   _eventSink = nil;
   return nil;
-}
-
-#pragma mark - CLLocationManagerDelegate
-
-- (CLLocationManager *)locationManager {
- if (!_locationManager) {
-   _locationManager = [CLLocationManager new];
-   _locationManager.delegate = self;
- }
- return _locationManager;
-}
-
-- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-  [self requestLocationServiceAuthorizationIfUndetermined:self.result always:nil];
 }
 
 @end
