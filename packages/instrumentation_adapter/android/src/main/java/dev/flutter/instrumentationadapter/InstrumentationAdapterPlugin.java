@@ -19,12 +19,12 @@ public class InstrumentationAdapterPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-      if (call.method.equals("testFinished")) {
-          Map<String, String> results = call.argument("results");
-          FlutterRunner.completeTestResults(results);
-          result.success(null);
-      } else {
-          result.notImplemented();
-      }
+    if (call.method.equals("testFinished")) {
+      Map<String, String> results = call.argument("results");
+      FlutterRunner.completeTestResults(results);
+      result.success(null);
+    } else {
+      result.notImplemented();
+    }
   }
 }

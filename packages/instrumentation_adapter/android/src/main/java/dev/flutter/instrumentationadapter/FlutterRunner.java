@@ -32,8 +32,7 @@ public class FlutterRunner extends Runner {
     methodChannel.setMethodCallHandler(
         new MethodCallHandler() {
           @Override
-          public void onMethodCall(MethodCall call, Result result) {
-          }
+          public void onMethodCall(MethodCall call, Result result) {}
         });
   }
 
