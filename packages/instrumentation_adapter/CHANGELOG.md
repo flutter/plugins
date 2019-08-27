@@ -1,6 +1,6 @@
 ## 0.0.2
 
-* Initial release in first-party plugins repository.
+* Document current usage instructions, which require adding a Java test file.
 
 ## 0.0.1
 
