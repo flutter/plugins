@@ -14,8 +14,8 @@ class InstrumentationAdapterFlutterBinding
   InstrumentationAdapterFlutterBinding() {
     // TODO(jackson): Report test results as they arrive
     tearDownAll(() async {
-      await _channel
-          .invokeMethod<void>('allTestsFinished', {'results': _results});
+      await _channel.invokeMethod<void>(
+          'allTestsFinished', <String, dynamic>{'results': _results});
     });
   }
 
