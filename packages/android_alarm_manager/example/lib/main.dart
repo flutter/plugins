@@ -61,40 +61,45 @@ class AppState extends State<App> {
       child: Scaffold(
         body: Center(
           child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text("Periodic Alarm Status: $isPeriodicActive"),
-                Text("OneShot Alarm Status: $isOneShotActive"),
-                RaisedButton(
-                  onPressed: () async {
-                    await AndroidAlarmManager.periodic(
-                        const Duration(seconds: 5), periodicID, printPeriodic,
-                        wakeup: true);
-                    AndroidAlarmManager.isAlarmActive(periodicID)
-                        .then((bool value) {
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text("Periodic Alarm Status: $isPeriodicActive"),
+              Text("OneShot Alarm Status: $isOneShotActive"),
+              RaisedButton(
+                onPressed: () async {
+                  await AndroidAlarmManager.periodic(
+                      const Duration(seconds: 5), periodicID, printPeriodic,
+                      wakeup: true);
+                  AndroidAlarmManager.isAlarmActive(periodicID).then(
+                    (bool value) {
                       setState(() {
                         isPeriodicActive = value;
                       });
-                    });
-                  },
-                  child: const Text("Start Periodic Alarm"),
-                ),
-                RaisedButton(
-                  onPressed: () async {
-                    await AndroidAlarmManager.oneShot(
-                        const Duration(seconds: 5), oneShotID, printOneShot,
-                        wakeup: true);
-                    AndroidAlarmManager.isAlarmActive(oneShotID)
-                        .then((bool value) {
-                      setState(() {
-                        isOneShotActive = value;
-                      });
-                    });
-                  },
-                  child: const Text("Start One Shot Alarm"),
-                )
-              ]),
+                    },
+                  );
+                },
+                child: const Text("Start Periodic Alarm"),
+              ),
+              RaisedButton(
+                onPressed: () async {
+                  await AndroidAlarmManager.oneShot(
+                      const Duration(seconds: 5), oneShotID, printOneShot,
+                      wakeup: true);
+                  AndroidAlarmManager.isAlarmActive(oneShotID).then(
+                    (bool value) {
+                      setState(
+                        () {
+                          isOneShotActive = value;
+                        },
+                      );
+                    },
+                  );
+                },
+                child: const Text("Start One Shot Alarm"),
+              )
+            ],
+          ),
         ),
       ),
     );
