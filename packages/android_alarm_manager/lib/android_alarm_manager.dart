@@ -280,4 +280,9 @@ class AndroidAlarmManager {
         await _channel.invokeMethod<bool>('Alarm.cancel', <dynamic>[id]);
     return (r == null) ? false : r;
   }
+
+  static Future<bool> isAlarmActive(int requestCode) async {
+    return await _channel
+        .invokeMethod<bool>('Alarm.isActive', <dynamic>[requestCode]);
+  }
 }
