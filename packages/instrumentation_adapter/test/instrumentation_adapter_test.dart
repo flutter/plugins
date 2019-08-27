@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:instrumentation_adapter/instrumentation_adapter.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   const MethodChannel channel = MethodChannel('instrumentation_adapter');
 
   setUp(() {
