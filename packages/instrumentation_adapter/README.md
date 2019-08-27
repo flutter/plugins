@@ -8,14 +8,14 @@ iOS support is not available yet, but is planned in the future.
 
 Add a dependency on the `instrumentation_adapter` package in the `dev_dependencies` section of pubspec.yaml. For plugins, do this in the pubspec.yaml of the example app.
 
-Invoke `InstrumentationAdapterFlutterBinding()` at the start of a test file.
+Invoke `InstrumentationAdapterFlutterBinding.ensureInitialized()` at the start of a test file.
 
 ```dart
 import 'package:instrumentation_adapter/instrumentation_adapter.dart';
 import '../test/package_info.dart' as test;
 
 void main() {
-  InstrumentationAdapterFlutterBinding();
+  InstrumentationAdapterFlutterBinding.ensureInitialized();
   testWidgets("failing test example", (WidgetTester tester) async {
     expect(2 + 2, equals(5));
   });
