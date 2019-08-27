@@ -9,6 +9,7 @@ import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesResult;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -35,8 +36,9 @@ import java.util.Map;
 public class InAppPurchasePlugin implements MethodCallHandler {
   private static final String TAG = "InAppPurchasePlugin";
   private @Nullable BillingClient billingClient;
-  private BillingClientFactory factory;
-  private final Activity activity;
+  private final BillingClientFactory factory;
+  private final Registrar registrar;
+  private final Context applicationContext;
   private final MethodChannel channel;
 
   @VisibleForTesting
@@ -65,21 +67,18 @@ public class InAppPurchasePlugin implements MethodCallHandler {
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final Activity activity = registrar.activity();
-    if (activity == null) {
-      return;
-    }
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/in_app_purchase");
+
     final BillingClientFactory factory = new BillingClientFactory();
-    final InAppPurchasePlugin plugin = new InAppPurchasePlugin(factory, activity, channel);
+    final InAppPurchasePlugin plugin = new InAppPurchasePlugin(factory, registrar, channel);
     channel.setMethodCallHandler(plugin);
   }
 
-  public InAppPurchasePlugin(
-      BillingClientFactory factory, Activity activity, MethodChannel channel) {
+  public InAppPurchasePlugin(BillingClientFactory factory, Registrar registrar, MethodChannel channel) {
+    this.applicationContext = registrar.context();
+    this.registrar = registrar;
     this.factory = factory;
-    this.activity = activity;
     this.channel = channel;
   }
 
@@ -117,9 +116,10 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     }
   }
 
+
   private void startConnection(final int handle, final Result result) {
     if (billingClient == null) {
-      billingClient = factory.createBillingClient(activity, channel);
+      billingClient = factory.createBillingClient(applicationContext, channel);
     }
 
     billingClient.startConnection(
@@ -194,6 +194,17 @@ public class InAppPurchasePlugin implements MethodCallHandler {
       result.error(
           "NOT_FOUND",
           "Details for sku " + sku + " are not available. Has this ID already been fetched?",
+          null);
+      return;
+    }
+    final Activity activity = registrar.activity();
+
+    if (activity == null) {
+      result.error(
+          "ACTIVITY_UNAVAILABLE",
+          "Details for sku "
+              + sku
+              + " are not available. This method requires to be run with the app in foreground.",
           null);
       return;
     }

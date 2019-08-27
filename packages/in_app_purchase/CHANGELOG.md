@@ -4,7 +4,7 @@
 
 ## 0.2.1+1
 
-* Android: Do not register if Activity is null.
+* Android: Require Activity only to use launchBillingFlow method.
 
 ## 0.2.1
 
