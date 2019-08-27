@@ -25,7 +25,7 @@ public class FlutterRunner extends Runner {
 
     // Look for an `ActivityTestRule` annotated `@Rule` and invoke `launchActivity()`
     Field[] fields = testClass.getDeclaredFields();
-    for (Field field: fields) {
+    for (Field field : fields) {
       if (field.isAnnotationPresent(Rule.class)) {
         try {
           Object instance = testClass.newInstance();
