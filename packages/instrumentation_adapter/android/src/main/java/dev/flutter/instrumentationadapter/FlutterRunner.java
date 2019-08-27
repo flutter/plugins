@@ -1,4 +1,4 @@
-package io.flutter.plugins.instrumentationadapter;
+package dev.flutter.plugins.instrumentationadapter;
 
 import androidx.test.rule.ActivityTestRule;
 import io.flutter.app.FlutterActivity;
@@ -17,23 +17,17 @@ import org.junit.runner.notification.RunNotifier;
 
 public class FlutterRunner extends Runner {
 
-  private static final String CHANNEL = "dev.flutter/InstrumentationTestFlutterBinding";
-  CompletableFuture<Map<String, String>> testResults;
+  private static final String CHANNEL = "dev.flutter/InstrumentationAdapterFlutterBinding";
+  static CompletableFuture<Map<String, String>> testResults = new CompletableFuture<>();
 
   final Class activityClass;
 
-  public FlutterRunner(Class<?> klass) {
-    activityClass = klass.newInstance().getActivityClass();
-    ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(activityClass);
+  public FlutterRunner(Class<FlutterActivity> activityClass) {
+    super();
+    this.activityClass = activityClass;
+    Class mainClass = activityClass.getSuperclass();
+    ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(mainClass);
     FlutterActivity activity = rule.launchActivity(null);
-    FlutterView view = activity.getFlutterView();
-    MethodChannel methodChannel = new MethodChannel(view, CHANNEL);
-    testResults = new CompletableFuture<>();
-    methodChannel.setMethodCallHandler(
-        new MethodCallHandler() {
-          @Override
-          public void onMethodCall(MethodCall call, Result result) {}
-        });
   }
 
   @Override

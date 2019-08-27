@@ -6,6 +6,6 @@ import 'package:instrumentation_adapter/instrumentation_adapter.dart';
 import '../test/package_info.dart' as test;
 
 void main() {
-  InstrumentationAdapterFlutterBinding();
+  InstrumentationAdapterFlutterBinding.ensureInitialized();
   test.main();
 }

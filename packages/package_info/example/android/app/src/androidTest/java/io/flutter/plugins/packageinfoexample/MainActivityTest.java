@@ -8,4 +8,4 @@ import io.flutter.plugins.instrumentationadapter.FlutterRunner;
 import org.junit.runner.RunWith;
 
 @RunWith(FlutterRunner.class)
-public class MainActivityTest extends FlutterRunnerTest<MainActivity> {}
+public class MainActivityTest extends MainActivity {}

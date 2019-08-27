@@ -15,5 +15,5 @@ dependencies:
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.instrumentationtest
-    pluginClass: InstrumentationTestPlugin
+    androidPackage: dev.flutter.plugins.instrumentationadapter
+    pluginClass: InstrumentationAdapterPlugin
