@@ -4,8 +4,12 @@
 
 package dev.flutter.plugins.instrumentationadapter;
 
+import android.app.Activity;
+import androidx.test.rule.ActivityTestRule;
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import org.junit.Rule;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
@@ -15,13 +19,24 @@ public class FlutterRunner extends Runner {
 
   final Class testClass;
 
-  public FlutterRunner(Class<FlutterTest> testClass) {
+  public FlutterRunner(Class<?> testClass) {
     super();
     this.testClass = testClass;
-    try {
-      testClass.newInstance().launchActivity();
-    } catch (InstantiationException | IllegalAccessException e) {
-      throw new IllegalThreadStateException("Unable to launch test");
+
+    // Look for an `ActivityTestRule` annotated `@Rule` and invoke `launchActivity()`
+    Field[] fields = testClass.getDeclaredFields();
+    for (Field field : fields) {
+      if (field.isAnnotationPresent(Rule.class)) {
+        try {
+          Object instance = testClass.newInstance();
+          ActivityTestRule<Activity> rule = (ActivityTestRule<Activity>) field.get(instance);
+          rule.launchActivity(null);
+        } catch (InstantiationException | IllegalAccessException e) {
+          // This might occur if the developer did not make the rule public.
+          // We could call field.setAccessible(true) but it seems better to throw.
+          throw new RuntimeException("Unable to access activity rule", e);
+        }
+      }
     }
   }
 
