@@ -150,7 +150,16 @@ class Polygon {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Polygon typedOther = other;
-    return polygonId == typedOther.polygonId;
+    return polygonId == typedOther.polygonId &&
+        consumeTapEvents == typedOther.consumeTapEvents &&
+        fillColor == typedOther.fillColor &&
+        geodesic == typedOther.geodesic &&
+        listEquals(points, typedOther.points) &&
+        visible == typedOther.visible &&
+        strokeColor == typedOther.strokeColor &&
+        strokeWidth == typedOther.strokeWidth &&
+        zIndex == typedOther.zIndex &&
+        onTap == typedOther.onTap;
   }
 
   @override
