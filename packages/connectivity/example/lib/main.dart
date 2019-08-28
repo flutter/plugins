@@ -102,8 +102,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 status == LocationAuthorizationStatus.authorizedWhenInUse) {
               wifiName = await _connectivity.getWifiName();
             } else {
-              print(
-                  'location service is not authorized, wifiName might not be correct');
               wifiName = await _connectivity.getWifiName();
             }
           } else {
@@ -126,8 +124,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 status == LocationAuthorizationStatus.authorizedWhenInUse) {
               wifiBSSID = await _connectivity.getWifiBSSID();
             } else {
-              print(
-                  'location service is not authorized, WIFIBSSID might not be correct');
               wifiBSSID = await _connectivity.getWifiBSSID();
             }
           } else {

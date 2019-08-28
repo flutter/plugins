@@ -50,7 +50,7 @@ dispose() {
 }
 ```
 
-You can get WIFI related information using:
+You can get wi-fi related information using:
 
 ```dart
 import 'package:connectivity/connectivity.dart';
@@ -91,7 +91,7 @@ and you still need to access the wifi information, you should request user's aut
 There is a helper method provided in this plugin to request the location authorization: `requestLocationServiceAuthorization`.
 To request location authorization, make sure to add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
 
-* `NSLocationAlwaysAndWhenInUseUsageDescription` - describe why the app needs access to the user’s location information all the time (foreground and background). _Privacy - Location Always and When In Use Usage Description_ in the visual editor.
+* `NSLocationAlwaysAndWhenInUseUsageDescription` - describe why the app needs access to the user’s location information all the time (foreground and background). This is called _Privacy - Location Always and When In Use Usage Description_ in the visual editor.
 * `NSLocationWhenInUseUsageDescription` - describe why the app needs access to the user’s location information when the app is running in the foreground. This is called _Privacy - Location When In Use Usage Description_ in the visual editor.
 
 ## Getting Started

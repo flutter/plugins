@@ -95,13 +95,13 @@ class Connectivity {
     return await methodChannel.invokeMethod<String>('wifiIPAddress');
   }
 
-  /// Request to authorize the location service. Only on iOS.
+  /// Request to authorize the location service (Only on iOS).
   ///
   /// This method will throw a [PlatformException] on Android.
   ///
   /// Returns a [LocationAuthorizationStatus] after user authorized or denied the location on this request.
   ///
-  /// if the location information needs to be accessible all the time, set `requestAlwaysLocationUsage` to true. If user has
+  /// If the location information needs to be accessible all the time, set `requestAlwaysLocationUsage` to true. If user has
   /// already granted a [LocationAuthorizationStatus.authorizedWhenInUse] prior to requesting an "always" access, it will return [LocationAuthorizationStatus.denied].
   ///
   /// If the location service authorization is not determined prior to making this call, a platform standard UI of requesting a location service will pop up.
@@ -145,7 +145,7 @@ class Connectivity {
   /// See also [getLocationServiceAuthorization] to obtain current location service status.
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization(
       {bool requestAlwaysLocationUsage = false}) async {
-    //Just `assert(Platform.isIOS)` will disable us to do dart side unit testing.
+    //Just `assert(Platform.isIOS)` will prevent us from doing dart side unit testing.
     assert(!Platform.isAndroid);
     final String result = await methodChannel.invokeMethod<String>(
         'requestLocationServiceAuthorization',
@@ -153,7 +153,7 @@ class Connectivity {
     return _convertLocationStatusString(result);
   }
 
-  /// Get the current location service authorization. Only on iOS.
+  /// Get the current location service authorization (Only on iOS).
   ///
   /// This method will throw a [PlatformException] on Android.
   ///
@@ -190,7 +190,7 @@ class Connectivity {
   ///
   /// See also [requestLocationServiceAuthorization] for requesting a location service authorization.
   Future<LocationAuthorizationStatus> getLocationServiceAuthorization() async {
-    //Just `assert(Platform.isIOS)` will disable us to do dart side unit testing.
+    //Just `assert(Platform.isIOS)` will prevent us from doing dart side unit testing.
     assert(!Platform.isAndroid);
     final String result = await methodChannel
         .invokeMethod<String>('getLocationServiceAuthorization');

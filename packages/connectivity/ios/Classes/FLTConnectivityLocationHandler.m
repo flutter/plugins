@@ -29,7 +29,7 @@
   }
 
   if (self.completion) {
-    // If a request is still in process, immdediately return.
+    // If a request is still in process, immediately return.
     completionHandler(kCLAuthorizationStatusNotDetermined);
     return;
   }
