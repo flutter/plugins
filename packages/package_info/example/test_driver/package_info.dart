@@ -1,16 +1,10 @@
-import 'dart:async';
 import 'dart:io';
-import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info/package_info.dart';
 
 void main() {
-  final Completer<String> completer = Completer<String>();
-  enableFlutterDriverExtension(handler: (_) => completer.future);
-  tearDownAll(() => completer.complete(null));
-
-  group('package_info test driver', () {
-    test('test package info result', () async {
+  group('package_info test', () {
+    testWidgets('test package info result', (_) async {
       final PackageInfo info = await PackageInfo.fromPlatform();
       // These tests are based on the example app. The tests should be updated if any related info changes.
       if (Platform.isAndroid) {
