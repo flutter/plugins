@@ -1,4 +1,4 @@
-## 0.5.20+7
+## 0.5.21
 
 * Don't recreate map elements if they didn't change since last widget build.
 
