@@ -316,6 +316,10 @@ class Convert {
     if (indoorEnabled != null) {
       sink.setIndoorEnabled(toBoolean(indoorEnabled));
     }
+    final Object trafficEnabled = data.get("trafficEnabled");
+    if (trafficEnabled != null) {
+      sink.setTrafficEnabled(toBoolean(trafficEnabled));
+    }
   }
 
   /** Returns the dartMarkerId of the interpreted marker. */

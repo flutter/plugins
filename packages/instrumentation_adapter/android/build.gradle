@@ -1,0 +1,41 @@
+group 'com.example.instrumentation_adapter'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.1'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 16
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    dependencies {
+        api 'junit:junit:4.12'
+        api 'androidx.test:core:1.0.0'
+        api 'androidx.test:runner:1.1.1'
+        api 'androidx.test:rules:1.1.1'
+        api 'androidx.test.espresso:espresso-core:3.1.1'
+    }
+}

@@ -1,3 +1,7 @@
+## 0.5.20+6
+
+* Adds support for toggling the traffic layer
+
 ## 0.5.20+5
 
 * Allow (de-)serialization of CameraPosition

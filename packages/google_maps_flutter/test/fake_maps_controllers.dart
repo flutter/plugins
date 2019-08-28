@@ -47,6 +47,8 @@ class FakePlatformGoogleMap {
 
   bool myLocationEnabled;
 
+  bool trafficEnabled;
+
   bool myLocationButtonEnabled;
 
   List<dynamic> padding;
@@ -340,6 +342,9 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('myLocationButtonEnabled')) {
       myLocationButtonEnabled = options['myLocationButtonEnabled'];
+    }
+    if (options.containsKey('trafficEnabled')) {
+      trafficEnabled = options['trafficEnabled'];
     }
     if (options.containsKey('padding')) {
       padding = options['padding'];

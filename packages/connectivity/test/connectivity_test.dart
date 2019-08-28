@@ -7,6 +7,8 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('$Connectivity', () {
     final List<MethodCall> log = <MethodCall>[];
 
