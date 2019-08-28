@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Updates about using *androidx* library.
+
 ## 0.1.0
 
 * Update boilerplate test to use `@Rule` instead of `FlutterTest`.
