@@ -105,7 +105,7 @@ void main() {
         <Matcher>[
           isMethodCall(
             'requestLocationServiceAuthorization',
-            arguments: null,
+            arguments: <bool>[false],
           ),
         ],
       );
