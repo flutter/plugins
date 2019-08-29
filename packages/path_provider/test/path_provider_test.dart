@@ -23,7 +23,7 @@ void main() {
   });
 
   setUp(() {
-    pathProviderPrivate(FakePlatform(operatingSystem: 'android'));
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
   });
 
   tearDown(() {
@@ -75,7 +75,7 @@ void main() {
   });
 
   test('getExternalStorageDirectory iOS test', () async {
-    pathProviderPrivate(FakePlatform(operatingSystem: 'ios'));
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
 
     response = null;
     try {

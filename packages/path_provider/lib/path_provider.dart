@@ -15,7 +15,7 @@ const MethodChannel _channel =
 Platform _platform = const LocalPlatform();
 
 @visibleForTesting
-void pathProviderPrivate(Platform platform) {
+void setMockPathProviderPlatform(Platform platform) {
   _platform = platform;
 }
 
