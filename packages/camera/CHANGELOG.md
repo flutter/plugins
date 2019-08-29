@@ -1,3 +1,7 @@
+## 0.5.4+1
+
+* Fix Android pause and resume video crash when executing in APIs below 24.
+
 ## 0.5.4
 
 * Add feature to pause and resume video recording.

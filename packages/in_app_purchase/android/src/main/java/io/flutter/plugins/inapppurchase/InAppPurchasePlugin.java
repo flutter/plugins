@@ -75,7 +75,8 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     channel.setMethodCallHandler(plugin);
   }
 
-  public InAppPurchasePlugin(BillingClientFactory factory, Registrar registrar, MethodChannel channel) {
+  public InAppPurchasePlugin(
+      BillingClientFactory factory, Registrar registrar, MethodChannel channel) {
     this.applicationContext = registrar.context();
     this.registrar = registrar;
     this.factory = factory;
@@ -115,7 +116,6 @@ public class InAppPurchasePlugin implements MethodCallHandler {
         result.notImplemented();
     }
   }
-
 
   private void startConnection(final int handle, final Result result) {
     if (billingClient == null) {
@@ -204,7 +204,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
           "ACTIVITY_UNAVAILABLE",
           "Details for sku "
               + sku
-              + " are not available. This method requires to be run with the app in foreground.",
+              + " are not available. This method must be run with the app in foreground.",
           null);
       return;
     }

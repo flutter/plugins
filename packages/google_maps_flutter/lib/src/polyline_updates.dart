@@ -38,9 +38,17 @@ class _PolylineUpdates {
         .map(idToCurrentPolyline)
         .toSet();
 
+    /// Returns `true` if [current] is not equals to previous one with the
+    /// same id.
+    bool hasChanged(Polyline current) {
+      final Polyline previous = previousPolylines[current.polylineId];
+      return current != previous;
+    }
+
     final Set<Polyline> _polylinesToChange = currentPolylineIds
         .intersection(prevPolylineIds)
         .map(idToCurrentPolyline)
+        .where(hasChanged)
         .toSet();
 
     polylinesToAdd = _polylinesToAdd;

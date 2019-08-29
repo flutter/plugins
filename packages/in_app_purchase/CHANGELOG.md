@@ -1,10 +1,15 @@
-## 0.2.1+2
+## 0.2.1+3
 
 * Android : Improved testability.
 
+
+## 0.2.1+2
+
+* Android: Require a non-null Activity to use the `launchBillingFlow` method.
+
 ## 0.2.1+1
 
-* Android: Require Activity only to use launchBillingFlow method.
+* Remove skipped driver test.
 
 ## 0.2.1
 

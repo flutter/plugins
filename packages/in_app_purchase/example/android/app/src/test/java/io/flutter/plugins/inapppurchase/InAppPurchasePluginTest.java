@@ -29,7 +29,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.Context;
 import androidx.annotation.Nullable;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
@@ -43,7 +42,6 @@ import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
-import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
@@ -67,14 +65,13 @@ public class InAppPurchasePluginTest {
   @Mock Activity activity;
   @Mock BillingClientFactory factory;
 
-
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+
     when(factory.createBillingClient(any(), any())).thenReturn(mockBillingClient);
     plugin = new InAppPurchasePlugin(factory, registrar, mockMethodChannel);
   }
-
 
   @Test
   public void invalidMethod() {
