@@ -138,7 +138,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
         AlarmService.cancel(mContext, requestCode);
         result.success(true);
       } else if (method.equals("Alarm.isActive")) {
-        //This method indicates whether the alarm has already been set or not
+        // This method indicates whether the alarm has already been set or not
         // It requires Request code with which it identifies. Applicable only to the Periodic alarms.
         int requestCode = ((JSONArray) arguments).getInt(0);
         boolean isActive = AlarmService.isAlarmActive(mContext, requestCode);
