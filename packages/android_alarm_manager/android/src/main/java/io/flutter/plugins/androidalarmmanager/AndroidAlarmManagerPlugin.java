@@ -50,7 +50,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     // alarmManagerPluginChannel is the channel responsible for receiving the following messages
     // from the main Flutter app:
     // - "AlarmService.start"
-    // - "Alarm.oneShot"
+    // - "Alarm.oneShotAt"
     // - "Alarm.periodic"
     // - "Alarm.cancel"
     final MethodChannel alarmManagerPluginChannel =
@@ -125,7 +125,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
         PeriodicRequest periodicRequest = PeriodicRequest.fromJson((JSONArray) arguments);
         AlarmService.setPeriodic(mContext, periodicRequest);
         result.success(true);
-      } else if (method.equals("Alarm.oneShot")) {
+      } else if (method.equals("Alarm.oneShotAt")) {
         // This message indicates that the Flutter app would like to schedule a one-time
         // task.
         OneShotRequest oneShotRequest = OneShotRequest.fromJson((JSONArray) arguments);

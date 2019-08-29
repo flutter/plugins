@@ -143,4 +143,60 @@ void main() {
       }
     }
   });
+
+  test('Pause and resume video recording', () async {
+    final List<CameraDescription> cameras = await availableCameras();
+    if (cameras.isEmpty) {
+      return;
+    }
+
+    final CameraController controller = CameraController(
+      cameras[0],
+      ResolutionPreset.low,
+      enableAudio: false,
+    );
+
+    await controller.initialize();
+    await controller.prepareForVideoRecording();
+
+    final String filePath =
+        '${testDir.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+
+    int startPause;
+    int timePaused = 0;
+
+    await controller.startVideoRecording(filePath);
+    final int recordingStart = DateTime.now().millisecondsSinceEpoch;
+    sleep(const Duration(milliseconds: 500));
+
+    await controller.pauseVideoRecording();
+    startPause = DateTime.now().millisecondsSinceEpoch;
+    sleep(const Duration(milliseconds: 500));
+    await controller.resumeVideoRecording();
+    timePaused += DateTime.now().millisecondsSinceEpoch - startPause;
+
+    sleep(const Duration(milliseconds: 500));
+
+    await controller.pauseVideoRecording();
+    startPause = DateTime.now().millisecondsSinceEpoch;
+    sleep(const Duration(milliseconds: 500));
+    await controller.resumeVideoRecording();
+    timePaused += DateTime.now().millisecondsSinceEpoch - startPause;
+
+    sleep(const Duration(milliseconds: 500));
+
+    await controller.stopVideoRecording();
+    final int recordingTime =
+        DateTime.now().millisecondsSinceEpoch - recordingStart;
+
+    final File videoFile = File(filePath);
+    final VideoPlayerController videoController = VideoPlayerController.file(
+      videoFile,
+    );
+    await videoController.initialize();
+    final int duration = videoController.value.duration.inMilliseconds;
+    await videoController.dispose();
+
+    expect(duration, lessThan(recordingTime - timePaused));
+  });
 }

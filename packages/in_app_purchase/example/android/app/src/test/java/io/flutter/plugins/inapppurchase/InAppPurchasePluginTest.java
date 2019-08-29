@@ -28,6 +28,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.content.Context;
 import androidx.annotation.Nullable;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
@@ -41,9 +43,11 @@ import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugins.inapppurchase.InAppPurchasePlugin.PluginPurchaseListener;
 import java.util.HashMap;
 import java.util.List;
@@ -60,11 +64,16 @@ public class InAppPurchasePluginTest {
   @Mock BillingClient mockBillingClient;
   @Mock MethodChannel mockMethodChannel;
   @Spy Result result;
+  @Mock PluginRegistry.Registrar registrar;
+  @Mock Activity activity;
+  @Mock BinaryMessenger messenger;
+  @Mock Context context;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    plugin = new InAppPurchasePlugin(mockBillingClient, mockMethodChannel);
+    when(registrar.context()).thenReturn(context);
+    plugin = new InAppPurchasePlugin(registrar, mockBillingClient, mockMethodChannel);
   }
 
   @Test
@@ -219,6 +228,7 @@ public class InAppPurchasePluginTest {
 
   @Test
   public void launchBillingFlow_ok_nullAccountId() {
+    when(registrar.activity()).thenReturn(activity);
     // Fetch the sku details first and then prepare the launch billing flow call
     String skuId = "foo";
     queryForSkus(singletonList(skuId));
@@ -246,7 +256,26 @@ public class InAppPurchasePluginTest {
   }
 
   @Test
+  public void launchBillingFlow_ok_null_Activity() {
+    // Fetch the sku details first and then prepare the launch billing flow call
+    String skuId = "foo";
+    String accountId = "account";
+    queryForSkus(singletonList(skuId));
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    arguments.put("accountId", accountId);
+    MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
+
+    plugin.onMethodCall(launchCall, result);
+
+    // Verify we pass the response code to result
+    verify(result).error(contains("ACTIVITY_UNAVAILABLE"), contains("foreground"), any());
+    verify(result, never()).success(any());
+  }
+
+  @Test
   public void launchBillingFlow_ok_AccountId() {
+    when(registrar.activity()).thenReturn(activity);
     // Fetch the sku details first and query the method call
     String skuId = "foo";
     String accountId = "account";

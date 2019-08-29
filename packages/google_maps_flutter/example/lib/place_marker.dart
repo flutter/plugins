@@ -67,6 +67,32 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     }
   }
 
+  void _onMarkerDragEnd(MarkerId markerId, LatLng newPosition) async {
+    final Marker tappedMarker = markers[markerId];
+    if (tappedMarker != null) {
+      await showDialog<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                actions: <Widget>[
+                  FlatButton(
+                    child: const Text('OK'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                ],
+                content: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 66),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text('Old position: ${tappedMarker.position}'),
+                        Text('New position: $newPosition'),
+                      ],
+                    )));
+          });
+    }
+  }
+
   void _add() {
     final int markerCount = markers.length;
 
@@ -87,6 +113,9 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
       infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
       onTap: () {
         _onMarkerTapped(markerId);
+      },
+      onDragEnd: (LatLng position) {
+        _onMarkerDragEnd(markerId, position);
       },
     );
 
