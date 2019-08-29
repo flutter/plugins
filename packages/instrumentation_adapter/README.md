@@ -1,14 +1,18 @@
 # instrumentation_adapter
 
-Adapts flutter_test results as Android instrumentation tests, making them usable for Firebase Test Lab and other Android CI providers.
+Adapts flutter_test results as Android instrumentation tests, making them usable
+for Firebase Test Lab and other Android CI providers.
 
 iOS support is not available yet, but is planned in the future.
 
 ## Usage
 
-Add a dependency on the `instrumentation_adapter` package in the `dev_dependencies` section of pubspec.yaml. For plugins, do this in the pubspec.yaml of the example app.
+Add a dependency on the `instrumentation_adapter` package in the
+`dev_dependencies` section of pubspec.yaml. For plugins, do this in the
+pubspec.yaml of the example app.
 
-Invoke `InstrumentationAdapterFlutterBinding.ensureInitialized()` at the start of a test file.
+Invoke `InstrumentationAdapterFlutterBinding.ensureInitialized()` at the start
+of a test file.
 
 ```dart
 import 'package:instrumentation_adapter/instrumentation_adapter.dart';
@@ -23,10 +27,9 @@ void main() {
 ```
 
 Create an instrumentation test file in your application's
-android/app/src/androidTest/java/com/example/myapp/ directory
-(replacing com, example, and myapp with values from your app's
-package name). You can name this test file MainActivityTest.java
-or another name of your choice.
+**android/app/src/androidTest/java/com/example/myapp/** directory (replacing
+com, example, and myapp with values from your app's package name). You can name
+this test file MainActivityTest.java or another name of your choice.
 
 ```
 package com.example.myapp;
@@ -43,6 +46,28 @@ public class MainActivityTest {
 }
 ```
 
+Update your application's **myapp/android/app/build.gradle** to make sure it
+uses androidx's version of AndroidJUnitRunner and has androidx libraries as a
+dependency.
+
+```
+android {
+  ...
+  defaultConfig {
+    ...
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+
+    // https://developer.android.com/jetpack/androidx/releases/test/#1.2.0
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}
+```
+
 Use gradle commands to build an instrumentation test for Android.
 
 ```
@@ -52,7 +77,8 @@ pushd android
 popd
 ```
 
-Upload to Firebase Test Lab, making sure to replace <PATH_TO_KEY_FILE>, <PROJECT_NAME>, <RESULTS_BUCKET>, and <RESULTS_DIRECTORY> with your values.
+Upload to Firebase Test Lab, making sure to replace <PATH_TO_KEY_FILE>,
+<PROJECT_NAME>, <RESULTS_BUCKET>, and <RESULTS_DIRECTORY> with your values.
 
 ```
 gcloud auth activate-service-account --key-file=<PATH_TO_KEY_FILE>
