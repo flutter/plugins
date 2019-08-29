@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,6 +80,7 @@ public class ImagePickerDelegate
   private final Activity activity;
   private final File externalFilesDirectory;
   private final ImageResizer imageResizer;
+  private final ImagePickerCache cache;
   private final PermissionManager permissionManager;
   private final IntentResolver intentResolver;
   private final FileUriResolver fileUriResolver;
@@ -112,13 +113,17 @@ public class ImagePickerDelegate
   private MethodCall methodCall;
 
   public ImagePickerDelegate(
-      final Activity activity, File externalFilesDirectory, ImageResizer imageResizer) {
+      final Activity activity,
+      final File externalFilesDirectory,
+      final ImageResizer imageResizer,
+      final ImagePickerCache cache) {
     this(
         activity,
         externalFilesDirectory,
         imageResizer,
         null,
         null,
+        cache,
         new PermissionManager() {
           @Override
           public boolean isPermissionGranted(String permissionName) {
@@ -171,15 +176,16 @@ public class ImagePickerDelegate
    */
   @VisibleForTesting
   ImagePickerDelegate(
-      Activity activity,
-      File externalFilesDirectory,
-      ImageResizer imageResizer,
-      MethodChannel.Result result,
-      MethodCall methodCall,
-      PermissionManager permissionManager,
-      IntentResolver intentResolver,
-      FileUriResolver fileUriResolver,
-      FileUtils fileUtils) {
+      final Activity activity,
+      final File externalFilesDirectory,
+      final ImageResizer imageResizer,
+      final MethodChannel.Result result,
+      final MethodCall methodCall,
+      final ImagePickerCache cache,
+      final PermissionManager permissionManager,
+      final IntentResolver intentResolver,
+      final FileUriResolver fileUriResolver,
+      final FileUtils fileUtils) {
     this.activity = activity;
     this.externalFilesDirectory = externalFilesDirectory;
     this.imageResizer = imageResizer;
@@ -190,6 +196,7 @@ public class ImagePickerDelegate
     this.intentResolver = intentResolver;
     this.fileUriResolver = fileUriResolver;
     this.fileUtils = fileUtils;
+    this.cache = cache;
   }
 
   void saveStateBeforeResult() {
@@ -197,28 +204,33 @@ public class ImagePickerDelegate
       return;
     }
 
-    ImagePickerCache.saveTypeWithMethodCallName(methodCall.method);
-    ImagePickerCache.saveDemensionWithMethodCall(methodCall);
+    cache.saveTypeWithMethodCallName(methodCall.method);
+    cache.saveDimensionWithMethodCall(methodCall);
     if (pendingCameraMediaUri != null) {
-      ImagePickerCache.savePendingCameraMediaUriPath(pendingCameraMediaUri);
+      cache.savePendingCameraMediaUriPath(pendingCameraMediaUri);
     }
   }
 
   void retrieveLostImage(MethodChannel.Result result) {
-    Map<String, Object> resultMap = ImagePickerCache.getCacheMap();
-    String path = (String) resultMap.get(ImagePickerCache.MAP_KEY_PATH);
+    Map<String, Object> resultMap = cache.getCacheMap();
+    String path = (String) resultMap.get(cache.MAP_KEY_PATH);
     if (path != null) {
-      Double maxWidth = (Double) resultMap.get(ImagePickerCache.MAP_KEY_MAX_WIDTH);
-      Double maxHeight = (Double) resultMap.get(ImagePickerCache.MAP_KEY_MAX_HEIGHT);
-      String newPath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
-      resultMap.put(ImagePickerCache.MAP_KEY_PATH, newPath);
+      Double maxWidth = (Double) resultMap.get(cache.MAP_KEY_MAX_WIDTH);
+      Double maxHeight = (Double) resultMap.get(cache.MAP_KEY_MAX_HEIGHT);
+      int imageQuality =
+          resultMap.get(cache.MAP_KEY_IMAGE_QUALITY) == null
+              ? 100
+              : (int) resultMap.get(cache.MAP_KEY_IMAGE_QUALITY);
+
+      String newPath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);
+      resultMap.put(cache.MAP_KEY_PATH, newPath);
     }
     if (resultMap.isEmpty()) {
       result.success(null);
     } else {
       result.success(resultMap);
     }
-    ImagePickerCache.clear();
+    cache.clear();
   }
 
   public void chooseVideoFromGallery(MethodCall methodCall, MethodChannel.Result result) {
@@ -408,7 +420,16 @@ public class ImagePickerDelegate
     }
 
     if (!permissionGranted) {
-      finishWithSuccess(null);
+      switch (requestCode) {
+        case REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION:
+        case REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION:
+          finishWithError("photo_access_denied", "The user did not allow photo access.");
+          break;
+        case REQUEST_CAMERA_IMAGE_PERMISSION:
+        case REQUEST_CAMERA_VIDEO_PERMISSION:
+          finishWithError("camera_access_denied", "The user did not allow camera access.");
+          break;
+      }
     }
 
     return true;
@@ -463,7 +484,7 @@ public class ImagePickerDelegate
       fileUriResolver.getFullImagePath(
           pendingCameraMediaUri != null
               ? pendingCameraMediaUri
-              : Uri.parse(ImagePickerCache.retrievePendingCameraMediaUriPath()),
+              : Uri.parse(cache.retrievePendingCameraMediaUriPath()),
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
@@ -482,7 +503,7 @@ public class ImagePickerDelegate
       fileUriResolver.getFullImagePath(
           pendingCameraMediaUri != null
               ? pendingCameraMediaUri
-              : Uri.parse(ImagePickerCache.retrievePendingCameraMediaUriPath()),
+              : Uri.parse(cache.retrievePendingCameraMediaUriPath()),
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
@@ -500,12 +521,18 @@ public class ImagePickerDelegate
     if (methodCall != null) {
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
-      String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+      int imageQuality =
+          methodCall.argument("imageQuality") == null
+              ? 100
+              : (int) methodCall.argument("imageQuality");
+
+      String finalImagePath =
+          imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);
 
       finishWithSuccess(finalImagePath);
 
       //delete original file if scaled
-      if (!finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
+      if (finalImagePath != null && !finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }
     } else {
@@ -527,14 +554,14 @@ public class ImagePickerDelegate
     pendingResult = result;
 
     // Clean up cache if a new image picker is launched.
-    ImagePickerCache.clear();
+    cache.clear();
 
     return true;
   }
 
   private void finishWithSuccess(String imagePath) {
     if (pendingResult == null) {
-      ImagePickerCache.saveResult(imagePath, null, null);
+      cache.saveResult(imagePath, null, null);
       return;
     }
     pendingResult.success(imagePath);
@@ -547,7 +574,7 @@ public class ImagePickerDelegate
 
   private void finishWithError(String errorCode, String errorMessage) {
     if (pendingResult == null) {
-      ImagePickerCache.saveResult(null, errorCode, errorMessage);
+      cache.saveResult(null, errorCode, errorMessage);
       return;
     }
     pendingResult.error(errorCode, errorMessage, null);

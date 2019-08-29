@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.googlemaps;
 
 import com.google.android.gms.maps.model.Cap;
@@ -11,10 +15,12 @@ class PolylineController implements PolylineOptionsSink {
   private final Polyline polyline;
   private final String googleMapsPolylineId;
   private boolean consumeTapEvents;
+  private final float density;
 
-  PolylineController(Polyline polyline, boolean consumeTapEvents) {
+  PolylineController(Polyline polyline, boolean consumeTapEvents, float density) {
     this.polyline = polyline;
     this.consumeTapEvents = consumeTapEvents;
+    this.density = density;
     this.googleMapsPolylineId = polyline.getId();
   }
 
@@ -70,7 +76,7 @@ class PolylineController implements PolylineOptionsSink {
 
   @Override
   public void setWidth(float width) {
-    polyline.setWidth(width);
+    polyline.setWidth(width * density);
   }
 
   @Override

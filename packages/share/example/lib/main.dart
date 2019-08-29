@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ class DemoApp extends StatefulWidget {
 
 class DemoAppState extends State<DemoApp> {
   String text = '';
+  String subject = '';
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +33,23 @@ class DemoAppState extends State<DemoApp> {
               children: <Widget>[
                 TextField(
                   decoration: const InputDecoration(
-                    labelText: 'Share:',
+                    labelText: 'Share text:',
                     hintText: 'Enter some text and/or link to share',
                   ),
                   maxLines: 2,
                   onChanged: (String value) => setState(() {
-                        text = value;
-                      }),
+                    text = value;
+                  }),
+                ),
+                TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Share subject:',
+                    hintText: 'Enter subject to share (optional)',
+                  ),
+                  maxLines: 2,
+                  onChanged: (String value) => setState(() {
+                    subject = value;
+                  }),
                 ),
                 const Padding(padding: EdgeInsets.only(top: 24.0)),
                 Builder(
@@ -57,6 +68,7 @@ class DemoAppState extends State<DemoApp> {
                               // has its position and size after it's built.
                               final RenderBox box = context.findRenderObject();
                               Share.share(text,
+                                  subject: subject,
                                   sharePositionOrigin:
                                       box.localToGlobal(Offset.zero) &
                                           box.size);

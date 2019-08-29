@@ -4,7 +4,6 @@
 
 import 'dart:async';
 import 'dart:math';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -32,7 +31,6 @@ typedef Marker MarkerUpdateAction(Marker marker);
 
 class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   PlaceMarkerBodyState();
-
   static final LatLng center = const LatLng(-33.86711, 151.1947171);
 
   GoogleMapController controller;
@@ -69,6 +67,32 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     }
   }
 
+  void _onMarkerDragEnd(MarkerId markerId, LatLng newPosition) async {
+    final Marker tappedMarker = markers[markerId];
+    if (tappedMarker != null) {
+      await showDialog<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                actions: <Widget>[
+                  FlatButton(
+                    child: const Text('OK'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                ],
+                content: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 66),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text('Old position: ${tappedMarker.position}'),
+                        Text('New position: $newPosition'),
+                      ],
+                    )));
+          });
+    }
+  }
+
   void _add() {
     final int markerCount = markers.length;
 
@@ -89,6 +113,9 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
       infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
       onTap: () {
         _onMarkerTapped(markerId);
+      },
+      onDragEnd: (LatLng position) {
+        _onMarkerDragEnd(markerId, position);
       },
     );
 
@@ -215,36 +242,42 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  void _setMarkerIcon(BitmapDescriptor assetIcon) {
-    if (selectedMarker == null) {
-      return;
-    }
-
-    final Marker marker = markers[selectedMarker];
-    setState(() {
-      markers[selectedMarker] = marker.copyWith(
-        iconParam: assetIcon,
-      );
-    });
-  }
-
-  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
-    final Completer<BitmapDescriptor> bitmapIcon =
-        Completer<BitmapDescriptor>();
-    final ImageConfiguration config = createLocalImageConfiguration(context);
-
-    const AssetImage('assets/red_square.png')
-        .resolve(config)
-        .addListener((ImageInfo image, bool sync) async {
-      final ByteData bytes =
-          await image.image.toByteData(format: ImageByteFormat.png);
-      final BitmapDescriptor bitmap =
-          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
-      bitmapIcon.complete(bitmap);
-    });
-
-    return await bitmapIcon.future;
-  }
+// A breaking change to the ImageStreamListener API affects this sample.
+// I've updates the sample to use the new API, but as we cannot use the new
+// API before it makes it to stable I'm commenting out this sample for now
+// TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
+// https://github.com/flutter/flutter/issues/33438
+//
+//  void _setMarkerIcon(BitmapDescriptor assetIcon) {
+//    if (selectedMarker == null) {
+//      return;
+//    }
+//
+//    final Marker marker = markers[selectedMarker];
+//    setState(() {
+//      markers[selectedMarker] = marker.copyWith(
+//        iconParam: assetIcon,
+//      );
+//    });
+//  }
+//
+//  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
+//    final Completer<BitmapDescriptor> bitmapIcon =
+//        Completer<BitmapDescriptor>();
+//    final ImageConfiguration config = createLocalImageConfiguration(context);
+//
+//    const AssetImage('assets/red_square.png')
+//        .resolve(config)
+//        .addListener(ImageStreamListener((ImageInfo image, bool sync) async {
+//      final ByteData bytes =
+//          await image.image.toByteData(format: ImageByteFormat.png);
+//      final BitmapDescriptor bitmap =
+//          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
+//      bitmapIcon.complete(bitmap);
+//    }));
+//
+//    return await bitmapIcon.future;
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -330,16 +363,22 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                           child: const Text('change zIndex'),
                           onPressed: _changeZIndex,
                         ),
-                        FlatButton(
-                          child: const Text('set marker icon'),
-                          onPressed: () {
-                            _getAssetIcon(context).then(
-                              (BitmapDescriptor icon) {
-                                _setMarkerIcon(icon);
-                              },
-                            );
-                          },
-                        ),
+                        // A breaking change to the ImageStreamListener API affects this sample.
+                        // I've updates the sample to use the new API, but as we cannot use the new
+                        // API before it makes it to stable I'm commenting out this sample for now
+                        // TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
+                        // https://github.com/flutter/flutter/issues/33438
+                        //
+                        // FlatButton(
+                        //   child: const Text('set marker icon'),
+                        //   onPressed: () {
+                        //     _getAssetIcon(context).then(
+                        //       (BitmapDescriptor icon) {
+                        //         _setMarkerIcon(icon);
+                        //       },
+                        //     );
+                        //   },
+                        // ),
                       ],
                     ),
                   ],

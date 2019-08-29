@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,15 +39,14 @@ Future<Directory> getTemporaryDirectory() async {
 /// On iOS, this uses the `NSApplicationSupportDirectory` API.
 /// If this directory does not exist, it is created automatically.
 ///
-/// On Android, this function throws an [UnsupportedError].
+/// On Android, this function uses the `getFilesDir` API on the context.
 Future<Directory> getApplicationSupportDirectory() async {
-  if (!Platform.isIOS)
-    throw UnsupportedError("getApplicationSupportDirectory requires iOS");
   final String path =
       await _channel.invokeMethod<String>('getApplicationSupportDirectory');
   if (path == null) {
     return null;
   }
+
   return Directory(path);
 }
 
@@ -58,7 +57,7 @@ Future<Directory> getApplicationSupportDirectory() async {
 /// [getApplicationSupportDirectory] instead if the data is not user-generated.
 ///
 /// On Android, this uses the `getDataDirectory` API on the context. Consider
-/// using getExternalStorageDirectory instead if data is intended to be visible
+/// using [getExternalStorageDirectory] instead if data is intended to be visible
 /// to the user.
 Future<Directory> getApplicationDocumentsDirectory() async {
   final String path =
@@ -76,7 +75,7 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 /// On iOS, this function throws an [UnsupportedError] as it is not possible
 /// to access outside the app's sandbox.
 ///
-/// On Android this uses the `getExternalStorageDirectory` API.
+/// On Android this uses the `getExternalFilesDir(null)`.
 Future<Directory> getExternalStorageDirectory() async {
   if (Platform.isIOS)
     throw UnsupportedError("Functionality not available on iOS");

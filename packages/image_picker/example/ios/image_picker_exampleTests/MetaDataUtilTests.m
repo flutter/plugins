@@ -29,6 +29,12 @@
                                                                              ofType:@"png"]];
   XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:dataPNG],
                  FLTImagePickerMIMETypePNG);
+
+  // test gif
+  NSData *dataGIF = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"gifImage"
+                                                                             ofType:@"gif"]];
+  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:dataGIF],
+                 FLTImagePickerMIMETypeGIF);
 }
 
 - (void)testSuffixFromType {
@@ -39,6 +45,10 @@
   // test png
   XCTAssertEqualObjects(
       [FLTImagePickerMetaDataUtil imageTypeSuffixFromType:FLTImagePickerMIMETypePNG], @".png");
+
+  // test gif
+  XCTAssertEqualObjects(
+      [FLTImagePickerMetaDataUtil imageTypeSuffixFromType:FLTImagePickerMIMETypeGIF], @".gif");
 
   // test other
   XCTAssertNil([FLTImagePickerMetaDataUtil imageTypeSuffixFromType:FLTImagePickerMIMETypeOther]);
@@ -85,47 +95,6 @@
                                                               quality:nil];
   XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:convertedDataPNG],
                  FLTImagePickerMIMETypePNG);
-
-  // test throws exceptions
-  XCTAssertThrows([FLTImagePickerMetaDataUtil convertImage:imageJPG
-                                                 usingType:FLTImagePickerMIMETypePNG
-                                                   quality:@(0.5)],
-                  @"setting quality when converting to PNG throws exception");
-}
-
-- (void)testGetNormalizedUIImageOrientationFromCGImagePropertyOrientation {
-  XCTAssertEqual(
-      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                      kCGImagePropertyOrientationUp],
-      UIImageOrientationUp);
-  XCTAssertEqual(
-      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                      kCGImagePropertyOrientationDown],
-      UIImageOrientationDown);
-  XCTAssertEqual(
-      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                      kCGImagePropertyOrientationLeft],
-      UIImageOrientationRight);
-  XCTAssertEqual(
-      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                      kCGImagePropertyOrientationRight],
-      UIImageOrientationLeft);
-  XCTAssertEqual(
-      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                      kCGImagePropertyOrientationUpMirrored],
-      UIImageOrientationUpMirrored);
-  XCTAssertEqual(
-      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                      kCGImagePropertyOrientationDownMirrored],
-      UIImageOrientationDownMirrored);
-  XCTAssertEqual(
-      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                      kCGImagePropertyOrientationLeftMirrored],
-      UIImageOrientationRightMirrored);
-  XCTAssertEqual(
-      [FLTImagePickerMetaDataUtil getNormalizedUIImageOrientationFromCGImagePropertyOrientation:
-                                      kCGImagePropertyOrientationRightMirrored],
-      UIImageOrientationLeftMirrored);
 }
 
 @end

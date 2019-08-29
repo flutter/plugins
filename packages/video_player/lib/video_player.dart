@@ -12,10 +12,7 @@ import 'package:meta/meta.dart';
 final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
   // This will clear all open videos on the platform when a full restart is
   // performed.
-  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-  // https://github.com/flutter/flutter/issues/26431
-  // ignore: strong_mode_implicit_dynamic_method
-  ..invokeMethod('init');
+  ..invokeMethod<void>('init');
 
 class DurationRange {
   DurationRange(this.start, this.end);
@@ -34,6 +31,8 @@ class DurationRange {
   @override
   String toString() => '$runtimeType(start: $start, end: $end)';
 }
+
+enum VideoFormat { dash, hls, ss, other }
 
 /// The duration, current position, buffering state, error state and settings
 /// of a [VideoPlayerController].
@@ -151,6 +150,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// package and null otherwise.
   VideoPlayerController.asset(this.dataSource, {this.package})
       : dataSourceType = DataSourceType.asset,
+        formatHint = null,
         super(VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from obtained from
@@ -158,7 +158,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// The URI for the video is given by the [dataSource] argument and must not be
   /// null.
-  VideoPlayerController.network(this.dataSource)
+  /// **Android only**: The [formatHint] option allows the caller to override
+  /// the video format detection code.
+  VideoPlayerController.network(this.dataSource, {this.formatHint})
       : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: null));
@@ -171,10 +173,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
+        formatHint = null,
         super(VideoPlayerValue(duration: null));
 
   int _textureId;
   final String dataSource;
+  final VideoFormat formatHint;
 
   /// Describes the type of data source this [VideoPlayerController]
   /// is constructed with.
@@ -206,12 +210,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         dataSourceDescription = <String, dynamic>{'uri': dataSource};
         break;
       case DataSourceType.file:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource};
+        dataSourceDescription = <String, dynamic>{
+          'uri': dataSource,
+          'formatHint': _videoFormatStringMap[formatHint]
+        };
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final Map<dynamic, dynamic> response = await _channel.invokeMethod(
+    final Map<String, dynamic> response =
+        await _channel.invokeMapMethod<String, dynamic>(
       'create',
       dataSourceDescription,
     );
@@ -228,6 +233,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     void eventListener(dynamic event) {
+      if (_isDisposed) {
+        return;
+      }
+
       final Map<dynamic, dynamic> map = event;
       switch (map['event']) {
         case 'initialized':
@@ -284,10 +293,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         _isDisposed = true;
         _timer?.cancel();
         await _eventSubscription?.cancel();
-        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-        // https://github.com/flutter/flutter/issues/26431
-        // ignore: strong_mode_implicit_dynamic_method
-        await _channel.invokeMethod(
+        await _channel.invokeMethod<void>(
           'dispose',
           <String, dynamic>{'textureId': _textureId},
         );
@@ -317,10 +323,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    _channel.invokeMethod(
+    _channel.invokeMethod<void>(
       'setLooping',
       <String, dynamic>{'textureId': _textureId, 'looping': value.isLooping},
     );
@@ -331,10 +334,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
     if (value.isPlaying) {
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      await _channel.invokeMethod(
+      await _channel.invokeMethod<void>(
         'play',
         <String, dynamic>{'textureId': _textureId},
       );
@@ -353,10 +353,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       );
     } else {
       _timer?.cancel();
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      await _channel.invokeMethod(
+      await _channel.invokeMethod<void>(
         'pause',
         <String, dynamic>{'textureId': _textureId},
       );
@@ -367,10 +364,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod(
+    await _channel.invokeMethod<void>(
       'setVolume',
       <String, dynamic>{'textureId': _textureId, 'volume': value.volume},
     );
@@ -382,10 +376,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return null;
     }
     return Duration(
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      milliseconds: await _channel.invokeMethod(
+      milliseconds: await _channel.invokeMethod<int>(
         'position',
         <String, dynamic>{'textureId': _textureId},
       ),
@@ -401,10 +392,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     } else if (moment < const Duration()) {
       moment = const Duration();
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod('seekTo', <String, dynamic>{
+    await _channel.invokeMethod<void>('seekTo', <String, dynamic>{
       'textureId': _textureId,
       'location': moment.inMilliseconds,
     });
@@ -419,6 +407,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     value = value.copyWith(volume: volume.clamp(0.0, 1.0));
     await _applyVolume();
   }
+
+  static const Map<VideoFormat, String> _videoFormatStringMap =
+      <VideoFormat, String>{
+    VideoFormat.ss: 'ss',
+    VideoFormat.hls: 'hls',
+    VideoFormat.dash: 'dash',
+    VideoFormat.other: 'other',
+  };
 }
 
 class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {

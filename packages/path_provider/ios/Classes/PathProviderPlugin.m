@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
 
 static FlutterError* getFlutterError(NSError* error) {
   if (error == nil) return nil;
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", error.code]
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)error.code]
                              message:error.domain
                              details:error.localizedDescription];
 }

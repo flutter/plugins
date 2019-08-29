@@ -44,6 +44,8 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         return Intent.ACTION_VOICE_COMMAND;
       case "settings":
         return Settings.ACTION_SETTINGS;
+      case "action_location_source_settings":
+        return Settings.ACTION_LOCATION_SOURCE_SETTINGS;
       default:
         return action;
     }
@@ -123,6 +125,9 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     Intent intent = new Intent(action);
     if (mRegistrar.activity() == null) {
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+    if (call.argument("flag") != null) {
+      intent.addFlags((Integer) call.argument("flags"));
     }
     if (call.argument("category") != null) {
       intent.addCategory((String) call.argument("category"));

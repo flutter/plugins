@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #import <Photos/Photos.h>
 #import <UIKit/UIKit.h>
 
+#import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
 
@@ -127,6 +128,9 @@ static const int SOURCE_GALLERY = 1;
                                delegate:nil
                       cancelButtonTitle:@"OK"
                       otherButtonTitles:nil] show];
+    self.result(nil);
+    self.result = nil;
+    _arguments = nil;
   }
 }
 
@@ -247,15 +251,24 @@ static const int SOURCE_GALLERY = 1;
 
     NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+    NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
+
+    if (![imageQuality isKindOfClass:[NSNumber class]]) {
+      imageQuality = @1;
+    } else if (imageQuality.intValue < 0 || imageQuality.intValue > 100) {
+      imageQuality = [NSNumber numberWithInt:1];
+    } else {
+      imageQuality = @([imageQuality floatValue] / 100);
+    }
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-      image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+      image = [FLTImagePickerImageUtil scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
     }
 
     PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
     if (!originalAsset) {
       // Image picked without an original asset (e.g. User took a photo directly)
-      [self saveImageWithPickerInfo:info image:image];
+      [self saveImageWithPickerInfo:info image:image imageQuality:imageQuality];
     } else {
       __weak typeof(self) weakSelf = self;
       [[PHImageManager defaultManager]
@@ -263,7 +276,12 @@ static const int SOURCE_GALLERY = 1;
                            options:nil
                      resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
                                      UIImageOrientation orientation, NSDictionary *_Nullable info) {
-                       [weakSelf saveImageWithOriginalImageData:imageData image:image];
+                       // maxWidth and maxHeight are used only for GIF images.
+                       [weakSelf saveImageWithOriginalImageData:imageData
+                                                          image:image
+                                                       maxWidth:maxWidth
+                                                      maxHeight:maxHeight
+                                                   imageQuality:imageQuality];
                      }];
     }
   }
@@ -278,64 +296,26 @@ static const int SOURCE_GALLERY = 1;
   _arguments = nil;
 }
 
-- (UIImage *)scaledImage:(UIImage *)image
-                maxWidth:(NSNumber *)maxWidth
-               maxHeight:(NSNumber *)maxHeight {
-  double originalWidth = image.size.width;
-  double originalHeight = image.size.height;
-
-  bool hasMaxWidth = maxWidth != (id)[NSNull null];
-  bool hasMaxHeight = maxHeight != (id)[NSNull null];
-
-  double width = hasMaxWidth ? MIN([maxWidth doubleValue], originalWidth) : originalWidth;
-  double height = hasMaxHeight ? MIN([maxHeight doubleValue], originalHeight) : originalHeight;
-
-  bool shouldDownscaleWidth = hasMaxWidth && [maxWidth doubleValue] < originalWidth;
-  bool shouldDownscaleHeight = hasMaxHeight && [maxHeight doubleValue] < originalHeight;
-  bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
-
-  if (shouldDownscale) {
-    double downscaledWidth = floor((height / originalHeight) * originalWidth);
-    double downscaledHeight = floor((width / originalWidth) * originalHeight);
-
-    if (width < height) {
-      if (!hasMaxWidth) {
-        width = downscaledWidth;
-      } else {
-        height = downscaledHeight;
-      }
-    } else if (height < width) {
-      if (!hasMaxHeight) {
-        height = downscaledHeight;
-      } else {
-        width = downscaledWidth;
-      }
-    } else {
-      if (originalWidth < originalHeight) {
-        width = downscaledWidth;
-      } else if (originalHeight < originalWidth) {
-        height = downscaledHeight;
-      }
-    }
-  }
-
-  UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
-  [image drawInRect:CGRectMake(0, 0, width, height)];
-
-  UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-
-  return scaledImage;
-}
-
-- (void)saveImageWithOriginalImageData:(NSData *)originalImageData image:(UIImage *)image {
+- (void)saveImageWithOriginalImageData:(NSData *)originalImageData
+                                 image:(UIImage *)image
+                              maxWidth:(NSNumber *)maxWidth
+                             maxHeight:(NSNumber *)maxHeight
+                          imageQuality:(NSNumber *)imageQuality {
   NSString *savedPath =
-      [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:originalImageData image:image];
+      [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:originalImageData
+                                                             image:image
+                                                          maxWidth:maxWidth
+                                                         maxHeight:maxHeight
+                                                      imageQuality:imageQuality];
   [self handleSavedPath:savedPath];
 }
 
-- (void)saveImageWithPickerInfo:(NSDictionary *)info image:(UIImage *)image {
-  NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info image:image];
+- (void)saveImageWithPickerInfo:(NSDictionary *)info
+                          image:(UIImage *)image
+                   imageQuality:(NSNumber *)imageQuality {
+  NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info
+                                                                        image:image
+                                                                 imageQuality:imageQuality];
   [self handleSavedPath:savedPath];
 }
 
