@@ -1,6 +1,10 @@
-## 0.2.1+1
+## 0.2.1+2
 
 * Android: Require a non-null Activity to use the `launchBillingFlow` method.
+
+## 0.2.1+1
+
+* Remove skipped driver test.
 
 ## 0.2.1
 
