@@ -95,11 +95,14 @@ Future<bool> launch(
       'universalLinksOnly': universalLinksOnly ?? false,
       'headers': headers ?? <String, String>{},
     },
-  );
-  if (statusBarBrightness != null) {
-    WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
-        previousAutomaticSystemUiAdjustment;
-  }
+  ).whenComplete(() {
+    if (statusBarBrightness != null &&
+        defaultTargetPlatform == TargetPlatform.iOS) {
+      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
+          previousAutomaticSystemUiAdjustment;
+    }
+  });
+
   return result;
 }
 

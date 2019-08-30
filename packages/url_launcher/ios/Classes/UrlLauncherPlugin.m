@@ -12,6 +12,7 @@ API_AVAILABLE(ios(9.0))
 @property(copy, nonatomic) FlutterResult flutterResult;
 @property(strong, nonatomic) NSURL *url;
 @property(strong, nonatomic) SFSafariViewController *safari;
+@property(nonatomic) BOOL didLoadSuccessfully;
 @property(nonatomic, copy) void (^didFinish)(void);
 
 @end
@@ -33,19 +34,20 @@ API_AVAILABLE(ios(9.0))
 
 - (void)safariViewController:(SFSafariViewController *)controller
       didCompleteInitialLoad:(BOOL)didLoadSuccessfully API_AVAILABLE(ios(9.0)) {
-  if (didLoadSuccessfully) {
-    self.flutterResult(nil);
-  } else {
-    self.flutterResult([FlutterError
-        errorWithCode:@"Error"
-              message:[NSString stringWithFormat:@"Error while launching %@", self.url]
-              details:nil]);
-  }
+  self.didLoadSuccessfully = didLoadSuccessfully;
 }
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller API_AVAILABLE(ios(9.0)) {
   [controller dismissViewControllerAnimated:YES completion:nil];
   self.didFinish();
+  if (self.didLoadSuccessfully) {
+    self.flutterResult(nil);
+  } else {
+    self.flutterResult([FlutterError
+                        errorWithCode:@"Error"
+                        message:[NSString stringWithFormat:@"Error while launching %@", self.url]
+                        details:nil]);
+  }
 }
 
 - (void)close {
