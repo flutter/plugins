@@ -44,6 +44,8 @@ URL schemes depend on the underlying platform and installed apps.
 
 Common schemes supported by both iOS and Android:
 
+***Note: These action won't work on simulator you need physical device to test for iOS.***
+
 | Scheme | Action |
 |---|---|
 | `http:<URL>` , `https:<URL>`, e.g. `http://flutter.dev` | Open URL in the default browser |
