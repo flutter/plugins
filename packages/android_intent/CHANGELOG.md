@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Added "flags" option to call intent.addFlags(int) in native. 
+
 ## 0.3.2
 
 * Added "action_location_source_settings" action to start Location Settings Activity.

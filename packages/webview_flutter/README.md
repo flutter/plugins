@@ -22,12 +22,10 @@ Keyboard support within webviews is also experimental. The above tags also
 surface known issues with keyboard input. Some currently known keyboard issues,
 as of `webview_flutter` version `0.3.10+4`:
 
-* [Input needs to be tapped twice to be registered on Samsung
-  devices](https://github.com/flutter/flutter/issues/35867)
-* [Keyboard behavior is buggy after a
-  resize](https://github.com/flutter/flutter/issues/36978)
 * [Keyboard persists after tapping outside text
   field](https://github.com/flutter/flutter/issues/36478)
+* [WebView's text selection dialog is not responding to touch
+  events](https://github.com/flutter/flutter/issues/24585)
 
 ## Setup
 

@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('$SharedPreferences', () {
     const MethodChannel channel = MethodChannel(
       'plugins.flutter.io/shared_preferences',
@@ -153,6 +155,12 @@ void main() {
 
       await preferences.reload();
       expect(preferences.getString('String'), kTestValues2['flutter.String']);
+    });
+
+    test('back to back calls should return same instance.', () async {
+      final Future<SharedPreferences> first = SharedPreferences.getInstance();
+      final Future<SharedPreferences> second = SharedPreferences.getInstance();
+      expect(await first, await second);
     });
 
     group('mocking', () {

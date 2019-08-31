@@ -1,8 +1,32 @@
-## 0.5.21
+## 0.5.22
 
 * Fix references to `myLocationButtonEnabled` in test and example app.
 * On iOS, `myLocationEnabled` no longer affects the value of `myLocationButtonEnabled`
 * Added `isMyLocationEnabled` to `GoogleMapsInspector`.
+
+## 0.5.21
+
+* Don't recreate map elements if they didn't change since last widget build.
+
+## 0.5.20+6
+
+* Adds support for toggling the traffic layer
+
+## 0.5.20+5
+
+* Allow (de-)serialization of CameraPosition
+
+## 0.5.20+4
+
+* Marker drag event
+
+## 0.5.20+3
+
+* Update Android play-services-maps to 17.0.0
+
+## 0.5.20+2
+
+* Android: Fix polyline width in building phase.
 
 ## 0.5.20+1
 

@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 part of google_maps_flutter;
 
 /// Uniquely identifies a [Polyline] among [GoogleMap] polylines.
@@ -188,7 +192,19 @@ class Polyline {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Polyline typedOther = other;
-    return polylineId == typedOther.polylineId;
+    return polylineId == typedOther.polylineId &&
+        consumeTapEvents == typedOther.consumeTapEvents &&
+        color == typedOther.color &&
+        geodesic == typedOther.geodesic &&
+        jointType == typedOther.jointType &&
+        listEquals(patterns, typedOther.patterns) &&
+        listEquals(points, typedOther.points) &&
+        startCap == typedOther.startCap &&
+        endCap == typedOther.endCap &&
+        visible == typedOther.visible &&
+        width == typedOther.width &&
+        zIndex == typedOther.zIndex &&
+        onTap == typedOther.onTap;
   }
 
   @override

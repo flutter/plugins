@@ -10,6 +10,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'fake_maps_controllers.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final FakePlatformViewsController fakePlatformViewsController =
       FakePlatformViewsController();
 
@@ -497,5 +499,34 @@ void main() {
     );
 
     expect(platformGoogleMap.padding, <double>[60, 50, 80, 70]);
+  });
+
+  testWidgets('Can update traffic', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          trafficEnabled: false,
+        ),
+      ),
+    );
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.trafficEnabled, false);
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          trafficEnabled: true,
+        ),
+      ),
+    );
+
+    expect(platformGoogleMap.trafficEnabled, true);
   });
 }
