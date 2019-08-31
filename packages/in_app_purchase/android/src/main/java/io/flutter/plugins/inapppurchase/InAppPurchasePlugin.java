@@ -70,7 +70,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/in_app_purchase");
 
-    final BillingClientFactory factory = new BillingClientFactory();
+    final BillingClientFactory factory = new BillingClientFactoryImpl();
     final InAppPurchasePlugin plugin = new InAppPurchasePlugin(factory, registrar, channel);
     channel.setMethodCallHandler(plugin);
   }

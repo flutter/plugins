@@ -63,13 +63,12 @@ public class InAppPurchasePluginTest {
   @Spy Result result;
   @Mock PluginRegistry.Registrar registrar;
   @Mock Activity activity;
-  @Mock BillingClientFactory factory;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
 
-    when(factory.createBillingClient(any(), any())).thenReturn(mockBillingClient);
+    BillingClientFactory factory = (context, channel) -> mockBillingClient;
     plugin = new InAppPurchasePlugin(factory, registrar, mockMethodChannel);
   }
 
