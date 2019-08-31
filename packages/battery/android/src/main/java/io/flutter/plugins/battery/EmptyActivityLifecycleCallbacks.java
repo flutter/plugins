@@ -7,7 +7,8 @@ import android.os.Bundle;
  * Helper class to avoid overriding all methods when we only need one or two. This should probably
  * go to flutter embedding or something.
  */
-public class EmptyActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
+public abstract class EmptyActivityLifecycleCallbacks
+    implements Application.ActivityLifecycleCallbacks {
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
 

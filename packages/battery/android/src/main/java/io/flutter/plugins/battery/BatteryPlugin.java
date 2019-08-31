@@ -54,6 +54,7 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler {
           application.unregisterActivityLifecycleCallbacks(lifecycleCallbacks);
           if (chargingStateChangeReceiver != null) {
             application.unregisterReceiver(chargingStateChangeReceiver);
+            chargingStateChangeReceiver = null;
           }
         }
       };
@@ -86,14 +87,14 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler {
   }
 
   private int getBatteryLevel() {
-    int batteryCapacity;
+    int batteryPercentage;
     if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
       BatteryManager batteryManager =
           (BatteryManager) application.getSystemService(Context.BATTERY_SERVICE);
       // getIntProperty will return 0 or Integer.MIN_VALUE if it fail to read a property
       // it will depend of the targetSdk.
       // See also : https://developer.android.com/reference/android/os/BatteryManager#getIntProperty(int)
-      batteryCapacity = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+      batteryPercentage = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
     } else {
       Intent intent = application.registerReceiver(null, chargedFilter);
 
@@ -104,10 +105,10 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler {
         // avoids zero divisor.
         return 0;
       }
-      batteryCapacity = (level * 100) / scale;
+      batteryPercentage = (level * 100) / scale;
     }
 
-    return batteryCapacity;
+    return batteryPercentage;
   }
 
   private BroadcastReceiver createChargingStateChangeReceiver(final EventSink events) {
