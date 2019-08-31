@@ -1,3 +1,15 @@
+## 0.5.21
+
+* Don't recreate map elements if they didn't change since last widget build.
+
+## 0.5.20+6
+
+* Adds support for toggling the traffic layer
+
+## 0.5.20+5
+
+* Allow (de-)serialization of CameraPosition
+
 ## 0.5.20+4
 
 * Marker drag event

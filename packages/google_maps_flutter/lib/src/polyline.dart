@@ -192,7 +192,19 @@ class Polyline {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Polyline typedOther = other;
-    return polylineId == typedOther.polylineId;
+    return polylineId == typedOther.polylineId &&
+        consumeTapEvents == typedOther.consumeTapEvents &&
+        color == typedOther.color &&
+        geodesic == typedOther.geodesic &&
+        jointType == typedOther.jointType &&
+        listEquals(patterns, typedOther.patterns) &&
+        listEquals(points, typedOther.points) &&
+        startCap == typedOther.startCap &&
+        endCap == typedOther.endCap &&
+        visible == typedOther.visible &&
+        width == typedOther.width &&
+        zIndex == typedOther.zIndex &&
+        onTap == typedOther.onTap;
   }
 
   @override

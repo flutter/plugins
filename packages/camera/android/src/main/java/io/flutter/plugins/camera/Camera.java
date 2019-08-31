@@ -21,6 +21,7 @@ import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -395,7 +396,12 @@ public class Camera {
     }
 
     try {
-      mediaRecorder.pause();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        mediaRecorder.pause();
+      } else {
+        result.error("videoRecordingFailed", "pauseVideoRecording requires Android API +24.", null);
+        return;
+      }
     } catch (IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
       return;
@@ -411,7 +417,13 @@ public class Camera {
     }
 
     try {
-      mediaRecorder.resume();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        mediaRecorder.resume();
+      } else {
+        result.error(
+            "videoRecordingFailed", "resumeVideoRecording requires Android API +24.", null);
+        return;
+      }
     } catch (IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
       return;

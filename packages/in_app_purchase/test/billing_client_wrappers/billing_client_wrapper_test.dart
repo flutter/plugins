@@ -13,6 +13,8 @@ import 'sku_details_wrapper_test.dart';
 import 'purchase_wrapper_test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
   BillingClient billingClient;
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:connectivity/connectivity.dart';
@@ -26,6 +27,14 @@ void main() {
           break;
         default:
           break;
+      }
+    });
+
+    test('test location methods, iOS only', () async {
+      print(Platform.isIOS);
+      if (Platform.isIOS) {
+        expect((await _connectivity.getLocationServiceAuthorization()),
+            LocationAuthorizationStatus.notDetermined);
       }
     });
   });
