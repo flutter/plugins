@@ -1,8 +1,14 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/services.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('$Connectivity', () {
     final List<MethodCall> log = <MethodCall>[];
 
@@ -19,6 +25,10 @@ void main() {
             return 'c0:ff:33:c0:d3:55';
           case 'wifiIPAddress':
             return '127.0.0.1';
+          case 'requestLocationServiceAuthorization':
+            return 'authorizedAlways';
+          case 'getLocationServiceAuthorization':
+            return 'authorizedAlways';
           default:
             return null;
         }
@@ -86,6 +96,36 @@ void main() {
         <Matcher>[
           isMethodCall(
             'wifiIPAddress',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
+    test('requestLocationServiceAuthorization', () async {
+      final LocationAuthorizationStatus result =
+          await Connectivity().requestLocationServiceAuthorization();
+      expect(result, LocationAuthorizationStatus.authorizedAlways);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'requestLocationServiceAuthorization',
+            arguments: <bool>[false],
+          ),
+        ],
+      );
+    });
+
+    test('getLocationServiceAuthorization', () async {
+      final LocationAuthorizationStatus result =
+          await Connectivity().getLocationServiceAuthorization();
+      expect(result, LocationAuthorizationStatus.authorizedAlways);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'getLocationServiceAuthorization',
             arguments: null,
           ),
         ],
