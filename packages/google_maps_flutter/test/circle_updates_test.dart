@@ -75,10 +75,10 @@ void main() {
 
     final Circle addedCircle = platformGoogleMap.circlesToAdd.first;
     expect(addedCircle, equals(c2));
+
     expect(platformGoogleMap.circleIdsToRemove.isEmpty, true);
 
-    expect(platformGoogleMap.circlesToChange.length, 1);
-    expect(platformGoogleMap.circlesToChange.first, equals(c1));
+    expect(platformGoogleMap.circlesToChange.isEmpty, true);
   });
 
   testWidgets("Removing a circle", (WidgetTester tester) async {
@@ -172,29 +172,22 @@ void main() {
     expect(platformGoogleMap.circleIdsToRemove.first, equals(c3.circleId));
   });
 
-  testWidgets(
-    "Partial Update",
-    (WidgetTester tester) async {
-      final Circle c1 = Circle(circleId: CircleId("circle_1"));
-      Circle c2 = Circle(circleId: CircleId("circle_2"));
-      final Set<Circle> prev = _toSet(c1: c1, c2: c2);
-      c2 = Circle(circleId: CircleId("circle_2"), radius: 10);
-      final Set<Circle> cur = _toSet(c1: c1, c2: c2);
+  testWidgets("Partial Update", (WidgetTester tester) async {
+    final Circle c1 = Circle(circleId: CircleId("circle_1"));
+    final Circle c2 = Circle(circleId: CircleId("circle_2"));
+    Circle c3 = Circle(circleId: CircleId("circle_3"));
+    final Set<Circle> prev = _toSet(c1: c1, c2: c2, c3: c3);
+    c3 = Circle(circleId: CircleId("circle_3"), radius: 10);
+    final Set<Circle> cur = _toSet(c1: c1, c2: c2, c3: c3);
 
-      await tester.pumpWidget(_mapWithCircles(prev));
-      await tester.pumpWidget(_mapWithCircles(cur));
+    await tester.pumpWidget(_mapWithCircles(prev));
+    await tester.pumpWidget(_mapWithCircles(cur));
 
-      final FakePlatformGoogleMap platformGoogleMap =
-          fakePlatformViewsController.lastCreatedView;
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
 
-      expect(platformGoogleMap.circlesToChange, _toSet(c2: c2));
-      expect(platformGoogleMap.circleIdsToRemove.isEmpty, true);
-      expect(platformGoogleMap.circlesToAdd.isEmpty, true);
-    },
-    // The test is currently broken due to a bug (we're updating all circles
-    // instead of just the ones that were changed):
-    // https://github.com/flutter/flutter/issues/30764
-    // TODO(amirh): enable this test when the issue is fixed.
-    skip: true,
-  );
+    expect(platformGoogleMap.circlesToChange, _toSet(c3: c3));
+    expect(platformGoogleMap.circleIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.circlesToAdd.isEmpty, true);
+  });
 }
