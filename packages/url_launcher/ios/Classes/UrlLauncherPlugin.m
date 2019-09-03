@@ -139,11 +139,9 @@ API_AVAILABLE(ios(9.0))
   self.currentSession.didFinish = ^(void) {
     weakSelf.currentSession = nil;
   };
-  UIViewController *viewController =
-      [UIApplication sharedApplication].delegate.window.rootViewController;
-  [viewController presentViewController:self.currentSession.safari
-                                  animated:YES
-                                  completion:nil];
+  [self.topViewController presentViewController:self.currentSession.safari
+                                      animated:YES
+                                    completion:nil];
 }
 
 - (void)closeWebViewWithResult:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
@@ -153,4 +151,23 @@ API_AVAILABLE(ios(9.0))
   result(nil);
 }
 
+- (UIViewController *)topViewController {
+  return [self topViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
+}
+
+- (UIViewController *)topViewController:(UIViewController *)rootViewController
+{
+  if ([rootViewController isKindOfClass:[UINavigationController class]]) {
+    UINavigationController *navigationController = (UINavigationController *)rootViewController;
+    return [self topViewController:[navigationController.viewControllers lastObject]];
+  }
+  if ([rootViewController isKindOfClass:[UITabBarController class]]) {
+    UITabBarController *tabController = (UITabBarController *)rootViewController;
+    return [self topViewController:tabController.selectedViewController];
+  }
+  if (rootViewController.presentedViewController) {
+    return [self topViewController:rootViewController];
+  }
+  return rootViewController;
+}
 @end
