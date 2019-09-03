@@ -61,12 +61,6 @@ API_AVAILABLE(ios(9.0))
 
 @end
 
-@interface FLTUrlLauncherPlugin ()
-
-@property(strong, nonatomic) UIViewController *viewController;
-
-@end
-
 @implementation FLTUrlLauncherPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -76,16 +70,8 @@ API_AVAILABLE(ios(9.0))
   UIViewController *viewController =
       [UIApplication sharedApplication].delegate.window.rootViewController;
   FLTUrlLauncherPlugin *plugin =
-      [[FLTUrlLauncherPlugin alloc] initWithViewController:viewController];
+      [[FLTUrlLauncherPlugin alloc] init];
   [registrar addMethodCallDelegate:plugin channel:channel];
-}
-
-- (instancetype)initWithViewController:(UIViewController *)viewController {
-  self = [super init];
-  if (self) {
-    self.viewController = viewController;
-  }
-  return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -153,8 +139,10 @@ API_AVAILABLE(ios(9.0))
   self.currentSession.didFinish = ^(void) {
     weakSelf.currentSession = nil;
   };
-  [self.viewController presentViewController:self.currentSession.safari
-                                    animated:YES
+  UIViewController *viewController =
+      [UIApplication sharedApplication].delegate.window.rootViewController;
+  [viewController presentViewController:self.currentSession.safari
+                                  animated:YES
                                   completion:nil];
 }
 
