@@ -61,12 +61,6 @@ API_AVAILABLE(ios(9.0))
 
 @end
 
-@interface FLTUrlLauncherPlugin ()
-
-@property(strong, nonatomic) UIViewController *viewController;
-
-@end
-
 @implementation FLTUrlLauncherPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -76,16 +70,8 @@ API_AVAILABLE(ios(9.0))
   UIViewController *viewController =
       [UIApplication sharedApplication].delegate.window.rootViewController;
   FLTUrlLauncherPlugin *plugin =
-      [[FLTUrlLauncherPlugin alloc] initWithViewController:viewController];
+      [[FLTUrlLauncherPlugin alloc] init];
   [registrar addMethodCallDelegate:plugin channel:channel];
-}
-
-- (instancetype)initWithViewController:(UIViewController *)viewController {
-  self = [super init];
-  if (self) {
-    self.viewController = viewController;
-  }
-  return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -153,9 +139,9 @@ API_AVAILABLE(ios(9.0))
   self.currentSession.didFinish = ^(void) {
     weakSelf.currentSession = nil;
   };
-  [self.viewController presentViewController:self.currentSession.safari
-                                    animated:YES
-                                  completion:nil];
+  [self.topViewController presentViewController:self.currentSession.safari
+                                      animated:YES
+                                    completion:nil];
 }
 
 - (void)closeWebViewWithResult:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
@@ -165,4 +151,23 @@ API_AVAILABLE(ios(9.0))
   result(nil);
 }
 
+- (UIViewController *)topViewController {
+  return [self topViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
+}
+
+- (UIViewController *)topViewController:(UIViewController *)rootViewController
+{
+  if ([rootViewController isKindOfClass:[UINavigationController class]]) {
+    UINavigationController *navigationController = (UINavigationController *)rootViewController;
+    return [self topViewController:[navigationController.viewControllers lastObject]];
+  }
+  if ([rootViewController isKindOfClass:[UITabBarController class]]) {
+    UITabBarController *tabController = (UITabBarController *)rootViewController;
+    return [self topViewController:tabController.selectedViewController];
+  }
+  if (rootViewController.presentedViewController) {
+    return [self topViewController:rootViewController];
+  }
+  return rootViewController;
+}
 @end

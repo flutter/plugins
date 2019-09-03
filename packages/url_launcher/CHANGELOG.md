@@ -1,3 +1,8 @@
+
+## 5.1.3
+
+* Fixed iOS app2app scenario.
+
 ## 5.1.2
 
 * Update AGP and gradle.
