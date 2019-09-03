@@ -1,3 +1,7 @@
+## 0.5.4
+
+* Added ability to stop authentication (For Android).
+
 ## 0.5.3
 
 * Add face id detection as well by not relying on FingerprintCompat.
