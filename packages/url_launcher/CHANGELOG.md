@@ -1,3 +1,7 @@
+## 5.1.3
+
+* Fixed iOS app2app scenarios where rootViewController changes after initialization.
+
 ## 5.1.2
 
 * Update AGP and gradle.
