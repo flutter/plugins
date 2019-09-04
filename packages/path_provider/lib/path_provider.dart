@@ -3,12 +3,21 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' show Directory;
 
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
+import 'package:platform/platform.dart';
 
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/path_provider');
+
+Platform _platform = const LocalPlatform();
+
+@visibleForTesting
+void setMockPathProviderPlatform(Platform platform) {
+  _platform = platform;
+}
 
 /// Path to the temporary directory on the device that is not backed up and is
 /// suitable for storing caches of downloaded files.
@@ -77,7 +86,7 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 ///
 /// On Android this uses the `getExternalFilesDir(null)`.
 Future<Directory> getExternalStorageDirectory() async {
-  if (Platform.isIOS)
+  if (_platform.isIOS)
     throw UnsupportedError("Functionality not available on iOS");
   final String path =
       await _channel.invokeMethod<String>('getStorageDirectory');
