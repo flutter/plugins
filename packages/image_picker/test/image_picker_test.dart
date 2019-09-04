@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('$ImagePicker', () {
     const MethodChannel channel =
         MethodChannel('plugins.flutter.io/image_picker');
@@ -34,11 +36,13 @@ void main() {
               'source': 0,
               'maxWidth': null,
               'maxHeight': null,
+              'imageQuality': null
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 1,
               'maxWidth': null,
               'maxHeight': null,
+              'imageQuality': null
             }),
           ],
         );
@@ -59,6 +63,15 @@ void main() {
           maxWidth: 10.0,
           maxHeight: 20.0,
         );
+        await ImagePicker.pickImage(
+            source: ImageSource.camera, maxWidth: 10.0, imageQuality: 70);
+        await ImagePicker.pickImage(
+            source: ImageSource.camera, maxHeight: 10.0, imageQuality: 70);
+        await ImagePicker.pickImage(
+            source: ImageSource.camera,
+            maxWidth: 10.0,
+            maxHeight: 20.0,
+            imageQuality: 70);
 
         expect(
           log,
@@ -67,21 +80,43 @@ void main() {
               'source': 0,
               'maxWidth': null,
               'maxHeight': null,
+              'imageQuality': null
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
+              'imageQuality': null
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
+              'imageQuality': null
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
+              'imageQuality': null
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': 10.0,
+              'maxHeight': null,
+              'imageQuality': 70
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': 10.0,
+              'imageQuality': 70
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': 10.0,
+              'maxHeight': 20.0,
+              'imageQuality': 70
             }),
           ],
         );

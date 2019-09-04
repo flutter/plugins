@@ -50,7 +50,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     // alarmManagerPluginChannel is the channel responsible for receiving the following messages
     // from the main Flutter app:
     // - "AlarmService.start"
-    // - "Alarm.oneShot"
+    // - "Alarm.oneShotAt"
     // - "Alarm.periodic"
     // - "Alarm.cancel"
     final MethodChannel alarmManagerPluginChannel =
@@ -125,7 +125,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
         PeriodicRequest periodicRequest = PeriodicRequest.fromJson((JSONArray) arguments);
         AlarmService.setPeriodic(mContext, periodicRequest);
         result.success(true);
-      } else if (method.equals("Alarm.oneShot")) {
+      } else if (method.equals("Alarm.oneShotAt")) {
         // This message indicates that the Flutter app would like to schedule a one-time
         // task.
         OneShotRequest oneShotRequest = OneShotRequest.fromJson((JSONArray) arguments);
@@ -166,17 +166,28 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
   static final class OneShotRequest {
     static OneShotRequest fromJson(JSONArray json) throws JSONException {
       int requestCode = json.getInt(0);
-      boolean exact = json.getBoolean(1);
-      boolean wakeup = json.getBoolean(2);
-      long startMillis = json.getLong(3);
-      boolean rescheduleOnReboot = json.getBoolean(4);
-      long callbackHandle = json.getLong(5);
+      boolean alarmClock = json.getBoolean(1);
+      boolean allowWhileIdle = json.getBoolean(2);
+      boolean exact = json.getBoolean(3);
+      boolean wakeup = json.getBoolean(4);
+      long startMillis = json.getLong(5);
+      boolean rescheduleOnReboot = json.getBoolean(6);
+      long callbackHandle = json.getLong(7);
 
       return new OneShotRequest(
-          requestCode, exact, wakeup, startMillis, rescheduleOnReboot, callbackHandle);
+          requestCode,
+          alarmClock,
+          allowWhileIdle,
+          exact,
+          wakeup,
+          startMillis,
+          rescheduleOnReboot,
+          callbackHandle);
     }
 
     final int requestCode;
+    final boolean alarmClock;
+    final boolean allowWhileIdle;
     final boolean exact;
     final boolean wakeup;
     final long startMillis;
@@ -185,12 +196,16 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
 
     OneShotRequest(
         int requestCode,
+        boolean alarmClock,
+        boolean allowWhileIdle,
         boolean exact,
         boolean wakeup,
         long startMillis,
         boolean rescheduleOnReboot,
         long callbackHandle) {
       this.requestCode = requestCode;
+      this.alarmClock = alarmClock;
+      this.allowWhileIdle = allowWhileIdle;
       this.exact = exact;
       this.wakeup = wakeup;
       this.startMillis = startMillis;

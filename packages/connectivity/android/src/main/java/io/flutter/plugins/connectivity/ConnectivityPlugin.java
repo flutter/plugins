@@ -84,7 +84,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
     return getNetworkTypeLegacy(manager);
   }
 
-  @SuppressWarnings("deprecated")
+  @SuppressWarnings("deprecation")
   private String getNetworkTypeLegacy(ConnectivityManager manager) {
     // handle type for Android versions less than Android 9
     NetworkInfo info = manager.getActiveNetworkInfo();
