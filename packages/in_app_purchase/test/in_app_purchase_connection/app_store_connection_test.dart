@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import 'package:test/test.dart';
 
@@ -17,6 +18,8 @@ import 'package:in_app_purchase/store_kit_wrappers.dart';
 import '../store_kit_wrappers/sk_test_stub_objects.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final FakeIOSPlatform fakeIOSPlatform = FakeIOSPlatform();
 
   setUpAll(() {

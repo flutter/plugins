@@ -6,15 +6,24 @@
 
 #import "Reachability/Reachability.h"
 
+#import <CoreLocation/CoreLocation.h>
+#import "FLTConnectivityLocationHandler.h"
 #import "SystemConfiguration/CaptiveNetwork.h"
 
 #include <ifaddrs.h>
 
 #include <arpa/inet.h>
 
+<<<<<<< HEAD
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
 @interface FLTConnectivityPlugin () <FlutterStreamHandler>
+=======
+@interface FLTConnectivityPlugin () <FlutterStreamHandler, CLLocationManagerDelegate>
+
+@property(strong, nonatomic) FLTConnectivityLocationHandler* locationHandler;
+
+>>>>>>> 0a7535d1cd7119767d8d2506b2c9e3742f585fa8
 @end
 
 @implementation FLTConnectivityPlugin {
@@ -148,9 +157,24 @@
     result([self getBSSID]);
   } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
     result([self getWifiIP]);
+<<<<<<< HEAD
   } else if ([call.method isEqualToString:@"subtype"]) {
     result([self getConnectionSubtype:[Reachability reachabilityForInternetConnection]]);
 
+=======
+  } else if ([call.method isEqualToString:@"getLocationServiceAuthorization"]) {
+    result([self convertCLAuthorizationStatusToString:[FLTConnectivityLocationHandler
+                                                          locationAuthorizationStatus]]);
+  } else if ([call.method isEqualToString:@"requestLocationServiceAuthorization"]) {
+    NSArray* arguments = call.arguments;
+    BOOL always = [arguments.firstObject boolValue];
+    __weak typeof(self) weakSelf = self;
+    [self.locationHandler
+        requestLocationAuthorization:always
+                          completion:^(CLAuthorizationStatus status) {
+                            result([weakSelf convertCLAuthorizationStatusToString:status]);
+                          }];
+>>>>>>> 0a7535d1cd7119767d8d2506b2c9e3742f585fa8
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -159,6 +183,34 @@
 - (void)onReachabilityDidChange:(NSNotification*)notification {
   Reachability* curReach = [notification object];
   _eventSink([self statusFromReachability:curReach]);
+}
+
+- (NSString*)convertCLAuthorizationStatusToString:(CLAuthorizationStatus)status {
+  switch (status) {
+    case kCLAuthorizationStatusNotDetermined: {
+      return @"notDetermined";
+    }
+    case kCLAuthorizationStatusRestricted: {
+      return @"restricted";
+    }
+    case kCLAuthorizationStatusDenied: {
+      return @"denied";
+    }
+    case kCLAuthorizationStatusAuthorizedAlways: {
+      return @"authorizedAlways";
+    }
+    case kCLAuthorizationStatusAuthorizedWhenInUse: {
+      return @"authorizedWhenInUse";
+    }
+    default: { return @"unknown"; }
+  }
+}
+
+- (FLTConnectivityLocationHandler*)locationHandler {
+  if (!_locationHandler) {
+    _locationHandler = [FLTConnectivityLocationHandler new];
+  }
+  return _locationHandler;
 }
 
 #pragma mark FlutterStreamHandler impl

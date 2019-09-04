@@ -1,3 +1,33 @@
+## 0.3.13
+
+* Add an optional `userAgent` property to set a custom User Agent.
+  
+## 0.3.12+1
+
+* Temporarily revert getTitle (doing this as a patch bump shortly after publishing).
+
+## 0.3.12
+
+* Added a getTitle getter to WebViewController.
+
+## 0.3.11+6
+
+* Calling destroy on Android webview when flutter webview is getting disposed.
+
+## 0.3.11+5
+
+* Reduce compiler warnings regarding iOS9 compatibility by moving a single
+  method back into a `@available` block.
+
+## 0.3.11+4
+
+* Removed noisy log messages on iOS.
+
+## 0.3.11+3
+
+* Apply the display listeners workaround that was shipped in 0.3.11+1 on
+  all Android versions prior to P.
+
 ## 0.3.11+2
 
 * Add fix for input connection being dropped after a screen resize on certain
