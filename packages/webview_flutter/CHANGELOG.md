@@ -1,6 +1,10 @@
 ## 0.3.13
 
 * Add an optional `userAgent` property to set a custom User Agent.
+
+## 0.3.13+1
+
+* Allow underscore in the JavaScript channel names.
   
 ## 0.3.12+1
 
