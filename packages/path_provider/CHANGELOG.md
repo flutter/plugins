@@ -1,6 +1,7 @@
 ## 1.2.2
 
 * Correct the integration test for Android's `getApplicationSupportDirectory` call.
+* Introduce `setMockPathProviderPlatform` for API for tests.
 * Adds missing unit and integration tests.
 
 ## 1.2.1
