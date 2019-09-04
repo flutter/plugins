@@ -11,7 +11,7 @@ import 'package:meta/meta.dart';
 import 'auth_strings.dart';
 import 'error_codes.dart';
 
-enum BiometricType { face, fingerprint, iris }
+enum BiometricType { face, fingerprint, iris, none }
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/local_auth');
 
