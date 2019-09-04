@@ -166,7 +166,7 @@ API_AVAILABLE(ios(9.0))
     return [self topViewController:tabController.selectedViewController];
   }
   if (rootViewController.presentedViewController) {
-    return [self topViewController:rootViewController];
+    return [self topViewController:rootViewController.presentedViewController];
   }
   return rootViewController;
 }
