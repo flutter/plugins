@@ -1,3 +1,39 @@
+## 0.6.1+4
+
+* Android: Fix a regression where the `retrieveLostImage` does not work anymore.
+* Set up Android unit test to test `ImagePickerCache` and added image quality caching tests.
+
+## 0.6.1+3
+
+* Bugfix iOS: Fix orientation of the picked image after scaling.
+* Remove unnecessary code that tried to normalize the orientation.
+* Trivial XCTest code fix.
+
+## 0.6.1+2
+
+* Replace dependency on `androidx.legacy:legacy-support-v4:1.0.0` with `androidx.core:core:1.0.2`
+
+## 0.6.1+1
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.6.1
+
+* New feature : Get images with custom quality. While picking images, user can pass `imageQuality`
+parameter to compress image.
+
+## 0.6.0+20
+
+* Android: Migrated information cache methods to use instance methods.
+
+## 0.6.0+19
+
+* Android: Fix memory leak due not unregistering ActivityLifecycleCallbacks.
+
+## 0.6.0+18
+
+* Fix video play in example and update video_player plugin dependency.
+
 ## 0.6.0+17
 
 * iOS: Fix a crash when user captures image from the camera with devices under iOS 11.

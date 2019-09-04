@@ -38,7 +38,13 @@ void _alarmManagerCallbackDispatcher() {
       print('Fatal: could not find callback');
       exit(-1);
     }
-    closure();
+
+    if (closure is Function()) {
+      closure();
+    } else if (closure is Function(int)) {
+      final int id = args[1];
+      closure(id);
+    }
   });
 
   // Once we've finished initializing, let the native portion of the plugin
@@ -80,8 +86,12 @@ class AndroidAlarmManager {
   /// `callback` must be either a top-level function or a static method from a
   /// class.
   ///
+  /// `callback` can be `Function()` or `Function(int)`
+  ///
   /// The timer is uniquely identified by `id`. Calling this function again
-  /// again with the same `id` will cancel and replace the existing timer.
+  /// with the same `id` will cancel and replace the existing timer.
+  ///
+  /// `id` will passed to `callback` if it is of type `Function(int)`
   ///
   /// If `alarmClock` is passed as `true`, the timer will be created with
   /// Android's `AlarmManagerCompat.setAlarmClock`.
@@ -107,26 +117,86 @@ class AndroidAlarmManager {
   static Future<bool> oneShot(
     Duration delay,
     int id,
-    dynamic Function() callback, {
+    Function callback, {
+    bool alarmClock = false,
+    bool allowWhileIdle = false,
+    bool exact = false,
+    bool wakeup = false,
+    bool rescheduleOnReboot = false,
+  }) =>
+      oneShotAt(
+        DateTime.now().add(delay),
+        id,
+        callback,
+        alarmClock: alarmClock,
+        allowWhileIdle: allowWhileIdle,
+        exact: exact,
+        wakeup: wakeup,
+        rescheduleOnReboot: rescheduleOnReboot,
+      );
+
+  /// Schedules a one-shot timer to run `callback` at `time`.
+  ///
+  /// The `callback` will run whether or not the main application is running or
+  /// in the foreground. It will run in the Isolate owned by the
+  /// AndroidAlarmManager service.
+  ///
+  /// `callback` must be either a top-level function or a static method from a
+  /// class.
+  ///
+  /// `callback` can be `Function()` or `Function(int)`
+  ///
+  /// The timer is uniquely identified by `id`. Calling this function again
+  /// with the same `id` will cancel and replace the existing timer.
+  ///
+  /// `id` will passed to `callback` if it is of type `Function(int)`
+  ///
+  /// If `alarmClock` is passed as `true`, the timer will be created with
+  /// Android's `AlarmManagerCompat.setAlarmClock`.
+  ///
+  /// If `allowWhileIdle` is passed as `true`, the timer will be created with
+  /// Android's `AlarmManagerCompat.setExactAndAllowWhileIdle` or
+  /// `AlarmManagerCompat.setAndAllowWhileIdle`.
+  ///
+  /// If `exact` is passed as `true`, the timer will be created with Android's
+  /// `AlarmManagerCompat.setExact`. When `exact` is `false` (the default), the
+  /// timer will be created with `AlarmManager.set`.
+  ///
+  /// If `wakeup` is passed as `true`, the device will be woken up when the
+  /// alarm fires. If `wakeup` is false (the default), the device will not be
+  /// woken up to service the alarm.
+  ///
+  /// If `rescheduleOnReboot` is passed as `true`, the alarm will be persisted
+  /// across reboots. If `rescheduleOnReboot` is false (the default), the alarm
+  /// will not be rescheduled after a reboot and will not be executed.
+  ///
+  /// Returns a [Future] that resolves to `true` on success and `false` on
+  /// failure.
+  static Future<bool> oneShotAt(
+    DateTime time,
+    int id,
+    Function callback, {
     bool alarmClock = false,
     bool allowWhileIdle = false,
     bool exact = false,
     bool wakeup = false,
     bool rescheduleOnReboot = false,
   }) async {
-    final int now = DateTime.now().millisecondsSinceEpoch;
-    final int first = now + delay.inMilliseconds;
+    assert(callback is Function() || callback is Function(int));
+    assert(id.bitLength < 32);
+    final int startMillis = time.millisecondsSinceEpoch;
     final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
     if (handle == null) {
       return false;
     }
-    final bool r = await _channel.invokeMethod<bool>('Alarm.oneShot', <dynamic>[
+    final bool r =
+        await _channel.invokeMethod<bool>('Alarm.oneShotAt', <dynamic>[
       id,
       alarmClock,
       allowWhileIdle,
       exact,
       wakeup,
-      first,
+      startMillis,
       rescheduleOnReboot,
       handle.toRawHandle(),
     ]);
@@ -142,8 +212,12 @@ class AndroidAlarmManager {
   /// `callback` must be either a top-level function or a static method from a
   /// class.
   ///
+  /// `callback` can be `Function()` or `Function(int)`
+  ///
   /// The repeating timer is uniquely identified by `id`. Calling this function
   /// again with the same `id` will cancel and replace the existing timer.
+  ///
+  /// `id` will passed to `callback` if it is of type `Function(int)`
   ///
   /// If `startAt` is passed, the timer will first go off at that time and
   /// subsequently run with period `duration`.
@@ -165,12 +239,14 @@ class AndroidAlarmManager {
   static Future<bool> periodic(
     Duration duration,
     int id,
-    dynamic Function() callback, {
+    Function callback, {
     DateTime startAt,
     bool exact = false,
     bool wakeup = false,
     bool rescheduleOnReboot = false,
   }) async {
+    assert(callback is Function() || callback is Function(int));
+    assert(id.bitLength < 32);
     final int now = DateTime.now().millisecondsSinceEpoch;
     final int period = duration.inMilliseconds;
     final int first =
