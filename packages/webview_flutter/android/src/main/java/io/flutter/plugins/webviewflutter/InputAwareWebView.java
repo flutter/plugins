@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
@@ -43,14 +47,11 @@ final class InputAwareWebView extends WebView {
 
   /** Sets the proxy adapter view back to its default behavior. */
   void unlockInputConnection() {
-    if (proxyAdapterView != null) {
-      proxyAdapterView.setLocked(false);
+    if (proxyAdapterView == null) {
+      return;
     }
 
-    // Restart the input connection to avoid ViewRootImpl assuming an incorrect window state.
-    InputMethodManager imm =
-        (InputMethodManager) containerView.getContext().getSystemService(INPUT_METHOD_SERVICE);
-    imm.restartInput(containerView);
+    proxyAdapterView.setLocked(false);
   }
 
   /** Restore the original InputConnection, if needed. */

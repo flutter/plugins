@@ -1,3 +1,27 @@
+## 0.2.1+3
+
+* Android : Improved testability.
+
+## 0.2.1+2
+
+* Android: Require a non-null Activity to use the `launchBillingFlow` method.
+
+## 0.2.1+1
+
+* Remove skipped driver test.
+
+## 0.2.1
+
+* iOS: Add currencyCode to priceLocale on productDetails.
+
+## 0.2.0+8
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.2.0+7
+
+* Make Gradle version compatible with the Android Gradle plugin version.
+
 ## 0.2.0+6
 
 * Add missing `hashCode` implementations.

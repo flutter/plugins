@@ -50,11 +50,18 @@ To run the unit tests:
 flutter test test/<name_of_plugin>_test.dart
 ```
 
-To run the integration tests:
+To run the integration tests using Flutter driver:
 
 ```
 cd example
 flutter drive test/<name_of_plugin>.dart
+```
+
+To run integration tests as instrumentation tests on a local Android device:
+
+```
+cd example
+(cd android && ./gradlew -Ptarget=$(pwd)/../test_live/<name_of_plugin>_test.dart connectedAndroidTest)
 ```
 
 ## Contributing code

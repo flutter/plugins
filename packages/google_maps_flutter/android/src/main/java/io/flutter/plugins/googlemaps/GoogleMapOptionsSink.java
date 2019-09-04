@@ -36,6 +36,8 @@ interface GoogleMapOptionsSink {
 
   void setIndoorEnabled(boolean indoorEnabled);
 
+  void setTrafficEnabled(boolean trafficEnabled);
+
   void setInitialMarkers(Object initialMarkers);
 
   void setInitialPolygons(Object initialPolygons);

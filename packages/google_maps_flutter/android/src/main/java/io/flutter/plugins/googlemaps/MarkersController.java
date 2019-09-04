@@ -5,6 +5,7 @@
 package io.flutter.plugins.googlemaps;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import io.flutter.plugin.common.MethodChannel;
@@ -73,6 +74,17 @@ class MarkersController {
       return markerController.consumeTapEvents();
     }
     return false;
+  }
+
+  void onMarkerDragEnd(String googleMarkerId, LatLng latLng) {
+    String markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
+    if (markerId == null) {
+      return;
+    }
+    final Map<String, Object> data = new HashMap<>();
+    data.put("markerId", markerId);
+    data.put("position", Convert.latLngToJson(latLng));
+    methodChannel.invokeMethod("marker#onDragEnd", data);
   }
 
   void onInfoWindowTap(String googleMarkerId) {
