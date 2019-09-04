@@ -75,10 +75,10 @@ void main() {
 
     final Marker addedMarker = platformGoogleMap.markersToAdd.first;
     expect(addedMarker, equals(m2));
+
     expect(platformGoogleMap.markerIdsToRemove.isEmpty, true);
 
-    expect(platformGoogleMap.markersToChange.length, 1);
-    expect(platformGoogleMap.markersToChange.first, equals(m1));
+    expect(platformGoogleMap.markersToChange.isEmpty, true);
   });
 
   testWidgets("Removing a marker", (WidgetTester tester) async {
@@ -175,29 +175,22 @@ void main() {
     expect(platformGoogleMap.markerIdsToRemove.first, equals(m3.markerId));
   });
 
-  testWidgets(
-    "Partial Update",
-    (WidgetTester tester) async {
-      final Marker m1 = Marker(markerId: MarkerId("marker_1"));
-      Marker m2 = Marker(markerId: MarkerId("marker_2"));
-      final Set<Marker> prev = _toSet(m1: m1, m2: m2);
-      m2 = Marker(markerId: MarkerId("marker_2"), draggable: true);
-      final Set<Marker> cur = _toSet(m1: m1, m2: m2);
+  testWidgets("Partial Update", (WidgetTester tester) async {
+    final Marker m1 = Marker(markerId: MarkerId("marker_1"));
+    final Marker m2 = Marker(markerId: MarkerId("marker_2"));
+    Marker m3 = Marker(markerId: MarkerId("marker_3"));
+    final Set<Marker> prev = _toSet(m1: m1, m2: m2, m3: m3);
+    m3 = Marker(markerId: MarkerId("marker_3"), draggable: true);
+    final Set<Marker> cur = _toSet(m1: m1, m2: m2, m3: m3);
 
-      await tester.pumpWidget(_mapWithMarkers(prev));
-      await tester.pumpWidget(_mapWithMarkers(cur));
+    await tester.pumpWidget(_mapWithMarkers(prev));
+    await tester.pumpWidget(_mapWithMarkers(cur));
 
-      final FakePlatformGoogleMap platformGoogleMap =
-          fakePlatformViewsController.lastCreatedView;
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
 
-      expect(platformGoogleMap.markersToChange, _toSet(m2: m2));
-      expect(platformGoogleMap.markerIdsToRemove.isEmpty, true);
-      expect(platformGoogleMap.markersToAdd.isEmpty, true);
-    },
-    // The test is currently broken due to a bug (we're updating all markers
-    // instead of just the ones that were changed):
-    // https://github.com/flutter/flutter/issues/27823
-    // TODO(amirh): enable this test when the issue is fixed.
-    skip: true,
-  );
+    expect(platformGoogleMap.markersToChange, _toSet(m3: m3));
+    expect(platformGoogleMap.markerIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.markersToAdd.isEmpty, true);
+  });
 }

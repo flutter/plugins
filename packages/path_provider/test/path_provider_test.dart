@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:platform/platform.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,10 @@ void main() {
     return response;
   });
 
+  setUp(() {
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
+  });
+
   tearDown(() {
     log.clear();
   });
@@ -31,6 +36,18 @@ void main() {
     expect(
       log,
       <Matcher>[isMethodCall('getTemporaryDirectory', arguments: null)],
+    );
+    expect(directory, isNull);
+  });
+
+  test('getApplicationSupportDirectory test', () async {
+    response = null;
+    final Directory directory = await getApplicationSupportDirectory();
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('getApplicationSupportDirectory', arguments: null)
+      ],
     );
     expect(directory, isNull);
   });
@@ -59,6 +76,16 @@ void main() {
     expect(directory, isNull);
   });
 
+  test('getExternalStorageDirectory test', () async {
+    response = null;
+    final Directory directory = await getExternalStorageDirectory();
+    expect(
+      log,
+      <Matcher>[isMethodCall('getStorageDirectory', arguments: null)],
+    );
+    expect(directory, isNull);
+  });
+
   test('getLibraryDirectory test', () async {
     response = null;
     final Directory directory = await getLibraryDirectory();
@@ -69,10 +96,29 @@ void main() {
     expect(directory, isNull);
   });
 
+  test('getExternalStorageDirectory iOS test', () async {
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+
+    response = null;
+    try {
+      await getExternalStorageDirectory();
+      fail('should throw UnsupportedError');
+    } catch (e) {
+      expect(e, isUnsupportedError);
+    }
+  });
+
   test('TemporaryDirectory path test', () async {
     final String fakePath = "/foo/bar/baz";
     response = fakePath;
     final Directory directory = await getTemporaryDirectory();
+    expect(directory.path, equals(fakePath));
+  });
+
+  test('ApplicationSupportDirectory path test', () async {
+    final String fakePath = "/foo/bar/baz";
+    response = fakePath;
+    final Directory directory = await getApplicationSupportDirectory();
     expect(directory.path, equals(fakePath));
   });
 
@@ -94,6 +140,13 @@ void main() {
     final String fakePath = "/foo/bar/baz";
     response = fakePath;
     final Directory directory = await getLibraryDirectory();
+    expect(directory.path, equals(fakePath));
+  });
+
+  test('ExternalStorageDirectory path test', () async {
+    final String fakePath = "/foo/bar/baz";
+    response = fakePath;
+    final Directory directory = await getExternalStorageDirectory();
     expect(directory.path, equals(fakePath));
   });
 }

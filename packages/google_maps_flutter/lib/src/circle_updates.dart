@@ -36,9 +36,17 @@ class _CircleUpdates {
         .map(idToCurrentCircle)
         .toSet();
 
+    /// Returns `true` if [current] is not equals to previous one with the
+    /// same id.
+    bool hasChanged(Circle current) {
+      final Circle previous = previousCircles[current.circleId];
+      return current != previous;
+    }
+
     final Set<Circle> _circlesToChange = currentCircleIds
         .intersection(prevCircleIds)
         .map(idToCurrentCircle)
+        .where(hasChanged)
         .toSet();
 
     circlesToAdd = _circlesToAdd;

@@ -393,7 +393,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       await controller.pauseVideoRecording();
     } on CameraException catch (e) {
       _showCameraException(e);
-      return null;
+      rethrow;
     }
   }
 
@@ -406,7 +406,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       await controller.resumeVideoRecording();
     } on CameraException catch (e) {
       _showCameraException(e);
-      return null;
+      rethrow;
     }
   }
 
@@ -477,6 +477,7 @@ List<CameraDescription> cameras;
 Future<void> main() async {
   // Fetch the available cameras before initializing the app.
   try {
+    WidgetsFlutterBinding.ensureInitialized();
     cameras = await availableCameras();
   } on CameraException catch (e) {
     logError(e.code, e.description);
