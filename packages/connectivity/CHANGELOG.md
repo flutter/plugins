@@ -1,13 +1,13 @@
-## 0.4.4
+## 0.4.5
 
-<<<<<<< HEAD
 * Change `ConnectionResult` type from enum to class with 2 fields. `type:ConnectionType` and `subtype:ConnectionSubtype`
 * Add `getNetworkSubtype` to get mobile connection subtype.
-=======
+
+## 0.4.4
+
 * Add `requestLocationServiceAuthorization` to request location authorization on iOS.
 * Add `getLocationServiceAuthorization` to get location authorization status on iOS.
 * Update README: add more information on iOS 13 updates with CNCopyCurrentNetworkInfo.
->>>>>>> 0a7535d1cd7119767d8d2506b2c9e3742f585fa8
 
 ## 0.4.3+7
 
