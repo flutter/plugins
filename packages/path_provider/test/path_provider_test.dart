@@ -7,8 +7,11 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:platform/platform.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   const MethodChannel channel =
       MethodChannel('plugins.flutter.io/path_provider');
   final List<MethodCall> log = <MethodCall>[];
@@ -17,6 +20,10 @@ void main() {
   channel.setMockMethodCallHandler((MethodCall methodCall) async {
     log.add(methodCall);
     return response;
+  });
+
+  setUp(() {
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
   });
 
   tearDown(() {
@@ -67,14 +74,16 @@ void main() {
     expect(directory, isNull);
   });
 
-  test('getExternalCacheDirectories test', () async {
+  test('getExternalStorageDirectory iOS test', () async {
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+
     response = null;
-    final List<Directory> directories = await getExternalCacheDirectories();
-    expect(
-      log,
-      <Matcher>[isMethodCall('getExternalCacheDirectories', arguments: null)],
-    );
-    expect(directories, <Directory>[]);
+    try {
+      await getExternalStorageDirectory();
+      fail('should throw UnsupportedError');
+    } catch (e) {
+      expect(e, isUnsupportedError);
+    }
   });
 
   test('getExternalStorageDirectories test', () async {

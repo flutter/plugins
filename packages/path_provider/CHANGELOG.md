@@ -1,11 +1,12 @@
-<<<<<<< HEAD
-## 1.2.2
+## 1.2.3
 
 * Support Android devices with multiple external storage options.
 
-## 1.2.1
+## 1.2.2
 
-* Correct the integration test for Androids `getApplicationSupportDirectory` call.
+* Correct the integration test for Android's `getApplicationSupportDirectory` call.
+* Introduce `setMockPathProviderPlatform` for API for tests.
+* Adds missing unit and integration tests.
 
 ## 1.2.1
 

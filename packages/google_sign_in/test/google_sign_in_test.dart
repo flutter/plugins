@@ -10,6 +10,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in/testing.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('GoogleSignIn', () {
     const MethodChannel channel = MethodChannel(
       'plugins.flutter.io/google_sign_in',
