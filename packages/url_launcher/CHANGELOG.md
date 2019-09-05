@@ -1,7 +1,7 @@
 
 ## 5.1.3
 
-* Fixed iOS app2app scenario.
+* Always launch url from the top most UIViewController in iOS.
 
 ## 5.1.2
 

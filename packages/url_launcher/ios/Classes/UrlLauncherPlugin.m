@@ -67,8 +67,6 @@ API_AVAILABLE(ios(9.0))
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher"
                                   binaryMessenger:registrar.messenger];
-  UIViewController *viewController =
-      [UIApplication sharedApplication].delegate.window.rootViewController;
   FLTUrlLauncherPlugin *plugin =
       [[FLTUrlLauncherPlugin alloc] init];
   [registrar addMethodCallDelegate:plugin channel:channel];
@@ -152,21 +150,33 @@ API_AVAILABLE(ios(9.0))
 }
 
 - (UIViewController *)topViewController {
-  return [self topViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
+  return [self topViewControllerFromViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
 }
 
-- (UIViewController *)topViewController:(UIViewController *)rootViewController
+/** 
+ * This method recursively iterate through the view hierarchy
+ * to return the top most view controller.
+ *
+ * It supports the following scenarios:
+ *
+ * - The view controller is presenting another view.
+ * - The view controller is a UINavigationController.
+ * - The view controller is a UITabBarController.
+ *
+ * @return The top most view controller.
+ */
+- (UIViewController *)topViewControllerFromViewController:(UIViewController *)rootViewController
 {
   if ([rootViewController isKindOfClass:[UINavigationController class]]) {
     UINavigationController *navigationController = (UINavigationController *)rootViewController;
-    return [self topViewController:[navigationController.viewControllers lastObject]];
+    return [self topViewControllerFromViewController:[navigationController.viewControllers lastObject]];
   }
   if ([rootViewController isKindOfClass:[UITabBarController class]]) {
     UITabBarController *tabController = (UITabBarController *)rootViewController;
-    return [self topViewController:tabController.selectedViewController];
+    return [self topViewControllerFromViewController:tabController.selectedViewController];
   }
   if (rootViewController.presentedViewController) {
-    return [self topViewController:rootViewController.presentedViewController];
+    return [self topViewControllerFromViewController:rootViewController.presentedViewController];
   }
   return rootViewController;
 }
