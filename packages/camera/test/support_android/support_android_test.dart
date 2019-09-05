@@ -9,6 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:camera/new/src/camera_testing.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('Support Android Camera', () {
     group('$Camera', () {
       final List<MethodCall> log = <MethodCall>[];
