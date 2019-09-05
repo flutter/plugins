@@ -1,3 +1,7 @@
+## 0.5.22
+
+* Fix marker consumeTapEvents
+
 ## 0.5.21+7
 
 * Create a clone of cached elements in GoogleMap (Polyline, Polygon, etc.) to detect modifications
