@@ -59,6 +59,17 @@ Future<Directory> getApplicationSupportDirectory() async {
   return Directory(path);
 }
 
+/// Path to the directory where application can store files that are persistent,
+/// backed up, and not visible to the user, such as sqlite.db.
+Future<Directory> getLibraryDirectory() async {
+  final String path =
+      await _channel.invokeMethod<String>('getLibraryDirectory');
+  if (path == null) {
+    return null;
+  }
+  return Directory(path);
+}
+
 /// Path to a directory where the application may place data that is
 /// user-generated, or that cannot otherwise be recreated by your application.
 ///
