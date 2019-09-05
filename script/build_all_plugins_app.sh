@@ -10,7 +10,7 @@ REPO_DIR="$(dirname "$SCRIPT_DIR")"
 source "$SCRIPT_DIR/common.sh"
 check_changed_packages > /dev/null
 
-(cd "$REPO_DIR" && pub global run flutter_plugin_tools gen-pubspec)
+(cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app)
 
 function error() {
   echo "$@" 1>&2
