@@ -4,8 +4,8 @@
 
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polygon;
+import com.google.android.libraries.maps.model.LatLng;
+import com.google.android.libraries.maps.model.Polygon;
 import java.util.List;
 
 /** Controller of a single Polygon on the map. */

@@ -4,8 +4,8 @@
 
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.maps.model.CircleOptions;
+import com.google.android.libraries.maps.model.LatLng;
 
 class CircleBuilder implements CircleOptionsSink {
   private final CircleOptions circleOptions;

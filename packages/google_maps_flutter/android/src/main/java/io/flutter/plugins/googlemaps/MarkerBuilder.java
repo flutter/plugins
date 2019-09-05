@@ -4,9 +4,9 @@
 
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.maps.model.BitmapDescriptor;
+import com.google.android.libraries.maps.model.LatLng;
+import com.google.android.libraries.maps.model.MarkerOptions;
 
 class MarkerBuilder implements MarkerOptionsSink {
   private final MarkerOptions markerOptions;

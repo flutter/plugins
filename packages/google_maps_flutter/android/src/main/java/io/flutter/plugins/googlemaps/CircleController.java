@@ -4,8 +4,8 @@
 
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.maps.model.Circle;
+import com.google.android.libraries.maps.model.LatLng;
 
 /** Controller of a single Circle on the map. */
 class CircleController implements CircleOptionsSink {

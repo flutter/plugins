@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.maps.model.LatLng;
 import java.util.List;
 
 /** Receiver of Polygon configuration options. */
