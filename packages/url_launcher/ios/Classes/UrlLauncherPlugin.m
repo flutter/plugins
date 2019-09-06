@@ -165,19 +165,18 @@ API_AVAILABLE(ios(9.0))
  *
  * @return The top most view controller.
  */
-- (UIViewController *)topViewControllerFromViewController:(UIViewController *)rootViewController
-{
-  if ([rootViewController isKindOfClass:[UINavigationController class]]) {
-    UINavigationController *navigationController = (UINavigationController *)rootViewController;
+- (UIViewController *)topViewControllerFromViewController:(UIViewController *)viewController {
+  if ([viewController isKindOfClass:[UINavigationController class]]) {
+    UINavigationController *navigationController = (UINavigationController *)viewController;
     return [self topViewControllerFromViewController:[navigationController.viewControllers lastObject]];
   }
-  if ([rootViewController isKindOfClass:[UITabBarController class]]) {
-    UITabBarController *tabController = (UITabBarController *)rootViewController;
+  if ([viewController isKindOfClass:[UITabBarController class]]) {
+    UITabBarController *tabController = (UITabBarController *)viewController;
     return [self topViewControllerFromViewController:tabController.selectedViewController];
   }
-  if (rootViewController.presentedViewController) {
-    return [self topViewControllerFromViewController:rootViewController.presentedViewController];
+  if (viewController.presentedViewController) {
+    return [self topViewControllerFromViewController:viewController.presentedViewController];
   }
-  return rootViewController;
+  return viewController;
 }
 @end
