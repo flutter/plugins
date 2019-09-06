@@ -1,6 +1,13 @@
-## 1.2.3
+## 1.3.1
 
 * Support Android devices with multiple external storage options.
+
+## 1.3.0
+
+* Added iOS-only support for `getLibraryDirectory`.
+* Update integration tests and example test.
+* Update example app UI to use a `ListView` show the list of content.
+* Update .gitignore to include Xcode build output folder `**/DerivedData/`
 
 ## 1.2.2
 

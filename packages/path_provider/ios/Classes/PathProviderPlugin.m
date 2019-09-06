@@ -42,6 +42,8 @@ static FlutterError* getFlutterError(NSError* error) {
       } else {
         result(path);
       }
+    } else if ([@"getLibraryDirectory" isEqualToString:call.method]) {
+      result([self getLibraryDirectory]);
     } else {
       result(FlutterMethodNotImplemented);
     }
@@ -58,6 +60,10 @@ static FlutterError* getFlutterError(NSError* error) {
 
 + (NSString*)getApplicationSupportDirectory {
   return GetDirectoryOfType(NSApplicationSupportDirectory);
+}
+
++ (NSString*)getLibraryDirectory {
+  return GetDirectoryOfType(NSLibraryDirectory);
 }
 
 @end
