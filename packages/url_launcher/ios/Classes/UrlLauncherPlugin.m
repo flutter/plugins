@@ -67,8 +67,7 @@ API_AVAILABLE(ios(9.0))
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher"
                                   binaryMessenger:registrar.messenger];
-  FLTUrlLauncherPlugin *plugin =
-      [[FLTUrlLauncherPlugin alloc] init];
+  FLTUrlLauncherPlugin *plugin = [[FLTUrlLauncherPlugin alloc] init];
   [registrar addMethodCallDelegate:plugin channel:channel];
 }
 
@@ -138,8 +137,8 @@ API_AVAILABLE(ios(9.0))
     weakSelf.currentSession = nil;
   };
   [self.topViewController presentViewController:self.currentSession.safari
-                                      animated:YES
-                                    completion:nil];
+                                       animated:YES
+                                     completion:nil];
 }
 
 - (void)closeWebViewWithResult:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
@@ -150,10 +149,11 @@ API_AVAILABLE(ios(9.0))
 }
 
 - (UIViewController *)topViewController {
-  return [self topViewControllerFromViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
+  return [self topViewControllerFromViewController:[UIApplication sharedApplication]
+                                                       .keyWindow.rootViewController];
 }
 
-/** 
+/**
  * This method recursively iterate through the view hierarchy
  * to return the top most view controller.
  *
@@ -168,7 +168,8 @@ API_AVAILABLE(ios(9.0))
 - (UIViewController *)topViewControllerFromViewController:(UIViewController *)viewController {
   if ([viewController isKindOfClass:[UINavigationController class]]) {
     UINavigationController *navigationController = (UINavigationController *)viewController;
-    return [self topViewControllerFromViewController:[navigationController.viewControllers lastObject]];
+    return [self
+        topViewControllerFromViewController:[navigationController.viewControllers lastObject]];
   }
   if ([viewController isKindOfClass:[UITabBarController class]]) {
     UITabBarController *tabController = (UITabBarController *)viewController;
