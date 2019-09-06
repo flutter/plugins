@@ -1,3 +1,7 @@
+## 0.5.3+1
+
+* Update the intl dependency
+
 ## 0.5.3
 
 * Add face id detection as well by not relying on FingerprintCompat.
