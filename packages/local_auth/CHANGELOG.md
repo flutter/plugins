@@ -1,3 +1,9 @@
+## 0.5.4
+
+* Do not require confirmation for face unlock on Android bringing the behavior in line with iOS..
+* Up the biometric version to beta01.
+* Handle no device credential error.
+
 ## 0.5.3
 
 * Add face id detection as well by not relying on FingerprintCompat.
