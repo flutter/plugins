@@ -283,7 +283,19 @@ class Marker {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Marker typedOther = other;
-    return markerId == typedOther.markerId;
+    return markerId == typedOther.markerId &&
+        alpha == typedOther.alpha &&
+        anchor == typedOther.anchor &&
+        consumeTapEvents == typedOther.consumeTapEvents &&
+        draggable == typedOther.draggable &&
+        flat == typedOther.flat &&
+        icon == typedOther.icon &&
+        infoWindow == typedOther.infoWindow &&
+        position == typedOther.position &&
+        rotation == typedOther.rotation &&
+        visible == typedOther.visible &&
+        zIndex == typedOther.zIndex &&
+        onTap == typedOther.onTap;
   }
 
   @override

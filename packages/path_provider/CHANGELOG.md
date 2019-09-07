@@ -1,3 +1,16 @@
+## 1.3.0
+
+* Added iOS-only support for `getLibraryDirectory`.
+* Update integration tests and example test.
+* Update example app UI to use a `ListView` show the list of content.
+* Update .gitignore to include Xcode build output folder `**/DerivedData/`
+
+## 1.2.2
+
+* Correct the integration test for Android's `getApplicationSupportDirectory` call.
+* Introduce `setMockPathProviderPlatform` for API for tests.
+* Adds missing unit and integration tests.
+
 ## 1.2.1
 
 * Fix fall through bug.

@@ -1,6 +1,11 @@
-## 0.10.2+1
+## 0.10.2+2
 
 * iOS: fixed some videos being rendered black
+
+## 0.10.2+1
+
+* Use DefaultHttpDataSourceFactory only when network schemas and use
+DefaultHttpDataSourceFactory by default.
 
 ## 0.10.2
 
