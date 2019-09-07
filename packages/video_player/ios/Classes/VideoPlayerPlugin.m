@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "VideoPlayerPlugin.h"
+#import "VIMediaCache.h"
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
 
@@ -157,8 +158,14 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _displayLink.paused = YES;
 }
 
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
-  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
+- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater enableCache:(BOOL)enableCache {
+  AVPlayerItem* item;
+  if (enableCache) {
+    VIResourceLoaderManager *resourceLoaderManager = [VIResourceLoaderManager new];
+    item = [resourceLoaderManager playerItemWithURL:url];
+  } else {
+    item = [AVPlayerItem playerItemWithURL:url];
+  }
   return [self initWithPlayerItem:item frameUpdater:frameUpdater];
 }
 
@@ -461,6 +468,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
     NSString* assetArg = argsMap[@"asset"];
     NSString* uriArg = argsMap[@"uri"];
+    long maxCacheSizeArg = ((NSNumber*)argsMap[@"maxCacheSize"]).longValue;
+    long maxFileSizeArg = ((NSNumber*)argsMap[@"maxFileSize"]).longValue;
     FLTVideoPlayer* player;
     if (assetArg) {
       NSString* assetPath;
@@ -473,8 +482,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else if (uriArg) {
+      BOOL enableCache = maxCacheSizeArg > 0 && maxFileSizeArg > 0;
       player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
-                                      frameUpdater:frameUpdater];
+                                      frameUpdater:frameUpdater
+                                       enableCache: enableCache];
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else {
       result(FlutterMethodNotImplemented);
