@@ -570,7 +570,7 @@ void main() {
       fail('expected MapStyleException');
     } on MapStyleException catch (e) {
       expect(e.cause,
-          'The data couldn’t be read because it isn’t in the correct format.');
+          'Unable to set the map style. Please check console logs for errors.');
     }
   });
 
