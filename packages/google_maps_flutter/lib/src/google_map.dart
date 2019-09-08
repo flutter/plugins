@@ -39,6 +39,7 @@ class GoogleMap extends StatefulWidget {
     this.polygons,
     this.polylines,
     this.circles,
+    this.tileOverlays,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -95,6 +96,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Circles to be placed on the map.
   final Set<Circle> circles;
+
+  /// Tile overlays to be placed on the map.
+  final Set<TileOverlay> tileOverlays;
 
   /// Called when the camera starts moving.
   ///
@@ -187,6 +191,8 @@ class _GoogleMapState extends State<GoogleMap> {
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
+  Map<TileOverlayId, TileOverlay> _tileOverlays =
+      <TileOverlayId, TileOverlay>{};
   _GoogleMapOptions _googleMapOptions;
 
   @override
@@ -198,6 +204,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'polygonsToAdd': _serializePolygonSet(widget.polygons),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'circlesToAdd': _serializeCircleSet(widget.circles),
+      'tileOverlaysToAdd': _serializeTileOverlaySet(widget.tileOverlays),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
@@ -229,6 +236,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _polygons = _keyByPolygonId(widget.polygons);
     _polylines = _keyByPolylineId(widget.polylines);
     _circles = _keyByCircleId(widget.circles);
+    _tileOverlays = _keyTileOverlayId(widget.tileOverlays);
   }
 
   @override
@@ -239,6 +247,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _updatePolygons();
     _updatePolylines();
     _updateCircles();
+    _updateTileOverlays();
   }
 
   void _updateOptions() async {
@@ -279,6 +288,13 @@ class _GoogleMapState extends State<GoogleMap> {
     controller._updateCircles(
         _CircleUpdates.from(_circles.values.toSet(), widget.circles));
     _circles = _keyByCircleId(widget.circles);
+  }
+
+  void _updateTileOverlays() async {
+    final GoogleMapController controller = await _controller.future;
+    controller._updateTileOverlays(_TileOverlayUpdates.from(
+        _tileOverlays.values.toSet(), widget.tileOverlays));
+    _tileOverlays = _keyTileOverlayId(widget.tileOverlays);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
@@ -341,6 +357,21 @@ class _GoogleMapState extends State<GoogleMap> {
     if (widget.onLongPress != null) {
       widget.onLongPress(position);
     }
+  }
+
+  Future<Map<String, dynamic>> onGetTile(
+      String tileOverlayIdParam, int x, int y, int zoom) async {
+    assert(tileOverlayIdParam != null);
+    final TileOverlayId tileOverlayId = TileOverlayId(tileOverlayIdParam);
+    final TileOverlay tileOverlay = _tileOverlays[tileOverlayId];
+    Tile tile;
+    if (tileOverlay != null && tileOverlay.tileProvider != null) {
+      tile = await tileOverlay.tileProvider.getTile(x, y, zoom);
+    }
+    if (tile == null) {
+      tile = TileProvider.noTile;
+    }
+    return tile.toJson();
   }
 }
 

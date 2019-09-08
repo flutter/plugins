@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter_example/tile_overlay.dart';
 import 'animate_camera.dart';
 import 'map_click.dart';
 import 'map_coordinates.dart';
@@ -30,6 +31,7 @@ final List<Page> _allPages = <Page>[
   PlacePolygonPage(),
   PlaceCirclePage(),
   PaddingPage(),
+  TileOverlayPage(),
 ];
 
 class MapsDemo extends StatelessWidget {
@@ -48,10 +50,10 @@ class MapsDemo extends StatelessWidget {
       body: ListView.builder(
         itemCount: _allPages.length,
         itemBuilder: (_, int index) => ListTile(
-              leading: _allPages[index].leading,
-              title: Text(_allPages[index].title),
-              onTap: () => _pushPage(context, _allPages[index]),
-            ),
+          leading: _allPages[index].leading,
+          title: Text(_allPages[index].title),
+          onTap: () => _pushPage(context, _allPages[index]),
+        ),
       ),
     );
   }
