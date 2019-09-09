@@ -12,11 +12,10 @@ Add a dependency on the `instrumentation_adapter` package in the
 pubspec.yaml of the example app.
 
 Invoke `InstrumentationAdapterFlutterBinding.ensureInitialized()` at the start
-of a test file.
+of a test file, e.g.
 
 ```dart
 import 'package:instrumentation_adapter/instrumentation_adapter.dart';
-import '../test/package_info.dart' as test;
 
 void main() {
   InstrumentationAdapterFlutterBinding.ensureInitialized();
