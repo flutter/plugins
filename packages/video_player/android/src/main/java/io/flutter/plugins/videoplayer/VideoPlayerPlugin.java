@@ -85,8 +85,8 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         String dataSource,
         Result result,
         String formatHint,
-        long maxCacheSize,
-        long maxFileSize) {
+        int maxCacheSize,
+        int maxFileSize) {
       this.eventChannel = eventChannel;
       this.textureEntry = textureEntry;
 
@@ -367,14 +367,16 @@ public class VideoPlayerPlugin implements MethodCallHandler {
               new EventChannel(
                   registrar.messenger(), "flutter.io/videoPlayer/videoEvents" + handle.id());
 
-          Long maxCacheSize, maxFileSize;
-          maxCacheSize = call.argument("maxCacheSize");
-          maxFileSize = call.argument("maxFileSize");
-          if (maxCacheSize == null) {
-            maxCacheSize = (long)(100 * 1024 * 1024); // default to 100 MiB for the entire cache
+          int maxCacheSize, maxFileSize;
+          if (call.argument("maxCacheSize") == null) {
+            maxCacheSize = (100 * 1024 * 1024); // default to 100 MiB for the entire cache
+          } else {
+            maxCacheSize = call.argument("maxCacheSize");
           }
-          if (maxFileSize == null) {
-            maxFileSize = (long)(10 * 1024 * 1024); // default to 10 MiB per file
+          if (call.argument("maxFileSize") == null) {
+            maxFileSize = (10 * 1024 * 1024); // default to 10 MiB per file
+          } else {
+            maxFileSize = call.argument("maxFileSize");
           }
           VideoPlayer player;
           if (call.argument("asset") != null) {
