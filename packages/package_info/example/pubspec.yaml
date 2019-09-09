@@ -10,7 +10,7 @@ dependencies:
 dev_dependencies:
   flutter_driver:
     sdk: flutter
-  instrumentation_adapter: "^0.1.0"
+  instrumentation_adapter: "^0.1.2"
   test: any
 
 flutter:
