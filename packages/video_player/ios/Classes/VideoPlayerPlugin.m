@@ -47,6 +47,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 - (void)pause;
 - (void)setIsLooping:(bool)isLooping;
 - (void)updatePlayingState;
++ (VIResourceLoaderManager*)resourceLoaderManager;
 @end
 
 static void* timeRangeContext = &timeRangeContext;
@@ -158,15 +159,26 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _displayLink.paused = YES;
 }
 
+- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
+    return [self initWithURL:url frameUpdater:frameUpdater enableCache:NO];
+}
+
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater enableCache:(BOOL)enableCache {
   AVPlayerItem* item;
   if (enableCache) {
-    VIResourceLoaderManager *resourceLoaderManager = [VIResourceLoaderManager new];
-    item = [resourceLoaderManager playerItemWithURL:url];
+    item = [[FLTVideoPlayer resourceLoaderManager] playerItemWithURL:url];
   } else {
     item = [AVPlayerItem playerItemWithURL:url];
   }
   return [self initWithPlayerItem:item frameUpdater:frameUpdater];
+}
+
++ (VIResourceLoaderManager*)resourceLoaderManager {
+    static VIResourceLoaderManager* resourceLoaderManager = nil;
+    if (resourceLoaderManager == nil) {
+        resourceLoaderManager = [VIResourceLoaderManager new];
+    }
+    return resourceLoaderManager;
 }
 
 - (CGAffineTransform)fixTransform:(AVAssetTrack*)videoTrack {
