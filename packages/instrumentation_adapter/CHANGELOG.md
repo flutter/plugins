@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Added support for running tests using Flutter driver.
+
 ## 0.1.0
 
 * Update boilerplate test to use `@Rule` instead of `FlutterTest`.
