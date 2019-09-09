@@ -1,3 +1,10 @@
+## 0.1.3
+
+* Added example app.
+* Added stub iOS implementation.
+* Updated README.
+* No longer throws errors when running tests on the host.
+
 ## 0.1.2
 
 * Added support for running tests using Flutter driver.
