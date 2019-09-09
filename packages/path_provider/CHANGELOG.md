@@ -1,6 +1,8 @@
 ## 1.3.1
 
-* Support Android devices with multiple external storage options.
+* Support retrieving storage paths on Android devices with multiple external
+  storage options. This adds a new class `AndroidEnvironment` that shadows the
+  directory names from Androids `android.os.Environment` class.
 
 ## 1.3.0
 
