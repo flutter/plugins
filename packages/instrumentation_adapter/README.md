@@ -90,3 +90,15 @@ gcloud firebase test android run --type instrumentation \
   --results-bucket=<RESULTS_BUCKET> \
   --results-dir=<RESULTS_DIRECTORY>
 ```
+
+## Flutter driver support
+
+`InstrumentationAdapterFlutterBinding` also reports test results to `FlutterDriver`
+when run on the command line via `flutter drive`. 
+
+```dart
+  final FlutterDriver driver = await FlutterDriver.connect();
+  final String result = await driver.requestData(null, timeout: const Duration(minutes: 1));
+  driver.close();
+  exit(result == 'pass' ? 0 : 1);
+```  
