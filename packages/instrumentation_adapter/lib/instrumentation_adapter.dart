@@ -70,7 +70,7 @@ class InstrumentationAdapterFlutterBinding
       {String description = '', Duration timeout}) async {
     // TODO(jackson): Report the results individually instead of all at once
     // See https://github.com/flutter/flutter/issues/38985
-    TestExceptionReporter valueBeforeTest = reportTestException;
+    final TestExceptionReporter valueBeforeTest = reportTestException;
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
       _results[description] = 'failed';
