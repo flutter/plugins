@@ -15,8 +15,12 @@ class InstrumentationAdapterFlutterBinding
   InstrumentationAdapterFlutterBinding() {
     // TODO(jackson): Report test results as they arrive
     tearDownAll(() async {
-      await _channel.invokeMethod<void>(
-          'allTestsFinished', <String, dynamic>{'results': _results});
+      try {
+        await _channel.invokeMethod<void>(
+            'allTestsFinished', <String, dynamic>{'results': _results});
+      } on MissingPluginException {
+        // Tests were run on the host rather than a device.
+      }
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
     });
   }
