@@ -1,6 +1,6 @@
 ## 0.5.21+1
 
-* Fix `prefer_const_constructors` warnings.
+* Fix `prefer_const_constructors` analyzer warnings in example app.
 
 ## 0.5.21
 
