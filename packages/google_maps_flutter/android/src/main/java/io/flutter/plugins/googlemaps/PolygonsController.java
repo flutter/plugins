@@ -81,7 +81,7 @@ class PolygonsController {
     if (polygon == null) {
       return;
     }
-    PolygonBuilder polygonBuilder = new PolygonBuilder();
+    PolygonBuilder polygonBuilder = new PolygonBuilder(density);
     String polygonId = Convert.interpretPolygonOptions(polygon, polygonBuilder);
     PolygonOptions options = polygonBuilder.build();
     addPolygon(polygonId, options, polygonBuilder.consumeTapEvents());

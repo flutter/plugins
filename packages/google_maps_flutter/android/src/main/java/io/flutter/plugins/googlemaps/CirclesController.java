@@ -81,7 +81,7 @@ class CirclesController {
     if (circle == null) {
       return;
     }
-    CircleBuilder circleBuilder = new CircleBuilder();
+    CircleBuilder circleBuilder = new CircleBuilder(density);
     String circleId = Convert.interpretCircleOptions(circle, circleBuilder);
     CircleOptions options = circleBuilder.build();
     addCircle(circleId, options, circleBuilder.consumeTapEvents());
