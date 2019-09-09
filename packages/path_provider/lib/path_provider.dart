@@ -125,9 +125,20 @@ Future<List<Directory>> getExternalCacheDirectories() async {
   final List<String> paths =
       await _channel.invokeListMethod<String>('getExternalCacheDirectories');
 
-  return (paths ?? const <String>[])
-      .map((String path) => Directory(path))
-      .toList();
+  return paths.map((String path) => Directory(path)).toList();
+}
+
+/// Shadows directory values from Androids `android.os.Environment` class.
+/// 
+/// https://developer.android.com/reference/android/os/Environment.html#fields_1
+class AndroidEnvironment {
+  static const String DIRECTORY_MUSIC = 'Music';
+  static const String DIRECTORY_PODCASTS = 'Podcasts';
+  static const String DIRECTORY_RINGTONES = 'Ringtones';
+  static const String DIRECTORY_ALARMS = 'Alarms';
+  static const String DIRECTORY_NOTIFICATIONS = 'Notifications';
+  static const String DIRECTORY_PICTURES = 'Pictures';
+  static const String DIRECTORY_MOVIES = 'Movies';
 }
 
 /// Paths to directories where application specific data can be stored.
@@ -140,12 +151,12 @@ Future<List<Directory>> getExternalCacheDirectories() async {
 /// On iOS, this function throws an UnsupportedError as it is not possible
 /// to access outside the app's sandbox.
 ///
-/// The parameter type is optional. If it is set, it must be one of the
-/// "DIRECTORY" constants defined in `android.os.Environment`, e.g.
-/// https://developer.android.com/reference/android/os/Environment#DIRECTORY_MUSIC
-///
 /// On Android this returns Context.getExternalFilesDirs(String type) or
 /// Context.getExternalFilesDir(String type) on API levels below 19.
+/// 
+/// The parameter [type] is optional. If it is set, it *must* be one of the
+/// constants defined in [AndroidEnvironment]. See [AndroidEnvironment] for
+/// more information.
 Future<List<Directory>> getExternalStorageDirectories(String type) async {
   if (_platform.isIOS)
     throw UnsupportedError("Functionality not available on iOS");
@@ -154,5 +165,5 @@ Future<List<Directory>> getExternalStorageDirectories(String type) async {
     <String, String>{"type": type},
   );
 
-  return (paths ?? <String>[]).map((String path) => Directory(path)).toList();
+  return paths.map((String path) => Directory(path)).toList();
 }

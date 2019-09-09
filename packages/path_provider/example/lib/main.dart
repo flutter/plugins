@@ -181,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: Platform.isIOS
                       ? null
                       : () {
-                          _requestExternalStorageDirectories('Music');
+                          _requestExternalStorageDirectories(AndroidEnvironment.DIRECTORY_MUSIC);
                         },
                 ),
               ),

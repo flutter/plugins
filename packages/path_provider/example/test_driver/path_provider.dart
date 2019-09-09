@@ -95,18 +95,30 @@ void main() {
   test('getExternalStorageDirectories', () async {
     if (Platform.isIOS) {
       final Future<List<Directory>> result =
-          getExternalStorageDirectories("music");
+          getExternalStorageDirectories(null);
       expect(result, throwsA(isInstanceOf<UnsupportedError>()));
     } else if (Platform.isAndroid) {
-      final List<Directory> directories =
-          await getExternalStorageDirectories("music");
-      for (Directory result in directories) {
-        final String uuid = Uuid().v1();
-        final File file = File('${result.path}/$uuid.txt');
-        file.writeAsStringSync('Hello world!');
-        expect(file.readAsStringSync(), 'Hello world!');
-        expect(result.listSync(), isNotEmpty);
-        file.deleteSync();
+      final List<String> allDirs = <String>[
+        null,
+        AndroidEnvironment.DIRECTORY_MUSIC,
+        AndroidEnvironment.DIRECTORY_PODCASTS,
+        AndroidEnvironment.DIRECTORY_RINGTONES,
+        AndroidEnvironment.DIRECTORY_ALARMS,
+        AndroidEnvironment.DIRECTORY_NOTIFICATIONS,
+        AndroidEnvironment.DIRECTORY_PICTURES,
+        AndroidEnvironment.DIRECTORY_MOVIES,
+      ];
+      for (String type in allDirs) {
+        final List<Directory> directories =
+            await getExternalStorageDirectories(type);
+        for (Directory result in directories) {
+          final String uuid = Uuid().v1();
+          final File file = File('${result.path}/$uuid.txt');
+          file.writeAsStringSync('Hello world!');
+          expect(file.readAsStringSync(), 'Hello world!');
+          expect(result.listSync(), isNotEmpty);
+          file.deleteSync();
+        }
       }
     }
   });
