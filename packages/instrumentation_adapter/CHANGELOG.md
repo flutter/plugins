@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Added support for running tests using Flutter driver.
+
 ## 0.1.1
 
 * Updates about using *androidx* library.
