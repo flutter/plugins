@@ -17,8 +17,7 @@ class InstrumentationAdapterFlutterBinding
     tearDownAll(() async {
       await _channel.invokeMethod<void>(
           'allTestsFinished', <String, dynamic>{'results': _results});
-      if (!_allTestsPassed.isCompleted)
-        _allTestsPassed.complete(true);
+      if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
     });
   }
 
@@ -52,16 +51,17 @@ class InstrumentationAdapterFlutterBinding
           };
           break;
         case 'get_health':
-          response = <String, String>{ 'status': 'ok' };
+          response = <String, String>{'status': 'ok'};
           break;
         default:
           throw UnimplementedError('$command is not implemented');
       }
-      return <String, dynamic> {
-        'isError' : false,
+      return <String, dynamic>{
+        'isError': false,
         'response': response,
       };
     }
+
     registerServiceExtension(name: 'driver', callback: callback);
   }
 
