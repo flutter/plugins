@@ -143,6 +143,54 @@ void main() {
       });
     });
 
+    group('#pickVideo', () {
+      test('passes the image source argument correctly', () async {
+        await ImagePicker.pickVideo(source: ImageSource.camera);
+        await ImagePicker.pickVideo(source: ImageSource.gallery);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickVideo',
+                arguments: <String, dynamic>{'source': 0, 'maxDuration': null}),
+            isMethodCall('pickVideo',
+                arguments: <String, dynamic>{'source': 1, 'maxDuration': null}),
+          ],
+        );
+      });
+
+      test('passes the duration argument correctly', () async {
+        await ImagePicker.pickVideo(source: ImageSource.camera);
+        await ImagePicker.pickVideo(
+            source: ImageSource.camera, maxDuration: Duration(seconds: 10));
+        await ImagePicker.pickVideo(
+            source: ImageSource.camera, maxDuration: Duration(minutes: 1));
+        await ImagePicker.pickVideo(
+            source: ImageSource.camera, maxDuration: Duration(hours: 1));
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickVideo',
+                arguments: <String, dynamic>{'source': 0, 'maxDuration': null}),
+            isMethodCall('pickVideo',
+                arguments: <String, dynamic>{'source': 0, 'maxDuration': 10}),
+            isMethodCall('pickVideo',
+                arguments: <String, dynamic>{'source': 0, 'maxDuration': 60}),
+            isMethodCall('pickVideo',
+                arguments: <String, dynamic>{'source': 0, 'maxDuration': 3600}),
+          ],
+        );
+      });
+
+      test('handles a null video path response gracefully', () async {
+        channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+
+        expect(
+            await ImagePicker.pickVideo(source: ImageSource.gallery), isNull);
+        expect(await ImagePicker.pickVideo(source: ImageSource.camera), isNull);
+      });
+    });
+
     group('#retrieveLostData', () {
       test('retrieveLostData get success response', () async {
         channel.setMockMethodCallHandler((MethodCall methodCall) async {

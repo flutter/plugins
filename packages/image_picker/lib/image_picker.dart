@@ -74,16 +74,18 @@ class ImagePicker {
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
+  /// The [maxDuration] argument specifies the maximum duration of the captured video.
+  ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  static Future<File> pickVideo({
-    @required ImageSource source,
-  }) async {
+  static Future<File> pickVideo(
+      {@required ImageSource source, Duration maxDuration}) async {
     assert(source != null);
     final String path = await _channel.invokeMethod<String>(
       'pickVideo',
       <String, dynamic>{
         'source': source.index,
+        'maxDuration': maxDuration?.inSeconds,
       },
     );
     return path == null ? null : File(path);

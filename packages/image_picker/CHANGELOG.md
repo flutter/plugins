@@ -1,3 +1,7 @@
+## 0.6.2
+
+* New feature : Set maximum duration for video recording.
+
 ## 0.6.1+4
 
 * Android: Fix a regression where the `retrieveLostImage` does not work anymore.
