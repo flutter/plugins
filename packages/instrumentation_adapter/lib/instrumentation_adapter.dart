@@ -17,8 +17,9 @@ class InstrumentationAdapterFlutterBinding
     tearDownAll(() async {
       await _channel.invokeMethod<void>(
           'allTestsFinished', <String, dynamic>{'results': _results});
-      if (!_allTestsPassed.isCompleted)
+      if (!_allTestsPassed.isCompleted) {
         _allTestsPassed.complete(true);
+      }
     });
   }
 
@@ -52,16 +53,17 @@ class InstrumentationAdapterFlutterBinding
           };
           break;
         case 'get_health':
-          response = <String, String>{ 'status': 'ok' };
+          response = <String, String>{'status': 'ok'};
           break;
         default:
           throw UnimplementedError('$command is not implemented');
       }
-      return <String, dynamic> {
-        'isError' : false,
+      return <String, dynamic>{
+        'isError': false,
         'response': response,
       };
     }
+
     registerServiceExtension(name: 'driver', callback: callback);
   }
 
@@ -70,7 +72,7 @@ class InstrumentationAdapterFlutterBinding
       {String description = '', Duration timeout}) async {
     // TODO(jackson): Report the results individually instead of all at once
     // See https://github.com/flutter/flutter/issues/38985
-    TestExceptionReporter valueBeforeTest = reportTestException;
+    final TestExceptionReporter valueBeforeTest = reportTestException;
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
       _results[description] = 'failed';
