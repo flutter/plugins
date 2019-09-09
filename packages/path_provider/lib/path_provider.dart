@@ -61,7 +61,12 @@ Future<Directory> getApplicationSupportDirectory() async {
 
 /// Path to the directory where application can store files that are persistent,
 /// backed up, and not visible to the user, such as sqlite.db.
+///
+/// On Android, this function throws an [UnsupportedError] as no equivalent
+/// folder exists.
 Future<Directory> getLibraryDirectory() async {
+  if (_platform.isAndroid)
+    throw UnsupportedError("Functionality not available on Android");
   final String path =
       await _channel.invokeMethod<String>('getLibraryDirectory');
   if (path == null) {
@@ -129,7 +134,7 @@ Future<List<Directory>> getExternalCacheDirectories() async {
 }
 
 /// Shadows directory values from Androids `android.os.Environment` class.
-/// 
+///
 /// https://developer.android.com/reference/android/os/Environment.html#fields_1
 class AndroidEnvironment {
   static const String DIRECTORY_MUSIC = 'Music';
@@ -153,7 +158,7 @@ class AndroidEnvironment {
 ///
 /// On Android this returns Context.getExternalFilesDirs(String type) or
 /// Context.getExternalFilesDir(String type) on API levels below 19.
-/// 
+///
 /// The parameter [type] is optional. If it is set, it *must* be one of the
 /// constants defined in [AndroidEnvironment]. See [AndroidEnvironment] for
 /// more information.

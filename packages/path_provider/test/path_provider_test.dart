@@ -86,8 +86,17 @@ void main() {
     expect(directory, isNull);
   });
 
-  test('getLibraryDirectory test', () async {
-    response = null;
+  test('getLibraryDirectory Android test', () async {
+    try {
+      await getLibraryDirectory();
+      fail('should throw UnsupportedError');
+    } catch (e) {
+      expect(e, isUnsupportedError);
+    }
+  });
+  test('getLibraryDirectory iOS test', () async {
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+
     final Directory directory = await getLibraryDirectory();
     expect(
       log,
@@ -136,7 +145,9 @@ void main() {
       <Matcher>[
         isMethodCall(
           'getExternalStorageDirectories',
-          arguments: const <String, String>{'type': AndroidEnvironment.DIRECTORY_MUSIC},
+          arguments: const <String, String>{
+            'type': AndroidEnvironment.DIRECTORY_MUSIC
+          },
         )
       ],
     );
@@ -183,6 +194,8 @@ void main() {
   });
 
   test('ApplicationLibraryDirectory path test', () async {
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+
     final String fakePath = "/foo/bar/baz";
     response = fakePath;
     final Directory directory = await getLibraryDirectory();
