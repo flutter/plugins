@@ -17,9 +17,7 @@ class InstrumentationAdapterFlutterBinding
     tearDownAll(() async {
       await _channel.invokeMethod<void>(
           'allTestsFinished', <String, dynamic>{'results': _results});
-      if (!_allTestsPassed.isCompleted) {
-        _allTestsPassed.complete(true);
-      }
+      if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
     });
   }
 
