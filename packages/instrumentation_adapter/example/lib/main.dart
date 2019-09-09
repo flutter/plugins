@@ -1,9 +1,5 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
 import 'dart:io' show Platform;
-
-import 'package:flutter/services.dart';
-import 'package:instrumentation_adapter/instrumentation_adapter.dart';
+import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
 

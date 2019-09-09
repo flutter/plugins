@@ -18,7 +18,7 @@ class InstrumentationAdapterFlutterBinding
       try {
         await _channel.invokeMethod<void>(
             'allTestsFinished', <String, dynamic>{'results': _results});
-      } on MissingPluginException catch(e) {
+      } on MissingPluginException {
         // Tests were run on the host rather than a device.
       }
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
