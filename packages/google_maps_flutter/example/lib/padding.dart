@@ -93,7 +93,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               controller: _topController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "Top",
               ),
             ),
@@ -105,7 +105,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               controller: _bottomController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "Bottom",
               ),
             ),
@@ -117,7 +117,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               controller: _leftController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "Left",
               ),
             ),
@@ -129,7 +129,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               controller: _rightController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "Right",
               ),
             ),

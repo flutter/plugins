@@ -1,3 +1,7 @@
+## 0.5.21+1
+
+* Fix `prefer_const_constructors` analyzer warnings in example app.
+
 ## 0.5.21
 
 * Don't recreate map elements if they didn't change since last widget build.
