@@ -7,7 +7,6 @@ package io.flutter.plugins.webviewflutter;
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
