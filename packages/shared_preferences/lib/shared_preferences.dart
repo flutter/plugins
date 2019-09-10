@@ -18,14 +18,24 @@ class SharedPreferences {
   SharedPreferences._(this._preferenceCache);
 
   static const String _prefix = 'flutter.';
-  static SharedPreferences _instance;
+  static Completer<SharedPreferences> _completer;
   static Future<SharedPreferences> getInstance() async {
-    if (_instance == null) {
-      final Map<String, Object> preferencesMap =
-          await _getSharedPreferencesMap();
-      _instance = SharedPreferences._(preferencesMap);
+    if (_completer == null) {
+      _completer = Completer<SharedPreferences>();
+      try {
+        final Map<String, Object> preferencesMap =
+            await _getSharedPreferencesMap();
+        _completer.complete(SharedPreferences._(preferencesMap));
+      } on Exception catch (e) {
+        // If there's an error, explicitly return the future with an error.
+        // then set the completer to null so we can retry.
+        _completer.completeError(e);
+        final Future<SharedPreferences> sharedPrefsFuture = _completer.future;
+        _completer = null;
+        return sharedPrefsFuture;
+      }
     }
-    return _instance;
+    return _completer.future;
   }
 
   /// The cache that holds all preferences.
@@ -168,7 +178,7 @@ class SharedPreferences {
 
   /// Initializes the shared preferences with mock values for testing.
   ///
-  /// If the singleton instance has been initialized already, it is automatically reloaded.
+  /// If the singleton instance has been initialized already, it is nullified.
   @visibleForTesting
   static void setMockInitialValues(Map<String, dynamic> values) {
     _kChannel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -177,6 +187,6 @@ class SharedPreferences {
       }
       return null;
     });
-    _instance?.reload();
+    _completer = null;
   }
 }
