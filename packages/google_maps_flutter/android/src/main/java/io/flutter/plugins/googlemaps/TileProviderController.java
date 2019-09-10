@@ -6,8 +6,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.maps.model.Tile;
-import com.google.android.gms.maps.model.TileProvider;
+import com.google.android.libraries.maps.model.Tile;
+import com.google.android.libraries.maps.model.TileProvider;
 
 import java.util.concurrent.CountDownLatch;
 

@@ -1,9 +1,8 @@
 package io.flutter.plugins.googlemaps;
 
-import android.util.Log;
 
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.android.gms.maps.model.TileProvider;
+import com.google.android.libraries.maps.model.TileOverlayOptions;
+import com.google.android.libraries.maps.model.TileProvider;
 
 public class TileOverlayBuilder implements TileOverlaySink {
     private final TileOverlayOptions tileOverlayOptions;

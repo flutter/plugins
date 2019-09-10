@@ -24,7 +24,8 @@ import com.google.android.libraries.maps.model.LatLngBounds;
 import com.google.android.libraries.maps.model.PatternItem;
 import com.google.android.libraries.maps.model.RoundCap;
 import com.google.android.libraries.maps.model.SquareCap;
-import com.google.android.gms.maps.model.Tile;
+import com.google.android.libraries.maps.model.Tile;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

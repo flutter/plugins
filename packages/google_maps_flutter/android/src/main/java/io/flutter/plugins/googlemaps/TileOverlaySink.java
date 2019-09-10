@@ -1,6 +1,6 @@
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.gms.maps.model.TileProvider;
+import com.google.android.libraries.maps.model.TileProvider;
 
 /**
  * Receiver of TileOverlayOptions configuration.
