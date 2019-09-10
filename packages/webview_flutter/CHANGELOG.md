@@ -1,3 +1,7 @@
+## 0.3.14
+
+* Added a getTitle getter to WebViewController.
+
 ## 0.3.13
 
 * Add an optional `userAgent` property to set a custom User Agent.
