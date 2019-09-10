@@ -39,12 +39,20 @@ public class TileProviderController implements TileProvider, MethodChannel.Resul
             Log.e(TAG, String.format("countDownLatch: can't get tile: x = %d, y= %d, zoom = %d", x, y, zoom), e);
             tile = TileProvider.NO_TILE;
         }
+        if (tile == null) {
+            tile = TileProvider.NO_TILE;
+        }
         return tile;
     }
 
     @Override
     public void success(Object data) {
-        tile = Convert.interpretTile(data);
+        try {
+            tile = Convert.interpretTile(data);
+        } catch (Exception ex) {
+            Log.e(TAG, "Can't parse tile data", ex);
+            tile = TileProvider.NO_TILE;
+        }
         countDownLatch.countDown();
     }
 
