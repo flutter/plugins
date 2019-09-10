@@ -1,3 +1,7 @@
+## 0.3.14
+
+* Add support for js `alert`, `confirm`, `prompt`.
+
 ## 0.3.13
 
 * Add an optional `userAgent` property to set a custom User Agent.

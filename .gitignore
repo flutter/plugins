@@ -15,6 +15,7 @@ Podfile
 Podfile.lock
 Pods/
 .symlinks/
+**/ios/**/DerivedData/
 **/Flutter/App.framework/
 **/Flutter/Flutter.framework/
 **/Flutter/Generated.xcconfig
