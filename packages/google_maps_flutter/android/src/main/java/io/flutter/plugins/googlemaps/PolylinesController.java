@@ -4,9 +4,9 @@
 
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.libraries.maps.GoogleMap;
+import com.google.android.libraries.maps.model.Polyline;
+import com.google.android.libraries.maps.model.PolylineOptions;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
 import java.util.List;

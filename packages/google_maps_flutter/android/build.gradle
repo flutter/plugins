@@ -21,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.android.tools.build:gradle:3.5.0'
     }
 }
 
@@ -29,6 +29,9 @@ rootProject.allprojects {
     repositories {
         google()
         jcenter()
+        flatDir {
+            dirs 'libs'
+        }
     }
 }
 
@@ -53,6 +56,10 @@ android {
     }
 
     dependencies {
-        implementation 'com.google.android.gms:play-services-maps:17.0.0'
+        implementation name: 'maps-sdk-3.0.0-beta', ext: 'aar'
+        implementation 'com.google.android.gms:play-services-basement:17.1.0'
+        implementation 'com.google.android.gms:play-services-base:17.1.0'
+        implementation 'com.google.android.gms:play-services-gcm:17.0.0'
+        implementation 'com.google.android.gms:play-services-location:17.0.0'
     }
 }

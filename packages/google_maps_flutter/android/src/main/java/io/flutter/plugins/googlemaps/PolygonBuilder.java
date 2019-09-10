@@ -4,8 +4,8 @@
 
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.libraries.maps.model.LatLng;
+import com.google.android.libraries.maps.model.PolygonOptions;
 import java.util.List;
 
 class PolygonBuilder implements PolygonOptionsSink {

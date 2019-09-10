@@ -4,8 +4,8 @@
 
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.maps.model.BitmapDescriptor;
+import com.google.android.libraries.maps.model.LatLng;
 
 /** Receiver of Marker configuration options. */
 interface MarkerOptionsSink {
