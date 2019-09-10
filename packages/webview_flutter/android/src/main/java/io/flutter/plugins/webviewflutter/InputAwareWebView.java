@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -27,8 +28,8 @@ final class InputAwareWebView extends WebView {
   private View threadedInputConnectionProxyView;
   private ThreadedInputConnectionProxyAdapterView proxyAdapterView;
 
-  InputAwareWebView(Context context, View containerView) {
-    super(context);
+  InputAwareWebView(Activity activity, View containerView) {
+    super(activity);
     this.containerView = containerView;
   }
 
