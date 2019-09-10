@@ -1,6 +1,6 @@
-## 0.5.4
+## 0.6.0
 
-* Do not require confirmation for face unlock on Android bringing the behavior in line with iOS..
+* Define a new parameter for signaling that the transaction is sensitive.
 * Up the biometric version to beta01.
 * Handle no device credential error.
 

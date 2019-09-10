@@ -77,7 +77,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             .setTitle((String) call.argument("signInTitle"))
             .setSubtitle((String) call.argument("fingerprintHint"))
             .setNegativeButtonText((String) call.argument("cancelButton"))
-            .setConfirmationRequired(false)
+            .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
             .build();
   }
 

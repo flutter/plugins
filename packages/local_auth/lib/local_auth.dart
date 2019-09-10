@@ -44,6 +44,11 @@ class LocalAuthentication {
   /// Construct [AndroidAuthStrings] and [IOSAuthStrings] if you want to
   /// customize messages in the dialogs.
   ///
+  /// Setting [sensitiveTransaction] to true enables platform specific
+  /// precautions. For instance, on face unlock, Android opens a confirmation
+  /// dialog after the face is recognized to make sure the user meant to unlock
+  /// their phone.
+  ///
   /// Throws an [PlatformException] if there were technical problems with local
   /// authentication (e.g. lack of relevant hardware). This might throw
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
@@ -54,12 +59,14 @@ class LocalAuthentication {
     bool stickyAuth = false,
     AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
     IOSAuthMessages iOSAuthStrings = const IOSAuthMessages(),
+    bool sensitiveTransaction = true,
   }) async {
     assert(localizedReason != null);
     final Map<String, Object> args = <String, Object>{
       'localizedReason': localizedReason,
       'useErrorDialogs': useErrorDialogs,
       'stickyAuth': stickyAuth,
+      'sensitiveTransaction': sensitiveTransaction,
     };
     if (Platform.isIOS) {
       args.addAll(iOSAuthStrings.args);
