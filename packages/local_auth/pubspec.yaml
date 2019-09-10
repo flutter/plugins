@@ -16,6 +16,11 @@ dependencies:
     sdk: flutter
   meta: ^1.0.5
   intl: ^0.15.1
+  platform: ^2.0.0 
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
