@@ -249,7 +249,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
                                    details:nil]);
       }
     } else {
-    result(FlutterMethodNotImplemented);
+      result(FlutterMethodNotImplemented);
   }
 }
 
