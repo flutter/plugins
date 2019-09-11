@@ -49,7 +49,7 @@ public class GoogleMapFactory extends PlatformViewFactory {
       builder.setInitialCircles(params.get("circlesToAdd"));
     }
     if(params.containsKey("tileOverlaysToAdd")) {
-      builder.setInitialCircles(params.get("tileOverlaysToAdd"));
+      builder.setInitialTileOverlays(params.get("tileOverlaysToAdd"));
     }
     return builder.build(id, context, mActivityState, mPluginRegistrar);
   }
