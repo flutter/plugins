@@ -87,6 +87,7 @@ final class GoogleMapController
   private List<Object> initialPolygons;
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
+  private List<Object> initialTileOverlays;
 
   GoogleMapController(
       int id,
@@ -628,6 +629,18 @@ final class GoogleMapController
 
   private void updateInitialCircles() {
     circlesController.addCircles(initialCircles);
+  }
+
+  @Override
+  public void setInitialTileOverlays(Object initialTileOverlays) {
+    this.initialTileOverlays = (List<Object>) initialTileOverlays;
+    if(googleMap!=null) {
+      updateInitialTileOverlays();
+    }
+  }
+
+  private void updateInitialTileOverlays() {
+    tileOverlayController.addTileOverlays(initialTileOverlays);
   }
 
   @SuppressLint("MissingPermission")
