@@ -1,3 +1,7 @@
+## 0.4.0+7
+
+* Update instrumentation test to use instrumentation_adapter plugin.
+
 ## 0.4.0+6
 
 * Fix Android compiler warnings.
