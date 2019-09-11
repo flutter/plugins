@@ -1,6 +1,12 @@
-## 0.5.4
+## 0.6.1
 
 * Added ability to stop authentication (For Android).
+
+## 0.6.0
+
+* Define a new parameter for signaling that the transaction is sensitive.
+* Up the biometric version to beta01.
+* Handle no device credential error.
 
 ## 0.5.3
 

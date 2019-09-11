@@ -457,6 +457,43 @@ void main() {
       expect(isPaused, _webviewBool(false));
     });
   });
+
+  test('getTitle', () async {
+    final String getTitleTest = '''
+        <!DOCTYPE html><html>
+        <head><title>Some title</title>
+        </head>
+        <body>
+        </body>
+        </html>
+      ''';
+    final String getTitleTestBase64 =
+        base64Encode(const Utf8Encoder().convert(getTitleTest));
+    final Completer<void> pageLoaded = Completer<void>();
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          initialUrl: 'data:text/html;charset=utf-8;base64,$getTitleTestBase64',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          onPageFinished: (String url) {
+            pageLoaded.complete(null);
+          },
+        ),
+      ),
+    );
+
+    final WebViewController controller = await controllerCompleter.future;
+    await pageLoaded.future;
+
+    final String title = await controller.getTitle();
+    expect(title, 'Some title');
+  });
 }
 
 Future<void> pumpWidget(Widget widget) {

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
+import 'package:platform/platform.dart';
 
 import 'auth_strings.dart';
 import 'error_codes.dart';
@@ -14,6 +14,13 @@ import 'error_codes.dart';
 enum BiometricType { face, fingerprint, iris }
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/local_auth');
+
+Platform _platform = const LocalPlatform();
+
+@visibleForTesting
+void setMockPathProviderPlatform(Platform platform) {
+  _platform = platform;
+}
 
 /// A Flutter plugin for authenticating the user identity locally.
 class LocalAuthentication {
@@ -44,6 +51,11 @@ class LocalAuthentication {
   /// Construct [AndroidAuthStrings] and [IOSAuthStrings] if you want to
   /// customize messages in the dialogs.
   ///
+  /// Setting [sensitiveTransaction] to true enables platform specific
+  /// precautions. For instance, on face unlock, Android opens a confirmation
+  /// dialog after the face is recognized to make sure the user meant to unlock
+  /// their phone.
+  ///
   /// Throws an [PlatformException] if there were technical problems with local
   /// authentication (e.g. lack of relevant hardware). This might throw
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
@@ -54,23 +66,25 @@ class LocalAuthentication {
     bool stickyAuth = false,
     AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
     IOSAuthMessages iOSAuthStrings = const IOSAuthMessages(),
+    bool sensitiveTransaction = true,
   }) async {
     assert(localizedReason != null);
     final Map<String, Object> args = <String, Object>{
       'localizedReason': localizedReason,
       'useErrorDialogs': useErrorDialogs,
       'stickyAuth': stickyAuth,
+      'sensitiveTransaction': sensitiveTransaction,
     };
-    if (Platform.isIOS) {
+    if (_platform.isIOS) {
       args.addAll(iOSAuthStrings.args);
-    } else if (Platform.isAndroid) {
+    } else if (_platform.isAndroid) {
       args.addAll(androidAuthStrings.args);
     } else {
       throw PlatformException(
           code: otherOperatingSystem,
           message: 'Local authentication does not support non-Android/iOS '
               'operating systems.',
-          details: 'Your operating system is ${Platform.operatingSystem}');
+          details: 'Your operating system is ${_platform.operatingSystem}');
     }
     return await _channel.invokeMethod<bool>(
         'authenticateWithBiometrics', args);
