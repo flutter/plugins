@@ -142,6 +142,14 @@ class ExplicitIntentsWidget extends StatelessWidget {
     intent.launch();
   }
 
+  void _openApplicationDetails() {
+    final AndroidIntent intent = const AndroidIntent(
+      action: 'action_application_details_settings',
+      data: 'package:io.flutter.plugins.androidintentexample',
+    );
+    intent.launch();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,6 +194,12 @@ class ExplicitIntentsWidget extends StatelessWidget {
                   'Tap here to open Location Settings Configuration',
                 ),
                 onPressed: _openLocationSettingsConfiguration,
+              ),
+              RaisedButton(
+                child: const Text(
+                  'Tap here to open Application Details',
+                ),
+                onPressed: _openApplicationDetails,
               )
             ],
           ),

@@ -29,7 +29,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.Context;
 import androidx.annotation.Nullable;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
@@ -43,12 +42,10 @@ import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
-import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugins.inapppurchase.InAppPurchasePlugin.PluginPurchaseListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,20 +57,19 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 public class InAppPurchasePluginTest {
-  InAppPurchasePlugin plugin;
+  private InAppPurchasePlugin plugin;
   @Mock BillingClient mockBillingClient;
   @Mock MethodChannel mockMethodChannel;
   @Spy Result result;
   @Mock PluginRegistry.Registrar registrar;
   @Mock Activity activity;
-  @Mock BinaryMessenger messenger;
-  @Mock Context context;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    when(registrar.context()).thenReturn(context);
-    plugin = new InAppPurchasePlugin(registrar, mockBillingClient, mockMethodChannel);
+
+    BillingClientFactory factory = (context, channel) -> mockBillingClient;
+    plugin = new InAppPurchasePlugin(factory, registrar, mockMethodChannel);
   }
 
   @Test
@@ -85,6 +81,7 @@ public class InAppPurchasePluginTest {
 
   @Test
   public void isReady_true() {
+    mockStartConnection();
     MethodCall call = new MethodCall(IS_READY, null);
     when(mockBillingClient.isReady()).thenReturn(true);
     plugin.onMethodCall(call, result);
@@ -93,6 +90,7 @@ public class InAppPurchasePluginTest {
 
   @Test
   public void isReady_false() {
+    mockStartConnection();
     MethodCall call = new MethodCall(IS_READY, null);
     when(mockBillingClient.isReady()).thenReturn(false);
     plugin.onMethodCall(call, result);
@@ -113,14 +111,7 @@ public class InAppPurchasePluginTest {
 
   @Test
   public void startConnection() {
-    Map<String, Integer> arguments = new HashMap<>();
-    arguments.put("handle", 1);
-    MethodCall call = new MethodCall(START_CONNECTION, arguments);
-    ArgumentCaptor<BillingClientStateListener> captor =
-        ArgumentCaptor.forClass(BillingClientStateListener.class);
-    doNothing().when(mockBillingClient).startConnection(captor.capture());
-
-    plugin.onMethodCall(call, result);
+    ArgumentCaptor<BillingClientStateListener> captor = mockStartConnection();
     verify(result, never()).success(any());
     captor.getValue().onBillingSetupFinished(100);
 
@@ -450,6 +441,18 @@ public class InAppPurchasePluginTest {
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
     verify(result, times(1)).success(responseCode);
+  }
+
+  private ArgumentCaptor<BillingClientStateListener> mockStartConnection() {
+    Map<String, Integer> arguments = new HashMap<>();
+    arguments.put("handle", 1);
+    MethodCall call = new MethodCall(START_CONNECTION, arguments);
+    ArgumentCaptor<BillingClientStateListener> captor =
+        ArgumentCaptor.forClass(BillingClientStateListener.class);
+    doNothing().when(mockBillingClient).startConnection(captor.capture());
+
+    plugin.onMethodCall(call, result);
+    return captor;
   }
 
   private void establishConnectedBillingClient(
