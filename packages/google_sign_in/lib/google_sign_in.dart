@@ -248,8 +248,8 @@ class GoogleSignIn {
   /// Returns a [Future] that completes with a success after [future], whether
   /// it completed with a value or an error.
   Future<void> _waitFor(Future<void> future) {
-    var completer = Completer<void>();
-    future.whenComplete(completer.complete).catchError((_) {
+    final Completer<void> completer = Completer<void>();
+    future.whenComplete(completer.complete).catchError((dynamic _) {
       // Ignore if previous call completed with an error.
     });
     return completer.future;

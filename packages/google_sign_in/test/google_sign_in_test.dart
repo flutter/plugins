@@ -45,11 +45,9 @@ void main() {
       responses = Map<String, dynamic>.from(kDefaultResponses);
       channel.setMockMethodCallHandler((MethodCall methodCall) {
         log.add(methodCall);
-        final response = responses[methodCall.method];
-        if (response != null &&
-            response is Map &&
-            response.containsKey('error')) {
-          return Future.error(response['error']);
+        final dynamic response = responses[methodCall.method];
+        if (response != null && response is Exception) {
+          return Future<dynamic>.error('$response');
         }
         return Future<dynamic>.value(response);
       });
@@ -150,10 +148,10 @@ void main() {
 
     test('signIn works even if a previous call throws error in other zone',
         () async {
-      responses['signInSilently'] = <String, dynamic>{'error': 'Not a user'};
+      responses['signInSilently'] = Exception('Not a user');
       await runZoned(() async {
         expect(await googleSignIn.signInSilently(), isNull);
-      }, onError: (e, st) {});
+      }, onError: (dynamic e, dynamic st) {});
       expect(await googleSignIn.signIn(), isNotNull);
       expect(
         log,
@@ -197,7 +195,7 @@ void main() {
     });
 
     test('can sign in after previously failed attempt', () async {
-      responses['signInSilently'] = <String, dynamic>{'error': 'Not a user'};
+      responses['signInSilently'] = Exception('Not a user');
       expect(await googleSignIn.signInSilently(), isNull);
       expect(await googleSignIn.signIn(), isNotNull);
       expect(
