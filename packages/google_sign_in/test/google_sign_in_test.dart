@@ -45,7 +45,13 @@ void main() {
       responses = Map<String, dynamic>.from(kDefaultResponses);
       channel.setMockMethodCallHandler((MethodCall methodCall) {
         log.add(methodCall);
-        return Future<dynamic>.value(responses[methodCall.method]);
+        final response = responses[methodCall.method];
+        if (response != null &&
+            response is Map &&
+            response.containsKey('error')) {
+          return Future.error(response['error']);
+        }
+        return Future<dynamic>.value(response);
       });
       googleSignIn = GoogleSignIn();
       log.clear();
@@ -140,6 +146,27 @@ void main() {
         }),
         isMethodCall('isSignedIn', arguments: null),
       ]);
+    });
+
+    test('signIn works even if a previous call throws error in other zone',
+        () async {
+      responses['signInSilently'] = <String, dynamic>{'error': 'Not a user'};
+      await runZoned(() async {
+        expect(await googleSignIn.signInSilently(), isNull);
+      }, onError: (e, st) {});
+      expect(await googleSignIn.signIn(), isNotNull);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
+            'scopes': <String>[],
+            'hostedDomain': null,
+          }),
+          isMethodCall('signInSilently', arguments: null),
+          isMethodCall('signIn', arguments: null),
+        ],
+      );
     });
 
     test('concurrent calls of the same method trigger sign in once', () async {
