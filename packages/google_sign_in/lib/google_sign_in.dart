@@ -247,7 +247,7 @@ class GoogleSignIn {
 
   /// Returns a [Future] that completes with a success after [future], whether
   /// it completed with a value or an error.
-  Future<void> _waitFor(Future<void> future) {
+  static Future<void> _waitFor(Future<void> future) {
     final Completer<void> completer = Completer<void>();
     future.whenComplete(completer.complete).catchError((dynamic _) {
       // Ignore if previous call completed with an error.
@@ -265,7 +265,7 @@ class GoogleSignIn {
       response = _callMethod(method);
     } else {
       response = _lastMethodCall.then((_) {
-        // If after the last completed call currentUser is not null and requested
+        // If after the last completed call `currentUser` is not `null` and requested
         // method is a sign in method, re-use the same authenticated user
         // instead of making extra call to the native side.
         const List<String> kSignInMethods = <String>[
