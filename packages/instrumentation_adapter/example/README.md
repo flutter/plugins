@@ -2,15 +2,15 @@
 
 Demonstrates how to use the instrumentation_adapter plugin.
 
-## Getting Started
+## Testing options
 
-This project is a starting point for a Flutter application.
+Below demonstrates the options of running a Flutter test.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1.  Execute `flutter test` to run the unit tests in *test* directory off device.
+1.  Execute `flutter drive -t test_driver/widget.dart` to run a driver test on
+    an attached device.
+1.  Execute `flutter run -t test/widget_test.dart` to run the test on an
+    attached device.
+1.  Execute `pushd android && ./gradlew connectedAndroidTest
+    -Ptarget=test_adapter/widget_test.dart && popd` to run the test on an
+    attached device, and report result to Android instrumentation.
