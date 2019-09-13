@@ -31,57 +31,18 @@
 + (UIImage *)scaledImage:(UIImage *)image
                 maxWidth:(NSNumber *)maxWidth
                maxHeight:(NSNumber *)maxHeight {
-  double originalWidth = image.size.width;
-  double originalHeight = image.size.height;
+    NSData *imageData = UIImagePNGRepresentation(image);
+    CGImageSourceRef src = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
+    CFDictionaryRef options = (__bridge CFDictionaryRef) @{
+                                                           (id) kCGImageSourceCreateThumbnailWithTransform : @YES,
+                                                           (id) kCGImageSourceCreateThumbnailFromImageAlways : @YES,
+                                                           (id) kCGImageSourceThumbnailMaxPixelSize : MAX(maxWidth, maxHeight)
+                                                           };
 
-  bool hasMaxWidth = maxWidth != (id)[NSNull null];
-  bool hasMaxHeight = maxHeight != (id)[NSNull null];
-
-  double width = hasMaxWidth ? MIN([maxWidth doubleValue], originalWidth) : originalWidth;
-  double height = hasMaxHeight ? MIN([maxHeight doubleValue], originalHeight) : originalHeight;
-
-  bool shouldDownscaleWidth = hasMaxWidth && [maxWidth doubleValue] < originalWidth;
-  bool shouldDownscaleHeight = hasMaxHeight && [maxHeight doubleValue] < originalHeight;
-  bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
-
-  if (shouldDownscale) {
-    double downscaledWidth = floor((height / originalHeight) * originalWidth);
-    double downscaledHeight = floor((width / originalWidth) * originalHeight);
-
-    if (width < height) {
-      if (!hasMaxWidth) {
-        width = downscaledWidth;
-      } else {
-        height = downscaledHeight;
-      }
-    } else if (height < width) {
-      if (!hasMaxHeight) {
-        height = downscaledHeight;
-      } else {
-        width = downscaledWidth;
-      }
-    } else {
-      if (originalWidth < originalHeight) {
-        width = downscaledWidth;
-      } else if (originalHeight < originalWidth) {
-        height = downscaledHeight;
-      }
-    }
-  }
-
-  // Scaling the image always rotate itself based on the current imageOrientation of the original
-  // Image. Set to orientationUp for the orignal image before scaling, so the scaled image doesn't
-  // mess up with the pixels.
-  UIImage *imageToScale = [UIImage imageWithCGImage:image.CGImage
-                                              scale:1
-                                        orientation:UIImageOrientationUp];
-
-  UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
-  [imageToScale drawInRect:CGRectMake(0, 0, width, height)];
-
-  UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return scaledImage;
+    CGImageRef scaledImageRef = CGImageSourceCreateThumbnailAtIndex(src, 0, options);
+    UIImage *scaled = [UIImage imageWithCGImage:scaledImageRef];
+    CGImageRelease(scaledImageRef);
+    return scaled;
 }
 
 + (GIFInfo *)scaledGIFImage:(NSData *)data
