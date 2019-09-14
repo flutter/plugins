@@ -31,18 +31,18 @@
 + (UIImage *)scaledImage:(UIImage *)image
                 maxWidth:(NSNumber *)maxWidth
                maxHeight:(NSNumber *)maxHeight {
-    NSData *imageData = UIImagePNGRepresentation(image);
-    CGImageSourceRef src = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
-    CFDictionaryRef options = (__bridge CFDictionaryRef) @{
-                                                           (id) kCGImageSourceCreateThumbnailWithTransform : @YES,
-                                                           (id) kCGImageSourceCreateThumbnailFromImageAlways : @YES,
-                                                           (id) kCGImageSourceThumbnailMaxPixelSize : MAX(maxWidth, maxHeight)
-                                                           };
+  NSData *imageData = UIImagePNGRepresentation(image);
+  CGImageSourceRef src = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
+  CFDictionaryRef options = (__bridge CFDictionaryRef) @{
+    (id)kCGImageSourceCreateThumbnailWithTransform : @YES,
+    (id)kCGImageSourceCreateThumbnailFromImageAlways : @YES,
+    (id)kCGImageSourceThumbnailMaxPixelSize : MAX(maxWidth, maxHeight)
+  };
 
-    CGImageRef scaledImageRef = CGImageSourceCreateThumbnailAtIndex(src, 0, options);
-    UIImage *scaled = [UIImage imageWithCGImage:scaledImageRef];
-    CGImageRelease(scaledImageRef);
-    return scaled;
+  CGImageRef scaledImageRef = CGImageSourceCreateThumbnailAtIndex(src, 0, options);
+  UIImage *scaled = [UIImage imageWithCGImage:scaledImageRef];
+  CGImageRelease(scaledImageRef);
+  return scaled;
 }
 
 + (GIFInfo *)scaledGIFImage:(NSData *)data
