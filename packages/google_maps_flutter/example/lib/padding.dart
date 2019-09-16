@@ -98,7 +98,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Flexible(
             flex: 2,
             child: TextField(
@@ -110,7 +110,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Flexible(
             flex: 2,
             child: TextField(
@@ -122,7 +122,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Flexible(
             flex: 2,
             child: TextField(
