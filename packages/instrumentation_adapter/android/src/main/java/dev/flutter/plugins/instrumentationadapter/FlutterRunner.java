@@ -5,6 +5,8 @@
 package dev.flutter.plugins.instrumentationadapter;
 
 import android.app.Activity;
+import android.os.Build;
+import androidx.annotation.RequiresApi;
 import androidx.test.rule.ActivityTestRule;
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -15,6 +17,7 @@ import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
+@RequiresApi(api = Build.VERSION_CODES.N)
 public class FlutterRunner extends Runner {
 
   final Class testClass;
@@ -44,6 +47,7 @@ public class FlutterRunner extends Runner {
   public Description getDescription() {
     return Description.createTestDescription(testClass, "Flutter Tests");
   }
+
 
   @Override
   public void run(RunNotifier notifier) {
