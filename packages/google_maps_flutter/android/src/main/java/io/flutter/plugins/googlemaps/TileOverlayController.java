@@ -15,6 +15,10 @@ public class TileOverlayController implements TileOverlaySink {
         tileOverlay.remove();
     }
 
+    void clearTileCache() {
+        tileOverlay.clearTileCache();
+    }
+
     @Override
     public void setFadeIn(boolean fadeIn) {
         tileOverlay.setFadeIn(fadeIn);

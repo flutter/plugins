@@ -37,14 +37,14 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
     super.dispose();
   }
 
-  void _remove() {
+  void _removeTileOverlay() {
     print("Remove tile overlay");
     setState(() {
       _tileOverlay = null;
     });
   }
 
-  void _add() {
+  void _addTileOverlay() {
     print("Add tile overlay");
     final TileOverlay tileOverlay = TileOverlay(
       tileOverlayId: TileOverlayId("tile_overlay_1"),
@@ -53,6 +53,13 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
     setState(() {
       _tileOverlay = tileOverlay;
     });
+  }
+
+  void _clearTileCache() {
+    print("Clear tile cahce");
+    if (_tileOverlay != null && controller != null) {
+      controller.clearTileCache(_tileOverlay.tileOverlayId);
+    }
   }
 
   @override
@@ -78,12 +85,16 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
           ),
         ),
         FlatButton(
-          child: const Text('add'),
-          onPressed: _add,
+          child: const Text('Add tile overlay'),
+          onPressed: _addTileOverlay,
         ),
         FlatButton(
-          child: const Text('remove'),
-          onPressed: _remove,
+          child: const Text('Remove tile overlay'),
+          onPressed: _removeTileOverlay,
+        ),
+        FlatButton(
+          child: const Text('Clear tile cache'),
+          onPressed: _clearTileCache,
         ),
       ],
     );
