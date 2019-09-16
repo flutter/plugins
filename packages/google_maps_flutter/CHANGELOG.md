@@ -4,6 +4,10 @@
 * On iOS, `myLocationEnabled` no longer affects the value of `myLocationButtonEnabled`
 * Added `isMyLocationEnabled` to `GoogleMapsInspector`.
 
+## 0.5.21+2
+
+* Fix more `prefer_const_constructors` analyzer warnings in example app.
+
 ## 0.5.21+1
 
 * Fix `prefer_const_constructors` analyzer warnings in example app.
