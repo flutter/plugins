@@ -368,6 +368,13 @@ final class GoogleMapController
         result.success(null);
         break;
       }
+      case "tileOverlays#clearTileCache":
+      {
+        Object rawTileOverlayId = call.argument("tileOverlayId");
+        tileOverlayController.clearTileCache(rawTileOverlayId);
+        result.success(null);
+        break;
+      }
       default:
         result.notImplemented();
     }

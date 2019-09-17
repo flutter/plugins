@@ -200,6 +200,18 @@ class GoogleMapController {
     );
   }
 
+  /// Clears the tile cache so that all tiles will be requested again from the
+  /// [TileProvider]. The current tiles from this tile overlay will also be
+  /// cleared from the map after calling this method. The API maintains a small
+  /// in-memory cache of tiles. If you want to cache tiles for longer, you
+  /// should implement an on-disk cache.
+  Future<void> clearTileCache(TileOverlayId tileOverlayId) async {
+    await channel.invokeMethod<void>(
+        'tileOverlays#clearTileCache', <String, dynamic>{
+      'tileOverlayId': tileOverlayId.value,
+    });
+  }
+
   /// Sets the styling of the base map.
   ///
   /// Set to `null` to clear any previous custom styling.
