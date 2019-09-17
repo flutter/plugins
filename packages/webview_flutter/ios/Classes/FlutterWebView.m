@@ -34,7 +34,7 @@
 
 @end
 
-@interface FLTWebViewController() <WKUIDelegate>
+@interface FLTWebViewController () <WKUIDelegate>
 
 @end
 
@@ -370,14 +370,18 @@
   }
 }
 
-// Added to allow for all iframe links / ads to ask the navigationdelegate for rejection or acceptance
-- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
-    if (!navigationAction.targetFrame.isMainFrame) {
-        // ... 
-        [webView loadRequest:navigationAction.request];
-    }
+// Added to allow for all iframe links / ads to ask the navigationdelegate for rejection or
+// acceptance
+- (WKWebView*)webView:(WKWebView*)webView
+    createWebViewWithConfiguration:(WKWebViewConfiguration*)configuration
+               forNavigationAction:(WKNavigationAction*)navigationAction
+                    windowFeatures:(WKWindowFeatures*)windowFeatures {
+  if (!navigationAction.targetFrame.isMainFrame) {
+    // ...
+    [webView loadRequest:navigationAction.request];
+  }
 
-    return nil;
+  return nil;
 }
 
 @end
