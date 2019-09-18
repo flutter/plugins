@@ -1,3 +1,9 @@
+## 0.6.0
+
+* Define a new parameter for signaling that the transaction is sensitive.
+* Up the biometric version to beta01.
+* Handle no device credential error.
+
 ## 0.5.3
 
 * Add face id detection as well by not relying on FingerprintCompat.
