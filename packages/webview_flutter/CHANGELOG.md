@@ -1,3 +1,7 @@
+## 0.3.15
+
+* Fix crash when a webview contains a select and user tries to change the value)
+
 ## 0.3.14+1
 
 * Allow underscores anywhere for Javascript Channel name.
