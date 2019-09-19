@@ -76,6 +76,16 @@
                                               scale:1
                                         orientation:UIImageOrientationUp];
 
+  // Swap width and height when source image orientation is left/right
+  if([image imageOrientation] == UIImageOrientationLeft
+     || [image imageOrientation] == UIImageOrientationRight
+     || [image imageOrientation] == UIImageOrientationLeftMirrored
+     || [image imageOrientation] == UIImageOrientationRightMirrored) {
+    double temp = width;
+    width = height;
+    height = temp;
+  }
+
   UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
   [imageToScale drawInRect:CGRectMake(0, 0, width, height)];
 
