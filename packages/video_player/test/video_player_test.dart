@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:video_player/video_player.dart';
 
 class FakeController extends ValueNotifier<VideoPlayerValue>
     implements VideoPlayerController {
@@ -22,28 +23,39 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   String get dataSource => '';
+
   @override
   DataSourceType get dataSourceType => DataSourceType.file;
+
   @override
   String get package => null;
+
   @override
   Future<Duration> get position async => value.position;
 
   @override
   Future<void> seekTo(Duration moment) async {}
+
   @override
   Future<void> setVolume(double volume) async {}
+
   @override
   Future<void> initialize() async {}
+
   @override
   Future<void> pause() async {}
+
   @override
   Future<void> play() async {}
+
   @override
   Future<void> setLooping(bool looping) async {}
 
   @override
   VideoFormat get formatHint => null;
+
+  @override
+  Map<String, String> get headers => {"test": "test"};
 }
 
 void main() {
