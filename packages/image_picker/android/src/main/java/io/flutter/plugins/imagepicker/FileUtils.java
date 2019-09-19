@@ -33,7 +33,6 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -92,23 +91,16 @@ class FileUtils {
                 }
 
                 final String selection = "_id=?";
-                final String[] selectionArgs = new String[]{split[1]};
+                final String[] selectionArgs = new String[] {split[1]};
 
                 return getDataColumn(context, contentUri, selection, selectionArgs);
             }
         } else if ("content".equalsIgnoreCase(uri.getScheme())) {
 
             // Return the remote address
-            if (isGooglePhotosUri(uri)) {
+            if (isGooglePhotosUri(uri) || isOneDriveUri(uri)) {
                 return null;
             }
-
-            // OneDrive stores files in the local storage, we can't get path
-            // Return the remote address
-            if (isOneDriveUri(uri)) {
-                return null;
-            }
-
 
             return getDataColumn(context, uri, null, null);
         } else if ("file".equalsIgnoreCase(uri.getScheme())) {
@@ -178,9 +170,7 @@ class FileUtils {
         return success ? file.getPath() : null;
     }
 
-    /**
-     * @return extension of image with dot, or default .jpg if it none.
-     */
+    /** @return extension of image with dot, or default .jpg if it none. */
     private static String getImageExtension(Uri uriImage) {
         String extension = null;
 
