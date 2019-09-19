@@ -1,3 +1,15 @@
+## 0.5.21+2
+
+* Fix more `prefer_const_constructors` analyzer warnings in example app.
+
+## 0.5.21+1
+
+* Fix `prefer_const_constructors` analyzer warnings in example app.
+
+## 0.5.21
+
+* Don't recreate map elements if they didn't change since last widget build.
+
 ## 0.5.20+6
 
 * Adds support for toggling the traffic layer

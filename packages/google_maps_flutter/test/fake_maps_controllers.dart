@@ -133,6 +133,7 @@ class FakePlatformGoogleMap {
     final Set<Marker> result = Set<Marker>();
     for (Map<dynamic, dynamic> markerData in markersData) {
       final String markerId = markerData['markerId'];
+      final double alpha = markerData['alpha'];
       final bool draggable = markerData['draggable'];
       final bool visible = markerData['visible'];
 
@@ -151,6 +152,7 @@ class FakePlatformGoogleMap {
         draggable: draggable,
         visible: visible,
         infoWindow: infoWindow,
+        alpha: alpha,
       ));
     }
 
