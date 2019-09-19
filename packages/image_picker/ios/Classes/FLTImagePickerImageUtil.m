@@ -77,10 +77,10 @@
                                         orientation:UIImageOrientationUp];
 
   // Swap width and height when source image orientation is left/right
-  if([image imageOrientation] == UIImageOrientationLeft
-     || [image imageOrientation] == UIImageOrientationRight
-     || [image imageOrientation] == UIImageOrientationLeftMirrored
-     || [image imageOrientation] == UIImageOrientationRightMirrored) {
+  if ([image imageOrientation] == UIImageOrientationLeft ||
+      [image imageOrientation] == UIImageOrientationRight ||
+      [image imageOrientation] == UIImageOrientationLeftMirrored ||
+      [image imageOrientation] == UIImageOrientationRightMirrored) {
     double temp = width;
     width = height;
     height = temp;
