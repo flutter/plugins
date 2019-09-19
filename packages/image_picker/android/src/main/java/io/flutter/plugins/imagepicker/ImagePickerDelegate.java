@@ -249,7 +249,7 @@ public class ImagePickerDelegate
   }
 
   private void launchPickVideoFromGalleryIntent() {
-    Intent pickVideoIntent = new Intent(Intent.ACTION_GET_CONTENT);
+    Intent pickVideoIntent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
     pickVideoIntent.setType("video/*");
 
     activity.startActivityForResult(pickVideoIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY);
@@ -310,7 +310,7 @@ public class ImagePickerDelegate
   }
 
   private void launchPickImageFromGalleryIntent() {
-    Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
+    Intent pickImageIntent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
     pickImageIntent.setType("image/*");
 
     activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
