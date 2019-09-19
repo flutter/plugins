@@ -219,5 +219,4 @@ class FileUtils {
   private static boolean isOneDriveUri(Uri uri) {
     return "com.microsoft.skydrive.content.external".equals(uri.getAuthority());
   }
-
 }
