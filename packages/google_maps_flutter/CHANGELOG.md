@@ -1,8 +1,11 @@
 ## 0.5.22
 
 * Fix references to `myLocationButtonEnabled` in test and example app.
-* On iOS, `myLocationEnabled` no longer affects the value of `myLocationButtonEnabled`
 * Added `isMyLocationEnabled` to `GoogleMapsInspector`.
+
+## 0.5.21+3
+
+* Fix `myLocationButton` bug in `google_maps_flutter` iOS.
 
 ## 0.5.21+2
 
