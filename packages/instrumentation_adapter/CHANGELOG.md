@@ -1,3 +1,7 @@
+## 0.1.4
+
+* Migrate example to AndroidX.
+
 ## 0.1.3
 
 * Added example app.
