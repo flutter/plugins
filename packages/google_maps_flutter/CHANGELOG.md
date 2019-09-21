@@ -2,6 +2,10 @@
 
 * Add TileOverlay support for Android.
 
+## 0.5.21+3
+
+* Fix `myLocationButton` bug in `google_maps_flutter` iOS.
+
 ## 0.5.21+2
 
 * Fix more `prefer_const_constructors` analyzer warnings in example app.
