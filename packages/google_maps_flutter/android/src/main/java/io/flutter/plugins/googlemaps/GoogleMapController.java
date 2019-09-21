@@ -358,23 +358,23 @@ final class GoogleMapController
           break;
         }
       case "tileOverlays#update":
-      {
-        Object tileOverlaysToAdd = call.argument("tileOverlaysToAdd");
-        tileOverlayController.addTileOverlays((List<Object>) tileOverlaysToAdd);
-        Object tileOverlaysToChange = call.argument("tileOverlaysToChange");
-        tileOverlayController.changeTileOverlays((List<Object>) tileOverlaysToChange);
-        Object tileOverlaysToRemove = call.argument("tileOverlayIdsToRemove");
-        tileOverlayController.removeTileOverlays((List<Object>) tileOverlaysToRemove);
-        result.success(null);
-        break;
-      }
+        {
+          Object tileOverlaysToAdd = call.argument("tileOverlaysToAdd");
+          tileOverlayController.addTileOverlays((List<Object>) tileOverlaysToAdd);
+          Object tileOverlaysToChange = call.argument("tileOverlaysToChange");
+          tileOverlayController.changeTileOverlays((List<Object>) tileOverlaysToChange);
+          Object tileOverlaysToRemove = call.argument("tileOverlayIdsToRemove");
+          tileOverlayController.removeTileOverlays((List<Object>) tileOverlaysToRemove);
+          result.success(null);
+          break;
+        }
       case "tileOverlays#clearTileCache":
-      {
-        Object rawTileOverlayId = call.argument("tileOverlayId");
-        tileOverlayController.clearTileCache(rawTileOverlayId);
-        result.success(null);
-        break;
-      }
+        {
+          Object rawTileOverlayId = call.argument("tileOverlayId");
+          tileOverlayController.clearTileCache(rawTileOverlayId);
+          result.success(null);
+          break;
+        }
       default:
         result.notImplemented();
     }
@@ -662,7 +662,7 @@ final class GoogleMapController
   @Override
   public void setInitialTileOverlays(Object initialTileOverlays) {
     this.initialTileOverlays = (List<Object>) initialTileOverlays;
-    if(googleMap!=null) {
+    if (googleMap != null) {
       updateInitialTileOverlays();
     }
   }
