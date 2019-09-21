@@ -31,7 +31,7 @@ Widget _mapWithTileOverlays(Set<TileOverlay> tileOverlays) {
 
 void main() {
   final FakePlatformViewsController fakePlatformViewsController =
-  FakePlatformViewsController();
+      FakePlatformViewsController();
 
   setUpAll(() {
     SystemChannels.platform_views.setMockMethodCallHandler(
@@ -44,7 +44,7 @@ void main() {
 
   testWidgets('Initializing a tile overlay', (WidgetTester tester) async {
     final TileOverlay t1 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
     await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t1)));
 
     final FakePlatformGoogleMap platformGoogleMap =
@@ -60,9 +60,9 @@ void main() {
 
   testWidgets("Adding a tile overlay", (WidgetTester tester) async {
     final TileOverlay t1 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
     final TileOverlay t2 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"));
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"));
 
     await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t1)));
     await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t1, t2: t2)));
@@ -76,13 +76,12 @@ void main() {
     expect(addedTileOverlay, equals(t2));
     expect(platformGoogleMap.tileOverlayIdsToRemove.isEmpty, true);
 
-    expect(platformGoogleMap.tileOverlaysToChange.length, 1);
-    expect(platformGoogleMap.tileOverlaysToChange.first, equals(t1));
+    expect(platformGoogleMap.tileOverlaysToChange.isEmpty, true);
   });
 
   testWidgets("Removing a tile overlay", (WidgetTester tester) async {
     final TileOverlay t1 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
 
     await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t1)));
     await tester.pumpWidget(_mapWithTileOverlays(null));
@@ -99,9 +98,9 @@ void main() {
 
   testWidgets("Updating a tile overlay", (WidgetTester tester) async {
     final TileOverlay t1 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
     final TileOverlay t2 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"), zIndex: 10);
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"), zIndex: 10);
 
     await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t1)));
     await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t2)));
@@ -117,9 +116,9 @@ void main() {
 
   testWidgets("Updating a tile overlay", (WidgetTester tester) async {
     final TileOverlay t1 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
     final TileOverlay t2 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"), zIndex: 10);
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"), zIndex: 10);
 
     await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t1)));
     await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t2)));
@@ -135,9 +134,9 @@ void main() {
 
   testWidgets("Multi Update", (WidgetTester tester) async {
     TileOverlay t1 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
     TileOverlay t2 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"));
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"));
     final Set<TileOverlay> prev = _toSet(t1: t1, t2: t2);
     t1 = TileOverlay(
         tileOverlayId: TileOverlayId("tile_overlay_1"), visible: false);
@@ -158,14 +157,14 @@ void main() {
 
   testWidgets("Multi Update", (WidgetTester tester) async {
     TileOverlay t2 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"));
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"));
     final TileOverlay t3 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_3"));
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_3"));
     final Set<TileOverlay> prev = _toSet(t2: t2, t3: t3);
 
     // t1 is added, t2 is updated, t3 is removed.
     final TileOverlay t1 =
-    TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
     t2 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"), zIndex: 10);
     final Set<TileOverlay> cur = _toSet(t1: t1, t2: t2);
@@ -186,31 +185,26 @@ void main() {
         equals(t3.tileOverlayId));
   });
 
-  testWidgets(
-    "Partial Update",
-        (WidgetTester tester) async {
-      final TileOverlay t1 =
-      TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
-      TileOverlay t2 =
-      TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"));
-      final Set<TileOverlay> prev = _toSet(t1: t1, t2: t2);
-      t2 = TileOverlay(
-          tileOverlayId: TileOverlayId("tile_overlay_2"), zIndex: 10);
-      final Set<TileOverlay> cur = _toSet(t1: t1, t2: t2);
+  testWidgets("Partial Update", (WidgetTester tester) async {
+    final TileOverlay t1 =
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
+    final TileOverlay t2 =
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"));
+    TileOverlay t3 =
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_3"));
+    final Set<TileOverlay> prev = _toSet(t1: t1, t2: t2, t3: t3);
+    t3 =
+        TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_3"), zIndex: 10);
+    final Set<TileOverlay> cur = _toSet(t1: t1, t2: t2, t3: t3);
 
-      await tester.pumpWidget(_mapWithTileOverlays(prev));
-      await tester.pumpWidget(_mapWithTileOverlays(cur));
+    await tester.pumpWidget(_mapWithTileOverlays(prev));
+    await tester.pumpWidget(_mapWithTileOverlays(cur));
 
-      final FakePlatformGoogleMap platformGoogleMap =
-          fakePlatformViewsController.lastCreatedView;
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
 
-      expect(platformGoogleMap.tileOverlaysToChange, _toSet(t2: t2));
-      expect(platformGoogleMap.tileOverlayIdsToRemove.isEmpty, true);
-      expect(platformGoogleMap.tileOverlaysToAdd.isEmpty, true);
-    },
-    // The test is currently broken due to a bug (we're updating all tile overlays
-    // instead of just the ones that were changed):
-    // TODO(otopba): enable this test when the issue is fixed.
-    skip: true,
-  );
+    expect(platformGoogleMap.tileOverlaysToChange, _toSet(t3: t3));
+    expect(platformGoogleMap.tileOverlayIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.tileOverlaysToAdd.isEmpty, true);
+  });
 }

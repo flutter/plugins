@@ -124,22 +124,29 @@ class TileOverlay {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final TileOverlay typedOther = other;
-    return tileOverlayId == typedOther.tileOverlayId;
+    return tileOverlayId == typedOther.tileOverlayId &&
+        fadeIn == typedOther.fadeIn &&
+        transparency == typedOther.transparency &&
+        zIndex == typedOther.zIndex &&
+        visible == typedOther.visible;
   }
 
   @override
   int get hashCode => tileOverlayId.hashCode;
 }
 
-Map<TileOverlayId, TileOverlay> _keyTileOverlayId(Iterable<TileOverlay> tileOverlays) {
+Map<TileOverlayId, TileOverlay> _keyTileOverlayId(
+    Iterable<TileOverlay> tileOverlays) {
   if (tileOverlays == null) {
     return <TileOverlayId, TileOverlay>{};
   }
-  return Map<TileOverlayId, TileOverlay>.fromEntries(tileOverlays.map((TileOverlay tileOverlay) =>
-      MapEntry<TileOverlayId, TileOverlay>(tileOverlay.tileOverlayId, tileOverlay)));
+  return Map<TileOverlayId, TileOverlay>.fromEntries(tileOverlays.map(
+      (TileOverlay tileOverlay) => MapEntry<TileOverlayId, TileOverlay>(
+          tileOverlay.tileOverlayId, tileOverlay)));
 }
 
-List<Map<String, dynamic>> _serializeTileOverlaySet(Set<TileOverlay> tileOverlays) {
+List<Map<String, dynamic>> _serializeTileOverlaySet(
+    Set<TileOverlay> tileOverlays) {
   if (tileOverlays == null) {
     return null;
   }

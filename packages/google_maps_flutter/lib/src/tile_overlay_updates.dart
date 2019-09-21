@@ -16,30 +16,38 @@ class _TileOverlayUpdates {
     }
 
     final Map<TileOverlayId, TileOverlay> previousTileOverlays =
-    _keyTileOverlayId(previous);
+        _keyTileOverlayId(previous);
     final Map<TileOverlayId, TileOverlay> currentTileOverlays =
-    _keyTileOverlayId(current);
+        _keyTileOverlayId(current);
 
     final Set<TileOverlayId> prevTileOverlayIds =
-    previousTileOverlays.keys.toSet();
+        previousTileOverlays.keys.toSet();
     final Set<TileOverlayId> currentTileOverlayIds =
-    currentTileOverlays.keys.toSet();
+        currentTileOverlays.keys.toSet();
 
     TileOverlay idToCurrentTileOverlay(TileOverlayId id) {
       return currentTileOverlays[id];
     }
 
     final Set<TileOverlayId> _tileOverlayIdsToRemove =
-    prevTileOverlayIds.difference(currentTileOverlayIds);
+        prevTileOverlayIds.difference(currentTileOverlayIds);
 
     final Set<TileOverlay> _tileOverlaysToAdd = currentTileOverlayIds
         .difference(prevTileOverlayIds)
         .map(idToCurrentTileOverlay)
         .toSet();
 
+    /// Returns `true` if [current] is not equals to previous one with the
+    /// same id.
+    bool hasChanged(TileOverlay current) {
+      final TileOverlay previous = previousTileOverlays[current.tileOverlayId];
+      return current != previous;
+    }
+
     final Set<TileOverlay> _tileOverlaysToChange = currentTileOverlayIds
         .intersection(prevTileOverlayIds)
         .map(idToCurrentTileOverlay)
+        .where(hasChanged)
         .toSet();
 
     tileOverlaysToAdd = _tileOverlaysToAdd;
