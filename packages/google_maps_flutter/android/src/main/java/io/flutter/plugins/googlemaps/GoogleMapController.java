@@ -84,10 +84,12 @@ final class GoogleMapController
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
   private final CirclesController circlesController;
+  private final TileOverlaysController tileOverlayController;
   private List<Object> initialMarkers;
   private List<Object> initialPolygons;
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
+  private List<Object> initialTileOverlays;
 
   GoogleMapController(
       int id,
@@ -109,6 +111,7 @@ final class GoogleMapController
     this.polygonsController = new PolygonsController(methodChannel);
     this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel);
+    this.tileOverlayController = new TileOverlaysController(methodChannel);
   }
 
   @Override
@@ -191,10 +194,12 @@ final class GoogleMapController
     polygonsController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     circlesController.setGoogleMap(googleMap);
+    tileOverlayController.setGoogleMap(googleMap);
     updateInitialMarkers();
     updateInitialPolygons();
     updateInitialPolylines();
     updateInitialCircles();
+    updateInitialTileOverlays();
   }
 
   @Override
@@ -352,6 +357,24 @@ final class GoogleMapController
           result.success(mapStyleResult);
           break;
         }
+      case "tileOverlays#update":
+      {
+        Object tileOverlaysToAdd = call.argument("tileOverlaysToAdd");
+        tileOverlayController.addTileOverlays((List<Object>) tileOverlaysToAdd);
+        Object tileOverlaysToChange = call.argument("tileOverlaysToChange");
+        tileOverlayController.changeTileOverlays((List<Object>) tileOverlaysToChange);
+        Object tileOverlaysToRemove = call.argument("tileOverlayIdsToRemove");
+        tileOverlayController.removeTileOverlays((List<Object>) tileOverlaysToRemove);
+        result.success(null);
+        break;
+      }
+      case "tileOverlays#clearTileCache":
+      {
+        Object rawTileOverlayId = call.argument("tileOverlayId");
+        tileOverlayController.clearTileCache(rawTileOverlayId);
+        result.success(null);
+        break;
+      }
       default:
         result.notImplemented();
     }
@@ -634,6 +657,18 @@ final class GoogleMapController
 
   private void updateInitialCircles() {
     circlesController.addCircles(initialCircles);
+  }
+
+  @Override
+  public void setInitialTileOverlays(Object initialTileOverlays) {
+    this.initialTileOverlays = (List<Object>) initialTileOverlays;
+    if(googleMap!=null) {
+      updateInitialTileOverlays();
+    }
+  }
+
+  private void updateInitialTileOverlays() {
+    tileOverlayController.addTileOverlays(initialTileOverlays);
   }
 
   @SuppressLint("MissingPermission")

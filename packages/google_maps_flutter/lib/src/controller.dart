@@ -80,6 +80,14 @@ class GoogleMapController {
         _googleMapState
             .onLongPress(LatLng._fromJson(call.arguments['position']));
         break;
+      case 'tileOverlay#getTile':
+        return await _googleMapState.onGetTile(
+          call.arguments['tileOverlayId'],
+          call.arguments['x'],
+          call.arguments['y'],
+          call.arguments['zoom'],
+        );
+        break;
       default:
         throw MissingPluginException();
     }
@@ -174,6 +182,33 @@ class GoogleMapController {
   Future<void> moveCamera(CameraUpdate cameraUpdate) async {
     await channel.invokeMethod<void>('camera#move', <String, dynamic>{
       'cameraUpdate': cameraUpdate._toJson(),
+    });
+  }
+
+  /// Updates tile overlays configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updateTileOverlays(
+      _TileOverlayUpdates tileOverlayUpdates) async {
+    assert(tileOverlayUpdates != null);
+    await channel.invokeMethod<void>(
+      'tileOverlays#update',
+      tileOverlayUpdates._toMap(),
+    );
+  }
+
+  /// Clears the tile cache so that all tiles will be requested again from the
+  /// [TileProvider]. The current tiles from this tile overlay will also be
+  /// cleared from the map after calling this method. The API maintains a small
+  /// in-memory cache of tiles. If you want to cache tiles for longer, you
+  /// should implement an on-disk cache.
+  Future<void> clearTileCache(TileOverlayId tileOverlayId) async {
+    await channel
+        .invokeMethod<void>('tileOverlays#clearTileCache', <String, dynamic>{
+      'tileOverlayId': tileOverlayId.value,
     });
   }
 

@@ -31,3 +31,7 @@ part 'src/polyline_updates.dart';
 part 'src/circle.dart';
 part 'src/circle_updates.dart';
 part 'src/ui.dart';
+part 'src/tile.dart';
+part 'src/tile_provider.dart';
+part 'src/tile_overlay.dart';
+part 'src/tile_overlay_updates.dart';
