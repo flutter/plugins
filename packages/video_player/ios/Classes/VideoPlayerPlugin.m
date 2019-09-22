@@ -495,7 +495,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else if (uriArg) {
       BOOL enableCache = maxCacheSizeArg > 0 && maxFileSizeArg > 0;
-      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
+      NSString *escapedURL = [uriArg stringByAddingPercentEncodingWithAllowedCharacters:NSMutableCharacterSet.alphanumericCharacterSet];
+      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:escapedURL]
                                       frameUpdater:frameUpdater
                                        enableCache: enableCache];
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
