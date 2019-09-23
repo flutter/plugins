@@ -66,6 +66,7 @@ public class DeviceInfoPlugin implements MethodCallHandler {
       build.put("tags", Build.TAGS);
       build.put("type", Build.TYPE);
       build.put("isPhysicalDevice", !isEmulator());
+      build.put("isTestLabDevice", isTestLabDevice());
       build.put("androidId", getAndroidId());
 
       Map<String, Object> version = new HashMap<>();
@@ -96,6 +97,16 @@ public class DeviceInfoPlugin implements MethodCallHandler {
   @SuppressLint("HardwareIds")
   private String getAndroidId() {
     return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+  }
+
+  /**
+   * A simple firebase test lab detection. It reads a system property that is provided by Test Lab
+   * to implement different behavior when running in Test Lab.
+   */
+  private boolean isTestLabDevice() {
+    String testLabSetting =
+        Settings.System.getString(context.getContentResolver(), "firebase.test.lab");
+    return "true".equals(testLabSetting);
   }
 
   /**

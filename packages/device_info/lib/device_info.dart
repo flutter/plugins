@@ -59,6 +59,7 @@ class AndroidDeviceInfo {
     this.tags,
     this.type,
     this.isPhysicalDevice,
+    this.isTestLabDevice,
     this.androidId,
   })  : supported32BitAbis = List<String>.unmodifiable(supported32BitAbis),
         supported64BitAbis = List<String>.unmodifiable(supported64BitAbis),
@@ -121,6 +122,9 @@ class AndroidDeviceInfo {
   /// `false` if the application is running in an emulator, `true` otherwise.
   final bool isPhysicalDevice;
 
+  /// `true` if the application is running on a firebase test lab device, `false` otherwise.
+  final bool isTestLabDevice;
+
   /// The Android hardware device ID that is unique between the device + user and app signing.
   final String androidId;
 
@@ -147,6 +151,7 @@ class AndroidDeviceInfo {
       tags: map['tags'],
       type: map['type'],
       isPhysicalDevice: map['isPhysicalDevice'],
+      isTestLabDevice: map['isTestLabDevice'],
       androidId: map['androidId'],
     );
   }
