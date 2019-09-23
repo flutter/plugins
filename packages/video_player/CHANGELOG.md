@@ -1,3 +1,7 @@
+## 0.10.2+2
+
+* iOS: Fix an issue where video_player plugin can cause a crash on iPhone X running iOS 12 when disposing the video controller.
+
 ## 0.10.2+1
 
 * Use DefaultHttpDataSourceFactory only when network schemas and use
