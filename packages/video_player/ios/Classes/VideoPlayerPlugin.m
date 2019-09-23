@@ -483,11 +483,21 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   } else {
     NSDictionary* argsMap = call.arguments;
     int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;
-    FLTVideoPlayer* player = _players[@(textureId)];
+    __block FLTVideoPlayer* player = _players[@(textureId)];
     if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_players removeObjectForKey:@(textureId)];
       [player dispose];
+
+      // TODO: remove the line below when the race condition is resolved:
+      // https://github.com/flutter/flutter/issues/41125
+      // Hang on to the player for a second to give time for the texture to grab the last buffer
+      // This can happen if the display link just notified that a frame was ready before this dispose gets called
+      // In this case, even though we unregister the texture id, the gpu thread has been scheduled to grab the buffer
+      // and if the player is deallocated, we'll crash
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+          player = nil;
+      });
       result(nil);
     } else if ([@"setLooping" isEqualToString:call.method]) {
       [player setIsLooping:[argsMap[@"looping"] boolValue]];
