@@ -240,8 +240,16 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     } else {
       result(@[ @(NO), error ]);
     }
-  } else {
-    result(FlutterMethodNotImplemented);
+  } else if ([call.method isEqualToString:@"map#getCameraPosition"]) {
+      if (_mapView != nil) {
+        result(PositionToJson([self cameraPosition]));
+      } else {
+        result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                   message:@"getVisibleRegion called prior to map initialization"
+                                   details:nil]);
+      }
+    } else {
+      result(FlutterMethodNotImplemented);
   }
 }
 
