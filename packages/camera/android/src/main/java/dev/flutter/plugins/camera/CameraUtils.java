@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import dev.flutter.plugins.camera.Camera.ResolutionPreset;
-
 /** Provides various utilities for camera. */
 public final class CameraUtils {
 

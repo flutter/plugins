@@ -39,7 +39,7 @@ import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
 import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
-public class Camera {
+/* package */ class Camera {
   private final SurfaceTextureEntry flutterTexture;
   private final CameraManager cameraManager;
   private final OrientationEventListener orientationEventListener;
@@ -61,17 +61,7 @@ public class Camera {
   private CamcorderProfile recordingProfile;
   private int currentOrientation = ORIENTATION_UNKNOWN;
 
-  // Mirrors camera.dart
-  public enum ResolutionPreset {
-    low,
-    medium,
-    high,
-    veryHigh,
-    ultraHigh,
-    max,
-  }
-
-  public Camera(
+  /* package */ Camera(
       final Activity activity,
       final SurfaceTextureEntry flutterTexture,
       final String cameraName,
