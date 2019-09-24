@@ -1,3 +1,7 @@
+## 0.7.0
+
+* Update `intl` to 0.16.0
+
 ## 0.6.0
 
 * Define a new parameter for signaling that the transaction is sensitive.
