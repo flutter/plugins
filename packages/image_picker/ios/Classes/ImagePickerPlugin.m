@@ -241,6 +241,16 @@ static const int SOURCE_GALLERY = 1;
     return;
   }
   if (videoURL != nil) {
+    if (@available(iOS 13.0, *)) {
+      NSString *fileName = [videoURL lastPathComponent];
+      NSURL *destination =
+          [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+
+      if ([[NSFileManager defaultManager] isReadableFileAtPath:[videoURL path]]) {
+        [[NSFileManager defaultManager] copyItemAtURL:videoURL toURL:destination error:nil];
+        videoURL = destination;
+      }
+    }
     self.result(videoURL.path);
     self.result = nil;
   } else {
