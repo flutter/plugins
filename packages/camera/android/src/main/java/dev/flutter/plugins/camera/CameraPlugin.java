@@ -30,10 +30,6 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
   @Override
   public void onAttachedToEngine(FlutterPluginBinding flutterPluginBinding) {
     this.pluginBinding = flutterPluginBinding;
-    this.imageStreamChannel = new EventChannel(
-        this.pluginBinding.getFlutterEngine().getDartExecutor(),
-        "plugins.flutter.io/camera/imageStream"
-    );
   }
 
   @Override
@@ -53,11 +49,21 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
 
     this.activityBinding = activityPluginBinding;
 
+    this.imageStreamChannel = new EventChannel(
+        this.pluginBinding.getFlutterEngine().getDartExecutor(),
+        "plugins.flutter.io/camera/imageStream"
+    );
+
     final MethodChannel channel =
         new MethodChannel(pluginBinding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/camera");
 
     channel.setMethodCallHandler(this);
   }
+
+  // TODO: there are 2+ channels
+  // 1:EventChannel   - plugins.flutter.io/camera/imageStream
+  // 1:MethodChannel  - plugins.flutter.io/camera
+  // 0+:EventChannel  - flutter.io/cameraPlugin/cameraEvents[textureId]
 
   @Override
   public void onDetachedFromActivityForConfigChanges() {
@@ -162,7 +168,8 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
       case "startImageStream":
         {
           try {
-            camera.startPreviewWithImageStream(imageStreamChannel);
+            CameraPreviewDisplay previewDisplay = new CameraPreviewDisplay(imageStreamChannel);
+            camera.startPreviewWithImageStream(previewDisplay);
             result.success(null);
           } catch (Exception e) {
             handleException(e, result);

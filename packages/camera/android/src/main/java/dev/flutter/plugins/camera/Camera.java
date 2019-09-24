@@ -24,6 +24,7 @@ import android.view.OrientationEventListener;
 import android.view.Surface;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,7 +38,6 @@ import java.util.Map;
 
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.view.FlutterView;
 import io.flutter.view.TextureRegistry;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 
@@ -440,53 +440,31 @@ public class Camera {
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
 
-  public void startPreviewWithImageStream(EventChannel imageStreamChannel)
+  public void startPreviewWithImageStream(@NonNull CameraPreviewDisplay previewDisplay)
       throws CameraAccessException {
     createCaptureSession(CameraDevice.TEMPLATE_STILL_CAPTURE, imageStreamReader.getSurface());
 
-    imageStreamChannel.setStreamHandler(
-        new EventChannel.StreamHandler() {
-          @Override
-          public void onListen(Object o, EventChannel.EventSink imageStreamSink) {
-            setImageStreamImageAvailableListener(imageStreamSink);
-          }
+    previewDisplay.startStreaming(new CameraPreviewDisplay.ImageStreamConnection() {
+      @Override
+      public void onConnectionReady(@NonNull CameraImageStream stream) {
+        setImageStreamImageAvailableListener(stream);
+      }
 
-          @Override
-          public void onCancel(Object o) {
-            imageStreamReader.setOnImageAvailableListener(null, null);
-          }
-        });
+      @Override
+      public void onConnectionClosed() {
+        imageStreamReader.setOnImageAvailableListener(null, null);
+      }
+    });
   }
 
-  private void setImageStreamImageAvailableListener(final EventChannel.EventSink imageStreamSink) {
+  private void setImageStreamImageAvailableListener(@NonNull CameraImageStream cameraImageStream) {
     imageStreamReader.setOnImageAvailableListener(
         reader -> {
-          Image img = reader.acquireLatestImage();
-          if (img == null) return;
+          Image image = reader.acquireLatestImage();
+          if (image == null) return;
 
-          List<Map<String, Object>> planes = new ArrayList<>();
-          for (Image.Plane plane : img.getPlanes()) {
-            ByteBuffer buffer = plane.getBuffer();
-
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes, 0, bytes.length);
-
-            Map<String, Object> planeBuffer = new HashMap<>();
-            planeBuffer.put("bytesPerRow", plane.getRowStride());
-            planeBuffer.put("bytesPerPixel", plane.getPixelStride());
-            planeBuffer.put("bytes", bytes);
-
-            planes.add(planeBuffer);
-          }
-
-          Map<String, Object> imageBuffer = new HashMap<>();
-          imageBuffer.put("width", img.getWidth());
-          imageBuffer.put("height", img.getHeight());
-          imageBuffer.put("format", img.getFormat());
-          imageBuffer.put("planes", planes);
-
-          imageStreamSink.success(imageBuffer);
-          img.close();
+          cameraImageStream.sendImage(image);
+          image.close();
         },
         null);
   }
