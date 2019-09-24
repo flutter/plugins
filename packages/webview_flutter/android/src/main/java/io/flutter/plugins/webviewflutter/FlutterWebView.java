@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
@@ -38,14 +39,15 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       Map<String, Object> params,
       final View containerView) {
 
+    Context wrappedContext = wrapContext(context);
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
     DisplayManager displayManager =
-        (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
+        (DisplayManager) wrappedContext.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
-    webView = new InputAwareWebView(context, containerView);
+    webView = new InputAwareWebView(wrappedContext, containerView);
     displayListenerProxy.onPostWebViewInitialization(displayManager);
 
-    platformThreadHandler = new Handler(context.getMainLooper());
+    platformThreadHandler = new Handler(wrappedContext.getMainLooper());
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
 
@@ -68,6 +70,29 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
+  }
+
+  private Context wrapContext(Context context) {
+    Context activityContext = context;
+    Context appContext = context.getApplicationContext();
+    if (appContext instanceof FlutterApplication) {
+      Activity currentActivity = ((FlutterApplication) appContext).getCurrentActivity();
+      if (currentActivity != null) {
+        activityContext = currentActivity;
+      }
+    }
+    final Context finalContext = activityContext;
+    // Cannot use activityContext, which will cause the keyboard to be unable to input.
+    // We have to wrap the original context.
+    return new ContextWrapper(context) {
+      @Override
+      public Object getSystemService(String name) {
+        if (name == Context.WINDOW_SERVICE) {
+          return finalContext.getSystemService(name);
+        }
+        return super.getSystemService(name);
+      }
+    };
   }
 
   @Override

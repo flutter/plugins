@@ -1,3 +1,7 @@
+## 0.3.14+2
+
+* Fix Android fails to render select element and keyboard input doesn't work.
+
 ## 0.3.14+1
 
 * Allow underscores anywhere for Javascript Channel name.
