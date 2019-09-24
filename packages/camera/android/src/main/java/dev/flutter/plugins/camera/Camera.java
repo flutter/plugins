@@ -32,11 +32,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.view.TextureRegistry;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 
@@ -158,7 +155,7 @@ public class Camera {
   }
 
   @SuppressLint("MissingPermission")
-  public void open(@NonNull final Result result) throws CameraAccessException {
+  public void open(@NonNull final OnCameraOpenedCallback callback) throws CameraAccessException {
     pictureImageReader = ImageReader.newInstance(
         captureSize.getWidth(),
         captureSize.getHeight(),
@@ -166,7 +163,7 @@ public class Camera {
         2
     );
 
-    // Used to steam image byte data to dart side.
+    // Used to stream image byte data to dart side.
     imageStreamReader = ImageReader.newInstance(
         previewSize.getWidth(),
         previewSize.getHeight(),
@@ -183,15 +180,15 @@ public class Camera {
             try {
               startPreview();
             } catch (CameraAccessException e) {
-              result.error("CameraAccess", e.getMessage(), null);
+              callback.onCameraOpenFailed(e.getMessage());
               close();
               return;
             }
-            Map<String, Object> reply = new HashMap<>();
-            reply.put("textureId", flutterTexture.id());
-            reply.put("previewWidth", previewSize.getWidth());
-            reply.put("previewHeight", previewSize.getHeight());
-            result.success(reply);
+            callback.onCameraOpened(
+                flutterTexture.id(),
+                previewSize.getWidth(),
+                previewSize.getHeight()
+            );
           }
 
           @Override
@@ -247,12 +244,11 @@ public class Camera {
     return flutterTexture;
   }
 
-  public void takePicture(String filePath, @NonNull final Result result) {
+  public void takePicture(String filePath, @NonNull final OnPictureTakenCallback callback) {
     final File file = new File(filePath);
 
     if (file.exists()) {
-      result.error(
-          "fileExists", "File at path '" + filePath + "' already exists. Cannot overwrite.", null);
+      callback.onFileAlreadyExists();
       return;
     }
 
@@ -261,9 +257,9 @@ public class Camera {
           try (Image image = reader.acquireLatestImage()) {
             ByteBuffer buffer = image.getPlanes()[0].getBuffer();
             writeToFile(buffer, file);
-            result.success(null);
+            callback.onPictureTaken();
           } catch (IOException e) {
-            result.error("IOError", "Failed saving image", null);
+            callback.onFailedToSaveImage();
           }
         },
         null);
@@ -293,12 +289,12 @@ public class Camera {
                 default:
                   reason = "Unknown reason";
               }
-              result.error("captureFailure", reason, null);
+              callback.onCaptureFailure(reason);
             }
           },
           null);
     } catch (CameraAccessException e) {
-      result.error("cameraAccess", e.getMessage(), null);
+      callback.onCameraAccessFailure(e.getMessage());
     }
   }
 
@@ -366,80 +362,53 @@ public class Camera {
     cameraDevice.createCaptureSession(surfaceList, callback, null);
   }
 
-  public void startVideoRecording(String filePath, Result result) {
+  public void startVideoRecording(String filePath) throws IOException, CameraAccessException, IllegalStateException {
     if (new File(filePath).exists()) {
-      result.error("fileExists", "File at path '" + filePath + "' already exists.", null);
+      throw new IllegalStateException("File " + filePath + " already exists.");
+    }
+
+    prepareMediaRecorder(filePath);
+    recordingVideo = true;
+    createCaptureSession(
+        CameraDevice.TEMPLATE_RECORD,
+        () -> mediaRecorder.start(),
+        mediaRecorder.getSurface()
+    );
+  }
+
+  public void stopVideoRecording() throws CameraAccessException {
+    if (!recordingVideo) {
       return;
     }
-    try {
-      prepareMediaRecorder(filePath);
-      recordingVideo = true;
-      createCaptureSession(
-          CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
-      result.success(null);
-    } catch (CameraAccessException | IOException e) {
-      result.error("videoRecordingFailed", e.getMessage(), null);
+
+    recordingVideo = false;
+    mediaRecorder.stop();
+    mediaRecorder.reset();
+    startPreview();
+  }
+
+  public void pauseVideoRecording() throws IllegalStateException, UnsupportedOperationException {
+    if (!recordingVideo) {
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      mediaRecorder.pause();
+    } else {
+      throw new UnsupportedOperationException("pauseVideoRecording requires Android API +24.");
     }
   }
 
-  public void stopVideoRecording(@NonNull final Result result) {
+  public void resumeVideoRecording() throws IllegalStateException, UnsupportedOperationException {
     if (!recordingVideo) {
-      result.success(null);
       return;
     }
 
-    try {
-      recordingVideo = false;
-      mediaRecorder.stop();
-      mediaRecorder.reset();
-      startPreview();
-      result.success(null);
-    } catch (CameraAccessException | IllegalStateException e) {
-      result.error("videoRecordingFailed", e.getMessage(), null);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      mediaRecorder.resume();
+    } else {
+      throw new UnsupportedOperationException("resumeVideoRecording requires Android API +24.");
     }
-  }
-
-  public void pauseVideoRecording(@NonNull final Result result) {
-    if (!recordingVideo) {
-      result.success(null);
-      return;
-    }
-
-    try {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        mediaRecorder.pause();
-      } else {
-        result.error("videoRecordingFailed", "pauseVideoRecording requires Android API +24.", null);
-        return;
-      }
-    } catch (IllegalStateException e) {
-      result.error("videoRecordingFailed", e.getMessage(), null);
-      return;
-    }
-
-    result.success(null);
-  }
-
-  public void resumeVideoRecording(@NonNull final Result result) {
-    if (!recordingVideo) {
-      result.success(null);
-      return;
-    }
-
-    try {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        mediaRecorder.resume();
-      } else {
-        result.error(
-            "videoRecordingFailed", "resumeVideoRecording requires Android API +24.", null);
-        return;
-      }
-    } catch (IllegalStateException e) {
-      result.error("videoRecordingFailed", e.getMessage(), null);
-      return;
-    }
-
-    result.success(null);
   }
 
   public void startPreview() throws CameraAccessException {
@@ -516,6 +485,44 @@ public class Camera {
             ? 0
             : (isFrontFacing) ? -currentOrientation : currentOrientation;
     return (sensorOrientationOffset + sensorOrientation + 360) % 360;
+  }
+
+  /**
+   * Callback invoked when this {@link Camera} is opened.
+   *
+   * <p>Reports either success or failure.
+   */
+  /* package */ interface OnCameraOpenedCallback {
+    /**
+     * The associated {@link Camera} was successfully opened and is tied to
+     * a {@link SurfaceTexture} with the given {@code textureId}, displayed
+     * at the given {@code previewWidth} and {@code previewHeight}.
+     */
+    void onCameraOpened(long textureId, int previewWidth, int previewHeight);
+
+    /**
+     * The associated {@link Camera} attempted to open, but failed.
+     *
+     * <p>The {@code Exception}'s {@code message} is provided.
+     */
+    void onCameraOpenFailed(@NonNull String message);
+  }
+
+  /**
+   * Callback invoked when this {@link Camera} takes a picture.
+   *
+   * <p>Reports either success or one of many causes of failure.
+   */
+  /* package */ interface OnPictureTakenCallback {
+    void onPictureTaken();
+
+    void onFileAlreadyExists();
+
+    void onFailedToSaveImage();
+
+    void onCaptureFailure(@NonNull String reason);
+
+    void onCameraAccessFailure(@NonNull String message);
   }
 
   /**

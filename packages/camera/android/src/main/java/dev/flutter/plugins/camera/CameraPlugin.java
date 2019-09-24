@@ -9,6 +9,7 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,7 +97,21 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
         enableAudio
     );
 
-    camera.open(result);
+    camera.open(new Camera.OnCameraOpenedCallback() {
+      @Override
+      public void onCameraOpened(long textureId, int previewWidth, int previewHeight) {
+        Map<String, Object> reply = new HashMap<>();
+        reply.put("textureId", textureId);
+        reply.put("previewWidth", previewWidth);
+        reply.put("previewHeight", previewHeight);
+        result.success(reply);
+      }
+
+      @Override
+      public void onCameraOpenFailed(@NonNull String message) {
+        result.error("CameraAccess", message, null);
+      }
+    });
 
     EventChannel cameraEventChannel = new EventChannel(
         pluginBinding.getFlutterEngine().getDartExecutor(),
@@ -166,7 +181,37 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
         }
       case "takePicture":
         {
-          camera.takePicture(call.argument("path"), result);
+          final String filePath = call.argument("path");
+          camera.takePicture(filePath, new Camera.OnPictureTakenCallback() {
+            @Override
+            public void onPictureTaken() {
+              result.success(null);
+            }
+
+            @Override
+            public void onFileAlreadyExists() {
+              result.error(
+                  "fileExists",
+                  "File at path '" + filePath + "' already exists. Cannot overwrite.",
+                  null
+              );
+            }
+
+            @Override
+            public void onFailedToSaveImage() {
+              result.error("IOError", "Failed saving image", null);
+            }
+
+            @Override
+            public void onCaptureFailure(@NonNull String reason) {
+              result.error("captureFailure", reason, null);
+            }
+
+            @Override
+            public void onCameraAccessFailure(@NonNull String message) {
+              result.error("cameraAccess", message, null);
+            }
+          });
           break;
         }
       case "prepareForVideoRecording":
@@ -177,22 +222,45 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
         }
       case "startVideoRecording":
         {
-          camera.startVideoRecording(call.argument("filePath"), result);
+          String filePath = call.argument("filePath");
+          try {
+            camera.startVideoRecording(filePath);
+          } catch (IllegalStateException e) {
+            result.error("fileExists", "File at path '" + filePath + "' already exists.", null);
+          } catch (CameraAccessException | IOException e) {
+            result.error("videoRecordingFailed", e.getMessage(), null);
+          }
           break;
         }
       case "stopVideoRecording":
         {
-          camera.stopVideoRecording(result);
+          try {
+            camera.stopVideoRecording();
+          } catch (CameraAccessException | IllegalStateException e) {
+            result.error("videoRecordingFailed", e.getMessage(), null);
+          }
           break;
         }
       case "pauseVideoRecording":
         {
-          camera.pauseVideoRecording(result);
+          try {
+            camera.pauseVideoRecording();
+          } catch (UnsupportedOperationException e) {
+            result.error("videoRecordingFailed", "pauseVideoRecording requires Android API +24.", null);
+          } catch (IllegalStateException e) {
+            result.error("videoRecordingFailed", e.getMessage(), null);
+          }
           break;
         }
       case "resumeVideoRecording":
         {
-          camera.resumeVideoRecording(result);
+          try {
+            camera.resumeVideoRecording();
+          } catch (UnsupportedOperationException e) {
+            result.error("videoRecordingFailed","resumeVideoRecording requires Android API +24.",null);
+          } catch (IllegalStateException e) {
+            result.error("videoRecordingFailed", e.getMessage(), null);
+          }
           break;
         }
       case "startImageStream":
