@@ -44,18 +44,23 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
   // NONE
 
   // Image preview
+  @Nullable
   private ImageReader imageStreamReader;
 
   // Taking a picture & Image preview
+  @Nullable
   private ImageReader pictureImageReader;
 
   // Video recording
   private boolean recordingVideo;
+  @Nullable
   private MediaRecorder mediaRecorder;
+  @Nullable
   private CamcorderProfile recordingProfile;
   private final boolean enableAudio;
 
   // Video recording & Image preview
+  @Nullable
   private CaptureRequest.Builder captureRequestBuilder;
 
   // All 3
@@ -71,8 +76,11 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
   private final Size previewSize;
   private final boolean isFrontFacing;
   private final int sensorOrientation;
+  @Nullable
   private CameraDevice cameraDevice;
+  @Nullable
   private CameraCaptureSession cameraCaptureSession;
+  @Nullable
   private CameraEventHandler cameraEventHandler;
   @NonNull
   private final OrientationEventListener orientationEventListener;
@@ -250,7 +258,7 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
   //------ End: Opening/Closing/Disposing of Camera -------
 
   //------ Start: Take picture with Camera -------
-  public void takePicture(String filePath, @NonNull final OnPictureTakenCallback callback) {
+  public void takePicture(@NonNull String filePath, @NonNull final OnPictureTakenCallback callback) {
     final File file = new File(filePath);
 
     if (file.exists()) {
@@ -258,32 +266,19 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
       return;
     }
 
-    pictureImageReader.setOnImageAvailableListener(
-        reader -> {
-          try (Image image = reader.acquireLatestImage()) {
-            ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-            writeToFile(buffer, file);
-            callback.onPictureTaken();
-          } catch (IOException e) {
-            callback.onFailedToSaveImage();
-          }
-        },
-        null);
-
     try {
-      final CaptureRequest.Builder captureBuilder =
-          cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-      captureBuilder.addTarget(pictureImageReader.getSurface());
-      captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
+      prepareToSavePictureToFile(file, callback);
 
+      CaptureRequest request = createStillPictureCaptureRequest(pictureImageReader);
       cameraCaptureSession.capture(
-          captureBuilder.build(),
+          request,
           new CameraCaptureSession.CaptureCallback() {
             @Override
             public void onCaptureFailed(
                 @NonNull CameraCaptureSession session,
                 @NonNull CaptureRequest request,
-                @NonNull CaptureFailure failure) {
+                @NonNull CaptureFailure failure
+            ) {
               String reason;
               switch (failure.getReason()) {
                 case CaptureFailure.REASON_ERROR:
@@ -302,6 +297,32 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
     } catch (CameraAccessException e) {
       callback.onCameraAccessFailure(e.getMessage());
     }
+  }
+
+  private void prepareToSavePictureToFile(@NonNull File file, @NonNull OnPictureTakenCallback callback) {
+    pictureImageReader.setOnImageAvailableListener(
+        reader -> {
+          // TODO(mattcarroll: The original implementation didn't remove the listener. I added that
+          // here. Should we be removing the listener, or no?
+          pictureImageReader.setOnImageAvailableListener(null, null);
+
+          try (Image image = reader.acquireLatestImage()) {
+            ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+            writeToFile(buffer, file);
+            callback.onPictureTaken();
+          } catch (IOException e) {
+            callback.onFailedToSaveImage();
+          }
+        },
+        null);
+  }
+
+  private CaptureRequest createStillPictureCaptureRequest(@NonNull ImageReader imageReader) throws CameraAccessException {
+    final CaptureRequest.Builder captureBuilder =
+        cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+    captureBuilder.addTarget(imageReader.getSurface());
+    captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
+    return captureBuilder.build();
   }
 
   private void writeToFile(ByteBuffer buffer, File file) throws IOException {

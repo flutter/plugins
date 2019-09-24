@@ -1,56 +1,39 @@
 package dev.flutter.plugins.camera;
 
-import android.Manifest.permission;
-import android.app.Activity;
 import android.content.pm.PackageManager;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.PluginRegistry;
 
-public class CameraPermissions {
+/* package */ class CameraPermissions {
   private static final int CAMERA_REQUEST_ID = 9796;
+
+  private final CameraPermissionsDelegate delegate;
   private boolean ongoing = false;
 
-  public void requestPermissions(
-      ActivityPluginBinding activityPluginBinding,
-      boolean enableAudio,
-      ResultCallback callback
-  ) {
+  /* package */ CameraPermissions(@NonNull CameraPermissionsDelegate delegate) {
+    this.delegate = delegate;
+  }
+
+  public void requestPermissions(boolean enableAudio, ResultCallback callback) {
     if (ongoing) {
       callback.onResult("cameraPermission", "Camera permission request ongoing");
     }
-    Activity activity = activityPluginBinding.getActivity();
-    if (!hasCameraPermission(activity) || (enableAudio && !hasAudioPermission(activity))) {
-      activityPluginBinding.addRequestPermissionsResultListener(
+    if (!delegate.hasCameraPermission() || (enableAudio && !delegate.hasAudioPermission())) {
+      delegate.addRequestPermissionsResultListener(
           new CameraRequestPermissionsListener(
               (String errorCode, String errorDescription) -> {
                 ongoing = false;
                 callback.onResult(errorCode, errorDescription);
               }));
       ongoing = true;
-      ActivityCompat.requestPermissions(
-          activity,
-          enableAudio
-              ? new String[] {permission.CAMERA, permission.RECORD_AUDIO}
-              : new String[] {permission.CAMERA},
-          CAMERA_REQUEST_ID);
+      delegate.requestPermission(enableAudio, CAMERA_REQUEST_ID);
     } else {
       // Permissions already exist. Call the callback with success.
       callback.onResult(null, null);
     }
-  }
-
-  private boolean hasCameraPermission(Activity activity) {
-    return ContextCompat.checkSelfPermission(activity, permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED;
-  }
-
-  private boolean hasAudioPermission(Activity activity) {
-    return ContextCompat.checkSelfPermission(activity, permission.RECORD_AUDIO)
-        == PackageManager.PERMISSION_GRANTED;
   }
 
   private static class CameraRequestPermissionsListener
@@ -64,6 +47,8 @@ public class CameraPermissions {
     @Override
     public boolean onRequestPermissionsResult(int id, String[] permissions, int[] grantResults) {
       if (id == CAMERA_REQUEST_ID) {
+        // TODO(mattcarroll): fix bug where granting 1st permission and denying 2nd crashes
+        // due to submitting a reply twice.
         if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
           callback.onResult("cameraPermission", "MediaRecorderCamera permission not granted");
         } else if (grantResults.length > 1
@@ -76,6 +61,16 @@ public class CameraPermissions {
       }
       return false;
     }
+  }
+
+  interface CameraPermissionsDelegate {
+    boolean hasCameraPermission();
+
+    boolean hasAudioPermission();
+
+    void requestPermission(boolean enableAudio, final @IntRange(from = 0) int requestCode);
+
+    void addRequestPermissionsResultListener(@NonNull PluginRegistry.RequestPermissionsResultListener listener);
   }
 
   interface ResultCallback {

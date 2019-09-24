@@ -4,12 +4,17 @@
 
 package dev.flutter.plugins.camera;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.icu.util.CurrencyAmount;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,29 +28,59 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.view.TextureRegistry;
 
 public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHandler {
 
-  private final CameraPermissions cameraPermissions = new CameraPermissions();
   private EventChannel imageStreamChannel;
   private Camera camera;
 
   private FlutterPluginBinding pluginBinding;
   private ActivityPluginBinding activityBinding;
 
+  private final CameraPermissions.CameraPermissionsDelegate permissionsDelegate = new CameraPermissions.CameraPermissionsDelegate() {
+    @Override
+    public boolean hasCameraPermission() {
+      return ContextCompat.checkSelfPermission(activityBinding.getActivity(), Manifest.permission.CAMERA)
+          == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public boolean hasAudioPermission() {
+      return ContextCompat.checkSelfPermission(activityBinding.getActivity(), Manifest.permission.RECORD_AUDIO)
+          == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void requestPermission(boolean enableAudio, int requestCode) {
+      ActivityCompat.requestPermissions(
+          activityBinding.getActivity(),
+          enableAudio
+              ? new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}
+              : new String[] {Manifest.permission.CAMERA},
+          requestCode);
+    }
+
+    @Override
+    public void addRequestPermissionsResultListener(@NonNull PluginRegistry.RequestPermissionsResultListener listener) {
+      activityBinding.addRequestPermissionsResultListener(listener);
+    }
+  };
+  private final CameraPermissions cameraPermissions = new CameraPermissions(permissionsDelegate);
+
   @Override
-  public void onAttachedToEngine(FlutterPluginBinding flutterPluginBinding) {
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     this.pluginBinding = flutterPluginBinding;
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding flutterPluginBinding) {
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     this.pluginBinding = null;
   }
 
   @Override
-  public void onAttachedToActivity(ActivityPluginBinding activityPluginBinding) {
+  public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
     // Setup
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       // When a background flutter view tries to register the plugin, the registrar has no activity.
@@ -171,8 +206,8 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
           if (camera != null) {
             camera.close();
           }
+
           cameraPermissions.requestPermissions(
-              activityBinding,
               call.argument("enableAudio"),
               (String errCode, String errDesc) -> {
                 if (errCode == null) {
