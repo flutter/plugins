@@ -21,6 +21,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.view.TextureRegistry;
 
 public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHandler {
 
@@ -89,9 +90,13 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
     String cameraName = call.argument("cameraName");
     String resolutionPreset = call.argument("resolutionPreset");
     boolean enableAudio = call.argument("enableAudio");
+    TextureRegistry.SurfaceTextureEntry textureEntry = pluginBinding
+        .getFlutterEngine()
+        .getRenderer()
+        .createSurfaceTexture();
     camera = new Camera(
         activityBinding.getActivity(),
-        pluginBinding.getFlutterEngine().getRenderer(),
+        textureEntry,
         cameraName,
         resolutionPreset,
         enableAudio
@@ -115,7 +120,7 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
 
     EventChannel cameraEventChannel = new EventChannel(
         pluginBinding.getFlutterEngine().getDartExecutor(),
-        "flutter.io/cameraPlugin/cameraEvents" + camera.getFlutterTexture().id()
+        "flutter.io/cameraPlugin/cameraEvents" + textureEntry.id()
     );
     cameraEventChannel.setStreamHandler(new EventChannel.StreamHandler() {
       @Override
