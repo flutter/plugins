@@ -5,13 +5,13 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
 import android.view.View;
-import android.app.Activity;
 import android.webkit.WebStorage;
 import android.webkit.WebViewClient;
 import io.flutter.app.FlutterApplication;
