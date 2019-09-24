@@ -4,7 +4,9 @@
 
 package dev.flutter.plugins.camera;
 
+import android.content.Context;
 import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -94,8 +96,10 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
         .getFlutterEngine()
         .getRenderer()
         .createSurfaceTexture();
+
     camera = new Camera(
         activityBinding.getActivity(),
+        (CameraManager) activityBinding.getActivity().getSystemService(Context.CAMERA_SERVICE),
         textureEntry,
         cameraName,
         resolutionPreset,

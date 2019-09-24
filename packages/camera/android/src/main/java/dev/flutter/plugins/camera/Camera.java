@@ -1,7 +1,6 @@
 package dev.flutter.plugins.camera;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
@@ -81,21 +80,18 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
 
   /* package */ Camera(
-      final Activity activity,
-      final SurfaceTextureEntry flutterTexture,
-      final String cameraName,
-      final String resolutionPreset,
-      final boolean enableAudio)
-      throws CameraAccessException {
-    if (activity == null) {
-      throw new IllegalStateException("No activity available!");
-    }
-
+      @NonNull Context context,
+      @NonNull CameraManager cameraManager,
+      @NonNull SurfaceTextureEntry flutterTexture,
+      @NonNull String cameraName,
+      @NonNull String resolutionPreset,
+      boolean enableAudio
+  ) throws CameraAccessException {
     this.cameraName = cameraName;
     this.enableAudio = enableAudio;
     this.flutterTexture = flutterTexture;
-    this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
-    this.orientationEventListener = new OrientationEventListener(activity.getApplicationContext()) {
+    this.cameraManager = cameraManager;
+    this.orientationEventListener = new OrientationEventListener(context.getApplicationContext()) {
       @Override
       public void onOrientationChanged(int orientation) {
         if (orientation == ORIENTATION_UNKNOWN) {
