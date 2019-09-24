@@ -136,26 +136,26 @@ final class InputAwareWebView extends WebView {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
       targetView.requestFocus();
       containerView.post(
-              new Runnable() {
-                @Override
-                public void run() {
-                  InputMethodManager imm =
-                          (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
-                  // This is a hack to make InputMethodManager believe that the target view now has focus.
-                  // As a result, InputMethodManager will think that targetView is focused, and will call
-                  // getHandler() of the view when creating input connection.
+          new Runnable() {
+            @Override
+            public void run() {
+              InputMethodManager imm =
+                  (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
+              // This is a hack to make InputMethodManager believe that the target view now has focus.
+              // As a result, InputMethodManager will think that targetView is focused, and will call
+              // getHandler() of the view when creating input connection.
 
-                  // Step 1: Set targetView as InputMethodManager#mNextServedView. This does not affect
-                  // the real window focus.
-                  targetView.onWindowFocusChanged(true);
+              // Step 1: Set targetView as InputMethodManager#mNextServedView. This does not affect
+              // the real window focus.
+              targetView.onWindowFocusChanged(true);
 
-                  // Step 2: Have InputMethodManager focus in on targetView. As a result, IMM will call
-                  // onCreateInputConnection() on targetView on the same thread as
-                  // targetView.getHandler(). It will also call subsequent InputConnection methods on this
-                  // thread. This is the IME thread in cases where targetView is our proxyAdapterView.
-                  imm.isActive(containerView);
-                }
-              });
+              // Step 2: Have InputMethodManager focus in on targetView. As a result, IMM will call
+              // onCreateInputConnection() on targetView on the same thread as
+              // targetView.getHandler(). It will also call subsequent InputConnection methods on this
+              // thread. This is the IME thread in cases where targetView is our proxyAdapterView.
+              imm.isActive(containerView);
+            }
+          });
     }
   }
 }
