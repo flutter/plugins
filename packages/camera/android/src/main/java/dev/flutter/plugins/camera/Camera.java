@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.view.TextureRegistry;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
@@ -59,7 +58,7 @@ public class Camera {
   private CameraCaptureSession cameraCaptureSession;
   private ImageReader pictureImageReader;
   private ImageReader imageStreamReader;
-  private EventChannel.EventSink eventSink;
+  private CameraEventHandler cameraEventHandler;
   private CaptureRequest.Builder captureRequestBuilder;
   private MediaRecorder mediaRecorder;
   private boolean recordingVideo;
@@ -119,19 +118,20 @@ public class Camera {
     previewSize = computeBestPreviewSize(cameraName, preset);
   }
 
-  public void setupCameraEventChannel(EventChannel cameraEventChannel) {
-    cameraEventChannel.setStreamHandler(
-        new EventChannel.StreamHandler() {
-          @Override
-          public void onListen(Object arguments, EventChannel.EventSink sink) {
-            eventSink = sink;
-          }
+  public void setCameraEventHandler(@Nullable CameraEventHandler handler) {
+    this.cameraEventHandler = handler;
+  }
 
-          @Override
-          public void onCancel(Object arguments) {
-            eventSink = null;
-          }
-        });
+  private void onError(String description) {
+    if (cameraEventHandler != null) {
+      cameraEventHandler.onError(description);
+    }
+  }
+
+  private void onCameraClosed() {
+    if (cameraEventHandler != null) {
+      cameraEventHandler.onCameraClosed();
+    }
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
@@ -159,14 +159,20 @@ public class Camera {
 
   @SuppressLint("MissingPermission")
   public void open(@NonNull final Result result) throws CameraAccessException {
-    pictureImageReader =
-        ImageReader.newInstance(
-            captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
+    pictureImageReader = ImageReader.newInstance(
+        captureSize.getWidth(),
+        captureSize.getHeight(),
+        ImageFormat.JPEG,
+        2
+    );
 
     // Used to steam image byte data to dart side.
-    imageStreamReader =
-        ImageReader.newInstance(
-            previewSize.getWidth(), previewSize.getHeight(), ImageFormat.YUV_420_888, 2);
+    imageStreamReader = ImageReader.newInstance(
+        previewSize.getWidth(),
+        previewSize.getHeight(),
+        ImageFormat.YUV_420_888,
+        2
+    );
 
     cameraManager.openCamera(
         cameraName,
@@ -190,14 +196,14 @@ public class Camera {
 
           @Override
           public void onClosed(@NonNull CameraDevice camera) {
-            sendEvent(EventType.CAMERA_CLOSING);
+            onCameraClosed();
             super.onClosed(camera);
           }
 
           @Override
           public void onDisconnected(@NonNull CameraDevice cameraDevice) {
             close();
-            sendEvent(EventType.ERROR, "The camera was disconnected.");
+            Camera.this.onError("The camera was disconnected.");
           }
 
           @Override
@@ -223,7 +229,7 @@ public class Camera {
               default:
                 errorDescription = "Unknown camera error";
             }
-            sendEvent(EventType.ERROR, errorDescription);
+            Camera.this.onError(errorDescription);
           }
         },
         null);
@@ -331,7 +337,7 @@ public class Camera {
           public void onConfigured(@NonNull CameraCaptureSession session) {
             try {
               if (cameraDevice == null) {
-                sendEvent(EventType.ERROR, "The camera was closed during configuration.");
+                onError("The camera was closed during configuration.");
                 return;
               }
               cameraCaptureSession = session;
@@ -342,13 +348,13 @@ public class Camera {
                 onSuccessCallback.run();
               }
             } catch (CameraAccessException | IllegalStateException | IllegalArgumentException e) {
-              sendEvent(EventType.ERROR, e.getMessage());
+              onError(e.getMessage());
             }
           }
 
           @Override
           public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-            sendEvent(EventType.ERROR, "Failed to configure camera session.");
+            onError("Failed to configure camera session.");
           }
         };
 
@@ -447,7 +453,7 @@ public class Camera {
     previewDisplay.startStreaming(new CameraPreviewDisplay.ImageStreamConnection() {
       @Override
       public void onConnectionReady(@NonNull CameraImageStream stream) {
-        setImageStreamImageAvailableListener(stream);
+        startSendingImagesToPreviewDisplay(stream);
       }
 
       @Override
@@ -457,7 +463,7 @@ public class Camera {
     });
   }
 
-  private void setImageStreamImageAvailableListener(@NonNull CameraImageStream cameraImageStream) {
+  private void startSendingImagesToPreviewDisplay(@NonNull CameraImageStream cameraImageStream) {
     imageStreamReader.setOnImageAvailableListener(
         reader -> {
           Image image = reader.acquireLatestImage();
@@ -467,22 +473,6 @@ public class Camera {
           image.close();
         },
         null);
-  }
-
-  private void sendEvent(EventType eventType) {
-    sendEvent(eventType, null);
-  }
-
-  private void sendEvent(EventType eventType, String description) {
-    if (eventSink != null) {
-      Map<String, String> event = new HashMap<>();
-      event.put("eventType", eventType.toString().toLowerCase());
-      // Only errors have description
-      if (eventType != EventType.ERROR) {
-        event.put("errorDescription", description);
-      }
-      eventSink.success(event);
-    }
   }
 
   private void closeCaptureSession() {
@@ -528,8 +518,13 @@ public class Camera {
     return (sensorOrientationOffset + sensorOrientation + 360) % 360;
   }
 
-  private enum EventType {
-    ERROR,
-    CAMERA_CLOSING,
+  /**
+   * Handler that, when registered with a {@link Camera}, is notified of errors
+   * and when the camera closes.
+   */
+  /* package */ interface CameraEventHandler {
+    void onError(String description);
+
+    void onCameraClosed();
   }
 }

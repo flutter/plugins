@@ -9,6 +9,9 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -93,13 +96,40 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
         enableAudio
     );
 
-    EventChannel cameraEventChannel =
-        new EventChannel(
-            pluginBinding.getFlutterEngine().getDartExecutor(),
-            "flutter.io/cameraPlugin/cameraEvents" + camera.getFlutterTexture().id());
-    camera.setupCameraEventChannel(cameraEventChannel);
-
     camera.open(result);
+
+    EventChannel cameraEventChannel = new EventChannel(
+        pluginBinding.getFlutterEngine().getDartExecutor(),
+        "flutter.io/cameraPlugin/cameraEvents" + camera.getFlutterTexture().id()
+    );
+    cameraEventChannel.setStreamHandler(new EventChannel.StreamHandler() {
+      @Override
+      public void onListen(Object o, final EventChannel.EventSink eventSink) {
+        final Camera.CameraEventHandler cameraEventHandler = new Camera.CameraEventHandler() {
+          @Override
+          public void onError(String description) {
+            Map<String, String> event = new HashMap<>();
+            event.put("eventType", "error");
+            event.put("errorDescription", description);
+            eventSink.success(event);
+          }
+
+          @Override
+          public void onCameraClosed() {
+            Map<String, String> event = new HashMap<>();
+            event.put("eventType", "camera_closing");
+            eventSink.success(event);
+          }
+        };
+
+        camera.setCameraEventHandler(cameraEventHandler);
+      }
+
+      @Override
+      public void onCancel(Object o) {
+        camera.setCameraEventHandler(null);
+      }
+    });
   }
 
   @Override
