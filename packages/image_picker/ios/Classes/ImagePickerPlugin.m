@@ -241,8 +241,29 @@ static const int SOURCE_GALLERY = 1;
     return;
   }
   if (videoURL != nil) {
-    self.result(videoURL.path);
-    self.result = nil;
+    // Precache file to a temp directory for ios13,
+    // to prevent unvalidated URL into the response.
+    if (@available(iOS 13.0, *)) {
+      NSFileManager *fileManager = [NSFileManager defaultManager];
+      NSError *error;
+
+      NSString *fileName = [videoURL lastPathComponent];
+      NSString *tempPath = NSTemporaryDirectory();
+      NSString *tempFile = [tempPath stringByAppendingPathComponent:fileName];
+
+      // Overwrite if exists
+      if ([fileManager fileExistsAtPath:tempFile] == YES) {
+        [fileManager removeItemAtPath:tempFile error:&error];
+      }
+
+      [fileManager copyItemAtPath:videoURL.path toPath:tempFile error:&error];
+
+      self.result(tempFile);
+      self.result = nil;
+    } else {
+      self.result(videoURL.path);
+      self.result = nil;
+    }
   } else {
     UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
     if (image == nil) {
