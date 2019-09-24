@@ -188,7 +188,7 @@ class _GoogleMapState extends State<GoogleMap> {
       Completer<GoogleMapController>();
 
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
-  Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
+  Map<OverlayId, Polygon> _polygons = <OverlayId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
   _GoogleMapOptions _googleMapOptions;
@@ -199,7 +199,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'initialCameraPosition': widget.initialCameraPosition?.toMap(),
       'options': _googleMapOptions.toMap(),
       'markersToAdd': _serializeMarkerSet(widget.markers),
-      'polygonsToAdd': _serializePolygonSet(widget.polygons),
+      'polygonsToAdd': _serializeOverlaySet(widget.polygons),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'circlesToAdd': _serializeCircleSet(widget.circles),
     };
@@ -230,7 +230,7 @@ class _GoogleMapState extends State<GoogleMap> {
     super.initState();
     _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
     _markers = _keyByMarkerId(widget.markers);
-    _polygons = _keyByPolygonId(widget.polygons);
+    _polygons = _keyByOverlayId(widget.polygons);
     _polylines = _keyByPolylineId(widget.polylines);
     _circles = _keyByCircleId(widget.circles);
   }
@@ -268,7 +268,7 @@ class _GoogleMapState extends State<GoogleMap> {
     final GoogleMapController controller = await _controller.future;
     controller._updatePolygons(
         _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
-    _polygons = _keyByPolygonId(widget.polygons);
+    _polygons = _keyByOverlayId(widget.polygons);
   }
 
   void _updatePolylines() async {
@@ -315,7 +315,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void onPolygonTap(String polygonIdParam) {
     assert(polygonIdParam != null);
-    final PolygonId polygonId = PolygonId(polygonIdParam);
+    final OverlayId polygonId = OverlayId(polygonIdParam);
     _polygons[polygonId].onTap();
   }
 

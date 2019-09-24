@@ -4,56 +4,26 @@
 
 part of google_maps_flutter;
 
-/// Uniquely identifies a [Polygon] among [GoogleMap] polygons.
-///
-/// This does not have to be globally unique, only unique among the list.
+// Draws a polygon through geographical locations on the map.
 @immutable
-class PolygonId {
-  PolygonId(this.value) : assert(value != null);
-
-  /// value of the [PolygonId].
-  final String value;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final PolygonId typedOther = other;
-    return value == typedOther.value;
-  }
-
-  @override
-  int get hashCode => value.hashCode;
-
-  @override
-  String toString() {
-    return 'PolygonId{value: $value}';
-  }
-}
-
-/// Draws a polygon through geographical locations on the map.
-@immutable
-class Polygon {
+class Polygon extends Overlay {
   const Polygon({
-    @required this.polygonId,
-    this.consumeTapEvents = false,
+    @required OverlayId polygonId,
+    VoidCallback onTap,
+    bool consumeTapEvents,
+    int zIndex,
     this.fillColor = Colors.black,
     this.geodesic = false,
     this.points = const <LatLng>[],
     this.strokeColor = Colors.black,
     this.strokeWidth = 10,
     this.visible = true,
-    this.zIndex = 0,
-    this.onTap,
-  });
-
-  /// Uniquely identifies a [Polygon].
-  final PolygonId polygonId;
-
-  /// True if the [Polygon] consumes tap events.
-  ///
-  /// If this is false, [onTap] callback will not be triggered.
-  final bool consumeTapEvents;
+  }) : super(
+          overlayId: polygonId,
+          onTap:onTap, 
+          consumeTapEvents:consumeTapEvents,
+          zIndex:zIndex,
+        );
 
   /// Fill color in ARGB format, the same format used by Color. The default value is black (0xff000000).
   final Color fillColor;
@@ -83,16 +53,6 @@ class Polygon {
   /// The default value is 10.
   final int strokeWidth;
 
-  /// The z-index of the polygon, used to determine relative drawing order of
-  /// map overlays.
-  ///
-  /// Overlays are drawn in order of z-index, so that lower values means drawn
-  /// earlier, and thus appearing to be closer to the surface of the Earth.
-  final int zIndex;
-
-  /// Callbacks to receive tap events for polygon placed on this map.
-  final VoidCallback onTap;
-
   /// Creates a new [Polygon] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Polygon copyWith({
@@ -107,7 +67,7 @@ class Polygon {
     VoidCallback onTapParam,
   }) {
     return Polygon(
-      polygonId: polygonId,
+      polygonId: overlayId,
       consumeTapEvents: consumeTapEventsParam ?? consumeTapEvents,
       fillColor: fillColorParam ?? fillColor,
       geodesic: geodesicParam ?? geodesic,
@@ -120,6 +80,7 @@ class Polygon {
     );
   }
 
+  @override
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
@@ -129,7 +90,7 @@ class Polygon {
       }
     }
 
-    addIfPresent('polygonId', polygonId.value);
+    addIfPresent('polygonId', overlayId.value);
     addIfPresent('consumeTapEvents', consumeTapEvents);
     addIfPresent('fillColor', fillColor.value);
     addIfPresent('geodesic', geodesic);
@@ -150,7 +111,7 @@ class Polygon {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Polygon typedOther = other;
-    return polygonId == typedOther.polygonId &&
+    return overlayId== typedOther.overlayId &&
         consumeTapEvents == typedOther.consumeTapEvents &&
         fillColor == typedOther.fillColor &&
         geodesic == typedOther.geodesic &&
@@ -161,9 +122,9 @@ class Polygon {
         zIndex == typedOther.zIndex &&
         onTap == typedOther.onTap;
   }
-
+  
   @override
-  int get hashCode => polygonId.hashCode;
+  int get hashCode => overlayId.hashCode;
 
   dynamic _pointsToJson() {
     final List<dynamic> result = <dynamic>[];
@@ -172,21 +133,4 @@ class Polygon {
     }
     return result;
   }
-}
-
-Map<PolygonId, Polygon> _keyByPolygonId(Iterable<Polygon> polygons) {
-  if (polygons == null) {
-    return <PolygonId, Polygon>{};
-  }
-  return Map<PolygonId, Polygon>.fromEntries(polygons.map((Polygon polygon) =>
-      MapEntry<PolygonId, Polygon>(polygon.polygonId, polygon)));
-}
-
-List<Map<String, dynamic>> _serializePolygonSet(Set<Polygon> polygons) {
-  if (polygons == null) {
-    return null;
-  }
-  return polygons
-      .map<Map<String, dynamic>>((Polygon p) => p._toJson())
-      .toList();
 }

@@ -22,6 +22,8 @@ part 'src/google_map.dart';
 part 'src/joint_type.dart';
 part 'src/marker.dart';
 part 'src/marker_updates.dart';
+part 'src/overlay_updates.dart';
+part 'src/overlay.dart';
 part 'src/location.dart';
 part 'src/pattern_item.dart';
 part 'src/polygon.dart';
