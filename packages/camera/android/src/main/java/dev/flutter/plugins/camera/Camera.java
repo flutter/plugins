@@ -40,26 +40,45 @@ import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
 import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
 /* package */ class Camera {
-  private final SurfaceTextureEntry flutterTexture;
-  private final CameraManager cameraManager;
-  private final OrientationEventListener orientationEventListener;
-  private final boolean isFrontFacing;
-  private final int sensorOrientation;
-  private final String cameraName;
-  private final Size captureSize;
-  private final Size previewSize;
+
+  // Taking a picture
+  // NONE
+
+  // Image preview
+  private ImageReader imageStreamReader;
+
+  // Taking a picture & Image preview
+  private ImageReader pictureImageReader;
+
+  // Video recording
+  private boolean recordingVideo;
+  private MediaRecorder mediaRecorder;
+  private CamcorderProfile recordingProfile;
   private final boolean enableAudio;
 
+  // Video recording & Image preview
+  private CaptureRequest.Builder captureRequestBuilder;
+
+  // All 3
+  @NonNull
+  private final CameraManager cameraManager;
+  @NonNull
+  private final SurfaceTextureEntry flutterTexture;
+  @NonNull
+  private final String cameraName;
+  @NonNull
+  private final Size captureSize;
+  @NonNull
+  private final Size previewSize;
+  private final boolean isFrontFacing;
+  private final int sensorOrientation;
   private CameraDevice cameraDevice;
   private CameraCaptureSession cameraCaptureSession;
-  private ImageReader pictureImageReader;
-  private ImageReader imageStreamReader;
   private CameraEventHandler cameraEventHandler;
-  private CaptureRequest.Builder captureRequestBuilder;
-  private MediaRecorder mediaRecorder;
-  private boolean recordingVideo;
-  private CamcorderProfile recordingProfile;
+  @NonNull
+  private final OrientationEventListener orientationEventListener;
   private int currentOrientation = ORIENTATION_UNKNOWN;
+
 
   /* package */ Camera(
       final Activity activity,
@@ -76,18 +95,17 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
     this.enableAudio = enableAudio;
     this.flutterTexture = flutterTexture;
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
-    orientationEventListener =
-        new OrientationEventListener(activity.getApplicationContext()) {
-          @Override
-          public void onOrientationChanged(int i) {
-            if (i == ORIENTATION_UNKNOWN) {
-              return;
-            }
-            // Convert the raw deg angle to the nearest multiple of 90.
-            currentOrientation = (int) Math.round(i / 90.0) * 90;
-          }
-        };
-    orientationEventListener.enable();
+    this.orientationEventListener = new OrientationEventListener(activity.getApplicationContext()) {
+      @Override
+      public void onOrientationChanged(int orientation) {
+        if (orientation == ORIENTATION_UNKNOWN) {
+          return;
+        }
+        // Convert the raw deg angle to the nearest multiple of 90.
+        currentOrientation = (int) Math.round(orientation / 90.0) * 90;
+      }
+    };
+    this.orientationEventListener.enable();
 
     CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
     StreamConfigurationMap streamConfigurationMap =
@@ -108,41 +126,7 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
     this.cameraEventHandler = handler;
   }
 
-  private void onError(String description) {
-    if (cameraEventHandler != null) {
-      cameraEventHandler.onError(description);
-    }
-  }
-
-  private void onCameraClosed() {
-    if (cameraEventHandler != null) {
-      cameraEventHandler.onCameraClosed();
-    }
-  }
-
-  private void prepareMediaRecorder(String outputFilePath) throws IOException {
-    if (mediaRecorder != null) {
-      mediaRecorder.release();
-    }
-    mediaRecorder = new MediaRecorder();
-
-    // There's a specific order that mediaRecorder expects. Do not change the order
-    // of these function calls.
-    if (enableAudio) mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-    mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-    mediaRecorder.setOutputFormat(recordingProfile.fileFormat);
-    if (enableAudio) mediaRecorder.setAudioEncoder(recordingProfile.audioCodec);
-    mediaRecorder.setVideoEncoder(recordingProfile.videoCodec);
-    mediaRecorder.setVideoEncodingBitRate(recordingProfile.videoBitRate);
-    if (enableAudio) mediaRecorder.setAudioSamplingRate(recordingProfile.audioSampleRate);
-    mediaRecorder.setVideoFrameRate(recordingProfile.videoFrameRate);
-    mediaRecorder.setVideoSize(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
-    mediaRecorder.setOutputFile(outputFilePath);
-    mediaRecorder.setOrientationHint(getMediaOrientation());
-
-    mediaRecorder.prepare();
-  }
-
+  //------ Start: Opening/Closing/Disposing of Camera -------
   @SuppressLint("MissingPermission")
   public void open(@NonNull final OnCameraOpenedCallback callback) throws CameraAccessException {
     pictureImageReader = ImageReader.newInstance(
@@ -221,14 +205,55 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
         null);
   }
 
-  private void writeToFile(ByteBuffer buffer, File file) throws IOException {
-    try (FileOutputStream outputStream = new FileOutputStream(file)) {
-      while (0 < buffer.remaining()) {
-        outputStream.getChannel().write(buffer);
-      }
+  public void close() {
+    closeCaptureSession();
+
+    if (cameraDevice != null) {
+      cameraDevice.close();
+      cameraDevice = null;
+    }
+    if (pictureImageReader != null) {
+      pictureImageReader.close();
+      pictureImageReader = null;
+    }
+    if (imageStreamReader != null) {
+      imageStreamReader.close();
+      imageStreamReader = null;
+    }
+    if (mediaRecorder != null) {
+      mediaRecorder.reset();
+      mediaRecorder.release();
+      mediaRecorder = null;
     }
   }
 
+  private void closeCaptureSession() {
+    if (cameraCaptureSession != null) {
+      cameraCaptureSession.close();
+      cameraCaptureSession = null;
+    }
+  }
+
+  public void dispose() {
+    close();
+    flutterTexture.release();
+    orientationEventListener.disable();
+  }
+
+  private void onCameraClosed() {
+    if (cameraEventHandler != null) {
+      cameraEventHandler.onCameraClosed();
+    }
+  }
+
+  private void onError(String description) {
+    if (cameraEventHandler != null) {
+      cameraEventHandler.onError(description);
+    }
+  }
+  //------ End: Opening/Closing/Disposing of Camera -------
+
+  //------ Start: Take picture with Camera -------
   public void takePicture(String filePath, @NonNull final OnPictureTakenCallback callback) {
     final File file = new File(filePath);
 
@@ -283,14 +308,135 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
     }
   }
 
+  private void writeToFile(ByteBuffer buffer, File file) throws IOException {
+    try (FileOutputStream outputStream = new FileOutputStream(file)) {
+      while (0 < buffer.remaining()) {
+        outputStream.getChannel().write(buffer);
+      }
+    }
+  }
+  //------ End: Take picture with Camera -------
+
+  //------ Start: Video recording with Camera ----
+  public void startVideoRecording(String filePath) throws IOException, CameraAccessException, IllegalStateException {
+    if (new File(filePath).exists()) {
+      throw new IllegalStateException("File " + filePath + " already exists.");
+    }
+
+    prepareMediaRecorder(filePath);
+    recordingVideo = true;
+    createCaptureSession(
+        CameraDevice.TEMPLATE_RECORD,
+        () -> mediaRecorder.start(),
+        mediaRecorder.getSurface()
+    );
+  }
+
+  private void prepareMediaRecorder(String outputFilePath) throws IOException {
+    if (mediaRecorder != null) {
+      mediaRecorder.release();
+    }
+    mediaRecorder = new MediaRecorder();
+
+    // There's a specific order that mediaRecorder expects. Do not change the order
+    // of these function calls.
+    if (enableAudio) mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+    mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+    mediaRecorder.setOutputFormat(recordingProfile.fileFormat);
+    if (enableAudio) mediaRecorder.setAudioEncoder(recordingProfile.audioCodec);
+    mediaRecorder.setVideoEncoder(recordingProfile.videoCodec);
+    mediaRecorder.setVideoEncodingBitRate(recordingProfile.videoBitRate);
+    if (enableAudio) mediaRecorder.setAudioSamplingRate(recordingProfile.audioSampleRate);
+    mediaRecorder.setVideoFrameRate(recordingProfile.videoFrameRate);
+    mediaRecorder.setVideoSize(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
+    mediaRecorder.setOutputFile(outputFilePath);
+    mediaRecorder.setOrientationHint(getMediaOrientation());
+
+    mediaRecorder.prepare();
+  }
+
+  public void stopVideoRecording() throws CameraAccessException {
+    if (!recordingVideo) {
+      return;
+    }
+
+    recordingVideo = false;
+    mediaRecorder.stop();
+    mediaRecorder.reset();
+    startPreview();
+  }
+
+  public void pauseVideoRecording() throws IllegalStateException, UnsupportedOperationException {
+    if (!recordingVideo) {
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      mediaRecorder.pause();
+    } else {
+      throw new UnsupportedOperationException("pauseVideoRecording requires Android API +24.");
+    }
+  }
+
+  public void resumeVideoRecording() throws IllegalStateException, UnsupportedOperationException {
+    if (!recordingVideo) {
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      mediaRecorder.resume();
+    } else {
+      throw new UnsupportedOperationException("resumeVideoRecording requires Android API +24.");
+    }
+  }
+  //------ End: Video recording with Camera ----
+
+  //------ Start: Image preview with Camera ----
+  public void startPreview() throws CameraAccessException {
+    createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
+  }
+
+  public void startPreviewWithImageStream(@NonNull CameraPreviewDisplay previewDisplay)
+      throws CameraAccessException {
+    createCaptureSession(CameraDevice.TEMPLATE_STILL_CAPTURE, imageStreamReader.getSurface());
+
+    previewDisplay.startStreaming(new CameraPreviewDisplay.ImageStreamConnection() {
+      @Override
+      public void onConnectionReady(@NonNull CameraImageStream stream) {
+        startSendingImagesToPreviewDisplay(stream);
+      }
+
+      @Override
+      public void onConnectionClosed() {
+        imageStreamReader.setOnImageAvailableListener(null, null);
+      }
+    });
+  }
+
   private void createCaptureSession(int templateType, Surface... surfaces)
       throws CameraAccessException {
     createCaptureSession(templateType, null, surfaces);
   }
 
+  private void startSendingImagesToPreviewDisplay(@NonNull CameraImageStream cameraImageStream) {
+    imageStreamReader.setOnImageAvailableListener(
+        reader -> {
+          Image image = reader.acquireLatestImage();
+          if (image == null) return;
+
+          cameraImageStream.sendImage(image);
+          image.close();
+        },
+        null);
+  }
+  //------ End: Image preview with Camera ----
+
+  //------ Start: Shared Camera behavior -----
   private void createCaptureSession(
-      int templateType, Runnable onSuccessCallback, Surface... surfaces)
-      throws CameraAccessException {
+      int templateType,
+      Runnable onSuccessCallback,
+      Surface... surfaces
+  ) throws CameraAccessException {
     // Close any existing capture session.
     closeCaptureSession();
 
@@ -347,123 +493,6 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
     cameraDevice.createCaptureSession(surfaceList, callback, null);
   }
 
-  public void startVideoRecording(String filePath) throws IOException, CameraAccessException, IllegalStateException {
-    if (new File(filePath).exists()) {
-      throw new IllegalStateException("File " + filePath + " already exists.");
-    }
-
-    prepareMediaRecorder(filePath);
-    recordingVideo = true;
-    createCaptureSession(
-        CameraDevice.TEMPLATE_RECORD,
-        () -> mediaRecorder.start(),
-        mediaRecorder.getSurface()
-    );
-  }
-
-  public void stopVideoRecording() throws CameraAccessException {
-    if (!recordingVideo) {
-      return;
-    }
-
-    recordingVideo = false;
-    mediaRecorder.stop();
-    mediaRecorder.reset();
-    startPreview();
-  }
-
-  public void pauseVideoRecording() throws IllegalStateException, UnsupportedOperationException {
-    if (!recordingVideo) {
-      return;
-    }
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      mediaRecorder.pause();
-    } else {
-      throw new UnsupportedOperationException("pauseVideoRecording requires Android API +24.");
-    }
-  }
-
-  public void resumeVideoRecording() throws IllegalStateException, UnsupportedOperationException {
-    if (!recordingVideo) {
-      return;
-    }
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      mediaRecorder.resume();
-    } else {
-      throw new UnsupportedOperationException("resumeVideoRecording requires Android API +24.");
-    }
-  }
-
-  public void startPreview() throws CameraAccessException {
-    createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
-  }
-
-  public void startPreviewWithImageStream(@NonNull CameraPreviewDisplay previewDisplay)
-      throws CameraAccessException {
-    createCaptureSession(CameraDevice.TEMPLATE_STILL_CAPTURE, imageStreamReader.getSurface());
-
-    previewDisplay.startStreaming(new CameraPreviewDisplay.ImageStreamConnection() {
-      @Override
-      public void onConnectionReady(@NonNull CameraImageStream stream) {
-        startSendingImagesToPreviewDisplay(stream);
-      }
-
-      @Override
-      public void onConnectionClosed() {
-        imageStreamReader.setOnImageAvailableListener(null, null);
-      }
-    });
-  }
-
-  private void startSendingImagesToPreviewDisplay(@NonNull CameraImageStream cameraImageStream) {
-    imageStreamReader.setOnImageAvailableListener(
-        reader -> {
-          Image image = reader.acquireLatestImage();
-          if (image == null) return;
-
-          cameraImageStream.sendImage(image);
-          image.close();
-        },
-        null);
-  }
-
-  private void closeCaptureSession() {
-    if (cameraCaptureSession != null) {
-      cameraCaptureSession.close();
-      cameraCaptureSession = null;
-    }
-  }
-
-  public void close() {
-    closeCaptureSession();
-
-    if (cameraDevice != null) {
-      cameraDevice.close();
-      cameraDevice = null;
-    }
-    if (pictureImageReader != null) {
-      pictureImageReader.close();
-      pictureImageReader = null;
-    }
-    if (imageStreamReader != null) {
-      imageStreamReader.close();
-      imageStreamReader = null;
-    }
-    if (mediaRecorder != null) {
-      mediaRecorder.reset();
-      mediaRecorder.release();
-      mediaRecorder = null;
-    }
-  }
-
-  public void dispose() {
-    close();
-    flutterTexture.release();
-    orientationEventListener.disable();
-  }
-
   private int getMediaOrientation() {
     final int sensorOrientationOffset =
         (currentOrientation == ORIENTATION_UNKNOWN)
@@ -471,6 +500,7 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
             : (isFrontFacing) ? -currentOrientation : currentOrientation;
     return (sensorOrientationOffset + sensorOrientation + 360) % 360;
   }
+  //------ End: Shared Camera behavior -----
 
   /**
    * Callback invoked when this {@link Camera} is opened.
