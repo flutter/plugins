@@ -104,7 +104,7 @@ class PurchasesResultWrapper {
       {@required BillingResponse this.responseCode,
       @required List<PurchaseWrapper> this.purchasesList});
 
-  factory PurchasesResultWrapper.fromJson(Map map) =>
+  factory PurchasesResultWrapper.fromJson(Map<String, dynamic> map) =>
       _$PurchasesResultWrapperFromJson(map);
 
   @override

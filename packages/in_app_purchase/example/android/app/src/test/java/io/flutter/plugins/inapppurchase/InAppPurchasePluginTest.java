@@ -1,5 +1,6 @@
 package io.flutter.plugins.inapppurchase;
 
+import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.CONSUME_PURCHASE_ASYNC;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.END_CONNECTION;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.IS_READY;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.LAUNCH_BILLING_FLOW;
@@ -27,12 +28,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import androidx.annotation.Nullable;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.android.billingclient.api.BillingClient.SkuType;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
@@ -42,7 +45,7 @@ import com.android.billingclient.api.SkuDetailsResponseListener;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugins.inapppurchase.InAppPurchasePlugin.PluginPurchaseListener;
+import io.flutter.plugin.common.PluginRegistry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,15 +57,19 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 public class InAppPurchasePluginTest {
-  InAppPurchasePlugin plugin;
+  private InAppPurchasePlugin plugin;
   @Mock BillingClient mockBillingClient;
   @Mock MethodChannel mockMethodChannel;
   @Spy Result result;
+  @Mock PluginRegistry.Registrar registrar;
+  @Mock Activity activity;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    plugin = new InAppPurchasePlugin(mockBillingClient, mockMethodChannel);
+
+    BillingClientFactory factory = (context, channel) -> mockBillingClient;
+    plugin = new InAppPurchasePlugin(factory, registrar, mockMethodChannel);
   }
 
   @Test
@@ -74,6 +81,7 @@ public class InAppPurchasePluginTest {
 
   @Test
   public void isReady_true() {
+    mockStartConnection();
     MethodCall call = new MethodCall(IS_READY, null);
     when(mockBillingClient.isReady()).thenReturn(true);
     plugin.onMethodCall(call, result);
@@ -82,6 +90,7 @@ public class InAppPurchasePluginTest {
 
   @Test
   public void isReady_false() {
+    mockStartConnection();
     MethodCall call = new MethodCall(IS_READY, null);
     when(mockBillingClient.isReady()).thenReturn(false);
     plugin.onMethodCall(call, result);
@@ -102,6 +111,15 @@ public class InAppPurchasePluginTest {
 
   @Test
   public void startConnection() {
+    ArgumentCaptor<BillingClientStateListener> captor = mockStartConnection();
+    verify(result, never()).success(any());
+    captor.getValue().onBillingSetupFinished(100);
+
+    verify(result, times(1)).success(100);
+  }
+
+  @Test
+  public void startConnection_multipleCalls() {
     Map<String, Integer> arguments = new HashMap<>();
     arguments.put("handle", 1);
     MethodCall call = new MethodCall(START_CONNECTION, arguments);
@@ -112,8 +130,11 @@ public class InAppPurchasePluginTest {
     plugin.onMethodCall(call, result);
     verify(result, never()).success(any());
     captor.getValue().onBillingSetupFinished(100);
+    captor.getValue().onBillingSetupFinished(200);
+    captor.getValue().onBillingSetupFinished(300);
 
     verify(result, times(1)).success(100);
+    verify(result, times(1)).success(any());
   }
 
   @Test
@@ -198,6 +219,7 @@ public class InAppPurchasePluginTest {
 
   @Test
   public void launchBillingFlow_ok_nullAccountId() {
+    when(registrar.activity()).thenReturn(activity);
     // Fetch the sku details first and then prepare the launch billing flow call
     String skuId = "foo";
     queryForSkus(singletonList(skuId));
@@ -225,7 +247,26 @@ public class InAppPurchasePluginTest {
   }
 
   @Test
+  public void launchBillingFlow_ok_null_Activity() {
+    // Fetch the sku details first and then prepare the launch billing flow call
+    String skuId = "foo";
+    String accountId = "account";
+    queryForSkus(singletonList(skuId));
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    arguments.put("accountId", accountId);
+    MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
+
+    plugin.onMethodCall(launchCall, result);
+
+    // Verify we pass the response code to result
+    verify(result).error(contains("ACTIVITY_UNAVAILABLE"), contains("foreground"), any());
+    verify(result, never()).success(any());
+  }
+
+  @Test
   public void launchBillingFlow_ok_AccountId() {
+    when(registrar.activity()).thenReturn(activity);
     // Fetch the sku details first and query the method call
     String skuId = "foo";
     String accountId = "account";
@@ -377,6 +418,41 @@ public class InAppPurchasePluginTest {
     HashMap<String, Object> resultData = resultCaptor.getValue();
     assertEquals(responseCode, resultData.get("responseCode"));
     assertEquals(fromPurchasesList(purchasesList), resultData.get("purchasesList"));
+  }
+
+  @Test
+  public void consumeAsync() {
+    establishConnectedBillingClient(null, null);
+    ArgumentCaptor<BillingResponse> resultCaptor = ArgumentCaptor.forClass(BillingResponse.class);
+    int responseCode = BillingResponse.OK;
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("purchaseToken", "mockToken");
+    ArgumentCaptor<ConsumeResponseListener> listenerCaptor =
+        ArgumentCaptor.forClass(ConsumeResponseListener.class);
+
+    plugin.onMethodCall(new MethodCall(CONSUME_PURCHASE_ASYNC, arguments), result);
+
+    // Verify we pass the data to result
+    verify(mockBillingClient).consumeAsync(eq("mockToken"), listenerCaptor.capture());
+
+    listenerCaptor.getValue().onConsumeResponse(responseCode, "mockToken");
+    verify(result).success(resultCaptor.capture());
+
+    // Verify we pass the response code to result
+    verify(result, never()).error(any(), any(), any());
+    verify(result, times(1)).success(responseCode);
+  }
+
+  private ArgumentCaptor<BillingClientStateListener> mockStartConnection() {
+    Map<String, Integer> arguments = new HashMap<>();
+    arguments.put("handle", 1);
+    MethodCall call = new MethodCall(START_CONNECTION, arguments);
+    ArgumentCaptor<BillingClientStateListener> captor =
+        ArgumentCaptor.forClass(BillingClientStateListener.class);
+    doNothing().when(mockBillingClient).startConnection(captor.capture());
+
+    plugin.onMethodCall(call, result);
+    return captor;
   }
 
   private void establishConnectedBillingClient(

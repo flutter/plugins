@@ -1,3 +1,51 @@
+## 0.4.4
+
+* Add `requestLocationServiceAuthorization` to request location authorization on iOS.
+* Add `getLocationServiceAuthorization` to get location authorization status on iOS.
+* Update README: add more information on iOS 13 updates with CNCopyCurrentNetworkInfo.
+
+## 0.4.3+7
+
+* Update README with the updated information about CNCopyCurrentNetworkInfo on iOS 13.
+
+## 0.4.3+6
+
+* [Android] Fix the invalid suppression check (it should be "deprecation" not "deprecated").
+
+## 0.4.3+5
+
+* [Android] Added API 29 support for `check()`.
+* [Android] Suppress warnings for using deprecated APIs.
+
+## 0.4.3+4
+
+* [Android] Updated logic to retrieve network info.
+
+## 0.4.3+3
+
+* Support for TYPE_MOBILE_HIPRI on Android.
+
+## 0.4.3+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+
+## 0.4.3+1
+
+* Fixes lint error by using `getApplicationContext()` when accessing the Wifi Service.
+
+## 0.4.3
+
+* Add getWifiBSSID to obtain current wifi network's BSSID.
+
+## 0.4.2+2
+
+* Add integration test.
+
+## 0.4.2+1
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
 ## 0.4.2
 
 * Adding getWifiIP() to obtain current wifi network's IP.

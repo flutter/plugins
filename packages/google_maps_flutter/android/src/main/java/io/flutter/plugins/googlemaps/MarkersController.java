@@ -5,6 +5,7 @@
 package io.flutter.plugins.googlemaps;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import io.flutter.plugin.common.MethodChannel;
@@ -67,7 +68,7 @@ class MarkersController {
     if (markerId == null) {
       return false;
     }
-    methodChannel.invokeMethod("marker#onTap", Convert.toJson(markerId));
+    methodChannel.invokeMethod("marker#onTap", Convert.markerIdToJson(markerId));
     MarkerController markerController = markerIdToController.get(markerId);
     if (markerController != null) {
       return markerController.consumeTapEvents();
@@ -75,12 +76,23 @@ class MarkersController {
     return false;
   }
 
+  void onMarkerDragEnd(String googleMarkerId, LatLng latLng) {
+    String markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
+    if (markerId == null) {
+      return;
+    }
+    final Map<String, Object> data = new HashMap<>();
+    data.put("markerId", markerId);
+    data.put("position", Convert.latLngToJson(latLng));
+    methodChannel.invokeMethod("marker#onDragEnd", data);
+  }
+
   void onInfoWindowTap(String googleMarkerId) {
     String markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
     if (markerId == null) {
       return;
     }
-    methodChannel.invokeMethod("infoWindow#onTap", Convert.toJson(markerId));
+    methodChannel.invokeMethod("infoWindow#onTap", Convert.markerIdToJson(markerId));
   }
 
   private void addMarker(Object marker) {

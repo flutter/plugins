@@ -9,6 +9,8 @@ import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'sk_test_stub_objects.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final FakeIOSPlatform fakeIOSPlatform = FakeIOSPlatform();
 
   setUpAll(() {
@@ -30,9 +32,14 @@ void main() {
         productResponseWrapper.products.first.priceLocale.currencySymbol,
         '\$',
       );
+
       expect(
         productResponseWrapper.products.first.priceLocale.currencySymbol,
         isNot('A'),
+      );
+      expect(
+        productResponseWrapper.products.first.priceLocale.currencyCode,
+        'USD',
       );
       expect(
         productResponseWrapper.invalidProductIdentifiers,
@@ -173,11 +180,9 @@ class TestPaymentTransactionObserver extends SKTransactionObserverWrapper {
 
   void removedTransactions({List<SKPaymentTransactionWrapper> transactions}) {}
 
-  void restoreCompletedTransactions({Error error}) {}
+  void restoreCompletedTransactionsFailed({SKError error}) {}
 
   void paymentQueueRestoreCompletedTransactionsFinished() {}
-
-  void updatedDownloads({List<SKDownloadWrapper> downloads}) {}
 
   bool shouldAddStorePayment(
       {SKPaymentWrapper payment, SKProductWrapper product}) {

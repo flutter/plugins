@@ -18,24 +18,24 @@ class SharedPreferences {
   SharedPreferences._(this._preferenceCache);
 
   static const String _prefix = 'flutter.';
-  static SharedPreferences _instance;
+  static Completer<SharedPreferences> _completer;
   static Future<SharedPreferences> getInstance() async {
-    if (_instance == null) {
-      final Map<Object, Object> fromSystem =
-          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-          // https://github.com/flutter/flutter/issues/26431
-          // ignore: strong_mode_implicit_dynamic_method
-          await _kChannel.invokeMethod('getAll');
-      assert(fromSystem != null);
-      // Strip the flutter. prefix from the returned preferences.
-      final Map<String, Object> preferencesMap = <String, Object>{};
-      for (String key in fromSystem.keys) {
-        assert(key.startsWith(_prefix));
-        preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
+    if (_completer == null) {
+      _completer = Completer<SharedPreferences>();
+      try {
+        final Map<String, Object> preferencesMap =
+            await _getSharedPreferencesMap();
+        _completer.complete(SharedPreferences._(preferencesMap));
+      } on Exception catch (e) {
+        // If there's an error, explicitly return the future with an error.
+        // then set the completer to null so we can retry.
+        _completer.completeError(e);
+        final Future<SharedPreferences> sharedPrefsFuture = _completer.future;
+        _completer = null;
+        return sharedPrefsFuture;
       }
-      _instance = SharedPreferences._(preferencesMap);
     }
-    return _instance;
+    return _completer.future;
   }
 
   /// The cache that holds all preferences.
@@ -70,6 +70,9 @@ class SharedPreferences {
   /// String.
   String getString(String key) => _preferenceCache[key];
 
+  /// Returns true if persistent storage the contains the given [key].
+  bool containsKey(String key) => _preferenceCache.containsKey(key);
+
   /// Reads a set of string values from persistent storage, throwing an
   /// exception if it's not a string set.
   List<String> getStringList(String key) {
@@ -78,7 +81,8 @@ class SharedPreferences {
       list = list.cast<String>().toList();
       _preferenceCache[key] = list;
     }
-    return list;
+    // Make a copy of the list so that later mutations won't propagate
+    return list?.toList();
   }
 
   /// Saves a boolean [value] to persistent storage in the background.
@@ -121,19 +125,18 @@ class SharedPreferences {
     if (value == null) {
       _preferenceCache.remove(key);
       return _kChannel
-          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-          // https://github.com/flutter/flutter/issues/26431
-          // ignore: strong_mode_implicit_dynamic_method
-          .invokeMethod('remove', params)
+          .invokeMethod<bool>('remove', params)
           .then<bool>((dynamic result) => result);
     } else {
-      _preferenceCache[key] = value;
+      if (value is List<String>) {
+        // Make a copy of the list so that later mutations won't propagate
+        _preferenceCache[key] = value.toList();
+      } else {
+        _preferenceCache[key] = value;
+      }
       params['value'] = value;
       return _kChannel
-          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-          // https://github.com/flutter/flutter/issues/26431
-          // ignore: strong_mode_implicit_dynamic_method
-          .invokeMethod('set$valueType', params)
+          .invokeMethod<bool>('set$valueType', params)
           .then<bool>((dynamic result) => result);
     }
   }
@@ -141,21 +144,41 @@ class SharedPreferences {
   /// Always returns true.
   /// On iOS, synchronize is marked deprecated. On Android, we commit every set.
   @deprecated
-  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-  // https://github.com/flutter/flutter/issues/26431
-  // ignore: strong_mode_implicit_dynamic_method
-  Future<bool> commit() async => await _kChannel.invokeMethod('commit');
+  Future<bool> commit() async => await _kChannel.invokeMethod<bool>('commit');
 
   /// Completes with true once the user preferences for the app has been cleared.
   Future<bool> clear() async {
     _preferenceCache.clear();
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return await _kChannel.invokeMethod('clear');
+    return await _kChannel.invokeMethod<bool>('clear');
+  }
+
+  /// Fetches the latest values from the host platform.
+  ///
+  /// Use this method to observe modifications that were made in native code
+  /// (without using the plugin) while the app is running.
+  Future<void> reload() async {
+    final Map<String, Object> preferences =
+        await SharedPreferences._getSharedPreferencesMap();
+    _preferenceCache.clear();
+    _preferenceCache.addAll(preferences);
+  }
+
+  static Future<Map<String, Object>> _getSharedPreferencesMap() async {
+    final Map<String, Object> fromSystem =
+        await _kChannel.invokeMapMethod<String, Object>('getAll');
+    assert(fromSystem != null);
+    // Strip the flutter. prefix from the returned preferences.
+    final Map<String, Object> preferencesMap = <String, Object>{};
+    for (String key in fromSystem.keys) {
+      assert(key.startsWith(_prefix));
+      preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
+    }
+    return preferencesMap;
   }
 
   /// Initializes the shared preferences with mock values for testing.
+  ///
+  /// If the singleton instance has been initialized already, it is nullified.
   @visibleForTesting
   static void setMockInitialValues(Map<String, dynamic> values) {
     _kChannel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -164,5 +187,6 @@ class SharedPreferences {
       }
       return null;
     });
+    _completer = null;
   }
 }
