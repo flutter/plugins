@@ -495,10 +495,17 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else if (uriArg) {
       BOOL enableCache = maxCacheSizeArg > 0 && maxFileSizeArg > 0;
-      NSString *escapedURL = [uriArg stringByAddingPercentEncodingWithAllowedCharacters:NSMutableCharacterSet.alphanumericCharacterSet];
-      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:escapedURL]
-                                      frameUpdater:frameUpdater
-                                       enableCache: enableCache];
+
+        if(enableCache){
+            NSString *escapedURL = [uriArg stringByAddingPercentEncodingWithAllowedCharacters:NSMutableCharacterSet.alphanumericCharacterSet];
+            player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:escapedURL]
+                                            frameUpdater:frameUpdater
+                                             enableCache: enableCache];
+        } else {
+            player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
+                                            frameUpdater:frameUpdater];
+        }
+
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else {
       result(FlutterMethodNotImplemented);

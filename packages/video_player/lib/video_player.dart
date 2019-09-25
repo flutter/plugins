@@ -151,6 +151,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   VideoPlayerController.asset(this.dataSource, {this.package})
       : dataSourceType = DataSourceType.asset,
         formatHint = null,
+        maxCacheSize = 0,
+        maxCacheFileSize = 0,
         super(VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from obtained from
@@ -160,9 +162,15 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null.
   /// **Android only**: The [formatHint] option allows the caller to override
   /// the video format detection code.
-  VideoPlayerController.network(this.dataSource, {this.formatHint})
+  VideoPlayerController.network(this.dataSource,
+      {this.formatHint,
+      bool isCached = true,
+      int maxCacheSize = 100 * 1024 * 1024,
+      int maxCacheFileSize = 10 * 1024 * 1024})
       : dataSourceType = DataSourceType.network,
         package = null,
+        maxCacheSize = isCached ? maxCacheSize : 0,
+        maxCacheFileSize = isCached ? maxCacheFileSize : 0,
         super(VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from a file.
@@ -174,6 +182,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
+        maxCacheSize = 0,
+        maxCacheFileSize = 0,
         super(VideoPlayerValue(duration: null));
 
   int _textureId;
@@ -184,8 +194,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// is constructed with.
   final DataSourceType dataSourceType;
 
-  static int maxCacheSize = 100 * 1024 * 1024;
-  static int maxCacheFileSize = 10 * 1024 * 1024;
+  final int maxCacheSize; // = 100 * 1024 * 1024;
+  final int maxCacheFileSize; // = 10 * 1024 * 1024;
 
   final String package;
   Timer _timer;
