@@ -4,6 +4,7 @@
 
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
 
 import 'package:flutter/services.dart';
 import 'package:mockito/mockito.dart';
@@ -11,6 +12,8 @@ import 'package:share/share.dart';
 import 'package:test/test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   MockMethodChannel mockChannel;
 
   setUp(() {
@@ -20,7 +23,7 @@ void main() {
       // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
       // https://github.com/flutter/flutter/issues/26431
       // ignore: strong_mode_implicit_dynamic_method
-      mockChannel.invokeMethod(call.method, call.arguments);
+      mockChannel.invokeMethod<dynamic>(call.method, call.arguments);
     });
   });
 
@@ -43,12 +46,12 @@ void main() {
   test('sharing origin sets the right params', () async {
     await Share.share(
       'some text to share',
-      sharePositionOrigin: Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
+      sharePositionOrigin: const Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
     );
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    verify(mockChannel.invokeMethod('share', <String, dynamic>{
+    verify(mockChannel.invokeMethod<dynamic>('share', <String, dynamic>{
       'text': 'some text to share',
       'originX': 1.0,
       'originY': 2.0,

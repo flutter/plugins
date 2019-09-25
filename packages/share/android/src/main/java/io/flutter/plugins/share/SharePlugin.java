@@ -38,7 +38,7 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
       case "share":
         expectMapArguments(call);
         // Android does not support showing the share sheet at a particular point on screen.
-        share((String) call.argument("text"));
+        share((String) call.argument("text"), (String) call.argument("subject"));
         result.success(null);
         break;
       case "shareFile":
@@ -67,7 +67,7 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
     }
   }
 
-  private void share(String text) {
+  private void share(String text, String subject) {
     if (text == null || text.isEmpty()) {
       throw new IllegalArgumentException("Non-empty text expected");
     }
@@ -75,6 +75,7 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
     Intent shareIntent = new Intent();
     shareIntent.setAction(Intent.ACTION_SEND);
     shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+    shareIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
     shareIntent.setType("text/plain");
     Intent chooserIntent = Intent.createChooser(shareIntent, null /* dialog title optional */);
     if (mRegistrar.activity() != null) {
