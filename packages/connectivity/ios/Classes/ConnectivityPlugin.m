@@ -6,13 +6,18 @@
 
 #import "Reachability/Reachability.h"
 
+#import <CoreLocation/CoreLocation.h>
+#import "FLTConnectivityLocationHandler.h"
 #import "SystemConfiguration/CaptiveNetwork.h"
 
 #include <ifaddrs.h>
 
 #include <arpa/inet.h>
 
-@interface FLTConnectivityPlugin () <FlutterStreamHandler>
+@interface FLTConnectivityPlugin () <FlutterStreamHandler, CLLocationManagerDelegate>
+
+@property(strong, nonatomic) FLTConnectivityLocationHandler* locationHandler;
+
 @end
 
 @implementation FLTConnectivityPlugin {
@@ -33,18 +38,25 @@
   [streamChannel setStreamHandler:instance];
 }
 
-- (NSString*)getWifiName {
-  NSString* wifiName = nil;
-  NSArray* interFaceNames = (__bridge_transfer id)CNCopySupportedInterfaces();
-
-  for (NSString* name in interFaceNames) {
-    NSDictionary* info = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)name);
-    if (info[@"SSID"]) {
-      wifiName = info[@"SSID"];
+- (NSString*)findNetworkInfo:(NSString*)key {
+  NSString* info = nil;
+  NSArray* interfaceNames = (__bridge_transfer id)CNCopySupportedInterfaces();
+  for (NSString* interfaceName in interfaceNames) {
+    NSDictionary* networkInfo =
+        (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)interfaceName);
+    if (networkInfo[key]) {
+      info = networkInfo[key];
     }
   }
+  return info;
+}
 
-  return wifiName;
+- (NSString*)getWifiName {
+  return [self findNetworkInfo:@"SSID"];
+}
+
+- (NSString*)getBSSID {
+  return [self findNetworkInfo:@"BSSID"];
 }
 
 - (NSString*)getWifiIP {
@@ -100,8 +112,22 @@
     result([self statusFromReachability:[Reachability reachabilityForInternetConnection]]);
   } else if ([call.method isEqualToString:@"wifiName"]) {
     result([self getWifiName]);
+  } else if ([call.method isEqualToString:@"wifiBSSID"]) {
+    result([self getBSSID]);
   } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
     result([self getWifiIP]);
+  } else if ([call.method isEqualToString:@"getLocationServiceAuthorization"]) {
+    result([self convertCLAuthorizationStatusToString:[FLTConnectivityLocationHandler
+                                                          locationAuthorizationStatus]]);
+  } else if ([call.method isEqualToString:@"requestLocationServiceAuthorization"]) {
+    NSArray* arguments = call.arguments;
+    BOOL always = [arguments.firstObject boolValue];
+    __weak typeof(self) weakSelf = self;
+    [self.locationHandler
+        requestLocationAuthorization:always
+                          completion:^(CLAuthorizationStatus status) {
+                            result([weakSelf convertCLAuthorizationStatusToString:status]);
+                          }];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -110,6 +136,34 @@
 - (void)onReachabilityDidChange:(NSNotification*)notification {
   Reachability* curReach = [notification object];
   _eventSink([self statusFromReachability:curReach]);
+}
+
+- (NSString*)convertCLAuthorizationStatusToString:(CLAuthorizationStatus)status {
+  switch (status) {
+    case kCLAuthorizationStatusNotDetermined: {
+      return @"notDetermined";
+    }
+    case kCLAuthorizationStatusRestricted: {
+      return @"restricted";
+    }
+    case kCLAuthorizationStatusDenied: {
+      return @"denied";
+    }
+    case kCLAuthorizationStatusAuthorizedAlways: {
+      return @"authorizedAlways";
+    }
+    case kCLAuthorizationStatusAuthorizedWhenInUse: {
+      return @"authorizedWhenInUse";
+    }
+    default: { return @"unknown"; }
+  }
+}
+
+- (FLTConnectivityLocationHandler*)locationHandler {
+  if (!_locationHandler) {
+    _locationHandler = [FLTConnectivityLocationHandler new];
+  }
+  return _locationHandler;
 }
 
 #pragma mark FlutterStreamHandler impl

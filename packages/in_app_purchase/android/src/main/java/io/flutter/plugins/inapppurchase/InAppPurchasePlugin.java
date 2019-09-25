@@ -10,14 +10,15 @@ import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
-import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
@@ -33,9 +34,11 @@ import java.util.Map;
 
 /** Wraps a {@link BillingClient} instance and responds to Dart calls for it. */
 public class InAppPurchasePlugin implements MethodCallHandler {
+  private static final String TAG = "InAppPurchasePlugin";
   private @Nullable BillingClient billingClient;
-  private final Activity activity;
-  private final Context context;
+  private final BillingClientFactory factory;
+  private final Registrar registrar;
+  private final Context applicationContext;
   private final MethodChannel channel;
 
   @VisibleForTesting
@@ -54,6 +57,8 @@ public class InAppPurchasePlugin implements MethodCallHandler {
     static final String QUERY_PURCHASES = "BillingClient#queryPurchases(String)";
     static final String QUERY_PURCHASE_HISTORY_ASYNC =
         "BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)";
+    static final String CONSUME_PURCHASE_ASYNC =
+        "BillingClient#consumeAsync(String, ConsumeResponseListener)";
 
     private MethodNames() {};
   }
@@ -64,13 +69,17 @@ public class InAppPurchasePlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/in_app_purchase");
-    channel.setMethodCallHandler(
-        new InAppPurchasePlugin(registrar.context(), registrar.activity(), channel));
+
+    final BillingClientFactory factory = new BillingClientFactoryImpl();
+    final InAppPurchasePlugin plugin = new InAppPurchasePlugin(factory, registrar, channel);
+    channel.setMethodCallHandler(plugin);
   }
 
-  public InAppPurchasePlugin(Context context, Activity activity, MethodChannel channel) {
-    this.context = context;
-    this.activity = activity;
+  public InAppPurchasePlugin(
+      BillingClientFactory factory, Registrar registrar, MethodChannel channel) {
+    this.applicationContext = registrar.context();
+    this.registrar = registrar;
+    this.factory = factory;
     this.channel = channel;
   }
 
@@ -100,28 +109,30 @@ public class InAppPurchasePlugin implements MethodCallHandler {
       case MethodNames.QUERY_PURCHASE_HISTORY_ASYNC:
         queryPurchaseHistoryAsync((String) call.argument("skuType"), result);
         break;
+      case MethodNames.CONSUME_PURCHASE_ASYNC:
+        consumeAsync((String) call.argument("purchaseToken"), result);
+        break;
       default:
         result.notImplemented();
     }
   }
 
-  @VisibleForTesting
-  /*package*/ InAppPurchasePlugin(@Nullable BillingClient billingClient, MethodChannel channel) {
-    this.billingClient = billingClient;
-    this.channel = channel;
-    this.context = null;
-    this.activity = null;
-  }
-
   private void startConnection(final int handle, final Result result) {
     if (billingClient == null) {
-      billingClient = buildBillingClient(context, channel);
+      billingClient = factory.createBillingClient(applicationContext, channel);
     }
 
     billingClient.startConnection(
         new BillingClientStateListener() {
+          private boolean alreadyFinished = false;
+
           @Override
           public void onBillingSetupFinished(int responseCode) {
+            if (alreadyFinished) {
+              Log.d(TAG, "Tried to call onBilllingSetupFinished multiple times.");
+              return;
+            }
+            alreadyFinished = true;
             // Consider the fact that we've finished a success, leave it to the Dart side to validate the responseCode.
             result.success(responseCode);
           }
@@ -186,6 +197,17 @@ public class InAppPurchasePlugin implements MethodCallHandler {
           null);
       return;
     }
+    final Activity activity = registrar.activity();
+
+    if (activity == null) {
+      result.error(
+          "ACTIVITY_UNAVAILABLE",
+          "Details for sku "
+              + sku
+              + " are not available. This method must be run with the app in foreground.",
+          null);
+      return;
+    }
 
     BillingFlowParams.Builder paramsBuilder =
         BillingFlowParams.newBuilder().setSkuDetails(skuDetails);
@@ -193,6 +215,22 @@ public class InAppPurchasePlugin implements MethodCallHandler {
       paramsBuilder.setAccountId(accountId);
     }
     result.success(billingClient.launchBillingFlow(activity, paramsBuilder.build()));
+  }
+
+  private void consumeAsync(String purchaseToken, final Result result) {
+    if (billingClientError(result)) {
+      return;
+    }
+
+    ConsumeResponseListener listener =
+        new ConsumeResponseListener() {
+          @Override
+          public void onConsumeResponse(
+              @BillingClient.BillingResponse int responseCode, String outToken) {
+            result.success(responseCode);
+          }
+        };
+    billingClient.consumeAsync(purchaseToken, listener);
   }
 
   private void queryPurchases(String skuType, Result result) {
@@ -239,28 +277,5 @@ public class InAppPurchasePlugin implements MethodCallHandler {
 
     result.error("UNAVAILABLE", "BillingClient is unset. Try reconnecting.", null);
     return true;
-  }
-
-  private static BillingClient buildBillingClient(Context context, MethodChannel channel) {
-    return BillingClient.newBuilder(context)
-        .setListener(new PluginPurchaseListener(channel))
-        .build();
-  }
-
-  @VisibleForTesting
-  /*package*/ static class PluginPurchaseListener implements PurchasesUpdatedListener {
-    private final MethodChannel channel;
-
-    PluginPurchaseListener(MethodChannel channel) {
-      this.channel = channel;
-    }
-
-    @Override
-    public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> purchases) {
-      final Map<String, Object> callbackArgs = new HashMap<>();
-      callbackArgs.put("responseCode", responseCode);
-      callbackArgs.put("purchasesList", fromPurchasesList(purchases));
-      channel.invokeMethod(MethodNames.ON_PURCHASES_UPDATED, callbackArgs);
-    }
   }
 }

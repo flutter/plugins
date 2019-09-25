@@ -1,3 +1,28 @@
+## 0.3.3+1
+
+* Added "action_application_details_settings" action to open application info settings . 
+
+## 0.3.3
+
+* Added "flags" option to call intent.addFlags(int) in native. 
+
+## 0.3.2
+
+* Added "action_location_source_settings" action to start Location Settings Activity.
+
+## 0.3.1+1
+
+* Fix Gradle version.
+
+## 0.3.1
+
+* Add a new componentName parameter to help the intent resolution.
+
+## 0.3.0+2
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
 ## 0.3.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX

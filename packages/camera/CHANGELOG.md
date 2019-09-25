@@ -1,3 +1,55 @@
+## 0.5.4+2
+
+* Fix Android NullPointerException on devices with only front-facing camera.
+
+## 0.5.4+1
+
+* Fix Android pause and resume video crash when executing in APIs below 24.
+
+## 0.5.4
+
+* Add feature to pause and resume video recording.
+
+## 0.5.3+1
+
+* Fix too large request code for FragmentActivity users.
+
+## 0.5.3
+
+* Added new quality presets.
+* Now all quality presets can be used to control image capture quality.
+
+## 0.5.2+2
+
+* Fix memory leak related to not unregistering stream handler in FlutterEventChannel when disposing camera.
+
+## 0.5.2+1
+
+* Fix bug that prevented video recording with audio.
+
+## 0.5.2
+
+* Added capability to disable audio for the `CameraController`. (e.g. `CameraController(_, _,
+ enableAudio: false);`)
+
+## 0.5.1
+
+* Can now be compiled with earlier Android sdks below 21 when
+`<uses-sdk tools:overrideLibrary="io.flutter.plugins.camera"/>` has been added to the project
+`AndroidManifest.xml`. For sdks below 21, the plugin won't be registered and calls to it will throw
+a `MissingPluginException.`
+
+## 0.5.0
+
+* **Breaking Change** This plugin no longer handles closing and opening the camera on Android
+  lifecycle changes. Please use `WidgetsBindingObserver` to control camera resources on lifecycle
+  changes. See example project for example using `WidgetsBindingObserver`.
+
+## 0.4.3+2
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
 ## 0.4.3+1
 
 * Catch additional `Exception`s from Android and throw as `CameraException`s.
