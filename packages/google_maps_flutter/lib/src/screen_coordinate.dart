@@ -5,6 +5,10 @@
 part of google_maps_flutter;
 
 /// Represents a point coordinate in the [GoogleMap]'s view.
+///
+/// The screen location is specified in screen pixels (not display pixels) relative
+/// to the top left of the map, not top left of the whole screen. (x, y) = (0, 0)
+/// corresponds to top-left of the [GoogleMap] not the whole screen.
 @immutable
 class ScreenCoordinate {
   const ScreenCoordinate({
