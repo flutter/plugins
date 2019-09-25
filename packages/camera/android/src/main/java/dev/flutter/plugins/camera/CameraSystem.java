@@ -49,7 +49,7 @@ import java.util.List;
   }
 
   /* package */ interface OnVideoRecordingCommandCallback {
-    void onSuccess();
+    void success();
 
     void onVideoRecordingFailed(@NonNull String message);
   }

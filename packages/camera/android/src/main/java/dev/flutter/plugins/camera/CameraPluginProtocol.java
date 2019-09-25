@@ -57,7 +57,7 @@ import io.flutter.plugin.common.MethodChannel;
               Map<String, Object> serializedDetails = new HashMap<>();
               serializedDetails.put("name", cameraDetails.getName());
               serializedDetails.put("sensorOrientation", cameraDetails.getSensorOrientation());
-              serializedDetails.put("lensDirection", cameraDetails.getLensDirection());
+              serializedDetails.put("lensFacing", cameraDetails.getLensDirection());
               allCameraDetailsSerialized.add(serializedDetails);
             }
 
@@ -142,7 +142,7 @@ import io.flutter.plugin.common.MethodChannel;
           String filePath = call.argument("filePath");
           cameraSystem.startVideoRecording(filePath, new CameraSystem.OnStartVideoRecordingCallback() {
             @Override
-            public void onSuccess() {
+            public void success() {
               result.success(null);
             }
 
@@ -162,7 +162,7 @@ import io.flutter.plugin.common.MethodChannel;
         {
           cameraSystem.stopVideoRecording(new CameraSystem.OnVideoRecordingCommandCallback() {
             @Override
-            public void onSuccess() {
+            public void success() {
               result.success(null);
             }
 
@@ -177,7 +177,7 @@ import io.flutter.plugin.common.MethodChannel;
         {
           cameraSystem.pauseVideoRecording(new CameraSystem.OnApiDependentVideoRecordingCommandCallback() {
             @Override
-            public void onSuccess() {
+            public void success() {
               result.success(null);
             }
 
@@ -197,7 +197,7 @@ import io.flutter.plugin.common.MethodChannel;
         {
           cameraSystem.resumeVideoRecording(new CameraSystem.OnApiDependentVideoRecordingCommandCallback() {
             @Override
-            public void onSuccess() {
+            public void success() {
               result.success(null);
             }
 

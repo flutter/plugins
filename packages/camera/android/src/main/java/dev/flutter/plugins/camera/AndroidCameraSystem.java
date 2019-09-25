@@ -53,8 +53,8 @@ import io.flutter.view.TextureRegistry;
     for (Map<String, Object> serializedDetails : allCameraDetailsSerialized) {
       allCameraDetails.add(new CameraDetails(
           (String) serializedDetails.get("name"),
-          (Integer) serializedDetails.get("screenOrientation"),
-          (String) serializedDetails.get("lensDirection")
+          (Integer) serializedDetails.get("sensorOrientation"),
+          (String) serializedDetails.get("lensFacing")
       ));
     }
     return allCameraDetails;
@@ -175,7 +175,7 @@ import io.flutter.view.TextureRegistry;
     // TODO(mattcarroll): determine desired behavior when no camera is active
     try {
       camera.stopVideoRecording();
-      callback.onSuccess();
+      callback.success();
     } catch (CameraAccessException | IllegalStateException e) {
       callback.onVideoRecordingFailed(e.getMessage());
     }
