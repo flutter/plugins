@@ -1,3 +1,7 @@
+## 0.6.2+2
+
+* Default the `subject` to an empty String if null is passed.
+
 ## 0.6.2+1
 
 * Specify explicit type for `invokeMethod`.

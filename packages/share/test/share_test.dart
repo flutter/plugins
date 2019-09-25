@@ -56,6 +56,24 @@ void main() {
       'originHeight': 4.0,
     }));
   });
+
+  test(
+      'if subject is null, an empty string should be sent to the method channel',
+      () async {
+    await Share.share(
+      'some text to share',
+      subject: null,
+      sharePositionOrigin: const Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
+    );
+    verify(mockChannel.invokeMethod<void>('share', <String, dynamic>{
+      'text': 'some text to share',
+      'subject': '',
+      'originX': 1.0,
+      'originY': 2.0,
+      'originWidth': 3.0,
+      'originHeight': 4.0,
+    }));
+  });
 }
 
 class MockMethodChannel extends Mock implements MethodChannel {}
