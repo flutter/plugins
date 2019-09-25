@@ -30,7 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Conversions between JSON-like values and GoogleMaps data types. */
+/**
+ * Conversions between JSON-like values and GoogleMaps data types.
+ */
 class Convert {
 
   private static BitmapDescriptor toBitmapDescriptor(Object o) {
@@ -201,9 +203,21 @@ class Convert {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 
-  private static LatLng toLatLng(Object o) {
+  static LatLng toLatLng(Object o) {
     final List<?> data = toList(o);
     return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
+  }
+
+  static Point toPoint(Object o) {
+    Map<String, Integer> screenCoordinate = (Map<String, Integer>) o;
+    return new Point(screenCoordinate.get("x"), screenCoordinate.get("y"));
+  }
+
+  static Map<String, Integer> pointToJson(Point point) {
+    final Map<String, Integer> data = new HashMap<>(2);
+    data.put("x", point.x);
+    data.put("y", point.y);
+    return data;
   }
 
   private static LatLngBounds toLatLngBounds(Object o) {
@@ -322,7 +336,9 @@ class Convert {
     }
   }
 
-  /** Returns the dartMarkerId of the interpreted marker. */
+  /**
+   * Returns the dartMarkerId of the interpreted marker.
+   */
   static String interpretMarkerOptions(Object o, MarkerOptionsSink sink) {
     final Map<?, ?> data = toMap(o);
     final Object alpha = data.get("alpha");
