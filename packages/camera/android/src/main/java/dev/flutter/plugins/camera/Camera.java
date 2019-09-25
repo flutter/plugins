@@ -335,9 +335,9 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
   //------ End: Take picture with Camera -------
 
   //------ Start: Video recording with Camera ----
-  public void startVideoRecording(String filePath) throws IOException, CameraAccessException, IllegalStateException {
+  public void startVideoRecording(@NonNull String filePath) throws IOException, CameraAccessException, IllegalStateException {
     if (new File(filePath).exists()) {
-      throw new IllegalStateException("File " + filePath + " already exists.");
+      throw new IOException("File " + filePath + " already exists.");
     }
 
     prepareMediaRecorder(filePath);
