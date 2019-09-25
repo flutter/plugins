@@ -194,8 +194,15 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// is constructed with.
   final DataSourceType dataSourceType;
 
-  final int maxCacheSize; // = 100 * 1024 * 1024;
-  final int maxCacheFileSize; // = 10 * 1024 * 1024;
+  /// The maximum cache size to keep on disk in bytes.
+  ///
+  /// eg, 100MB is `100 * 1024 * 1024`
+  final int maxCacheSize;
+
+  /// The maximum size of each individual file in bytes.
+  ///
+  /// eg, 10MB is `10 * 1024 * 1024`
+  final int maxCacheFileSize;
 
   final String package;
   Timer _timer;
