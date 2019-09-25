@@ -451,8 +451,8 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position) {
 
 static NSDictionary* PointToJson(CGPoint point) {
   return @{
-    @"x" : @((int) point.x),
-    @"y" : @((int) point.y),
+    @"x" : @((int)point.x),
+    @"y" : @((int)point.y),
   };
 }
 

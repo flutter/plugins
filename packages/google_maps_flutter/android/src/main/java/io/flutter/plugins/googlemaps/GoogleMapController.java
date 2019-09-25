@@ -249,9 +249,7 @@ final class GoogleMapController
             result.success(Convert.latLngToJson(latLng));
           } else {
             result.error(
-                "GoogleMap uninitialized",
-                "getLatLng called prior to map initialization",
-                null);
+                "GoogleMap uninitialized", "getLatLng called prior to map initialization", null);
           }
           break;
         }
