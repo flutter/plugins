@@ -38,6 +38,35 @@ enum ResolutionPreset {
   max,
 }
 
+/// Define the desired mode for the camera device's flash control.
+enum FlashMode {
+  /// The flash is disabled
+  off,
+
+  /// Fire flash for this capture
+  alwaysFlash,
+
+  /// Fire the flash for this capture if needed
+  autoFlash,
+
+  /// Flash light is continuously ON
+  torch,
+}
+
+enum AutoFocusMode {
+  /// Auto Focus is disabled
+  off,
+
+  /// Basic mode
+  auto,
+
+  /// Attempt to provide constantly a sharp image stream
+  continuous,
+
+  /// Close-up
+  macro,
+}
+
 typedef onLatestImageAvailable = Function(CameraImage image);
 
 /// Returns the resolution preset as a String.
@@ -244,8 +273,8 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
-    this.enableFlash = false,
-    this.enableAutoExposure = true,
+    this.flashMode = FlashMode.off,
+    this.autoFocusMode = AutoFocusMode.continuous,
   }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
@@ -254,11 +283,11 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Whether to include audio when recording a video.
   final bool enableAudio;
 
-  /// Switch ON the flash when a camera is initialized
-  final bool enableFlash;
+  /// Set the initial Flash state
+  final FlashMode flashMode;
 
-  /// Switch ON the Auto Exposure when a camera is initialized
-  final bool enableAutoExposure;
+  /// Set the flash Auto Focus state
+  final AutoFocusMode autoFocusMode;
 
   int _textureId;
   bool _isDisposed = false;
@@ -282,8 +311,8 @@ class CameraController extends ValueNotifier<CameraValue> {
           'cameraName': description.name,
           'resolutionPreset': serializeResolutionPreset(resolutionPreset),
           'enableAudio': enableAudio,
-          'enableFlash': enableFlash,
-          'enableAutoExposure': enableAutoExposure,
+          'flashMode': flashMode.index,
+          'autoFocusMode': autoFocusMode.index,
         },
       );
       _textureId = reply['textureId'];
@@ -525,34 +554,19 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
-  /// Switch ON the flash.
-  Future<void> flashOn({double level = 1.0}) async {
+  /// Set the Flash light [mode]
+  /// See [FlashMode] enum for available options
+  Future<void> setFlash({FlashMode mode = FlashMode.off}) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController.',
-        'flashOn was called on uninitialized CameraController',
+        'flashMode was called on uninitialized CameraController',
       );
     }
 
     try {
-      await _channel
-          .invokeMethod<void>('flashOn', <String, dynamic>{'level': level});
-    } on PlatformException catch (e) {
-      throw CameraException(e.code, e.message);
-    }
-  }
-
-  /// Switch OFF the flash.
-  Future<void> flashOff() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController.',
-        'flashOff was called on uninitialized CameraController',
-      );
-    }
-
-    try {
-      await _channel.invokeMethod<void>('flashOff');
+      await _channel.invokeMethod<void>(
+          'setFlash', <String, dynamic>{'mode': mode.index});
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -601,33 +615,19 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
-  /// Switch ON continuous Auto Exposure.
-  Future<void> autoExposureOn() async {
+  /// Set the Auto Focus [mode]
+  /// See [AutoFocusMode] enum for available options
+  Future<void> setAutoFocus({AutoFocusMode mode = AutoFocusMode.off}) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController.',
-        'autoExposureOn was called on uninitialized CameraController',
+        'autoFocusMode was called on uninitialized CameraController',
       );
     }
 
     try {
-      await _channel.invokeMethod<void>('autoExposureOn');
-    } on PlatformException catch (e) {
-      throw CameraException(e.code, e.message);
-    }
-  }
-
-  /// Switch OFF continuous Auto Exposure.
-  Future<void> autoExposureOff() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController.',
-        'autoExposureOff was called on uninitialized CameraController',
-      );
-    }
-
-    try {
-      await _channel.invokeMethod<void>('autoExposureOff');
+      await _channel.invokeMethod<void>(
+          'setAutoFocus', <String, dynamic>{'mode': mode.index});
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

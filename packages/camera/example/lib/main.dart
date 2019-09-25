@@ -41,7 +41,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
-  bool enableFlash = false;
+  FlashMode flashMode = FlashMode.off;
 
   @override
   void initState() {
@@ -101,12 +101,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
           ),
           _captureControlRowWidget(),
-          Row(
-            children: <Widget>[
-              _toggleAudioWidget(),
-              _toggleFlashWidget(),
-            ],
-          ),
+          _optionsControlRowWidget(),
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
@@ -143,40 +138,60 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Toggle recording audio
   Widget _toggleAudioWidget() {
+    return Row(
+      children: <Widget>[
+        const Text('Enable Audio:'),
+        Switch(
+          value: enableAudio,
+          onChanged: (bool value) {
+            enableAudio = value;
+            if (controller != null) {
+              onNewCameraSelected(controller.description);
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  /// Display the control bar with buttons to options like audio and flash.
+  Widget _optionsControlRowWidget() {
     return Padding(
-      padding: const EdgeInsets.only(left: 25),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          const Text('Enable Audio:'),
-          Switch(
-            value: enableAudio,
-            onChanged: (bool value) {
-              enableAudio = value;
-              if (controller != null) {
-                onNewCameraSelected(controller.description);
-              }
-            },
-          ),
+          _toggleAudioWidget(),
+          _flashButton(),
+          _torchButton(),
         ],
       ),
     );
   }
 
-  /// Display the Flash Switch
-  Widget _toggleFlashWidget() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 25),
-      child: Row(
-        children: <Widget>[
-          const Text('Enable Flash:'),
-          Switch(value: enableFlash, onChanged: _toggleFlash),
-        ],
-      ),
+  /// Flash Toggle Button
+  Widget _flashButton() {
+    IconData iconData = Icons.flash_off;
+    Color color = Colors.black;
+    if (flashMode == FlashMode.alwaysFlash) {
+      iconData = Icons.flash_on;
+      color = Colors.blue;
+    } else if (flashMode == FlashMode.autoFlash) {
+      iconData = Icons.flash_auto;
+      color = Colors.red;
+    }
+    return IconButton(
+      icon: Icon(iconData),
+      color: color,
+      onPressed: controller != null && controller.value.isInitialized
+          ? _onFlashButtonPressed
+          : null,
     );
   }
 
   /// Toggle Flash
-  Future<void> _toggleFlash(bool value) async {
+  Future<void> _onFlashButtonPressed() async {
     bool hasFlash = false;
 
     if (controller != null) {
@@ -184,15 +199,60 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
 
     if (hasFlash) {
-      enableFlash = value;
-      if (enableFlash) {
-        controller.flashOn();
+      if (flashMode == FlashMode.off || flashMode == FlashMode.torch) {
+        // Turn on the flash for capture
+        flashMode = FlashMode.alwaysFlash;
+      } else if (flashMode == FlashMode.alwaysFlash) {
+        // Turn on the flash for capture if needed
+        flashMode = FlashMode.autoFlash;
       } else {
-        controller.flashOff();
+        // Turn off the flash
+        flashMode = FlashMode.off;
       }
+      // Apply the new mode
+      controller.setFlash(mode: flashMode);
     }
 
+    // Change UI State
     setState(() {});
+  }
+
+  /// Constant Flash (Torch) Toggle Button
+  Widget _torchButton() {
+    return IconButton(
+      icon: Icon(Icons.lightbulb_outline),
+      color: flashMode == FlashMode.torch ? Colors.blue : Colors.black,
+      onPressed: controller != null && controller.value.isInitialized
+          ? onTorchButtonPressed
+          : null,
+    );
+  }
+
+  /// Toggle constant Flash (Torch)
+  Future<void> onTorchButtonPressed() async {
+    bool hasFlash = false;
+
+    if (controller != null) {
+      hasFlash = await controller.hasFlash;
+    }
+
+    if (hasFlash) {
+      if (flashMode != FlashMode.torch) {
+        // Turn on the flash as a pocket light or a torch light
+        controller.setFlash(mode: FlashMode.torch);
+        // Change UI State
+        setState(() {
+          flashMode = FlashMode.torch;
+        });
+      } else {
+        // Turn off the flash
+        controller.setFlash();
+        // Change UI State
+        setState(() {
+          flashMode = FlashMode.off;
+        });
+      }
+    }
   }
 
   /// Display the thumbnail of the captured image or video.

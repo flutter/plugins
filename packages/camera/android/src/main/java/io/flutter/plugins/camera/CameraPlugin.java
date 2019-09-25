@@ -49,8 +49,8 @@ public class CameraPlugin implements MethodCallHandler {
     String cameraName = call.argument("cameraName");
     String resolutionPreset = call.argument("resolutionPreset");
     boolean enableAudio = call.argument("enableAudio");
-    boolean enableFlash = call.argument("enableFlash");
-    boolean enableAutoExposure = call.argument("enableAutoExposure");
+    int flashMode = call.argument("flashMode");
+    int autoFocusMode = call.argument("autoFocusMode");
     camera =
         new Camera(
             registrar.activity(),
@@ -58,8 +58,8 @@ public class CameraPlugin implements MethodCallHandler {
             cameraName,
             resolutionPreset,
             enableAudio,
-            enableFlash,
-            enableAutoExposure);
+            flashMode,
+            autoFocusMode);
 
     EventChannel cameraEventChannel =
         new EventChannel(
@@ -153,14 +153,9 @@ public class CameraPlugin implements MethodCallHandler {
           }
           break;
         }
-      case "flashOn":
+      case "setFlash":
         {
-          camera.setFlashMode(result, true, call.argument("level"));
-          break;
-        }
-      case "flashOff":
-        {
-          camera.setFlashMode(result, false);
+          camera.setFlash(result, call.argument("mode"));
           break;
         }
       case "hasFlash":
@@ -168,14 +163,9 @@ public class CameraPlugin implements MethodCallHandler {
           result.success(hasFlash());
           break;
         }
-      case "autoExposureOn":
+      case "setAutoFocus":
         {
-          camera.setAutoExposureMode(result, true);
-          break;
-        }
-      case "autoExposureOff":
-        {
-          camera.setAutoExposureMode(result, false);
+          camera.setAutoFocus(result, call.argument("mode"));
           break;
         }
       case "dispose":

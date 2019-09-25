@@ -49,9 +49,9 @@ public class Camera {
   private final Size captureSize;
   private final Size previewSize;
   private final boolean enableAudio;
-  private final boolean enableFlash;
-  private final boolean enableAutoExposure;
 
+  private int flashMode;
+  private int autoFocusMode;
   private CameraDevice cameraDevice;
   private CameraCaptureSession cameraCaptureSession;
   private ImageReader pictureImageReader;
@@ -73,14 +73,28 @@ public class Camera {
     max,
   }
 
+  // Flash control setting. (Mirrors FlashMode enum in camera.dart)
+  // Labels respect java convention to avoid conflict with reserved word or any variable name
+  private final int CAMERA_FLASH_MODE_OFF = 0;
+  private final int CAMERA_FLASH_MODE_ALWAYS_FLASH = 1;
+  private final int CAMERA_FLASH_MODE_AUTO_FLASH = 2;
+  private final int CAMERA_FLASH_MODE_TORCH = 3;
+
+  // Auto Focus setting. (Mirrors AutoFocusMode in camera.dart)
+  // Labels respect java convention to avoid conflict with reserved word or any variable name
+  private final int CAMERA_AUTO_FOCUS_MODE_OFF = 0;
+  private final int CAMERA_AUTO_FOCUS_MODE_AUTO = 1;
+  private final int CAMERA_AUTO_FOCUS_MODE_CONTINUOUS = 2;
+  private final int CAMERA_AUTO_FOCUS_MODE_MACRO = 3;
+
   public Camera(
       final Activity activity,
       final FlutterView flutterView,
       final String cameraName,
       final String resolutionPreset,
       final boolean enableAudio,
-      final boolean enableFlash,
-      final boolean enableAutoExposure)
+      final int flashMode,
+      final int autoFocusMode)
       throws CameraAccessException {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
@@ -88,8 +102,8 @@ public class Camera {
 
     this.cameraName = cameraName;
     this.enableAudio = enableAudio;
-    this.enableFlash = enableFlash;
-    this.enableAutoExposure = enableAutoExposure;
+    this.flashMode = flashMode;
+    this.autoFocusMode = autoFocusMode;
     this.flutterTexture = flutterView.createSurfaceTexture();
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     orientationEventListener =
@@ -268,6 +282,9 @@ public class Camera {
           cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
       captureBuilder.addTarget(pictureImageReader.getSurface());
       captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
+      // Request initial Flash and Auto-Exposure
+      setFlashModeRequest(captureBuilder, flashMode);
+      setAutoFocusModeRequest(captureBuilder, autoFocusMode);
 
       cameraCaptureSession.capture(
           captureBuilder.build(),
@@ -325,18 +342,6 @@ public class Camera {
       }
     }
 
-    // Request initial Flash mode
-    captureRequestBuilder.set(
-        CaptureRequest.FLASH_MODE,
-        enableFlash ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
-
-    // Request initial Auto Exposure mode
-    captureRequestBuilder.set(
-        CaptureRequest.CONTROL_AE_MODE,
-        enableAutoExposure
-            ? CaptureRequest.CONTROL_AE_MODE_ON
-            : CaptureRequest.CONTROL_AE_MODE_OFF);
-
     // Prepare the callback
     CameraCaptureSession.StateCallback callback =
         new CameraCaptureSession.StateCallback() {
@@ -350,6 +355,10 @@ public class Camera {
               cameraCaptureSession = session;
               captureRequestBuilder.set(
                   CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+
+              // Request initial Flash and Auto-Exposure
+              setFlashModeRequest(captureRequestBuilder, flashMode);
+              setAutoFocusModeRequest(captureRequestBuilder, autoFocusMode);
 
               cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               if (onSuccessCallback != null) {
@@ -494,42 +503,107 @@ public class Camera {
         null);
   }
 
-  public void setFlashMode(@NonNull final Result result, boolean enable) {
-    setFlashMode(result, enable, 1.0);
-  }
-
-  public void setFlashMode(@NonNull final Result result, boolean enable, double level) {
+  public void setFlash(@NonNull final Result result, int mode) {
     try {
-      // Request Flash mode
-      captureRequestBuilder.set(
-          CaptureRequest.FLASH_MODE,
-          enable ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+      // Force turning off the torch to avoid keeping the
+      // light on when another flash mode is selected
+      if (mode != CAMERA_FLASH_MODE_TORCH && flashMode == CAMERA_FLASH_MODE_TORCH) {
+        setFlashModeRequest(captureRequestBuilder, CAMERA_FLASH_MODE_OFF);
+        setAutoFocusModeRequest(captureRequestBuilder, autoFocusMode);
+        CaptureRequest request = captureRequestBuilder.build();
+        cameraCaptureSession.setRepeatingRequest(request, null, null);
+      }
 
-      // Request Auto Exposure mode as recommended when you switch the Flash
-      // more information:
-      // https://developer.android.com/reference/android/hardware/camera2/CaptureRequest.html#FLASH_MODE
-      captureRequestBuilder.set(
-          CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
-          CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+      // Keep the new mode
+      flashMode = mode;
 
-      cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+      // Rebuild Capture Session immediatly only if Torch Mode is requested or when turned off
+      if (flashMode == CAMERA_FLASH_MODE_TORCH || flashMode == CAMERA_FLASH_MODE_OFF) {
+        // Rebuild Capture Session with flash and focus settings
+        setFlashModeRequest(captureRequestBuilder, flashMode);
+        setAutoFocusModeRequest(captureRequestBuilder, autoFocusMode);
+        CaptureRequest request = captureRequestBuilder.build();
+        cameraCaptureSession.setRepeatingRequest(request, null, null);
+      }
+
       result.success(null);
     } catch (Exception e) {
       result.error("cameraFlashFailed", e.getMessage(), null);
     }
   }
 
-  public void setAutoExposureMode(@NonNull final Result result, boolean enable) {
-    try {
-      // Request Auto Exposure mode
-      captureRequestBuilder.set(
-          CaptureRequest.CONTROL_AE_MODE,
-          enable ? CaptureRequest.CONTROL_AE_MODE_ON : CaptureRequest.CONTROL_AE_MODE_OFF);
+  private void setFlashModeRequest(CaptureRequest.Builder builderRequest, int mode) {
+    // Request Flash mode and set the tightly coupled auto Exposure mode
+    int flashRequestMode;
+    int autoExposureRequestMode;
+    switch (mode) {
+      case CAMERA_FLASH_MODE_ALWAYS_FLASH:
+        flashRequestMode = CameraMetadata.FLASH_MODE_SINGLE;
+        autoExposureRequestMode = CameraMetadata.CONTROL_AE_MODE_ON;
+        break;
+      case CAMERA_FLASH_MODE_AUTO_FLASH:
+        flashRequestMode = CameraMetadata.FLASH_MODE_SINGLE;
+        autoExposureRequestMode = CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH_REDEYE;
+        break;
+      case CAMERA_FLASH_MODE_TORCH:
+        flashRequestMode = CameraMetadata.FLASH_MODE_TORCH;
+        autoExposureRequestMode = CameraMetadata.CONTROL_AE_MODE_ON;
+        break;
+      default:
+        flashRequestMode = CameraMetadata.FLASH_MODE_OFF;
+        autoExposureRequestMode = CameraMetadata.CONTROL_AE_MODE_ON;
+    }
 
-      cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+    builderRequest.set(CaptureRequest.FLASH_MODE, flashRequestMode);
+    builderRequest.set(CaptureRequest.CONTROL_AE_MODE, autoExposureRequestMode);
+
+    // Request Auto Exposure mode as recommended when you switch the Flash
+    // more information:
+    // https://developer.android.com/reference/android/hardware/camera2/CaptureRequest.html#FLASH_MODE
+    builderRequest.set(
+        CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+        CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+  }
+
+  public void setAutoFocus(@NonNull final Result result, int mode) {
+    try {
+      // Keep the mode
+      autoFocusMode = mode;
+
+      // Rebuild Capture Session with flash and focus settings
+      setFlashModeRequest(captureRequestBuilder, flashMode);
+      setAutoFocusModeRequest(captureRequestBuilder, autoFocusMode);
+      CaptureRequest request = captureRequestBuilder.build();
+      cameraCaptureSession.setRepeatingRequest(request, null, null);
+
       result.success(null);
     } catch (Exception e) {
-      result.error("cameraAutoExposureFailed", e.getMessage(), null);
+      result.error("cameraAutoFocusFailed", e.getMessage(), null);
+    }
+  }
+
+  private void setAutoFocusModeRequest(CaptureRequest.Builder builderRequest, int mode) {
+    // Request Auto Focus Mode
+    int autoFocusRequestMode;
+    switch (mode) {
+      case CAMERA_AUTO_FOCUS_MODE_OFF:
+        autoFocusRequestMode = CameraMetadata.CONTROL_AF_MODE_AUTO;
+        break;
+      case CAMERA_AUTO_FOCUS_MODE_CONTINUOUS:
+        autoFocusRequestMode = CameraMetadata.CONTROL_AF_MODE_CONTINUOUS_VIDEO;
+        break;
+      case CAMERA_AUTO_FOCUS_MODE_MACRO:
+        autoFocusRequestMode = CameraMetadata.CONTROL_AF_MODE_MACRO;
+        break;
+      default:
+        autoFocusRequestMode = CameraMetadata.CONTROL_AF_MODE_AUTO;
+    }
+
+    builderRequest.set(CaptureRequest.CONTROL_AF_MODE, autoFocusRequestMode);
+
+    if (mode != CAMERA_AUTO_FOCUS_MODE_OFF) {
+      builderRequest.set(
+          CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
     }
   }
 
