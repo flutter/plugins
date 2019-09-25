@@ -1,3 +1,7 @@
+## 0.6.2
+
+* Update and migrate iOS example project.
+
 ## 0.6.1+4
 
 * Android: Fix a regression where the `retrieveLostImage` does not work anymore.
