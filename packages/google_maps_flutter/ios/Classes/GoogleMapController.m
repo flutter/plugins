@@ -229,6 +229,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isMyLocationButtonEnabled"]) {
     NSNumber* isMyLocationButtonEnabled = @(_mapView.settings.myLocationButton);
     result(isMyLocationButtonEnabled);
+  } else if ([call.method isEqualToString:@"map#isTrafficEnabled"]) {
+    NSNumber* isTrafficEnabled = @(_mapView.trafficEnabled);
+    result(isTrafficEnabled);
   } else if ([call.method isEqualToString:@"map#setStyle"]) {
     NSString* mapStyle = [call arguments];
     NSString* error = [self setMapStyle:mapStyle];
@@ -286,6 +289,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   _mapView.indoorEnabled = enabled;
 }
 
+- (void)setTrafficEnabled:(BOOL)enabled {
+  _mapView.trafficEnabled = enabled;
+}
+
 - (void)setMapType:(GMSMapViewType)mapType {
   _mapView.mapType = mapType;
 }
@@ -320,7 +327,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)setMyLocationEnabled:(BOOL)enabled {
   _mapView.myLocationEnabled = enabled;
-  _mapView.settings.myLocationButton = enabled;
 }
 
 - (void)setMyLocationButtonEnabled:(BOOL)enabled {
@@ -371,6 +377,11 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 - (BOOL)mapView:(GMSMapView*)mapView didTapMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
   return [_markersController onMarkerTap:markerId];
+}
+
+- (void)mapView:(GMSMapView*)mapView didEndDraggingMarker:(GMSMarker*)marker {
+  NSString* markerId = marker.userData[0];
+  [_markersController onMarkerDragEnd:markerId coordinate:marker.position];
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {
@@ -503,6 +514,10 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   id indoorEnabled = data[@"indoorEnabled"];
   if (indoorEnabled) {
     [sink setIndoorEnabled:ToBool(indoorEnabled)];
+  }
+  id trafficEnabled = data[@"trafficEnabled"];
+  if (trafficEnabled) {
+    [sink setTrafficEnabled:ToBool(trafficEnabled)];
   }
   id mapType = data[@"mapType"];
   if (mapType) {

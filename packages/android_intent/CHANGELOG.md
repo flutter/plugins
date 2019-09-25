@@ -1,6 +1,10 @@
+## 0.3.3+1
+
+* Added "action_application_details_settings" action to open application info settings . 
+
 ## 0.3.3
 
-* Added support for [setType](https://developer.android.com/reference/android/content/Intent.html#setType(java.lang.String)) and [setDataAndType](https://developer.android.com/reference/android/content/Intent.html#setDataAndType(android.net.Uri,%20java.lang.String)) parameters. 
+* Added "flags" option to call intent.addFlags(int) in native. 
 
 ## 0.3.2
 

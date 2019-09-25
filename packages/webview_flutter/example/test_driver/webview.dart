@@ -222,6 +222,94 @@ void main() {
     await resizeCompleter.future;
   });
 
+  test('set custom userAgent', () async {
+    final Completer<WebViewController> controllerCompleter1 =
+        Completer<WebViewController>();
+    final GlobalKey _globalKey = GlobalKey();
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: _globalKey,
+          initialUrl: 'https://flutter.dev/',
+          javascriptMode: JavascriptMode.unrestricted,
+          userAgent: 'Custom_User_Agent1',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter1.complete(controller);
+          },
+        ),
+      ),
+    );
+    final WebViewController controller1 = await controllerCompleter1.future;
+    final String customUserAgent1 = await _getUserAgent(controller1);
+    expect(customUserAgent1, 'Custom_User_Agent1');
+    // rebuild the WebView with a different user agent.
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: _globalKey,
+          initialUrl: 'https://flutter.dev/',
+          javascriptMode: JavascriptMode.unrestricted,
+          userAgent: 'Custom_User_Agent2',
+        ),
+      ),
+    );
+
+    final String customUserAgent2 = await _getUserAgent(controller1);
+    expect(customUserAgent2, 'Custom_User_Agent2');
+  });
+
+  test('use default platform userAgent after webView is rebuilt', () async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    final GlobalKey _globalKey = GlobalKey();
+    // Build the webView with no user agent to get the default platform user agent.
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: _globalKey,
+          initialUrl: 'https://flutter.dev/',
+          javascriptMode: JavascriptMode.unrestricted,
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    final String defaultPlatformUserAgent = await _getUserAgent(controller);
+    // rebuild the WebView with a custom user agent.
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: _globalKey,
+          initialUrl: 'https://flutter.dev/',
+          javascriptMode: JavascriptMode.unrestricted,
+          userAgent: 'Custom_User_Agent',
+        ),
+      ),
+    );
+    final String customUserAgent = await _getUserAgent(controller);
+    expect(customUserAgent, 'Custom_User_Agent');
+    // rebuilds the WebView with no user agent.
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: _globalKey,
+          initialUrl: 'https://flutter.dev/',
+          javascriptMode: JavascriptMode.unrestricted,
+        ),
+      ),
+    );
+
+    final String customUserAgent2 = await _getUserAgent(controller);
+    expect(customUserAgent2, defaultPlatformUserAgent);
+  });
+
   group('Media playback policy', () {
     String audioTestBase64;
     setUpAll(() async {
@@ -369,6 +457,43 @@ void main() {
       expect(isPaused, _webviewBool(false));
     });
   });
+
+  test('getTitle', () async {
+    final String getTitleTest = '''
+        <!DOCTYPE html><html>
+        <head><title>Some title</title>
+        </head>
+        <body>
+        </body>
+        </html>
+      ''';
+    final String getTitleTestBase64 =
+        base64Encode(const Utf8Encoder().convert(getTitleTest));
+    final Completer<void> pageLoaded = Completer<void>();
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          initialUrl: 'data:text/html;charset=utf-8;base64,$getTitleTestBase64',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          onPageFinished: (String url) {
+            pageLoaded.complete(null);
+          },
+        ),
+      ),
+    );
+
+    final WebViewController controller = await controllerCompleter.future;
+    await pageLoaded.future;
+
+    final String title = await controller.getTitle();
+    expect(title, 'Some title');
+  });
 }
 
 Future<void> pumpWidget(Widget widget) {
@@ -383,4 +508,13 @@ String _webviewBool(bool value) {
     return value ? '1' : '0';
   }
   return value ? 'true' : 'false';
+}
+
+/// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
+Future<String> _getUserAgent(WebViewController controller) async {
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    return await controller.evaluateJavascript('navigator.userAgent;');
+  }
+  return jsonDecode(
+      await controller.evaluateJavascript('navigator.userAgent;'));
 }

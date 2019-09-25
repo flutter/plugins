@@ -157,14 +157,17 @@ class CameraValue {
     this.isRecordingVideo,
     this.isTakingPicture,
     this.isStreamingImages,
-  });
+    bool isRecordingPaused,
+  }) : _isRecordingPaused = isRecordingPaused;
 
   const CameraValue.uninitialized()
       : this(
-            isInitialized: false,
-            isRecordingVideo: false,
-            isTakingPicture: false,
-            isStreamingImages: false);
+          isInitialized: false,
+          isRecordingVideo: false,
+          isTakingPicture: false,
+          isStreamingImages: false,
+          isRecordingPaused: false,
+        );
 
   /// True after [CameraController.initialize] has completed successfully.
   final bool isInitialized;
@@ -177,6 +180,11 @@ class CameraValue {
 
   /// True when images from the camera are being streamed.
   final bool isStreamingImages;
+
+  final bool _isRecordingPaused;
+
+  /// True when camera [isRecordingVideo] and recording is paused.
+  bool get isRecordingPaused => isRecordingVideo && _isRecordingPaused;
 
   final String errorDescription;
 
@@ -199,6 +207,7 @@ class CameraValue {
     bool isStreamingImages,
     String errorDescription,
     Size previewSize,
+    bool isRecordingPaused,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -207,6 +216,7 @@ class CameraValue {
       isRecordingVideo: isRecordingVideo ?? this.isRecordingVideo,
       isTakingPicture: isTakingPicture ?? this.isTakingPicture,
       isStreamingImages: isStreamingImages ?? this.isStreamingImages,
+      isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
     );
   }
 
@@ -473,7 +483,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         'startVideoRecording',
         <String, dynamic>{'textureId': _textureId, 'filePath': filePath},
       );
-      value = value.copyWith(isRecordingVideo: true);
+      value = value.copyWith(isRecordingVideo: true, isRecordingPaused: false);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -497,6 +507,60 @@ class CameraController extends ValueNotifier<CameraValue> {
       value = value.copyWith(isRecordingVideo: false);
       await _channel.invokeMethod<void>(
         'stopVideoRecording',
+        <String, dynamic>{'textureId': _textureId},
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Pause video recording.
+  ///
+  /// This feature is only available on iOS and Android sdk 24+.
+  Future<void> pauseVideoRecording() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'pauseVideoRecording was called on uninitialized CameraController',
+      );
+    }
+    if (!value.isRecordingVideo) {
+      throw CameraException(
+        'No video is recording',
+        'pauseVideoRecording was called when no video is recording.',
+      );
+    }
+    try {
+      value = value.copyWith(isRecordingPaused: true);
+      await _channel.invokeMethod<void>(
+        'pauseVideoRecording',
+        <String, dynamic>{'textureId': _textureId},
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Resume video recording after pausing.
+  ///
+  /// This feature is only available on iOS and Android sdk 24+.
+  Future<void> resumeVideoRecording() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'resumeVideoRecording was called on uninitialized CameraController',
+      );
+    }
+    if (!value.isRecordingVideo) {
+      throw CameraException(
+        'No video is recording',
+        'resumeVideoRecording was called when no video is recording.',
+      );
+    }
+    try {
+      value = value.copyWith(isRecordingPaused: false);
+      await _channel.invokeMethod<void>(
+        'resumeVideoRecording',
         <String, dynamic>{'textureId': _textureId},
       );
     } on PlatformException catch (e) {

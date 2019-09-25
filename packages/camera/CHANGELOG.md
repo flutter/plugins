@@ -1,3 +1,15 @@
+## 0.5.4+2
+
+* Fix Android NullPointerException on devices with only front-facing camera.
+
+## 0.5.4+1
+
+* Fix Android pause and resume video crash when executing in APIs below 24.
+
+## 0.5.4
+
+* Add feature to pause and resume video recording.
+
 ## 0.5.3+1
 
 * Fix too large request code for FragmentActivity users.

@@ -160,6 +160,7 @@ class Marker {
     this.visible = true,
     this.zIndex = 0.0,
     this.onTap,
+    this.onDragEnd,
   }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
 
   /// Uniquely identifies a [Marker].
@@ -216,6 +217,8 @@ class Marker {
   /// Callbacks to receive tap events for markers placed on this map.
   final VoidCallback onTap;
 
+  final ValueChanged<LatLng> onDragEnd;
+
   /// Creates a new [Marker] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Marker copyWith({
@@ -231,6 +234,7 @@ class Marker {
     bool visibleParam,
     double zIndexParam,
     VoidCallback onTapParam,
+    ValueChanged<LatLng> onDragEndParam,
   }) {
     return Marker(
       markerId: markerId,
@@ -246,6 +250,7 @@ class Marker {
       visible: visibleParam ?? visible,
       zIndex: zIndexParam ?? zIndex,
       onTap: onTapParam ?? onTap,
+      onDragEnd: onDragEndParam ?? onDragEnd,
     );
   }
 
@@ -278,7 +283,19 @@ class Marker {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Marker typedOther = other;
-    return markerId == typedOther.markerId;
+    return markerId == typedOther.markerId &&
+        alpha == typedOther.alpha &&
+        anchor == typedOther.anchor &&
+        consumeTapEvents == typedOther.consumeTapEvents &&
+        draggable == typedOther.draggable &&
+        flat == typedOther.flat &&
+        icon == typedOther.icon &&
+        infoWindow == typedOther.infoWindow &&
+        position == typedOther.position &&
+        rotation == typedOther.rotation &&
+        visible == typedOther.visible &&
+        zIndex == typedOther.zIndex &&
+        onTap == typedOther.onTap;
   }
 
   @override
