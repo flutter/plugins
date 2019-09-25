@@ -1,3 +1,7 @@
+## 0.5.21+5
+
+* Update and migrate iOS example project.
+
 ## 0.5.21+4
 
 * Support projection methods to translate between screen and latlng coordinates.
