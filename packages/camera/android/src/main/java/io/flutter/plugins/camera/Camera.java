@@ -517,14 +517,11 @@ public class Camera {
       // Keep the new mode
       flashMode = mode;
 
-      // Rebuild Capture Session immediatly only if Torch Mode is requested or when turned off
-      if (flashMode == CAMERA_FLASH_MODE_TORCH || flashMode == CAMERA_FLASH_MODE_OFF) {
-        // Rebuild Capture Session with flash and focus settings
-        setFlashModeRequest(captureRequestBuilder, flashMode);
-        setAutoFocusModeRequest(captureRequestBuilder, autoFocusMode);
-        CaptureRequest request = captureRequestBuilder.build();
-        cameraCaptureSession.setRepeatingRequest(request, null, null);
-      }
+      // Rebuild Capture Session with flash and focus settings
+      setFlashModeRequest(captureRequestBuilder, flashMode);
+      setAutoFocusModeRequest(captureRequestBuilder, autoFocusMode);
+      CaptureRequest request = captureRequestBuilder.build();
+      cameraCaptureSession.setRepeatingRequest(request, null, null);
 
       result.success(null);
     } catch (Exception e) {
@@ -538,12 +535,12 @@ public class Camera {
     int autoExposureRequestMode;
     switch (mode) {
       case CAMERA_FLASH_MODE_ALWAYS_FLASH:
-        flashRequestMode = CameraMetadata.FLASH_MODE_SINGLE;
-        autoExposureRequestMode = CameraMetadata.CONTROL_AE_MODE_ON;
+        flashRequestMode = CameraMetadata.FLASH_MODE_OFF;
+        autoExposureRequestMode = CameraMetadata.CONTROL_AE_MODE_ON_ALWAYS_FLASH;
         break;
       case CAMERA_FLASH_MODE_AUTO_FLASH:
-        flashRequestMode = CameraMetadata.FLASH_MODE_SINGLE;
-        autoExposureRequestMode = CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH_REDEYE;
+        flashRequestMode = CameraMetadata.FLASH_MODE_OFF;
+        autoExposureRequestMode = CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH;
         break;
       case CAMERA_FLASH_MODE_TORCH:
         flashRequestMode = CameraMetadata.FLASH_MODE_TORCH;
