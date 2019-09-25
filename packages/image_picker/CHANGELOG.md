@@ -1,6 +1,6 @@
 ## 0.6.1+5
 
-* Fix aspect ratio inversion on portrait pictures.
+* Fix aspect ratio inversion on images that was rotated side ways(Left, Right, etc.).
 
 ## 0.6.1+4
 
