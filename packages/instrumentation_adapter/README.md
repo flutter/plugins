@@ -67,6 +67,14 @@ dependencies {
 }
 ```
 
+And put the following lines in `android/gradle.properties` to solve AndroidX
+incompatibilities.
+
+```
+android.useAndroidX=true
+android.enableJetifier=true
+```
+
 Use gradle commands to build an instrumentation test for Android.
 
 ```
@@ -93,11 +101,11 @@ gcloud firebase test android run --type instrumentation \
 ## Flutter driver support
 
 `InstrumentationAdapterFlutterBinding` also reports test results to `FlutterDriver`
-when run on the command line via `flutter drive`. 
+when run on the command line via `flutter drive`.
 
 ```dart
   final FlutterDriver driver = await FlutterDriver.connect();
   final String result = await driver.requestData(null, timeout: const Duration(minutes: 1));
   driver.close();
   exit(result == 'pass' ? 0 : 1);
-```  
+```
