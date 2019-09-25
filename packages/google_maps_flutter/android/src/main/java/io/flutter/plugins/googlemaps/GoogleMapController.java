@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -223,6 +224,32 @@ final class GoogleMapController
                 "GoogleMap uninitialized",
                 "getVisibleRegion called prior to map initialization",
                 null);
+          }
+          break;
+        }
+      case "map#getScreenCoordinate":
+        {
+          if (googleMap != null) {
+            LatLng latLng = Convert.toLatLng(call.arguments);
+            Point screenLocation = googleMap.getProjection().toScreenLocation(latLng);
+            result.success(Convert.pointToJson(screenLocation));
+          } else {
+            result.error(
+                "GoogleMap uninitialized",
+                "getScreenCoordinate called prior to map initialization",
+                null);
+          }
+          break;
+        }
+      case "map#getLatLng":
+        {
+          if (googleMap != null) {
+            Point point = Convert.toPoint(call.arguments);
+            LatLng latLng = googleMap.getProjection().fromScreenLocation(point);
+            result.success(Convert.latLngToJson(latLng));
+          } else {
+            result.error(
+                "GoogleMap uninitialized", "getLatLng called prior to map initialization", null);
           }
           break;
         }
