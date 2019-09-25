@@ -49,6 +49,7 @@ class AndroidIntent {
     this.arguments,
     this.package,
     this.componentName,
+    this.type,
   })  : _channel = channel,
         _platform = platform;
 
