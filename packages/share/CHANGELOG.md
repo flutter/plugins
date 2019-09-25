@@ -1,4 +1,4 @@
-## 0.6.3
+## 0.6.2+2
 
 * Update and migrate iOS example project.
 
