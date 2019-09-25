@@ -8,6 +8,7 @@ import android.hardware.camera2.CameraAccessException;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +50,18 @@ import io.flutter.plugin.common.MethodChannel;
       switch (call.method) {
         case "availableCameras":
           try {
-            List<Map<String, Object>> serializedCameras = cameraSystem.getAvailableCameras();
-            result.success(serializedCameras);
+            List<CameraDetails> allCameraDetails = cameraSystem.getAvailableCameras();
+
+            List<Map<String, Object>> allCameraDetailsSerialized = new ArrayList<>();
+            for (CameraDetails cameraDetails : allCameraDetails) {
+              Map<String, Object> serializedDetails = new HashMap<>();
+              serializedDetails.put("name", cameraDetails.getName());
+              serializedDetails.put("sensorOrientation", cameraDetails.getSensorOrientation());
+              serializedDetails.put("lensDirection", cameraDetails.getLensDirection());
+              allCameraDetailsSerialized.add(serializedDetails);
+            }
+
+            result.success(allCameraDetailsSerialized);
           } catch (Exception e) {
             handleException(e, result);
           }

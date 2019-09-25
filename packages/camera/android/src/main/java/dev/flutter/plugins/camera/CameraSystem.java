@@ -9,10 +9,9 @@ import android.hardware.camera2.CameraAccessException;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.Map;
 
 /* package */ interface CameraSystem {
-  List<Map<String, Object>> getAvailableCameras() throws CameraAccessException;
+  List<CameraDetails> getAvailableCameras() throws CameraAccessException;
 
   void initialize(
       @NonNull CameraConfigurationRequest request,
@@ -99,6 +98,26 @@ import java.util.Map;
 
     public boolean getEnableAudio() {
       return enableAudio;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      CameraConfigurationRequest that = (CameraConfigurationRequest) o;
+
+      if (enableAudio != that.enableAudio) return false;
+      if (!cameraName.equals(that.cameraName)) return false;
+      return resolutionPreset.equals(that.resolutionPreset);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = cameraName.hashCode();
+      result = 31 * result + resolutionPreset.hashCode();
+      result = 31 * result + (enableAudio ? 1 : 0);
+      return result;
     }
   }
 }

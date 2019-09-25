@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +47,17 @@ import io.flutter.view.TextureRegistry;
   }
 
   @Override
-  public List<Map<String, Object>> getAvailableCameras() throws CameraAccessException {
-    return CameraUtils.getAvailableCameras(activityBinding.getActivity());
+  public List<CameraDetails> getAvailableCameras() throws CameraAccessException {
+    List<Map<String, Object>> allCameraDetailsSerialized = CameraUtils.getAvailableCameras(activityBinding.getActivity());
+    List<CameraDetails> allCameraDetails = new ArrayList<>();
+    for (Map<String, Object> serializedDetails : allCameraDetailsSerialized) {
+      allCameraDetails.add(new CameraDetails(
+          (String) serializedDetails.get("name"),
+          (Integer) serializedDetails.get("screenOrientation"),
+          (String) serializedDetails.get("lensDirection")
+      ));
+    }
+    return allCameraDetails;
   }
 
   @Override
