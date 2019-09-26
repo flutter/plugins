@@ -10,6 +10,9 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
+/**
+ * Top-level facade for all Camera plugin behavior.
+ */
 /* package */ interface CameraSystem {
   List<CameraDetails> getAvailableCameras() throws CameraAccessException;
 

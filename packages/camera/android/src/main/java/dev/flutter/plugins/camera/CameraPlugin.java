@@ -73,25 +73,31 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware {
         "plugins.flutter.io/camera/imageStream"
     );
     CameraPreviewDisplay cameraImageStream = new CameraPluginProtocol.ChannelCameraPreviewDisplay(imageStreamChannel);
+    CameraPluginProtocol.CameraEventChannelFactory cameraChannelFactory = new CameraPluginProtocol.CameraEventChannelFactory() {
+      @NonNull
+      @Override
+      public EventChannel createCameraEventChannel(long textureId) {
+        return new EventChannel(
+            pluginBinding.getFlutterEngine().getDartExecutor(),
+            "flutter.io/cameraPlugin/cameraEvents" + textureId
+        );
+      }
+    };
     CameraSystem cameraSystem = new AndroidCameraSystem(
         pluginBinding,
         activityBinding,
         cameraPermissions,
-        cameraImageStream
+        cameraImageStream,
+        cameraChannelFactory
     );
     this.cameraPluginProtocol = new CameraPluginProtocol(cameraSystem);
 
-    final MethodChannel channel = new MethodChannel(
+    final MethodChannel primaryPluginChannel = new MethodChannel(
         pluginBinding.getFlutterEngine().getDartExecutor(),
         "plugins.flutter.io/camera"
     );
-    channel.setMethodCallHandler(cameraPluginProtocol.getCameraSystemChannelHandler());
+    primaryPluginChannel.setMethodCallHandler(cameraPluginProtocol.getCameraSystemChannelHandler());
   }
-
-  // TODO: there are 2+ channels
-  // 1:EventChannel   - plugins.flutter.io/camera/imageStream
-  // 1:MethodChannel  - plugins.flutter.io/camera
-  // 0+:EventChannel  - flutter.io/cameraPlugin/cameraEvents[textureId]
 
   private void teardown() {
     // Teardown

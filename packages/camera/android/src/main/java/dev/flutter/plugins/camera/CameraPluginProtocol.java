@@ -8,12 +8,14 @@ import android.hardware.camera2.CameraAccessException;
 import android.media.Image;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
@@ -286,6 +288,11 @@ import io.flutter.plugin.common.MethodChannel;
     }
   }
 
+  interface CameraEventChannelFactory {
+    @NonNull
+    EventChannel createCameraEventChannel(long textureId);
+  }
+
   /**
    * Implementation of a {@link CameraPreviewDisplay} that uses an {@link EventChannel}
    * to send camera preview images to Flutter.
@@ -350,6 +357,47 @@ import io.flutter.plugin.common.MethodChannel;
       imageBuffer.put("planes", planes);
 
       imageStreamSink.success(imageBuffer);
+    }
+  }
+
+  /* package */ static class ChannelCameraEventHandler implements Camera.CameraEventHandler {
+    private final List<Map<String, String>> queuedEvents = new CopyOnWriteArrayList<>();
+    private EventChannel.EventSink eventSink;
+
+    /* package */ ChannelCameraEventHandler() {}
+
+    public void setEventSink(@Nullable EventChannel.EventSink eventSink) {
+      this.eventSink = eventSink;
+
+      // Send all queue'd events.
+      if (!queuedEvents.isEmpty()) {
+        while (!queuedEvents.isEmpty()) {
+          eventSink.success(queuedEvents.remove(0));
+        }
+      }
+    }
+
+    @Override
+    public void onError(String description) {
+      Map<String, String> event = new HashMap<>();
+      event.put("eventType", "error");
+      event.put("errorDescription", description);
+      sendEvent(event);
+    }
+
+    @Override
+    public void onCameraClosed() {
+      Map<String, String> event = new HashMap<>();
+      event.put("eventType", "camera_closing");
+      sendEvent(event);
+    }
+
+    private void sendEvent(@NonNull Map<String, String> event) {
+      if (eventSink != null) {
+        eventSink.success(event);
+      } else {
+        queuedEvents.add(event);
+      }
     }
   }
 }

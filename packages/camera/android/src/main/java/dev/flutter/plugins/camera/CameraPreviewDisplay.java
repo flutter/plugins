@@ -6,6 +6,10 @@ package dev.flutter.plugins.camera;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Displays a camera preview by streaming {@link Image}s from an Android
+ * camera by way of a given {@link ImageStreamConnection}.
+ */
 public interface CameraPreviewDisplay {
   void startStreaming(@NonNull final ImageStreamConnection connection);
 

@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +21,9 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.view.TextureRegistry;
 
+/**
+ * Android implementation of a {@link CameraSystem}.
+ */
 /* package */ class AndroidCameraSystem implements CameraSystem {
   @NonNull
   private final FlutterPlugin.FlutterPluginBinding pluginBinding;
@@ -31,6 +33,8 @@ import io.flutter.view.TextureRegistry;
   private final CameraPermissions cameraPermissions;
   @NonNull
   private final CameraPreviewDisplay cameraPreviewDisplay;
+  @NonNull
+  private final CameraPluginProtocol.CameraEventChannelFactory cameraEventChannelFactory;
   @Nullable
   private Camera camera;
 
@@ -38,12 +42,14 @@ import io.flutter.view.TextureRegistry;
       @NonNull FlutterPlugin.FlutterPluginBinding pluginBinding,
       @NonNull ActivityPluginBinding activityBinding,
       @NonNull CameraPermissions cameraPermissions,
-      @NonNull CameraPreviewDisplay cameraPreviewDisplay
-  ) {
+      @NonNull CameraPreviewDisplay cameraPreviewDisplay,
+      @NonNull CameraPluginProtocol.CameraEventChannelFactory cameraEventChannelFactory
+      ) {
     this.pluginBinding = pluginBinding;
     this.activityBinding = activityBinding;
     this.cameraPermissions = cameraPermissions;
     this.cameraPreviewDisplay = cameraPreviewDisplay;
+    this.cameraEventChannelFactory = cameraEventChannelFactory;
   }
 
   @Override
@@ -118,36 +124,19 @@ import io.flutter.view.TextureRegistry;
       }
     });
 
-    EventChannel cameraEventChannel = new EventChannel(
-        pluginBinding.getFlutterEngine().getDartExecutor(),
-        "flutter.io/cameraPlugin/cameraEvents" + textureEntry.id()
-    );
+    final CameraPluginProtocol.ChannelCameraEventHandler eventHandler = new CameraPluginProtocol.ChannelCameraEventHandler();
+    camera.setCameraEventHandler(eventHandler);
+
+    EventChannel cameraEventChannel = cameraEventChannelFactory.createCameraEventChannel(textureEntry.id());
     cameraEventChannel.setStreamHandler(new EventChannel.StreamHandler() {
       @Override
       public void onListen(Object o, final EventChannel.EventSink eventSink) {
-        final Camera.CameraEventHandler cameraEventHandler = new Camera.CameraEventHandler() {
-          @Override
-          public void onError(String description) {
-            Map<String, String> event = new HashMap<>();
-            event.put("eventType", "error");
-            event.put("errorDescription", description);
-            eventSink.success(event);
-          }
-
-          @Override
-          public void onCameraClosed() {
-            Map<String, String> event = new HashMap<>();
-            event.put("eventType", "camera_closing");
-            eventSink.success(event);
-          }
-        };
-
-        camera.setCameraEventHandler(cameraEventHandler);
+        eventHandler.setEventSink(eventSink);
       }
 
       @Override
       public void onCancel(Object o) {
-        camera.setCameraEventHandler(null);
+        eventHandler.setEventSink(null);
       }
     });
   }

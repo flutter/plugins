@@ -8,6 +8,9 @@ import android.media.Image;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Serializes and sends an {@link Image} to a destination through a stream.
+ */
 public interface CameraImageStream {
   void sendImage(@NonNull Image image);
 }
