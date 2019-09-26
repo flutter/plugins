@@ -126,6 +126,10 @@ import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
     previewSize = computeBestPreviewSize(cameraName, preset);
   }
 
+  public long getTextureId() {
+    return flutterTexture.id();
+  }
+
   public void setCameraEventHandler(@Nullable CameraEventHandler handler) {
     this.cameraEventHandler = handler;
   }

@@ -11,6 +11,8 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
 import android.util.Size;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,9 +43,8 @@ public final class CameraUtils {
         new CompareSizesByArea());
   }
 
-  public static List<Map<String, Object>> getAvailableCameras(Activity activity)
+  public static List<Map<String, Object>> getAvailableCameras(@NonNull CameraManager cameraManager)
       throws CameraAccessException {
-    CameraManager cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     String[] cameraNames = cameraManager.getCameraIdList();
     List<Map<String, Object>> cameras = new ArrayList<>();
     for (String cameraName : cameraNames) {

@@ -9,6 +9,7 @@ import android.media.Image;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -40,6 +41,8 @@ import io.flutter.plugin.common.MethodChannel;
 
   @NonNull
   private CameraSystem cameraSystem;
+  @Nullable
+  private MethodChannel primaryChannel;
   @NonNull
   private final CameraSystemChannelHandler channelHandler;
 
@@ -48,12 +51,25 @@ import io.flutter.plugin.common.MethodChannel;
     this.channelHandler = new CameraSystemChannelHandler(cameraSystem);
   }
 
+  public void connect(@NonNull MethodChannel channel) {
+    this.primaryChannel = channel;
+    this.primaryChannel.setMethodCallHandler(getCameraSystemChannelHandler());
+  }
+
+  public void disconnect() {
+    if (primaryChannel != null) {
+      primaryChannel.setMethodCallHandler(null);
+    }
+  }
+
   public void release() {
+    disconnect();
     cameraSystem.dispose();
   }
 
+  @VisibleForTesting
   @NonNull
-  public MethodChannel.MethodCallHandler getCameraSystemChannelHandler() {
+  /* package */ MethodChannel.MethodCallHandler getCameraSystemChannelHandler() {
     return channelHandler;
   }
 

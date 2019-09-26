@@ -7,41 +7,189 @@ package dev.flutter.plugins.camera;
 import android.hardware.camera2.CameraAccessException;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import java.io.IOException;
 import java.util.List;
+
+import io.flutter.plugin.common.EventChannel;
 
 /**
  * Top-level facade for all Camera plugin behavior.
  */
-/* package */ interface CameraSystem {
-  List<CameraDetails> getAvailableCameras() throws CameraAccessException;
+/* package */ class CameraSystem {
+  @NonNull
+  private final CameraPermissions cameraPermissions;
+  @NonNull
+  private final CameraHardware cameraHardware;
+  @NonNull
+  private final CameraPreviewDisplay cameraPreviewDisplay;
+  @NonNull
+  private final CameraPluginProtocol.CameraEventChannelFactory cameraEventChannelFactory;
+  @NonNull
+  private final CameraFactory cameraFactory;
+  @Nullable
+  private Camera camera;
 
-  void initialize(
+  /* package */ CameraSystem(
+      @NonNull CameraPermissions cameraPermissions,
+      @NonNull CameraHardware cameraHardware,
+      @NonNull CameraPreviewDisplay cameraPreviewDisplay,
+      @NonNull CameraPluginProtocol.CameraEventChannelFactory cameraEventChannelFactory,
+      @NonNull CameraFactory cameraFactory
+  ) {
+    this.cameraPermissions = cameraPermissions;
+    this.cameraHardware = cameraHardware;
+    this.cameraPreviewDisplay = cameraPreviewDisplay;
+    this.cameraEventChannelFactory = cameraEventChannelFactory;
+    this.cameraFactory = cameraFactory;
+  }
+
+  public List<CameraDetails> getAvailableCameras() throws CameraAccessException {
+    return cameraHardware.getAvailableCameras();
+  }
+
+  public void initialize(
       @NonNull CameraConfigurationRequest request,
       @NonNull OnCameraInitializationCallback callback
-  );
+  ) {
+    if (camera != null) {
+      camera.close();
+    }
 
-  void takePicture(
-      @NonNull String filePath,
-      @NonNull Camera.OnPictureTakenCallback callback
-  );
+    if (!cameraPermissions.hasCameraPermission() || (request.getEnableAudio() ))
 
-  void startVideoRecording(
-      @NonNull String filePath,
-      @NonNull OnStartVideoRecordingCallback callback
-  );
+      cameraPermissions.requestPermissions(
+          request.getEnableAudio(),
+          new CameraPermissions.ResultCallback() {
+            @Override
+            public void onSuccess() {
+              try {
+                openCamera(request, callback);
+              } catch (Exception error) {
+                callback.onError("CameraAccess", error.getMessage());
+              }
+            }
 
-  void stopVideoRecording(@NonNull OnVideoRecordingCommandCallback callback);
+            @Override
+            public void onResult(String errorCode, String errorDescription) {
+              callback.onCameraPermissionError(errorCode, errorDescription);
+            }
+          });
+  }
 
-  void pauseVideoRecording(@NonNull OnApiDependentVideoRecordingCommandCallback callback);
+  private void openCamera(
+      @NonNull CameraConfigurationRequest request,
+      @NonNull OnCameraInitializationCallback callback
+  ) throws CameraAccessException {
+    camera = cameraFactory.createCamera(
+        request.getCameraName(),
+        request.getResolutionPreset(),
+        request.getEnableAudio()
+    );
 
-  void resumeVideoRecording(@NonNull OnApiDependentVideoRecordingCommandCallback callback);
+    camera.open(new Camera.OnCameraOpenedCallback() {
+      @Override
+      public void onCameraOpened(long textureId, int previewWidth, int previewHeight) {
+        callback.onSuccess(textureId, previewWidth, previewHeight);
+      }
 
-  void startImageStream(@NonNull OnCameraAccessCommandCallback callback);
+      @Override
+      public void onCameraOpenFailed(@NonNull String message) {
+        callback.onError("CameraAccess", message);
+      }
+    });
 
-  void stopImageStream(@NonNull OnCameraAccessCommandCallback callback);
+    final CameraPluginProtocol.ChannelCameraEventHandler eventHandler = new CameraPluginProtocol.ChannelCameraEventHandler();
+    camera.setCameraEventHandler(eventHandler);
 
-  void dispose();
+    EventChannel cameraEventChannel = cameraEventChannelFactory.createCameraEventChannel(camera.getTextureId());
+    cameraEventChannel.setStreamHandler(new EventChannel.StreamHandler() {
+      @Override
+      public void onListen(Object o, final EventChannel.EventSink eventSink) {
+        eventHandler.setEventSink(eventSink);
+      }
+
+      @Override
+      public void onCancel(Object o) {
+        eventHandler.setEventSink(null);
+      }
+    });
+  }
+
+  public void takePicture(@NonNull String filePath, @NonNull Camera.OnPictureTakenCallback callback) {
+    // TODO(mattcarroll): determine desired behavior when no camera is active
+    camera.takePicture(filePath, callback);
+  }
+
+  public void startVideoRecording(@NonNull String filePath, @NonNull OnStartVideoRecordingCallback callback) {
+    // TODO(mattcarroll): determine desired behavior when no camera is active
+    try {
+      camera.startVideoRecording(filePath);
+    } catch (IllegalStateException e) {
+      callback.onFileAlreadyExists(filePath);
+    } catch (CameraAccessException | IOException e) {
+      callback.onVideoRecordingFailed(e.getMessage());
+    }
+  }
+
+  public void stopVideoRecording(@NonNull OnVideoRecordingCommandCallback callback) {
+    // TODO(mattcarroll): determine desired behavior when no camera is active
+    try {
+      camera.stopVideoRecording();
+      callback.success();
+    } catch (CameraAccessException | IllegalStateException e) {
+      callback.onVideoRecordingFailed(e.getMessage());
+    }
+  }
+
+  public void pauseVideoRecording(@NonNull OnApiDependentVideoRecordingCommandCallback callback) {
+    // TODO(mattcarroll): determine desired behavior when no camera is active
+    try {
+      camera.pauseVideoRecording();
+    } catch (UnsupportedOperationException e) {
+      callback.onUnsupportedOperation();
+    } catch (IllegalStateException e) {
+      callback.onVideoRecordingFailed(e.getMessage());
+    }
+  }
+
+  public void resumeVideoRecording(@NonNull OnApiDependentVideoRecordingCommandCallback callback) {
+    // TODO(mattcarroll): determine desired behavior when no camera is active
+    try {
+      camera.resumeVideoRecording();
+    } catch (UnsupportedOperationException e) {
+      callback.onUnsupportedOperation();
+    } catch (IllegalStateException e) {
+      callback.onVideoRecordingFailed(e.getMessage());
+    }
+  }
+
+  public void startImageStream(@NonNull OnCameraAccessCommandCallback callback) {
+    // TODO(mattcarroll): determine desired behavior when no camera is active
+    try {
+      camera.startPreviewWithImageStream(cameraPreviewDisplay);
+      callback.success();
+    } catch (CameraAccessException e) {
+      callback.onCameraAccessFailure(e.getMessage());
+    }
+  }
+
+  public void stopImageStream(@NonNull OnCameraAccessCommandCallback callback) {
+    // TODO(mattcarroll): determine desired behavior when no camera is active
+    try {
+      camera.startPreview();
+      callback.success();
+    } catch (CameraAccessException e) {
+      callback.onCameraAccessFailure(e.getMessage());
+    }
+  }
+
+  public void dispose() {
+    if (camera != null) {
+      camera.dispose();
+    }
+  }
 
   /* package */ interface OnCameraInitializationCallback {
     void onCameraPermissionError(@NonNull String errorCode, @NonNull String description);
@@ -71,7 +219,7 @@ import java.util.List;
     void onCameraAccessFailure(@NonNull String message);
   }
 
-  /* package */ class CameraConfigurationRequest {
+  /* package */ static class CameraConfigurationRequest {
     @NonNull
     private final String cameraName;
     @NonNull

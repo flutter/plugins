@@ -4,6 +4,8 @@
 
 package dev.flutter.plugins.camera;
 
+import android.content.Context;
+import android.hardware.camera2.CameraManager;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -67,12 +69,32 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware {
       return;
     }
 
+    CameraSystem cameraSystem = createCameraSystem();
+    this.cameraPluginProtocol = new CameraPluginProtocol(cameraSystem);
+    this.cameraPluginProtocol.connect(new MethodChannel(
+        pluginBinding.getFlutterEngine().getDartExecutor(),
+        "plugins.flutter.io/camera"
+    ));
+  }
+
+  /**
+   * Selects all concrete dependencies to construct a functional {@link CameraSystem} and
+   * then returns the assembled {@link CameraSystem}.
+   */
+  @NonNull
+  private CameraSystem createCameraSystem() {
     CameraPermissions cameraPermissions = new AndroidCameraPermissions(activityBinding);
+
+    CameraHardware cameraHardware = new AndroidCameraHardware(
+        (CameraManager) pluginBinding.getApplicationContext().getSystemService(Context.CAMERA_SERVICE)
+    );
+
     EventChannel imageStreamChannel = new EventChannel(
         pluginBinding.getFlutterEngine().getDartExecutor(),
         "plugins.flutter.io/camera/imageStream"
     );
     CameraPreviewDisplay cameraImageStream = new CameraPluginProtocol.ChannelCameraPreviewDisplay(imageStreamChannel);
+
     CameraPluginProtocol.CameraEventChannelFactory cameraChannelFactory = new CameraPluginProtocol.CameraEventChannelFactory() {
       @NonNull
       @Override
@@ -83,20 +105,19 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware {
         );
       }
     };
-    CameraSystem cameraSystem = new AndroidCameraSystem(
-        pluginBinding,
-        activityBinding,
-        cameraPermissions,
-        cameraImageStream,
-        cameraChannelFactory
-    );
-    this.cameraPluginProtocol = new CameraPluginProtocol(cameraSystem);
 
-    final MethodChannel primaryPluginChannel = new MethodChannel(
-        pluginBinding.getFlutterEngine().getDartExecutor(),
-        "plugins.flutter.io/camera"
+    CameraFactory cameraFactory = new AndroidCameraFactory(
+        pluginBinding,
+        activityBinding
     );
-    primaryPluginChannel.setMethodCallHandler(cameraPluginProtocol.getCameraSystemChannelHandler());
+
+    return new CameraSystem(
+        cameraPermissions,
+        cameraHardware,
+        cameraImageStream,
+        cameraChannelFactory,
+        cameraFactory
+    );
   }
 
   private void teardown() {
