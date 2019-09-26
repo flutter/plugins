@@ -1,3 +1,7 @@
+## 0.10.2+2
+
+* Support http headers when use network datasource.
+
 ## 0.10.2+1
 
 * Use DefaultHttpDataSourceFactory only when network schemas and use
