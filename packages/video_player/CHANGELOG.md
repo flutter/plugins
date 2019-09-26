@@ -1,3 +1,8 @@
+## 0.10.2+1
+
+* Use DefaultHttpDataSourceFactory only when network schemas and use
+DefaultHttpDataSourceFactory by default.
+
 ## 0.10.2
 
 * **Android Only** Adds optional VideoFormat used to signal what format the plugin should try.

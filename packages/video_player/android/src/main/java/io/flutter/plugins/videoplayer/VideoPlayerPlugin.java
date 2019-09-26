@@ -86,9 +86,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       Uri uri = Uri.parse(dataSource);
 
       DataSource.Factory dataSourceFactory;
-      if (isFileOrAsset(uri)) {
-        dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
-      } else {
+      if (isHTTP(uri)) {
         dataSourceFactory =
             new DefaultHttpDataSourceFactory(
                 "ExoPlayer",
@@ -96,6 +94,8 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                 DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
                 DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
                 true);
+      } else {
+        dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
       }
 
       MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
@@ -104,12 +104,12 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       setupVideoPlayer(eventChannel, textureEntry, result);
     }
 
-    private static boolean isFileOrAsset(Uri uri) {
+    private static boolean isHTTP(Uri uri) {
       if (uri == null || uri.getScheme() == null) {
         return false;
       }
       String scheme = uri.getScheme();
-      return scheme.equals("file") || scheme.equals("asset");
+      return scheme.equals("http") || scheme.equals("https");
     }
 
     private MediaSource buildMediaSource(

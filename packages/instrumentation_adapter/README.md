@@ -12,11 +12,10 @@ Add a dependency on the `instrumentation_adapter` package in the
 pubspec.yaml of the example app.
 
 Invoke `InstrumentationAdapterFlutterBinding.ensureInitialized()` at the start
-of a test file.
+of a test file, e.g.
 
 ```dart
 import 'package:instrumentation_adapter/instrumentation_adapter.dart';
-import '../test/package_info.dart' as test;
 
 void main() {
   InstrumentationAdapterFlutterBinding.ensureInitialized();
@@ -90,3 +89,15 @@ gcloud firebase test android run --type instrumentation \
   --results-bucket=<RESULTS_BUCKET> \
   --results-dir=<RESULTS_DIRECTORY>
 ```
+
+## Flutter driver support
+
+`InstrumentationAdapterFlutterBinding` also reports test results to `FlutterDriver`
+when run on the command line via `flutter drive`. 
+
+```dart
+  final FlutterDriver driver = await FlutterDriver.connect();
+  final String result = await driver.requestData(null, timeout: const Duration(minutes: 1));
+  driver.close();
+  exit(result == 'pass' ? 0 : 1);
+```  

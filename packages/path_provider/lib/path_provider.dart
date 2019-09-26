@@ -3,12 +3,21 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' show Directory;
 
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
+import 'package:platform/platform.dart';
 
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/path_provider');
+
+Platform _platform = const LocalPlatform();
+
+@visibleForTesting
+void setMockPathProviderPlatform(Platform platform) {
+  _platform = platform;
+}
 
 /// Path to the temporary directory on the device that is not backed up and is
 /// suitable for storing caches of downloaded files.
@@ -50,6 +59,17 @@ Future<Directory> getApplicationSupportDirectory() async {
   return Directory(path);
 }
 
+/// Path to the directory where application can store files that are persistent,
+/// backed up, and not visible to the user, such as sqlite.db.
+Future<Directory> getLibraryDirectory() async {
+  final String path =
+      await _channel.invokeMethod<String>('getLibraryDirectory');
+  if (path == null) {
+    return null;
+  }
+  return Directory(path);
+}
+
 /// Path to a directory where the application may place data that is
 /// user-generated, or that cannot otherwise be recreated by your application.
 ///
@@ -77,7 +97,7 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 ///
 /// On Android this uses the `getExternalFilesDir(null)`.
 Future<Directory> getExternalStorageDirectory() async {
-  if (Platform.isIOS)
+  if (_platform.isIOS)
     throw UnsupportedError("Functionality not available on iOS");
   final String path =
       await _channel.invokeMethod<String>('getStorageDirectory');
