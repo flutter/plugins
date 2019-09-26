@@ -30,7 +30,7 @@ import io.flutter.view.TextureRegistry;
   @NonNull
   private final CameraPermissions cameraPermissions;
   @NonNull
-  private final EventChannel imageStreamChannel;
+  private final CameraPreviewDisplay cameraPreviewDisplay;
   @Nullable
   private Camera camera;
 
@@ -38,12 +38,12 @@ import io.flutter.view.TextureRegistry;
       @NonNull FlutterPlugin.FlutterPluginBinding pluginBinding,
       @NonNull ActivityPluginBinding activityBinding,
       @NonNull CameraPermissions cameraPermissions,
-      @NonNull EventChannel imageStreamChannel
+      @NonNull CameraPreviewDisplay cameraPreviewDisplay
   ) {
     this.pluginBinding = pluginBinding;
     this.activityBinding = activityBinding;
     this.cameraPermissions = cameraPermissions;
-    this.imageStreamChannel = imageStreamChannel;
+    this.cameraPreviewDisplay = cameraPreviewDisplay;
   }
 
   @Override
@@ -209,8 +209,7 @@ import io.flutter.view.TextureRegistry;
   public void startImageStream(@NonNull OnCameraAccessCommandCallback callback) {
     // TODO(mattcarroll): determine desired behavior when no camera is active
     try {
-      CameraPreviewDisplay previewDisplay = new CameraPreviewDisplay(imageStreamChannel);
-      camera.startPreviewWithImageStream(previewDisplay);
+      camera.startPreviewWithImageStream(cameraPreviewDisplay);
       callback.success();
     } catch (CameraAccessException e) {
       callback.onCameraAccessFailure(e.getMessage());

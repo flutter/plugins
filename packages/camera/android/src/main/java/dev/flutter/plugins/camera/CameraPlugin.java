@@ -72,11 +72,12 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware {
         pluginBinding.getFlutterEngine().getDartExecutor(),
         "plugins.flutter.io/camera/imageStream"
     );
+    CameraPreviewDisplay cameraImageStream = new CameraPluginProtocol.ChannelCameraPreviewDisplay(imageStreamChannel);
     CameraSystem cameraSystem = new AndroidCameraSystem(
         pluginBinding,
         activityBinding,
         cameraPermissions,
-        imageStreamChannel
+        cameraImageStream
     );
     this.cameraPluginProtocol = new CameraPluginProtocol(cameraSystem);
 

@@ -63,5 +63,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'androidx.test:core:1.2.0' // for robolectric
-    testImplementation 'org.mockito:mockito-core:1.10.19'
+    testImplementation 'org.mockito:mockito-core:2.28.2'
+    testImplementation 'org.mockito:mockito-inline:2.28.2' // for mocking final classes
+
 }

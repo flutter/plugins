@@ -5,17 +5,35 @@
 package dev.flutter.plugins.camera;
 
 import android.hardware.camera2.CameraAccessException;
+import android.media.Image;
 
 import androidx.annotation.NonNull;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
+/**
+ * Handles all channel communications for the Camera plugin.
+ *
+ * <p>This class has the following responsibilities:
+ * <ol>
+ *   <li>Parse incoming channel requests</li>
+ *   <li>Invoke a corresponding high-level behavior</li>
+ *   <li>Serialize and send results</li>
+ * </ol>
+ *
+ * <p>This class should not include any plugin implementation responsibilities. The purpose
+ * of this class is to codify the channel communication protocol, and that's all. By limiting
+ * the scope of this class to the channel protocol, we can easily achieve 100% unit test coverage
+ * of all incoming request processing, and result responses.
+ */
 /* package */ class CameraPluginProtocol {
 
   @NonNull
@@ -268,4 +286,70 @@ import io.flutter.plugin.common.MethodChannel;
     }
   }
 
+  /**
+   * Implementation of a {@link CameraPreviewDisplay} that uses an {@link EventChannel}
+   * to send camera preview images to Flutter.
+   *
+   * <p>See {@link ChannelCameraImageStream} for serialization details.
+   */
+  /* package */ static class ChannelCameraPreviewDisplay implements CameraPreviewDisplay {
+    private final EventChannel streamChannel;
+
+    /* package */ ChannelCameraPreviewDisplay(@NonNull EventChannel streamChannel) {
+      this.streamChannel = streamChannel;
+    }
+
+    @Override
+    public void startStreaming(@NonNull final CameraPreviewDisplay.ImageStreamConnection connection) {
+      streamChannel.setStreamHandler(new EventChannel.StreamHandler() {
+        @Override
+        public void onListen(Object o, EventChannel.EventSink eventSink) {
+          CameraImageStream cameraImageStream = new ChannelCameraImageStream(eventSink);
+          connection.onConnectionReady(cameraImageStream);
+        }
+
+        @Override
+        public void onCancel(Object o) {
+          connection.onConnectionClosed();
+        }
+      });
+    }
+  }
+
+  /**
+   * Implementation of {@link CameraImageStream} that uses an {@link EventChannel.EventSink} to
+   * serialize and send camera preview images to Flutter.
+   */
+  /* package */ static class ChannelCameraImageStream implements CameraImageStream {
+    private EventChannel.EventSink imageStreamSink;
+
+    /* package */ ChannelCameraImageStream(@NonNull EventChannel.EventSink imageStreamSink) {
+      this.imageStreamSink = imageStreamSink;
+    }
+
+    public void sendImage(@NonNull Image image) {
+      List<Map<String, Object>> planes = new ArrayList<>();
+      for (Image.Plane plane : image.getPlanes()) {
+        ByteBuffer buffer = plane.getBuffer();
+
+        byte[] bytes = new byte[buffer.remaining()];
+        buffer.get(bytes, 0, bytes.length);
+
+        Map<String, Object> planeBuffer = new HashMap<>();
+        planeBuffer.put("bytesPerRow", plane.getRowStride());
+        planeBuffer.put("bytesPerPixel", plane.getPixelStride());
+        planeBuffer.put("bytes", bytes);
+
+        planes.add(planeBuffer);
+      }
+
+      Map<String, Object> imageBuffer = new HashMap<>();
+      imageBuffer.put("width", image.getWidth());
+      imageBuffer.put("height", image.getHeight());
+      imageBuffer.put("format", image.getFormat());
+      imageBuffer.put("planes", planes);
+
+      imageStreamSink.success(imageBuffer);
+    }
+  }
 }
