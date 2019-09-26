@@ -423,7 +423,12 @@ public class Camera {
     }
 
     try {
-      mediaRecorder.pause();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        mediaRecorder.pause();
+      } else {
+        result.error("videoRecordingFailed", "pauseVideoRecording requires Android API +24.", null);
+        return;
+      }
     } catch (IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
       return;
@@ -439,7 +444,13 @@ public class Camera {
     }
 
     try {
-      mediaRecorder.resume();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        mediaRecorder.resume();
+      } else {
+        result.error(
+            "videoRecordingFailed", "resumeVideoRecording requires Android API +24.", null);
+        return;
+      }
     } catch (IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
       return;

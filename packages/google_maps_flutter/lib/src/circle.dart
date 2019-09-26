@@ -141,7 +141,16 @@ class Circle {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Circle typedOther = other;
-    return circleId == typedOther.circleId;
+    return circleId == typedOther.circleId &&
+        consumeTapEvents == typedOther.consumeTapEvents &&
+        fillColor == typedOther.fillColor &&
+        center == typedOther.center &&
+        radius == typedOther.radius &&
+        strokeColor == typedOther.strokeColor &&
+        strokeWidth == typedOther.strokeWidth &&
+        visible == typedOther.visible &&
+        zIndex == typedOther.zIndex &&
+        onTap == typedOther.onTap;
   }
 
   @override

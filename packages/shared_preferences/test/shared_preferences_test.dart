@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('$SharedPreferences', () {
     const MethodChannel channel = MethodChannel(
       'plugins.flutter.io/shared_preferences',

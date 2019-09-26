@@ -1,3 +1,13 @@
+## 4.0.8
+
+* Get rid of `MethodCompleter` and serialize async actions using chained futures.
+  This prevents a bug when sign in methods are being used in error handling zones.
+
+## 4.0.7
+
+* Switch from using `api` to `implementation` for dependency on `play-services-auth`,
+  preventing version mismatch build failures in some Android configurations.
+
 ## 4.0.6
 
 * Fixed the `PlatformException` leaking from `catchError()` in debug mode.

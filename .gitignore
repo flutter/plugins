@@ -22,6 +22,7 @@ Pods/
 ServiceDefinitions.json
 xcuserdata/
 *.xcworkspace
+**/DerivedData/
 
 local.properties
 keystore.properties
