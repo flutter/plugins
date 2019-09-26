@@ -65,25 +65,23 @@ import io.flutter.plugin.common.EventChannel;
       camera.close();
     }
 
-    if (!cameraPermissions.hasCameraPermission() || (request.getEnableAudio() ))
-
-      cameraPermissions.requestPermissions(
-          request.getEnableAudio(),
-          new CameraPermissions.ResultCallback() {
-            @Override
-            public void onSuccess() {
-              try {
-                openCamera(request, callback);
-              } catch (Exception error) {
-                callback.onError("CameraAccess", error.getMessage());
-              }
+    cameraPermissions.requestPermissions(
+        request.getEnableAudio(),
+        new CameraPermissions.ResultCallback() {
+          @Override
+          public void onSuccess() {
+            try {
+              openCamera(request, callback);
+            } catch (Exception error) {
+              callback.onError("CameraAccess", error.getMessage());
             }
+          }
 
-            @Override
-            public void onResult(String errorCode, String errorDescription) {
-              callback.onCameraPermissionError(errorCode, errorDescription);
-            }
-          });
+          @Override
+          public void onResult(String errorCode, String errorDescription) {
+            callback.onCameraPermissionError(errorCode, errorDescription);
+          }
+        });
   }
 
   private void openCamera(
@@ -108,6 +106,7 @@ import io.flutter.plugin.common.EventChannel;
       }
     });
 
+    // TODO(mattcarroll): remove the ChannelCameraEventHandler reference from CameraSystem, it's a protocol detail.
     final CameraPluginProtocol.ChannelCameraEventHandler eventHandler = new CameraPluginProtocol.ChannelCameraEventHandler();
     camera.setCameraEventHandler(eventHandler);
 
@@ -186,6 +185,7 @@ import io.flutter.plugin.common.EventChannel;
   public void stopImageStream(@NonNull OnCameraAccessCommandCallback callback) {
     // TODO(mattcarroll): determine desired behavior when no camera is active
     try {
+      // TODO(mattcarroll): verify that startPreview() is really what should run here
       camera.startPreview();
       callback.success();
     } catch (CameraAccessException e) {

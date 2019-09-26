@@ -14,7 +14,7 @@ import io.flutter.plugin.common.PluginRegistry;
 
   boolean hasAudioPermission();
 
-  void requestPermissions(boolean enableAudio, ResultCallback callback);
+  void requestPermissions(boolean enableAudio, @NonNull ResultCallback callback);
 
   void addRequestPermissionsResultListener(@NonNull PluginRegistry.RequestPermissionsResultListener listener);
 
