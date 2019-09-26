@@ -1,3 +1,7 @@
+## 0.5.5
+
+* Add support for Flash and Auto Focus.
+
 ## 0.5.4+2
 
 * Fix Android NullPointerException on devices with only front-facing camera.
@@ -8,7 +12,6 @@
 
 ## 0.5.4
 
-* Add support for Flash and Auto Exposure.
 * Add feature to pause and resume video recording.
 
 ## 0.5.3+1
