@@ -1,3 +1,8 @@
+
+## 5.1.3
+
+* Always launch url from the top most UIViewController in iOS.
+
 ## 5.1.2
 
 * Update AGP and gradle.

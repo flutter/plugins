@@ -211,7 +211,8 @@ public class AlarmService extends JobIntentService {
     // provided.
     // TODO(mattcarroll): consider giving a method name anyway for the purpose of developer discoverability
     //                    when reading the source code. Especially on the Dart side.
-    sBackgroundChannel.invokeMethod("", new Object[] {callbackHandle}, result);
+    sBackgroundChannel.invokeMethod(
+        "", new Object[] {callbackHandle, intent.getIntExtra("id", -1)}, result);
   }
 
   private static void scheduleAlarm(
@@ -242,6 +243,7 @@ public class AlarmService extends JobIntentService {
 
     // Create an Intent for the alarm and set the desired Dart callback handle.
     Intent alarm = new Intent(context, AlarmBroadcastReceiver.class);
+    alarm.putExtra("id", requestCode);
     alarm.putExtra("callbackHandle", callbackHandle);
     PendingIntent pendingIntent =
         PendingIntent.getBroadcast(context, requestCode, alarm, PendingIntent.FLAG_UPDATE_CURRENT);

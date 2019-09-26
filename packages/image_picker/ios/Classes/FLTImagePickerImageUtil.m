@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,12 +69,18 @@
     }
   }
 
+  // Scaling the image always rotate itself based on the current imageOrientation of the original
+  // Image. Set to orientationUp for the orignal image before scaling, so the scaled image doesn't
+  // mess up with the pixels.
+  UIImage *imageToScale = [UIImage imageWithCGImage:image.CGImage
+                                              scale:1
+                                        orientation:UIImageOrientationUp];
+
   UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
-  [image drawInRect:CGRectMake(0, 0, width, height)];
+  [imageToScale drawInRect:CGRectMake(0, 0, width, height)];
 
   UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
-
   return scaledImage;
 }
 

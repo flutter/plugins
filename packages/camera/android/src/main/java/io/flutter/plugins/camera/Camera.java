@@ -1,6 +1,7 @@
 package io.flutter.plugins.camera;
 
 import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
+import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -16,6 +17,7 @@ import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
@@ -47,7 +49,6 @@ public class Camera {
   private final String cameraName;
   private final Size captureSize;
   private final Size previewSize;
-  private final Size videoSize;
   private final boolean enableAudio;
   private final boolean enableTorch;
   private final boolean enableAE;
@@ -60,7 +61,18 @@ public class Camera {
   private CaptureRequest.Builder captureRequestBuilder;
   private MediaRecorder mediaRecorder;
   private boolean recordingVideo;
+  private CamcorderProfile recordingProfile;
   private int currentOrientation = ORIENTATION_UNKNOWN;
+
+  // Mirrors camera.dart
+  public enum ResolutionPreset {
+    low,
+    medium,
+    high,
+    veryHigh,
+    ultraHigh,
+    max,
+  }
 
   public Camera(
       final Activity activity,
@@ -94,21 +106,6 @@ public class Camera {
         };
     orientationEventListener.enable();
 
-    int minHeight;
-    switch (resolutionPreset) {
-      case "high":
-        minHeight = 720;
-        break;
-      case "medium":
-        minHeight = 480;
-        break;
-      case "low":
-        minHeight = 240;
-        break;
-      default:
-        throw new IllegalArgumentException("Unknown preset: " + resolutionPreset);
-    }
-
     CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
     StreamConfigurationMap streamConfigurationMap =
         characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
@@ -117,12 +114,11 @@ public class Camera {
     //noinspection ConstantConditions
     isFrontFacing =
         characteristics.get(CameraCharacteristics.LENS_FACING) == CameraMetadata.LENS_FACING_FRONT;
-    captureSize = CameraUtils.computeBestCaptureSize(streamConfigurationMap);
-    Size[] sizes =
-        CameraUtils.computeBestPreviewAndRecordingSize(
-            activity, streamConfigurationMap, minHeight, getMediaOrientation(), captureSize);
-    videoSize = sizes[0];
-    previewSize = sizes[1];
+    ResolutionPreset preset = ResolutionPreset.valueOf(resolutionPreset);
+    recordingProfile =
+        CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
+    captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
+    previewSize = computeBestPreviewSize(cameraName, preset);
   }
 
   public void setupCameraEventChannel(EventChannel cameraEventChannel) {
@@ -150,13 +146,13 @@ public class Camera {
     // of these function calls.
     if (enableAudio) mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
     mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-    mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-    if (enableAudio) mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-    mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-    mediaRecorder.setVideoEncodingBitRate(1024 * 1000);
-    if (enableAudio) mediaRecorder.setAudioSamplingRate(16000);
-    mediaRecorder.setVideoFrameRate(27);
-    mediaRecorder.setVideoSize(videoSize.getWidth(), videoSize.getHeight());
+    mediaRecorder.setOutputFormat(recordingProfile.fileFormat);
+    if (enableAudio) mediaRecorder.setAudioEncoder(recordingProfile.audioCodec);
+    mediaRecorder.setVideoEncoder(recordingProfile.videoCodec);
+    mediaRecorder.setVideoEncodingBitRate(recordingProfile.videoBitRate);
+    if (enableAudio) mediaRecorder.setAudioSamplingRate(recordingProfile.audioSampleRate);
+    mediaRecorder.setVideoFrameRate(recordingProfile.videoFrameRate);
+    mediaRecorder.setVideoSize(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     mediaRecorder.setOutputFile(outputFilePath);
     mediaRecorder.setOrientationHint(getMediaOrientation());
 
@@ -418,6 +414,49 @@ public class Camera {
     } catch (CameraAccessException | IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
     }
+  }
+
+  public void pauseVideoRecording(@NonNull final Result result) {
+    if (!recordingVideo) {
+      result.success(null);
+      return;
+    }
+
+    try {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        mediaRecorder.pause();
+      } else {
+        result.error("videoRecordingFailed", "pauseVideoRecording requires Android API +24.", null);
+        return;
+      }
+    } catch (IllegalStateException e) {
+      result.error("videoRecordingFailed", e.getMessage(), null);
+      return;
+    }
+
+    result.success(null);
+  }
+
+  public void resumeVideoRecording(@NonNull final Result result) {
+    if (!recordingVideo) {
+      result.success(null);
+      return;
+    }
+
+    try {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        mediaRecorder.resume();
+      } else {
+        result.error(
+            "videoRecordingFailed", "resumeVideoRecording requires Android API +24.", null);
+        return;
+      }
+    } catch (IllegalStateException e) {
+      result.error("videoRecordingFailed", e.getMessage(), null);
+      return;
+    }
+
+    result.success(null);
   }
 
   public void startPreview() throws CameraAccessException {

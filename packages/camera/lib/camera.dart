@@ -15,13 +15,40 @@ final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
 enum CameraLensDirection { front, back, external }
 
-enum ResolutionPreset { low, medium, high }
+/// Affect the quality of video recording and image capture:
+///
+/// If a preset is not available on the camera being used a preset of lower quality will be selected automatically.
+enum ResolutionPreset {
+  /// 352x288 on iOS, 240p (320x240) on Android
+  low,
+
+  /// 480p (640x480 on iOS, 720x480 on Android)
+  medium,
+
+  /// 720p (1280x720)
+  high,
+
+  /// 1080p (1920x1080)
+  veryHigh,
+
+  /// 2160p (3840x2160)
+  ultraHigh,
+
+  /// The highest resolution available.
+  max,
+}
 
 typedef onLatestImageAvailable = Function(CameraImage image);
 
 /// Returns the resolution preset as a String.
 String serializeResolutionPreset(ResolutionPreset resolutionPreset) {
   switch (resolutionPreset) {
+    case ResolutionPreset.max:
+      return 'max';
+    case ResolutionPreset.ultraHigh:
+      return 'ultraHigh';
+    case ResolutionPreset.veryHigh:
+      return 'veryHigh';
     case ResolutionPreset.high:
       return 'high';
     case ResolutionPreset.medium:
@@ -130,14 +157,17 @@ class CameraValue {
     this.isRecordingVideo,
     this.isTakingPicture,
     this.isStreamingImages,
-  });
+    bool isRecordingPaused,
+  }) : _isRecordingPaused = isRecordingPaused;
 
   const CameraValue.uninitialized()
       : this(
-            isInitialized: false,
-            isRecordingVideo: false,
-            isTakingPicture: false,
-            isStreamingImages: false);
+          isInitialized: false,
+          isRecordingVideo: false,
+          isTakingPicture: false,
+          isStreamingImages: false,
+          isRecordingPaused: false,
+        );
 
   /// True after [CameraController.initialize] has completed successfully.
   final bool isInitialized;
@@ -150,6 +180,11 @@ class CameraValue {
 
   /// True when images from the camera are being streamed.
   final bool isStreamingImages;
+
+  final bool _isRecordingPaused;
+
+  /// True when camera [isRecordingVideo] and recording is paused.
+  bool get isRecordingPaused => isRecordingVideo && _isRecordingPaused;
 
   final String errorDescription;
 
@@ -172,6 +207,7 @@ class CameraValue {
     bool isStreamingImages,
     String errorDescription,
     Size previewSize,
+    bool isRecordingPaused,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -180,6 +216,7 @@ class CameraValue {
       isRecordingVideo: isRecordingVideo ?? this.isRecordingVideo,
       isTakingPicture: isTakingPicture ?? this.isTakingPicture,
       isStreamingImages: isStreamingImages ?? this.isStreamingImages,
+      isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
     );
   }
 
@@ -457,7 +494,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         'startVideoRecording',
         <String, dynamic>{'textureId': _textureId, 'filePath': filePath},
       );
-      value = value.copyWith(isRecordingVideo: true);
+      value = value.copyWith(isRecordingVideo: true, isRecordingPaused: false);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -488,91 +525,54 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
-  /// Switch ON the torch.
-  Future<void> torchOn({double level: 1.0}) async {
+  /// Pause video recording.
+  ///
+  /// This feature is only available on iOS and Android sdk 24+.
+  Future<void> pauseVideoRecording() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
-        'Uninitialized CameraController.',
-        'torchOn was called on uninitialized CameraController',
+        'Uninitialized CameraController',
+        'pauseVideoRecording was called on uninitialized CameraController',
       );
     }
-    
+    if (!value.isRecordingVideo) {
+      throw CameraException(
+        'No video is recording',
+        'pauseVideoRecording was called when no video is recording.',
+      );
+    }
     try {
+      value = value.copyWith(isRecordingPaused: true);
       await _channel.invokeMethod<void>(
-        'torchOn', 
-        <String, dynamic>{'level': level}
+        'pauseVideoRecording',
+        <String, dynamic>{'textureId': _textureId},
       );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
   }
 
-  /// Switch OFF the torch.
-  Future<void> torchOff() async {
+  /// Resume video recording after pausing.
+  ///
+  /// This feature is only available on iOS and Android sdk 24+.
+  Future<void> resumeVideoRecording() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
-        'Uninitialized CameraController.',
-        'torchOff was called on uninitialized CameraController',
+        'Uninitialized CameraController',
+        'resumeVideoRecording was called on uninitialized CameraController',
       );
     }
-
+    if (!value.isRecordingVideo) {
+      throw CameraException(
+        'No video is recording',
+        'resumeVideoRecording was called when no video is recording.',
+      );
+    }
     try {
+      value = value.copyWith(isRecordingPaused: false);
       await _channel.invokeMethod<void>(
-        'torchOff'
-      );
-    } on PlatformException catch (e) {
-      throw CameraException(e.code, e.message);
-    }
-  }
-
-  /// check if the device has a torch.
-  Future<bool> get hasTorch async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController.',
-        'hasTorch was called on uninitialized CameraController',
-      );
-    }
-
-    try {
-      return await _channel.invokeMethod<bool>(
-        'hasTorch'
-      );
-    } on PlatformException catch (e) {
-      throw CameraException(e.code, e.message);
-    }
-  }
-
-  /// Switch ON continuous Auto Exposure.
-  Future<void> aeOn() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController.',
-        'aeOn was called on uninitialized CameraController',
-      );
-    }
-    
-    try {
-      await _channel.invokeMethod<void>(
-        'aeOn'
-      );
-    } on PlatformException catch (e) {
-      throw CameraException(e.code, e.message);
-    }
-  }
-
-  /// Switch OFF continuous Auto Exposure.
-  Future<void> aeOff() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController.',
-        'aeOff was called on uninitialized CameraController',
-      );
-    }
-
-    try {
-      await _channel.invokeMethod<void>(
-        'aeOff'
+        'resumeVideoRecording',
+        <String, dynamic>{'textureId': _textureId},
       );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
