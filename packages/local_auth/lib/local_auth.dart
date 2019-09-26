@@ -63,7 +63,7 @@ class LocalAuthentication {
     };
     if (Platform.isIOS) {
       args.addAll(iOSAuthStrings.args);
-    } else if (Platform.isAndroid) {
+    } else if (Platform.operatingSystem == "android") {
       args.addAll(androidAuthStrings.args);
     } else {
       throw PlatformException(
@@ -81,7 +81,7 @@ class LocalAuthentication {
   ///
   /// Returns [Future] bool true or false:
   Future<bool> stopAuthentication() {
-    if (Platform.isAndroid) {
+    if (Platform.operatingSystem == "android") {
       return _channel.invokeMethod<bool>('stopAuthentication');
     }
     final Future<bool> future = Future<bool>(() => true);
