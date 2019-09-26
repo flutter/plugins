@@ -16,6 +16,14 @@ import io.flutter.plugin.common.EventChannel;
 
 /**
  * Top-level facade for all Camera plugin behavior.
+ *
+ * <p>The public interface of this class is purposefully established as close to a 1:1 relationship
+ * with the plugin's channel communication as possible, representing a channel-agnostic implementation
+ * of the plugin.
+ *
+ * <p>This class avoids Android implementation details, by design. It allows tests to verify
+ * top-level behavior expectations with JVM tests. All of {@code CameraSystem}'s conceptual
+ * dependencies are modeled with interfaces, or classes that can be easily mocked.
  */
 /* package */ class CameraSystem {
   @NonNull
