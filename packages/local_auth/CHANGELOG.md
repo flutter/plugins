@@ -1,6 +1,6 @@
-## 0.6.1
+## 0.6.0+1
 
-* Update `intl` to 0.16.0
+* Update the `intl` constraint to ">=0.15.1 <0.17.0" (0.16.0 isn't really a breaking change).
 
 ## 0.6.0
 
