@@ -29,6 +29,19 @@ for it in the plugin and use an action constant to refer to it. For instance:
 
 `'action_location_source_settings'` translates to `android.settings.LOCATION_SOURCE_SETTINGS`
 
+`'action_application_details_settings'` translates to `android.settings.ACTION_APPLICATION_DETAILS_SETTINGS`
+
+```dart
+if (platform.isAndroid) {
+  final AndroidIntent intent = AndroidIntent(
+    action: 'action_application_details_settings',
+    data: 'package:com.example.app', // replace com.example.app with your applicationId
+  );
+  await intent.launch();
+}
+
+```
+
 Feel free to add support for additional Android intents.
 
 The Dart values supported for the arguments parameter, and their corresponding

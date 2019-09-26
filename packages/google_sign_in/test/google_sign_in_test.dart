@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in/testing.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('GoogleSignIn', () {
     const MethodChannel channel = MethodChannel(
       'plugins.flutter.io/google_sign_in',
@@ -43,7 +45,11 @@ void main() {
       responses = Map<String, dynamic>.from(kDefaultResponses);
       channel.setMockMethodCallHandler((MethodCall methodCall) {
         log.add(methodCall);
-        return Future<dynamic>.value(responses[methodCall.method]);
+        final dynamic response = responses[methodCall.method];
+        if (response != null && response is Exception) {
+          return Future<dynamic>.error('$response');
+        }
+        return Future<dynamic>.value(response);
       });
       googleSignIn = GoogleSignIn();
       log.clear();
@@ -140,6 +146,27 @@ void main() {
       ]);
     });
 
+    test('signIn works even if a previous call throws error in other zone',
+        () async {
+      responses['signInSilently'] = Exception('Not a user');
+      await runZoned(() async {
+        expect(await googleSignIn.signInSilently(), isNull);
+      }, onError: (dynamic e, dynamic st) {});
+      expect(await googleSignIn.signIn(), isNotNull);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
+            'scopes': <String>[],
+            'hostedDomain': null,
+          }),
+          isMethodCall('signInSilently', arguments: null),
+          isMethodCall('signIn', arguments: null),
+        ],
+      );
+    });
+
     test('concurrent calls of the same method trigger sign in once', () async {
       final List<Future<GoogleSignInAccount>> futures =
           <Future<GoogleSignInAccount>>[
@@ -168,7 +195,7 @@ void main() {
     });
 
     test('can sign in after previously failed attempt', () async {
-      responses['signInSilently'] = <String, dynamic>{'error': 'Not a user'};
+      responses['signInSilently'] = Exception('Not a user');
       expect(await googleSignIn.signInSilently(), isNull);
       expect(await googleSignIn.signIn(), isNotNull);
       expect(

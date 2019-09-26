@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 part of google_maps_flutter;
 
 /// Uniquely identifies a [Polygon] among [GoogleMap] polygons.
@@ -146,7 +150,16 @@ class Polygon {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Polygon typedOther = other;
-    return polygonId == typedOther.polygonId;
+    return polygonId == typedOther.polygonId &&
+        consumeTapEvents == typedOther.consumeTapEvents &&
+        fillColor == typedOther.fillColor &&
+        geodesic == typedOther.geodesic &&
+        listEquals(points, typedOther.points) &&
+        visible == typedOther.visible &&
+        strokeColor == typedOther.strokeColor &&
+        strokeWidth == typedOther.strokeWidth &&
+        zIndex == typedOther.zIndex &&
+        onTap == typedOther.onTap;
   }
 
   @override
