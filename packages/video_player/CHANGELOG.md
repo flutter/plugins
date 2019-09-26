@@ -1,3 +1,7 @@
+## 0.10.2+2
+
+* Update and migrate iOS example project.
+
 ## 0.10.2+1
 
 * Use DefaultHttpDataSourceFactory only when network schemas and use
