@@ -10,7 +10,7 @@
 
 @property(strong, nonatomic) NSDictionary *periodMap;
 @property(strong, nonatomic) NSDictionary *discountMap;
-@property(strong, nonatomic) NSDictionary *productMap;
+@property(strong, nonatomic) NSMutableDictionary *productMap;
 @property(strong, nonatomic) NSDictionary *productResponseMap;
 @property(strong, nonatomic) NSDictionary *paymentMap;
 @property(strong, nonatomic) NSDictionary *transactionMap;
@@ -30,16 +30,23 @@
     @"subscriptionPeriod" : self.periodMap,
     @"paymentMode" : @1
   };
-  self.productMap = @{
+
+  self.productMap = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"price" : @"1",
     @"priceLocale" : [FIAObjectTranslator getMapFromNSLocale:NSLocale.systemLocale],
     @"productIdentifier" : @"123",
     @"localizedTitle" : @"title",
     @"localizedDescription" : @"des",
-    @"subscriptionPeriod" : self.periodMap,
-    @"introductoryPrice" : self.discountMap,
-    @"subscriptionGroupIdentifier" : @"com.group"
-  };
+  }];
+  if (@available(iOS 11.2, *)) {
+    self.productMap[@"subscriptionPeriod"] = self.periodMap;
+    self.productMap[@"introductoryPrice"] = self.discountMap;
+  }
+
+  if (@available(iOS 12.0, *)) {
+    self.productMap[@"subscriptionGroupIdentifier"] = @"com.group";
+  }
+
   self.productResponseMap =
       @{@"products" : @[ self.productMap ], @"invalidProductIdentifiers" : @[]};
   self.paymentMap = @{
@@ -79,16 +86,20 @@
 }
 
 - (void)testSKProductSubscriptionPeriodStubToMap {
-  SKProductSubscriptionPeriodStub *period =
-      [[SKProductSubscriptionPeriodStub alloc] initWithMap:self.periodMap];
-  NSDictionary *map = [FIAObjectTranslator getMapFromSKProductSubscriptionPeriod:period];
-  XCTAssertEqualObjects(map, self.periodMap);
+  if (@available(iOS 11.2, *)) {
+    SKProductSubscriptionPeriodStub *period =
+        [[SKProductSubscriptionPeriodStub alloc] initWithMap:self.periodMap];
+    NSDictionary *map = [FIAObjectTranslator getMapFromSKProductSubscriptionPeriod:period];
+    XCTAssertEqualObjects(map, self.periodMap);
+  }
 }
 
 - (void)testSKProductDiscountStubToMap {
-  SKProductDiscountStub *discount = [[SKProductDiscountStub alloc] initWithMap:self.discountMap];
-  NSDictionary *map = [FIAObjectTranslator getMapFromSKProductDiscount:discount];
-  XCTAssertEqualObjects(map, self.discountMap);
+  if (@available(iOS 11.2, *)) {
+    SKProductDiscountStub *discount = [[SKProductDiscountStub alloc] initWithMap:self.discountMap];
+    NSDictionary *map = [FIAObjectTranslator getMapFromSKProductDiscount:discount];
+    XCTAssertEqualObjects(map, self.discountMap);
+  }
 }
 
 - (void)testProductToMap {
@@ -125,9 +136,11 @@
 }
 
 - (void)testLocaleToMap {
-  NSLocale *system = NSLocale.systemLocale;
-  NSDictionary *map = [FIAObjectTranslator getMapFromNSLocale:system];
-  XCTAssertEqualObjects(map[@"currencySymbol"], system.currencySymbol);
+  if (@available(iOS 10.0, *)) {
+    NSLocale *system = NSLocale.systemLocale;
+    NSDictionary *map = [FIAObjectTranslator getMapFromNSLocale:system];
+    XCTAssertEqualObjects(map[@"currencySymbol"], system.currencySymbol);
+  }
 }
 
 @end

@@ -59,7 +59,6 @@
         return YES;
       }
       updatedDownloads:nil];
-  handler.testing = YES;
   [queue addTransactionObserver:handler];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
@@ -87,7 +86,6 @@
         return YES;
       }
       updatedDownloads:nil];
-  handler.testing = YES;
   [queue addTransactionObserver:handler];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
@@ -115,7 +113,6 @@
         return YES;
       }
       updatedDownloads:nil];
-  handler.testing = YES;
   [queue addTransactionObserver:handler];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
@@ -143,7 +140,6 @@
         return YES;
       }
       updatedDownloads:nil];
-  handler.testing = YES;
   [queue addTransactionObserver:handler];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
@@ -171,7 +167,6 @@
         return YES;
       }
       updatedDownloads:nil];
-  handler.testing = YES;
   [queue addTransactionObserver:handler];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];

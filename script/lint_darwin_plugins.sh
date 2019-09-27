@@ -53,7 +53,6 @@ function lint_packages() {
     'google_maps_flutter'
     'google_sign_in'
     'image_picker'
-    'in_app_purchase'
     'instrumentation_adapter'
     'local_auth'
     'package_info'

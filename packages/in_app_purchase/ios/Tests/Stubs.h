@@ -9,10 +9,12 @@
 #import "InAppPurchasePlugin.h"
 
 NS_ASSUME_NONNULL_BEGIN
+API_AVAILABLE(ios(11.2), macos(10.13.2))
 @interface SKProductSubscriptionPeriodStub : SKProductSubscriptionPeriod
 - (instancetype)initWithMap:(NSDictionary *)map;
 @end
 
+API_AVAILABLE(ios(11.2), macos(10.13.2))
 @interface SKProductDiscountStub : SKProductDiscount
 - (instancetype)initWithMap:(NSDictionary *)map;
 @end
