@@ -239,6 +239,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                     "default_web_client_id", "string", registrar.context().getPackageName());
         if (clientIdIdentifier != 0) {
           optionsBuilder.requestIdToken(registrar.context().getString(clientIdIdentifier));
+          optionsBuilder.requestServerAuthCode(registrar.context().getString(clientIdIdentifier));
         }
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
@@ -360,6 +361,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       response.put("email", account.getEmail());
       response.put("id", account.getId());
       response.put("idToken", account.getIdToken());
+      response.put("serverAuthCode", account.getServerAuthCode());
       response.put("displayName", account.getDisplayName());
       if (account.getPhotoUrl() != null) {
         response.put("photoUrl", account.getPhotoUrl().toString());
