@@ -3,32 +3,34 @@
 # This script lints and tests iOS and macOS platform code.
 
 # So that users can run this script from anywhere and it will work as expected.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
-REPO_DIR="$(dirname "$SCRIPT_DIR")"
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
+readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
 
 function lint_package() {
   local package_name=$1
   local platform=$2
-  local podspec_dir="$REPO_DIR/packages/$package_name/$platform/$package_name.podspec"
+  local podspec="$REPO_DIR/packages/$package_name/$platform/$package_name.podspec"
   local failure_count=0
 
-  if [[ -f "$podspec_dir" ]]; then
+  if [[ -f "$podspec" ]]; then
     echo "Linting $platform $package_name.podspec"
 
     # Build as frameworks.
     # This will also run any tests set up as a test_spec. See https://blog.cocoapods.org/CocoaPods-1.3.0.
-    pod lib lint "$podspec_dir" --allow-warnings --fail-fast --silent
+    # TODO: Add --analyze flag https://github.com/flutter/flutter/issues/41443
+    # TODO: Remove --allow-warnings flag https://github.com/flutter/flutter/issues/41444
+    pod lib lint "$podspec" --allow-warnings --fail-fast --silent
     if [[ $? -ne 0 ]]; then
-      error "Package $package_name has framework issues. Run \"pod lib lint $podspec_dir\" to inspect."
+      error "Package $package_name has framework issues. Run \"pod lib lint $podspec\" to inspect."
       failure_count+=1
     fi
 
     # Build as libraries.
-    pod lib lint "$podspec_dir" --allow-warnings --use-libraries --fail-fast --silent
+    pod lib lint "$podspec" --allow-warnings --use-libraries --fail-fast --silent
     if [[ $? -ne 0 ]]; then
-      error "Package $package_name has library issues. Run \"pod lib lint $podspec_dir --use-libraries\" to inspect."
+      error "Package $package_name has library issues. Run \"pod lib lint $podspec --use-libraries\" to inspect."
       failure_count+=1
     fi
   fi
