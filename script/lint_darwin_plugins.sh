@@ -10,12 +10,11 @@ source "$SCRIPT_DIR/common.sh"
 
 function lint_package() {
   local package_name=$1
-  local platform=$2
-  local podspec="$REPO_DIR/packages/$package_name/$platform/$package_name.podspec"
+  local package_dir="$REPO_DIR/packages/$package_name/"
   local failure_count=0
 
-  if [[ -f "$podspec" ]]; then
-    echo "Linting $platform $package_name.podspec"
+  for podspec in $(find "$package_dir" -name "*\.podspec"); do
+    echo "Linting $package_name.podspec"
 
     # Build as frameworks.
     # This will also run any tests set up as a test_spec. See https://blog.cocoapods.org/CocoaPods-1.3.0.
@@ -33,7 +32,7 @@ function lint_package() {
       error "Package $package_name has library issues. Run \"pod lib lint $podspec --use-libraries\" to inspect."
       failure_count+=1
     fi
-  fi
+  done
 
   return $failure_count
 }
@@ -73,9 +72,7 @@ function lint_packages() {
     if [[ ${skipped_packages[*]} =~ $package_name ]]; then
       continue
     fi      
-    lint_package $package_name "ios"
-    failure_count+=$?
-    lint_package $package_name "macos"
+    lint_package $package_name
     failure_count+=$?
   done
 
