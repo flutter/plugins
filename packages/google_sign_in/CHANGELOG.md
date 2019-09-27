@@ -1,3 +1,7 @@
+## 4.0.9
+
+* Added support for getting `serverAuthCode`
+
 ## 4.0.8
 
 * Get rid of `MethodCompleter` and serialize async actions using chained futures.
