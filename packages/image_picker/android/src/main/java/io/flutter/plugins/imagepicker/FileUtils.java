@@ -98,7 +98,7 @@ class FileUtils {
     } else if ("content".equalsIgnoreCase(uri.getScheme())) {
 
       // Return the remote address
-      if (isGooglePhotosUri(uri)) {
+      if (isGooglePhotosUri(uri) || isOneDriveUri(uri)) {
         return null;
       }
 
@@ -214,5 +214,9 @@ class FileUtils {
 
   private static boolean isGooglePhotosUri(Uri uri) {
     return "com.google.android.apps.photos.contentprovider".equals(uri.getAuthority());
+  }
+
+  private static boolean isOneDriveUri(Uri uri) {
+    return "com.microsoft.skydrive.content.external".equals(uri.getAuthority());
   }
 }
