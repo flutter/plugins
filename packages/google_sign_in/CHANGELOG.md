@@ -1,3 +1,7 @@
+## 4.0.10
+
+* Added support for getting `serverAuthCode`
+
 ## 4.0.9
 
 * Update and migrate iOS example project.
