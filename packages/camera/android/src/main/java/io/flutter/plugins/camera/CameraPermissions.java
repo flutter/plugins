@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
@@ -14,13 +16,12 @@ public class CameraPermissions {
   private boolean ongoing = false;
 
   public void requestPermissions(
-      Registrar registrar, boolean enableAudio, ResultCallback callback) {
+      Activity activity, Permissions permissions, boolean enableAudio, ResultCallback callback) {
     if (ongoing) {
       callback.onResult("cameraPermission", "Camera permission request ongoing");
     }
-    Activity activity = registrar.activity();
     if (!hasCameraPermission(activity) || (enableAudio && !hasAudioPermission(activity))) {
-      registrar.addRequestPermissionsResultListener(
+      permissions.addRequestPermissionsResultListener(
           new CameraRequestPermissionsListener(
               (String errorCode, String errorDescription) -> {
                 ongoing = false;
@@ -74,7 +75,13 @@ public class CameraPermissions {
     }
   }
 
-  interface ResultCallback {
+  public interface Permissions {
+    Registrar addRequestPermissionsResultListener(
+        PluginRegistry.RequestPermissionsResultListener listener
+    );
+  }
+
+  public interface ResultCallback {
     void onResult(String errorCode, String errorDescription);
   }
 }

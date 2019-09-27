@@ -17,15 +17,19 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugins.camera.Camera;
+import io.flutter.plugins.camera.CameraPermissions;
+import io.flutter.plugins.camera.CameraUtils;
 
 public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHandler {
+
+  private FlutterPluginBinding pluginBinding;
+  private ActivityPluginBinding activityBinding;
 
   private final CameraPermissions cameraPermissions = new CameraPermissions();
   private EventChannel imageStreamChannel;
   private Camera camera;
-
-  private FlutterPluginBinding pluginBinding;
-  private ActivityPluginBinding activityBinding;
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding flutterPluginBinding) {
@@ -112,7 +116,8 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
             camera.close();
           }
           cameraPermissions.requestPermissions(
-              activityBinding,
+              activityBinding.getActivity(),
+              new NewEmbeddingPermissions(activityBinding),
               call.argument("enableAudio"),
               (String errCode, String errDesc) -> {
                 if (errCode == null) {
@@ -203,5 +208,20 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware, MethodCallHan
     }
 
     throw (RuntimeException) exception;
+  }
+
+  private static class NewEmbeddingPermissions implements CameraPermissions.Permissions {
+    private ActivityPluginBinding activityPluginBinding;
+
+    private NewEmbeddingPermissions(@NonNull ActivityPluginBinding activityPluginBinding) {
+      this.activityPluginBinding = activityPluginBinding;
+    }
+
+    @Override
+    public PluginRegistry.Registrar addRequestPermissionsResultListener(PluginRegistry.RequestPermissionsResultListener listener) {
+      activityPluginBinding.addRequestPermissionsResultListener(listener);
+
+      return null; // <- this is a breaking change.
+    }
   }
 }

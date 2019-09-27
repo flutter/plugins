@@ -24,7 +24,7 @@ public final class CameraUtils {
 
   private CameraUtils() {}
 
-  static Size computeBestPreviewSize(String cameraName, ResolutionPreset preset) {
+  public static Size computeBestPreviewSize(String cameraName, ResolutionPreset preset) {
     if (preset.ordinal() > ResolutionPreset.high.ordinal()) {
       preset = ResolutionPreset.high;
     }

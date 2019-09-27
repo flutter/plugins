@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.view.FlutterView;
+import io.flutter.view.TextureRegistry;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -74,7 +75,7 @@ public class Camera {
 
   public Camera(
       final Activity activity,
-      final FlutterView flutterView,
+      final TextureRegistry textureRegistry,
       final String cameraName,
       final String resolutionPreset,
       final boolean enableAudio)
@@ -85,7 +86,7 @@ public class Camera {
 
     this.cameraName = cameraName;
     this.enableAudio = enableAudio;
-    this.flutterTexture = flutterView.createSurfaceTexture();
+    this.flutterTexture = textureRegistry.createSurfaceTexture();
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     orientationEventListener =
         new OrientationEventListener(activity.getApplicationContext()) {
@@ -233,7 +234,7 @@ public class Camera {
     }
   }
 
-  SurfaceTextureEntry getFlutterTexture() {
+  public SurfaceTextureEntry getFlutterTexture() {
     return flutterTexture;
   }
 
