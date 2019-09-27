@@ -26,6 +26,8 @@ class GoogleSignInAuthentication {
   /// The OAuth2 access token to access Google services.
   String get accessToken => _data['accessToken'];
 
+  String get serverAuthCode => _data['serverAuthCode'];
+
   @override
   String toString() => 'GoogleSignInAuthentication:$_data';
 }
@@ -36,7 +38,8 @@ class GoogleSignInAccount implements GoogleIdentity {
         email = data['email'],
         id = data['id'],
         photoUrl = data['photoUrl'],
-        _idToken = data['idToken'] {
+        _idToken = data['idToken'],
+        _serverAuthCode = data['serverAuthCode'] {
     assert(id != null);
   }
 
@@ -61,6 +64,9 @@ class GoogleSignInAccount implements GoogleIdentity {
   final String photoUrl;
 
   final String _idToken;
+
+  final String _serverAuthCode;
+
   final GoogleSignIn _googleSignIn;
 
   /// Retrieve [GoogleSignInAuthentication] for this account.
@@ -90,6 +96,10 @@ class GoogleSignInAccount implements GoogleIdentity {
     // the one we obtained on login.
     if (response['idToken'] == null) {
       response['idToken'] = _idToken;
+    }
+
+    if (response['serverAuthCode'] == null) {
+      response['serverAuthCode'] = _serverAuthCode;
     }
     return GoogleSignInAuthentication._(response);
   }
@@ -123,7 +133,8 @@ class GoogleSignInAccount implements GoogleIdentity {
         email == otherAccount.email &&
         id == otherAccount.id &&
         photoUrl == otherAccount.photoUrl &&
-        _idToken == otherAccount._idToken;
+        _idToken == otherAccount._idToken &&
+        _serverAuthCode == otherAccount._serverAuthCode;
   }
 
   @override
