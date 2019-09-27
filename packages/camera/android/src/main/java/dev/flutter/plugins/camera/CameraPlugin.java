@@ -86,27 +86,6 @@ public class CameraPlugin implements FlutterPlugin, ActivityAware {
     this.activityBinding = null;
   }
 
-  private void instantiateCamera(MethodCall call, Result result) throws CameraAccessException {
-    String cameraName = call.argument("cameraName");
-    String resolutionPreset = call.argument("resolutionPreset");
-    boolean enableAudio = call.argument("enableAudio");
-    camera = new Camera(
-        activityBinding.getActivity(),
-        pluginBinding.getFlutterEngine().getRenderer(),
-        cameraName,
-        resolutionPreset,
-        enableAudio
-    );
-
-    EventChannel cameraEventChannel =
-        new EventChannel(
-            pluginBinding.getFlutterEngine().getDartExecutor(),
-            "flutter.io/cameraPlugin/cameraEvents" + camera.getFlutterTexture().id());
-    camera.setupCameraEventChannel(cameraEventChannel);
-
-    camera.open(result);
-  }
-
   private static class NewEmbeddingPermissions implements CameraPermissions.Permissions {
     private ActivityPluginBinding activityPluginBinding;
 
