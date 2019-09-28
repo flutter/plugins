@@ -10,33 +10,27 @@
 #import <instrumentation_adapter/InstrumentationAdapterPlugin.h>
 
 @interface instrumentation_adapter_exampleTests : XCTestCase
-
 @end
 
 @implementation instrumentation_adapter_exampleTests
 
-- (void)setUp {
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-}
+- (void)testMirrorChannelTests {
+  InstrumentationAdapterPlugin* plugin = InstrumentationAdapterPlugin.sharedInstance;
 
-- (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-}
-
-- (void)testExample {
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct results.
-    
-    [NSThread sleepForTimeInterval:5.0f];
-    NSLog(@"==== Begin Test Results ====");
-    NSLog(@"%@", [[InstrumentationAdapterPlugin sharedInstance] getTestResults]);
-}
-
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
+  [self keyValueObservingExpectationForObject:plugin
+                                      keyPath:@"testResultsByDescription"
+                                      handler:^BOOL(InstrumentationAdapterPlugin* plugin, NSDictionary* change) {
+    id newValue = change[NSKeyValueChangeNewKey];
+    if (newValue != nil && newValue != [NSNull null]) {
+      NSDictionary<NSString*, IAPTestResult>* testResultsByDescription = newValue;
+      [testResultsByDescription enumerateKeysAndObjectsUsingBlock:^(NSString *description, IAPTestResult result, BOOL * _Nonnull stop) {
+        XCTAssertEqualObjects(result, IAPTestResultSuccess, @"Failed channel test: %@", description);
+      }];
+      return YES;
+    }
+    return NO;
+  }];
+  [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 
 @end
