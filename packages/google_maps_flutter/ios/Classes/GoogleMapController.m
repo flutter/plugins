@@ -8,7 +8,9 @@
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position);
+static NSDictionary* PointToJson(CGPoint point);
 static NSArray* LocationToJson(CLLocationCoordinate2D position);
+static CGPoint ToCGPoint(NSDictionary* json);
 static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json);
 static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
 static GMSCameraUpdate* ToCameraUpdate(NSArray* data);
@@ -145,6 +147,26 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     } else {
       result([FlutterError errorWithCode:@"GoogleMap uninitialized"
                                  message:@"getVisibleRegion called prior to map initialization"
+                                 details:nil]);
+    }
+  } else if ([call.method isEqualToString:@"map#getScreenCoordinate"]) {
+    if (_mapView != nil) {
+      CLLocationCoordinate2D location = [FLTGoogleMapJsonConversions toLocation:call.arguments];
+      CGPoint point = [_mapView.projection pointForCoordinate:location];
+      result(PointToJson(point));
+    } else {
+      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                 message:@"getScreenCoordinate called prior to map initialization"
+                                 details:nil]);
+    }
+  } else if ([call.method isEqualToString:@"map#getLatLng"]) {
+    if (_mapView != nil && call.arguments) {
+      CGPoint point = ToCGPoint(call.arguments);
+      CLLocationCoordinate2D latlng = [_mapView.projection coordinateForPoint:point];
+      result(LocationToJson(latlng));
+    } else {
+      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                 message:@"getLatLng called prior to map initialization"
                                  details:nil]);
     }
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
@@ -427,6 +449,13 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position) {
   };
 }
 
+static NSDictionary* PointToJson(CGPoint point) {
+  return @{
+    @"x" : @((int)point.x),
+    @"y" : @((int)point.y),
+  };
+}
+
 static NSDictionary* GMSCoordinateBoundsToJson(GMSCoordinateBounds* bounds) {
   if (!bounds) {
     return nil;
@@ -458,6 +487,12 @@ static GMSCameraPosition* ToCameraPosition(NSDictionary* data) {
 
 static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json) {
   return json ? ToCameraPosition(json) : nil;
+}
+
+static CGPoint ToCGPoint(NSDictionary* json) {
+  double x = ToDouble(json[@"x"]);
+  double y = ToDouble(json[@"y"]);
+  return CGPointMake(x, y);
 }
 
 static GMSCoordinateBounds* ToBounds(NSArray* data) {
