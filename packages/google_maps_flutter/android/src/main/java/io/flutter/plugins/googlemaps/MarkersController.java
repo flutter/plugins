@@ -63,6 +63,21 @@ class MarkersController {
     }
   }
 
+  void showMarkerInfoWindow(String markerId) {
+    MarkerController markerController = markerIdToController.get(markerId);
+    markerController.showInfoWindow();
+  }
+
+  void hideMarkerInfoWindow(String markerId) {
+    MarkerController markerController = markerIdToController.get(markerId);
+    markerController.hideInfoWindow();
+  }
+
+  boolean isInfoWindowShown(String markerId) {
+    MarkerController markerController = markerIdToController.get(markerId);
+    return markerController.isInfoWindowShown();
+  }
+
   boolean onMarkerTap(String googleMarkerId) {
     String markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
     if (markerId == null) {
