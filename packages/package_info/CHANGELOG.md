@@ -1,3 +1,7 @@
+## 0.4.0+7
+
+* Update and migrate iOS example project.
+
 ## 0.4.0+6
 
 * Fix Android compiler warnings.
