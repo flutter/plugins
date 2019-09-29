@@ -1,3 +1,7 @@
+## 0.6.1+6
+
+* Android: Fix ImagePickerPlugin#onCreate cast context may be cause exeception.
+
 ## 0.6.1+5
 
 * Update and migrate iOS example project.
