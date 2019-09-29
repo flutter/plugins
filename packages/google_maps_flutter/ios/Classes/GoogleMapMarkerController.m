@@ -26,6 +26,15 @@ static void InterpretInfoWindow(id<FLTGoogleMapMarkerOptionsSink> sink, NSDictio
   }
   return self;
 }
+- (void)showInfoWIndow {
+  _mapView.selectedMarker = _marker;
+}
+- (void)hideInfoWIndow {
+  _mapView.selectedMarker = nil;
+}
+- (BOOL)isInfoWindowShown {
+  return false;
+}
 - (BOOL)consumeTapEvents {
   return _consumeTapEvents;
 }
@@ -299,6 +308,18 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
   if (markerId && _markerIdToController[markerId]) {
     [_methodChannel invokeMethod:@"infoWindow#onTap" arguments:@{@"markerId" : markerId}];
   }
+}
+- (void)showMarkerInfoWindow:(NSString*)markerId {
+  FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
+  [controller showInfoWIndow];
+}
+- (void)hideMarkerInfoWindow:(NSString*)markerId {
+  FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
+  [controller hideInfoWIndow];
+}
+- (BOOL)isMarkerInfoWindowShown:(NSString*)markerId {
+  FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
+  return([controller isInfoWIndowShown]);
 }
 
 + (CLLocationCoordinate2D)getPosition:(NSDictionary*)marker {

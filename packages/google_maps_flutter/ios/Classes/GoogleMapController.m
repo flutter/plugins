@@ -185,6 +185,23 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       [_markersController removeMarkerIds:markerIdsToRemove];
     }
     result(nil);
+  } else if ([call.method isEqualToString:@"markers#showInfoWindow"]) {
+    id markerId = call.arguments[@"markerId"];
+    if ([markerId isKindOfClass:[NSString class]]) {
+      [_markersController showMarkerInfoWindow:markerId];
+    }
+    result(nil);
+  } else if ([call.method isEqualToString:@"markers#hideInfoWindow"]) {
+    id markerId = call.arguments[@"markerId"];
+    if ([markerId isKindOfClass:[NSString class]]) {
+      [_markersController hideMarkerInfoWindow:markerId];
+    }
+    result(nil);
+  } else if ([call.method isEqualToString:@"markers#isInfoWindowShown"]) {
+    id markerId = call.arguments[@"markerId"];
+    if ([markerId isKindOfClass:[NSString class]]) {
+      result([_markersController isMarkerInfoWindowShown:markerId]);
+    }
   } else if ([call.method isEqualToString:@"polygons#update"]) {
     id polygonsToAdd = call.arguments[@"polygonsToAdd"];
     if ([polygonsToAdd isKindOfClass:[NSArray class]]) {
