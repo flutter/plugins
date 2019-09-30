@@ -49,7 +49,7 @@ static FlutterError *getFlutterError(NSError *error) {
   self = [super init];
   if (self) {
     [GIDSignIn sharedInstance].delegate = self;
-    
+
     // On the iOS simulator, we get "Broken pipe" errors after sign-in for some
     // unknown reason. We can avoid crashing the app by ignoring them.
     signal(SIGPIPE, SIG_IGN);
