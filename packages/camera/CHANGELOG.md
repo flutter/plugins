@@ -1,3 +1,7 @@
+## 0.5.4+4
+
+* Fix event type check
+
 ## 0.5.4+3
 
 * Update and migrate iOS example project.
