@@ -496,7 +496,7 @@ public class Camera {
       Map<String, String> event = new HashMap<>();
       event.put("eventType", eventType.toString().toLowerCase());
       // Only errors have description
-      if (eventType != EventType.ERROR) {
+      if (eventType == EventType.ERROR) {
         event.put("errorDescription", description);
       }
       eventSink.success(event);
