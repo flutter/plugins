@@ -493,7 +493,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_players removeObjectForKey:@(textureId)];
-      //[player dispose];
       result(nil);
     } else if ([@"setLooping" isEqualToString:call.method]) {
       [player setIsLooping:[argsMap[@"looping"] boolValue]];
