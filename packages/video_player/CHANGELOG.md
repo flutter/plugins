@@ -1,3 +1,7 @@
+## 0.10.2+1
+
+* Dispose 'player' after the texture is unregistered on iOS.
+
 ## 0.10.2
 
 * **Android Only** Adds optional VideoFormat used to signal what format the plugin should try.
