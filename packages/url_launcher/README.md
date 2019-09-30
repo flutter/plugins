@@ -44,14 +44,16 @@ URL schemes depend on the underlying platform and installed apps.
 
 Common schemes supported by both iOS and Android:
 
-***Note: These action won't work on simulator you need physical device to test for iOS.***
-
 | Scheme | Action |
 |---|---|
 | `http:<URL>` , `https:<URL>`, e.g. `http://flutter.dev` | Open URL in the default browser |
 | `mailto:<email address>?subject=<subject>&body=<body>`, e.g. `mailto:smith@example.org?subject=News&body=New%20plugin` | Create email to <email address> in the default email app |
 | `tel:<phone number>`, e.g. `tel:+1 555 010 999` | Make a phone call to <phone number> using the default phone app |
 | `sms:<phone number>`, e.g. `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
+
+URL schemes will fail if there are no apps installed on the device that can
+support them. For example, iOS simulators don't have a default email or phone
+apps installed and can't open `tel:` or `mailto:` links.
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
 
