@@ -1,3 +1,9 @@
+## 0.5.3+5
+
+* Allow replacing the platform-specific implementation of SharedPreferences in
+Dart in addition to the existing ability to do so in native code by implementing
+the method channel contract.
+
 ## 0.5.3+4
 
 * Copy `List` instances when reading and writing values to prevent mutations from propagating.
