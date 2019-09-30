@@ -61,31 +61,14 @@ API_AVAILABLE(ios(9.0))
 
 @end
 
-@interface FLTUrlLauncherPlugin ()
-
-@property(strong, nonatomic) UIViewController *viewController;
-
-@end
-
 @implementation FLTUrlLauncherPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher"
                                   binaryMessenger:registrar.messenger];
-  UIViewController *viewController =
-      [UIApplication sharedApplication].delegate.window.rootViewController;
-  FLTUrlLauncherPlugin *plugin =
-      [[FLTUrlLauncherPlugin alloc] initWithViewController:viewController];
+  FLTUrlLauncherPlugin *plugin = [[FLTUrlLauncherPlugin alloc] init];
   [registrar addMethodCallDelegate:plugin channel:channel];
-}
-
-- (instancetype)initWithViewController:(UIViewController *)viewController {
-  self = [super init];
-  if (self) {
-    self.viewController = viewController;
-  }
-  return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -153,9 +136,9 @@ API_AVAILABLE(ios(9.0))
   self.currentSession.didFinish = ^(void) {
     weakSelf.currentSession = nil;
   };
-  [self.viewController presentViewController:self.currentSession.safari
-                                    animated:YES
-                                  completion:nil];
+  [self.topViewController presentViewController:self.currentSession.safari
+                                       animated:YES
+                                     completion:nil];
 }
 
 - (void)closeWebViewWithResult:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
@@ -165,4 +148,36 @@ API_AVAILABLE(ios(9.0))
   result(nil);
 }
 
+- (UIViewController *)topViewController {
+  return [self topViewControllerFromViewController:[UIApplication sharedApplication]
+                                                       .keyWindow.rootViewController];
+}
+
+/**
+ * This method recursively iterate through the view hierarchy
+ * to return the top most view controller.
+ *
+ * It supports the following scenarios:
+ *
+ * - The view controller is presenting another view.
+ * - The view controller is a UINavigationController.
+ * - The view controller is a UITabBarController.
+ *
+ * @return The top most view controller.
+ */
+- (UIViewController *)topViewControllerFromViewController:(UIViewController *)viewController {
+  if ([viewController isKindOfClass:[UINavigationController class]]) {
+    UINavigationController *navigationController = (UINavigationController *)viewController;
+    return [self
+        topViewControllerFromViewController:[navigationController.viewControllers lastObject]];
+  }
+  if ([viewController isKindOfClass:[UITabBarController class]]) {
+    UITabBarController *tabController = (UITabBarController *)viewController;
+    return [self topViewControllerFromViewController:tabController.selectedViewController];
+  }
+  if (viewController.presentedViewController) {
+    return [self topViewControllerFromViewController:viewController.presentedViewController];
+  }
+  return viewController;
+}
 @end

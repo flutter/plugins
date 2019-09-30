@@ -1,3 +1,11 @@
+## 0.2.1+4
+
+* Update and migrate iOS example project.
+
+## 0.2.1+3
+
+* Android : Improved testability.
+
 ## 0.2.1+2
 
 * Android: Require a non-null Activity to use the `launchBillingFlow` method.

@@ -1,3 +1,27 @@
+## 0.5.21+6
+
+* Override a default method to work around flutter/flutter#40126.
+
+## 0.5.21+5
+
+* Update and migrate iOS example project.
+
+## 0.5.21+4
+
+* Support projection methods to translate between screen and latlng coordinates.
+
+## 0.5.21+3
+
+* Fix `myLocationButton` bug in `google_maps_flutter` iOS.
+
+## 0.5.21+2
+
+* Fix more `prefer_const_constructors` analyzer warnings in example app.
+
+## 0.5.21+1
+
+* Fix `prefer_const_constructors` analyzer warnings in example app.
+
 ## 0.5.21
 
 * Don't recreate map elements if they didn't change since last widget build.
