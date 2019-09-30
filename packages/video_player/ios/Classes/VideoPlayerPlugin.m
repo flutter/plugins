@@ -363,6 +363,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   }
 }
 
+- (void)onUnregistered {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self dispose];
+  });
+}
+
 - (FlutterError* _Nullable)onCancelWithArguments:(id _Nullable)arguments {
   _eventSink = nil;
   return nil;
@@ -487,7 +493,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_players removeObjectForKey:@(textureId)];
-      [player dispose];
+      //[player dispose];
       result(nil);
     } else if ([@"setLooping" isEqualToString:call.method]) {
       [player setIsLooping:[argsMap[@"looping"] boolValue]];
