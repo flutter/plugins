@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
-#import "FIAObjectTranslator.h"
 #import "Stubs.h"
+
+@import in_app_purchase;
 
 @interface TranslatorTest : XCTestCase
 

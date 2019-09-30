@@ -4,9 +4,8 @@
 
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
-#import "FIAPReceiptManager.h"
-#import "FIAPRequestHandler.h"
-#import "InAppPurchasePlugin.h"
+
+@import in_app_purchase;
 
 NS_ASSUME_NONNULL_BEGIN
 API_AVAILABLE(ios(11.2), macos(10.13.2))
