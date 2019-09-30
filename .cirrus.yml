@@ -51,6 +51,7 @@ task:
   osx_instance:
     image: mojave-xcode-10.2-flutter
   setup_script:
+    - sudo gem install cocoapods --no-document
     - pod --version
   upgrade_script:
     - flutter channel master
