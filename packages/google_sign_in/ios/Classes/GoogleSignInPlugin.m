@@ -29,7 +29,7 @@ static FlutterError *getFlutterError(NSError *error) {
                              details:error.localizedDescription];
 }
 
-@interface FLTGoogleSignInPlugin () <GIDSignInDelegate, GIDSignInUIDelegate>
+@interface FLTGoogleSignInPlugin () <GIDSignInDelegate>
 @end
 
 @implementation FLTGoogleSignInPlugin {
@@ -49,8 +49,7 @@ static FlutterError *getFlutterError(NSError *error) {
   self = [super init];
   if (self) {
     [GIDSignIn sharedInstance].delegate = self;
-    [GIDSignIn sharedInstance].uiDelegate = self;
-
+    
     // On the iOS simulator, we get "Broken pipe" errors after sign-in for some
     // unknown reason. We can avoid crashing the app by ignoring them.
     signal(SIGPIPE, SIG_IGN);
@@ -84,11 +83,15 @@ static FlutterError *getFlutterError(NSError *error) {
     }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
     if ([self setAccountRequest:result]) {
-      [[GIDSignIn sharedInstance] signInSilently];
+      [[GIDSignIn sharedInstance] restorePreviousSignIn];
     }
   } else if ([call.method isEqualToString:@"isSignedIn"]) {
-    result(@([[GIDSignIn sharedInstance] hasAuthInKeychain]));
+    result(@([[GIDSignIn sharedInstance] hasPreviousSignIn]));
   } else if ([call.method isEqualToString:@"signIn"]) {
+    // TODO(jackson): It might be more appropriate to use controller of the FlutterView
+    UIViewController *controller = [UIApplication sharedApplication].keyWindow.rootViewController;
+    [GIDSignIn sharedInstance].presentingViewController = controller;
+
     if ([self setAccountRequest:result]) {
       @try {
         [[GIDSignIn sharedInstance] signIn];
@@ -136,9 +139,7 @@ static FlutterError *getFlutterError(NSError *error) {
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
   NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
   id annotation = options[UIApplicationOpenURLOptionsAnnotationKey];
-  return [[GIDSignIn sharedInstance] handleURL:url
-                             sourceApplication:sourceApplication
-                                    annotation:annotation];
+  return [[GIDSignIn sharedInstance] handleURL:url];
 }
 
 #pragma mark - <GIDSignInUIDelegate> protocol
