@@ -151,8 +151,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   VideoPlayerController.asset(this.dataSource, {this.package})
       : dataSourceType = DataSourceType.asset,
         formatHint = null,
-        maxCacheSize = 0,
-        maxCacheFileSize = 0,
+        _isCached = false,
         super(VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from obtained from
@@ -168,9 +167,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       int maxCacheSize = 100 * 1024 * 1024,
       int maxCacheFileSize = 10 * 1024 * 1024})
       : dataSourceType = DataSourceType.network,
+        _isCached = isCached ?? false,
         package = null,
-        maxCacheSize = isCached ? maxCacheSize : 0,
-        maxCacheFileSize = isCached ? maxCacheFileSize : 0,
         super(VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from a file.
@@ -182,8 +180,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
-        maxCacheSize = 0,
-        maxCacheFileSize = 0,
+        _isCached = false,
         super(VideoPlayerValue(duration: null));
 
   int _textureId;
@@ -195,14 +192,32 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   final DataSourceType dataSourceType;
 
   /// The maximum cache size to keep on disk in bytes.
-  ///
-  /// eg, 100MB is `100 * 1024 * 1024`
-  final int maxCacheSize;
+  static int _maxCacheSize = 100 * 1024 * 1024;
 
   /// The maximum size of each individual file in bytes.
+  static int _maxCacheFileSize = 10 * 1024 * 1024;
+
+  /// If the video is cached or not
+  final bool _isCached;
+
+  /// If we've set the cache once already
+  static bool _hasAlreadySetCache = false;
+
+  /// Set the cache size in bytes. Default is maxSize of `100 * 1024 * 1024`
+  /// and maxFileSize of `10 * 1024 * 1024`.
   ///
-  /// eg, 10MB is `10 * 1024 * 1024`
-  final int maxCacheFileSize;
+  /// Throws StateError if you try to set the cache size twice. You can only set it once.
+  static void setCacheSize(int maxSize, int maxFileSize) {
+    if (_hasAlreadySetCache == false) {
+      VideoPlayerController._maxCacheSize = maxSize;
+      VideoPlayerController._maxCacheFileSize = maxFileSize;
+      VideoPlayerController._hasAlreadySetCache = true;
+    } else {
+      throw StateError(
+        "You can only set the VideoPlayerController cache size once.",
+      );
+    }
+  }
 
   final String package;
   Timer _timer;
@@ -215,6 +230,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   int get textureId => _textureId;
 
   Future<void> initialize() async {
+    /// Initializing cements the cache size
+    VideoPlayerController._hasAlreadySetCache = true;
+
     _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
     _lifeCycleObserver.initialize();
     _creatingCompleter = Completer<void>();
@@ -237,8 +255,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         break;
     }
     dataSourceDescription.addAll(<String, dynamic>{
-      'maxCacheSize': maxCacheSize,
-      'maxFileSize': maxCacheFileSize,
+      'maxCacheSize': _isCached ? _maxCacheSize : 0,
+      'maxFileSize': _isCached ? _maxCacheFileSize : 0,
     });
     final Map<String, dynamic> response =
         await _channel.invokeMapMethod<String, dynamic>(
