@@ -26,6 +26,7 @@
 		9FC8F0EC229FA68500C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
 		9FC8F0EE229FB90B00C8D58F /* ImageUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */; };
 		F4F7A436CCA4BF276270A3AE /* libPods-Runner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC32F6993F4529982D9519F1 /* libPods-Runner.a */; };
+		F78AF3192342D9D7008449C7 /* ImagePickerTestImages.m in Sources */ = {isa = PBXBuildFile; fileRef = F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,11 +62,11 @@
 		5C9513001EC38BD300040975 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		680049172280D368006DD6AB /* image_picker_exampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = image_picker_exampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6800491B2280D368006DD6AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		680049252280D736006DD6AB /* MetaDataUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MetaDataUtilTests.m; sourceTree = "<group>"; };
+		680049252280D736006DD6AB /* MetaDataUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MetaDataUtilTests.m; path = ../../../ios/Tests/MetaDataUtilTests.m; sourceTree = "<group>"; };
 		680049352280F2B8006DD6AB /* pngImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pngImage.png; sourceTree = "<group>"; };
 		680049362280F2B8006DD6AB /* jpgImage.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = jpgImage.jpg; sourceTree = "<group>"; };
 		6801632E632668F4349764C9 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
-		68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhotoAssetUtilTests.m; sourceTree = "<group>"; };
+		68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PhotoAssetUtilTests.m; path = ../../../ios/Tests/PhotoAssetUtilTests.m; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		7AFFD8ED1D35381100E5BB4D /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -79,8 +80,10 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9FC8F0E8229FA49E00C8D58F /* gifImage.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = gifImage.gif; sourceTree = "<group>"; };
-		9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageUtilTests.m; sourceTree = "<group>"; };
+		9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ImageUtilTests.m; path = ../../../ios/Tests/ImageUtilTests.m; sourceTree = "<group>"; };
 		EC32F6993F4529982D9519F1 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F78AF3172342D9D7008449C7 /* ImagePickerTestImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ImagePickerTestImages.h; path = ../../../ios/Tests/ImagePickerTestImages.h; sourceTree = "<group>"; };
+		F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ImagePickerTestImages.m; path = ../../../ios/Tests/ImagePickerTestImages.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +114,8 @@
 				9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */,
 				680049252280D736006DD6AB /* MetaDataUtilTests.m */,
 				68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */,
+				F78AF3172342D9D7008449C7 /* ImagePickerTestImages.h */,
+				F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */,
 			);
 			path = image_picker_exampleTests;
 			sourceTree = "<group>";
@@ -383,6 +388,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FC8F0EE229FB90B00C8D58F /* ImageUtilTests.m in Sources */,
+				F78AF3192342D9D7008449C7 /* ImagePickerTestImages.m in Sources */,
 				680049262280D736006DD6AB /* MetaDataUtilTests.m in Sources */,
 				68F4B464228B3AB500C25614 /* PhotoAssetUtilTests.m in Sources */,
 			);
@@ -433,7 +439,6 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_COMMA = YES;
@@ -445,17 +450,12 @@
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = image_picker_exampleTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.google.transformTest.image-picker-exampleTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
 			};
 			name = Debug;
@@ -465,7 +465,6 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_COMMA = YES;
@@ -477,16 +476,11 @@
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = image_picker_exampleTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.google.transformTest.image-picker-exampleTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
 			};
 			name = Release;
@@ -604,7 +598,6 @@
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -626,7 +619,6 @@
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

@@ -52,7 +52,6 @@ function lint_packages() {
     'device_info'
     'google_maps_flutter'
     'google_sign_in'
-    'image_picker'
     'instrumentation_adapter'
     'local_auth'
     'package_info'
