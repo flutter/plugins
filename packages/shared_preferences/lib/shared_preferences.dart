@@ -3,21 +3,20 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
+import 'method_channel_shared_preferences.dart';
+import 'shared_preferences_platform_interface.dart';
 
-const MethodChannel _kChannel =
-    MethodChannel('plugins.flutter.io/shared_preferences');
-
-/// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
-/// a persistent store for simple data.
+/// Wraps platform-specific user preferences APIs, providing a persistent store
+/// for simple data.
 ///
 /// Data is persisted to disk asynchronously.
 class SharedPreferences {
   SharedPreferences._(this._preferenceCache);
 
   static const String _prefix = 'flutter.';
+  static Map<String, dynamic> _mockInitialValues;
   static Completer<SharedPreferences> _completer;
   static Future<SharedPreferences> getInstance() async {
     if (_completer == null) {
@@ -36,6 +35,34 @@ class SharedPreferences {
       }
     }
     return _completer.future;
+  }
+
+  static SharedPreferencesPlatform _platform;
+
+  /// Sets a custom [SharedPreferencesPlatform].
+  ///
+  /// This property can be set to use a custom platform implementation.
+  static set platform(SharedPreferencesPlatform platform) {
+    assert(_platform == null);
+    _platform = platform;
+  }
+
+  /// The SharedPreferences platform that's used by the plugin.
+  ///
+  /// The default value is [MethodChannelSharedPreferences] on Android or iOS.
+  static SharedPreferencesPlatform get platform {
+    if (_platform == null) {
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.android:
+        case TargetPlatform.iOS:
+          _platform = MethodChannelSharedPreferences();
+          break;
+        default:
+          throw UnsupportedError(
+              "Trying to use the default shared preferences implementation for $defaultTargetPlatform but there isn't a default one");
+      }
+    }
+    return _platform;
   }
 
   /// The cache that holds all preferences.
@@ -88,12 +115,14 @@ class SharedPreferences {
   /// Saves a boolean [value] to persistent storage in the background.
   ///
   /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  Future<bool> setBool(String key, bool value) => _setValue('Bool', key, value);
+  Future<bool> setBool(String key, bool value) =>
+      _setValue(key, value, () => platform.setBool('$_prefix$key', value));
 
   /// Saves an integer [value] to persistent storage in the background.
   ///
   /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  Future<bool> setInt(String key, int value) => _setValue('Int', key, value);
+  Future<bool> setInt(String key, int value) =>
+      _setValue(key, value, () => platform.setInt('$_prefix$key', value));
 
   /// Saves a double [value] to persistent storage in the background.
   ///
@@ -101,55 +130,52 @@ class SharedPreferences {
   ///
   /// If [value] is null, this is equivalent to calling [remove()] on the [key].
   Future<bool> setDouble(String key, double value) =>
-      _setValue('Double', key, value);
+      _setValue(key, value, () => platform.setDouble('$_prefix$key', value));
 
   /// Saves a string [value] to persistent storage in the background.
   ///
   /// If [value] is null, this is equivalent to calling [remove()] on the [key].
   Future<bool> setString(String key, String value) =>
-      _setValue('String', key, value);
+      _setValue(key, value, () => platform.setString('$_prefix$key', value));
 
   /// Saves a list of strings [value] to persistent storage in the background.
   ///
   /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  Future<bool> setStringList(String key, List<String> value) =>
-      _setValue('StringList', key, value);
+  Future<bool> setStringList(String key, List<String> value) => _setValue(
+      key, value, () => platform.setStringList('$_prefix$key', value));
 
   /// Removes an entry from persistent storage.
-  Future<bool> remove(String key) => _setValue(null, key, null);
+  Future<bool> remove(String key) => _setValue(key, null, null);
 
-  Future<bool> _setValue(String valueType, String key, Object value) {
-    final Map<String, dynamic> params = <String, dynamic>{
-      'key': '$_prefix$key',
-    };
+  Future<bool> _setValue(
+    String key,
+    Object value,
+    Future<bool> Function() platformSet,
+  ) {
     if (value == null) {
       _preferenceCache.remove(key);
-      return _kChannel
-          .invokeMethod<bool>('remove', params)
-          .then<bool>((dynamic result) => result);
-    } else {
-      if (value is List<String>) {
-        // Make a copy of the list so that later mutations won't propagate
-        _preferenceCache[key] = value.toList();
-      } else {
-        _preferenceCache[key] = value;
-      }
-      params['value'] = value;
-      return _kChannel
-          .invokeMethod<bool>('set$valueType', params)
-          .then<bool>((dynamic result) => result);
+      return platform.remove('$_prefix$key');
     }
+
+    if (value is List<String>) {
+      // Make a copy of the list so that later mutations won't propagate
+      _preferenceCache[key] = value.toList();
+    } else {
+      _preferenceCache[key] = value;
+    }
+
+    return platformSet();
   }
 
   /// Always returns true.
   /// On iOS, synchronize is marked deprecated. On Android, we commit every set.
   @deprecated
-  Future<bool> commit() async => await _kChannel.invokeMethod<bool>('commit');
+  Future<bool> commit() => Future<bool>.value(true);
 
   /// Completes with true once the user preferences for the app has been cleared.
-  Future<bool> clear() async {
+  Future<bool> clear() {
     _preferenceCache.clear();
-    return await _kChannel.invokeMethod<bool>('clear');
+    return platform.clear();
   }
 
   /// Fetches the latest values from the host platform.
@@ -164,9 +190,11 @@ class SharedPreferences {
   }
 
   static Future<Map<String, Object>> _getSharedPreferencesMap() async {
-    final Map<String, Object> fromSystem =
-        await _kChannel.invokeMapMethod<String, Object>('getAll');
+    final Map<String, Object> fromSystem = _mockInitialValues == null
+        ? await platform.getAll()
+        : _mockInitialValues;
     assert(fromSystem != null);
+
     // Strip the flutter. prefix from the returned preferences.
     final Map<String, Object> preferencesMap = <String, Object>{};
     for (String key in fromSystem.keys) {
@@ -181,12 +209,8 @@ class SharedPreferences {
   /// If the singleton instance has been initialized already, it is nullified.
   @visibleForTesting
   static void setMockInitialValues(Map<String, dynamic> values) {
-    _kChannel.setMockMethodCallHandler((MethodCall methodCall) async {
-      if (methodCall.method == 'getAll') {
-        return values;
-      }
-      return null;
-    });
+    _mockInitialValues =
+        values == null ? null : Map<String, dynamic>.from(values);
     _completer = null;
   }
 }

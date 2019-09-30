@@ -4,6 +4,7 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/method_channel_shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -32,6 +33,7 @@ void main() {
 
     final List<MethodCall> log = <MethodCall>[];
     SharedPreferences preferences;
+    SharedPreferences.platform = MethodChannelSharedPreferences();
 
     setUp(() async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {

@@ -50,3 +50,24 @@ const MethodChannel('plugins.flutter.io/shared_preferences')
     return null;
   });
 ```
+
+### Replacing platform-specific implementation
+
+You can manually set the platform-specific implementation of the ```SharedPreferences```
+protocol by implementing the interface defined by the abstract ```SharedPreferencesPlatform```
+class and setting it via the ```platform``` property:
+
+```dart
+class MySharedPreferences extends SharedPreferencesPlatform {...}
+...
+SharedPreferences.platform = MySharedPreferences();
+```
+
+This allows for replacing the platform-specific implementation of ```SharedPreferences```
+in Dart in addition to the existing ability to do so in native code by implementing
+the method channel contract.
+
+The ```platform``` property must be set before calling ```getInstance```.
+
+By default, if the ```platform``` property isn't set, it will use the method channel
+protocol implementation for iOS and Android (no other platform is currently supported).
