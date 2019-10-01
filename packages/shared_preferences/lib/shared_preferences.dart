@@ -52,15 +52,7 @@ class SharedPreferences {
   /// The default value is [MethodChannelSharedPreferences] on Android or iOS.
   static SharedPreferencesPlatform get platform {
     if (_platform == null) {
-      switch (defaultTargetPlatform) {
-        case TargetPlatform.android:
-        case TargetPlatform.iOS:
           _platform = MethodChannelSharedPreferences();
-          break;
-        default:
-          throw UnsupportedError(
-              "Trying to use the default shared preferences implementation for $defaultTargetPlatform but there isn't a default one");
-      }
     }
     return _platform;
   }
