@@ -1,3 +1,7 @@
+## 0.10.3
+
+* Add caching functionality to videos from network sources.
+
 ## 0.10.2+4
 
 * Define clang module for iOS.
