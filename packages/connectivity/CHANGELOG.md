@@ -1,3 +1,7 @@
+## 0.4.5
+
+* Adding `listenToValidInternetConnection`  as a way to test internet reachability.
+
 ## 0.4.4
 
 * Add `requestLocationServiceAuthorization` to request location authorization on iOS.
