@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #import "VideoPlayerPlugin.h"
-#import "VIMediaCache.h"
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
+#import "VIMediaCache.h"
 
 int64_t FLTCMTimeToMillis(CMTime time) {
   if (time.timescale == 0) return 0;
@@ -160,10 +160,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
-    return [self initWithURL:url frameUpdater:frameUpdater enableCache:NO];
+  return [self initWithURL:url frameUpdater:frameUpdater enableCache:NO];
 }
 
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater enableCache:(BOOL)enableCache {
+- (instancetype)initWithURL:(NSURL*)url
+               frameUpdater:(FLTFrameUpdater*)frameUpdater
+                enableCache:(BOOL)enableCache {
   AVPlayerItem* item;
   if (enableCache) {
     item = [[FLTVideoPlayer resourceLoaderManager] playerItemWithURL:url];
@@ -174,11 +176,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 + (VIResourceLoaderManager*)resourceLoaderManager {
-    static VIResourceLoaderManager* resourceLoaderManager = nil;
-    if (resourceLoaderManager == nil) {
-        resourceLoaderManager = [VIResourceLoaderManager new];
-    }
-    return resourceLoaderManager;
+  static VIResourceLoaderManager* resourceLoaderManager = nil;
+  if (resourceLoaderManager == nil) {
+    resourceLoaderManager = [VIResourceLoaderManager new];
+  }
+  return resourceLoaderManager;
 }
 
 - (CGAffineTransform)fixTransform:(AVAssetTrack*)videoTrack {
@@ -496,15 +498,17 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     } else if (uriArg) {
       BOOL enableCache = maxCacheSizeArg > 0 && maxFileSizeArg > 0;
 
-        if(enableCache){
-            NSString *escapedURL = [uriArg stringByAddingPercentEncodingWithAllowedCharacters:NSMutableCharacterSet.alphanumericCharacterSet];
-            player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:escapedURL]
-                                            frameUpdater:frameUpdater
-                                             enableCache: enableCache];
-        } else {
-            player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
-                                            frameUpdater:frameUpdater];
-        }
+      if (enableCache) {
+        NSString* escapedURL = [uriArg
+            stringByAddingPercentEncodingWithAllowedCharacters:NSMutableCharacterSet
+                                                                   .alphanumericCharacterSet];
+        player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:escapedURL]
+                                        frameUpdater:frameUpdater
+                                         enableCache:enableCache];
+      } else {
+        player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
+                                        frameUpdater:frameUpdater];
+      }
 
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else {

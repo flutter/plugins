@@ -50,7 +50,6 @@ import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.FlutterNativeView;
 import io.flutter.view.TextureRegistry;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -97,14 +96,16 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
       DataSource.Factory dataSourceFactory;
       if (isHTTP(uri)) {
-        dataSourceFactory = new DefaultHttpDataSourceFactory(
-          "ExoPlayer",
-          null,
-          DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-          DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
-          true);
+        dataSourceFactory =
+            new DefaultHttpDataSourceFactory(
+                "ExoPlayer",
+                null,
+                DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+                DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+                true);
         if (maxCacheSize > 0 && maxFileSize > 0) {
-          dataSourceFactory = new CacheDataSourceFactory(context, maxCacheSize, maxFileSize, dataSourceFactory);
+          dataSourceFactory =
+              new CacheDataSourceFactory(context, maxCacheSize, maxFileSize, dataSourceFactory);
         }
       } else {
         dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
@@ -475,15 +476,15 @@ class CacheDataSourceFactory implements DataSource.Factory {
   private final long maxFileSize, maxCacheSize;
   private static SimpleCache downloadCache;
 
-  CacheDataSourceFactory(Context context, long maxCacheSize, long maxFileSize, DataSource.Factory upstreamDataSource) {
+  CacheDataSourceFactory(
+      Context context, long maxCacheSize, long maxFileSize, DataSource.Factory upstreamDataSource) {
     super();
     this.context = context;
     this.maxCacheSize = maxCacheSize;
     this.maxFileSize = maxFileSize;
     DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-    defaultDatasourceFactory = new DefaultDataSourceFactory(this.context,
-      bandwidthMeter,
-      upstreamDataSource);
+    defaultDatasourceFactory =
+        new DefaultDataSourceFactory(this.context, bandwidthMeter, upstreamDataSource);
   }
 
   @Override
@@ -494,8 +495,12 @@ class CacheDataSourceFactory implements DataSource.Factory {
       downloadCache = new SimpleCache(new File(context.getCacheDir(), "video"), evictor);
     }
 
-    return new CacheDataSource(downloadCache, defaultDatasourceFactory.createDataSource(),
-      new FileDataSource(), new CacheDataSink(downloadCache, maxFileSize),
-      CacheDataSource.FLAG_BLOCK_ON_CACHE | CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR, null);
+    return new CacheDataSource(
+        downloadCache,
+        defaultDatasourceFactory.createDataSource(),
+        new FileDataSource(),
+        new CacheDataSink(downloadCache, maxFileSize),
+        CacheDataSource.FLAG_BLOCK_ON_CACHE | CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR,
+        null);
   }
 }
