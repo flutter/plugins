@@ -247,3 +247,19 @@ enum LocationAuthorizationStatus {
   /// Status unknown.
   unknown
 }
+
+/// Returns a Stream that checks for a valid internet connection.
+/// It will return false if, for example, the device is connected to some network,
+/// but is unable to reach the internet.
+/// Idea based on https://github.com/pwittchen/ReactiveNetwork
+Stream<bool> listenToValidInternetConnection(Duration interval,
+    {Future<bool> Function() internetCheck = _checkInternetConnection}) =>
+    Stream<bool>.periodic(interval).asyncMap((_) async => await internetCheck());
+
+Future<bool> _checkInternetConnection() =>
+    HttpClient()
+        .getUrl(Uri.parse("http://clients3.google.com/generate_204"))
+        .then((HttpClientRequest request) => request.close())
+        .then((HttpClientResponse response) => response.statusCode == 204)
+        .catchError((dynamic error) => Future<bool>.value(false));
+
