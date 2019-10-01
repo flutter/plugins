@@ -162,10 +162,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// **Android only**: The [formatHint] option allows the caller to override
   /// the video format detection code.
   VideoPlayerController.network(this.dataSource,
-      {this.formatHint,
-      bool isCached = true,
-      int maxCacheSize = 100 * 1024 * 1024,
-      int maxCacheFileSize = 10 * 1024 * 1024})
+      {this.formatHint, bool isCached = true})
       : dataSourceType = DataSourceType.network,
         _isCached = isCached ?? false,
         package = null,
@@ -208,6 +205,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// Throws StateError if you try to set the cache size twice. You can only set it once.
   static void setCacheSize(int maxSize, int maxFileSize) {
+    assert(maxSize != null && maxSize > 0);
+    assert(maxFileSize != null && maxFileSize > 0);
+
     if (_hasAlreadySetCache == false) {
       VideoPlayerController._maxCacheSize = maxSize;
       VideoPlayerController._maxCacheFileSize = maxFileSize;
