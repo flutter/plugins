@@ -7,7 +7,6 @@
 @import image_picker;
 @import XCTest;
 
-
 @interface MetaDataUtilTests : XCTestCase
 @end
 
