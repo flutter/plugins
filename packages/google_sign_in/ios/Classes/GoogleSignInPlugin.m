@@ -40,15 +40,16 @@ static FlutterError *getFlutterError(NSError *error) {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
                                   binaryMessenger:[registrar messenger]];
-  FLTGoogleSignInPlugin *instance = [[FLTGoogleSignInPlugin alloc] init];
+  FLTGoogleSignInPlugin *instance = [[FLTGoogleSignInPlugin alloc] initWithController:[registrar messenger]];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)init {
+- (instancetype)initWithController:(id)controller {
   self = [super init];
   if (self) {
     [GIDSignIn sharedInstance].delegate = self;
+    [GIDSignIn sharedInstance].presentingViewController = controller;
 
     // On the iOS simulator, we get "Broken pipe" errors after sign-in for some
     // unknown reason. We can avoid crashing the app by ignoring them.
@@ -88,10 +89,6 @@ static FlutterError *getFlutterError(NSError *error) {
   } else if ([call.method isEqualToString:@"isSignedIn"]) {
     result(@([[GIDSignIn sharedInstance] hasPreviousSignIn]));
   } else if ([call.method isEqualToString:@"signIn"]) {
-    // TODO(jackson): It might be more appropriate to use controller of the FlutterView
-    UIViewController *controller = [UIApplication sharedApplication].keyWindow.rootViewController;
-    [GIDSignIn sharedInstance].presentingViewController = controller;
-
     if ([self setAccountRequest:result]) {
       @try {
         [[GIDSignIn sharedInstance] signIn];
