@@ -1,6 +1,10 @@
 ## 0.5.0
 * Added indicator for a firebase test lab device.
 
+## 0.4.0+3
+
+* Update and migrate iOS example project.
+
 ## 0.4.0+2
 
 * Bump minimum Flutter version to 1.5.0.
