@@ -92,7 +92,9 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
           public void onActivityStopped(Activity activity) {}
         };
 
-    if (this.registrar != null) {
+    if (this.registrar != null
+        && this.registrar.context() != null
+        && this.registrar.context().getApplicationContext() != null) {
       ((Application) this.registrar.context().getApplicationContext())
           .registerActivityLifecycleCallbacks(
               this
