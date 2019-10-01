@@ -1,6 +1,10 @@
 ## 0.4.5
 
-* Adding `listenToValidInternetConnection`  as a way to test internet reachability.
+* Add `listenToValidInternetConnection` to periodically check for internet reachability.
+
+## 0.4.4+1
+
+* Update and migrate iOS example project.
 
 ## 0.4.4
 

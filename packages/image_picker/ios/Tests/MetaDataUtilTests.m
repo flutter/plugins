@@ -2,39 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <XCTest/XCTest.h>
-#import "FLTImagePickerMetaDataUtil.h"
+#import "ImagePickerTestImages.h"
+
+@import image_picker;
+@import XCTest;
 
 @interface MetaDataUtilTests : XCTestCase
-
-@property(strong, nonatomic) NSBundle *testBundle;
-
 @end
 
 @implementation MetaDataUtilTests
 
-- (void)setUp {
-  self.testBundle = [NSBundle bundleForClass:self.class];
-}
-
 - (void)testGetImageMIMETypeFromImageData {
   // test jpeg
-  NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
-                                                                             ofType:@"jpg"]];
-  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:dataJPG],
-                 FLTImagePickerMIMETypeJPEG);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:ImagePickerTestImages.JPGTestData],
+      FLTImagePickerMIMETypeJPEG);
 
   // test png
-  NSData *dataPNG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"pngImage"
-                                                                             ofType:@"png"]];
-  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:dataPNG],
-                 FLTImagePickerMIMETypePNG);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:ImagePickerTestImages.PNGTestData],
+      FLTImagePickerMIMETypePNG);
 
   // test gif
-  NSData *dataGIF = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"gifImage"
-                                                                             ofType:@"gif"]];
-  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:dataGIF],
-                 FLTImagePickerMIMETypeGIF);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:ImagePickerTestImages.GIFTestData],
+      FLTImagePickerMIMETypeGIF);
 }
 
 - (void)testSuffixFromType {
@@ -55,16 +47,15 @@
 }
 
 - (void)testGetMetaData {
-  NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
-                                                                             ofType:@"jpg"]];
-  NSDictionary *metaData = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
-  NSDictionary *exif = [metaData objectForKey:(NSString *)kCGImagePropertyExifDictionary];
-  XCTAssertEqual([exif[(NSString *)kCGImagePropertyExifPixelXDimension] integerValue], 12);
+  NSDictionary *metaData =
+      [FLTImagePickerMetaDataUtil getMetaDataFromImageData:ImagePickerTestImages.JPGTestData];
+  NSDictionary *exif = [metaData objectForKey:(__bridge NSString *)kCGImagePropertyExifDictionary];
+  XCTAssertEqual([exif[(__bridge NSString *)kCGImagePropertyExifPixelXDimension] integerValue], 12);
 }
 
 - (void)testWriteMetaData {
-  NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
-                                                                             ofType:@"jpg"]];
+  NSData *dataJPG = ImagePickerTestImages.JPGTestData;
+
   NSDictionary *metaData = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:dataJPG];
   NSString *tmpFile = [NSString stringWithFormat:@"image_picker_test.jpg"];
   NSString *tmpDirectory = NSTemporaryDirectory();
@@ -81,9 +72,7 @@
 }
 
 - (void)testConvertImageToData {
-  NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
-                                                                             ofType:@"jpg"]];
-  UIImage *imageJPG = [UIImage imageWithData:dataJPG];
+  UIImage *imageJPG = [UIImage imageWithData:ImagePickerTestImages.JPGTestData];
   NSData *convertedDataJPG = [FLTImagePickerMetaDataUtil convertImage:imageJPG
                                                             usingType:FLTImagePickerMIMETypeJPEG
                                                               quality:@(0.5)];
