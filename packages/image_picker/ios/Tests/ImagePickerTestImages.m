@@ -65,11 +65,9 @@
              "AncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0R"
              "FRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tr"
              "e4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2wBDAAQDAwMDAgQDAwMEBAQFBgoGBg"
-             "UFBgwICQcKDgwPDg4MDQ0PERYTDxAVEQ0NExoTFRcYGRkZDxIbHRsYHRYYGRj/"
-             "2wBDAQQEBAYFBgsGBgsYEA0Q"
-             "GBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBj/3QAEAAH/"
-             "2gAMAwEAAh"
-             "EDEQA/AMWiiivzk/qo/9k="
+             "UFBgwICQcKDgwPDg4MDQ0PERYTDxAVEQ0NExoTFRcYGRkZDxIbHRsYHRYYGRj/2wBDAQQEBAYFBgsGBgsYEA0"
+             "QGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBj/3QAEAAH/2gAMAwEA"
+             "AhEDEQA/AMWiiivzk/qo/9k="
                             options:0];
   }
   return data;
@@ -84,10 +82,9 @@
     // embedded in the test bundle. Fall back to the base64 string representation of the png.
     data = [[NSData alloc]
         initWithBase64EncodedString:
-            @"iVBORw0KGgoAAAAEQ2dCSVAAIAYsuHdmAAAADUlIRFIAAAAMAAAABwgGAAAAPLKsJAAAAARnQU1BAACxj"
-             "wv8YQUAAAABc1JHQgCuzhzpAAAAIGNIUk0AAHomAACAhAAA+"
-             "gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAJ"
-             "cEhZcwAABxMAAAcTAc4gDwgAAAAOSURBVGMwdX71nxTMMKqBCAwAsfuEYQAAAABJRU5ErkJggg=="
+            @"iVBORw0KGgoAAAAEQ2dCSVAAIAYsuHdmAAAADUlIRFIAAAAMAAAABwgGAAAAPLKsJAAAAARnQU1BAACxjwv8Y"
+            "QUAAAABc1JHQgCuzhzpAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAJcEh"
+            "ZcwAABxMAAAcTAc4gDwgAAAAOSURBVGMwdX71nxTMMKqBCAwAsfuEYQAAAABJRU5ErkJggg=="
                             options:0];
   }
   return data;
@@ -102,8 +99,7 @@
     // embedded in the test bundle. Fall back to the base64 string representation of the gif.
     data = [[NSData alloc]
         initWithBase64EncodedString:
-            @"R0lGODlhDAAHAPAAAOpCNQAAACH5BABkAAAAIf8LTkVUU0NBUEUyLjADAQAAAC"
-            "wAAAAADAAHAAACCISP"
+            @"R0lGODlhDAAHAPAAAOpCNQAAACH5BABkAAAAIf8LTkVUU0NBUEUyLjADAQAAACwAAAAADAAHAAACCISP"
              "qcvtD1UBACH5BABkAAAALAAAAAAMAAcAhuc/JPA/K+49Ne4+PvA7MrhYHoB+A4N9BYh+BYZ+E4xyG496HZJ"
              "8F5J4GaRtE6tsH7tWIr9SK7xVKJl3IKpvI7lrKc1FLc5PLNJILsdTJMFVJsZWJshWIM9XIshWJNBWLd1SK9"
              "BUMNFRNOlAI+9CMuNJMetHPnuCAF66F1u8FVu7GV27HGytG3utGH6rHGK1G3WxFWeuIHqlIG60IGi4JTnTDz"
@@ -116,8 +112,7 @@
              "cAAfcAAvYAA/cBBPQABfUABvQAB/UBBvYBCfAACPEAC/AACvIACvMBAPgAAPkAAPgBAPkBAvgBAPoAAPoBA"
              "PsBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
              "AAAAAAAAAAAAAAAAAAAAAAAABkfAAadjeUxEEYnk8QBoLhUHCASJJCWLyiTiIZFG3lAoO4F4SiUwScywYCQQ8"
-             "S"
-             "cEEokCG06D8pA4mBUWCQoIBwIGGQQGBgUFQQA7"
+             "ScEEokCG06D8pA4mBUWCQoIBwIGGQQGBgUFQQA7"
                             options:0];
   }
   return data;
