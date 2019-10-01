@@ -4,8 +4,9 @@
 
 #import <XCTest/XCTest.h>
 #import "FIAPaymentQueueHandler.h"
-#import "InAppPurchasePlugin.h"
 #import "Stubs.h"
+
+@import in_app_purchase;
 
 @interface InAppPurchasePluginTest : XCTestCase
 
