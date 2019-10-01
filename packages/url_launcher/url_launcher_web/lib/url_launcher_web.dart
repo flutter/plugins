@@ -3,6 +3,7 @@ import 'dart:html' as html;
 
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:meta/meta.dart';
 
 class UrlLauncherPlugin {
   static void registerWith(Registrar registrar) {
@@ -38,6 +39,11 @@ class UrlLauncherPlugin {
   }
 
   bool _launch(String url) {
-    return html.window.open(url, '') != null;
+    return openNewWindow(url) != null;
+  }
+
+  @visibleForTesting
+  html.WindowBase openNewWindow(String url) {
+    return html.window.open(url, '');
   }
 }

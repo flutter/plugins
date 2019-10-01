@@ -4,6 +4,8 @@
 
 @TestOn('chrome') // Uses web-only Flutter SDK
 
+import 'dart:html' as html;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -29,6 +31,19 @@ void main() {
 
     test('cannot launch "tel" URLs', () {
       expect(canLaunch('tel:5551234567'), completion(isFalse));
+    });
+
+    test('launching a URL returns true', () {
+      expect(launch('https://www.google.com'), completion(isTrue));
+    });
+
+    test('the window that is launched is a new window', () {
+      final UrlLauncherPlugin urlLauncherPlugin = UrlLauncherPlugin();
+      final html.WindowBase newWindow =
+          urlLauncherPlugin.openNewWindow('https://www.google.com');
+      expect(newWindow, isNotNull);
+      expect(newWindow, isNot(equals(html.window)));
+      expect(newWindow.opener, equals(html.window));
     });
   });
 }
