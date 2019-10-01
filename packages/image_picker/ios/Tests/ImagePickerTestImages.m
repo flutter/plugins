@@ -83,8 +83,9 @@
     data = [[NSData alloc]
         initWithBase64EncodedString:
             @"iVBORw0KGgoAAAAEQ2dCSVAAIAYsuHdmAAAADUlIRFIAAAAMAAAABwgGAAAAPLKsJAAAAARnQU1BAACxjwv8Y"
-            "QUAAAABc1JHQgCuzhzpAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAJcEh"
-            "ZcwAABxMAAAcTAc4gDwgAAAAOSURBVGMwdX71nxTMMKqBCAwAsfuEYQAAAABJRU5ErkJggg=="
+             "QUAAAABc1JHQgCuzhzpAAAAIGNIUk0AAHomAACAhAAA+"
+             "gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAJcEh"
+             "ZcwAABxMAAAcTAc4gDwgAAAAOSURBVGMwdX71nxTMMKqBCAwAsfuEYQAAAABJRU5ErkJggg=="
                             options:0];
   }
   return data;
