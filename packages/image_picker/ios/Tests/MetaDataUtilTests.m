@@ -15,16 +15,19 @@
 
 - (void)testGetImageMIMETypeFromImageData {
   // test jpeg
-  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:ImagePickerTestImages.JPGTestData],
-                 FLTImagePickerMIMETypeJPEG);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:ImagePickerTestImages.JPGTestData],
+      FLTImagePickerMIMETypeJPEG);
 
   // test png
-  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:ImagePickerTestImages.PNGTestData],
-                 FLTImagePickerMIMETypePNG);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:ImagePickerTestImages.PNGTestData],
+      FLTImagePickerMIMETypePNG);
 
   // test gif
-  XCTAssertEqual([FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:ImagePickerTestImages.GIFTestData],
-                 FLTImagePickerMIMETypeGIF);
+  XCTAssertEqual(
+      [FLTImagePickerMetaDataUtil getImageMIMETypeFromImageData:ImagePickerTestImages.GIFTestData],
+      FLTImagePickerMIMETypeGIF);
 }
 
 - (void)testSuffixFromType {
@@ -45,7 +48,8 @@
 }
 
 - (void)testGetMetaData {
-  NSDictionary *metaData = [FLTImagePickerMetaDataUtil getMetaDataFromImageData:ImagePickerTestImages.JPGTestData];
+  NSDictionary *metaData =
+      [FLTImagePickerMetaDataUtil getMetaDataFromImageData:ImagePickerTestImages.JPGTestData];
   NSDictionary *exif = [metaData objectForKey:(__bridge NSString *)kCGImagePropertyExifDictionary];
   XCTAssertEqual([exif[(__bridge NSString *)kCGImagePropertyExifPixelXDimension] integerValue], 12);
 }

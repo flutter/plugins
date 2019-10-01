@@ -22,7 +22,9 @@
 
 - (void)testScaledGIFImage_ShouldBeScaled {
   // gif image that frame size is 3 and the duration is 1 second.
-  GIFInfo *info = [FLTImagePickerImageUtil scaledGIFImage:ImagePickerTestImages.GIFTestData maxWidth:@3 maxHeight:@2];
+  GIFInfo *info = [FLTImagePickerImageUtil scaledGIFImage:ImagePickerTestImages.GIFTestData
+                                                 maxWidth:@3
+                                                maxHeight:@2];
 
   NSArray<UIImage *> *images = info.images;
   NSTimeInterval duration = info.interval;
