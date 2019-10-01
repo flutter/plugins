@@ -25,9 +25,13 @@ function check_changed_packages() {
 
   CHANGED_PACKAGES=""
   CHANGED_PACKAGE_LIST=()
+
+  # Filter out packages that have been deleted.
   for package in "${packages[@]}"; do
-    CHANGED_PACKAGES="${CHANGED_PACKAGES},$package"
-    CHANGED_PACKAGE_LIST=("${CHANGED_PACKAGE_LIST[@]}" "$package")
+    if [ -d "$REPO_DIR/packages/$package" ]; then
+      CHANGED_PACKAGES="${CHANGED_PACKAGES},$package"
+      CHANGED_PACKAGE_LIST=("${CHANGED_PACKAGE_LIST[@]}" "$package")
+    fi
   done
 
   if [[ "${#CHANGED_PACKAGE_LIST[@]}" == 0 ]]; then
