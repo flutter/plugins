@@ -154,26 +154,28 @@ void main() {
     group('WHEN connection is valid', () {
       test("MUST emit true", () {
         StreamSubscription<bool> subscription;
-        subscription =
-            listenToValidInternetConnection(Duration(milliseconds: 1), internetCheck: () => Future<bool>.value(true))
-                .listen(expectAsync1((bool isConnected) {
-              expect(isConnected, isTrue);
-              subscription.cancel();
-            }));
+        subscription = listenToValidInternetConnection(
+                Duration(milliseconds: 1),
+                internetCheck: () => Future<bool>.value(true))
+            .listen(expectAsync1((bool isConnected) {
+          expect(isConnected, isTrue);
+          subscription.cancel();
+        }));
       });
     });
 
     group('WHEN connection is invalid', () {
       test("MUST emit false", () {
         StreamSubscription<bool> subscription;
-        subscription =
-            listenToValidInternetConnection(Duration(milliseconds: 1), internetCheck: () => Future<bool>.value(false))
-                .listen(expectAsync1((bool isConnected) {
-              expect(isConnected, isFalse);
-              subscription.cancel();
-            }),);
+        subscription = listenToValidInternetConnection(
+            Duration(milliseconds: 1),
+            internetCheck: () => Future<bool>.value(false)).listen(
+          expectAsync1((bool isConnected) {
+            expect(isConnected, isFalse);
+            subscription.cancel();
+          }),
+        );
       });
     });
   });
-
 }
