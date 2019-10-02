@@ -155,7 +155,7 @@ void main() {
       test("MUST emit true", () {
         StreamSubscription<bool> subscription;
         subscription = listenToValidInternetConnection(
-                Duration(milliseconds: 1),
+                const Duration(milliseconds: 1),
                 internetCheck: () => Future<bool>.value(true))
             .listen(expectAsync1((bool isConnected) {
           expect(isConnected, isTrue);
@@ -168,7 +168,7 @@ void main() {
       test("MUST emit false", () {
         StreamSubscription<bool> subscription;
         subscription = listenToValidInternetConnection(
-            Duration(milliseconds: 1),
+            const Duration(milliseconds: 1),
             internetCheck: () => Future<bool>.value(false)).listen(
           expectAsync1((bool isConnected) {
             expect(isConnected, isFalse);
