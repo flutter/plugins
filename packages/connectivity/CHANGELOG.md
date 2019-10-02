@@ -1,3 +1,8 @@
+## 0.4.4+2
+
+* Remove deprecated call to `BinaryMessenger` in `connectivity_test.dart`.
+* Add `ConnectivityNetworkOption` class and `ConnectivityNetworkType` enum in `test` namespace.
+
 ## 0.4.4+1
 
 * Update and migrate iOS example project.
