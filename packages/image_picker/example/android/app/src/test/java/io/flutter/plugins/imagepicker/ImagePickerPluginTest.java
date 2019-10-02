@@ -109,6 +109,15 @@ public class ImagePickerPluginTest {
         "No exception thrown when ImagePickerPlugin.registerWith ran with activity = null", true);
   }
 
+  @Test
+  public void onConstructor_WhenContextTypeIsActivity_ShouldNotCrash() {
+    // When you use Module to dependency, the type of Context will be Application.but when you use AAR to dependency on this plugin, the type of Context will be Activity.
+    when(mockRegistrar.context()).thenReturn(mockActivity);
+    new ImagePickerPlugin(mockRegistrar, mockImagePickerDelegate);
+    assertTrue(
+        "No exception thrown when ImagePickerPlugin() ran with context instanceof Activity", true);
+  }
+
   private MethodCall buildMethodCall(final int source) {
     final Map<String, Object> arguments = new HashMap<>();
     arguments.put("source", source);

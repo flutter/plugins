@@ -81,8 +81,9 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
 
           @Override
           public void onActivityDestroyed(Activity activity) {
-            if (activity == registrar.activity()) {
-              ((Application) registrar.context().getApplicationContext())
+            if (activity == registrar.activity()
+                && registrar.activity().getApplicationContext() != null) {
+              ((Application) registrar.activity().getApplicationContext())
                   .unregisterActivityLifecycleCallbacks(
                       this); // Use getApplicationContext() to avoid casting failures
             }
