@@ -49,7 +49,6 @@ function lint_packages() {
     'android_intent'
     'battery'
     'connectivity'
-    'device_info'
     'google_maps_flutter'
     'google_sign_in'
     'instrumentation_adapter'
