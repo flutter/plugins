@@ -48,7 +48,6 @@ function lint_packages() {
     'android_alarm_manager'
     'android_intent'
     'battery'
-    'connectivity'
     'google_maps_flutter'
     'google_sign_in'
     'instrumentation_adapter'
