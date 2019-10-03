@@ -1,3 +1,7 @@
+## 0.3.0+6
+
+* Support the v2 Android embedder.
+
 ## 0.3.0+5
 
 * Fix Gradle version.
