@@ -9,6 +9,8 @@
 #import "GoogleMapPolygonController.h"
 #import "GoogleMapPolylineController.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 // Defines map UI options writable from Flutter.
 @protocol FLTGoogleMapOptionsSink
 - (void)setCameraTargetBounds:(GMSCoordinateBounds *)bounds;
@@ -46,3 +48,5 @@
 @interface FLTGoogleMapFactory : NSObject <FlutterPlatformViewFactory>
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 @end
+
+NS_ASSUME_NONNULL_END
