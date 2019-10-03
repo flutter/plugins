@@ -111,7 +111,6 @@ public class ImagePickerPluginTest {
 
   @Test
   public void onConstructor_WhenContextTypeIsActivity_ShouldNotCrash() {
-    // When you use Module to dependency, the type of Context will be Application.but when you use AAR to dependency on this plugin, the type of Context will be Activity.
     when(mockRegistrar.context()).thenReturn(mockActivity);
     new ImagePickerPlugin(mockRegistrar, mockImagePickerDelegate);
     assertTrue(
