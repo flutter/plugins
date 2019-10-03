@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -223,6 +224,32 @@ final class GoogleMapController
                 "GoogleMap uninitialized",
                 "getVisibleRegion called prior to map initialization",
                 null);
+          }
+          break;
+        }
+      case "map#getScreenCoordinate":
+        {
+          if (googleMap != null) {
+            LatLng latLng = Convert.toLatLng(call.arguments);
+            Point screenLocation = googleMap.getProjection().toScreenLocation(latLng);
+            result.success(Convert.pointToJson(screenLocation));
+          } else {
+            result.error(
+                "GoogleMap uninitialized",
+                "getScreenCoordinate called prior to map initialization",
+                null);
+          }
+          break;
+        }
+      case "map#getLatLng":
+        {
+          if (googleMap != null) {
+            Point point = Convert.toPoint(call.arguments);
+            LatLng latLng = googleMap.getProjection().fromScreenLocation(point);
+            result.success(Convert.latLngToJson(latLng));
+          } else {
+            result.error(
+                "GoogleMap uninitialized", "getLatLng called prior to map initialization", null);
           }
           break;
         }
@@ -440,6 +467,20 @@ final class GoogleMapController
     mapView.onDestroy();
     registrar.activity().getApplication().unregisterActivityLifecycleCallbacks(this);
   }
+
+  // @Override
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
+  // does. This will override it when available even with the annotation commented out.
+  public void onInputConnectionLocked() {
+    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+  };
+
+  // @Override
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
+  // does. This will override it when available even with the annotation commented out.
+  public void onInputConnectionUnlocked() {
+    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+  };
 
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
