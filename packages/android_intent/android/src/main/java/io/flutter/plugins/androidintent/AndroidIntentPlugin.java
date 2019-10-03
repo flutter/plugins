@@ -9,8 +9,13 @@ import dev.flutter.plugins.androidintent.MethodCallHandlerImpl;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-/** AndroidIntentPlugin */
-public class AndroidIntentPlugin {
+/**
+ * Plugin implementation that uses the legacy {@code io.flutter.plugin.common} package.
+ *
+ * <p>This does not respond to changes in activity or context, unlike {@link
+ * dev.flutter.plugins.androidintent.AndroidIntentPlugin}.
+ */
+public final class AndroidIntentPlugin {
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =

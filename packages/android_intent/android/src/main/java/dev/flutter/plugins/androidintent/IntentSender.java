@@ -11,7 +11,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 /** Forms and launches intents. */
-public class IntentSender {
+public final class IntentSender {
   private static final String TAG = "IntentSender";
 
   private @Nullable Activity activity;
@@ -103,14 +103,8 @@ public class IntentSender {
     this.activity = activity;
   }
 
-  /**
-   * Caches the given {@code applicationContext} to use for {@link #send}.
-   *
-   * <p>Also resets the cached {@code activity} to null, since the given activity should no longer
-   * be valid after applicationContext changes.
-   */
+  /** Caches the given {@code applicationContext} to use for {@link #send}. */
   void setApplicationContext(@Nullable Context applicationContext) {
     this.applicationContext = applicationContext;
-    setActivity(null);
   }
 }

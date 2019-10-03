@@ -13,7 +13,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel.Result;
@@ -30,8 +29,6 @@ public class MethodCallHandlerImplTest {
   private IntentSender sender;
   private MethodCallHandlerImpl methodCallHandler;
 
-  public MethodCallHandlerImplTest() {}
-
   @Before
   public void setUp() {
     context = ApplicationProvider.getApplicationContext();
@@ -41,17 +38,27 @@ public class MethodCallHandlerImplTest {
 
   @Test
   public void onMethodCall_doesNothingWhenContextIsNull() {
-    sendLaunchMethodCall("foo", null, null, null, null);
+    Result result = mock(Result.class);
+    Map<String, Object> args = new HashMap<>();
+    args.put("action", "foo");
 
+    methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
+
+    // No matter what, should always succeed.
+    verify(result, times(1)).success(null);
     assertNull(shadowOf((Application) context).getNextStartedActivity());
   }
 
   @Test
   public void onMethodCall_setsAction() {
     sender.setApplicationContext(context);
+    Map<String, Object> args = new HashMap<>();
+    args.put("action", "foo");
+    Result result = mock(Result.class);
 
-    sendLaunchMethodCall("foo", null, null, null, null);
+    methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
 
+    verify(result, times(1)).success(null);
     Intent intent = shadowOf((Application) context).getNextStartedActivity();
     assertNotNull(intent);
     assertEquals("foo", intent.getAction());
@@ -60,9 +67,13 @@ public class MethodCallHandlerImplTest {
   @Test
   public void onMethodCall_setsNewTaskFlagWithApplicationContext() {
     sender.setApplicationContext(context);
+    Map<String, Object> args = new HashMap<>();
+    args.put("action", "foo");
+    Result result = mock(Result.class);
 
-    sendLaunchMethodCall("foo", null, null, null, null);
+    methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
 
+    verify(result, times(1)).success(null);
     Intent intent = shadowOf((Application) context).getNextStartedActivity();
     assertNotNull(intent);
     assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags());
@@ -71,10 +82,15 @@ public class MethodCallHandlerImplTest {
   @Test
   public void onMethodCall_addsFlags() {
     sender.setApplicationContext(context);
-
+    Map<String, Object> args = new HashMap<>();
+    args.put("action", "foo");
     Integer requestFlags = Intent.FLAG_FROM_BACKGROUND;
-    sendLaunchMethodCall("foo", requestFlags, null, null, null);
+    args.put("flags", requestFlags);
+    Result result = mock(Result.class);
 
+    methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
+
+    verify(result, times(1)).success(null);
     Intent intent = shadowOf((Application) context).getNextStartedActivity();
     assertNotNull(intent);
     assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK | requestFlags, intent.getFlags());
@@ -83,10 +99,15 @@ public class MethodCallHandlerImplTest {
   @Test
   public void onMethodCall_addsCategory() {
     sender.setApplicationContext(context);
-
+    Map<String, Object> args = new HashMap<>();
+    args.put("action", "foo");
     String category = "bar";
-    sendLaunchMethodCall("foo", null, category, null, null);
+    args.put("category", category);
+    Result result = mock(Result.class);
 
+    methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
+
+    verify(result, times(1)).success(null);
     Intent intent = shadowOf((Application) context).getNextStartedActivity();
     assertNotNull(intent);
     assertTrue(intent.getCategories().contains(category));
@@ -95,10 +116,15 @@ public class MethodCallHandlerImplTest {
   @Test
   public void onMethodCall_setsData() {
     sender.setApplicationContext(context);
-
+    Map<String, Object> args = new HashMap<>();
+    args.put("action", "foo");
     Uri data = Uri.parse("http://flutter.dev");
-    sendLaunchMethodCall("foo", null, null, data, null);
+    args.put("data", data.toString());
+    Result result = mock(Result.class);
 
+    methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
+
+    verify(result, times(1)).success(null);
     Intent intent = shadowOf((Application) context).getNextStartedActivity();
     assertNotNull(intent);
     assertEquals(data, intent.getData());
@@ -107,31 +133,16 @@ public class MethodCallHandlerImplTest {
   @Test
   public void onMethodCall_clearsInvalidPackageNames() {
     sender.setApplicationContext(context);
+    Map<String, Object> args = new HashMap<>();
+    args.put("action", "foo");
+    args.put("packageName", "invalid");
+    Result result = mock(Result.class);
 
-    sendLaunchMethodCall("foo", null, null, null, "foo");
+    methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
 
+    verify(result, times(1)).success(null);
     Intent intent = shadowOf((Application) context).getNextStartedActivity();
     assertNotNull(intent);
     assertNull(intent.getPackage());
-  }
-
-  private void sendLaunchMethodCall(
-      String action,
-      @Nullable Integer flags,
-      @Nullable String category,
-      @Nullable Uri data,
-      @Nullable String packageName) {
-    Map<String, Object> args = new HashMap<>();
-    args.put("action", action);
-    args.put("flags", flags);
-    args.put("category", category);
-    args.put("data", String.valueOf(data));
-    args.put("packageName", packageName);
-    MethodCall call = new MethodCall("launch", args);
-    Result result = mock(Result.class);
-    methodCallHandler.onMethodCall(call, result);
-
-    // No matter what, should always succeed.
-    verify(result, times(1)).success(null);
   }
 }

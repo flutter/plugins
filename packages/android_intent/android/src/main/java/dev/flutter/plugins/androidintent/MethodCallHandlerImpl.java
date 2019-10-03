@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /** Forwards incoming {@link MethodCall}s to {@link IntentSender#send}. */
-public class MethodCallHandlerImpl implements MethodCallHandler {
+public final class MethodCallHandlerImpl implements MethodCallHandler {
   private final IntentSender sender;
 
   /**
@@ -32,7 +33,7 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
    * <p>Always calls {@code result#success}.
    */
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
     String action = convertAction((String) call.argument("action"));
     Integer flags = call.argument("flags");
     String category = call.argument("category");
