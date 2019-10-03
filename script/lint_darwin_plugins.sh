@@ -49,7 +49,6 @@ function lint_packages() {
     'battery'
     'google_maps_flutter'
     'google_sign_in'
-    'instrumentation_adapter'
     'local_auth'
     'package_info'
     'path_provider'
