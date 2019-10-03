@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.connectivityexample;
+package io.flutter.plugins.connectivity_example;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

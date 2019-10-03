@@ -4,41 +4,35 @@
 
 package dev.flutter.plugins.connectivity;
 
-import android.hardware.camera2.CameraAccessException;
-import android.os.Build;
-
-//import androidx.annotation.NonNull;
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.embedding.engine.plugins.activity.ActivityAware;
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugins.connectivity.ConnectivityMethodChannelHandler;
 
 public class ConnectivityPlugin implements FlutterPlugin {
 
-    private FlutterPluginBinding pluginBinding;
+  private FlutterPluginBinding pluginBinding;
 
-    @Override
-    public void onAttachedToEngine(FlutterPluginBinding binding) {
-        this.pluginBinding = binding;
-        final MethodChannel channel =
-                new MethodChannel(pluginBinding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/connectivity");
-        final EventChannel eventChannel = new EventChannel(pluginBinding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/connectivity_status");
+  @Override
+  public void onAttachedToEngine(FlutterPluginBinding binding) {
+    this.pluginBinding = binding;
+    final MethodChannel channel =
+        new MethodChannel(
+            pluginBinding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/connectivity");
+    final EventChannel eventChannel =
+        new EventChannel(
+            pluginBinding.getFlutterEngine().getDartExecutor(),
+            "plugins.flutter.io/connectivity_status");
 
-        ConnectivityMethodChannelHandler handler = new ConnectivityMethodChannelHandler(pluginBinding.getApplicationContext());
+    ConnectivityMethodChannelHandler handler =
+        new ConnectivityMethodChannelHandler(pluginBinding.getApplicationContext());
 
-        channel.setMethodCallHandler(handler);
-        eventChannel.setStreamHandler(handler);
-    }
+    channel.setMethodCallHandler(handler);
+    eventChannel.setStreamHandler(handler);
+  }
 
-    @Override
-    public void onDetachedFromEngine(FlutterPluginBinding binding) {
-        this.pluginBinding = null;
-    }
+  @Override
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+    this.pluginBinding = null;
+  }
 }
