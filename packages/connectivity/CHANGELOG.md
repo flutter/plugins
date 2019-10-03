@@ -1,3 +1,13 @@
+## 0.4.4+1
+
+* Update and migrate iOS example project.
+
+## 0.4.4
+
+* Add `requestLocationServiceAuthorization` to request location authorization on iOS.
+* Add `getLocationServiceAuthorization` to get location authorization status on iOS.
+* Update README: add more information on iOS 13 updates with CNCopyCurrentNetworkInfo.
+
 ## 0.4.3+7
 
 * Update README with the updated information about CNCopyCurrentNetworkInfo on iOS 13.

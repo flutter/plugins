@@ -154,7 +154,7 @@
     SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
     payment.applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
     NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
-    payment.quantity = quantity ? quantity.integerValue : 1;
+    payment.quantity = (quantity != nil) ? quantity.integerValue : 1;
     if (@available(iOS 8.3, *)) {
       payment.simulatesAskToBuyInSandbox =
           [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];

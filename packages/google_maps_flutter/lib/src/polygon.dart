@@ -120,6 +120,11 @@ class Polygon {
     );
   }
 
+  /// Creates a new [Polygon] object whose values are the same as this instance.
+  Polygon clone() {
+    return copyWith(pointsParam: List<LatLng>.of(points));
+  }
+
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
@@ -150,7 +155,16 @@ class Polygon {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Polygon typedOther = other;
-    return polygonId == typedOther.polygonId;
+    return polygonId == typedOther.polygonId &&
+        consumeTapEvents == typedOther.consumeTapEvents &&
+        fillColor == typedOther.fillColor &&
+        geodesic == typedOther.geodesic &&
+        listEquals(points, typedOther.points) &&
+        visible == typedOther.visible &&
+        strokeColor == typedOther.strokeColor &&
+        strokeWidth == typedOther.strokeWidth &&
+        zIndex == typedOther.zIndex &&
+        onTap == typedOther.onTap;
   }
 
   @override
@@ -170,7 +184,7 @@ Map<PolygonId, Polygon> _keyByPolygonId(Iterable<Polygon> polygons) {
     return <PolygonId, Polygon>{};
   }
   return Map<PolygonId, Polygon>.fromEntries(polygons.map((Polygon polygon) =>
-      MapEntry<PolygonId, Polygon>(polygon.polygonId, polygon)));
+      MapEntry<PolygonId, Polygon>(polygon.polygonId, polygon.clone())));
 }
 
 List<Map<String, dynamic>> _serializePolygonSet(Set<Polygon> polygons) {

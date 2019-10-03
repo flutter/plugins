@@ -1,3 +1,17 @@
+## 0.6.0+2
+
+* Update and migrate iOS example project.
+
+## 0.6.0+1
+
+* Update the `intl` constraint to ">=0.15.1 <0.17.0" (0.16.0 isn't really a breaking change).
+
+## 0.6.0
+
+* Define a new parameter for signaling that the transaction is sensitive.
+* Up the biometric version to beta01.
+* Handle no device credential error.
+
 ## 0.5.3
 
 * Add face id detection as well by not relying on FingerprintCompat.

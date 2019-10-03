@@ -58,22 +58,3 @@ These are the available plugins in this repository.
 | [url_launcher](./packages/url_launcher/) | [![pub package](https://img.shields.io/pub/v/url_launcher.svg)](https://pub.dev/packages/url_launcher) |
 | [video_player](./packages/video_player/) | [![pub package](https://img.shields.io/pub/v/video_player.svg)](https://pub.dev/packages/video_player) |
 | [webview_flutter](./packages/webview_flutter/) | [![pub package](https://img.shields.io/pub/v/webview_flutter.svg)](https://pub.dev/packages/webview_flutter) |
-| | |
-| **FlutterFire Plugins** |  |
-| [cloud_firestore](./packages/cloud_firestore/) | [![pub package](https://img.shields.io/pub/v/cloud_firestore.svg)](https://pub.dev/packages/cloud_firestore)
-| [cloud_functions](./packages/cloud_functions/) | [![pub package](https://img.shields.io/pub/v/cloud_functions.svg)](https://pub.dev/packages/cloud_functions) |
-| [firebase_admob](./packages/firebase_admob/) | [![pub package](https://img.shields.io/pub/v/firebase_admob.svg)](https://pub.dev/packages/firebase_admob) |
-| [firebase_analytics](./packages/firebase_analytics/) | [![pub package](https://img.shields.io/pub/v/firebase_analytics.svg)](https://pub.dev/packages/firebase_analytics) |
-| [firebase_auth](./packages/firebase_auth/) | [![pub package](https://img.shields.io/pub/v/firebase_auth.svg)](https://pub.dev/packages/firebase_auth) |
-| [firebase_core](./packages/firebase_core/) | [![pub package](https://img.shields.io/pub/v/firebase_core.svg)](https://pub.dev/packages/firebase_core) |
-| [firebase_crashlytics](./packages/firebase_crashlytics/) | [![pub package](https://img.shields.io/pub/v/firebase_crashlytics.svg)](https://pub.dev/packages/firebase_crashlytics) |
-| [firebase_database](./packages/firebase_database/) | [![pub package](https://img.shields.io/pub/v/firebase_database.svg)](https://pub.dev/packages/firebase_database) |
-| [firebase_dynamic_links](./packages/firebase_dynamic_links/) | [![pub package](https://img.shields.io/pub/v/firebase_dynamic_links.svg)](https://pub.dev/packages/firebase_dynamic_links) |
-| [firebase_in_app_messaging](./packages/firebase_in_app_messaging/) | [![pub package](https://img.shields.io/pub/v/firebase_in_app_messaging.svg)](https://pub.dev/packages/firebase_in_app_messaging) |
-| [firebase_messaging](./packages/firebase_messaging/) | [![pub package](https://img.shields.io/pub/v/firebase_messaging.svg)](https://pub.dev/packages/firebase_messaging) |
-| [firebase_ml_vision](./packages/firebase_ml_vision/) | [![pub package](https://img.shields.io/pub/v/firebase_ml_vision.svg)](https://pub.dev/packages/firebase_ml_vision) |
-| [firebase_performance](./packages/firebase_performance/) | [![pub package](https://img.shields.io/pub/v/firebase_performance.svg)](https://pub.dev/packages/firebase_performance) |
-| [firebase_remote_config](./packages/firebase_remote_config/) | [![pub package](https://img.shields.io/pub/v/firebase_remote_config.svg)](https://pub.dev/packages/firebase_remote_config) |
-| [firebase_storage](./packages/firebase_storage/) | [![pub package](https://img.shields.io/pub/v/firebase_storage.svg)](https://pub.dev/packages/firebase_storage) |
-
-Learn more about [FlutterFire](https://github.com/flutter/plugins/blob/master/FlutterFire.md).

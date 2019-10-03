@@ -156,6 +156,15 @@ class Polyline {
     );
   }
 
+  /// Creates a new [Polyline] object whose values are the same as this
+  /// instance.
+  Polyline clone() {
+    return copyWith(
+      patternsParam: List<PatternItem>.of(patterns),
+      pointsParam: List<LatLng>.of(points),
+    );
+  }
+
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
@@ -192,7 +201,19 @@ class Polyline {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Polyline typedOther = other;
-    return polylineId == typedOther.polylineId;
+    return polylineId == typedOther.polylineId &&
+        consumeTapEvents == typedOther.consumeTapEvents &&
+        color == typedOther.color &&
+        geodesic == typedOther.geodesic &&
+        jointType == typedOther.jointType &&
+        listEquals(patterns, typedOther.patterns) &&
+        listEquals(points, typedOther.points) &&
+        startCap == typedOther.startCap &&
+        endCap == typedOther.endCap &&
+        visible == typedOther.visible &&
+        width == typedOther.width &&
+        zIndex == typedOther.zIndex &&
+        onTap == typedOther.onTap;
   }
 
   @override
@@ -222,8 +243,8 @@ Map<PolylineId, Polyline> _keyByPolylineId(Iterable<Polyline> polylines) {
     return <PolylineId, Polyline>{};
   }
   return Map<PolylineId, Polyline>.fromEntries(polylines.map(
-      (Polyline polyline) =>
-          MapEntry<PolylineId, Polyline>(polyline.polylineId, polyline)));
+      (Polyline polyline) => MapEntry<PolylineId, Polyline>(
+          polyline.polylineId, polyline.clone())));
 }
 
 List<Map<String, dynamic>> _serializePolylineSet(Set<Polyline> polylines) {
