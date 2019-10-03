@@ -4,7 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
@@ -14,6 +17,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import androidx.test.core.app.ApplicationProvider;
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.BinaryMessenger.BinaryMessageHandler;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel.Result;
 import java.util.HashMap;
@@ -25,6 +30,7 @@ import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class MethodCallHandlerImplTest {
+  private static final String CHANNEL_NAME = "plugins.flutter.io/android_intent";
   private Context context;
   private IntentSender sender;
   private MethodCallHandlerImpl methodCallHandler;
@@ -34,6 +40,49 @@ public class MethodCallHandlerImplTest {
     context = ApplicationProvider.getApplicationContext();
     sender = new IntentSender(null, null);
     methodCallHandler = new MethodCallHandlerImpl(sender);
+  }
+
+  @Test
+  public void startListening_registersChannel() {
+    BinaryMessenger messenger = mock(BinaryMessenger.class);
+
+    methodCallHandler.startListening(messenger);
+
+    verify(messenger, times(1))
+        .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class));
+  }
+
+  @Test
+  public void startListening_unregistersExistingChannel() {
+    BinaryMessenger firstMessenger = mock(BinaryMessenger.class);
+    BinaryMessenger secondMessenger = mock(BinaryMessenger.class);
+    methodCallHandler.startListening(firstMessenger);
+
+    methodCallHandler.startListening(secondMessenger);
+
+    // Unregisters the first and then registers the second.
+    verify(firstMessenger, times(1)).setMessageHandler(CHANNEL_NAME, null);
+    verify(secondMessenger, times(1))
+        .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class));
+  }
+
+  @Test
+  public void stopListening_unregistersExistingChannel() {
+    BinaryMessenger messenger = mock(BinaryMessenger.class);
+    methodCallHandler.startListening(messenger);
+
+    methodCallHandler.stopListening();
+
+    verify(messenger, times(1)).setMessageHandler(CHANNEL_NAME, null);
+  }
+
+  @Test
+  public void stopListening_doesNothingWhenUnset() {
+    BinaryMessenger messenger = mock(BinaryMessenger.class);
+
+    methodCallHandler.stopListening();
+
+    verify(messenger, never()).setMessageHandler(CHANNEL_NAME, null);
   }
 
   @Test

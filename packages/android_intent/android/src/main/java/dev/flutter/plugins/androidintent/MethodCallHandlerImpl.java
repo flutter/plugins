@@ -6,8 +6,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import java.util.ArrayList;
@@ -15,7 +19,9 @@ import java.util.Map;
 
 /** Forwards incoming {@link MethodCall}s to {@link IntentSender#send}. */
 public final class MethodCallHandlerImpl implements MethodCallHandler {
+  private static final String TAG = "MethodCallHandlerImpl";
   private final IntentSender sender;
+  private @Nullable MethodChannel methodChannel;
 
   /**
    * Uses the given {@code sender} for all incoming calls.
@@ -23,8 +29,40 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
    * <p>This assumes that the sender's context and activity state are managed elsewhere and
    * correctly initialized before being sent here.
    */
-  public MethodCallHandlerImpl(IntentSender sender) {
+  MethodCallHandlerImpl(IntentSender sender) {
     this.sender = sender;
+  }
+
+  /**
+   * Registers this instance as a method call handler on the given {@code messenger}.
+   *
+   * <p>Stops any previously started and unstopped calls.
+   *
+   * <p>This should be cleaned with {@link #stopListening} once the messenger is disposed of.
+   */
+  void startListening(BinaryMessenger messenger) {
+    if (methodChannel != null) {
+      Log.wtf(TAG, "Setting a method call handler before the last was disposed.");
+      stopListening();
+    }
+
+    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/android_intent");
+    methodChannel.setMethodCallHandler(this);
+  }
+
+  /**
+   * Clears this instance from listening to method calls.
+   *
+   * <p>Does nothing is {@link #startListening} hasn't been called, or if we're already stopped.
+   */
+  void stopListening() {
+    if (methodChannel == null) {
+      Log.d(TAG, "Tried to stop listening when no methodChannel had been initialized.");
+      return;
+    }
+
+    methodChannel.setMethodCallHandler(null);
+    methodChannel = null;
   }
 
   /**

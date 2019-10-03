@@ -6,9 +6,9 @@ version: 0.3.3+3
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.androidintent
+    androidPackage: dev.flutter.plugins.androidintent
     iosPrefix: FLT
-    pluginClass: AndroidIntentPlugin
+    pluginClass: AndroidIntentPluginRegistrar
 
 dependencies:
   flutter:
