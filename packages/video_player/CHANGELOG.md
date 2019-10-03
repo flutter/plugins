@@ -1,3 +1,7 @@
+## 0.10.2+3
+
+* Fix bug where formatHint was not being pass down to network sources.
+
 ## 0.10.2+2
 
 * Update and migrate iOS example project.
