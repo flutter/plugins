@@ -1,6 +1,6 @@
 ## 0.6.1+7
 
-* Android: Fix ImagePickerPlugin#onCreate cast context may be cause exeception.
+* Android: Fix ImagePickerPlugin#onCreate casting context which causes exception.
 
 ## 0.6.1+6
 
