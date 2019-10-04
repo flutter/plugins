@@ -1,3 +1,7 @@
+## 0.6.3
+
+* Resolve a crash when not setting the subject variable and sharing to Mail.
+
 ## 0.6.2+2
 
 * Update and migrate iOS example project.
