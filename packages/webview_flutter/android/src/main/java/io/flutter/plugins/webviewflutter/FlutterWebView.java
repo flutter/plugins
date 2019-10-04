@@ -258,11 +258,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "hasProgressTracking":
           final boolean progressTrackingEnabled = (boolean) settings.get(key);
           if (progressTrackingEnabled) {
-            webView.setWebChromeClient(new WebChromeClient() {
-              public void onProgressChanged(WebView view, int progress) {
-                flutterWebViewClient.onLoadingProgress(progress);
-              }
-            });
+            webView.setWebChromeClient(
+                new WebChromeClient() {
+                  public void onProgressChanged(WebView view, int progress) {
+                    flutterWebViewClient.onLoadingProgress(progress);
+                  }
+                });
           }
           break;
         case "userAgent":
