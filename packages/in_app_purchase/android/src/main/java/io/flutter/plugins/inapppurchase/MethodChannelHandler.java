@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Handles MethodChannel for the plugin. */
+/** Handles method channel for the plugin. */
 public class MethodChannelHandler implements MethodChannel.MethodCallHandler {
 
   private static final String TAG = "InAppPurchasePlugin";

@@ -4,6 +4,7 @@ import android.content.Context;
 import com.android.billingclient.api.BillingClient;
 import io.flutter.plugin.common.MethodChannel;
 
+/** The implementation for {@link BillingClientFactory} for the plugin. */
 public final class BillingClientFactoryImpl implements BillingClientFactory {
 
   @Override
