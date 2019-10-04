@@ -9,7 +9,7 @@ import android.provider.Browser;
 import android.support.annotation.Nullable;
 
 /** Launches components for URLs. */
-final class UrlLauncher {
+class UrlLauncher {
   private Context activityContext;
 
   /**
