@@ -65,8 +65,9 @@ Future<Directory> getApplicationSupportDirectory() async {
 /// On Android, this function throws an [UnsupportedError] as no equivalent
 /// folder exists.
 Future<Directory> getLibraryDirectory() async {
-  if (_platform.isAndroid)
-    throw UnsupportedError("Functionality not available on Android");
+  if (_platform.isAndroid) {
+    throw UnsupportedError('Functionality not available on Android');
+  }
   final String path =
       await _channel.invokeMethod<String>('getLibraryDirectory');
   if (path == null) {
@@ -102,8 +103,9 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 ///
 /// On Android this uses the `getExternalFilesDir(null)`.
 Future<Directory> getExternalStorageDirectory() async {
-  if (_platform.isIOS)
-    throw UnsupportedError("Functionality not available on iOS");
+  if (_platform.isIOS) {
+    throw UnsupportedError('Functionality not available on iOS');
+  }
   final String path =
       await _channel.invokeMethod<String>('getStorageDirectory');
   if (path == null) {
@@ -125,8 +127,9 @@ Future<Directory> getExternalStorageDirectory() async {
 /// On Android this returns Context.getExternalCacheDirs() or
 /// Context.getExternalCacheDir() on API levels below 19.
 Future<List<Directory>> getExternalCacheDirectories() async {
-  if (_platform.isIOS)
-    throw UnsupportedError("Functionality not available on iOS");
+  if (_platform.isIOS) {
+    throw UnsupportedError('Functionality not available on iOS');
+  }
   final List<String> paths =
       await _channel.invokeListMethod<String>('getExternalCacheDirectories');
 
@@ -163,8 +166,9 @@ class AndroidEnvironment {
 /// constants defined in [AndroidEnvironment]. See [AndroidEnvironment] for
 /// more information.
 Future<List<Directory>> getExternalStorageDirectories(String type) async {
-  if (_platform.isIOS)
-    throw UnsupportedError("Functionality not available on iOS");
+  if (_platform.isIOS) {
+    throw UnsupportedError('Functionality not available on iOS');
+  }
   final List<String> paths = await _channel.invokeListMethod<String>(
     'getExternalStorageDirectories',
     <String, String>{"type": type},
