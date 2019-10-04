@@ -4,6 +4,9 @@
 
 package io.flutter.plugins.connectivity;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
@@ -18,9 +21,26 @@ public class ConnectivityPlugin {
     final EventChannel eventChannel =
         new EventChannel(registrar.messenger(), "plugins.flutter.io/connectivity_status");
 
+    ConnectivityManager connectivityManager =
+        (ConnectivityManager)
+            registrar
+                .context()
+                .getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+    WifiManager wifiManager =
+        (WifiManager)
+            registrar.context().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+    Connectivity connectivity = new Connectivity(connectivityManager, wifiManager);
+
     ConnectivityMethodChannelHandler methodChannelHandler =
-        new ConnectivityMethodChannelHandler(registrar.context());
+        new ConnectivityMethodChannelHandler(connectivity);
     channel.setMethodCallHandler(methodChannelHandler);
-    eventChannel.setStreamHandler(methodChannelHandler);
+
+    BroadcastReceiverRegistrarImpl receiverRegistrar =
+        new BroadcastReceiverRegistrarImpl(registrar.context(), connectivity);
+    ConnectivityEventChannelHandler eventChannelHandler =
+        new ConnectivityEventChannelHandler(receiverRegistrar);
+    eventChannel.setStreamHandler(eventChannelHandler);
   }
 }

@@ -4,9 +4,15 @@
 
 package dev.flutter.plugins.connectivity;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugins.connectivity.BroadcastReceiverRegistrarImpl;
+import io.flutter.plugins.connectivity.Connectivity;
+import io.flutter.plugins.connectivity.ConnectivityEventChannelHandler;
 import io.flutter.plugins.connectivity.ConnectivityMethodChannelHandler;
 
 /**
@@ -24,12 +30,30 @@ public class ConnectivityPlugin implements FlutterPlugin {
     final EventChannel eventChannel =
         new EventChannel(
             binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/connectivity_status");
+    ConnectivityManager connectivityManager =
+        (ConnectivityManager)
+            binding
+                .getApplicationContext()
+                .getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+    WifiManager wifiManager =
+        (WifiManager)
+            binding
+                .getApplicationContext()
+                .getApplicationContext()
+                .getSystemService(Context.WIFI_SERVICE);
 
-    ConnectivityMethodChannelHandler handler =
-        new ConnectivityMethodChannelHandler(binding.getApplicationContext());
+    Connectivity connectivity = new Connectivity(connectivityManager, wifiManager);
 
-    channel.setMethodCallHandler(handler);
-    eventChannel.setStreamHandler(handler);
+    ConnectivityMethodChannelHandler methodChannelHandler =
+        new ConnectivityMethodChannelHandler(connectivity);
+    channel.setMethodCallHandler(methodChannelHandler);
+
+    BroadcastReceiverRegistrarImpl receiverRegistrar =
+        new BroadcastReceiverRegistrarImpl(binding.getApplicationContext(), connectivity);
+    ConnectivityEventChannelHandler eventChannelHandler =
+        new ConnectivityEventChannelHandler(receiverRegistrar);
+    eventChannel.setStreamHandler(eventChannelHandler);
   }
 
   @Override
