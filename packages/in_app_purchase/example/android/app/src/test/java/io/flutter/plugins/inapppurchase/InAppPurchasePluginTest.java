@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
-
 import androidx.annotation.Nullable;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
@@ -47,7 +46,6 @@ import com.android.billingclient.api.SkuDetailsResponseListener;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -379,7 +377,8 @@ public class InAppPurchasePluginTest {
     ArgumentCaptor<PurchaseHistoryResponseListener> listenerCaptor =
         ArgumentCaptor.forClass(PurchaseHistoryResponseListener.class);
 
-    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASE_HISTORY_ASYNC, arguments), result);
+    methodChannelHandler.onMethodCall(
+        new MethodCall(QUERY_PURCHASE_HISTORY_ASYNC, arguments), result);
 
     // Verify we pass the data to result
     verify(mockBillingClient)
@@ -398,7 +397,8 @@ public class InAppPurchasePluginTest {
 
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("skuType", SkuType.INAPP);
-    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASE_HISTORY_ASYNC, arguments), result);
+    methodChannelHandler.onMethodCall(
+        new MethodCall(QUERY_PURCHASE_HISTORY_ASYNC, arguments), result);
 
     // Assert that we sent an error back.
     verify(result).error(contains("UNAVAILABLE"), contains("BillingClient"), any());

@@ -14,38 +14,39 @@ import io.flutter.plugins.inapppurchase.MethodChannelHandler;
  */
 public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
-    private MethodChannelHandler methodChannelHandler;
+  private MethodChannelHandler methodChannelHandler;
 
-    @Override
-    public void onAttachedToEngine(FlutterPluginBinding binding) {
-        final MethodChannel methodChannel =
-                new MethodChannel(
-                        binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/in_app_purchase");
-        methodChannelHandler = new MethodChannelHandler(null, binding.getApplicationContext(), methodChannel, new BillingClientFactoryImpl());
-        methodChannel.setMethodCallHandler(methodChannelHandler);
-    }
+  @Override
+  public void onAttachedToEngine(FlutterPluginBinding binding) {
+    final MethodChannel methodChannel =
+        new MethodChannel(
+            binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/in_app_purchase");
+    methodChannelHandler =
+        new MethodChannelHandler(
+            null, binding.getApplicationContext(), methodChannel, new BillingClientFactoryImpl());
+    methodChannel.setMethodCallHandler(methodChannelHandler);
+  }
 
-    @Override
-    public void onDetachedFromEngine(FlutterPluginBinding binding) {
-    }
+  @Override
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {}
 
-    @Override
-    public void onAttachedToActivity(ActivityPluginBinding binding) {
-        methodChannelHandler.setActivity(binding.getActivity());
-    }
+  @Override
+  public void onAttachedToActivity(ActivityPluginBinding binding) {
+    methodChannelHandler.setActivity(binding.getActivity());
+  }
 
-    @Override
-    public void onDetachedFromActivity() {
-        methodChannelHandler.setActivity(null);
-    }
+  @Override
+  public void onDetachedFromActivity() {
+    methodChannelHandler.setActivity(null);
+  }
 
-    @Override
-    public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
-        onAttachedToActivity(binding);
-    }
+  @Override
+  public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+    onAttachedToActivity(binding);
+  }
 
-    @Override
-    public void onDetachedFromActivityForConfigChanges() {
-        onDetachedFromActivity();
-    }
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+    onDetachedFromActivity();
+  }
 }

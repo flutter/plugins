@@ -6,9 +6,9 @@ import io.flutter.embedding.engine.FlutterEngine;
 
 public class MainActivity extends FlutterActivity {
 
-    @Override
-    public void configureFlutterEngine(FlutterEngine flutterEngine) {
-        super.configureFlutterEngine(flutterEngine);
-        flutterEngine.getPlugins().add(new InAppPurchasePlugin());
-    }
+  @Override
+  public void configureFlutterEngine(FlutterEngine flutterEngine) {
+    super.configureFlutterEngine(flutterEngine);
+    flutterEngine.getPlugins().add(new InAppPurchasePlugin());
+  }
 }

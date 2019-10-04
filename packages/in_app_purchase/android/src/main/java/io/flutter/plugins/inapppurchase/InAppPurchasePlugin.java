@@ -16,20 +16,20 @@ public class InAppPurchasePlugin {
   static final class MethodNames {
     static final String IS_READY = "BillingClient#isReady()";
     static final String START_CONNECTION =
-            "BillingClient#startConnection(BillingClientStateListener)";
+        "BillingClient#startConnection(BillingClientStateListener)";
     static final String END_CONNECTION = "BillingClient#endConnection()";
     static final String ON_DISCONNECT = "BillingClientStateListener#onBillingServiceDisconnected()";
     static final String QUERY_SKU_DETAILS =
-            "BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)";
+        "BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)";
     static final String LAUNCH_BILLING_FLOW =
-            "BillingClient#launchBillingFlow(Activity, BillingFlowParams)";
+        "BillingClient#launchBillingFlow(Activity, BillingFlowParams)";
     static final String ON_PURCHASES_UPDATED =
-            "PurchasesUpdatedListener#onPurchasesUpdated(int, List<Purchase>)";
+        "PurchasesUpdatedListener#onPurchasesUpdated(int, List<Purchase>)";
     static final String QUERY_PURCHASES = "BillingClient#queryPurchases(String)";
     static final String QUERY_PURCHASE_HISTORY_ASYNC =
-            "BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)";
+        "BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)";
     static final String CONSUME_PURCHASE_ASYNC =
-            "BillingClient#consumeAsync(String, ConsumeResponseListener)";
+        "BillingClient#consumeAsync(String, ConsumeResponseListener)";
 
     private MethodNames() {};
   }
@@ -38,7 +38,9 @@ public class InAppPurchasePlugin {
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/in_app_purchase");
-    final MethodChannelHandler methodChannelHandler = new MethodChannelHandler(registrar.activity(), registrar.context(), channel, new BillingClientFactoryImpl());
+    final MethodChannelHandler methodChannelHandler =
+        new MethodChannelHandler(
+            registrar.activity(), registrar.context(), channel, new BillingClientFactoryImpl());
     channel.setMethodCallHandler(methodChannelHandler);
   }
 }
