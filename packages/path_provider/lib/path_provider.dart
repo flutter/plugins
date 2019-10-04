@@ -185,7 +185,7 @@ String _mapStorageDirectory(StorageDirectory directory) {
   if (directory == null) {
     return null;
   }
-  
+
   switch (directory) {
     case StorageDirectory.music:
       return 'Music';
