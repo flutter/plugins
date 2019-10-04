@@ -11,16 +11,12 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-
 import androidx.annotation.NonNull;
-
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
-/**
- * Handles MethodChannel and EventChannel for the plugin.
- */
+/** Handles MethodChannel and EventChannel for the plugin. */
 public class ConnectivityMethodChannelHandler
     implements MethodChannel.MethodCallHandler, EventChannel.StreamHandler {
 

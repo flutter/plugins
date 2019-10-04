@@ -20,11 +20,10 @@ public class ConnectivityPlugin implements FlutterPlugin {
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     final MethodChannel channel =
         new MethodChannel(
-                binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/connectivity");
+            binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/connectivity");
     final EventChannel eventChannel =
         new EventChannel(
-                binding.getFlutterEngine().getDartExecutor(),
-            "plugins.flutter.io/connectivity_status");
+            binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/connectivity_status");
 
     ConnectivityMethodChannelHandler handler =
         new ConnectivityMethodChannelHandler(binding.getApplicationContext());
@@ -34,5 +33,5 @@ public class ConnectivityPlugin implements FlutterPlugin {
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding){}
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {}
 }
