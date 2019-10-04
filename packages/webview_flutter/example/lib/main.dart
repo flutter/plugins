@@ -53,6 +53,9 @@ class _WebViewExampleState extends State<WebViewExample> {
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
           },
+          onProgress: (progress) {
+            print("WebView is loading (progress : $progress%)");
+          },
           // TODO(iskakaushik): Remove this when collection literals makes it to stable.
           // ignore: prefer_collection_literals
           javascriptChannels: <JavascriptChannel>[

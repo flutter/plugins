@@ -10,14 +10,18 @@ import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebStorage;
+import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -246,11 +250,22 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
               flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
 
           webView.setWebViewClient(webViewClient);
+
           break;
         case "debuggingEnabled":
           final boolean debuggingEnabled = (boolean) settings.get(key);
 
           webView.setWebContentsDebuggingEnabled(debuggingEnabled);
+          break;
+        case "hasProgressTracking":
+          final boolean progressTrackingEnabled = (boolean) settings.get(key);
+          if (progressTrackingEnabled) {
+            webView.setWebChromeClient(new WebChromeClient() {
+              public void onProgressChanged(WebView view, int progress) {
+                flutterWebViewClient.onLoadingProgress(progress);
+              }
+            });
+          }
           break;
         case "userAgent":
           updateUserAgent((String) settings.get(key));

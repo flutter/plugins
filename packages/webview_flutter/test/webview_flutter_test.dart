@@ -658,6 +658,62 @@ void main() {
     });
   });
 
+  group('$PageLoadingCallback', () {
+    testWidgets('onLoadingProgress is not null', (WidgetTester tester) async {
+      int loadingProgress;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onProgress: (int progress) {
+          loadingProgress = progress;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      platformWebView.fakeOnProgressCallback(50);
+
+      expect(loadingProgress, 50);
+    });
+
+    testWidgets('onLoadingProgress is null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        initialUrl: 'https://youtube.com',
+        onProgress: null,
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      // This is to test that it does not crash on a null callback.
+      platformWebView.fakeOnProgressCallback(50);
+    });
+
+    testWidgets('onLoadingProgress changed', (WidgetTester tester) async {
+      int loadingProgress;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onProgress: (int progress) {},
+      ));
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onProgress: (int progress) {
+          loadingProgress = progress;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      platformWebView.fakeOnProgressCallback(50);
+
+      expect(loadingProgress, 50);
+    });
+  });
+
   group('navigationDelegate', () {
     testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
@@ -974,6 +1030,24 @@ class FakePlatformWebView {
     final ByteData data = codec.encodeMethodCall(MethodCall(
       'onPageFinished',
       <dynamic, dynamic>{'url': currentUrl},
+    ));
+
+    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+    // https://github.com/flutter/flutter/issues/33446
+    // ignore: deprecated_member_use
+    BinaryMessages.handlePlatformMessage(
+      channel.name,
+      data,
+      (ByteData data) {},
+    );
+  }
+
+  void fakeOnProgressCallback(int progress) {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+
+    final ByteData data = codec.encodeMethodCall(MethodCall(
+      'onProgress',
+      <dynamic, dynamic>{'progress': progress},
     ));
 
     // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
