@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
-import 'package:flutter_android_lifecycle/flutter_android_lifecycle.dart';
 
 void main() => runApp(MyApp());
 
