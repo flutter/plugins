@@ -14,8 +14,8 @@ public class SharePlugin {
 
   public static void registerWith(Registrar registrar) {
     MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-
-    MethodChannelHandler handler = new MethodChannelHandler(registrar.activity());
+    Share share = new Share(registrar.activity());
+    MethodCallHandler handler = new MethodCallHandler(share);
     channel.setMethodCallHandler(handler);
   }
 }

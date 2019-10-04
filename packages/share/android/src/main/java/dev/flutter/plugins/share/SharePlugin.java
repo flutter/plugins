@@ -5,7 +5,8 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugins.share.MethodChannelHandler;
+import io.flutter.plugins.share.MethodCallHandler;
+import io.flutter.plugins.share.Share;
 
 /**
  * Plugin implementation that uses the new {@code io.flutter.embedding} package.
@@ -15,14 +16,16 @@ import io.flutter.plugins.share.MethodChannelHandler;
 public class SharePlugin implements FlutterPlugin, ActivityAware {
 
   private static final String CHANNEL = "plugins.flutter.io/share";
-  MethodChannelHandler handler;
-  Activity activity;
+  private MethodCallHandler handler;
+  private Activity activity;
+  private Share share;
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     final MethodChannel methodChannel =
         new MethodChannel(binding.getFlutterEngine().getDartExecutor(), CHANNEL);
-    handler = new MethodChannelHandler(activity);
+    share = new Share(activity);
+    handler = new MethodCallHandler(share);
     methodChannel.setMethodCallHandler(handler);
   }
 
@@ -32,13 +35,13 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
     activity = binding.getActivity();
-    handler.setActivity(activity);
+    share.setActivity(activity);
   }
 
   @Override
   public void onDetachedFromActivity() {
     activity = null;
-    handler.setActivity(null);
+    share.setActivity(null);
   }
 
   @Override
