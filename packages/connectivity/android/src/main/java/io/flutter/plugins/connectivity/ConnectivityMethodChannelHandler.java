@@ -11,6 +11,9 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+
+import androidx.annotation.NonNull;
+
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -30,7 +33,7 @@ public class ConnectivityMethodChannelHandler
    *
    * @param context The Context used in the handler. It must not be null.
    */
-  public ConnectivityMethodChannelHandler(Context context) {
+  public ConnectivityMethodChannelHandler(@NonNull Context context) {
     assert (context != null);
     this.context = context;
     this.manager =
