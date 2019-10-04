@@ -136,29 +136,44 @@ void main() {
       expect(e, isUnsupportedError);
     }
   });
-  test('getExternalStorageDirectories test', () async {
-    response = <String>[];
-    final List<Directory> directories =
-        await getExternalStorageDirectories(AndroidEnvironment.DIRECTORY_MUSIC);
-    expect(
-      log,
-      <Matcher>[
-        isMethodCall(
-          'getExternalStorageDirectories',
-          arguments: const <String, String>{
-            'type': AndroidEnvironment.DIRECTORY_MUSIC
-          },
-        )
-      ],
-    );
-    expect(directories, <Directory>[]);
-  });
+
+  const List<List<dynamic>> _mappings = <List<dynamic>>[
+    <dynamic>[null, null],
+    <dynamic>[StorageDirectory.music, 'Music'],
+    <dynamic>[StorageDirectory.podcasts, 'Podcasts'],
+    <dynamic>[StorageDirectory.ringtones, 'Ringtones'],
+    <dynamic>[StorageDirectory.alarms, 'Alarms'],
+    <dynamic>[StorageDirectory.notifications, 'Notifications'],
+    <dynamic>[StorageDirectory.pictures, 'Pictures'],
+    <dynamic>[StorageDirectory.movies, 'Movies'],
+  ];
+
+  for (List<dynamic> mapping in _mappings) {
+    final StorageDirectory type = mapping[0];
+    final String androidDirectory = mapping[1];
+
+    test('getExternalStorageDirectories test (type: $type)', () async {
+      response = <String>[];
+      final List<Directory> directories =
+          await getExternalStorageDirectories(type: type);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'getExternalStorageDirectories',
+            arguments: <String, String>{'type': androidDirectory},
+          )
+        ],
+      );
+      expect(directories, <Directory>[]);
+    });
+  }
 
   test('getExternalStorageDirectories iOS test', () async {
     setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
 
     try {
-      await getExternalStorageDirectories("music");
+      await getExternalStorageDirectories(type: StorageDirectory.music);
       fail('should throw UnsupportedError');
     } catch (e) {
       expect(e, isUnsupportedError);
@@ -219,8 +234,9 @@ void main() {
   test('ExternalStorageDirectories path test', () async {
     final List<String> paths = <String>["/foo/bar/baz", "/foo/bar/baz2"];
     response = paths;
-    final List<Directory> directories =
-        await getExternalStorageDirectories("music");
+    final List<Directory> directories = await getExternalStorageDirectories(
+      type: StorageDirectory.music,
+    );
     expect(directories.map((Directory d) => d.path).toList(), equals(paths));
   });
 }

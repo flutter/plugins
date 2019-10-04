@@ -95,22 +95,22 @@ void main() {
   test('getExternalStorageDirectories', () async {
     if (Platform.isIOS) {
       final Future<List<Directory>> result =
-          getExternalStorageDirectories(null);
+          getExternalStorageDirectories(type: null);
       expect(result, throwsA(isInstanceOf<UnsupportedError>()));
     } else if (Platform.isAndroid) {
-      final List<String> allDirs = <String>[
+      final List<StorageDirectory> allDirs = <StorageDirectory>[
         null,
-        AndroidEnvironment.DIRECTORY_MUSIC,
-        AndroidEnvironment.DIRECTORY_PODCASTS,
-        AndroidEnvironment.DIRECTORY_RINGTONES,
-        AndroidEnvironment.DIRECTORY_ALARMS,
-        AndroidEnvironment.DIRECTORY_NOTIFICATIONS,
-        AndroidEnvironment.DIRECTORY_PICTURES,
-        AndroidEnvironment.DIRECTORY_MOVIES,
+        StorageDirectory.music,
+        StorageDirectory.podcasts,
+        StorageDirectory.ringtones,
+        StorageDirectory.alarms,
+        StorageDirectory.notifications,
+        StorageDirectory.pictures,
+        StorageDirectory.movies,
       ];
-      for (String type in allDirs) {
+      for (StorageDirectory type in allDirs) {
         final List<Directory> directories =
-            await getExternalStorageDirectories(type);
+            await getExternalStorageDirectories(type: type);
         for (Directory result in directories) {
           final String uuid = Uuid().v1();
           final File file = File('${result.path}/$uuid.txt');

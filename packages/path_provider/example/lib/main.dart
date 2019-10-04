@@ -104,9 +104,9 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _requestExternalStorageDirectories(String type) {
+  void _requestExternalStorageDirectories(StorageDirectory type) {
     setState(() {
-      _externalStorageDirectories = getExternalStorageDirectories(type);
+      _externalStorageDirectories = getExternalStorageDirectories(type: type);
     });
   }
 
@@ -182,7 +182,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       ? null
                       : () {
                           _requestExternalStorageDirectories(
-                              AndroidEnvironment.DIRECTORY_MUSIC);
+                            StorageDirectory.music,
+                          );
                         },
                 ),
               ),

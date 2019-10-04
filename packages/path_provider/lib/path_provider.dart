@@ -139,14 +139,14 @@ Future<List<Directory>> getExternalCacheDirectories() async {
 /// Shadows directory values from Androids `android.os.Environment` class.
 ///
 /// https://developer.android.com/reference/android/os/Environment.html#fields_1
-class AndroidEnvironment {
-  static const String DIRECTORY_MUSIC = 'Music';
-  static const String DIRECTORY_PODCASTS = 'Podcasts';
-  static const String DIRECTORY_RINGTONES = 'Ringtones';
-  static const String DIRECTORY_ALARMS = 'Alarms';
-  static const String DIRECTORY_NOTIFICATIONS = 'Notifications';
-  static const String DIRECTORY_PICTURES = 'Pictures';
-  static const String DIRECTORY_MOVIES = 'Movies';
+enum StorageDirectory {
+  music,
+  podcasts,
+  ringtones,
+  alarms,
+  notifications,
+  pictures,
+  movies,
 }
 
 /// Paths to directories where application specific data can be stored.
@@ -161,18 +161,39 @@ class AndroidEnvironment {
 ///
 /// On Android this returns Context.getExternalFilesDirs(String type) or
 /// Context.getExternalFilesDir(String type) on API levels below 19.
-///
-/// The parameter [type] is optional. If it is set, it *must* be one of the
-/// constants defined in [AndroidEnvironment]. See [AndroidEnvironment] for
-/// more information.
-Future<List<Directory>> getExternalStorageDirectories(String type) async {
+Future<List<Directory>> getExternalStorageDirectories({
+  /// Optional parameter. See [StorageDirectory] for more informations on
+  /// how this type translates to Android storage directories.
+  StorageDirectory type,
+}) async {
   if (_platform.isIOS) {
     throw UnsupportedError('Functionality not available on iOS');
   }
   final List<String> paths = await _channel.invokeListMethod<String>(
     'getExternalStorageDirectories',
-    <String, String>{"type": type},
+    <String, String>{"type": _mapStorageDirectory(type)},
   );
 
   return paths.map((String path) => Directory(path)).toList();
+}
+
+String _mapStorageDirectory(StorageDirectory directory) {
+  switch (directory) {
+    case StorageDirectory.music:
+      return 'Music';
+    case StorageDirectory.podcasts:
+      return 'Podcasts';
+    case StorageDirectory.ringtones:
+      return 'Ringtones';
+    case StorageDirectory.alarms:
+      return 'Alarms';
+    case StorageDirectory.notifications:
+      return 'Notifications';
+    case StorageDirectory.pictures:
+      return 'Pictures';
+    case StorageDirectory.movies:
+      return 'Movies';
+    default:
+      return null;
+  }
 }
