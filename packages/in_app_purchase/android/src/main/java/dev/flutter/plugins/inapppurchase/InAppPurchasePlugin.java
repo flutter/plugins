@@ -7,6 +7,11 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.inapppurchase.BillingClientFactoryImpl;
 import io.flutter.plugins.inapppurchase.MethodChannelHandler;
 
+/**
+ * Plugin implementation that uses the new {@code io.flutter.embedding} package.
+ *
+ * <p>Instantiate this in an add to app scenario to gracefully handle activity and context changes.
+ */
 public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
     private MethodChannelHandler methodChannelHandler;

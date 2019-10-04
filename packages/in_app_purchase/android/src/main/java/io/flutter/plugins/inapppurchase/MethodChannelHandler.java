@@ -1,9 +1,14 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.inapppurchase;
 
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.billingclient.api.BillingClient;
@@ -27,6 +32,9 @@ import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesList;
 import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesResult;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 
+/**
+ * Handles MethodChannel for the plugin.
+ */
 public class MethodChannelHandler implements MethodChannel.MethodCallHandler {
 
     private static final String TAG = "InAppPurchasePlugin";
@@ -40,13 +48,22 @@ public class MethodChannelHandler implements MethodChannel.MethodCallHandler {
 
     private HashMap<String, SkuDetails> cachedSkus = new HashMap<>();
 
-    public MethodChannelHandler(@Nullable Activity activity, Context applicationContext, MethodChannel methodChannel, BillingClientFactory billingClientFactory) {
+    /**
+     * Constructs the MethodChannelHandler
+     */
+    public MethodChannelHandler(@Nullable Activity activity, @NonNull Context applicationContext, @NonNull MethodChannel methodChannel, @NonNull BillingClientFactory billingClientFactory) {
         this.billingClientFactory = billingClientFactory;
         this.applicationContext = applicationContext;
         this.activity = activity;
         this.methodChannel = methodChannel;
     }
 
+    /**
+     * Sets the activity. Should be called as soon as the the activity is available.
+     * When an the activity becomes unavailable, call this method to it to null.
+     *
+     * @param activity the activity to be set.
+     */
     public void setActivity(Activity activity) {
         this.activity = activity;
     }
