@@ -55,7 +55,9 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   UIActivityViewController *activityViewController =
       [[UIActivityViewController alloc] initWithActivityItems:@[ sharedItems ]
                                         applicationActivities:nil];
-  [activityViewController setValue:subject forKey:@"subject"];
+  if (subject && ![subject isKindOfClass:[NSNull class]]) {
+    [activityViewController setValue:subject forKey:@"subject"];
+  }
   activityViewController.popoverPresentationController.sourceView = controller.view;
   if (!CGRectIsEmpty(origin)) {
     activityViewController.popoverPresentationController.sourceRect = origin;
