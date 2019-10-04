@@ -114,9 +114,10 @@ Future<Directory> getExternalStorageDirectory() async {
   return Directory(path);
 }
 
-/// Paths to directories where application specific cache data can be stored.
-/// These paths typically reside on external storage like separate partitions
-/// or SD cards. Phones may have multiple storage directories available.
+/// Paths to directories where application specific external cache data can be
+/// stored. These paths typically reside on external storage like separate 
+/// partitions or SD cards. Phones may have multiple storage directories 
+/// available.
 ///
 /// The current operating system should be determined before issuing this
 /// function call, as this functionality is only available on Android.
