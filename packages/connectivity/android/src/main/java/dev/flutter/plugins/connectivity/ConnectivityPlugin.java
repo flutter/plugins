@@ -14,7 +14,6 @@ import io.flutter.plugins.connectivity.ConnectivityMethodChannelHandler;
  *
  * <p>Instantiate this in an add to app scenario to gracefully handle activity and context changes.
  */
-
 public class ConnectivityPlugin implements FlutterPlugin {
 
   @Override
