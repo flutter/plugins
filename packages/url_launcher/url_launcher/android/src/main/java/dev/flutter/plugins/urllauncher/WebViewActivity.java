@@ -1,4 +1,4 @@
-package io.flutter.plugins.urllauncher;
+package dev.flutter.plugins.urllauncher;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
