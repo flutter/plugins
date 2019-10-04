@@ -1,16 +1,35 @@
-# flutter_android_lifecycle_example
+# Flutter Android Lifecycle Plugin
 
-Demonstrates how to use the flutter_android_lifecycle plugin.
+[![pub package](https://img.shields.io/pub/v/flutter_android_lifecycle.svg)](https://pub.dartlang.org/packages/flutter_android_lifecycle)
 
-## Getting Started
+A Flutter plugin for Android to allow other Flutter plugins to access an Android `Lifecycle` object
+in the plugin's binding.
 
-This project is a starting point for a Flutter application.
+*Note*: This plugin is still under development, and some APIs might not be available yet.
 
-A few resources to get you started if this is your first Flutter project:
+## Installation
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Add `flutter_android_lifecycle` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/).
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Example
+
+Use a `FlutterLifecycleAdapter` within another Flutter plugin's Android implementation, as shown
+below:
+
+```java
+public class MyPlugin implements FlutterPlugin {
+  @Override
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+    Object lifecycleReference = binding.getLifecycle();
+    Lifecycle lifecycle = new FlutterLifecycleAdapter(lifecycleReference).getLifecycle();
+    
+    // Use lifecycle as desired.
+  }
+  
+  //...
+}
+```
+
+*Note*: This plugin is still under development, and some APIs might not be available yet.
+[Feedback welcome](https://github.com/flutter/flutter/issues) and
+[Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
