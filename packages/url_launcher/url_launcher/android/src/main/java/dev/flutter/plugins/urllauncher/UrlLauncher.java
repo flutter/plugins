@@ -6,13 +6,22 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Browser;
+import android.support.annotation.Nullable;
 
 /** Launches components for URLs. */
 final class UrlLauncher {
-  private final Context activityContext;
+  private Context activityContext;
 
-  /** Uses the given {@code activityContext} for launching intents. */
-  UrlLauncher(Context activityContext) {
+  /**
+   * Uses the given {@code activityContext} for launching intents.
+   *
+   * <p>It may be null initially, but should be set before calling {@link #launch}.
+   */
+  UrlLauncher(@Nullable Context activityContext) {
+    this.activityContext = activityContext;
+  }
+
+  void setActivityContext(@Nullable Context activityContext) {
     this.activityContext = activityContext;
   }
 

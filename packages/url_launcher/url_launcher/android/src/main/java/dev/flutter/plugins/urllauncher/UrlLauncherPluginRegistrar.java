@@ -4,16 +4,25 @@
 
 package dev.flutter.plugins.urllauncher;
 
-import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-/** UrlLauncherPlugin */
+/**
+ * Automatically registers a plugin implementation that relies on the stable {@code
+ * io.flutter.plugin.common} package.
+ */
 public class UrlLauncherPluginRegistrar {
+
+  /**
+   * Registers a plugin implementation that uses the stable {@code io.flutter.plugin.common}
+   * package.
+   *
+   * <p>Calling this automatically initializes the plugin. However plugins initialized this way
+   * won't react to changes in activity or context, unlike {@link UrlLauncherPlugin}.
+   */
   public static void registerWith(Registrar registrar) {
-    MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/url_launcher");
-    UrlLauncher plugin = new UrlLauncher(registrar.activeContext());
-    channel.setMethodCallHandler(new MethodCallHandlerImpl(plugin));
+    MethodCallHandlerImpl handler =
+        new MethodCallHandlerImpl(new UrlLauncher(registrar.activeContext()));
+    handler.startListening(registrar.messenger());
   }
 
   private UrlLauncherPluginRegistrar() {}
