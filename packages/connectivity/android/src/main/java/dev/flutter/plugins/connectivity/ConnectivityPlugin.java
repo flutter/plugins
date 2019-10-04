@@ -9,30 +9,31 @@ import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.connectivity.ConnectivityMethodChannelHandler;
 
-public class ConnectivityPlugin implements FlutterPlugin {
+/**
+ * Plugin implementation that uses the new {@code io.flutter.embedding} package.
+ *
+ * <p>Instantiate this in an add to app scenario to gracefully handle activity and context changes.
+ */
 
-  private FlutterPluginBinding pluginBinding;
+public class ConnectivityPlugin implements FlutterPlugin {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    this.pluginBinding = binding;
     final MethodChannel channel =
         new MethodChannel(
-            pluginBinding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/connectivity");
+                binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/connectivity");
     final EventChannel eventChannel =
         new EventChannel(
-            pluginBinding.getFlutterEngine().getDartExecutor(),
+                binding.getFlutterEngine().getDartExecutor(),
             "plugins.flutter.io/connectivity_status");
 
     ConnectivityMethodChannelHandler handler =
-        new ConnectivityMethodChannelHandler(pluginBinding.getApplicationContext());
+        new ConnectivityMethodChannelHandler(binding.getApplicationContext());
 
     channel.setMethodCallHandler(handler);
     eventChannel.setStreamHandler(handler);
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {
-    this.pluginBinding = null;
-  }
+  public void onDetachedFromEngine(FlutterPluginBinding binding){}
 }

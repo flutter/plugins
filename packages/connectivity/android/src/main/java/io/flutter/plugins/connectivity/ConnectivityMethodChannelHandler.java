@@ -15,6 +15,9 @@ import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
+/**
+ * Handles MethodChannel and EventChannel for the plugin.
+ */
 public class ConnectivityMethodChannelHandler
     implements MethodChannel.MethodCallHandler, EventChannel.StreamHandler {
 
@@ -22,6 +25,11 @@ public class ConnectivityMethodChannelHandler
   private ConnectivityManager manager;
   private BroadcastReceiver receiver;
 
+  /**
+   * Construct the ConnectivityMethodChannelHandler
+   *
+   * @param context The Context used in the handler. It must not be null.
+   */
   public ConnectivityMethodChannelHandler(Context context) {
     assert (context != null);
     this.context = context;
