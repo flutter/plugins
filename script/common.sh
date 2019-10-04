@@ -23,13 +23,12 @@ function check_changed_packages() {
     return 1
   fi
 
-  # Filter out any packages that don't have a pubspec.yaml: they have probably
-  # been deleted in this PR. Also filter out `location_background` since it
-  # should be removed soon.
   CHANGED_PACKAGES=""
   CHANGED_PACKAGE_LIST=()
+
+  # Filter out packages that have been deleted.
   for package in "${packages[@]}"; do
-    if [ -f "$REPO_DIR/packages/$package/pubspec.yaml" ] && [ $package != "location_background" ]; then
+    if [ -d "$REPO_DIR/packages/$package" ]; then
       CHANGED_PACKAGES="${CHANGED_PACKAGES},$package"
       CHANGED_PACKAGE_LIST=("${CHANGED_PACKAGE_LIST[@]}" "$package")
     fi

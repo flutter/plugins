@@ -1,6 +1,10 @@
-## 0.10.2+2
+## 0.10.2+3
 
 * iOS: fixed some videos being rendered black
+
+## 0.10.2+2
+
+* Update and migrate iOS example project.
 
 ## 0.10.2+1
 

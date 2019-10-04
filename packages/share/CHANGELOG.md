@@ -1,3 +1,7 @@
+## 0.6.2+2
+
+* Update and migrate iOS example project.
+
 ## 0.6.2+1
 
 * Specify explicit type for `invokeMethod`.
