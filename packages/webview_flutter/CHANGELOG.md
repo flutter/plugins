@@ -1,3 +1,7 @@
+## 0.3.15
+
+* Added loading progress tracking support.
+
 ## 0.3.14+1
 
 * Allow underscores anywhere for Javascript Channel name.
