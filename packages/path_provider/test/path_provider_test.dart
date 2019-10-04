@@ -146,6 +146,9 @@ void main() {
     <dynamic>[StorageDirectory.notifications, 'Notifications'],
     <dynamic>[StorageDirectory.pictures, 'Pictures'],
     <dynamic>[StorageDirectory.movies, 'Movies'],
+    <dynamic>[StorageDirectory.downloads, 'Downloads'],
+    <dynamic>[StorageDirectory.dcim, 'DCIM'],
+    <dynamic>[StorageDirectory.documents, 'Documents'],
   ];
 
   for (List<dynamic> mapping in _mappings) {

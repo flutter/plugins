@@ -148,6 +148,9 @@ enum StorageDirectory {
   notifications,
   pictures,
   movies,
+  downloads,
+  dcim,
+  documents,
 }
 
 /// Paths to directories where application specific data can be stored.
@@ -179,6 +182,10 @@ Future<List<Directory>> getExternalStorageDirectories({
 }
 
 String _mapStorageDirectory(StorageDirectory directory) {
+  if (directory == null) {
+    return null;
+  }
+  
   switch (directory) {
     case StorageDirectory.music:
       return 'Music';
@@ -194,7 +201,13 @@ String _mapStorageDirectory(StorageDirectory directory) {
       return 'Pictures';
     case StorageDirectory.movies:
       return 'Movies';
+    case StorageDirectory.downloads:
+      return 'Downloads';
+    case StorageDirectory.dcim:
+      return 'DCIM';
+    case StorageDirectory.documents:
+      return 'Documents';
     default:
-      return null;
+      throw ArgumentError('Unknown storage directory: $directory');
   }
 }
