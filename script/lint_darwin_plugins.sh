@@ -45,15 +45,9 @@ function lint_packages() {
 
   # TODO: These packages have linter errors. Remove plugins from this list as linter issues are fixed.
   local skipped_packages=(
-    'android_alarm_manager'
-    'android_intent'
     'battery'
-    'connectivity'
-    'device_info'
     'google_maps_flutter'
     'google_sign_in'
-    'image_picker'
-    'instrumentation_adapter'
     'local_auth'
     'package_info'
     'path_provider'

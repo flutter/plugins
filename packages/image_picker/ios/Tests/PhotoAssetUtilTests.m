@@ -2,21 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <XCTest/XCTest.h>
-#import "FLTImagePickerMetaDataUtil.h"
-#import "FLTImagePickerPhotoAssetUtil.h"
+#import "ImagePickerTestImages.h"
+
+@import image_picker;
+@import XCTest;
 
 @interface PhotoAssetUtilTests : XCTestCase
-
-@property(strong, nonatomic) NSBundle *testBundle;
-
 @end
 
 @implementation PhotoAssetUtilTests
-
-- (void)setUp {
-  self.testBundle = [NSBundle bundleForClass:self.class];
-}
 
 - (void)getAssetFromImagePickerInfoShouldReturnNilIfNotAvailable {
   NSDictionary *mockData = @{};
@@ -25,8 +19,7 @@
 
 - (void)testSaveImageWithOriginalImageData_ShouldSaveWithTheCorrectExtentionAndMetaData {
   // test jpg
-  NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
-                                                                             ofType:@"jpg"]];
+  NSData *dataJPG = ImagePickerTestImages.JPGTestData;
   UIImage *imageJPG = [UIImage imageWithData:dataJPG];
   NSString *savedPathJPG = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataJPG
                                                                                   image:imageJPG
@@ -42,8 +35,7 @@
   XCTAssertEqualObjects(originalMetaDataJPG[@"ProfileName"], newMetaDataJPG[@"ProfileName"]);
 
   // test png
-  NSData *dataPNG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"pngImage"
-                                                                             ofType:@"png"]];
+  NSData *dataPNG = ImagePickerTestImages.PNGTestData;
   UIImage *imagePNG = [UIImage imageWithData:dataPNG];
   NSString *savedPathPNG = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataPNG
                                                                                   image:imagePNG
@@ -60,9 +52,7 @@
 }
 
 - (void)testSaveImageWithPickerInfo_ShouldSaveWithDefaultExtention {
-  NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
-                                                                             ofType:@"jpg"]];
-  UIImage *imageJPG = [UIImage imageWithData:dataJPG];
+  UIImage *imageJPG = [UIImage imageWithData:ImagePickerTestImages.JPGTestData];
   NSString *savedPathJPG = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
                                                                            image:imageJPG
                                                                     imageQuality:nil];
@@ -80,9 +70,7 @@
           @{(__bridge NSString *)kCGImagePropertyExifMakerNote : @"aNote"}
     }
   };
-  NSData *dataJPG = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
-                                                                             ofType:@"jpg"]];
-  UIImage *imageJPG = [UIImage imageWithData:dataJPG];
+  UIImage *imageJPG = [UIImage imageWithData:ImagePickerTestImages.JPGTestData];
   NSString *savedPathJPG = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:dummyInfo
                                                                            image:imageJPG
                                                                     imageQuality:nil];
@@ -95,8 +83,7 @@
 
 - (void)testSaveImageWithOriginalImageData_ShouldSaveAsGifAnimation {
   // test gif
-  NSData *dataGIF = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"gifImage"
-                                                                             ofType:@"gif"]];
+  NSData *dataGIF = ImagePickerTestImages.GIFTestData;
   UIImage *imageGIF = [UIImage imageWithData:dataGIF];
   CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)dataGIF, nil);
 
@@ -122,8 +109,7 @@
 
 - (void)testSaveImageWithOriginalImageData_ShouldSaveAsScalledGifAnimation {
   // test gif
-  NSData *dataGIF = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"gifImage"
-                                                                             ofType:@"gif"]];
+  NSData *dataGIF = ImagePickerTestImages.GIFTestData;
   UIImage *imageGIF = [UIImage imageWithData:dataGIF];
 
   CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)dataGIF, nil);

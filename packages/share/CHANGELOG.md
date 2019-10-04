@@ -1,6 +1,10 @@
-## 0.6.2+2
+## 0.6.2+3
 
 * Fix iOS crash when setting subject to null.
+
+## 0.6.2+2
+
+* Update and migrate iOS example project.
 
 ## 0.6.2+1
 

@@ -1,6 +1,7 @@
 ## 0.1.4
 
 * Migrate example to AndroidX.
+* Define clang module for iOS.
 
 ## 0.1.3
 
