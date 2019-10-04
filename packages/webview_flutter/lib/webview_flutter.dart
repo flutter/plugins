@@ -91,7 +91,7 @@ enum AutoMediaPlaybackPolicy {
   always_allow,
 }
 
-final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
+final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9_]*\$');
 
 /// A named channel for receiving messaged from JavaScript code running inside a web view.
 class JavascriptChannel {
@@ -624,6 +624,11 @@ class WebViewController {
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     return _webViewPlatformController.evaluateJavascript(javascriptString);
+  }
+
+  /// Returns the title of the currently loaded page.
+  Future<String> getTitle() {
+    return _webViewPlatformController.getTitle();
   }
 }
 
