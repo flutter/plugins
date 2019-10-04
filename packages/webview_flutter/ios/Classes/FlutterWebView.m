@@ -267,7 +267,8 @@
       NSNumber* hasProgressTrackingValue = settings[key];
       bool hasProgressTracking = [hasProgressTrackingValue boolValue];
       if (hasProgressTracking) {
-        _progressionDelegate = [[FLTWKProgressionDelegate alloc] initWithWebView: _webView channel:_channel];
+        _progressionDelegate = [[FLTWKProgressionDelegate alloc] initWithWebView: _webView
+                                                                         channel:_channel];
       }
     } else if ([key isEqualToString:@"debuggingEnabled"]) {
       // no-op debugging is always enabled on iOS.
