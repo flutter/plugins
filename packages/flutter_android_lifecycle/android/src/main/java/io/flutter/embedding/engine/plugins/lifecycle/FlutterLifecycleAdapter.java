@@ -4,16 +4,17 @@
 
 package io.flutter.embedding.engine.plugins.lifecycle;
 
-import androidx.lifecycle.Lifecycle;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
 
 public class FlutterLifecycleAdapter {
-  @NonNull
-  private final Lifecycle lifecycle;
+  @NonNull private final Lifecycle lifecycle;
 
   public FlutterLifecycleAdapter(@NonNull Object reference) {
     if (!(reference instanceof HiddenLifecycleReference)) {
-      throw new IllegalArgumentException("The reference argument must be of type HiddenLifecycleReference. Was actually " + reference);
+      throw new IllegalArgumentException(
+          "The reference argument must be of type HiddenLifecycleReference. Was actually "
+              + reference);
     }
 
     this.lifecycle = ((HiddenLifecycleReference) reference).getLifecycle();

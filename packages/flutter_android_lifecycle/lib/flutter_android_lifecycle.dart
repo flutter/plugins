@@ -1,5 +1,1 @@
-
-
-class FlutterAndroidLifecycle {
-
-}
+class FlutterAndroidLifecycle {}

@@ -5,9 +5,7 @@
 package io.flutter.plugins.flutterandroidlifecycle.example;
 
 import android.util.Log;
-
 import androidx.lifecycle.Lifecycle;
-
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -25,11 +23,14 @@ public class MainActivity extends FlutterActivity {
 
     @Override
     public void onAttachedToEngine(FlutterPluginBinding flutterPluginBinding) {
-      FlutterLifecycleAdapter adapter = new FlutterLifecycleAdapter(flutterPluginBinding.getLifecycle());
+      FlutterLifecycleAdapter adapter =
+          new FlutterLifecycleAdapter(flutterPluginBinding.getLifecycle());
       Lifecycle lifecycle = adapter.getLifecycle();
 
       if (lifecycle == null) {
-        throw new RuntimeException("The FlutterLifecycleAdapter did not correctly provide a Lifecycle instance. Source reference: " + flutterPluginBinding.getLifecycle());
+        throw new RuntimeException(
+            "The FlutterLifecycleAdapter did not correctly provide a Lifecycle instance. Source reference: "
+                + flutterPluginBinding.getLifecycle());
       }
       Log.d(TAG, "Successfully obtained Lifecycle: " + lifecycle);
     }
