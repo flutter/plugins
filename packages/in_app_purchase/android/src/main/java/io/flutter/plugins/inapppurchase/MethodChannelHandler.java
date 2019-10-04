@@ -5,7 +5,6 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
@@ -39,6 +38,8 @@ public class MethodChannelHandler implements MethodChannel.MethodCallHandler {
     private final Context applicationContext;
     private final MethodChannel methodChannel;
 
+    private HashMap<String, SkuDetails> cachedSkus = new HashMap<>();
+
     public MethodChannelHandler(@Nullable Activity activity, Context applicationContext, MethodChannel methodChannel, BillingClientFactory billingClientFactory) {
         this.billingClientFactory = billingClientFactory;
         this.applicationContext = applicationContext;
@@ -46,10 +47,7 @@ public class MethodChannelHandler implements MethodChannel.MethodCallHandler {
         this.methodChannel = methodChannel;
     }
 
-    private HashMap<String, SkuDetails> cachedSkus = new HashMap<>();
-
-    @VisibleForTesting
-    void setActivity(Activity activity) {
+    public void setActivity(Activity activity) {
         this.activity = activity;
     }
 
