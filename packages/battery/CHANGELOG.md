@@ -1,4 +1,4 @@
-## 0.3.0+6
+## 0.3.1
 
 * Support the v2 Android embedder.
 
