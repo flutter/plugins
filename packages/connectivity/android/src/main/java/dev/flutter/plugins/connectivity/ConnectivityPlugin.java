@@ -7,6 +7,7 @@ package dev.flutter.plugins.connectivity;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugins.connectivity.ConnectivityChecker;
 import io.flutter.plugins.connectivity.ConnectivityMethodChannelHandler;
 
 /**
@@ -26,12 +27,11 @@ public class ConnectivityPlugin implements FlutterPlugin {
         new EventChannel(
                 binding.getFlutterEngine().getDartExecutor(),
             "plugins.flutter.io/connectivity_status");
-
-    ConnectivityMethodChannelHandler handler =
-        new ConnectivityMethodChannelHandler(binding.getApplicationContext());
-
-    channel.setMethodCallHandler(handler);
-    eventChannel.setStreamHandler(handler);
+//    ConnectivityMethodChannelHandler handler =
+//        new ConnectivityMethodChannelHandler(binding.getApplicationContext());
+//
+//    channel.setMethodCallHandler(handler);
+//    eventChannel.setStreamHandler(handler);
   }
 
   @Override
