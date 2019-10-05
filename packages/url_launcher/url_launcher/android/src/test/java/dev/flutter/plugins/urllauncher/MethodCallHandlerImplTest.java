@@ -8,7 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.BinaryMessenger.BinaryMessageHandler;
@@ -24,14 +23,12 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 public class MethodCallHandlerImplTest {
   private static final String CHANNEL_NAME = "plugins.flutter.io/url_launcher";
-  private Context applicationContext;
   private UrlLauncher urlLauncher;
   private MethodCallHandlerImpl methodCallHandler;
 
   @Before
   public void setUp() {
-    applicationContext = ApplicationProvider.getApplicationContext();
-    urlLauncher = new UrlLauncher(applicationContext);
+    urlLauncher = new UrlLauncher(ApplicationProvider.getApplicationContext(), /*activity=*/ null);
     methodCallHandler = new MethodCallHandlerImpl(urlLauncher);
   }
 

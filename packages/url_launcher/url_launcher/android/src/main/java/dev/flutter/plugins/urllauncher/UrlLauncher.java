@@ -1,5 +1,6 @@
 package dev.flutter.plugins.urllauncher;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -10,26 +11,29 @@ import android.support.annotation.Nullable;
 
 /** Launches components for URLs. */
 class UrlLauncher {
-  private Context activityContext;
+  private final Context applicationContext;
+  private @Nullable Activity activity;
 
   /**
-   * Uses the given {@code activityContext} for launching intents.
+   * Uses the given {@code applicationContext} for launching intents.
    *
    * <p>It may be null initially, but should be set before calling {@link #launch}.
    */
-  UrlLauncher(@Nullable Context activityContext) {
-    this.activityContext = activityContext;
+  UrlLauncher(Context applicationContext, @Nullable Activity activity) {
+    this.applicationContext = applicationContext;
+    this.activity = activity;
   }
 
-  void setActivityContext(@Nullable Context activityContext) {
-    this.activityContext = activityContext;
+  void setActivity(@Nullable Activity activity) {
+    this.activity = activity;
   }
 
-  /** Returns whether the given {@code uri} resolves into an existing component. */
-  boolean canLaunch(String uri) {
+  /** Returns whether the given {@code url} resolves into an existing component. */
+  boolean canLaunch(String url) {
     Intent launchIntent = new Intent(Intent.ACTION_VIEW);
-    launchIntent.setData(Uri.parse(uri));
-    ComponentName componentName = launchIntent.resolveActivity(activityContext.getPackageManager());
+    launchIntent.setData(Uri.parse(url));
+    ComponentName componentName =
+        launchIntent.resolveActivity(applicationContext.getPackageManager());
 
     return componentName != null
         && !"{com.android.fallback/com.android.fallback.Fallback}"
@@ -43,7 +47,7 @@ class UrlLauncher {
    * @param useWebView when true, the URL is launched inside of {@link WebViewActivity}.
    * @param enableJavaScript Only used if {@param useWebView} is true. Enables JS in the WebView.
    * @param enableDomStorage Only used if {@param useWebView} is true. Enables DOM storage in the
-   * @return {@link LaunchStatus#NO_ACTIVITY} if there's no available {@code activityContext}.
+   * @return {@link LaunchStatus#NO_ACTIVITY} if there's no available {@code applicationContext}.
    *     {@link LaunchStatus#OK} otherwise.
    */
   LaunchStatus launch(
@@ -52,7 +56,7 @@ class UrlLauncher {
       boolean useWebView,
       boolean enableJavaScript,
       boolean enableDomStorage) {
-    if (activityContext == null) {
+    if (activity == null) {
       return LaunchStatus.NO_ACTIVITY;
     }
 
@@ -60,7 +64,7 @@ class UrlLauncher {
     if (useWebView) {
       launchIntent =
           WebViewActivity.createIntent(
-              activityContext, url, enableJavaScript, enableDomStorage, headersBundle);
+              activity, url, enableJavaScript, enableDomStorage, headersBundle);
     } else {
       launchIntent =
           new Intent(Intent.ACTION_VIEW)
@@ -68,20 +72,20 @@ class UrlLauncher {
               .putExtra(Browser.EXTRA_HEADERS, headersBundle);
     }
 
-    activityContext.startActivity(launchIntent);
+    activity.startActivity(launchIntent);
     return LaunchStatus.OK;
   }
 
   /** Closes any activities started with {@link #launch} {@code useWebView=true}. */
   void closeWebView() {
-    activityContext.sendBroadcast(new Intent(WebViewActivity.ACTION_CLOSE));
+    applicationContext.sendBroadcast(new Intent(WebViewActivity.ACTION_CLOSE));
   }
 
   /** Result of a {@link #launch} call. */
   enum LaunchStatus {
     /** The intent was well formed. */
     OK,
-    /** No activity context was found to launch. */
+    /** No activity was found to launch. */
     NO_ACTIVITY,
   }
 }

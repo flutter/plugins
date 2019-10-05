@@ -21,7 +21,7 @@ public class UrlLauncherPluginRegistrar {
    */
   public static void registerWith(Registrar registrar) {
     MethodCallHandlerImpl handler =
-        new MethodCallHandlerImpl(new UrlLauncher(registrar.activeContext()));
+        new MethodCallHandlerImpl(new UrlLauncher(registrar.context(), registrar.activity()));
     handler.startListening(registrar.messenger());
   }
 

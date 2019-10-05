@@ -1,6 +1,8 @@
 package dev.flutter.plugins.urllauncher;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
+import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -12,38 +14,53 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
  */
 public final class UrlLauncherPlugin implements FlutterPlugin, ActivityAware {
   private static final String TAG = "UrlLauncherPlugin";
-
-  private final MethodCallHandlerImpl methodCallHandler;
-  private final UrlLauncher urlLauncher;
+  private @Nullable MethodCallHandlerImpl methodCallHandler;
+  private @Nullable UrlLauncher urlLauncher;
 
   /**
    * Initialize this within the {@code #configureFlutterEngine} of a Flutter activity or fragment.
    *
    * <p>See {@code dev.flutter.plugins.urllauncherexample.MainActivity} for an example.
    */
-  public UrlLauncherPlugin() {
-    urlLauncher = new UrlLauncher(null);
-    methodCallHandler = new MethodCallHandlerImpl(urlLauncher);
-  }
+  public UrlLauncherPlugin() {}
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+    urlLauncher = new UrlLauncher(binding.getApplicationContext(), /*activity=*/ null);
+    methodCallHandler = new MethodCallHandlerImpl(urlLauncher);
     methodCallHandler.startListening(binding.getFlutterEngine().getDartExecutor());
   }
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+    if (methodCallHandler == null) {
+      Log.wtf(TAG, "Already detached from the engine.");
+      return;
+    }
+
     methodCallHandler.stopListening();
+    methodCallHandler = null;
+    urlLauncher = null;
   }
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
-    urlLauncher.setActivityContext(binding.getActivity());
+    if (methodCallHandler == null) {
+      Log.wtf(TAG, "urlLauncher was never set.");
+      return;
+    }
+
+    urlLauncher.setActivity(binding.getActivity());
   }
 
   @Override
   public void onDetachedFromActivity() {
-    urlLauncher.setActivityContext(null);
+    if (methodCallHandler == null) {
+      Log.wtf(TAG, "urlLauncher was never set.");
+      return;
+    }
+
+    urlLauncher.setActivity(null);
   }
 
   @Override
