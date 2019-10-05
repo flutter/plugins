@@ -5,9 +5,8 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
 /**
- * The handler receives method channel calls from the UIThread, gets the related information from
- * a @{@link Connectivity}, and then send the result back to the UIThread through the method
- * channel.
+ * The handler receives {@link MethodCall}s from the UIThread, gets the related information from
+ * a @{@link Connectivity}, and then send the result back to the UIThread through the {@link MethodChannel.Result}.
  */
 public class ConnectivityMethodChannelHandler implements MethodChannel.MethodCallHandler {
 
