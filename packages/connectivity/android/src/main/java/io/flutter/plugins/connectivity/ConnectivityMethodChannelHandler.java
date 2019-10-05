@@ -4,15 +4,18 @@ import androidx.annotation.NonNull;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
-/** Handles MethodChannel for the plugin. */
+/**
+ * The handler receives method channel calls from the UIThread, gets the related information from
+ * a @{@link Connectivity}, and then send the result back to the UIThread through the method
+ * channel.
+ */
 public class ConnectivityMethodChannelHandler implements MethodChannel.MethodCallHandler {
 
   private Connectivity connectivity;
 
   /**
-   * Construct the ConnectivityMethodChannelHandler
-   *
-   * @param connectivity The {@link Connectivity} used to check connectivity information.
+   * Construct the ConnectivityMethodChannelHandler with a {@code connectivity}. The {@code
+   * connectivity} must not be null.
    */
   public ConnectivityMethodChannelHandler(@NonNull Connectivity connectivity) {
     assert (connectivity != null);

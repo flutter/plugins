@@ -35,12 +35,10 @@ public class ConnectivityPlugin {
 
     ConnectivityMethodChannelHandler methodChannelHandler =
         new ConnectivityMethodChannelHandler(connectivity);
-    channel.setMethodCallHandler(methodChannelHandler);
+    ConnectivityBroadcastReceiver receiver =
+        new ConnectivityBroadcastReceiver(registrar.context(), connectivity);
 
-    BroadcastReceiverRegistrarImpl receiverRegistrar =
-        new BroadcastReceiverRegistrarImpl(registrar.context(), connectivity);
-    ConnectivityEventChannelHandler eventChannelHandler =
-        new ConnectivityEventChannelHandler(receiverRegistrar);
-    eventChannel.setStreamHandler(eventChannelHandler);
+    channel.setMethodCallHandler(methodChannelHandler);
+    eventChannel.setStreamHandler(receiver);
   }
 }

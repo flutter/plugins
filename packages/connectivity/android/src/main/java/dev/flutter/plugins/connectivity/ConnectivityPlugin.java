@@ -7,18 +7,21 @@ package dev.flutter.plugins.connectivity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
+import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugins.connectivity.BroadcastReceiverRegistrarImpl;
 import io.flutter.plugins.connectivity.Connectivity;
-import io.flutter.plugins.connectivity.ConnectivityEventChannelHandler;
+import io.flutter.plugins.connectivity.ConnectivityBroadcastReceiver;
 import io.flutter.plugins.connectivity.ConnectivityMethodChannelHandler;
 
 /**
- * Plugin implementation that uses the new {@code io.flutter.embedding} package.
+ * Entry point of the plugin.
  *
- * <p>Instantiate this in an add to app scenario to gracefully handle activity and context changes.
+ * <p>The ConnectivityPlugin links up dependencies and set up the method channel and the event
+ * channel during {@link #onAttachedToEngine(FlutterPluginBinding)}. Add an instance of this plugin
+ * class to the {@link FlutterEngine} to register the plugin. See also {@link FlutterPlugin} for
+ * more details.
  */
 public class ConnectivityPlugin implements FlutterPlugin {
 
@@ -47,13 +50,11 @@ public class ConnectivityPlugin implements FlutterPlugin {
 
     ConnectivityMethodChannelHandler methodChannelHandler =
         new ConnectivityMethodChannelHandler(connectivity);
-    channel.setMethodCallHandler(methodChannelHandler);
+    ConnectivityBroadcastReceiver receiver =
+        new ConnectivityBroadcastReceiver(binding.getApplicationContext(), connectivity);
 
-    BroadcastReceiverRegistrarImpl receiverRegistrar =
-        new BroadcastReceiverRegistrarImpl(binding.getApplicationContext(), connectivity);
-    ConnectivityEventChannelHandler eventChannelHandler =
-        new ConnectivityEventChannelHandler(receiverRegistrar);
-    eventChannel.setStreamHandler(eventChannelHandler);
+    channel.setMethodCallHandler(methodChannelHandler);
+    eventChannel.setStreamHandler(receiver);
   }
 
   @Override

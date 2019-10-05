@@ -10,18 +10,11 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-
-/** Responsible for checking connectivity information. */
+/** Reports connectivity related information such as connectivity type and wifi information. */
 public class Connectivity {
   private ConnectivityManager connectivityManager;
   private WifiManager wifiManager;
 
-  /**
-   * Constructs a ConnectivityChecker
-   *
-   * @param connectivityManager used to check connectivity information.
-   * @param wifiManager used to check wifi information.
-   */
   public Connectivity(ConnectivityManager connectivityManager, WifiManager wifiManager) {
     this.connectivityManager = connectivityManager;
     this.wifiManager = wifiManager;
