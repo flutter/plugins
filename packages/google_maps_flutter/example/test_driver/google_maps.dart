@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -637,5 +638,41 @@ void main() {
         await controller.getScreenCoordinate(northWest);
 
     expect(topLeft, const ScreenCoordinate(x: 0, y: 0));
+  });
+
+  test('testResizeWidget', () async {
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+    final GoogleMap map = GoogleMap(
+      initialCameraPosition: _kInitialCameraPosition,
+      onMapCreated: (GoogleMapController controller) async {
+        controllerCompleter.complete(controller);
+      },
+    );
+    await pumpWidget(Directionality(
+        textDirection: TextDirection.ltr,
+        child: MaterialApp(
+            home: Scaffold(
+                body: SizedBox(height: 100, width: 100, child: map)))));
+    final GoogleMapController controller = await controllerCompleter.future;
+
+    await pumpWidget(Directionality(
+        textDirection: TextDirection.ltr,
+        child: MaterialApp(
+            home: Scaffold(
+                body: SizedBox(height: 400, width: 400, child: map)))));
+
+    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
+    // initialization. https://github.com/flutter/flutter/issues/24806
+    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
+    // still being investigated.
+    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
+    // https://github.com/flutter/flutter/issues/27550
+    await Future<dynamic>.delayed(const Duration(seconds: 3));
+
+    // Simple call to make sure that the app hasn't crashed.
+    final LatLngBounds bounds1 = await controller.getVisibleRegion();
+    final LatLngBounds bounds2 = await controller.getVisibleRegion();
+    expect(bounds1, bounds2);
   });
 }

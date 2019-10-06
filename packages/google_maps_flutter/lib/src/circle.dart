@@ -114,6 +114,9 @@ class Circle {
     );
   }
 
+  /// Creates a new [Circle] object whose values are the same as this instance.
+  Circle clone() => copyWith();
+
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
@@ -161,8 +164,8 @@ Map<CircleId, Circle> _keyByCircleId(Iterable<Circle> circles) {
   if (circles == null) {
     return <CircleId, Circle>{};
   }
-  return Map<CircleId, Circle>.fromEntries(circles.map(
-      (Circle circle) => MapEntry<CircleId, Circle>(circle.circleId, circle)));
+  return Map<CircleId, Circle>.fromEntries(circles.map((Circle circle) =>
+      MapEntry<CircleId, Circle>(circle.circleId, circle.clone())));
 }
 
 List<Map<String, dynamic>> _serializeCircleSet(Set<Circle> circles) {

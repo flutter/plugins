@@ -64,6 +64,8 @@ task:
   matrix:
     - name: build_all_plugins_ipa
       script: ./script/build_all_plugins_app.sh ios --no-codesign
+    - name: lint_darwin_plugins
+      script: ./script/lint_darwin_plugins.sh
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
