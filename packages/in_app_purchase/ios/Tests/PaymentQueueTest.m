@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
-#import "FIAPaymentQueueHandler.h"
 #import "Stubs.h"
+
+@import in_app_purchase;
 
 @interface PaymentQueueTest : XCTestCase
 
@@ -59,7 +60,6 @@
         return YES;
       }
       updatedDownloads:nil];
-  handler.testing = YES;
   [queue addTransactionObserver:handler];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
@@ -87,7 +87,6 @@
         return YES;
       }
       updatedDownloads:nil];
-  handler.testing = YES;
   [queue addTransactionObserver:handler];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
@@ -115,7 +114,6 @@
         return YES;
       }
       updatedDownloads:nil];
-  handler.testing = YES;
   [queue addTransactionObserver:handler];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
@@ -143,7 +141,6 @@
         return YES;
       }
       updatedDownloads:nil];
-  handler.testing = YES;
   [queue addTransactionObserver:handler];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
@@ -171,7 +168,6 @@
         return YES;
       }
       updatedDownloads:nil];
-  handler.testing = YES;
   [queue addTransactionObserver:handler];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
