@@ -468,6 +468,20 @@ final class GoogleMapController
     registrar.activity().getApplication().unregisterActivityLifecycleCallbacks(this);
   }
 
+  // @Override
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
+  // does. This will override it when available even with the annotation commented out.
+  public void onInputConnectionLocked() {
+    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+  };
+
+  // @Override
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
+  // does. This will override it when available even with the annotation commented out.
+  public void onInputConnectionUnlocked() {
+    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+  };
+
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
     if (disposed || activity.hashCode() != registrarActivityHashCode) {
