@@ -112,6 +112,20 @@ void main() {
       expect(
           fakeVideoPlayerPlatform.dataSourceDescriptions[0], <String, dynamic>{
         'uri': 'https://127.0.0.1',
+        'formatHint': null,
+      });
+    });
+
+    test('initialize network with hint', () async {
+      final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+          formatHint: VideoFormat.dash);
+      await controller.initialize();
+
+      expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0], <String, dynamic>{
+        'uri': 'https://127.0.0.1',
+        'formatHint': 'dash',
       });
     });
 
@@ -123,7 +137,6 @@ void main() {
       expect(
           fakeVideoPlayerPlatform.dataSourceDescriptions[0], <String, dynamic>{
         'uri': 'file://a.avi',
-        'formatHint': null,
       });
     });
   });
