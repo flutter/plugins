@@ -4,9 +4,9 @@
 
 package dev.flutter.plugins.connectivity_exmaple;
 
-import dev.flutter.plugins.connectivity.ConnectivityPlugin;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.plugins.connectivity.ConnectivityPlugin;
 
 public class MainActivity extends FlutterActivity {
 
