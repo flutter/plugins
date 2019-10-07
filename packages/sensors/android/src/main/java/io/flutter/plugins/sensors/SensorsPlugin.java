@@ -8,6 +8,7 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
@@ -19,66 +20,49 @@ public class SensorsPlugin implements FlutterPlugin {
   private static final String USER_ACCELEROMETER_CHANNEL_NAME =
       "plugins.flutter.io/sensors/user_accel";
 
+  private EventChannel accelerometerChannel;
+  private EventChannel userAccelChannel;
+  private EventChannel gyroscopeChannel;
+
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-
-    final EventChannel accelerometerChannel =
-        new EventChannel(registrar.messenger(), ACCELEROMETER_CHANNEL_NAME);
-    final StreamHandlerImpl accelerationStreamHandler =
-        new StreamHandlerImpl(
-            (SensorManager)
-                registrar.context().getSystemService(registrar.context().SENSOR_SERVICE),
-            Sensor.TYPE_ACCELEROMETER);
-    accelerometerChannel.setStreamHandler(accelerationStreamHandler);
-
-    final EventChannel userAccelChannel =
-        new EventChannel(registrar.messenger(), USER_ACCELEROMETER_CHANNEL_NAME);
-    final StreamHandlerImpl linearAccelerationStreamHandler =
-        new StreamHandlerImpl(
-            (SensorManager)
-                registrar.context().getSystemService(registrar.context().SENSOR_SERVICE),
-            Sensor.TYPE_LINEAR_ACCELERATION);
-    userAccelChannel.setStreamHandler(linearAccelerationStreamHandler);
-
-    final EventChannel gyroscopeChannel =
-        new EventChannel(registrar.messenger(), GYROSCOPE_CHANNEL_NAME);
-    final StreamHandlerImpl gyroScopeStreamHandler =
-        new StreamHandlerImpl(
-            (SensorManager)
-                registrar.context().getSystemService(registrar.context().SENSOR_SERVICE),
-            Sensor.TYPE_GYROSCOPE);
-    gyroscopeChannel.setStreamHandler(gyroScopeStreamHandler);
+    SensorsPlugin plugin = new SensorsPlugin();
+    plugin.setupEventChannels(registrar.context(), registrar.messenger());
   }
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     Context context = binding.getApplicationContext();
-    final EventChannel accelerometerChannel =
-        new EventChannel(binding.getFlutterEngine().getDartExecutor(), ACCELEROMETER_CHANNEL_NAME);
+    setupEventChannels(context, binding.getFlutterEngine().getDartExecutor());
+  }
+
+  @Override
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+    accelerometerChannel.setStreamHandler(null);
+    userAccelChannel.setStreamHandler(null);
+    gyroscopeChannel.setStreamHandler(null);
+  }
+
+  private void setupEventChannels(Context context, BinaryMessenger messenger) {
+    accelerometerChannel = new EventChannel(messenger, ACCELEROMETER_CHANNEL_NAME);
     final StreamHandlerImpl accelerationStreamHandler =
         new StreamHandlerImpl(
             (SensorManager) context.getSystemService(context.SENSOR_SERVICE),
             Sensor.TYPE_ACCELEROMETER);
     accelerometerChannel.setStreamHandler(accelerationStreamHandler);
 
-    final EventChannel userAccelChannel =
-        new EventChannel(
-            binding.getFlutterEngine().getDartExecutor(), USER_ACCELEROMETER_CHANNEL_NAME);
+    userAccelChannel = new EventChannel(messenger, USER_ACCELEROMETER_CHANNEL_NAME);
     final StreamHandlerImpl linearAccelerationStreamHandler =
         new StreamHandlerImpl(
             (SensorManager) context.getSystemService(context.SENSOR_SERVICE),
             Sensor.TYPE_LINEAR_ACCELERATION);
     userAccelChannel.setStreamHandler(linearAccelerationStreamHandler);
 
-    final EventChannel gyroscopeChannel =
-        new EventChannel(binding.getFlutterEngine().getDartExecutor(), GYROSCOPE_CHANNEL_NAME);
+    gyroscopeChannel = new EventChannel(messenger, GYROSCOPE_CHANNEL_NAME);
     final StreamHandlerImpl gyroScopeStreamHandler =
         new StreamHandlerImpl(
             (SensorManager) context.getSystemService(context.SENSOR_SERVICE),
             Sensor.TYPE_GYROSCOPE);
     gyroscopeChannel.setStreamHandler(gyroScopeStreamHandler);
   }
-
-  @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {}
 }
