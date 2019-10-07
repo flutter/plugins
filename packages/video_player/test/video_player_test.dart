@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -80,4 +82,139 @@ void main() {
         ),
         findsOneWidget);
   });
+
+  group('VideoPlayerController', () {
+    FakeVideoPlayerPlatform fakeVideoPlayerPlatform;
+
+    setUp(() {
+      fakeVideoPlayerPlatform = FakeVideoPlayerPlatform();
+    });
+
+    test('initialize asset', () async {
+      final VideoPlayerController controller = VideoPlayerController.asset(
+        'a.avi',
+      );
+      await controller.initialize();
+
+      expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0], <String, dynamic>{
+        'asset': 'a.avi',
+        'package': null,
+      });
+    });
+
+    test('initialize network', () async {
+      final VideoPlayerController controller = VideoPlayerController.network(
+        'https://127.0.0.1',
+      );
+      await controller.initialize();
+
+      expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0], <String, dynamic>{
+        'uri': 'https://127.0.0.1',
+      });
+    });
+
+    test('initialize file', () async {
+      final VideoPlayerController controller =
+          VideoPlayerController.file(File('a.avi'));
+      await controller.initialize();
+
+      expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0], <String, dynamic>{
+        'uri': 'file://a.avi',
+        'formatHint': null,
+      });
+    });
+  });
+}
+
+class FakeVideoPlayerPlatform {
+  FakeVideoPlayerPlatform() {
+    _channel.setMockMethodCallHandler(onMethodCall);
+  }
+
+  final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer');
+
+  Completer<bool> initialized = Completer<bool>();
+  List<Map<String, dynamic>> dataSourceDescriptions = <Map<String, dynamic>>[];
+  int nextTextureId = 0;
+
+  Future<dynamic> onMethodCall(MethodCall call) {
+    switch (call.method) {
+      case 'init':
+        initialized.complete(true);
+        break;
+      case 'create':
+        FakeVideoEventStream(
+            nextTextureId, 100, 100, const Duration(seconds: 1));
+        final Map<dynamic, dynamic> dataSource = call.arguments;
+        dataSourceDescriptions.add(dataSource.cast<String, dynamic>());
+        return Future<Map<String, int>>.sync(() {
+          return <String, int>{
+            'textureId': nextTextureId++,
+          };
+        });
+        break;
+      case 'setLooping':
+        break;
+      case 'setVolume':
+        break;
+      case 'pause':
+        break;
+      default:
+        throw UnimplementedError(
+            '${call.method} is not implemented by the FakeVideoPlayerPlatform');
+    }
+    return Future<void>.sync(() {});
+  }
+}
+
+class FakeVideoEventStream {
+  FakeVideoEventStream(this.textureId, this.width, this.height, this.duration) {
+    eventsChannel = FakeEventsChannel(
+        'flutter.io/videoPlayer/videoEvents$textureId', onListen);
+  }
+
+  int textureId;
+  int width;
+  int height;
+  Duration duration;
+  FakeEventsChannel eventsChannel;
+
+  void onListen() {
+    final Map<String, dynamic> initializedEvent = <String, dynamic>{
+      'event': 'initialized',
+      'duration': duration.inMilliseconds,
+      'width': width,
+      'height': height,
+    };
+    eventsChannel.sendEvent(initializedEvent);
+  }
+}
+
+class FakeEventsChannel {
+  FakeEventsChannel(String name, this.onListen) {
+    eventsMethodChannel = MethodChannel(name);
+    eventsMethodChannel.setMockMethodCallHandler(onMethodCall);
+  }
+
+  MethodChannel eventsMethodChannel;
+  VoidCallback onListen;
+
+  Future<dynamic> onMethodCall(MethodCall call) {
+    switch (call.method) {
+      case 'listen':
+        onListen();
+        break;
+    }
+    return Future<void>.sync(() {});
+  }
+
+  void sendEvent(dynamic event) {
+    ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+        eventsMethodChannel.name,
+        const StandardMethodCodec().encodeSuccessEnvelope(event),
+        (ByteData data) {});
+  }
 }
