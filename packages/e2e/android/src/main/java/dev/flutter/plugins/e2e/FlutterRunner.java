@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package dev.flutter.plugins.instrumentationadapter;
+package dev.flutter.plugins.e2e;
 
 import android.app.Activity;
 import androidx.test.rule.ActivityTestRule;

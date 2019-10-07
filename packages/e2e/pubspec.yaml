@@ -15,5 +15,5 @@ dependencies:
 
 flutter:
   plugin:
-    androidPackage: dev.flutter.plugins.instrumentationadapter
-    pluginClass: InstrumentationAdapterPlugin
+    androidPackage: dev.flutter.plugins.e2e
+    pluginClass: E2EPlugin
