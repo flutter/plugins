@@ -8,6 +8,7 @@ import android.app.Activity;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
@@ -18,21 +19,16 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
   private MethodCallHandler handler;
   private Activity activity;
   private Share share;
+  private MethodChannel methodChannel;
 
   public static void registerWith(Registrar registrar) {
-    MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-    Share share = new Share(registrar.activity());
-    MethodCallHandler handler = new MethodCallHandler(share);
-    channel.setMethodCallHandler(handler);
+    SharePlugin plugin = new SharePlugin();
+    plugin.setUpChannel(registrar.messenger());
   }
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    final MethodChannel methodChannel =
-        new MethodChannel(binding.getFlutterEngine().getDartExecutor(), CHANNEL);
-    share = new Share(activity);
-    handler = new MethodCallHandler(share);
-    methodChannel.setMethodCallHandler(handler);
+    setUpChannel(binding.getFlutterEngine().getDartExecutor());
   }
 
   @Override
@@ -58,5 +54,12 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
   @Override
   public void onDetachedFromActivityForConfigChanges() {
     onDetachedFromActivity();
+  }
+
+  private void setUpChannel(BinaryMessenger messenger) {
+    methodChannel = new MethodChannel(messenger, CHANNEL);
+    share = new Share(activity);
+    handler = new MethodCallHandler(share);
+    methodChannel.setMethodCallHandler(handler);
   }
 }
