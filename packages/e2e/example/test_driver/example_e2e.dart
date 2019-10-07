@@ -13,7 +13,7 @@ import 'package:e2e/e2e.dart';
 import 'package:e2e_example/main.dart';
 
 void main() {
-  InstrumentationAdapterFlutterBinding.ensureInitialized();
+  E2EWidgetsFlutterBinding.ensureInitialized();
   testWidgets('verify text', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(MyApp());
