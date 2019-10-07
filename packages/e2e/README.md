@@ -135,14 +135,3 @@ gcloud firebase test android run --type instrumentation \
 ```
 
 iOS support for Firebase Test Lab is not yet available, but is planned.
-
-## Flutter driver support
-
-`InstrumentationAdapterFlutterBinding` also reports test results to `FlutterDriver`
-when run on the command line via `flutter drive`. 
-
-```dart
-  final FlutterDriver driver = await FlutterDriver.connect();
-  final String result = await driver.requestData(null, timeout: const Duration(minutes: 1));
-  driver.close();
-```  
