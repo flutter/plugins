@@ -5,7 +5,7 @@
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.dev/e2e"
                                   binaryMessenger:[registrar messenger]];
-  InstrumentationAdapterPlugin* instance = [[InstrumentationAdapterPlugin alloc] init];
+  E2EPlugin* instance = [[E2EPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
