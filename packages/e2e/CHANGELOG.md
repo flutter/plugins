@@ -1,7 +1,9 @@
 ## 0.2.0
 
-* Rename package from instrumentation_adapter to e2e.
-* Refactor example app test.
+* Renamed package from instrumentation_adapter to e2e.
+* Refactored example app test.
+* **Breaking change**. Renamed `InstrumentationAdapterFlutterBinding` to
+  `E2EWidgetsFlutterBinding`.
 
 ## 0.1.4
 
