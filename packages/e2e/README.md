@@ -22,8 +22,42 @@ void main() {
   testWidgets("failing test example", (WidgetTester tester) async {
     expect(2 + 2, equals(5));
   });
+  exit(result == 'pass' ? 0 : 1);
 }
 ```
+
+## Using Flutter driver to run tests
+
+`E2EWidgetsTestBinding` supports launching the on-device tests with `flutter drive`.
+Note that the tests don't use the `FlutterDriver` API, they use `testWidgets` instead.
+
+Put the a file named `<package_name>_test.dart` in the app' `test_driver` directory:
+
+```
+import 'package:flutter_driver/flutter_driver.dart';
+
+Future<void> main() async {
+  final FlutterDriver driver = await FlutterDriver.connect();
+  await driver.requestData(null, timeout: const Duration(minutes: 1));
+  driver.close();
+}
+```
+
+To run a example app test with Flutter driver:
+
+```
+cd example
+flutter drive test/<package_name>_e2e.dart
+```
+
+To test plugin APIs using Flutter driver:
+
+```
+cd example
+flutter drive --driver=test_driver/<package_name>_test.dart test/<package_name>_e2e.dart
+```
+
+## Android device testing
 
 Create an instrumentation test file in your application's
 **android/app/src/androidTest/java/com/example/myapp/** directory (replacing
@@ -67,29 +101,16 @@ dependencies {
 }
 ```
 
-To run a example app test with Flutter driver:
-
-```
-cd example
-flutter drive test/<package_name>_e2e.dart
-```
-
-To test plugin APIs using Flutter driver:
-
-```
-cd example
-flutter drive ../test/<package_name>_e2e.dart
-```
-
-To e2e test on a local emulator using Android instrumentation:
+To e2e test on a local Android device (emulated or physical):
 
 ```
 ./gradlew connectedAndroidTest -Ptarget=`pwd`/../test_driver/<package_name>_e2e.dart
 ```
 
-To e2e test using Firebase test lab, follow the instructions on the [e2e README](https://github.com/flutter/plugins/tree/master/packages/e2e) or let CI do it for you.
+## Firebase Test Lab
 
-Use gradle commands to build an instrumentation test for Android.
+To run an e2e test on Android devices using Firebase Test Lab, use gradle commands to build an
+instrumentation test for Android.
 
 ```
 pushd android
@@ -112,6 +133,8 @@ gcloud firebase test android run --type instrumentation \
   --results-dir=<RESULTS_DIRECTORY>
 ```
 
+iOS support for Firebase Test Lab is not yet available, but is planned.
+
 ## Flutter driver support
 
 `InstrumentationAdapterFlutterBinding` also reports test results to `FlutterDriver`
@@ -121,5 +144,4 @@ when run on the command line via `flutter drive`.
   final FlutterDriver driver = await FlutterDriver.connect();
   final String result = await driver.requestData(null, timeout: const Duration(minutes: 1));
   driver.close();
-  exit(result == 'pass' ? 0 : 1);
 ```  
