@@ -1,3 +1,7 @@
+## 0.3.14+2
+
+* iOS now can open iframe links and target _blank links.
+
 ## 0.3.14+1
 
 * Allow underscores anywhere for Javascript Channel name.
