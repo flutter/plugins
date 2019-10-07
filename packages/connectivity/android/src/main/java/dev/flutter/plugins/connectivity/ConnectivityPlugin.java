@@ -18,12 +18,11 @@ import io.flutter.plugins.connectivity.ConnectivityMethodChannelHandler;
 /**
  * Entry point of the plugin.
  *
- * <p>The ConnectivityPlugin links up dependencies and set up the {@link io.flutter.plugin.common.MethodChannel.MethodCallHandler} and the
- * {@link io.flutter.plugin.common.EventChannel.StreamHandler} during {@link #onAttachedToEngine(FlutterPluginBinding)}.
- * To register the plugin, add an instance of this class to the {@link FlutterEngine}.
- * </p>
- *
- * See also {@link FlutterPlugin} for more details.
+ * <p>The ConnectivityPlugin links up dependencies and set up the {@link
+ * io.flutter.plugin.common.MethodChannel.MethodCallHandler} and the {@link
+ * io.flutter.plugin.common.EventChannel.StreamHandler} during {@link
+ * #onAttachedToEngine(FlutterPluginBinding)}. To register the plugin, add an instance of this class
+ * to the {@link FlutterEngine}. See also {@link FlutterPlugin} for more details.
  */
 public class ConnectivityPlugin implements FlutterPlugin {
 
