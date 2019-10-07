@@ -29,9 +29,9 @@ class E2EWidgetsFlutterBinding
 
   static WidgetsBinding ensureInitialized() {
     if (WidgetsBinding.instance == null) {
-      InstrumentationAdapterFlutterBinding();
+      E2EWidgetsFlutterBinding();
     }
-    assert(WidgetsBinding.instance is InstrumentationAdapterFlutterBinding);
+    assert(WidgetsBinding.instance is E2EWidgetsFlutterBinding);
     return WidgetsBinding.instance;
   }
 
