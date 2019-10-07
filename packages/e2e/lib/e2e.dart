@@ -10,8 +10,7 @@ import 'package:flutter/widgets.dart';
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
-class E2EWidgetsFlutterBinding
-    extends LiveTestWidgetsFlutterBinding {
+class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
   E2EWidgetsFlutterBinding() {
     // TODO(jackson): Report test results as they arrive
     tearDownAll(() async {
