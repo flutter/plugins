@@ -4,7 +4,7 @@ import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:instrumentation_adapter/instrumentation_adapter.dart';
 import 'package:package_info/package_info.dart';
-import 'package:package_info_example/main.dart' as app;
+import 'package:package_info_example/main.dart';
 
 void main() {
   InstrumentationAdapterFlutterBinding.ensureInitialized();
@@ -28,7 +28,8 @@ void main() {
   });
 
   testWidgets('example', (WidgetTester tester) async {
-    await tester.pumpWidget(app.MyApp());
+    await tester.pumpWidget(MyApp());
+    await tester.pumpAndSettle();
     if (Platform.isAndroid) {
       expect(find.text('package_info_example'), findsOneWidget);
       expect(find.text('1'), findsOneWidget);
