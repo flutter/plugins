@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:io';
-import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:instrumentation_adapter/instrumentation_adapter.dart';
 import 'package:package_info/package_info.dart';

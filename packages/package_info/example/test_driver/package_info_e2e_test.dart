@@ -1,5 +1,4 @@
 import 'package:flutter_driver/flutter_driver.dart';
-import 'package:test/test.dart';
 
 Future<void> main() async {
   final FlutterDriver driver = await FlutterDriver.connect();

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info/package_info.dart';
-import 'package:platform/platform.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +12,6 @@ void main() {
   const MethodChannel channel =
       MethodChannel('plugins.flutter.io/package_info');
   List<MethodCall> log;
-  String response;
 
   channel.setMockMethodCallHandler((MethodCall methodCall) async {
     log.add(methodCall);
@@ -29,7 +25,7 @@ void main() {
         };
       default:
         assert(false);
-        break;
+        return null;
     }
   });
 
@@ -46,7 +42,7 @@ void main() {
     expect(
       log,
       <Matcher>[
-        isMethodCall('getAll'),
+        isMethodCall('getAll', arguments: null),
       ],
     );
   });
