@@ -5,9 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info/package_info.dart';
 
 void main() {
-  final Completer<String> completer = Completer<String>();
-  enableFlutterDriverExtension(handler: (_) => completer.future);
-  tearDownAll(() => completer.complete(null));
+  InstrumentationAdapterFlutterBinding.ensureInitialized();
 
   group('package_info test driver', () {
     test('test package info result', () async {
