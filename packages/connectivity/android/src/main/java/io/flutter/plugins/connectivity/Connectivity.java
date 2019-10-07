@@ -25,8 +25,23 @@ public class Connectivity {
   }
 
   @NonNull
-  String checkNetworkType() {
-    return getNetworkType();
+  String getNetworkType() {
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      Network network = connectivityManager.getActiveNetwork();
+      NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+      if (capabilities == null) {
+        return "none";
+      }
+      if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+          || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+        return "wifi";
+      }
+      if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+        return "mobile";
+      }
+    }
+
+    return getNetworkTypeLegacy();
   }
 
   @Nullable
@@ -69,25 +84,6 @@ public class Connectivity {
   @Nullable
   private WifiInfo getWifiInfo() {
     return wifiManager == null ? null : wifiManager.getConnectionInfo();
-  }
-
-  private String getNetworkType() {
-    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      Network network = connectivityManager.getActiveNetwork();
-      NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
-      if (capabilities == null) {
-        return "none";
-      }
-      if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-          || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-        return "wifi";
-      }
-      if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-        return "mobile";
-      }
-    }
-
-    return getNetworkTypeLegacy();
   }
 
   @SuppressWarnings("deprecation")

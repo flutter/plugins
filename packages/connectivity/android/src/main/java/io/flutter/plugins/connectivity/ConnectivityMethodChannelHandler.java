@@ -30,7 +30,7 @@ public class ConnectivityMethodChannelHandler implements MethodChannel.MethodCal
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     switch (call.method) {
       case "check":
-        result.success(connectivity.checkNetworkType());
+        result.success(connectivity.getNetworkType());
         break;
       case "wifiName":
         result.success(connectivity.getWifiName());

@@ -46,7 +46,7 @@ public class ConnectivityBroadcastReceiver extends BroadcastReceiver
   @Override
   public void onReceive(Context context, Intent intent) {
     if (events != null) {
-      events.success(connectivity.checkNetworkType());
+      events.success(connectivity.getNetworkType());
     }
   }
 }

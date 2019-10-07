@@ -11,7 +11,7 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
         </activity>
-        <activity android:name="dev.flutter.plugins.connectivity_exmaple.MainActivity"
+        <activity android:name="dev.flutter.plugins.connectivityexmaple.MainActivity"
             android:theme="@android:style/Theme.Black.NoTitleBar"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
             android:hardwareAccelerated="true"
