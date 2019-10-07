@@ -17,7 +17,7 @@ public class E2EPlugin implements MethodCallHandler {
 
   public static CompletableFuture<Map<String, String>> testResults = new CompletableFuture<>();
 
-  private static final String CHANNEL = "dev.flutter/InstrumentationAdapterFlutterBinding";
+  private static final String CHANNEL = "plugins.flutter.dev/e2e";
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
