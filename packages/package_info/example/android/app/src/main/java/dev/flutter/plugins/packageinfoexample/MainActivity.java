@@ -6,7 +6,7 @@ package dev.flutter.plugins.packageinfoexample;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
-import io.flutter.plugins.packageinfo.PackageInfoPlugin;
+import dev.flutter.plugins.packageinfo.PackageInfoPlugin;
 
 public class MainActivity extends FlutterActivity {
   @Override
