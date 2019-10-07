@@ -4,9 +4,9 @@
 
 package dev.flutter.plugins.shareexample;
 
-import dev.flutter.plugins.share.SharePlugin;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.plugins.share.SharePlugin;
 
 public class MainActivity extends FlutterActivity {
 
