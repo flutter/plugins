@@ -33,13 +33,12 @@ public class PackageInfoPlugin implements MethodCallHandler, FlutterPlugin {
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     applicationContext = binding.getApplicationContext();
     onAttachedToEngine(
-            binding.getApplicationContext(), binding.getFlutterEngine().getDartExecutor());
+        binding.getApplicationContext(), binding.getFlutterEngine().getDartExecutor());
   }
 
   private void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
     this.applicationContext = applicationContext;
-    methodChannel =
-        new MethodChannel(messenger, "plugins.flutter.io/package_info");
+    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/package_info");
     methodChannel.setMethodCallHandler(new PackageInfoPlugin());
   }
 
