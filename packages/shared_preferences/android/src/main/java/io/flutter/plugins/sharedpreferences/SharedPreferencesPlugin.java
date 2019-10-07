@@ -4,12 +4,14 @@
 
 package io.flutter.plugins.sharedpreferences;
 
+import androidx.annotation.NonNull;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 
 /** SharedPreferencesPlugin */
 @SuppressWarnings("unchecked")
-public class SharedPreferencesPlugin {
+public class SharedPreferencesPlugin implements FlutterPlugin {
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
@@ -18,4 +20,15 @@ public class SharedPreferencesPlugin {
     MethodCallHandlerImpl handler = new MethodCallHandlerImpl(registrar.context());
     channel.setMethodCallHandler(handler);
   }
+
+  @Override
+  public void onAttachedToEngine(@NonNull FlutterPlugin.FlutterPluginBinding binding) {
+    MethodChannel channel =
+        new MethodChannel(binding.getFlutterEngine().getDartExecutor(), CHANNEL_NAME);
+    MethodCallHandlerImpl handler = new MethodCallHandlerImpl(binding.getApplicationContext());
+    channel.setMethodCallHandler(handler);
+  }
+
+  @Override
+  public void onDetachedFromEngine(@NonNull FlutterPlugin.FlutterPluginBinding binding) {}
 }
