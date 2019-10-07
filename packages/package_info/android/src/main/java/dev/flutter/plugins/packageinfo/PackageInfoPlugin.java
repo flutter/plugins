@@ -31,7 +31,6 @@ public class PackageInfoPlugin implements MethodCallHandler, FlutterPlugin {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    applicationContext = binding.getApplicationContext();
     onAttachedToEngine(
         binding.getApplicationContext(), binding.getFlutterEngine().getDartExecutor());
   }
@@ -39,7 +38,7 @@ public class PackageInfoPlugin implements MethodCallHandler, FlutterPlugin {
   private void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
     this.applicationContext = applicationContext;
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/package_info");
-    methodChannel.setMethodCallHandler(new PackageInfoPlugin());
+    methodChannel.setMethodCallHandler(this);
   }
 
   @Override
