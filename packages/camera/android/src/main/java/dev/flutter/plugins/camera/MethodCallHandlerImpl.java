@@ -1,67 +1,42 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+package dev.flutter.plugins.camera;
 
-package io.flutter.plugins.camera;
-
+import android.app.Activity;
 import android.hardware.camera2.CameraAccessException;
-import android.os.Build;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import dev.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.flutter.view.FlutterView;
 import io.flutter.view.TextureRegistry;
 
-public class CameraPlugin implements MethodCallHandler {
-
-  private final CameraPermissions cameraPermissions = new CameraPermissions();
-  private final FlutterView view;
-  private final Registrar registrar;
+final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
+  private final Activity activity;
+  private final BinaryMessenger messenger;
+  private final CameraPermissions cameraPermissions;
+  private final PermissionsRegistry permissionsRegistry;
+  private final TextureRegistry textureRegistry;
+  private final MethodChannel methodChannel;
   private final EventChannel imageStreamChannel;
-  private Camera camera;
+  private @Nullable Camera camera;
 
-  private CameraPlugin(Registrar registrar) {
-    this.registrar = registrar;
-    this.view = registrar.view();
-    this.imageStreamChannel =
-        new EventChannel(registrar.messenger(), "plugins.flutter.io/camera/imageStream");
-  }
+  MethodCallHandlerImpl(
+      Activity activity,
+      BinaryMessenger messenger,
+      CameraPermissions cameraPermissions,
+      PermissionsRegistry permissionsAdder,
+      TextureRegistry textureRegistry) {
+    this.activity = activity;
+    this.messenger = messenger;
+    this.cameraPermissions = cameraPermissions;
+    this.permissionsRegistry = permissionsAdder;
+    this.textureRegistry = textureRegistry;
 
-  public static void registerWith(Registrar registrar) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      // When a background flutter view tries to register the plugin, the registrar has no activity.
-      // We stop the registration process as this plugin is foreground only. Also, if the sdk is
-      // less than 21 (min sdk for Camera2) we don't register the plugin.
-      return;
-    }
-
-    final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/camera");
-
-    channel.setMethodCallHandler(new CameraPlugin(registrar));
-  }
-
-  private void instantiateCamera(MethodCall call, Result result) throws CameraAccessException {
-    String cameraName = call.argument("cameraName");
-    String resolutionPreset = call.argument("resolutionPreset");
-    boolean enableAudio = call.argument("enableAudio");
-    TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture = view.createSurfaceTexture();
-    DartMessenger dartMessenger =
-        new DartMessenger(registrar.messenger(), flutterSurfaceTexture.id());
-    camera =
-        new Camera(
-            registrar.activity(),
-            flutterSurfaceTexture,
-            dartMessenger,
-            cameraName,
-            resolutionPreset,
-            enableAudio);
-
-    camera.open(result);
+    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/camera");
+    imageStreamChannel = new EventChannel(messenger, "plugins.flutter.io/camera/imageStream");
+    methodChannel.setMethodCallHandler(this);
   }
 
   @Override
@@ -69,7 +44,7 @@ public class CameraPlugin implements MethodCallHandler {
     switch (call.method) {
       case "availableCameras":
         try {
-          result.success(CameraUtils.getAvailableCameras(registrar.activity()));
+          result.success(CameraUtils.getAvailableCameras(activity));
         } catch (Exception e) {
           handleException(e, result);
         }
@@ -80,7 +55,8 @@ public class CameraPlugin implements MethodCallHandler {
             camera.close();
           }
           cameraPermissions.requestPermissions(
-              registrar,
+              activity,
+              permissionsRegistry,
               call.argument("enableAudio"),
               (String errCode, String errDesc) -> {
                 if (errCode == null) {
@@ -159,6 +135,29 @@ public class CameraPlugin implements MethodCallHandler {
         result.notImplemented();
         break;
     }
+  }
+
+  void stopListening() {
+    methodChannel.setMethodCallHandler(null);
+  }
+
+  private void instantiateCamera(MethodCall call, Result result) throws CameraAccessException {
+    String cameraName = call.argument("cameraName");
+    String resolutionPreset = call.argument("resolutionPreset");
+    boolean enableAudio = call.argument("enableAudio");
+    TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture =
+        textureRegistry.createSurfaceTexture();
+    DartMessenger dartMessenger = new DartMessenger(messenger, flutterSurfaceTexture.id());
+    camera =
+        new Camera(
+            activity,
+            flutterSurfaceTexture,
+            dartMessenger,
+            cameraName,
+            resolutionPreset,
+            enableAudio);
+
+    camera.open(result);
   }
 
   // We move catching CameraAccessException out of onMethodCall because it causes a crash
