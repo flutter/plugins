@@ -4,34 +4,38 @@
 
 package io.flutter.plugins.deviceinfo;
 
+import android.content.ContentResolver;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** DeviceInfoPlugin */
 public class DeviceInfoPlugin implements FlutterPlugin {
 
+  MethodChannel channel;
+
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/device_info");
-
-    final MethodCallHandlerImpl handler =
-        new MethodCallHandlerImpl(registrar.context().getContentResolver());
-    channel.setMethodCallHandler(handler);
+    DeviceInfoPlugin plugin = new DeviceInfoPlugin();
+    plugin.setupMethodChannel(registrar.messenger(), registrar.context().getContentResolver());
   }
 
   @Override
   public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
-    final MethodChannel channel =
-        new MethodChannel(
-            binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/device_info");
-
-    final MethodCallHandlerImpl handler =
-        new MethodCallHandlerImpl(binding.getApplicationContext().getContentResolver());
-    channel.setMethodCallHandler(handler);
+    setupMethodChannel(
+        binding.getFlutterEngine().getDartExecutor(),
+        binding.getApplicationContext().getContentResolver());
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPlugin.FlutterPluginBinding binding) {}
+  public void onDetachedFromEngine(FlutterPlugin.FlutterPluginBinding binding) {
+    channel.setMethodCallHandler(null);
+  }
+
+  private void setupMethodChannel(BinaryMessenger messenger, ContentResolver contentResolver) {
+    channel = new MethodChannel(messenger, "plugins.flutter.io/device_info");
+    final MethodCallHandlerImpl handler = new MethodCallHandlerImpl(contentResolver);
+    channel.setMethodCallHandler(handler);
+  }
 }
