@@ -22,7 +22,7 @@ public class E2EPlugin implements MethodCallHandler {
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-    channel.setMethodCallHandler(new InstrumentationAdapterPlugin());
+    channel.setMethodCallHandler(new E2EPlugin());
   }
 
   @Override

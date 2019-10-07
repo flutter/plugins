@@ -49,7 +49,7 @@ public class FlutterRunner extends Runner {
   public void run(RunNotifier notifier) {
     Map<String, String> results = null;
     try {
-      results = InstrumentationAdapterPlugin.testResults.get();
+      results = E2EPlugin.testResults.get();
     } catch (ExecutionException | InterruptedException e) {
       throw new IllegalThreadStateException("Unable to get test results");
     }

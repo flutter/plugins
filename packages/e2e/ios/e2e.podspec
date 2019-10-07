@@ -4,7 +4,7 @@
 Pod::Spec.new do |s|
   s.name             = 'e2e'
   s.version          = '0.0.1'
-  s.summary          = 'Instrumentation adapter.'
+  s.summary          = 'Adapter for e2e tests.'
   s.description      = <<-DESC
 Runs tests that use the flutter_test API as integration tests.
                        DESC
