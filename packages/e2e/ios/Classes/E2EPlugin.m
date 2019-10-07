@@ -1,6 +1,6 @@
-#import "InstrumentationAdapterPlugin.h"
+#import "E2EPlugin.h"
 
-@implementation InstrumentationAdapterPlugin
+@implementation E2EPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
       methodChannelWithName:@"dev.flutter/InstrumentationAdapterFlutterBinding"
