@@ -9,9 +9,11 @@ import io.flutter.plugins.share.MethodCallHandler;
 import io.flutter.plugins.share.Share;
 
 /**
- * Plugin implementation that uses the new {@code io.flutter.embedding} package.
+ * Entry point of the plugin.
  *
- * <p>Instantiate this in an add to app scenario to gracefully handle activity and context changes.
+ * <p>set up the {@link io.flutter.plugin.common.MethodChannel.MethodCallHandler} during {@link
+ * #onAttachedToEngine(FlutterPluginBinding)}. It also implements {@link ActivityAware}, provides
+ * the activity instance to {@link Share} when it's available.
  */
 public class SharePlugin implements FlutterPlugin, ActivityAware {
 
