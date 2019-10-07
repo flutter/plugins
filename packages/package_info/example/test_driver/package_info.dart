@@ -2,13 +2,14 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:instrumentation_adapter/instrumentation_adapter.dart';
 import 'package:package_info/package_info.dart';
 
 void main() {
   InstrumentationAdapterFlutterBinding.ensureInitialized();
 
   group('package_info test driver', () {
-    test('test package info result', () async {
+    testWidgets('test package info result', () async {
       final PackageInfo info = await PackageInfo.fromPlatform();
       // These tests are based on the example app. The tests should be updated if any related info changes.
       if (Platform.isAndroid) {
