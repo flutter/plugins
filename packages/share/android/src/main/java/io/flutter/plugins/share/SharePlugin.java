@@ -44,6 +44,7 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
   public void onDetachedFromActivity() {
     activity = null;
     share.setActivity(null);
+    methodChannel.setMethodCallHandler(null);
   }
 
   @Override
