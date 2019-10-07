@@ -31,16 +31,17 @@ void main() {
     if (Platform.isAndroid) {
       expect(find.text('package_info_example'), findsOneWidget);
       expect(find.text('1'), findsOneWidget);
-      expect(find.text('io.flutter.plugins.packageinfoexample'), findsOneWidget);
+      expect(
+          find.text('io.flutter.plugins.packageinfoexample'), findsOneWidget);
       expect(find.text('1.0'), findsOneWidget);
     } else if (Platform.isIOS) {
       expect(find.text('Package Info Example'), findsOneWidget);
       expect(find.text('1'), findsOneWidget);
-      expect(find.text('io.flutter.plugins.packageInfoExample'), findsOneWidget);
+      expect(
+          find.text('io.flutter.plugins.packageInfoExample'), findsOneWidget);
       expect(find.text('1.0'), findsOneWidget);
     } else {
       throw (UnsupportedError('platform not supported'));
     }
-
   });
 }
