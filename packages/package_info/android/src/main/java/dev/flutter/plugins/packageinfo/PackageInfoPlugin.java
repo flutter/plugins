@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.packageinfo;
+package dev.flutter.plugins.packageinfo;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -25,7 +25,7 @@ public class PackageInfoPlugin implements MethodCallHandler, FlutterPlugin {
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final BatteryPlugin instance = new BatteryPlugin();
+    final PackageInfoPlugin instance = new PackageInfoPlugin();
     instance.onAttachedToEngine(registrar.context(), registrar.messenger());
   }
 
@@ -39,8 +39,8 @@ public class PackageInfoPlugin implements MethodCallHandler, FlutterPlugin {
   private void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
     this.applicationContext = applicationContext;
     methodChannel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/package_info");
-    methodChannel.setMethodCallHandler(new PackageInfoPlugin(registrar));
+        new MethodChannel(messenger, "plugins.flutter.io/package_info");
+    methodChannel.setMethodCallHandler(new PackageInfoPlugin());
   }
 
   @Override
@@ -48,10 +48,6 @@ public class PackageInfoPlugin implements MethodCallHandler, FlutterPlugin {
     applicationContext = null;
     methodChannel.setMethodCallHandler(null);
     methodChannel = null;
-  }
-
-  private PackageInfoPlugin(Registrar registrar) {
-    this.mRegistrar = registrar;
   }
 
   @Override

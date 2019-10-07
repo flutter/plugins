@@ -7,7 +7,7 @@ version: 0.4.0+8
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.packageinfo
+    androidPackage: dev.flutter.plugins.packageinfo
     iosPrefix: FLT
     pluginClass: PackageInfoPlugin
 
