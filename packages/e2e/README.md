@@ -34,7 +34,7 @@ this test file MainActivityTest.java or another name of your choice.
 package com.example.myapp;
 
 import androidx.test.rule.ActivityTestRule;
-import dev.flutter.plugins.instrumentationadapter.FlutterRunner;
+import dev.flutter.plugins.e2e.FlutterRunner;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
@@ -66,6 +66,28 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
 ```
+
+To run a example app test with Flutter driver:
+
+```
+cd example
+flutter drive test/<package_name>_e2e.dart
+```
+
+To test plugin APIs using Flutter driver:
+
+```
+cd example
+flutter drive ../test/<package_name>_e2e.dart
+```
+
+To e2e test on a local emulator using Android instrumentation:
+
+```
+./gradlew connectedAndroidTest -Ptarget=`pwd`/../test_driver/<package_name>_e2e.dart
+```
+
+To e2e test using Firebase test lab, follow the instructions on the [e2e README](https://github.com/flutter/plugins/tree/master/packages/e2e) or let CI do it for you.
 
 Use gradle commands to build an instrumentation test for Android.
 
