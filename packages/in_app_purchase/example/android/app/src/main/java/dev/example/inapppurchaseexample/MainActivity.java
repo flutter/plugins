@@ -4,7 +4,7 @@
 
 package dev.example.inapppurchaseexample;
 
-import dev.flutter.plugins.inapppurchase.InAppPurchasePlugin;
+import io.flutter.plugins.inapppurchase.InAppPurchasePlugin;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 
