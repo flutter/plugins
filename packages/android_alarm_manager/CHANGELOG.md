@@ -1,3 +1,8 @@
+## 0.4.4+1
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
 ## 0.4.4
 
 * Add `id` to `callback` if it is of type `Function(int)`

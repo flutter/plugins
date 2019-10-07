@@ -1,6 +1,10 @@
-## 0.4.0+7
+## 0.4.0+8
 
 * Update instrumentation test to use instrumentation_adapter plugin.
+
+## 0.4.0+7
+
+* Update and migrate iOS example project.
 
 ## 0.4.0+6
 

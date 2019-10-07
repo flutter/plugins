@@ -1,5 +1,4 @@
-
-FROM cirrusci/flutter:latest
+FROM cirrusci/flutter:stable
 
 RUN sudo apt-get update && \
     sudo apt-get install -y git wget curl unzip python lsb-release sudo apt-transport-https

@@ -2,25 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <XCTest/XCTest.h>
-#import "FLTImagePickerImageUtil.h"
+#import "ImagePickerTestImages.h"
+
+@import image_picker;
+@import XCTest;
 
 @interface ImageUtilTests : XCTestCase
-
-@property(strong, nonatomic) NSBundle *testBundle;
-
 @end
 
 @implementation ImageUtilTests
 
-- (void)setUp {
-  self.testBundle = [NSBundle bundleForClass:self.class];
-}
-
 - (void)testScaledImage_ShouldBeScaled {
-  NSData *data = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"jpgImage"
-                                                                          ofType:@"jpg"]];
-  UIImage *image = [UIImage imageWithData:data];
+  UIImage *image = [UIImage imageWithData:ImagePickerTestImages.JPGTestData];
   UIImage *newImage = [FLTImagePickerImageUtil scaledImage:image maxWidth:@3 maxHeight:@2];
 
   XCTAssertEqual(newImage.size.width, 3);
@@ -29,9 +22,9 @@
 
 - (void)testScaledGIFImage_ShouldBeScaled {
   // gif image that frame size is 3 and the duration is 1 second.
-  NSData *data = [NSData dataWithContentsOfFile:[self.testBundle pathForResource:@"gifImage"
-                                                                          ofType:@"gif"]];
-  GIFInfo *info = [FLTImagePickerImageUtil scaledGIFImage:data maxWidth:@3 maxHeight:@2];
+  GIFInfo *info = [FLTImagePickerImageUtil scaledGIFImage:ImagePickerTestImages.GIFTestData
+                                                 maxWidth:@3
+                                                maxHeight:@2];
 
   NSArray<UIImage *> *images = info.images;
   NSTimeInterval duration = info.interval;
