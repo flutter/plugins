@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.	// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be	// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.	// found in the LICENSE file.
+
 package io.flutter.plugins.quickactions;
 
 import android.annotation.TargetApi;
