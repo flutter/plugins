@@ -1,4 +1,4 @@
-package dev.flutter.plugins.androidintent;
+package io.flutter.plugins.androidintent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

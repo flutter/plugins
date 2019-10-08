@@ -1,4 +1,4 @@
-package dev.flutter.plugins.androidintent;
+package io.flutter.plugins.androidintent;
 
 import android.content.ComponentName;
 import android.content.Intent;

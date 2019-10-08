@@ -1,4 +1,4 @@
-package dev.flutter.plugins.androidintent;
+package io.flutter.plugins.androidintent;
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -17,7 +17,7 @@ public final class AndroidIntentPlugin implements FlutterPlugin, ActivityAware {
   /**
    * Initialize this within the {@code #configureFlutterEngine} of a Flutter activity or fragment.
    *
-   * <p>See {@code dev.flutter.plugins.androidintentexample.MainActivity} for an example.
+   * <p>See {@code io.flutter.plugins.androidintentexample.MainActivity} for an example.
    */
   public AndroidIntentPlugin() {
     sender = new IntentSender(/*activity=*/ null, /*context=*/ null);
