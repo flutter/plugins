@@ -19,7 +19,7 @@ import java.util.Map;
  * The implementation of {@link MethodChannel.MethodCallHandler} for the plugin. Responsible for
  * receiving method calls from method channel.
  */
-public class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
+class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private ContentResolver contentResolver;
 
@@ -27,7 +27,7 @@ public class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private static final String[] EMPTY_STRING_LIST = new String[] {};
 
   /** Constructs DeviceInfo. The {@code contentResolver} must not be null. */
-  public MethodCallHandlerImpl(@NonNull ContentResolver contentResolver) {
+  MethodCallHandlerImpl(@NonNull ContentResolver contentResolver) {
     this.contentResolver = contentResolver;
   }
 
