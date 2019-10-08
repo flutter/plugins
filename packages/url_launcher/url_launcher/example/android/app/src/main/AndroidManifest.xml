@@ -14,22 +14,22 @@
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
       android:hardwareAccelerated="true"
       android:launchMode="singleTop"
-      android:name="io.flutter.plugins.urllauncherexample.MainActivity"
+      android:exported="true"
+      android:name="io.flutter.plugins.urllauncherexample.EmbeddingV1Activity"
+      android:theme="@android:style/Theme.Black.NoTitleBar"
+      android:windowSoftInputMode="adjustResize">
+    </activity>
+    <activity
+      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
+      android:hardwareAccelerated="true"
+      android:launchMode="singleTop"
+      android:name=".MainActivity"
       android:theme="@android:style/Theme.Black.NoTitleBar"
       android:windowSoftInputMode="adjustResize">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
-    </activity>
-    <activity
-      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
-      android:exported="true"
-      android:hardwareAccelerated="true"
-      android:launchMode="singleTop"
-      android:name="dev.flutter.plugins.urllauncherexample.MainActivity"
-      android:theme="@android:style/Theme.Black.NoTitleBar"
-      android:windowSoftInputMode="adjustResize">
     </activity>
   </application>
 

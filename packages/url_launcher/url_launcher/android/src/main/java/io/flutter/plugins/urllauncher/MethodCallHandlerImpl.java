@@ -1,14 +1,14 @@
-package dev.flutter.plugins.urllauncher;
+package io.flutter.plugins.urllauncher;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import dev.flutter.plugins.urllauncher.UrlLauncher.LaunchStatus;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugins.urllauncher.UrlLauncher.LaunchStatus;
 import java.util.Map;
 
 /**
