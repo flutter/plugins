@@ -599,7 +599,7 @@ public class Camera {
         autoFocusRequestMode = CameraMetadata.CONTROL_AF_MODE_AUTO;
         break;
       case CAMERA_AUTO_FOCUS_MODE_CONTINUOUS:
-        autoFocusRequestMode = CameraMetadata.CONTROL_AF_MODE_CONTINUOUS_VIDEO;
+        autoFocusRequestMode = CameraMetadata.CONTROL_AF_MODE_CONTINUOUS_PICTURE;
         break;
       case CAMERA_AUTO_FOCUS_MODE_MACRO:
         autoFocusRequestMode = CameraMetadata.CONTROL_AF_MODE_MACRO;
@@ -610,7 +610,7 @@ public class Camera {
 
     builderRequest.set(CaptureRequest.CONTROL_AF_MODE, autoFocusRequestMode);
 
-    if (mode != CAMERA_AUTO_FOCUS_MODE_OFF) {
+    if (mode != CAMERA_AUTO_FOCUS_MODE_OFF && mode != CAMERA_AUTO_FOCUS_MODE_CONTINUOUS) {
       builderRequest.set(
           CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
     }
