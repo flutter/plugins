@@ -13,4 +13,3 @@ Future<void> main() async {
   driver.close();
   exit(result == 'pass' ? 0 : 1);
 }
-`
