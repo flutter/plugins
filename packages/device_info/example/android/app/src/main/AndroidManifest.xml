@@ -4,14 +4,15 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application android:name="io.flutter.app.FlutterApplication" android:label="device_info_example" android:icon="@mipmap/ic_launcher">
-        <activity android:name="io.flutter.plugins.deviceinfoexample.MainActivity"
+        <activity android:name=".EmbeddingV1Activity"
                   android:launchMode="singleTop"
                   android:theme="@android:style/Theme.Black.NoTitleBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
                   android:hardwareAccelerated="true"
+                  android:exported="true"
                   android:windowSoftInputMode="adjustResize">
         </activity>
-        <activity android:name="dev.flutter.plugins.deviceinfoexample.MainActivity"
+        <activity android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Black.NoTitleBar"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
