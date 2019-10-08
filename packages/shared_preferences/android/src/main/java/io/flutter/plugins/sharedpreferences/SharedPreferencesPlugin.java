@@ -4,8 +4,10 @@
 
 package io.flutter.plugins.sharedpreferences;
 
+import android.content.Context;
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 
@@ -13,22 +15,26 @@ import io.flutter.plugin.common.PluginRegistry;
 @SuppressWarnings("unchecked")
 public class SharedPreferencesPlugin implements FlutterPlugin {
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
+  private MethodChannel channel;
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
-    MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-
-    MethodCallHandlerImpl handler = new MethodCallHandlerImpl(registrar.context());
-    channel.setMethodCallHandler(handler);
+    SharedPreferencesPlugin plugin = new SharedPreferencesPlugin();
+    plugin.setupChannel(registrar.messenger(), registrar.context());
   }
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPlugin.FlutterPluginBinding binding) {
-    MethodChannel channel =
-        new MethodChannel(binding.getFlutterEngine().getDartExecutor(), CHANNEL_NAME);
-    MethodCallHandlerImpl handler = new MethodCallHandlerImpl(binding.getApplicationContext());
-    channel.setMethodCallHandler(handler);
+    setupChannel(binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext());
   }
 
   @Override
-  public void onDetachedFromEngine(@NonNull FlutterPlugin.FlutterPluginBinding binding) {}
+  public void onDetachedFromEngine(@NonNull FlutterPlugin.FlutterPluginBinding binding) {
+    channel.setMethodCallHandler(null);
+  }
+
+  private void setupChannel(BinaryMessenger messenger, Context context) {
+    channel = new MethodChannel(messenger, CHANNEL_NAME);
+    MethodCallHandlerImpl handler = new MethodCallHandlerImpl(context);
+    channel.setMethodCallHandler(handler);
+  }
 }
