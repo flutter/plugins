@@ -5,5 +5,6 @@
 #import "FlutterAndroidLifecyclePlugin.h"
 
 @implementation FlutterAndroidLifecyclePlugin
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {}
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+}
 @end
