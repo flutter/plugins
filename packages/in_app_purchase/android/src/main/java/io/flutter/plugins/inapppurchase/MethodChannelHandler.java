@@ -43,7 +43,7 @@ class MethodChannelHandler implements MethodChannel.MethodCallHandler {
   private HashMap<String, SkuDetails> cachedSkus = new HashMap<>();
 
   /** Constructs the MethodChannelHandler */
-  public MethodChannelHandler(
+  MethodChannelHandler(
       @Nullable Activity activity,
       @NonNull Context applicationContext,
       @NonNull MethodChannel methodChannel,
