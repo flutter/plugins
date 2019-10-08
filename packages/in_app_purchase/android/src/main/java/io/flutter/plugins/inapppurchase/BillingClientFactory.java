@@ -10,7 +10,7 @@ import com.android.billingclient.api.BillingClient;
 import io.flutter.plugin.common.MethodChannel;
 
 /** Responsible for creating a {@link BillingClient} object. */
-public interface BillingClientFactory {
+interface BillingClientFactory {
 
   /**
    * Creates and returns a {@link BillingClient}.

@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Handles method channel for the plugin. */
-public class MethodChannelHandler implements MethodChannel.MethodCallHandler {
+class MethodChannelHandler implements MethodChannel.MethodCallHandler {
 
   private static final String TAG = "InAppPurchasePlugin";
 
@@ -60,7 +60,7 @@ public class MethodChannelHandler implements MethodChannel.MethodCallHandler {
    *
    * @param activity the activity to be set.
    */
-  public void setActivity(Activity activity) {
+  void setActivity(Activity activity) {
     this.activity = activity;
   }
 
