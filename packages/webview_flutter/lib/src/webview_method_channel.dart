@@ -59,6 +59,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   Future<String> currentUrl() => _channel.invokeMethod<String>('currentUrl');
 
   @override
+  Future<String> captureBase64() => _channel.invokeMethod<String>('captureBase64');
+
+  @override
   Future<bool> canGoBack() => _channel.invokeMethod<bool>("canGoBack");
 
   @override

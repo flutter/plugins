@@ -6,9 +6,12 @@ package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
+import android.util.Base64;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebViewClient;
@@ -18,6 +21,9 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +54,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     platformThreadHandler = new Handler(context.getMainLooper());
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
+    webView.getSettings().setLoadWithOverviewMode(true);
+    webView.getSettings().setUseWideViewPort(true);
+    webView.getSettings().setJavaScriptEnabled(true);
+    webView.getSettings().setAllowFileAccessFromFileURLs(true);
+    webView.getSettings().setAllowUniversalAccessFromFileURLs(true);
+//    webView.getSettings().setBuiltInZoomControls(true);
+//    webView.getSettings().setDisplayZoomControls(true);
+//    webView.getSettings().setSupportZoom(true);
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
@@ -134,6 +148,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "clearCache":
         clearCache(result);
         break;
+	  case "captureBase64":
+        capturebase64(result);
       case "getTitle":
         getTitle(result);
         break;
@@ -221,6 +237,108 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       webView.removeJavascriptInterface(channelName);
     }
     result.success(null);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void capturebase64(Result result){
+//    Bitmap bmp = webView.getDrawingCache();
+//    try{
+//      String imgstr = bitmapToBase64(bmp);
+//      result.success(imgstr);
+//    }catch (IOException e){
+//      result.error(e.getMessage(),null,null);
+//    }
+    int width = webView.getWidth();
+    int height = webView.getHeight();
+    int scrolly = webView.getScrollY();
+    Bitmap bm = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+    Canvas canvas = new Canvas(bm);
+    int top = height;
+    while (top > 0) {
+      if (top < height) {
+        top = 0;
+      } else {
+        top -= height;
+
+      }
+      canvas.save();
+      canvas.clipRect(0, top, width, top + height);
+      webView.scrollTo(0, top);
+      webView.draw(canvas);
+      canvas.restore();
+    }
+
+    try{
+      String imgstr = bitmapToBase64(bm);
+      result.success(imgstr);
+    }catch (IOException e){
+      result.error(e.getMessage(),null,null);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private void capturebase642(Result result) {
+    // List<String> channelNames = (List<String>) methodCall.arguments;
+    // for (String channelName : channelNames) {
+    //   webView.removeJavascriptInterface(channelName);
+    // }
+    // result.success(null);
+    int height = (int) (webView.getContentHeight() * webView.getScale());
+    int width = webView.getWidth();
+    int pH = webView.getHeight();
+    Bitmap bm = Bitmap.createBitmap(width, height==0?pH:height, Bitmap.Config.RGB_565);
+    Canvas canvas = new Canvas(bm);
+    int top = height;
+    while (top > 0) {
+        if (top < pH) {
+            top = 0;
+        } else {
+            top -= pH;
+        }
+        canvas.save();
+        canvas.clipRect(0, top, width, top + pH);
+        webView.scrollTo(0, top);
+        webView.draw(canvas);
+        canvas.restore();
+    }
+
+    try{
+      String imgstr = bitmapToBase64(bm);
+      result.success(imgstr);
+    }catch (IOException e){
+      result.error(e.getMessage(),null,null);
+    }
+
+  }
+
+  public String bitmapToBase64(Bitmap bitmap) throws IOException {
+
+    String result = null;
+    ByteArrayOutputStream baos = null;
+    try {
+      if (bitmap != null) {
+        baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+        baos.flush();
+        baos.close();
+
+        byte[] bitmapBytes = baos.toByteArray();
+        result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+      }
+    } catch (IOException e) {
+      throw e;
+    } finally {
+      try {
+        if (baos != null) {
+          baos.flush();
+          baos.close();
+        }
+      } catch (IOException e) {
+        throw e;
+      }
+    }
+    return result;
   }
 
   private void clearCache(Result result) {

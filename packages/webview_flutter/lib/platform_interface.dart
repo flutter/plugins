@@ -78,6 +78,12 @@ abstract class WebViewPlatformController {
         "WebView currentUrl is not implemented on the current platform");
   }
 
+
+  Future<String> captureBase64() {
+    throw UnimplementedError(
+        "WebView captureBase64 is not implemented on the current platform");
+  }
+
   /// Checks whether there's a back history item.
   Future<bool> canGoBack() {
     throw UnimplementedError(

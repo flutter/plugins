@@ -118,6 +118,8 @@
     [self onRemoveJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"clearCache"]) {
     [self clearCache:result];
+  } else if ([[call method] isEqualToString:@"captureBase64"]) {
+    [self capturebase64:result];
   } else if ([[call method] isEqualToString:@"getTitle"]) {
     [self onGetTitle:result];
   } else {
@@ -240,6 +242,18 @@
   }
 }
 
+- (void)capturebase64:(FlutterResult)result {
+//    NSSet* cacheDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+//    WKWebsiteDataStore* dataStore = [WKWebsiteDataStore defaultDataStore];
+//    NSDate* dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+//    [dataStore removeDataOfTypes:cacheDataTypes
+//                   modifiedSince:dateFrom
+//               completionHandler:^{
+//                   result(nil);
+//               }];
+
+}  
+
 - (void)onGetTitle:(FlutterResult)result {
   NSString* title = _webView.title;
   result(title);
@@ -330,7 +344,21 @@
 }
 
 - (bool)loadUrl:(NSString*)url withHeaders:(NSDictionary<NSString*, NSString*>*)headers {
-  NSURL* nsUrl = [NSURL URLWithString:url];
+  // NSURL* nsUrl = [NSURL URLWithString:url];  TODO://modified by jack.
+  NSURL* nsUrl = [NSURL fileURLWithPath:url];
+  if ([url.lowercaseString hasPrefix:@"file://"]) {
+    url = [url substringFromIndex:7]; // length of 'file://'
+
+    NSURL *nsUrl = [NSURL fileURLWithPath:url];
+    NSURL *readAccessToURL = [[nsUrl URLByDeletingLastPathComponent] URLByDeletingLastPathComponent];
+    NSLog(@"\nOpening as file \(nsUrl)");
+
+    [_webView loadFileURL:nsUrl allowingReadAccessToURL:readAccessToURL];
+    return true;
+  }
+
+  NSLog(@"\nOpening as URL \(nsUrl)");
+  nsUrl = [NSURL URLWithString:url];
   if (!nsUrl) {
     return false;
   }
