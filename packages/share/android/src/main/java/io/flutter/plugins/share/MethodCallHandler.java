@@ -10,12 +10,12 @@ import io.flutter.plugin.common.MethodChannel;
 import java.util.Map;
 
 /** Handles the method calls for the plugin. */
-public class MethodCallHandler implements MethodChannel.MethodCallHandler {
+class MethodCallHandler implements MethodChannel.MethodCallHandler {
 
   private Share share;
 
   /** Constructs the MethodChannelHandler */
-  public MethodCallHandler(@NonNull Share share) {
+  MethodCallHandler(@NonNull Share share) {
     this.share = share;
   }
 

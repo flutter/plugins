@@ -9,7 +9,7 @@ import android.content.Intent;
 import androidx.annotation.Nullable;
 
 /** Handles share intent. */
-public class Share {
+class Share {
 
   private Activity activity;
 
@@ -18,7 +18,7 @@ public class Share {
    * null when constructing the {@link Share} object and set to non-null when an activity is
    * available using {@link #setActivity(Activity)}.
    */
-  public Share(@Nullable Activity activity) {
+  Share(@Nullable Activity activity) {
     this.activity = activity;
   }
 
@@ -26,7 +26,7 @@ public class Share {
    * Sets the activity when an activity is available. When the activity becomes unavailable, use
    * this method to set it to null.
    */
-  public void setActivity(@Nullable Activity activity) {
+  void setActivity(@Nullable Activity activity) {
     this.activity = activity;
   }
 
