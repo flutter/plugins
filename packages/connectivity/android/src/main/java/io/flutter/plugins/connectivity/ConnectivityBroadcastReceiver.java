@@ -20,14 +20,13 @@ import io.flutter.plugin.common.EventChannel;
  * io.flutter.plugin.common.EventChannel#setStreamHandler(io.flutter.plugin.common.EventChannel.StreamHandler)}
  * to set up the receiver.
  */
-public class ConnectivityBroadcastReceiver extends BroadcastReceiver
+class ConnectivityBroadcastReceiver extends BroadcastReceiver
     implements EventChannel.StreamHandler {
   private Context context;
   private Connectivity connectivity;
   private EventChannel.EventSink events;
 
-  public ConnectivityBroadcastReceiver(
-      @NonNull Context context, @NonNull Connectivity connectivity) {
+  ConnectivityBroadcastReceiver(@NonNull Context context, @NonNull Connectivity connectivity) {
     this.context = context;
     this.connectivity = connectivity;
   }

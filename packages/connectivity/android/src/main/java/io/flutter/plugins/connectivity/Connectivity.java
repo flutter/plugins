@@ -15,11 +15,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /** Reports connectivity related information such as connectivity type and wifi information. */
-public class Connectivity {
+class Connectivity {
   private ConnectivityManager connectivityManager;
   private WifiManager wifiManager;
 
-  public Connectivity(ConnectivityManager connectivityManager, WifiManager wifiManager) {
+  Connectivity(ConnectivityManager connectivityManager, WifiManager wifiManager) {
     this.connectivityManager = connectivityManager;
     this.wifiManager = wifiManager;
   }

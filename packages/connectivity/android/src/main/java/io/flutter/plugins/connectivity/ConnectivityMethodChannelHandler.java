@@ -13,7 +13,7 @@ import io.flutter.plugin.common.MethodChannel;
  * a @{@link Connectivity}, and then send the result back to the UIThread through the {@link
  * MethodChannel.Result}.
  */
-public class ConnectivityMethodChannelHandler implements MethodChannel.MethodCallHandler {
+class ConnectivityMethodChannelHandler implements MethodChannel.MethodCallHandler {
 
   private Connectivity connectivity;
 
@@ -21,7 +21,7 @@ public class ConnectivityMethodChannelHandler implements MethodChannel.MethodCal
    * Construct the ConnectivityMethodChannelHandler with a {@code connectivity}. The {@code
    * connectivity} must not be null.
    */
-  public ConnectivityMethodChannelHandler(@NonNull Connectivity connectivity) {
+  ConnectivityMethodChannelHandler(@NonNull Connectivity connectivity) {
     assert (connectivity != null);
     this.connectivity = connectivity;
   }
