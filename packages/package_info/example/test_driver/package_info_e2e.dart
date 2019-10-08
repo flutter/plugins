@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:instrumentation_adapter/instrumentation_adapter.dart';
+import 'package:e2e/e2e.dart';
 import 'package:package_info/package_info.dart';
 import 'package:package_info_example/main.dart';
 
 void main() {
-  InstrumentationAdapterFlutterBinding.ensureInitialized();
+  E2EWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('fromPlatform', (WidgetTester tester) async {
     final PackageInfo info = await PackageInfo.fromPlatform();
