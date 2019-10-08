@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package dev.flutter.plugins.camera;
+package io.flutter.plugins.camera;
 
 import android.app.Activity;
 import android.os.Build;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import dev.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
 import io.flutter.view.TextureRegistry;
 
 /**
@@ -31,7 +31,7 @@ public final class CameraPlugin implements FlutterPlugin, ActivityAware {
   /**
    * Initialize this within the {@code #configureFlutterEngine} of a Flutter activity or fragment.
    *
-   * <p>See {@code dev.flutter.plugins.camera.MainActivity} for an example.
+   * <p>See {@code io.flutter.plugins.camera.MainActivity} for an example.
    */
   public CameraPlugin() {}
 

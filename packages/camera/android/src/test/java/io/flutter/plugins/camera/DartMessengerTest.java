@@ -1,4 +1,4 @@
-package dev.flutter.plugins.camera;
+package io.flutter.plugins.camera;
 
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;

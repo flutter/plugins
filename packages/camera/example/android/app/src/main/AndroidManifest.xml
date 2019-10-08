@@ -9,13 +9,9 @@
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
       android:hardwareAccelerated="true"
       android:launchMode="singleTop"
-      android:name=".MainActivity"
+      android:name=".EmbeddingV1Activity"
       android:theme="@style/LaunchTheme"
       android:windowSoftInputMode="adjustResize">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
       <meta-data
         android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
         android:value="true"/>
@@ -25,9 +21,14 @@
       android:exported="true"
       android:hardwareAccelerated="true"
       android:launchMode="singleTop"
-      android:name="dev.flutter.plugins.cameraexample.MainActivity"
+      android:name=".MainActivity"
       android:theme="@style/LaunchTheme"
-      android:windowSoftInputMode="adjustResize"/>
+      android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
   </application>
 
   <uses-feature

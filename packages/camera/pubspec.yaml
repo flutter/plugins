@@ -27,7 +27,7 @@ dev_dependencies:
 
 flutter:
   plugin:
-    androidPackage: dev.flutter.plugins.camera
+    androidPackage: io.flutter.plugins.camera
     pluginClass: CameraPlugin
 
 environment:

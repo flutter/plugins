@@ -1,4 +1,4 @@
-package dev.flutter.plugins.camera;
+package io.flutter.plugins.camera;
 
 import android.text.TextUtils;
 import androidx.annotation.Nullable;

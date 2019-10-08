@@ -1,7 +1,7 @@
-package dev.flutter.plugins.camera;
+package io.flutter.plugins.camera;
 
 import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
-import static dev.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
+import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
