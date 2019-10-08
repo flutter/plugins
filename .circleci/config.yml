@@ -8,8 +8,6 @@ jobs:
       - run: echo $GCLOUD_KEY > ${HOME}/gcloud-service-key.json
       - run: cat  ${HOME}/gcloud-service-key.json
       - run: flutter doctor
-      - run: flutter test 
-      - run: flutter -v build apk
       - run: wget 'https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-195.0.0-linux-x86_64.tar.gz'
       - run: tar -xvf google-cloud-sdk*
       - run: ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
