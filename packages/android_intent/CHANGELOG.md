@@ -1,3 +1,11 @@
+## 0.3.3+3
+
+* Define clang module for iOS.
+
+## 0.3.3+2
+
+* Update and migrate iOS example project.
+
 ## 0.3.3+1
 
 * Added "action_application_details_settings" action to open application info settings . 
