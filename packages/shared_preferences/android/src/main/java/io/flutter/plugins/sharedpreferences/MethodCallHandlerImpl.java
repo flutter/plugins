@@ -27,9 +27,7 @@ import java.util.Set;
  * Implementation of the {@link MethodChannel.MethodCallHandler} for the plugin. It is also
  * responsible of managing the {@link android.content.SharedPreferences}.
  */
-//TODO(cyanglaz) Refactor out the code that handling the android.content.SharedPreferences to a different class and make this class purely handling method calls.
-//https://github.com/flutter/flutter/issues/42115
-public class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
+class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private static final String SHARED_PREFERENCES_NAME = "FlutterSharedPreferences";
 
@@ -44,7 +42,7 @@ public class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
    * Constructs a {@link MethodCallHandlerImpl} instance. Creates a {@link
    * android.content.SharedPreferences} based on the {@code context}.
    */
-  public MethodCallHandlerImpl(@NonNull Context context) {
+  MethodCallHandlerImpl(@NonNull Context context) {
     preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
   }
 
