@@ -4,12 +4,13 @@
 
 package io.flutter.plugins.inapppurchase;
 
+import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
@@ -38,6 +39,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
     private MethodNames() {};
   }
 
+  private MethodChannel methodChannel;
   private MethodChannelHandler methodChannelHandler;
 
   /** Plugin registration. */
@@ -52,17 +54,16 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
-    final MethodChannel methodChannel =
-            new MethodChannel(
-                    binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/in_app_purchase");
-    methodChannelHandler =
-            new MethodChannelHandler(
-                    null, binding.getApplicationContext(), methodChannel, new BillingClientFactoryImpl());
-    methodChannel.setMethodCallHandler(methodChannelHandler);
+    setupMethodChannel(
+        binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext());
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPlugin.FlutterPluginBinding binding) {}
+  public void onDetachedFromEngine(FlutterPlugin.FlutterPluginBinding binding) {
+    methodChannel.setMethodCallHandler(null);
+    methodChannel = null;
+    methodChannelHandler = null;
+  }
 
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
@@ -82,5 +83,12 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   @Override
   public void onDetachedFromActivityForConfigChanges() {
     onDetachedFromActivity();
+  }
+
+  private void setupMethodChannel(BinaryMessenger messenger, Context context) {
+    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/in_app_purchase");
+    methodChannelHandler =
+        new MethodChannelHandler(null, context, methodChannel, new BillingClientFactoryImpl());
+    methodChannel.setMethodCallHandler(methodChannelHandler);
   }
 }
