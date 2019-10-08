@@ -4,6 +4,7 @@
 * Refactored example app test.
 * **Breaking change**. Renamed `InstrumentationAdapterFlutterBinding` to
   `E2EWidgetsFlutterBinding`.
+* Updated README.
 
 ## 0.1.4
 
