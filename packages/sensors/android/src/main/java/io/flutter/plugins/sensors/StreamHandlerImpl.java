@@ -6,7 +6,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import io.flutter.plugin.common.EventChannel;
 
-public class StreamHandlerImpl implements EventChannel.StreamHandler {
+class StreamHandlerImpl implements EventChannel.StreamHandler {
 
   private SensorEventListener sensorEventListener;
   private final SensorManager sensorManager;
