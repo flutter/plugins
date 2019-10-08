@@ -877,7 +877,16 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   } else if ([@"resumeVideoRecording" isEqualToString:call.method]) {
     [_camera resumeVideoRecording];
     result(nil);
-  } else {
+  } else if ([@"turnOn" isEqualToString:call.method]) {
+    NSNumber *intensity = call.arguments[@"intensity"];
+    [self turnOn];
+    result(nil);
+  } else if ([@"turnOff" isEqualToString:call.method]) {
+    [self turnOff];
+    result(nil);
+   }
+
+  else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
 
@@ -899,6 +908,29 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       result(FlutterMethodNotImplemented);
     }
   }
+}
+
+- (void) turnOff
+{
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if ([device hasTorch] && [device hasFlash]){
+        [device lockForConfiguration:nil];
+        [device setTorchMode:AVCaptureTorchModeOff];
+        [device unlockForConfiguration];
+    }
+}
+
+- (void)turnOn
+{
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if ([device hasTorch] && [device hasFlash]){
+        [device lockForConfiguration:nil];
+        NSError *error = nil;
+        float acceptedLevel = (1 < AVCaptureMaxAvailableTorchLevel ? 1 : AVCaptureMaxAvailableTorchLevel);
+        NSLog(@"FLash level: %f", acceptedLevel);
+        [device setTorchModeOnWithLevel:acceptedLevel error:&error];
+        [device unlockForConfiguration];
+    }
 }
 
 @end

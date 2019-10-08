@@ -14,7 +14,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.FlutterView;
-import io.flutter.view.TextureRegistry;
 
 public class CameraPlugin implements MethodCallHandler {
 
@@ -49,17 +48,13 @@ public class CameraPlugin implements MethodCallHandler {
     String cameraName = call.argument("cameraName");
     String resolutionPreset = call.argument("resolutionPreset");
     boolean enableAudio = call.argument("enableAudio");
-    TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture = view.createSurfaceTexture();
-    DartMessenger dartMessenger =
-        new DartMessenger(registrar.messenger(), flutterSurfaceTexture.id());
-    camera =
-        new Camera(
-            registrar.activity(),
-            flutterSurfaceTexture,
-            dartMessenger,
-            cameraName,
-            resolutionPreset,
-            enableAudio);
+    camera = new Camera(registrar.activity(), view, cameraName, resolutionPreset, enableAudio);
+
+    EventChannel cameraEventChannel =
+        new EventChannel(
+            registrar.messenger(),
+            "flutter.io/cameraPlugin/cameraEvents" + camera.getFlutterTexture().id());
+    camera.setupCameraEventChannel(cameraEventChannel);
 
     camera.open(result);
   }
@@ -147,6 +142,26 @@ public class CameraPlugin implements MethodCallHandler {
           }
           break;
         }
+      case "turnOn":
+      {
+        try {
+          camera.setFlash(true);
+          result.success(null);
+        } catch (Exception e) {
+          handleException(e, result);
+        }
+        break;
+      }
+      case "turnOff":
+      {
+        try {
+          camera.setFlash(false);
+          result.success(null);
+        } catch (Exception e) {
+          handleException(e, result);
+        }
+        break;
+      }
       case "dispose":
         {
           if (camera != null) {

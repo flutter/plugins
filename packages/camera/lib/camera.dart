@@ -162,12 +162,12 @@ class CameraValue {
 
   const CameraValue.uninitialized()
       : this(
-          isInitialized: false,
-          isRecordingVideo: false,
-          isTakingPicture: false,
-          isStreamingImages: false,
-          isRecordingPaused: false,
-        );
+    isInitialized: false,
+    isRecordingVideo: false,
+    isTakingPicture: false,
+    isStreamingImages: false,
+    isRecordingPaused: false,
+  );
 
   /// True after [CameraController.initialize] has completed successfully.
   final bool isInitialized;
@@ -240,11 +240,10 @@ class CameraValue {
 ///
 /// To show the camera preview on the screen use a [CameraPreview] widget.
 class CameraController extends ValueNotifier<CameraValue> {
-  CameraController(
-    this.description,
-    this.resolutionPreset, {
-    this.enableAudio = true,
-  }) : super(const CameraValue.uninitialized());
+  CameraController(this.description,
+      this.resolutionPreset, {
+        this.enableAudio = true,
+      }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
   final ResolutionPreset resolutionPreset;
@@ -268,7 +267,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     try {
       _creatingCompleter = Completer<void>();
       final Map<String, dynamic> reply =
-          await _channel.invokeMapMethod<String, dynamic>(
+      await _channel.invokeMapMethod<String, dynamic>(
         'initialize',
         <String, dynamic>{
           'cameraName': description.name,
@@ -404,13 +403,13 @@ class CameraController extends ValueNotifier<CameraValue> {
       throw CameraException(e.code, e.message);
     }
     const EventChannel cameraEventChannel =
-        EventChannel('plugins.flutter.io/camera/imageStream');
+    EventChannel('plugins.flutter.io/camera/imageStream');
     _imageStreamSubscription =
         cameraEventChannel.receiveBroadcastStream().listen(
-      (dynamic imageData) {
-        onAvailable(CameraImage._fromPlatformData(imageData));
-      },
-    );
+              (dynamic imageData) {
+            onAvailable(CameraImage._fromPlatformData(imageData));
+          },
+        );
   }
 
   /// Stop streaming images from platform camera.
@@ -584,5 +583,9 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
       await _eventSubscription?.cancel();
     }
+  }
+
+  Future<void> setFlash(bool status) async {
+    await _channel.invokeMethod<void>(status ? 'turnOn' : 'turnOff');
   }
 }
