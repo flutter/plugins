@@ -1,25 +1,19 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
 package io.flutter.plugins.flutter_android_lifecycle;
 
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-/** FlutterAndroidLifecyclePlugin */
-public class FlutterAndroidLifecyclePlugin implements MethodCallHandler {
-  /** Plugin registration. */
+/**
+ * Plugin class that exists because the Flutter tool expects such a class to exist for every Android
+ * plugin.
+ *
+ * <p><strong>DO NOT USE THIS CLASS.</strong>
+ */
+public class FlutterAndroidLifecyclePlugin {
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_android_lifecycle");
-    channel.setMethodCallHandler(new FlutterAndroidLifecyclePlugin());
-  }
-
-  @Override
-  public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
-    } else {
-      result.notImplemented();
-    }
+    // no-op
   }
 }

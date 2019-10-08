@@ -1,3 +1,4 @@
-## 0.0.1
+## 1.0.0
 
-* TODO: Describe initial release.
+* Introduces a `FlutterLifecycleAdapter`, which can be used by other plugins to obtain a `Lifecycle`
+  reference from a `FlutterPluginBinding`.
