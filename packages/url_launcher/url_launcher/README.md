@@ -53,6 +53,16 @@ Common schemes supported by both iOS and Android:
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
 
+### Encoding URLs
+
+URLs should be safely encoded, espeically when including spaces or other special characters. We can do this using dart's `Uri` helper methods included in `dart:core`:
+```dart
+final String subject = 'Example Subject';
+final emailLaunchString = Uri.encodeFull('mailto:smith@example.org?subject=$subject');
+// ...
+launch(emailLaunchString);
+```
+
 ## Handling missing URL receivers
 
 A particular mobile device may not be able to receive all supported URL schemes.
