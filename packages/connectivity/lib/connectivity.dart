@@ -23,9 +23,7 @@ class Connectivity {
   // EventChannel because it is overridden. Forcing the class to be a singleton class can prevent
   // misusage of creating a second instance from a programmer.
   factory Connectivity() {
-    if (_singleton == null) {
-      _singleton = Connectivity._();
-    }
+    _singleton ??= Connectivity._();
     return _singleton;
   }
 
@@ -36,9 +34,8 @@ class Connectivity {
   Stream<ConnectivityResult> _onConnectivityChanged;
 
   @visibleForTesting
-  static const MethodChannel methodChannel = MethodChannel(
-    'plugins.flutter.io/connectivity',
-  );
+  static const MethodChannel methodChannel =
+      MethodChannel('plugins.flutter.io/connectivity');
 
   @visibleForTesting
   static const EventChannel eventChannel = EventChannel(
@@ -47,11 +44,9 @@ class Connectivity {
 
   /// Fires whenever the connectivity state changes.
   Stream<ConnectivityResult> get onConnectivityChanged {
-    if (_onConnectivityChanged == null) {
-      _onConnectivityChanged = eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => _parseConnectivityResult(event));
-    }
+    _onConnectivityChanged ??= eventChannel
+        .receiveBroadcastStream()
+        .map((dynamic event) => _parseConnectivityResult(event));
     return _onConnectivityChanged;
   }
 
@@ -86,14 +81,12 @@ class Connectivity {
   ///
   /// From Android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the BSSID.
-  Future<String> getWifiBSSID() async {
-    return await methodChannel.invokeMethod<String>('wifiBSSID');
-  }
+  Future<String> getWifiBSSID() async =>
+      await methodChannel.invokeMethod<String>('wifiBSSID');
 
   /// Obtains the IP address of the connected wifi network
-  Future<String> getWifiIP() async {
-    return await methodChannel.invokeMethod<String>('wifiIPAddress');
-  }
+  Future<String> getWifiIP() async =>
+      await methodChannel.invokeMethod<String>('wifiIPAddress');
 
   /// Request to authorize the location service (Only on iOS).
   ///
