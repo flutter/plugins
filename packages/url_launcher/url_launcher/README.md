@@ -57,7 +57,7 @@ More details can be found here for [iOS](https://developer.apple.com/library/con
 
 URLs should be safely encoded, espeically when including spaces or other special characters. We can do this using dart's `Uri` helper methods included in `dart:core`:
 ```dart
-final String subject = 'Example Subject';
+final subject = 'Example Subject';
 final emailLaunchString = Uri.encodeFull('mailto:smith@example.org?subject=$subject');
 // ...
 launch(emailLaunchString);
