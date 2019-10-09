@@ -9,6 +9,7 @@
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
       android:hardwareAccelerated="true"
       android:launchMode="singleTop"
+      android:exported="true"
       android:name=".EmbeddingV1Activity"
       android:theme="@style/LaunchTheme"
       android:windowSoftInputMode="adjustResize">
@@ -18,7 +19,6 @@
     </activity>
     <activity
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
-      android:exported="true"
       android:hardwareAccelerated="true"
       android:launchMode="singleTop"
       android:name=".MainActivity"

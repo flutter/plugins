@@ -6,7 +6,6 @@ package io.flutter.plugins.camera;
 
 import android.app.Activity;
 import android.os.Build;
-import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -18,9 +17,13 @@ import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
 import io.flutter.view.TextureRegistry;
 
 /**
- * Plugin implementation that uses the {@code io.flutter.embedding} package.
+ * Platform implementation of the camera_plugin.
  *
  * <p>Instantiate this in an add to app scenario to gracefully handle activity and context changes.
+ * See {@code io.flutter.plugins.camera.MainActivity} for an example.
+ *
+ * <p>Call {@link #registerWith(Registrar)} to register an implementation of this that uses the
+ * stable {@code io.flutter.plugin.common} package.
  */
 public final class CameraPlugin implements FlutterPlugin, ActivityAware {
 
@@ -43,15 +46,8 @@ public final class CameraPlugin implements FlutterPlugin, ActivityAware {
    * won't react to changes in activity or context, unlike {@link CameraPlugin}.
    */
   public static void registerWith(Registrar registrar) {
-    if (registrar.activity() == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      // When a background flutter view tries to register the plugin, the registrar has no activity.
-      // We stop the registration process as this plugin is foreground only. Also, if the sdk is
-      // less than 21 (min sdk for Camera2) we don't register the plugin.
-      return;
-    }
-
     CameraPlugin plugin = new CameraPlugin();
-    plugin.startListening(
+    plugin.maybeStartListening(
         registrar.activity(),
         registrar.messenger(),
         registrar::addRequestPermissionsResultListener,
@@ -70,7 +66,7 @@ public final class CameraPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
-    startListening(
+    maybeStartListening(
         binding.getActivity(),
         flutterPluginBinding.getFlutterEngine().getDartExecutor(),
         binding::addRequestPermissionsResultListener,
@@ -80,7 +76,7 @@ public final class CameraPlugin implements FlutterPlugin, ActivityAware {
   @Override
   public void onDetachedFromActivity() {
     if (methodCallHandler == null) {
-      Log.wtf(TAG, "Detached before initialzed.");
+      // Could be on too low of an SDK to have started listening originally.
       return;
     }
 
@@ -98,11 +94,16 @@ public final class CameraPlugin implements FlutterPlugin, ActivityAware {
     onDetachedFromActivity();
   }
 
-  void startListening(
+  private void maybeStartListening(
       Activity activity,
       BinaryMessenger messenger,
       PermissionsRegistry permissionsRegistry,
       TextureRegistry textureRegistry) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      // If the sdk is less than 21 (min sdk for Camera2) we don't register the plugin.
+      return;
+    }
+
     methodCallHandler =
         new MethodCallHandlerImpl(
             activity, messenger, new CameraPermissions(), permissionsRegistry, textureRegistry);
