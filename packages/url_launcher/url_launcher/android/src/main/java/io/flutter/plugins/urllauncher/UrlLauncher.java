@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Browser;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /** Launches components for URLs. */
 class UrlLauncher {

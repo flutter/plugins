@@ -1,3 +1,10 @@
+## 5.2.0
+
+* Migrate the plugin to use the V2 Android engine embedding. This shouldn't
+  affect existing functionality. Plugin authors who use the V2 embedding can now
+  instantiate the plugin and expect that it correctly responds to app lifecycle
+  changes.
+
 ## 5.1.7
 
 * Define clang module for iOS.
