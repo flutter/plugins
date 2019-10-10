@@ -51,7 +51,7 @@ android {
         }
     }
 
-    def exoPlayerVersion = '2.10.3'
+    def exoPlayerVersion = '2.10.5'
     dependencies {
         implementation "com.google.android.exoplayer:exoplayer-core:$exoPlayerVersion"
         implementation "com.google.android.exoplayer:exoplayer-hls:$exoPlayerVersion"
