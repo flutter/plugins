@@ -5,6 +5,7 @@
 package io.flutter.embedding.engine.plugins.lifecycle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import io.flutter.Log;
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +14,7 @@ import java.lang.reflect.Method;
 public class FlutterLifecycleAdapter {
   private static final String TAG = "FlutterLifecycleAdapter";
 
-  @NonNull private Lifecycle lifecycle = null;
+  @Nullable private Lifecycle lifecycle = null;
 
   public FlutterLifecycleAdapter(@NonNull Object reference) {
     try {
@@ -39,7 +40,14 @@ public class FlutterLifecycleAdapter {
     }
   }
 
-  @NonNull
+  /**
+   * Returns the lifecycle object.
+   *
+   * Returns null if the Flutter engine version does not include the
+   * lifecycle extraction code. (this probably means the Flutter engine version
+   * is too old).
+   */
+  @Nullable
   public Lifecycle getLifecycle() {
     return lifecycle;
   }

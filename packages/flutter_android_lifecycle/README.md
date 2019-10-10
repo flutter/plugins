@@ -5,7 +5,9 @@
 A Flutter plugin for Android to allow other Flutter plugins to access an Android `Lifecycle` object
 in the plugin's binding.
 
-*Note*: This plugin is still under development, and some APIs might not be available yet.
+The purpose of having this plugin instead of exposing an Android `Lifecycle` object in the engine's
+Android embedder plugins API is to force plugins to have a pub constraint that signifies the
+major version of the Android `Lifecycle` API they expect.
 
 ## Installation
 

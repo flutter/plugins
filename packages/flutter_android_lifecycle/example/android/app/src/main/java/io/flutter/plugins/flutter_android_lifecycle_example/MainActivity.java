@@ -29,6 +29,7 @@ public class MainActivity extends FlutterActivity {
 
       if (lifecycle == null) {
         Log.d(TAG, "Couldn't obtained Lifecycle!");
+        return;
         // TODO(amirh): make this throw once the lifecycle API is available on stable.
         // throw new RuntimeException(
         //     "The FlutterLifecycleAdapter did not correctly provide a Lifecycle instance. Source reference: "

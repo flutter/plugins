@@ -34,9 +34,5 @@ android {
 
     dependencies {
         implementation "androidx.annotation:annotation:1.1.0"
-        implementation "androidx.lifecycle:lifecycle-runtime:2.0.0-rc01"
-        api 'android.arch.lifecycle:runtime:1.1.1'
-        api 'android.arch.lifecycle:common:1.1.1'
-        api 'android.arch.lifecycle:common-java8:1.1.1'
     }
 }
