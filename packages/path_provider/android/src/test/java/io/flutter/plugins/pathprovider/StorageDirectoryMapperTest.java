@@ -37,5 +37,4 @@ public class StorageDirectoryMapperTest {
       assertEquals("Unknown index: " + 10, e.getMessage());
     }
   }
-
 }
