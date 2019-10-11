@@ -6,6 +6,7 @@ package io.flutter.plugins.pathprovider;
 
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import androidx.annotation.NonNull;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -32,7 +33,7 @@ public class PathProviderPlugin implements MethodCallHandler {
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(MethodCall call, @NonNull Result result) {
     switch (call.method) {
       case "getTemporaryDirectory":
         result.success(getPathProviderTemporaryDirectory());
@@ -47,8 +48,9 @@ public class PathProviderPlugin implements MethodCallHandler {
         result.success(getPathProviderExternalCacheDirectories());
         break;
       case "getExternalStorageDirectories":
-        final String type = call.argument("type");
-        result.success(getPathProviderExternalStorageDirectories(type));
+        final Integer type = call.argument("type");
+        final String directoryName = StorageDirectoryMapper.androidType(type);
+        result.success(getPathProviderExternalStorageDirectories(directoryName));
         break;
       case "getApplicationSupportDirectory":
         result.success(getApplicationSupportDirectory());
