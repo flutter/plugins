@@ -32,7 +32,7 @@ public class SensorsPlugin implements FlutterPlugin {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    Context context = binding.getApplicationContext();
+    final Context context = binding.getApplicationContext();
     setupEventChannels(context, binding.getFlutterEngine().getDartExecutor());
   }
 
