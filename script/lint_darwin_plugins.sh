@@ -51,7 +51,6 @@ function lint_packages() {
     'package_info'
     'path_provider'
     'quick_actions'
-    'sensors'
     'share'
     'shared_preferences'
     'url_launcher'
