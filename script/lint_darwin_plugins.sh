@@ -57,7 +57,6 @@ function lint_packages() {
     'google_maps_flutter'
     'google_sign_in'
     'path_provider'
-    'quick_actions'
     'share'
     'video_player'
     'webview_flutter'
