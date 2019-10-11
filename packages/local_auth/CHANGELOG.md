@@ -1,6 +1,7 @@
 ## 0.6.0+2
 
 * Update and migrate iOS example project.
+* Define clang module for iOS.
 
 ## 0.6.0+1
 
