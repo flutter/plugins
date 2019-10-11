@@ -56,7 +56,6 @@ function lint_packages() {
     'battery'
     'google_maps_flutter'
     'google_sign_in'
-    'package_info'
     'path_provider'
     'quick_actions'
     'share'
