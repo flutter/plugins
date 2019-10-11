@@ -4,9 +4,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 
-/**
- * Helps to map the Dart `StorageDirectory` enum to a Android system constant.
- */
+/** Helps to map the Dart `StorageDirectory` enum to a Android system constant. */
 class StorageDirectoryMapper {
 
   /**
@@ -14,7 +12,7 @@ class StorageDirectoryMapper {
    *
    * @return The correct Android Environment constant or null, if the index is null.
    * @throws IllegalArgumentException If `dartIndex` is not null but also not matches any known
-   * index.
+   *     index.
    */
   static String androidType(Integer dartIndex) throws IllegalArgumentException {
     if (dartIndex == null) {
