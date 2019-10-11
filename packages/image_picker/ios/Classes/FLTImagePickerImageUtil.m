@@ -68,7 +68,6 @@
       }
     }
   }
-  NSLog(@"orientation %@", @(image.imageOrientation));
   // Scaling the image always rotate itself based on the current imageOrientation of the original
   // Image. Set to orientationUp for the orignal image before scaling, so the scaled image doesn't
   // mess up with the pixels.
