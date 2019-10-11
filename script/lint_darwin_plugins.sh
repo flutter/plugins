@@ -13,8 +13,16 @@ function lint_package() {
   local package_dir="${REPO_DIR}/packages/$package_name/"
   local failure_count=0
 
-  for podspec in "$(find "${package_dir}" -name '*\.podspec')"; do
-    echo "Linting $package_name.podspec"
+  local skipped_podspecs=(
+    'url_launcher_web.podspec'
+  )
+  find "${package_dir}" -type f -name '*\.podspec' | while read podspec; do
+    # These podspecs are temporary multi-platform adoption dummy files.
+    if [[ "${skipped_podspecs[*]}" =~ "$(basename ${podspec})" ]]; then
+      continue
+    fi
+
+    echo "Linting $(basename ${podspec})"
 
     # Build as frameworks.
     # This will also run any tests set up as a test_spec. See https://blog.cocoapods.org/CocoaPods-1.3.0.
@@ -54,7 +62,6 @@ function lint_packages() {
     'sensors'
     'share'
     'shared_preferences'
-    'url_launcher'
     'video_player'
     'webview_flutter'
   )
