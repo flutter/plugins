@@ -63,7 +63,7 @@ Future<Directory> getApplicationSupportDirectory() async {
 /// backed up, and not visible to the user, such as sqlite.db.
 ///
 /// On Android, this function throws an [UnsupportedError] as no equivalent
-/// folder exists.
+/// path exists.
 Future<Directory> getLibraryDirectory() async {
   if (_platform.isAndroid) {
     throw UnsupportedError('Functionality not available on Android');
