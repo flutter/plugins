@@ -1,3 +1,7 @@
+## 5.1.7
+
+* Define clang module for iOS.
+
 ## 5.1.6
 
 * Fixes bug where androidx app won't build with this plugin by enabling androidx and jetifier in the android `gradle.properties`.
