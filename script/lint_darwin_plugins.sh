@@ -61,7 +61,6 @@ function lint_packages() {
     'quick_actions'
     'sensors'
     'share'
-    'shared_preferences'
     'video_player'
     'webview_flutter'
   )
