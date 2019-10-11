@@ -1,3 +1,7 @@
+## 0.2.0+1
+
+* Updated README.
+
 ## 0.2.0
 
 * Renamed package from instrumentation_adapter to e2e.
