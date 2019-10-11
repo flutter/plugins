@@ -18,7 +18,7 @@ public class SharedPreferencesPlugin implements FlutterPlugin {
   private MethodChannel channel;
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
-    SharedPreferencesPlugin plugin = new SharedPreferencesPlugin();
+    final SharedPreferencesPlugin plugin = new SharedPreferencesPlugin();
     plugin.setupChannel(registrar.messenger(), registrar.context());
   }
 
