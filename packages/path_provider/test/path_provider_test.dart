@@ -137,24 +137,8 @@ void main() {
     }
   });
 
-  const List<List<dynamic>> _mappings = <List<dynamic>>[
-    <dynamic>[null, null],
-    <dynamic>[StorageDirectory.music, 'Music'],
-    <dynamic>[StorageDirectory.podcasts, 'Podcasts'],
-    <dynamic>[StorageDirectory.ringtones, 'Ringtones'],
-    <dynamic>[StorageDirectory.alarms, 'Alarms'],
-    <dynamic>[StorageDirectory.notifications, 'Notifications'],
-    <dynamic>[StorageDirectory.pictures, 'Pictures'],
-    <dynamic>[StorageDirectory.movies, 'Movies'],
-    <dynamic>[StorageDirectory.downloads, 'Downloads'],
-    <dynamic>[StorageDirectory.dcim, 'DCIM'],
-    <dynamic>[StorageDirectory.documents, 'Documents'],
-  ];
-
-  for (List<dynamic> mapping in _mappings) {
-    final StorageDirectory type = mapping[0];
-    final String androidDirectory = mapping[1];
-
+  for (StorageDirectory type
+      in StorageDirectory.values + <StorageDirectory>[null]) {
     test('getExternalStorageDirectories test (type: $type)', () async {
       response = <String>[];
       final List<Directory> directories =
@@ -164,7 +148,7 @@ void main() {
         <Matcher>[
           isMethodCall(
             'getExternalStorageDirectories',
-            arguments: <String, String>{'type': androidDirectory},
+            arguments: <String, dynamic>{'type': type?.index},
           )
         ],
       );

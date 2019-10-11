@@ -137,7 +137,7 @@ Future<List<Directory>> getExternalCacheDirectories() async {
   return paths.map((String path) => Directory(path)).toList();
 }
 
-/// Shadows directory values from Androids `android.os.Environment` class.
+/// Corresponds to constants defined in Androids `android.os.Environment` class.
 ///
 /// https://developer.android.com/reference/android/os/Environment.html#fields_1
 enum StorageDirectory {
@@ -175,39 +175,8 @@ Future<List<Directory>> getExternalStorageDirectories({
   }
   final List<String> paths = await _channel.invokeListMethod<String>(
     'getExternalStorageDirectories',
-    <String, String>{"type": _mapStorageDirectory(type)},
+    <String, dynamic>{'type': type?.index},
   );
 
   return paths.map((String path) => Directory(path)).toList();
-}
-
-String _mapStorageDirectory(StorageDirectory directory) {
-  if (directory == null) {
-    return null;
-  }
-
-  switch (directory) {
-    case StorageDirectory.music:
-      return 'Music';
-    case StorageDirectory.podcasts:
-      return 'Podcasts';
-    case StorageDirectory.ringtones:
-      return 'Ringtones';
-    case StorageDirectory.alarms:
-      return 'Alarms';
-    case StorageDirectory.notifications:
-      return 'Notifications';
-    case StorageDirectory.pictures:
-      return 'Pictures';
-    case StorageDirectory.movies:
-      return 'Movies';
-    case StorageDirectory.downloads:
-      return 'Downloads';
-    case StorageDirectory.dcim:
-      return 'DCIM';
-    case StorageDirectory.documents:
-      return 'Documents';
-    default:
-      throw ArgumentError('Unknown storage directory: $directory');
-  }
 }
