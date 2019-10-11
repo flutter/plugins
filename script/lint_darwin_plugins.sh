@@ -59,7 +59,6 @@ function lint_packages() {
     'package_info'
     'path_provider'
     'quick_actions'
-    'sensors'
     'share'
     'video_player'
     'webview_flutter'
