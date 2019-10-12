@@ -207,13 +207,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         };
         break;
       case DataSourceType.network:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource};
-        break;
-      case DataSourceType.file:
         dataSourceDescription = <String, dynamic>{
           'uri': dataSource,
           'formatHint': _videoFormatStringMap[formatHint]
         };
+        break;
+      case DataSourceType.file:
+        dataSourceDescription = <String, dynamic>{'uri': dataSource};
+        break;
     }
     final Map<String, dynamic> response =
         await _channel.invokeMapMethod<String, dynamic>(

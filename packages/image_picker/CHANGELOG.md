@@ -1,6 +1,14 @@
-## 0.6.1+5
+## 0.6.1+7
 
 * iOS: Fix image orientation problems when scaling images.
+
+## 0.6.1+6
+
+* Define clang module for iOS
+
+## 0.6.1+5
+
+* Update and migrate iOS example project.
 
 ## 0.6.1+4
 
