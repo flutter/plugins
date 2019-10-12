@@ -77,6 +77,8 @@
                                         orientation:UIImageOrientationUp];
 
   // Swap width and height when source image orientation is left/right
+  // In order to avoid the problem of error width/height when image
+  // orientation in these enums.
   if ([image imageOrientation] == UIImageOrientationLeft ||
       [image imageOrientation] == UIImageOrientationRight ||
       [image imageOrientation] == UIImageOrientationLeftMirrored ||
