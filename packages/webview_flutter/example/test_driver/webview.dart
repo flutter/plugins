@@ -494,6 +494,72 @@ void main() {
     final String title = await controller.getTitle();
     expect(title, 'Some title');
   });
+
+  test('on scroll listener', () async {
+    final Completer<int> receivedXCompletor = Completer<int>();
+    final Completer<int> receivedYCompletor = Completer<int>();
+    final Completer<void> pageFinishedLoadCompleter =
+        Completer<WebViewController>();
+    final WebViewScrollController webViewScrollController =
+        WebViewScrollController();
+    final Function scrollListener = (int x, int y) {
+      receivedXCompletor.complete(x);
+      receivedYCompletor.complete(y);
+    };
+    webViewScrollController.addListener(scrollListener);
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          scrollController: webViewScrollController,
+          key: GlobalKey(),
+          // This is the data URL for: '<!DOCTYPE html>'
+          initialUrl: 'https://flutter.dev/',
+          onPageFinished: (String url) {
+            pageFinishedLoadCompleter.complete();
+          },
+        ),
+      ),
+    );
+    await pageFinishedLoadCompleter.future;
+    webViewScrollController.scrollTo(10, 20);
+    final int newX = await receivedXCompletor.future;
+    final int newY = await receivedYCompletor.future;
+    expect(newX, 10);
+    expect(newY, 20);
+  });
+
+  test('initial scroll programmatically', () async {
+    final Completer<int> receivedXCompletor = Completer<int>();
+    final Completer<int> receivedYCompletor = Completer<int>();
+    final Completer<void> pageFinishedLoadCompleter =
+        Completer<WebViewController>();
+    final WebViewScrollController webViewScrollController =
+        WebViewScrollController(initialOffsetX: 25, initialOffsetY: 35);
+    final Function scrollListener = (int x, int y) {
+      receivedXCompletor.complete(x);
+      receivedYCompletor.complete(y);
+    };
+    webViewScrollController.addListener(scrollListener);
+    await pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          scrollController: webViewScrollController,
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          onPageFinished: (String url) {
+            pageFinishedLoadCompleter.complete();
+          },
+        ),
+      ),
+    );
+    await pageFinishedLoadCompleter.future;
+    final int newX = await receivedXCompletor.future;
+    final int newY = await receivedYCompletor.future;
+    expect(newX, 25);
+    expect(newY, 35);
+  });
 }
 
 Future<void> pumpWidget(Widget widget) {

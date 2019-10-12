@@ -26,10 +26,15 @@ final class InputAwareWebView extends WebView {
 
   private View threadedInputConnectionProxyView;
   private ThreadedInputConnectionProxyAdapterView proxyAdapterView;
+  private OnScrollChangeListener onScrollChangeListener;
 
   InputAwareWebView(Context context, View containerView) {
     super(context);
     this.containerView = containerView;
+  }
+
+  public void setOnScrollChangeListener(OnScrollChangeListener onScrollChangeListener) {
+    this.onScrollChangeListener = onScrollChangeListener;
   }
 
   /**
@@ -154,5 +159,17 @@ final class InputAwareWebView extends WebView {
             imm.isActive(containerView);
           }
         });
+  }
+
+  @Override
+  protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+    super.onScrollChanged(l, t, oldl, oldt);
+    if (onScrollChangeListener != null) {
+      onScrollChangeListener.onScrollChange(this, l, t);
+    }
+  }
+
+  public interface OnScrollChangeListener {
+    void onScrollChange(WebView v, int offsetX, int offsetY);
   }
 }

@@ -4,6 +4,8 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -32,6 +34,8 @@ class WebViewExample extends StatefulWidget {
 class _WebViewExampleState extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
+  final WebViewScrollController _webViewScrollController =
+      WebViewScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -41,35 +45,35 @@ class _WebViewExampleState extends State<WebViewExample> {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
           NavigationControls(_controller.future),
-          SampleMenu(_controller.future),
+          SampleMenu(_controller.future, _webViewScrollController),
         ],
       ),
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
-          initialUrl: 'https://flutter.dev',
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
-            _controller.complete(webViewController);
-          },
-          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-          // ignore: prefer_collection_literals
-          javascriptChannels: <JavascriptChannel>[
-            _toasterJavascriptChannel(context),
-          ].toSet(),
-          navigationDelegate: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to $request}');
-              return NavigationDecision.prevent;
-            }
-            print('allowing navigation to $request');
-            return NavigationDecision.navigate;
-          },
-          onPageFinished: (String url) {
-            print('Page finished loading: $url');
-          },
-        );
+            initialUrl: 'https://flutter.dev',
+            javascriptMode: JavascriptMode.unrestricted,
+            onWebViewCreated: (WebViewController webViewController) {
+              _controller.complete(webViewController);
+            },
+            // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+            // ignore: prefer_collection_literals
+            javascriptChannels: <JavascriptChannel>[
+              _toasterJavascriptChannel(context),
+            ].toSet(),
+            navigationDelegate: (NavigationRequest request) {
+              if (request.url.startsWith('https://www.youtube.com/')) {
+                print('blocking navigation to $request}');
+                return NavigationDecision.prevent;
+              }
+              print('allowing navigation to $request');
+              return NavigationDecision.navigate;
+            },
+            onPageFinished: (String url) {
+              print('Page finished loading: $url');
+            },
+            scrollController: _webViewScrollController);
       }),
       floatingActionButton: favoriteButton(),
     );
@@ -114,12 +118,14 @@ enum MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  scrollToRandomPosition
 }
 
 class SampleMenu extends StatelessWidget {
-  SampleMenu(this.controller);
+  SampleMenu(this.controller, this.scrollController);
 
   final Future<WebViewController> controller;
+  final WebViewScrollController scrollController;
   final CookieManager cookieManager = CookieManager();
 
   @override
@@ -151,6 +157,9 @@ class SampleMenu extends StatelessWidget {
                 break;
               case MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data, context);
+                break;
+              case MenuOptions.scrollToRandomPosition:
+                _scrollToRandomPosition(scrollController);
                 break;
             }
           },
@@ -184,6 +193,9 @@ class SampleMenu extends StatelessWidget {
               value: MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
             ),
+            const PopupMenuItem<MenuOptions>(
+                value: MenuOptions.scrollToRandomPosition,
+                child: Text('Scroll to random position')),
           ],
         );
       },
@@ -251,6 +263,11 @@ class SampleMenu extends StatelessWidget {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  void _scrollToRandomPosition(WebViewScrollController scrollController) {
+    final Random random = Random(DateTime.now().millisecondsSinceEpoch);
+    scrollController.scrollTo(0, random.nextInt(2000));
   }
 
   Widget _getCookieList(String cookies) {

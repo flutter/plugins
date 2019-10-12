@@ -38,6 +38,10 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       case 'onPageFinished':
         _platformCallbacksHandler.onPageFinished(call.arguments['url']);
         return null;
+      case 'onScrollPositionChanged':
+        _platformCallbacksHandler.onScrollPositionChange(
+            call.arguments['offsetX'], call.arguments['offsetY']);
+        return true;
     }
     throw MissingPluginException(
         '${call.method} was invoked but has no handler');
@@ -52,6 +56,15 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     return _channel.invokeMethod<void>('loadUrl', <String, dynamic>{
       'url': url,
       'headers': headers,
+    });
+  }
+
+  @override
+  Future<void> scrollTo(int offsetX, int offsetY) {
+    assert(offsetX != null && offsetY != null);
+    return _channel.invokeMethod<void>('scrollTo', <String, int>{
+      'offsetX': offsetX,
+      'offsetY': offsetY,
     });
   }
 
@@ -148,6 +161,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'javascriptChannelNames': creationParams.javascriptChannelNames.toList(),
       'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
+      'initialScrollOffsetX': creationParams.initialScrollOffsetX,
+      'initialScrollOffsetY': creationParams.initialScrollOffsetY
     };
   }
 }

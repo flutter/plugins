@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.webkit.WebStorage;
+import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -19,6 +20,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +60,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
       registerJavaScriptChannelNames((List<String>) params.get(JS_CHANNEL_NAMES_FIELD));
     }
-
+    attachOnScrollListener();
     updateAutoMediaPlaybackPolicy((Integer) params.get("autoMediaPlaybackPolicy"));
     if (params.containsKey("userAgent")) {
       String userAgent = (String) params.get("userAgent");
@@ -136,6 +138,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         break;
       case "getTitle":
         getTitle(result);
+        break;
+      case "scrollTo":
+        scrollTo(methodCall, result);
         break;
       default:
         result.notImplemented();
@@ -233,6 +238,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(webView.getTitle());
   }
 
+  @SuppressWarnings({"unchecked", "ConstantConditions"})
+  private void scrollTo(MethodCall methodCall, Result result) {
+    Map<String, Integer> offsets = (Map<String, Integer>) methodCall.arguments;
+    webView.scrollTo(offsets.get("offsetX"), offsets.get("offsetY"));
+    result.success(null);
+  }
+
   private void applySettings(Map<String, Object> settings) {
     for (String key : settings.keySet()) {
       switch (key) {
@@ -290,6 +302,19 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void updateUserAgent(String userAgent) {
     webView.getSettings().setUserAgentString(userAgent);
+  }
+
+  private void attachOnScrollListener() {
+    webView.setOnScrollChangeListener(
+        new InputAwareWebView.OnScrollChangeListener() {
+          @Override
+          public void onScrollChange(WebView v, int offsetX, int offsetY) {
+            Map<String, Object> args = new HashMap<>();
+            args.put("offsetX", offsetX);
+            args.put("offsetY", offsetY);
+            methodChannel.invokeMethod("onScrollPositionChanged", args);
+          }
+        });
   }
 
   @Override

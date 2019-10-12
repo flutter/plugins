@@ -1,3 +1,7 @@
+## 0.3.15
+
+* Allow user to listen to scrolling event and perform a programmatically scroll.
+
 ## 0.3.14+1
 
 * Allow underscores anywhere for Javascript Channel name.
