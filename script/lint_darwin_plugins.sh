@@ -56,7 +56,6 @@ function lint_packages() {
     'battery'
     'google_maps_flutter'
     'share'
-    'webview_flutter'
   )
 
   local failure_count=0
