@@ -1,4 +1,5 @@
 ## 0.6.1+5
+
 * iOS: Fix image orientation problems when scaling images.
 
 ## 0.6.1+4
