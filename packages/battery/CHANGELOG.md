@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Support the v2 Android embedder.
+
 ## 0.3.0+6
 
 * Define clang module for iOS.
