@@ -1,3 +1,11 @@
+## 0.5.5+1
+
+* Fix event type check
+
+## 0.5.5
+
+* Define clang modules for iOS.
+
 ## 0.5.4+3
 
 * Update and migrate iOS example project.

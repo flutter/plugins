@@ -1,3 +1,16 @@
+## 0.5.21+7
+
+* Create a clone of cached elements in GoogleMap (Polyline, Polygon, etc.) to detect modifications
+  if these objects are mutated instead of modified by copy.
+
+## 0.5.21+6
+
+* Override a default method to work around flutter/flutter#40126.
+
+## 0.5.21+5
+
+* Update and migrate iOS example project.
+
 ## 0.5.21+4
 
 * Support projection methods to translate between screen and latlng coordinates.
