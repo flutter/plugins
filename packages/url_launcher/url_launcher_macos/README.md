@@ -4,7 +4,7 @@ The macOS implementation of [`url_launcher`][1].
 
 ## Usage
 
-To use this plugin in your Flutter Web app, simply add it as a dependency in
+To use this plugin in your macOS Flutter app, simply add it as a dependency in
 your pubspec using a `git` dependency. This is only temporary: in the future
 we hope to make this package an "endorsed" implementation of `url_launcher`,
 so that it is automatically included in your macOS Flutter app when you depend
