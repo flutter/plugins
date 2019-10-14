@@ -29,12 +29,17 @@ public class SharedPreferencesPlugin implements FlutterPlugin {
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPlugin.FlutterPluginBinding binding) {
-    channel.setMethodCallHandler(null);
+    teardownChannel();
   }
 
   private void setupChannel(BinaryMessenger messenger, Context context) {
     channel = new MethodChannel(messenger, CHANNEL_NAME);
     MethodCallHandlerImpl handler = new MethodCallHandlerImpl(context);
     channel.setMethodCallHandler(handler);
+  }
+
+  private void teardownChannel() {
+    channel.setMethodCallHandler(null);
+    channel = null;
   }
 }
