@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.share;
 
+import android.app.Activity;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -21,12 +22,12 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
 
   public static void registerWith(Registrar registrar) {
     SharePlugin plugin = new SharePlugin();
-    plugin.setUpChannel(registrar.messenger());
+    plugin.setUpChannel(registrar.activity(), registrar.messenger());
   }
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    setUpChannel(binding.getFlutterEngine().getDartExecutor());
+    setUpChannel(null, binding.getFlutterEngine().getDartExecutor());
   }
 
   @Override
@@ -56,9 +57,9 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
     onDetachedFromActivity();
   }
 
-  private void setUpChannel(BinaryMessenger messenger) {
+  private void setUpChannel(Activity activity, BinaryMessenger messenger) {
     methodChannel = new MethodChannel(messenger, CHANNEL);
-    share = new Share();
+    share = new Share(activity);
     handler = new MethodCallHandler(share);
     methodChannel.setMethodCallHandler(handler);
   }

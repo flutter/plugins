@@ -14,6 +14,15 @@ class Share {
   private Activity activity;
 
   /**
+   * Constructs a Share object. The {@code activity} is used to start the share intent. It might be
+   * null when constructing the {@link Share} object and set to non-null when an activity is
+   * available using {@link #setActivity(Activity)}.
+   */
+  Share(@Nullable Activity activity) {
+    this.activity = activity;
+  }
+
+  /**
    * Sets the activity when an activity is available. When the activity becomes unavailable, use
    * this method to set it to null.
    */
