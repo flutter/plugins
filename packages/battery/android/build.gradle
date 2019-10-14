@@ -46,6 +46,7 @@ android {
     }
 }
 
+// TODO(mklim): Remove this hack once androidx.lifecycle is included on stable. https://github.com/flutter/flutter/issues/42348
 afterEvaluate {
     def containsEmbeddingDependencies = false
     for (def configuration : configurations.all) {
