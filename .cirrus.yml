@@ -9,7 +9,8 @@ task:
     - flutter upgrade
     - git fetch origin master
   activate_script:
-    - git clone git@github.com:collinjackson/plugin_tools.git
+    # Remove before landing
+    - git clone https://github.com/collinjackson/plugin_tools.git
     - pub global activate flutter plugin_tools -s path
   matrix:
     - name: publishable
