@@ -19,8 +19,8 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
   private static final String CHANNEL_ID = "plugins.flutter.io/quick_actions";
 
-  MethodChannel channel;
-  MethodCallHandlerImpl handler;
+  private MethodChannel channel;
+  private MethodCallHandlerImpl handler;
 
   /**
    * Plugin registration.
@@ -40,8 +40,7 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onDetachedFromEngine(FlutterPluginBinding binding) {
-    channel.setMethodCallHandler(null);
-    handler = null;
+    teardownChannel();
   }
 
   @Override
@@ -69,5 +68,11 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
     channel = new MethodChannel(messenger, CHANNEL_ID);
     handler = new MethodCallHandlerImpl(context, activity);
     channel.setMethodCallHandler(handler);
+  }
+
+  private void teardownChannel() {
+    channel.setMethodCallHandler(null);
+    channel = null;
+    handler = null;
   }
 }
