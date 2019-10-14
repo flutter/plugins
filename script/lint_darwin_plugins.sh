@@ -13,31 +13,52 @@ function lint_package() {
   local package_dir="${REPO_DIR}/packages/$package_name/"
   local failure_count=0
 
+  # These podspecs are temporary multi-platform adoption dummy files.
   local skipped_podspecs=(
-    'url_launcher_web.podspec'
+    "url_launcher_web.podspec"
   )
-  find "${package_dir}" -type f -name '*\.podspec' | while read podspec; do
-    # These podspecs are temporary multi-platform adoption dummy files.
-    if [[ "${skipped_podspecs[*]}" =~ "$(basename ${podspec})" ]]; then
+  
+  # TODO: These packages have analyzer warnings. Remove plugins from this list as issues are fixed.
+  local skip_analysis_packages=(
+    "camera.podspec" # https://github.com/flutter/flutter/issues/42673
+    "image_picker.podspec" # https://github.com/flutter/flutter/issues/42678
+    "in_app_purchase.podspec" # https://github.com/flutter/flutter/issues/42679
+  )
+  find "${package_dir}" -type f -name "*\.podspec" | while read podspec; do
+    local podspecBasename=$(basename "${podspec}")
+    if [[ "${skipped_podspecs[*]}" =~ "${podspecBasename}" ]]; then
       continue
     fi
 
-    echo "Linting $(basename ${podspec})"
+    # TODO: Remove --allow-warnings flag https://github.com/flutter/flutter/issues/41444
+    local lint_args=(
+      lib
+      lint
+      "${podspec}"
+      --allow-warnings
+      --fail-fast
+      --silent
+    )
+    if [[ ! "${skip_analysis_packages[*]}" =~ "${podspecBasename}" ]]; then
+      lint_args+=(--analyze)
+      echo "Linting and analyzing ${podspecBasename}"
+    else
+      echo "Linting ${podspecBasename}"
+    fi
 
     # Build as frameworks.
     # This will also run any tests set up as a test_spec. See https://blog.cocoapods.org/CocoaPods-1.3.0.
-    # TODO: Add --analyze flag https://github.com/flutter/flutter/issues/41443
-    # TODO: Remove --allow-warnings flag https://github.com/flutter/flutter/issues/41444
-    pod lib lint "${podspec}" --allow-warnings --fail-fast --silent
+    pod "${lint_args[@]}"
     if [[ "$?" -ne 0 ]]; then
-      error "Package ${package_name} has framework issues. Run \"pod lib lint $podspec\" to inspect."
+      error "Package ${package_name} has framework issues. Run \"pod lib lint ${podspec} --analyze\" to inspect."
       failure_count+=1
     fi
 
     # Build as libraries.
-    pod lib lint "${podspec}" --allow-warnings --use-libraries --fail-fast --silent
+    lint_args+=(--use-libraries)
+    pod "${lint_args[@]}"
     if [[ "$?" -ne 0 ]]; then
-      error "Package ${package_name} has library issues. Run \"pod lib lint $podspec --use-libraries\" to inspect."
+      error "Package ${package_name} has library issues. Run \"pod lib lint ${podspec} --use-libraries --analyze\" to inspect."
       failure_count+=1
     fi
   done
