@@ -55,7 +55,6 @@ function lint_packages() {
   local skipped_packages=(
     'battery'
     'google_maps_flutter'
-    'google_sign_in'
     'share'
     'webview_flutter'
   )
