@@ -9,7 +9,7 @@ import 'package:e2e/e2e.dart';
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Builds and runs', (WidgetTester tester) async {
+  testWidgets('Can get battery level', (WidgetTester tester) async {
     final Battery battery = Battery();
     final int batteryLevel = await battery.batteryLevel;
     expect(batteryLevel, isNotNull);
