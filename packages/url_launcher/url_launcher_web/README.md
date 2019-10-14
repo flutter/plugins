@@ -14,8 +14,9 @@ on `package:url_launcher`.
 dependencies:
   url_launcher: ^5.1.4
   url_launcher_web:
-    git: git@github.com:flutter/plugins.git
-    path: packages/url_launcher/url_launcher_web
+    git:
+      url: git://github.com/flutter/plugins.git
+      path: packages/url_launcher/url_launcher_web
 ```
 
 Once you have the `url_launcher_web` dependency in your pubspec, you should
