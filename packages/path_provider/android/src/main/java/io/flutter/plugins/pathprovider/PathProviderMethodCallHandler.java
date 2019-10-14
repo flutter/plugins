@@ -5,6 +5,7 @@
 package io.flutter.plugins.pathprovider;
 
 import android.content.Context;
+import androidx.annotation.NonNull;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
@@ -20,7 +21,7 @@ public class PathProviderMethodCallHandler implements MethodCallHandler {
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
     switch (call.method) {
       case "getTemporaryDirectory":
         result.success(getPathProviderTemporaryDirectory());

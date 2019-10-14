@@ -1,3 +1,8 @@
+## 1.3.2
+
+* Support the v2 Android embedder.
+* Migrate to using the new e2e test binding.
+
 ## 1.3.1
 
 * Define clang module for iOS.

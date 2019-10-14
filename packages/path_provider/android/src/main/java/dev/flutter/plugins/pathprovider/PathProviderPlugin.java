@@ -4,14 +4,14 @@
 
 package dev.flutter.plugins.pathprovider;
 
+import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.pathprovider.PathProviderMethodCallHandler;
 
 public class PathProviderPlugin implements FlutterPlugin {
   @Override
-  public void onAttachedToEngine(FlutterPluginBinding binding) {
-
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
     MethodChannel channel =
         new MethodChannel(
             binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/path_provider");
@@ -21,5 +21,5 @@ public class PathProviderPlugin implements FlutterPlugin {
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding flutterPluginBinding) {}
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {}
 }
