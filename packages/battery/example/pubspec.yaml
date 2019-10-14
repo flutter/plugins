@@ -7,5 +7,11 @@ dependencies:
   battery:
     path: ../
 
+dev_dependencies:
+  e2e: ^0.2.0
+
 flutter:
   uses-material-design: true
+
+environment:
+  flutter: ">=1.9.1+hotfix.4 <2.0.0"
