@@ -13,6 +13,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-environment:
-  flutter: ">=1.9.1+hotfix.4 <2.0.0"
