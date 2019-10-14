@@ -33,8 +33,7 @@ public class ConnectivityPlugin implements FlutterPlugin {
 
   @Override
   public void onDetachedFromEngine(FlutterPluginBinding binding) {
-    methodChannel.setMethodCallHandler(null);
-    eventChannel.setStreamHandler(null);
+    teardownChannels();
   }
 
   private void setupChannels(BinaryMessenger messenger, Context context) {
@@ -53,5 +52,12 @@ public class ConnectivityPlugin implements FlutterPlugin {
 
     methodChannel.setMethodCallHandler(methodChannelHandler);
     eventChannel.setStreamHandler(receiver);
+  }
+
+  private void teardownChannels() {
+    methodChannel.setMethodCallHandler(null);
+    eventChannel.setStreamHandler(null);
+    methodChannel = null;
+    eventChannel = null;
   }
 }
