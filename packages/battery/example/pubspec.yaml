@@ -8,7 +8,8 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  e2e: ^0.2.0
+  flutter_driver:
+    sdk: flutter
 
 flutter:
   uses-material-design: true
