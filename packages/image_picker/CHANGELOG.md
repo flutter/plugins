@@ -1,3 +1,7 @@
+## 0.6.1+7
+
+* Android: Fix ImagePickerPlugin#onCreate casting context which causes exception.
+
 ## 0.6.1+6
 
 * Define clang module for iOS
