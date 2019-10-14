@@ -1,3 +1,7 @@
+## 0.3.14+2
+
+* Define clang module for iOS.
+
 ## 0.3.14+1
 
 * Allow underscores anywhere for Javascript Channel name.
