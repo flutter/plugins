@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package dev.flutter.plugins.packageinfoexample;
+package io.flutter.plugins.packageinfoexample;
 
 import androidx.test.rule.ActivityTestRule;
-import dev.flutter.plugins.e2e.FlutterRunner;
+import dev.flutter.plugins.instrumentationadapter.FlutterRunner;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
