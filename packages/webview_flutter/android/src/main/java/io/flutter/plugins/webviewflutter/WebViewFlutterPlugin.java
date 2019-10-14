@@ -13,17 +13,21 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /**
  * Java platform implementation of the webview_flutter plugin.
  *
- * <p>Instantiate this in an add to app scenario to gracefully handle activity and context changes.
+ * <p>Register this in an add to app scenario to gracefully handle activity and context changes.
  *
- * <p>Call registerWith to use the stable {@code io.flutter.plugin.common} package instead.
+ * <p>Call {@link #registerWith(Registrar)} to use the stable {@code io.flutter.plugin.common}
+ * package instead.
  */
 public class WebViewFlutterPlugin implements FlutterPlugin {
+
   private @Nullable FlutterCookieManager flutterCookieManager;
 
   /**
-   * Initialize this within the {@code #configureFlutterEngine} of a Flutter activity or fragment.
+   * Add an instance of this to {@link io.flutter.embedding.engine.plugins.PluginRegistry} to
+   * register it.
    *
-   * <p>See {@code io.flutter.plugins.webviewflutterexample.MainActivity} for an example.
+   * <p>Registration should eventually be handled automatically by v2 of the
+   * GeneratedPluginRegistrant. https://github.com/flutter/flutter/issues/42694
    */
   public WebViewFlutterPlugin() {}
 
@@ -40,7 +44,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin {
         .registerViewFactory(
             "plugins.flutter.io/webview",
             new WebViewFactory(registrar.messenger(), registrar.view()));
-    FlutterCookieManager.registerWith(registrar.messenger());
+    new FlutterCookieManager(registrar.messenger());
   }
 
   @Override

@@ -22,10 +22,6 @@ class FlutterCookieManager implements MethodCallHandler {
     methodChannel.setMethodCallHandler(this);
   }
 
-  static void registerWith(BinaryMessenger messenger) {
-    new FlutterCookieManager(messenger);
-  }
-
   @Override
   public void onMethodCall(MethodCall methodCall, Result result) {
     switch (methodCall.method) {

@@ -41,7 +41,7 @@ final class InputAwareWebView extends WebView {
       return;
     }
 
-    Log.e(TAG, "The containerView has changed while the proxyAdapterView exists.");
+    Log.w(TAG, "The containerView has changed while the proxyAdapterView exists.");
     if (containerView != null) {
       setInputConnectionTarget(proxyAdapterView);
     }
