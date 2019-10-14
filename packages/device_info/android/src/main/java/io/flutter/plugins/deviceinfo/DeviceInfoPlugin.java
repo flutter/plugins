@@ -30,12 +30,17 @@ public class DeviceInfoPlugin implements FlutterPlugin {
 
   @Override
   public void onDetachedFromEngine(FlutterPlugin.FlutterPluginBinding binding) {
-    channel.setMethodCallHandler(null);
+    tearDownChannel();
   }
 
   private void setupMethodChannel(BinaryMessenger messenger, ContentResolver contentResolver) {
     channel = new MethodChannel(messenger, "plugins.flutter.io/device_info");
     final MethodCallHandlerImpl handler = new MethodCallHandlerImpl(contentResolver);
     channel.setMethodCallHandler(handler);
+  }
+
+  private void tearDownChannel() {
+    channel.setMethodCallHandler(null);
+    channel = null;
   }
 }

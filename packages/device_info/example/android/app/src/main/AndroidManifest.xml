@@ -13,7 +13,6 @@
                   android:windowSoftInputMode="adjustResize">
         </activity>
         <activity android:name=".MainActivity"
-            android:launchMode="singleTop"
             android:theme="@android:style/Theme.Black.NoTitleBar"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
             android:hardwareAccelerated="true"
