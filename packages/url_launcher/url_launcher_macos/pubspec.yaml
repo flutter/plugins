@@ -1,0 +1,23 @@
+name: url_launcher_macos
+description: macOS platform implementation of url_launcher
+version: 0.9.0
+author: Flutter Team <flutter-dev@googlegroups.com>
+homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher_macos
+
+flutter:
+  plugin:
+    platforms:
+      macos:
+        pluginClass: UrlLauncherPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+environment:
+  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  flutter: ">=1.5.0 <2.0.0"
