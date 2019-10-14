@@ -13,6 +13,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import android.app.Activity;
 
 /** Wraps a {@link BillingClient} instance and responds to Dart calls for it. */
 public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
@@ -44,25 +45,19 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/in_app_purchase");
-    final MethodChannelHandler methodChannelHandler =
-        new MethodChannelHandler(
-            registrar.activity(), registrar.context(), channel, new BillingClientFactoryImpl());
-    channel.setMethodCallHandler(methodChannelHandler);
+    InAppPurchasePlugin plugin = new InAppPurchasePlugin();
+    plugin.setupMethodChannel(registrar.activity(), registrar.messenger(), registrar.context());
   }
 
   @Override
   public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
-    setupMethodChannel(
+    setupMethodChannel(null,
         binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext());
   }
 
   @Override
   public void onDetachedFromEngine(FlutterPlugin.FlutterPluginBinding binding) {
-    methodChannel.setMethodCallHandler(null);
-    methodChannel = null;
-    methodChannelHandler = null;
+    teardownMethodChannel();
   }
 
   @Override
@@ -85,10 +80,16 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
     onDetachedFromActivity();
   }
 
-  private void setupMethodChannel(BinaryMessenger messenger, Context context) {
+  private void setupMethodChannel(Activity activity, BinaryMessenger messenger, Context context) {
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/in_app_purchase");
     methodChannelHandler =
-        new MethodChannelHandler(null, context, methodChannel, new BillingClientFactoryImpl());
+        new MethodChannelHandler(activity, context, methodChannel, new BillingClientFactoryImpl());
     methodChannel.setMethodCallHandler(methodChannelHandler);
+  }
+
+  private void teardownMethodChannel() {
+    methodChannel.setMethodCallHandler(null);
+    methodChannel = null;
+    methodChannelHandler = null;
   }
 }
