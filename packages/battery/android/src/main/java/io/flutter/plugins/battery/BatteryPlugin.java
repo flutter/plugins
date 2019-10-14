@@ -39,7 +39,6 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler, FlutterP
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    applicationContext = binding.getApplicationContext();
     onAttachedToEngine(
         binding.getApplicationContext(), binding.getFlutterEngine().getDartExecutor());
   }
