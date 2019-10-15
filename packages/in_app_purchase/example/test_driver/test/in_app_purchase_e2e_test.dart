@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter_driver/flutter_driver.dart';
 
 Future<void> main() async {
