@@ -1,4 +1,4 @@
-## 0/4/1
+## 0.4.1
 
 * Support the v2 Android embedder.
 * Update to AndroidX.
