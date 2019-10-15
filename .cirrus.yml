@@ -8,10 +8,7 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
-  activate_script:
-    # Remove before landing
-    - git clone https://github.com/collinjackson/plugin_tools.git flutter_plugin_tools
-    - pub global activate flutter_plugin_tools -s path
+  activate_script: pub global activate flutter_plugin_tools
   matrix:
     - name: publishable
       script: ./script/check_publish.sh
