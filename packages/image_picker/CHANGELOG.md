@@ -1,3 +1,7 @@
+## 0.6.1+8
+
+* Fix iOS build and analyzer warnings.
+
 ## 0.6.1+7
 
 * Android: Fix ImagePickerPlugin#onCreate casting context which causes exception.
