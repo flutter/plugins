@@ -1,3 +1,8 @@
+## 0.5.6
+
+* Add support for the v2 Android embedding. This shouldn't affect existing
+  functionality.
+
 ## 0.5.5+1
 
 * Fix event type check

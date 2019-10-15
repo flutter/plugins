@@ -3,16 +3,16 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/painting.dart';
-import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:e2e/e2e.dart';
 
 void main() {
-  final Completer<String> completer = Completer<String>();
   Directory testDir;
-  enableFlutterDriverExtension(handler: (_) => completer.future);
+
+  E2EWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
     final Directory extDir = await getTemporaryDirectory();
@@ -21,7 +21,6 @@ void main() {
 
   tearDownAll(() async {
     await testDir.delete(recursive: true);
-    completer.complete(null);
   });
 
   final Map<ResolutionPreset, Size> presetExpectedSizes =
@@ -70,7 +69,8 @@ void main() {
         expectedSize, Size(image.height.toDouble(), image.width.toDouble()));
   }
 
-  test('Capture specific image resolutions', () async {
+  testWidgets('Capture specific image resolutions',
+      (WidgetTester tester) async {
     final List<CameraDescription> cameras = await availableCameras();
     if (cameras.isEmpty) {
       return;
@@ -90,7 +90,7 @@ void main() {
         await controller.dispose();
       }
     }
-  });
+  }, skip: !Platform.isAndroid);
 
   // This tests that the capture is no bigger than the preset, since we have
   // automatic code to fall back to smaller sizes when we need to. Returns
@@ -121,7 +121,8 @@ void main() {
         expectedSize, Size(video.height, video.width));
   }
 
-  test('Capture specific video resolutions', () async {
+  testWidgets('Capture specific video resolutions',
+      (WidgetTester tester) async {
     final List<CameraDescription> cameras = await availableCameras();
     if (cameras.isEmpty) {
       return;
@@ -142,9 +143,9 @@ void main() {
         await controller.dispose();
       }
     }
-  });
+  }, skip: !Platform.isAndroid);
 
-  test('Pause and resume video recording', () async {
+  testWidgets('Pause and resume video recording', (WidgetTester tester) async {
     final List<CameraDescription> cameras = await availableCameras();
     if (cameras.isEmpty) {
       return;
@@ -198,5 +199,5 @@ void main() {
     await videoController.dispose();
 
     expect(duration, lessThan(recordingTime - timePaused));
-  });
+  }, skip: !Platform.isAndroid);
 }
