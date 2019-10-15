@@ -6,8 +6,8 @@ package io.flutter.plugins.androidalarmmanager;
 
 import android.content.Context;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.plugin.common.JSONMethodCodec;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.JSONMethodCodec;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -40,7 +40,8 @@ import org.json.JSONException;
  *       Dart is ready to execute tasks.
  * </ol>
  */
-public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandler, ViewDestroyListener {
+public class AndroidAlarmManagerPlugin
+    implements FlutterPlugin, MethodCallHandler, ViewDestroyListener {
   private Context mContext;
   private MethodChannel mAlarmManagerPluginChannel;
   private MethodChannel mBackgroundCallbackChannel;
@@ -62,8 +63,8 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    onAttachedToEngine(binding.getApplicationContext(),
-        binding.getFlutterEngine().getDartExecutor());
+    onAttachedToEngine(
+        binding.getApplicationContext(), binding.getFlutterEngine().getDartExecutor());
   }
 
   public void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
@@ -77,9 +78,7 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
     // - "Alarm.cancel"
     mAlarmManagerPluginChannel =
         new MethodChannel(
-            messenger,
-            "plugins.flutter.io/android_alarm_manager",
-            JSONMethodCodec.INSTANCE);
+            messenger, "plugins.flutter.io/android_alarm_manager", JSONMethodCodec.INSTANCE);
 
     // mBackgroundCallbackChannel is the channel responsible for receiving the following messages
     // from the background isolate that was setup by this plugin:
@@ -118,8 +117,7 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
     mBackgroundCallbackChannel = null;
   }
 
-  public AndroidAlarmManagerPlugin() {
-  }
+  public AndroidAlarmManagerPlugin() {}
 
   /** Invoked when the Flutter side of this plugin sends a message to the Android side. */
   @Override
