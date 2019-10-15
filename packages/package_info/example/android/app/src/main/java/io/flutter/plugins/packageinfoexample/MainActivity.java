@@ -5,9 +5,9 @@
 package io.flutter.plugins.packageinfoexample;
 
 import dev.flutter.plugins.e2e.E2EPlugin;
-import io.flutter.plugins.packageinfo.PackageInfoPlugin;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.plugins.packageinfo.PackageInfoPlugin;
 
 public class MainActivity extends FlutterActivity {
   // TODO(jackson): Remove this once v2 of GeneratedPluginRegistrant rolls to stable.
