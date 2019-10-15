@@ -5,7 +5,9 @@
 package io.flutter.plugins.androidalarmmanager;
 
 import android.content.Context;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.JSONMethodCodec;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -38,7 +40,11 @@ import org.json.JSONException;
  *       Dart is ready to execute tasks.
  * </ol>
  */
-public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroyListener {
+public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandler, ViewDestroyListener {
+  private Context mContext;
+  private MethodChannel mAlarmManagerPluginChannel;
+  private MethodChannel mBackgroundCallbackChannel;
+
   /**
    * Registers this plugin with an associated Flutter execution context, represented by the given
    * {@link Registrar}.
@@ -47,38 +53,51 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
    * connected to, and running against, the associated Flutter execution context.
    */
   public static void registerWith(Registrar registrar) {
-    // alarmManagerPluginChannel is the channel responsible for receiving the following messages
+    final AndroidAlarmManagerPlugin plugin = new AndroidAlarmManagerPlugin();
+    // Listen for FlutterView destruction so that this plugin can move itself
+    // to background mode.
+    registrar.addViewDestroyListener(plugin);
+    plugin.onAttachedToEngine(registrar.context(), registrar.messenger());
+  }
+
+  @Override
+  public void onAttachedToEngine(FlutterPluginBinding binding) {
+    onAttachedToEngine(binding.getApplicationContext(),
+        binding.getFlutterEngine().getDartExecutor());
+  }
+
+  public void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
+    this.mContext = applicationContext;
+
+    // mAlarmManagerPluginChannel is the channel responsible for receiving the following messages
     // from the main Flutter app:
     // - "AlarmService.start"
     // - "Alarm.oneShotAt"
     // - "Alarm.periodic"
     // - "Alarm.cancel"
-    final MethodChannel alarmManagerPluginChannel =
+    mAlarmManagerPluginChannel =
         new MethodChannel(
-            registrar.messenger(),
+            messenger,
             "plugins.flutter.io/android_alarm_manager",
             JSONMethodCodec.INSTANCE);
 
-    // backgroundCallbackChannel is the channel responsible for receiving the following messages
+    // mBackgroundCallbackChannel is the channel responsible for receiving the following messages
     // from the background isolate that was setup by this plugin:
     // - "AlarmService.initialized"
     //
     // This channel is also responsible for sending requests from Android to Dart to execute Dart
     // callbacks in the background isolate. Those messages are sent with an empty method name because
     // they are the only messages that this channel sends to Dart.
-    final MethodChannel backgroundCallbackChannel =
+    mBackgroundCallbackChannel =
         new MethodChannel(
-            registrar.messenger(),
+            messenger,
             "plugins.flutter.io/android_alarm_manager_background",
             JSONMethodCodec.INSTANCE);
 
-    // Instantiate a new AndroidAlarmManagerPlugin, connect the primary and background
-    // method channels for Android/Flutter communication, and listen for FlutterView
-    // destruction so that this plugin can move itself to background mode.
-    AndroidAlarmManagerPlugin plugin = new AndroidAlarmManagerPlugin(registrar.context());
-    alarmManagerPluginChannel.setMethodCallHandler(plugin);
-    backgroundCallbackChannel.setMethodCallHandler(plugin);
-    registrar.addViewDestroyListener(plugin);
+    // Instantiate a new AndroidAlarmManagerPlugin and connect the primary and background
+    // method channels for Android/Flutter communication.
+    mAlarmManagerPluginChannel.setMethodCallHandler(this);
+    mBackgroundCallbackChannel.setMethodCallHandler(this);
 
     // The AlarmService expects to hold a static reference to the plugin's background
     // method channel.
@@ -86,13 +105,20 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     //                    can exist at a time. Moreover, calling registerWith() a 2nd time would
     //                    seem to overwrite the previously registered background channel without
     //                    notice.
-    AlarmService.setBackgroundChannel(backgroundCallbackChannel);
+    AlarmService.setBackgroundChannel(mBackgroundCallbackChannel);
   }
 
-  private Context mContext;
+  @Override
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+    mContext = null;
+    mAlarmManagerPluginChannel.setMethodCallHandler(null);
+    mAlarmManagerPluginChannel = null;
 
-  private AndroidAlarmManagerPlugin(Context context) {
-    this.mContext = context;
+    mBackgroundCallbackChannel.setMethodCallHandler(null);
+    mBackgroundCallbackChannel = null;
+  }
+
+  public AndroidAlarmManagerPlugin() {
   }
 
   /** Invoked when the Flutter side of this plugin sends a message to the Android side. */

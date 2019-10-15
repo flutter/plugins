@@ -67,6 +67,9 @@ class AndroidAlarmManager {
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> initialize() async {
+    // Setup Flutter state needed for MethodChannels just in case runApp hasn't
+    // been called yet.
+    WidgetsFlutterBinding.ensureInitialized();
     final CallbackHandle handle =
         PluginUtilities.getCallbackHandle(_alarmManagerCallbackDispatcher);
     if (handle == null) {
