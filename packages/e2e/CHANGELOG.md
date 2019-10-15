@@ -1,3 +1,9 @@
+## 0.2.1
+
+* Updated to support new embedder.
+* Print a warning if the plugin is not registered.
+* Updated method channel name.
+
 ## 0.2.0+1
 
 * Updated README.

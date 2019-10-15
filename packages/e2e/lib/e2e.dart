@@ -18,7 +18,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
         await _channel.invokeMethod<void>(
             'allTestsFinished', <String, dynamic>{'results': _results});
       } on MissingPluginException {
-        // Tests were run on the host rather than a device.
+        print('Warning: E2E test plugin was not detected.');
       }
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
     });
@@ -35,7 +35,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
   }
 
   static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.dev/e2e');
+      MethodChannel('plugins.flutter.io/e2e');
 
   static Map<String, String> _results = <String, String>{};
 
