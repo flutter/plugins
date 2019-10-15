@@ -11,7 +11,6 @@
         android:label="e2e_example"
         android:icon="@mipmap/ic_launcher">
         <activity android:name=".EmbedderV1Activity"
-                  android:launchMode="singleTop"
                   android:theme="@android:style/Theme.Black.NoTitleBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
                   android:hardwareAccelerated="true"
@@ -19,7 +18,6 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
