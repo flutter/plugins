@@ -1,6 +1,6 @@
 ## 0.2.1
 
-* Updated to support new embedder.
+* Support the v2 Android embedder.
 * Print a warning if the plugin is not registered.
 * Updated method channel name.
 * Set a Flutter minimum SDK version.
