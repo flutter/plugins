@@ -19,13 +19,6 @@ public final class UrlLauncherPlugin implements FlutterPlugin, ActivityAware {
   private @Nullable UrlLauncher urlLauncher;
 
   /**
-   * Initialize this within the {@code #configureFlutterEngine} of a Flutter activity or fragment.
-   *
-   * <p>See {@code dev.flutter.plugins.urllauncherexample.MainActivity} for an example.
-   */
-  public UrlLauncherPlugin() {}
-
-  /**
    * Registers a plugin implementation that uses the stable {@code io.flutter.plugin.common}
    * package.
    *
