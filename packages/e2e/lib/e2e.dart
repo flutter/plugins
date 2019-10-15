@@ -34,8 +34,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     return WidgetsBinding.instance;
   }
 
-  static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.io/e2e');
+  static const MethodChannel _channel = MethodChannel('plugins.flutter.io/e2e');
 
   static Map<String, String> _results = <String, String>{};
 
