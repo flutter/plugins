@@ -54,26 +54,25 @@
   _messenger = [registrar messenger];
 
   __weak typeof(self) weakSelf = self;
-  _paymentQueueHandler =
-      [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueue defaultQueue]
-          transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-            [weakSelf handleTransactionsUpdated:transactions];
-          }
-          transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-            [weakSelf handleTransactionsRemoved:transactions];
-          }
-          restoreTransactionFailed:^(NSError *_Nonnull error) {
-            [weakSelf handleTransactionRestoreFailed:error];
-          }
-          restoreCompletedTransactionsFinished:^{
-            [weakSelf restoreCompletedTransactionsFinished];
-          }
-          shouldAddStorePayment:^BOOL(SKPayment *payment, SKProduct *product) {
-            return [weakSelf shouldAddStorePayment:payment product:product];
-          }
-          updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
-            [weakSelf updatedDownloads:downloads];
-          }];
+  _paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueue defaultQueue]
+      transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+        [weakSelf handleTransactionsUpdated:transactions];
+      }
+      transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+        [weakSelf handleTransactionsRemoved:transactions];
+      }
+      restoreTransactionFailed:^(NSError *_Nonnull error) {
+        [weakSelf handleTransactionRestoreFailed:error];
+      }
+      restoreCompletedTransactionsFinished:^{
+        [weakSelf restoreCompletedTransactionsFinished];
+      }
+      shouldAddStorePayment:^BOOL(SKPayment *payment, SKProduct *product) {
+        return [weakSelf shouldAddStorePayment:payment product:product];
+      }
+      updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
+        [weakSelf updatedDownloads:downloads];
+      }];
   _callbackChannel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase_callback"
                                   binaryMessenger:[registrar messenger]];
