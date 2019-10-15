@@ -1,3 +1,7 @@
+## 0.10.2+4
+
+* Define clang module for iOS.
+
 ## 0.10.2+3
 
 * Fix bug where formatHint was not being pass down to network sources.
