@@ -56,8 +56,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
-public class InAppPurchasePluginTest {
-  private MethodChannelHandler methodChannelHandler;
+public class MethodCallHandlerTest {
+  private MethodCallHandlerImpl methodChannelHandler;
   private BillingClientFactory factory;
   @Mock BillingClient mockBillingClient;
   @Mock MethodChannel mockMethodChannel;
@@ -70,7 +70,7 @@ public class InAppPurchasePluginTest {
     MockitoAnnotations.initMocks(this);
 
     factory = (context, channel) -> mockBillingClient;
-    methodChannelHandler = new MethodChannelHandler(activity, context, mockMethodChannel, factory);
+    methodChannelHandler = new MethodCallHandlerImpl(activity, context, mockMethodChannel, factory);
   }
 
   @Test

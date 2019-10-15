@@ -41,7 +41,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   }
 
   private MethodChannel methodChannel;
-  private MethodChannelHandler methodChannelHandler;
+  private MethodCallHandlerImpl methodCallHandler;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
@@ -52,7 +52,9 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   @Override
   public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
     setupMethodChannel(
-        null, binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext());
+        /*activity=*/ null,
+        binding.getFlutterEngine().getDartExecutor(),
+        binding.getApplicationContext());
   }
 
   @Override
@@ -62,12 +64,12 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
-    methodChannelHandler.setActivity(binding.getActivity());
+    methodCallHandler.setActivity(binding.getActivity());
   }
 
   @Override
   public void onDetachedFromActivity() {
-    methodChannelHandler.setActivity(null);
+    methodCallHandler.setActivity(null);
   }
 
   @Override
@@ -82,14 +84,14 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
   private void setupMethodChannel(Activity activity, BinaryMessenger messenger, Context context) {
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/in_app_purchase");
-    methodChannelHandler =
-        new MethodChannelHandler(activity, context, methodChannel, new BillingClientFactoryImpl());
-    methodChannel.setMethodCallHandler(methodChannelHandler);
+    methodCallHandler =
+        new MethodCallHandlerImpl(activity, context, methodChannel, new BillingClientFactoryImpl());
+    methodChannel.setMethodCallHandler(methodCallHandler);
   }
 
   private void teardownMethodChannel() {
     methodChannel.setMethodCallHandler(null);
     methodChannel = null;
-    methodChannelHandler = null;
+    methodCallHandler = null;
   }
 }

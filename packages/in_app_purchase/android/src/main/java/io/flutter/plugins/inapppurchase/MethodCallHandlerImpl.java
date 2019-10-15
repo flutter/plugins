@@ -29,21 +29,21 @@ import java.util.List;
 import java.util.Map;
 
 /** Handles method channel for the plugin. */
-class MethodChannelHandler implements MethodChannel.MethodCallHandler {
+class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private static final String TAG = "InAppPurchasePlugin";
 
-  private @Nullable BillingClient billingClient;
+  @Nullable private BillingClient billingClient;
   private final BillingClientFactory billingClientFactory;
 
-  private Activity activity;
+  @Nullable private Activity activity;
   private final Context applicationContext;
   private final MethodChannel methodChannel;
 
   private HashMap<String, SkuDetails> cachedSkus = new HashMap<>();
 
-  /** Constructs the MethodChannelHandler */
-  MethodChannelHandler(
+  /** Constructs the MethodCallHandlerImpl */
+  MethodCallHandlerImpl(
       @Nullable Activity activity,
       @NonNull Context applicationContext,
       @NonNull MethodChannel methodChannel,
@@ -55,12 +55,10 @@ class MethodChannelHandler implements MethodChannel.MethodCallHandler {
   }
 
   /**
-   * Sets the activity. Should be called as soon as the the activity is available. When an the
-   * activity becomes unavailable, call this method to it to null.
-   *
-   * @param activity the activity to be set.
+   * Sets the activity. Should be called as soon as the the activity is available. When the activity
+   * becomes unavailable, call this method again with {@code null}.
    */
-  void setActivity(Activity activity) {
+  void setActivity(@Nullable Activity activity) {
     this.activity = activity;
   }
 
