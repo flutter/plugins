@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.packageinfoexample;
 
+import dev.flutter.plugins.e2e.E2EPlugin;
 import io.flutter.plugins.packageinfo.PackageInfoPlugin;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
