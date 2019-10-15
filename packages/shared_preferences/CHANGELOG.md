@@ -1,3 +1,9 @@
+## 0.4.1
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+
 ## 0.5.3+4
 
 * Copy `List` instances when reading and writing values to prevent mutations from propagating.
