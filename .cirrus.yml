@@ -5,35 +5,47 @@ task:
     cpu: 8
     memory: 16G
   upgrade_script:
-    - flutter channel $FLUTTER_CHANNEL
+    - flutter channel master
     - flutter upgrade
-    - git fetch origin $FLUTTER_CHANNEL
+    - git fetch origin master
   activate_script: pub global activate flutter_plugin_tools
   matrix:
     - name: publishable
       script: ./script/check_publish.sh
-    - name: test+format
+    - name: format
       install_script:
         - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
         - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main"
         - sudo apt-get update
         - sudo apt-get install -y --allow-unauthenticated clang-format-7
       format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-7
-      test_script: ./script/incremental_build.sh test
+    - name: test
+      env:
+        matrix:
+          FLUTTER_CHANNEL: "master"
+          FLUTTER_CHANNEL: "stable"
+      test_script:
+        - flutter channel $FLUTTER_CHANNEL
+        - ./script/incremental_build.sh test
     - name: analyze
       script: ./script/incremental_build.sh analyze
     - name: build_all_plugins_apk
-      script: ./script/build_all_plugins_app.sh apk
+      env:
+        matrix:
+          FLUTTER_CHANNEL: "master"
+          FLUTTER_CHANNEL: "stable"
+      script:
+        - flutter channel $FLUTTER_CHANNEL
+        - ./script/build_all_plugins_app.sh apk
     - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+        matrix:
+          FLUTTER_CHANNEL: "master"
+          FLUTTER_CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-       env:
-         matrix:
-           FLUTTER_CHANNEL: "master"
-           FLUTTER_CHANNEL: "stable"
       script:
         flutter channel $FLUTTER_CHANNEL
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
