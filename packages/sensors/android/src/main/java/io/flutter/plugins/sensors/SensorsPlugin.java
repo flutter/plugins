@@ -32,15 +32,13 @@ public class SensorsPlugin implements FlutterPlugin {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    Context context = binding.getApplicationContext();
+    final Context context = binding.getApplicationContext();
     setupEventChannels(context, binding.getFlutterEngine().getDartExecutor());
   }
 
   @Override
   public void onDetachedFromEngine(FlutterPluginBinding binding) {
-    accelerometerChannel.setStreamHandler(null);
-    userAccelChannel.setStreamHandler(null);
-    gyroscopeChannel.setStreamHandler(null);
+    teardownEventChannels();
   }
 
   private void setupEventChannels(Context context, BinaryMessenger messenger) {
@@ -64,5 +62,11 @@ public class SensorsPlugin implements FlutterPlugin {
             (SensorManager) context.getSystemService(context.SENSOR_SERVICE),
             Sensor.TYPE_GYROSCOPE);
     gyroscopeChannel.setStreamHandler(gyroScopeStreamHandler);
+  }
+
+  private void teardownEventChannels() {
+    accelerometerChannel.setStreamHandler(null);
+    userAccelChannel.setStreamHandler(null);
+    gyroscopeChannel.setStreamHandler(null);
   }
 }
