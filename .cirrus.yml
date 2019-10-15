@@ -70,9 +70,10 @@ task:
     image: mojave-xcode-10.2-flutter
   setup_script:
     - pod repo update
-  matrix:
-    FLUTTER_CHANNEL: "master"
-    FLUTTER_CHANNEL: "stable"
+  env:
+    matrix:
+      FLUTTER_CHANNEL: "master"
+      FLUTTER_CHANNEL: "stable"
   upgrade_script:
     - flutter channel $FLUTTER_CHANNEL
     - flutter upgrade
