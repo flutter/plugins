@@ -21,7 +21,6 @@ function lint_package() {
   # TODO: These packages have analyzer warnings. Remove plugins from this list as issues are fixed.
   local skip_analysis_packages=(
     "camera.podspec" # https://github.com/flutter/flutter/issues/42673
-    "in_app_purchase.podspec" # https://github.com/flutter/flutter/issues/42679
   )
   find "${package_dir}" -type f -name "*\.podspec" | while read podspec; do
     local podspecBasename=$(basename "${podspec}")
