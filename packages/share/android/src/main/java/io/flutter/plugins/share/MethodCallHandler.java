@@ -14,7 +14,6 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
 
   private Share share;
 
-  /** Constructs the MethodChannelHandler */
   MethodCallHandler(@NonNull Share share) {
     this.share = share;
   }

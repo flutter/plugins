@@ -9,8 +9,7 @@ import 'package:e2e/e2e.dart';
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Can launch share',
-      (WidgetTester tester) async {
+  testWidgets('Can launch share', (WidgetTester tester) async {
     expect(Share.share('message', subject: 'title'), completes);
   });
 }
