@@ -1,6 +1,7 @@
 ## 0.2.1+5
 
 * Define clang module for iOS.
+* Fix iOS build warning.
 
 ## 0.2.1+4
 
