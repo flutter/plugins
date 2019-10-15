@@ -1,3 +1,10 @@
+## 0.3.4
+
+* Migrate the plugin to use the V2 Android engine embedding. This shouldn't
+  affect existing functionality. Plugin authors who use the V2 embedding can now
+  instantiate the plugin and expect that it correctly responds to app lifecycle
+  changes.
+
 ## 0.3.3+3
 
 * Define clang module for iOS.
@@ -8,11 +15,11 @@
 
 ## 0.3.3+1
 
-* Added "action_application_details_settings" action to open application info settings . 
+* Added "action_application_details_settings" action to open application info settings .
 
 ## 0.3.3
 
-* Added "flags" option to call intent.addFlags(int) in native. 
+* Added "flags" option to call intent.addFlags(int) in native.
 
 ## 0.3.2
 

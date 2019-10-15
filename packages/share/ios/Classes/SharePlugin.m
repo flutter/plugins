@@ -44,7 +44,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 
 - (NSString *)activityViewController:(UIActivityViewController *)activityViewController
               subjectForActivityType:(UIActivityType)activityType {
-  return [_subject isKindOfClass:NSNull.class] ? nil : _subject;
+  return [_subject isKindOfClass:NSNull.class] ? @"" : _subject;
 }
 
 @end
