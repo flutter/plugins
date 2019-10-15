@@ -1,6 +1,10 @@
-## 0.6.1+7
+## 0.6.1+8
 
 * iOS: Fix image orientation problems when scaling images.
+
+## 0.6.1+7
+
+* Android: Fix ImagePickerPlugin#onCreate casting context which causes exception.
 
 ## 0.6.1+6
 
