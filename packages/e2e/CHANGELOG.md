@@ -3,6 +3,7 @@
 * Updated to support new embedder.
 * Print a warning if the plugin is not registered.
 * Updated method channel name.
+* Set a Flutter minimum SDK version.
 
 ## 0.2.0+1
 
