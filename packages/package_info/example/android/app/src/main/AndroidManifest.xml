@@ -5,7 +5,6 @@
 
     <application android:name="io.flutter.app.FlutterApplication" android:label="package_info_example" android:icon="@mipmap/ic_launcher">
         <activity android:name=".MainActivity"
-                  android:launchMode="singleTop"
                   android:theme="@android:style/Theme.Black.NoTitleBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
                   android:hardwareAccelerated="true"
@@ -16,7 +15,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".EmbedderV1Activity"
-                  android:launchMode="singleTop"
                   android:theme="@android:style/Theme.Black.NoTitleBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
                   android:hardwareAccelerated="true"
