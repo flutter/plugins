@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.inapppurchase;
 
+import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
@@ -13,7 +14,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import android.app.Activity;
 
 /** Wraps a {@link BillingClient} instance and responds to Dart calls for it. */
 public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
@@ -51,8 +51,8 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
-    setupMethodChannel(null,
-        binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext());
+    setupMethodChannel(
+        null, binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext());
   }
 
   @Override
