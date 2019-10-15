@@ -15,7 +15,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="io.flutter.plugins.packageinfoexample.EmbedderV1Activity"
+        <activity android:name=".EmbedderV1Activity"
                   android:launchMode="singleTop"
                   android:theme="@android:style/Theme.Black.NoTitleBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
