@@ -76,9 +76,11 @@
                                               scale:1
                                         orientation:UIImageOrientationUp];
 
-  // Swap width and height when source image orientation is left/right
-  // In order to avoid the problem of error width/height when image
-  // orientation in these enums.
+  // The image orientation is manually set to UIImageOrientationUp which swapped the aspect ratio in some scenarios. 
+  // For example, when the original image has orientation left, the horizontal pixels
+  // should be scaled to `width` and the vertical pixels should be scaled to `height`. After setting the orientation
+  // to up, we end up scaling the horizontal pixels to `height` and vertical to `width`.
+  // Below swap will solve this issue.
   if ([image imageOrientation] == UIImageOrientationLeft ||
       [image imageOrientation] == UIImageOrientationRight ||
       [image imageOrientation] == UIImageOrientationLeftMirrored ||
