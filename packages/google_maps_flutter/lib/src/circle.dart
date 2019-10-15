@@ -114,6 +114,9 @@ class Circle {
     );
   }
 
+  /// Creates a new [Circle] object whose values are the same as this instance.
+  Circle clone() => copyWith();
+
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
@@ -141,7 +144,16 @@ class Circle {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Circle typedOther = other;
-    return circleId == typedOther.circleId;
+    return circleId == typedOther.circleId &&
+        consumeTapEvents == typedOther.consumeTapEvents &&
+        fillColor == typedOther.fillColor &&
+        center == typedOther.center &&
+        radius == typedOther.radius &&
+        strokeColor == typedOther.strokeColor &&
+        strokeWidth == typedOther.strokeWidth &&
+        visible == typedOther.visible &&
+        zIndex == typedOther.zIndex &&
+        onTap == typedOther.onTap;
   }
 
   @override
@@ -152,8 +164,8 @@ Map<CircleId, Circle> _keyByCircleId(Iterable<Circle> circles) {
   if (circles == null) {
     return <CircleId, Circle>{};
   }
-  return Map<CircleId, Circle>.fromEntries(circles.map(
-      (Circle circle) => MapEntry<CircleId, Circle>(circle.circleId, circle)));
+  return Map<CircleId, Circle>.fromEntries(circles.map((Circle circle) =>
+      MapEntry<CircleId, Circle>(circle.circleId, circle.clone())));
 }
 
 List<Map<String, dynamic>> _serializeCircleSet(Set<Circle> circles) {

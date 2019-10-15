@@ -1,3 +1,11 @@
+## 0.4.0+4
+
+* Define clang module for iOS.
+
+## 0.4.0+3
+
+* Update and migrate iOS example project.
+
 ## 0.4.0+2
 
 * Bump minimum Flutter version to 1.5.0.
