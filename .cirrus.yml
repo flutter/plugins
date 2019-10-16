@@ -77,7 +77,6 @@ task:
   upgrade_script:
     - flutter channel $CHANNEL
     - flutter upgrade
-    - git fetch origin $CHANNEL
   activate_script:
     - pub global activate flutter_plugin_tools
   create_simulator_script:
