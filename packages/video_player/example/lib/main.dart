@@ -465,7 +465,7 @@ class _PlayerVideoAndPopPageState extends State<PlayerVideoAndPopPage> {
     super.initState();
 
     _videoPlayerController =
-        VideoPlayerController.asset("assets/Butterfly-209.mp4");
+        VideoPlayerController.asset('assets/Butterfly-209.mp4');
     _videoPlayerController.addListener(() {
       if (!_videoPlayerController.value.isPlaying) {
         Navigator.pop(context);
@@ -476,29 +476,15 @@ class _PlayerVideoAndPopPageState extends State<PlayerVideoAndPopPage> {
   }
 
   @override
-  void dispose() {
-    _videoPlayerController.dispose();
-
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Material(
       elevation: 0,
-      child: AssetPlayerLifeCycle('assets/Butterfly-209.mp4',
-          (BuildContext context, VideoPlayerController controller) {
-        controller.addListener(() {
-          if (!controller.value.isPlaying) {
-            Navigator.pop(context);
-          }
-        });
-        return Center(
-            child: AspectRatio(
-          aspectRatio: controller.value.aspectRatio,
-          child: VideoPlayer(controller),
-        ));
-      }),
+      child: Center(
+        child: AspectRatio(
+          aspectRatio: _videoPlayerController.value.aspectRatio,
+          child: VideoPlayer(_videoPlayerController),
+        ),
+      ),
     );
   }
 }
