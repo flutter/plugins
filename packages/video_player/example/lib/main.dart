@@ -459,6 +459,7 @@ class PlayerVideoAndPopPage extends StatefulWidget {
 
 class _PlayerVideoAndPopPageState extends State<PlayerVideoAndPopPage> {
   VideoPlayerController _videoPlayerController;
+  bool startedPlaying = false;
 
   @override
   void initState() {
@@ -467,12 +468,17 @@ class _PlayerVideoAndPopPageState extends State<PlayerVideoAndPopPage> {
     _videoPlayerController =
         VideoPlayerController.asset('assets/Butterfly-209.mp4');
     _videoPlayerController.addListener(() {
-      if (!_videoPlayerController.value.isPlaying) {
+      if (startedPlaying && !_videoPlayerController.value.isPlaying) {
         Navigator.pop(context);
       }
     });
-    _videoPlayerController.play();
-    _videoPlayerController.initialize();
+  }
+
+  Future<bool> started() async {
+    await _videoPlayerController.initialize();
+    await _videoPlayerController.play();
+    startedPlaying = true;
+    return true;
   }
 
   @override
@@ -480,9 +486,17 @@ class _PlayerVideoAndPopPageState extends State<PlayerVideoAndPopPage> {
     return Material(
       elevation: 0,
       child: Center(
-        child: AspectRatio(
-          aspectRatio: _videoPlayerController.value.aspectRatio,
-          child: VideoPlayer(_videoPlayerController),
+        child: FutureBuilder<bool>(
+          future: started(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.data == true) {
+              return AspectRatio(
+                  aspectRatio: _videoPlayerController.value.aspectRatio,
+                  child: VideoPlayer(_videoPlayerController));
+            } else {
+              return const Text('waiting for video to load');
+            }
+          },
         ),
       ),
     );
