@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 /** Launches components for URLs. */
 class UrlLauncher {
   private final Context applicationContext;
-  private @Nullable Activity activity;
+  @Nullable private Activity activity;
 
   /**
    * Uses the given {@code applicationContext} for launching intents.

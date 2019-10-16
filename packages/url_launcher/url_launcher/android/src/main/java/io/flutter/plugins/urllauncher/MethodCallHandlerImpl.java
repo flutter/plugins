@@ -18,7 +18,7 @@ import java.util.Map;
 final class MethodCallHandlerImpl implements MethodCallHandler {
   private static final String TAG = "MethodCallHandlerImpl";
   private final UrlLauncher urlLauncher;
-  private @Nullable MethodChannel channel;
+  @Nullable private MethodChannel channel;
 
   /** Forwards all incoming MethodChannel calls to the given {@code urlLauncher}. */
   MethodCallHandlerImpl(UrlLauncher urlLauncher) {

@@ -15,8 +15,8 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  */
 public final class UrlLauncherPlugin implements FlutterPlugin, ActivityAware {
   private static final String TAG = "UrlLauncherPlugin";
-  private @Nullable MethodCallHandlerImpl methodCallHandler;
-  private @Nullable UrlLauncher urlLauncher;
+  @Nullable private MethodCallHandlerImpl methodCallHandler;
+  @Nullable private UrlLauncher urlLauncher;
 
   /**
    * Registers a plugin implementation that uses the stable {@code io.flutter.plugin.common}
