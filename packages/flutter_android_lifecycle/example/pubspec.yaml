@@ -1,0 +1,21 @@
+name: flutter_android_lifecycle_example
+description: Demonstrates how to use the flutter_android_lifecycle plugin.
+publish_to: 'none'
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_android_lifecycle:
+    path: ../
+  e2e: "^0.2.0"
+
+flutter:
+  uses-material-design: true
