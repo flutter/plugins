@@ -18,7 +18,8 @@ Future<void> main() async {
     await driver.waitFor(pushTab, timeout: const Duration(seconds: 10));
     await driver.tap(pushTab, timeout: const Duration(seconds: 10));
     await driver.waitForAbsent(pushTab, timeout: const Duration(seconds: 10));
-    await driver.waitFor(pushTab, timeout: const Duration(seconds: 30));
+    await driver.waitFor(find.byValueKey('main_page'));
+    await driver.waitFor(pushTab);
     final Health health =
         await driver.checkHealth(timeout: const Duration(seconds: 10));
     expect(health.status, HealthStatus.ok);

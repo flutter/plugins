@@ -366,6 +366,7 @@ class App extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        key: const ValueKey<String>('main_page'),
         appBar: AppBar(
           title: const Text('Video player example'),
           actions: <Widget>[
@@ -502,3 +503,72 @@ class _PlayerVideoAndPopPageState extends State<PlayerVideoAndPopPage> {
     );
   }
 }
+
+// class VideoCrashPlayerPage extends StatefulWidget {
+//   @override
+//   _VideoCrashPlayerPageState createState() => _VideoCrashPlayerPageState();
+// }
+
+// class _VideoCrashPlayerPageState extends State<VideoCrashPlayerPage> {
+//   VideoPlayerController _videoPlayerController;
+//   bool startedPlaying = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     _videoPlayerController =
+//         VideoPlayerController.asset("assets/Butterfly-209.mp4");
+//     _videoPlayerController.addListener(() {
+//       if (startedPlaying && !_videoPlayerController.value.isPlaying) {
+//         Navigator.pop(context);
+//       }
+//     });
+
+//     // _videoPlayerController.play();
+//     // _videoPlayerController.initialize();
+//   }
+
+//   Future<bool> started() async {
+//     await _videoPlayerController.initialize();
+//     await _videoPlayerController.play();
+//     startedPlaying = true;
+//     return true;
+//   }
+
+//   @override
+//   void dispose() {
+//     _videoPlayerController.dispose();
+
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Material(
+//         elevation: 0,
+//         child: Column(
+//           children: <Widget>[
+//             Expanded(
+//                 child: FittedBox(
+//               fit: BoxFit.cover,
+//               child: Container(
+//                 width: 818.0,
+//                 height: 864.0,
+//                 child: FutureBuilder<bool>(
+//                   future: started(),
+//                   builder:
+//                       (BuildContext context, AsyncSnapshot<bool> snapshot) {
+//                     if (snapshot.data == true) {
+//                       return VideoPlayer(_videoPlayerController);
+//                     } else {
+//                       return const Text('waiting for video to load');
+//                     }
+//                   },
+//                 ),
+//               ),
+//             ))
+//           ],
+//         ));
+//   }
+// }
