@@ -6,7 +6,7 @@ A Flutter plugin for Android to allow other Flutter plugins to access an Android
 in the plugin's binding.
 
 The purpose of having this plugin instead of exposing an Android `Lifecycle` object in the engine's
-Android embedder plugins API is to force plugins to have a pub constraint that signifies the
+Android embedding plugins API is to force plugins to have a pub constraint that signifies the
 major version of the Android `Lifecycle` API they expect.
 
 ## Installation
@@ -28,8 +28,7 @@ import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
 public class MyPlugin implements FlutterPlugin {
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-    Object lifecycleReference = binding.getLifecycle();
-    Lifecycle lifecycle = new FlutterLifecycleAdapter(lifecycleReference).getLifecycle();
+    Lifecycle lifecycle = new FlutterLifecycleAdapter.getLifecycle(binding);
     
     // Use lifecycle as desired.
   }
@@ -38,6 +37,5 @@ public class MyPlugin implements FlutterPlugin {
 }
 ```
 
-*Note*: This plugin is still under development, and some APIs might not be available yet.
 [Feedback welcome](https://github.com/flutter/flutter/issues) and
 [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
