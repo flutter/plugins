@@ -30,13 +30,7 @@ task:
     - name: analyze
       script: ./script/incremental_build.sh analyze
     - name: build_all_plugins_apk
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      script:
-        - flutter channel $CHANNEL
-        - ./script/build_all_plugins_app.sh apk
+      script: ./script/build_all_plugins_app.sh apk
     - name: build-apks+java-test+drive-examples
       env:
         matrix:
