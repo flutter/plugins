@@ -23,14 +23,13 @@ public class MainActivity extends FlutterActivity {
 
     @Override
     public void onAttachedToEngine(FlutterPluginBinding flutterPluginBinding) {
-      FlutterLifecycleAdapter adapter =
-          new FlutterLifecycleAdapter(flutterPluginBinding.getLifecycle());
-      Lifecycle lifecycle = adapter.getLifecycle();
+      Lifecycle lifecycle = FlutterLifecycleAdapter.getLifecycle(flutterPluginBinding);
 
       if (lifecycle == null) {
         Log.d(TAG, "Couldn't obtained Lifecycle!");
         return;
         // TODO(amirh): make this throw once the lifecycle API is available on stable.
+        // https://github.com/flutter/flutter/issues/42875
         // throw new RuntimeException(
         //     "The FlutterLifecycleAdapter did not correctly provide a Lifecycle instance. Source reference: "
         //         + flutterPluginBinding.getLifecycle());
