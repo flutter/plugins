@@ -1,5 +1,6 @@
 ## 0.10.2+5
 
+* Dispose `FLTVideoPlayer` in `onTextureUnregistered` callback on iOS.
 * Dispose 'player' after the texture is unregistered on iOS.
 
 ## 0.10.2+4
