@@ -69,12 +69,8 @@ task:
     image: mojave-xcode-10.2-flutter
   setup_script:
     - pod repo update
-  env:
-    matrix:
-      CHANNEL: "master"
-      CHANNEL: "stable"
   upgrade_script:
-    - flutter channel $CHANNEL
+    - flutter channel master
     - flutter upgrade
     - git fetch origin master
   activate_script:
@@ -95,7 +91,11 @@ task:
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       build_script:
+        - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh drive-examples
