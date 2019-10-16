@@ -1,3 +1,7 @@
+## 0.10.2+5
+
+* Update unit test for compatibility with Flutter stable branch.
+
 ## 0.10.2+4
 
 * Define clang module for iOS.
