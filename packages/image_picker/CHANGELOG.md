@@ -1,6 +1,10 @@
-## 0.6.1+8
+## 0.6.1+9
 
 * iOS: Fix image orientation problems when scaling images.
+
+## 0.6.1+8
+
+* Fix iOS build and analyzer warnings.
 
 ## 0.6.1+7
 
