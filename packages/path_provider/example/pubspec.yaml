@@ -7,6 +7,7 @@ dependencies:
   path_provider:
     path: ../
   uuid: "^1.0.0"
+  e2e: "^0.2.1"
 
 dev_dependencies:
   flutter_driver:

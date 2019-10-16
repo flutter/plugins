@@ -5,15 +5,13 @@
 import 'dart:async';
 
 import 'dart:io';
-import 'package:flutter_driver/driver_extension.dart';
+import 'package:e2e/e2e.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 void main() {
-  final Completer<String> allTestsCompleter = Completer<String>();
-  enableFlutterDriverExtension(handler: (_) => allTestsCompleter.future);
-  tearDownAll(() => allTestsCompleter.complete(null));
+  E2EWidgetsFlutterBinding.ensureInitialized();
 
   test('getTemporaryDirectory', () async {
     final Directory result = await getTemporaryDirectory();
