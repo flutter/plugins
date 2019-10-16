@@ -366,7 +366,7 @@ class App extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        key: const ValueKey<String>('main_page'),
+        key: const ValueKey<String>('home_page'),
         appBar: AppBar(
           title: const Text('Video player example'),
           actions: <Widget>[
@@ -473,6 +473,12 @@ class _PlayerVideoAndPopPageState extends State<PlayerVideoAndPopPage> {
         Navigator.pop(context);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    super.dispose();
   }
 
   Future<bool> started() async {

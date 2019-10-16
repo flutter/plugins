@@ -15,13 +15,12 @@ Future<void> main() async {
   //TODO(cyanglaz): Use TabBar tabs to navigate between pages after https://github.com/flutter/flutter/issues/16991 is fixed.
   test('Push a page contains video and pop back, do not crash.', () async {
     final SerializableFinder pushTab = find.byValueKey('push_tab');
-    await driver.waitFor(pushTab, timeout: const Duration(seconds: 10));
-    await driver.tap(pushTab, timeout: const Duration(seconds: 10));
-    await driver.waitForAbsent(pushTab, timeout: const Duration(seconds: 10));
-    await driver.waitFor(find.byValueKey('main_page'));
     await driver.waitFor(pushTab);
-    final Health health =
-        await driver.checkHealth(timeout: const Duration(seconds: 10));
+    await driver.tap(pushTab);
+    await driver.waitForAbsent(pushTab);
+    await driver.waitFor(find.byValueKey('home_page'));
+    await driver.waitUntilNoTransientCallbacks();
+    final Health health = await driver.checkHealth();
     expect(health.status, HealthStatus.ok);
   });
 }
