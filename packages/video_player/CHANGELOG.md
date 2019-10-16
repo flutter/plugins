@@ -1,6 +1,23 @@
-## 0.10.2+1
+## 0.10.2+5
 
 * Dispose 'player' after the texture is unregistered on iOS.
+
+## 0.10.2+4
+
+* Define clang module for iOS.
+
+## 0.10.2+3
+
+* Fix bug where formatHint was not being pass down to network sources.
+
+## 0.10.2+2
+
+* Update and migrate iOS example project.
+
+## 0.10.2+1
+
+* Use DefaultHttpDataSourceFactory only when network schemas and use
+DefaultHttpDataSourceFactory by default.
 
 ## 0.10.2
 

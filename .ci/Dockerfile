@@ -1,5 +1,4 @@
-
-FROM cirrusci/flutter:latest
+FROM cirrusci/flutter:stable
 
 RUN yes | sdkmanager \
     "platforms;android-27" \

@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
 import android.view.View;
+import androidx.annotation.Nullable;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
@@ -14,9 +15,9 @@ import java.util.Map;
 
 public final class WebViewFactory extends PlatformViewFactory {
   private final BinaryMessenger messenger;
-  private final View containerView;
+  private @Nullable final View containerView;
 
-  WebViewFactory(BinaryMessenger messenger, View containerView) {
+  WebViewFactory(BinaryMessenger messenger, @Nullable View containerView) {
     super(StandardMessageCodec.INSTANCE);
     this.messenger = messenger;
     this.containerView = containerView;

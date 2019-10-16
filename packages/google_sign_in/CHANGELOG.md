@@ -1,3 +1,13 @@
+## 4.0.9
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
+## 4.0.8
+
+* Get rid of `MethodCompleter` and serialize async actions using chained futures.
+  This prevents a bug when sign in methods are being used in error handling zones.
+
 ## 4.0.7
 
 * Switch from using `api` to `implementation` for dependency on `play-services-auth`,

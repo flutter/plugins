@@ -48,7 +48,7 @@
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
               binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
-  if ([super init]) {
+  if (self = [super init]) {
     _viewId = viewId;
 
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
@@ -118,6 +118,8 @@
     [self onRemoveJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"clearCache"]) {
     [self clearCache:result];
+  } else if ([[call method] isEqualToString:@"getTitle"]) {
+    [self onGetTitle:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -236,6 +238,11 @@
     // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
     NSLog(@"Clearing cache is not supported for Flutter WebViews prior to iOS 9.");
   }
+}
+
+- (void)onGetTitle:(FlutterResult)result {
+  NSString* title = _webView.title;
+  result(title);
 }
 
 // Returns nil when successful, or an error message when one or more keys are unknown.

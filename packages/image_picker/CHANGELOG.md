@@ -1,3 +1,19 @@
+## 0.6.1+8
+
+* Fix iOS build and analyzer warnings.
+
+## 0.6.1+7
+
+* Android: Fix ImagePickerPlugin#onCreate casting context which causes exception.
+
+## 0.6.1+6
+
+* Define clang module for iOS
+
+## 0.6.1+5
+
+* Update and migrate iOS example project.
+
 ## 0.6.1+4
 
 * Android: Fix a regression where the `retrieveLostImage` does not work anymore.

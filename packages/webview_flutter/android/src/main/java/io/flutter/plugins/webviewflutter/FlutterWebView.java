@@ -12,6 +12,8 @@ import android.os.Handler;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebViewClient;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -36,7 +38,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       BinaryMessenger messenger,
       int id,
       Map<String, Object> params,
-      final View containerView) {
+      @Nullable View containerView) {
 
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
     DisplayManager displayManager =
@@ -96,6 +98,16 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   @Override
+  public void onFlutterViewAttached(@NonNull View flutterView) {
+    webView.setContainerView(flutterView);
+  }
+
+  @Override
+  public void onFlutterViewDetached() {
+    webView.setContainerView(null);
+  }
+
+  @Override
   public void onMethodCall(MethodCall methodCall, Result result) {
     switch (methodCall.method) {
       case "loadUrl":
@@ -133,6 +145,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         break;
       case "clearCache":
         clearCache(result);
+        break;
+      case "getTitle":
+        getTitle(result);
         break;
       default:
         result.notImplemented();
@@ -224,6 +239,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView.clearCache(true);
     WebStorage.getInstance().deleteAllData();
     result.success(null);
+  }
+
+  private void getTitle(Result result) {
+    result.success(webView.getTitle());
   }
 
   private void applySettings(Map<String, Object> settings) {

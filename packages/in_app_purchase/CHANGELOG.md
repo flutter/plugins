@@ -1,3 +1,23 @@
+## 0.2.2
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
+## 0.2.1+5
+
+* Define clang module for iOS.
+* Fix iOS build warning.
+
+## 0.2.1+4
+
+* Update and migrate iOS example project.
+
+## 0.2.1+3
+
+* Android : Improved testability.
+
 ## 0.2.1+2
 
 * Android: Require a non-null Activity to use the `launchBillingFlow` method.
