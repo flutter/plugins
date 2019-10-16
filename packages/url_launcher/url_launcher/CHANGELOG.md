@@ -1,3 +1,7 @@
+## 5.2.1
+
+* Revert the migration since the Flutter dependency was too low.
+
 ## 5.2.0
 
 * Migrate the plugin to use the V2 Android engine embedding. This shouldn't
