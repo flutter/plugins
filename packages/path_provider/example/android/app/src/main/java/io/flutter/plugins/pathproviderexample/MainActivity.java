@@ -12,6 +12,8 @@ public class MainActivity extends FlutterActivity {
   @Override
   public void configureFlutterEngine(FlutterEngine flutterEngine) {
     super.configureFlutterEngine(flutterEngine);
+    // TODO(jackson): Remove this once v2 of GeneratedPluginRegistrant rolls to stable.
+    // https://github.com/flutter/flutter/issues/42694
     flutterEngine.getPlugins().add(new PathProviderPlugin());
   }
 }
