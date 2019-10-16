@@ -28,9 +28,8 @@ class ImageResizer {
    * <p>If no resizing is needed, returns the path for the original image.
    */
   String resizeImageIfNeeded(
-      String imagePath, Double maxWidth, Double maxHeight, int imageQuality) {
-    boolean shouldScale =
-        maxWidth != null || maxHeight != null || (imageQuality > -1 && imageQuality < 101);
+      String imagePath, Double maxWidth, Double maxHeight, Integer imageQuality) {
+    boolean shouldScale = maxWidth != null || maxHeight != null || imageQuality != null;
 
     if (!shouldScale) {
       return imagePath;

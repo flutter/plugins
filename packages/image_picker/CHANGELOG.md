@@ -1,3 +1,7 @@
+## 0.6.1+9
+
+* Android: Fix fallback of imageQuality so that resizeImageIfNeeded works as expected
+
 ## 0.6.1+8
 
 * Fix iOS build and analyzer warnings.
