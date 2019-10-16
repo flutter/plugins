@@ -79,6 +79,8 @@ task:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-12-2 | xargs xcrun simctl boot
   matrix:
+    # TODO(jackson): This is timing out on stable but should be run on stable once it passes.
+    # https://github.com/flutter/flutter/issues/42810
     - name: build_all_plugins_ipa
       script: ./script/build_all_plugins_app.sh ios --no-codesign
     - name: lint_darwin_plugins
