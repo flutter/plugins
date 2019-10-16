@@ -5,6 +5,8 @@ task:
     cpu: 8
     memory: 16G
   upgrade_script:
+    - flutter channel stable
+    - flutter upgrade
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
