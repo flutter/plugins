@@ -24,7 +24,7 @@ task:
       script: ./script/incremental_build.sh analyze
     - name: build_all_plugins_apk
       script: ./script/build_all_plugins_app.sh apk
-    - name: build-apks+java-test+drive-examples
+    - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
@@ -43,6 +43,7 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=""
         - ./script/incremental_build.sh build-examples --apk
         - ./script/incremental_build.sh java-test  # must come after apk build
+        - ./script/incremental_build.sh firebase-test-lab
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
 
