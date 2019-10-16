@@ -30,6 +30,8 @@ task:
     - name: analyze
       script: ./script/incremental_build.sh analyze
     - name: build_all_plugins_apk
+      # TODO(jackson): This is timing out on stable but should be run on stable once it passes.
+      # https://github.com/flutter/flutter/issues/42810
       script: ./script/build_all_plugins_app.sh apk
     - name: build-apks+java-test+drive-examples
       env:
