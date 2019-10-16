@@ -1,3 +1,7 @@
+## 0.3.5
+
+* Fixed resolveActivity not respecting the provided componentName.
+
 ## 0.3.4
 
 * Migrate the plugin to use the V2 Android engine embedding. This shouldn't
