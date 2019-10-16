@@ -27,7 +27,7 @@ task:
       test_script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
-        - if [ "CHANNEL" -eq "stable" ]; do find . | grep _web$ | xargs rm -rf
+        - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh test
     - name: analyze
@@ -36,7 +36,7 @@ task:
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
-        - if [ "CHANNEL" -eq "stable" ]; do find . | grep _web$ | xargs rm -rf
+        - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh apk
     - name: build-apks+java-test+drive-examples
@@ -51,7 +51,7 @@ task:
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
-        - if [ "CHANNEL" -eq "stable" ]; do find . | grep _web$ | xargs rm -rf
+        - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -88,7 +88,7 @@ task:
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
-        - if [ "CHANNEL" -eq "stable" ]; do find . | grep _web$ | xargs rm -rf
+        - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh ios --no-codesign
     - name: lint_darwin_plugins
@@ -108,7 +108,7 @@ task:
       build_script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
-        - if [ "CHANNEL" -eq "stable" ]; do find . | grep _web$ | xargs rm -rf
+        - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh drive-examples
