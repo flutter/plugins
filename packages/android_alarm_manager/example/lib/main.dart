@@ -25,7 +25,7 @@ Future<void> main() async {
           Text('See device log for output', textDirection: TextDirection.ltr)));
   await AndroidAlarmManager.periodic(
       const Duration(seconds: 5), periodicID, printPeriodic,
-      wakeup: true);
+      wakeup: true, exact: true);
   await AndroidAlarmManager.oneShot(
       const Duration(seconds: 5), oneShotID, printOneShot);
 }

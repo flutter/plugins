@@ -152,15 +152,6 @@ public class AlarmService extends JobIntentService {
     prefs.edit().putLong(CALLBACK_HANDLE_KEY, callbackHandle).apply();
   }
 
-  public static boolean setBackgroundFlutterView(FlutterNativeView view) {
-    if (sBackgroundFlutterView != null && sBackgroundFlutterView != view) {
-      Log.i(TAG, "setBackgroundFlutterView tried to overwrite an existing FlutterNativeView");
-      return false;
-    }
-    sBackgroundFlutterView = view;
-    return true;
-  }
-
   public static void setPluginRegistrant(PluginRegistrantCallback callback) {
     sPluginRegistrantCallback = callback;
   }

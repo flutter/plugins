@@ -20,10 +20,6 @@ const String _backgroundName =
 void _alarmManagerCallbackDispatcher() {
   const MethodChannel _channel =
       MethodChannel(_backgroundName, JSONMethodCodec());
-
-  // Setup Flutter state needed for MethodChannels.
-  WidgetsFlutterBinding.ensureInitialized();
-
   // This is where the magic happens and we handle background events from the
   // native portion of the plugin.
   _channel.setMethodCallHandler((MethodCall call) async {
