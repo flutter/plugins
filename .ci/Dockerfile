@@ -1,8 +1,18 @@
 FROM cirrusci/flutter:stable
 
-# Add repo for gcloud sdk and install it
-RUN sudo apt-get update && sudo apt-get install -y gpg-agent
+RUN sudo apt-get update -y
 
+RUN sudo apt-get install -y --no-install-recommends \
+  git \
+  wget \
+  curl \
+  zip \
+  unzip \
+  apt-transport-https \
+  ca-certificates \
+  gnupg
+
+# Add repo for gcloud sdk and install it
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | \
     sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list 
 
