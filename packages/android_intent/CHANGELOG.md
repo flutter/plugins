@@ -1,3 +1,9 @@
+## 0.3.4+1
+
+* Fix minor lints in the Java platform code.
+* Add smoke e2e tests for the V2 embedding.
+* Fully migrate the example app to AndroidX.
+
 ## 0.3.4
 
 * Migrate the plugin to use the V2 Android engine embedding. This shouldn't
