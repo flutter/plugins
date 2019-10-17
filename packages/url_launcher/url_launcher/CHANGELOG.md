@@ -1,3 +1,7 @@
+## 5.2.2
+
+* Re-land embedder v2 support with correct Flutter SDK constraints.
+
 ## 5.2.1
 
 * Revert the migration since the Flutter dependency was too low.
