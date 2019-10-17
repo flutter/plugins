@@ -39,8 +39,7 @@ import org.json.JSONException;
  *       Dart is ready to execute tasks.
  * </ol>
  */
-public class AndroidAlarmManagerPlugin
-    implements FlutterPlugin, MethodCallHandler {
+public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandler {
   private Context context;
   private MethodChannel alarmManagerPluginChannel;
   private MethodChannel backgroundCallbackChannel;
