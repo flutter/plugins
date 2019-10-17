@@ -241,26 +241,20 @@ class GoogleMapController {
   Future<void> showMarkerInfoWindow(MarkerId markerId) async {
     assert(markerId != null);
     await channel.invokeMethod<void>(
-      'markers#showInfoWindow',
-      <String, String>{'markerId': markerId.value}
-    );
+        'markers#showInfoWindow', <String, String>{'markerId': markerId.value});
   }
 
   /// Hide [Marker] info window
   Future<void> hideMarkerInfoWindow(MarkerId markerId) async {
     assert(markerId != null);
     await channel.invokeMethod<void>(
-      'markers#hideInfoWindow',
-      <String, String>{'markerId': markerId.value}
-    );
+        'markers#hideInfoWindow', <String, String>{'markerId': markerId.value});
   }
 
-  /// Returns whether the info window is currently shown 
+  /// Returns whether the info window is currently shown
   Future<bool> isMarkerInfoWindowShown(MarkerId markerId) async {
     assert(markerId != null);
-    return await channel.invokeMethod<bool>(
-      'markers#isInfoWindowShown',
-      <String, String>{'markerId': markerId.value}
-    );
+    return await channel.invokeMethod<bool>('markers#isInfoWindowShown',
+        <String, String>{'markerId': markerId.value});
   }
 }
