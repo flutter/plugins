@@ -1,4 +1,4 @@
-package io.flutter.plugins.flutter_android_lifecycle_example;
+package io.flutter.plugins.flutter_plugin_android_lifecycle_example;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

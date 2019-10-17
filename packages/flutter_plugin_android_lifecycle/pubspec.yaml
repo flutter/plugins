@@ -1,8 +1,8 @@
-name: flutter_android_lifecycle
+name: flutter_plugin_android_lifecycle
 description: Flutter plugin for accessing an Android Lifecycle within other plugins.
 version: 1.0.0
 author: Flutter Team <flutter-dev@googlegroups.com>
-homepage: https://github.com/flutter/plugins/tree/master/packages/flutter_android_lifecycle
+homepage: https://github.com/flutter/plugins/tree/master/packages/flutter_plugin_android_lifecycle
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -19,5 +19,5 @@ flutter:
   plugin:
     platforms:
       android:
-        package: io.flutter.plugins.flutter_android_lifecycle
+        package: io.flutter.plugins.flutter_plugin_android_lifecycle
         pluginClass: FlutterAndroidLifecyclePlugin

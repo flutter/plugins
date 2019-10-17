@@ -1,4 +1,4 @@
-group 'io.flutter.plugins.flutter_android_lifecycle'
+group 'io.flutter.plugins.flutter_plugin_android_lifecycle'
 version '1.0'
 
 buildscript {

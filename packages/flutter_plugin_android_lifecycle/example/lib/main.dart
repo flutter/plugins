@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Sample flutter_android_lifecycle usage'),
+          title: const Text('Sample flutter_plugin_android_lifecycle usage'),
         ),
       ),
     );
