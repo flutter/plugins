@@ -1,0 +1,17 @@
+name: url_launcher_web_app
+description: Testing url_launcher_web
+
+dependencies:
+  flutter:
+    sdk: flutter
+  url_launcher: ^5.1.4
+  url_launcher_web:
+    git:
+      url: git://github.com/flutter/plugins.git
+      path: packages/url_launcher/url_launcher_web
+
+flutter:
+  uses-material-design: true
+
+environment:
+  flutter: ">=1.9.1+hotfix.2 <2.0.0"
