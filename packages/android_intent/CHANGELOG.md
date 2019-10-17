@@ -1,4 +1,4 @@
-## 0.3.5
+## 0.3.4+1
 
 * Fixed resolveActivity not respecting the provided componentName.
 
