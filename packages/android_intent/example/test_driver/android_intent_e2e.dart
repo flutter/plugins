@@ -19,12 +19,24 @@ void main() {
     await tester.pumpWidget(MyApp());
 
     // Verify that the new embedding example app builds
-    expect(
-      find.byWidgetPredicate(
-        (Widget widget) => widget is Text && widget.data.startsWith('Tap here'),
-      ),
-      findsNWidgets(2),
-    );
+    if (Platform.isAndroid) {
+      expect(
+        find.byWidgetPredicate(
+          (Widget widget) =>
+              widget is Text && widget.data.startsWith('Tap here'),
+        ),
+        findsNWidgets(2),
+      );
+    } else {
+      expect(
+        find.byWidgetPredicate(
+          (Widget widget) =>
+              widget is Text &&
+              widget.data.startsWith('This plugin only works with Android'),
+        ),
+        findsOneWidget,
+      );
+    }
   });
 
   testWidgets('#launch throws when no Activity is found',
