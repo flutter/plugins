@@ -22,5 +22,5 @@ Future<void> main() async {
     await driver.waitUntilNoTransientCallbacks();
     final Health health = await driver.checkHealth();
     expect(health.status, HealthStatus.ok);
-  });
+  }, timeout: const Timeout(Duration(minutes: 10)));
 }
