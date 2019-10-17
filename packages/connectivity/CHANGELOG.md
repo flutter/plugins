@@ -1,7 +1,14 @@
-## 0.4.5
+* Support the v2 Android embedder.
+
+## 0.4.4+2
 
 * Change `ConnectionResult` type from enum to class with 2 fields. `type:ConnectionType` and `subtype:ConnectionSubtype`
 * Add `getNetworkSubtype` to get mobile connection subtype.
+
+## 0.4.4+1
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
 
 ## 0.4.4
 
