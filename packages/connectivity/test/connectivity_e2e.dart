@@ -18,7 +18,8 @@ void main() {
     });
 
     test('test connectivity result', (WidgetTester tester) async {
-      final ConnectivityDetailedResult result = await _connectivity.checkConnectivityInfo();
+      final ConnectivityDetailedResult result =
+          await _connectivity.checkConnectivityInfo();
       expect(result, isNotNull);
       expect(result.subtype, ConnectionSubtype.unknown);
       switch (result.result) {
@@ -34,7 +35,8 @@ void main() {
 
     testWidgets('test location methods, iOS only', (WidgetTester tester) async {
       if (Platform.isIOS) {
-        expect((await _connectivity.getLocationServiceAuthorization()), LocationAuthorizationStatus.notDetermined);
+        expect((await _connectivity.getLocationServiceAuthorization()),
+            LocationAuthorizationStatus.notDetermined);
       }
     });
   });
