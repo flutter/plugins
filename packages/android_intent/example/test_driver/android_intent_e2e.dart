@@ -1,8 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:e2e/e2e.dart';
+import 'dart:io';
 
 import 'package:android_intent_example/main.dart';
+import 'package:e2e/e2e.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../../lib/android_intent.dart';
 
 /// This is a smoke test that verifies that the example app builds and loads.
 /// Because this plugin works by launching Android platform UIs it's not
@@ -22,4 +26,16 @@ void main() {
       findsNWidgets(2),
     );
   });
+
+  testWidgets('#launch throws when no Activity is found',
+      (WidgetTester tester) async {
+    // We can't test that any of this is really working, this is mostly just
+    // checking that the plugin API is registered. Only works on Android.
+    const AndroidIntent intent =
+        AndroidIntent(action: 'LAUNCH', package: 'foobar');
+    await expectLater(() async => await intent.launch(), throwsA((Exception e) {
+      return e is PlatformException &&
+          e.message.contains('No Activity found to handle Intent');
+    }));
+  }, skip: !Platform.isAndroid);
 }
