@@ -41,6 +41,8 @@ class StorageDirectoryMapper {
       case 9:
         if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
           return Environment.DIRECTORY_DOCUMENTS;
+        } else {
+          throw new IllegalArgumentException("Documents directory is unsupported.");
         }
       default:
         throw new IllegalArgumentException("Unknown index: " + dartIndex);
