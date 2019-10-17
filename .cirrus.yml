@@ -24,12 +24,13 @@ task:
       script: ./script/incremental_build.sh analyze
     - name: build_all_plugins_apk
       script: ./script/build_all_plugins_app.sh apk
-    - name: build-apks+java-test+drive-examples
+    - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
       script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -43,6 +44,12 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=""
         - ./script/incremental_build.sh build-examples --apk
         - ./script/incremental_build.sh java-test  # must come after apk build
+        - if [[ $GCLOUD_FIREBASE_TESTLAB_KEY == ENCRYPTED* ]]; then
+        -   echo "This user does not have permission to run Firebase Test Lab tests."
+        - else
+        -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
+        -   ./script/incremental_build.sh firebase-test-lab
+        - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
 
