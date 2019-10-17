@@ -1,3 +1,16 @@
+## 0.3.15+2
+
+* Re-land support for the v2 Android embedding. This correctly sets the minimum
+  SDK to the latest stable and avoid any compile errors. *WARNING:* the V2
+  embedding itself still requires the current Flutter master channel
+  (flutter/flutter@1d4d63a) for text input to work properly on all Android
+  versions.
+
+## 0.3.15+1
+
+* Revert the prior embedding support add since it requires an API that hasn't
+  rolled to stable.
+
 ## 0.3.15
 
 * Add support for the v2 Android embedding. This shouldn't affect existing
