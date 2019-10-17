@@ -319,7 +319,7 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
 }
 - (BOOL)isMarkerInfoWindowShown:(NSString*)markerId {
   FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
-  return([controller isInfoWIndowShown]);
+  return([controller isInfoWindowShown]);
 }
 
 + (CLLocationCoordinate2D)getPosition:(NSDictionary*)marker {
