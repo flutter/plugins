@@ -225,7 +225,11 @@ class FakeEventsChannel {
   }
 
   void sendEvent(dynamic event) {
-    ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+    // TODO(jackson): This has been deprecated and should be replaced
+    // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
+    // available on all the versions of Flutter that we test.
+    // ignore: deprecated_member_use
+    defaultBinaryMessenger.handlePlatformMessage(
         eventsMethodChannel.name,
         const StandardMethodCodec().encodeSuccessEnvelope(event),
         (ByteData data) {});
