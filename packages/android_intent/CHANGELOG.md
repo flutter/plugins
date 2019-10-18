@@ -1,6 +1,6 @@
-## 0.3.5+1
+## 0.3.4+2
 
-* Fixed resolveActivity not respecting the provided componentName.
+* Fix resolveActivity not respecting the provided componentName.
 
 ## 0.3.4+1
 
