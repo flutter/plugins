@@ -21,7 +21,7 @@ import java.util.Map;
 public final class MethodCallHandlerImpl implements MethodCallHandler {
   private static final String TAG = "MethodCallHandlerImpl";
   private final IntentSender sender;
-  private @Nullable MethodChannel methodChannel;
+  @Nullable private MethodChannel methodChannel;
 
   /**
    * Uses the given {@code sender} for all incoming calls.
