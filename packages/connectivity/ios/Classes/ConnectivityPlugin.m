@@ -155,9 +155,7 @@
     case kCLAuthorizationStatusAuthorizedWhenInUse: {
       return @"authorizedWhenInUse";
     }
-    default: {
-      return @"unknown";
-    }
+    default: { return @"unknown"; }
   }
 }
 
