@@ -1,3 +1,7 @@
+## 0.2.2+1
+
+* Fix a regression in 0.2.2 that requires the app to migrate to AndroidX to use the plugin.
+
 ## 0.2.2
 
 * Support the v2 Android embedder.
