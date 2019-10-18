@@ -11,17 +11,17 @@ import 'package:path_provider/path_provider.dart';
 
 // From https://flutter.dev/docs/cookbook/persistence/reading-writing-files
 Future<String> get _localPath async {
-  final directory = await getTemporaryDirectory();
+  final Directory directory = await getTemporaryDirectory();
   return directory.path;
 }
 
 Future<File> get _localFile async {
-  final path = await _localPath;
+  final String path = await _localPath;
   return File('$path/counter.txt');
 }
 
 Future<File> writeCounter(int counter) async {
-  final file = await _localFile;
+  final File file = await _localFile;
 
   // Write the file.
   return file.writeAsString('$counter');
@@ -29,12 +29,13 @@ Future<File> writeCounter(int counter) async {
 
 Future<int> readCounter() async {
   try {
-    final file = await _localFile;
+    final File file = await _localFile;
 
     // Read the file.
-    String contents = await file.readAsString();
+    final String contents = await file.readAsString();
 
     return int.parse(contents);
+  // ignore: unused_catch_clause
   } on FileSystemException catch (e) {
     // If encountering an error, return 0.
     return 0;
@@ -42,7 +43,7 @@ Future<int> readCounter() async {
 }
 
 Future<void> incrementCounter() async {
-  int value = await readCounter();
+  final int value = await readCounter();
   print('incrementCounter to: ${value + 1}');
   await writeCounter(value + 1);
 }
@@ -62,7 +63,7 @@ void main() {
       await AndroidAlarmManager.oneShot(
           const Duration(seconds: 1), alarmId, incrementCounter);
       expect(await AndroidAlarmManager.cancel(alarmId), isTrue);
-      await new Future.delayed(const Duration(seconds: 4));
+      await Future<void>.delayed(const Duration(seconds: 4));
       expect(await readCounter(), startingValue);
     });
 
@@ -72,10 +73,10 @@ void main() {
       await AndroidAlarmManager.oneShot(
           const Duration(seconds: 1), alarmId, incrementCounter,
           exact: true, wakeup: true);
-      await new Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       // poll until file is updated
       for (int i = 0; i < 10 && await readCounter() == startingValue; i++) {
-        await new Future.delayed(const Duration(seconds: 1));
+        await Future<void>.delayed(const Duration(seconds: 1));
       }
       expect(await readCounter(), startingValue + 1);
       expect(await AndroidAlarmManager.cancel(alarmId), isTrue);
@@ -90,11 +91,11 @@ void main() {
         wakeup: true, exact: true);
     // poll until file is updated
     for (int i = 0; i < 100 && await readCounter() < startingValue + 2; i++) {
-      await new Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
     }
     expect(await readCounter(), startingValue + 2);
     expect(await AndroidAlarmManager.cancel(alarmId), isTrue);
-    await new Future.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 3));
     expect(await readCounter(), startingValue + 2);
   });
 }
