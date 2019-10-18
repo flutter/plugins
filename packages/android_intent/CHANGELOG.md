@@ -1,3 +1,7 @@
+## 0.3.4+3
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
 ## 0.3.4+2
 
 * Fix resolveActivity not respecting the provided componentName.
