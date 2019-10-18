@@ -31,7 +31,7 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
     bool universalLinksOnly,
     Map<String, String> headers,
   ) {
-    _channel.invokeMethod<bool>(
+    return _channel.invokeMethod<bool>(
       'launch',
       <String, Object>{
         'url': url,

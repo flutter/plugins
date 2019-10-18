@@ -8,8 +8,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import 'url_launcher_platform_interface.dart';
 import 'method_channel_url_launcher.dart';
+import 'url_launcher_platform_interface.dart';
 
 /// Parses the specified URL string and delegates handling of it to the
 /// underlying platform.
