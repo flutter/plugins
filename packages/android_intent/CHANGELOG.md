@@ -1,3 +1,7 @@
+## 0.3.4+2
+
+* Fix resolveActivity not respecting the provided componentName.
+
 ## 0.3.4+1
 
 * Fix minor lints in the Java platform code.
