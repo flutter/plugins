@@ -64,8 +64,9 @@ afterEvaluate {
         android {
             dependencies {
                 def lifecycle_version = "2.1.0"
-                api "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
-                api "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+                api 'android.arch.lifecycle:runtime:1.1.1'
+                api 'android.arch.lifecycle:common:1.1.1'
+                api 'android.arch.lifecycle:common-java8:1.1.1'
             }
         }
     }
