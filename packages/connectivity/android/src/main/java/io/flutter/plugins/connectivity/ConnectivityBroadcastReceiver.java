@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import androidx.annotation.NonNull;
 import io.flutter.plugin.common.EventChannel;
 
 /**
@@ -26,7 +25,7 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
   private Connectivity connectivity;
   private EventChannel.EventSink events;
 
-  ConnectivityBroadcastReceiver(@NonNull Context context, @NonNull Connectivity connectivity) {
+  ConnectivityBroadcastReceiver(Context context, Connectivity connectivity) {
     this.context = context;
     this.connectivity = connectivity;
   }
