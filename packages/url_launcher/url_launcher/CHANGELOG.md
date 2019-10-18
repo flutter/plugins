@@ -1,4 +1,4 @@
-## 5.2.2+1
+## 5.2.3
 
 Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
 
