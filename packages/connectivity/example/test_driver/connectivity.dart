@@ -1,14 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
+import 'dart:async';
 import 'dart:io';
-import 'package:e2e/e2e.dart';
+import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:connectivity/connectivity.dart';
 
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized();
+  final Completer<String> completer = Completer<String>();
+  enableFlutterDriverExtension(handler: (_) => completer.future);
+  tearDownAll(() => completer.complete(null));
 
   group('Connectivity test driver', () {
     Connectivity _connectivity;
@@ -17,7 +16,7 @@ void main() {
       _connectivity = Connectivity();
     });
 
-    testWidgets('test connectivity result', (WidgetTester tester) async {
+    test('test connectivity result', () async {
       final ConnectivityResult result = await _connectivity.checkConnectivity();
       expect(result, isNotNull);
       switch (result) {
@@ -31,7 +30,8 @@ void main() {
       }
     });
 
-    testWidgets('test location methods, iOS only', (WidgetTester tester) async {
+    test('test location methods, iOS only', () async {
+      print(Platform.isIOS);
       if (Platform.isIOS) {
         expect((await _connectivity.getLocationServiceAuthorization()),
             LocationAuthorizationStatus.notDetermined);

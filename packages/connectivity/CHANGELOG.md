@@ -1,7 +1,3 @@
-## 0.4.5
-
-* Support the v2 Android embedder.
-
 ## 0.4.4+1
 
 * Update and migrate iOS example project.
