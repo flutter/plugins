@@ -16,6 +16,8 @@ Future<void> main() async {
   final int periodicID = 0;
   final int oneShotID = 1;
 
+  WidgetsFlutterBinding.ensureInitialized();
+
   // Start the AlarmManager service.
   await AndroidAlarmManager.initialize();
 
