@@ -1,3 +1,11 @@
+## 0.4.5+1
+
+* Revert 0.4.5 because the lower bound flutter version introduced is not supported.
+
+## 0.4.5
+
+* Support the v2 Android embedder.
+
 ## 0.4.4+1
 
 * Update and migrate iOS example project.
