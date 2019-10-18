@@ -14,15 +14,14 @@ abstract class UrlLauncherPlatform {
   /// For documentation on the other arguments, see the `launch` documentation
   /// in `package:url_launcher/url_launcher.dart`.
   Future<bool> launch(
-      String url,
-      bool useSafariVC,
-      bool useWebView,
-      bool enableJavaScript,
-      bool enableDomStorage,
-      bool universalLinksOnly,
-      Map<String, String> headers,
+    String url,
+    bool useSafariVC,
+    bool useWebView,
+    bool enableJavaScript,
+    bool enableDomStorage,
+    bool universalLinksOnly,
+    Map<String, String> headers,
   );
-
 
   /// Closes the WebView, if one was opened earlier by `launch`.
   Future<void> closeWebView();
