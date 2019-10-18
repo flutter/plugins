@@ -1,3 +1,7 @@
+## 1.3.1
+
+* Define clang module for iOS.
+
 ## 1.3.0
 
 * Added iOS-only support for `getLibraryDirectory`.
