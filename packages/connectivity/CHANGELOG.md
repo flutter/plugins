@@ -1,6 +1,6 @@
-## 0.4.6
+## 0.4.5+1
 
-* Fix a regression in 0.4.5 that requires the app to migrate to AndroidX to use the plugin.
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
 
 ## 0.4.5
 
