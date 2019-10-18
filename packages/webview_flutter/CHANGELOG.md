@@ -1,3 +1,8 @@
+## 0.3.15+1
+
+* Revert the prior embedding support add since it requires an API that hasn't
+  rolled to stable.
+
 ## 0.3.15
 
 * Add support for the v2 Android embedding. This shouldn't affect existing
