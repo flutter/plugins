@@ -2,7 +2,6 @@
 
 * Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
 
-
 ## 0.2.2
 
 * Support the v2 Android embedder.
