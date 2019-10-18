@@ -1,3 +1,8 @@
+## 5.2.3
+
+* Adds `urlLauncherPlatform` which can be overridden to implement `url_launcher`
+  on other platforms (which may not want to use MethodChannels).
+
 ## 5.2.2
 
 * Re-land embedder v2 support with correct Flutter SDK constraints.
