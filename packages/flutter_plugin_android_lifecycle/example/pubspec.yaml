@@ -8,6 +8,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  e2e: "^0.2.1"
 
 dev_dependencies:
   flutter_test:
@@ -15,7 +16,6 @@ dev_dependencies:
 
   flutter_plugin_android_lifecycle:
     path: ../
-  e2e: "^0.2.1"
 
 flutter:
   uses-material-design: true

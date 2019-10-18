@@ -6,6 +6,7 @@ package io.flutter.plugins.flutter_plugin_android_lifecycle_example;
 
 import android.util.Log;
 import androidx.lifecycle.Lifecycle;
+import dev.flutter.plugins.e2e.E2EPlugin;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -17,6 +18,7 @@ public class MainActivity extends FlutterActivity {
   @Override
   public void configureFlutterEngine(FlutterEngine flutterEngine) {
     flutterEngine.getPlugins().add(new TestPlugin());
+    flutterEngine.getPlugins().add(new E2EPlugin());
   }
 
   private static class TestPlugin implements FlutterPlugin {
