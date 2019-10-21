@@ -14,10 +14,11 @@ dev_dependencies:
     sdk: flutter
   in_app_purchase:
     path: ../
+  e2e: ^0.2.0
 
 flutter:
   uses-material-design: true
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
-  flutter: ">=0.4.4 <2.0.0"
+  flutter: ">=1.9.1+hotfix.2 <2.0.0"
