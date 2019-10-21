@@ -1,3 +1,11 @@
+## 0.4.1
+
+* Support the v2 Android embedding.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
+
 ## 0.4.0+4
 
 * Define clang module for iOS.
