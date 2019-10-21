@@ -232,6 +232,8 @@ final class GoogleMapController
           if (googleMap != null) {
             LatLng latLng = Convert.toLatLng(call.arguments);
             Point screenLocation = googleMap.getProjection().toScreenLocation(latLng);
+            screenLocation.x /= density;
+            screenLocation.y /= density;
             result.success(Convert.pointToJson(screenLocation));
           } else {
             result.error(
