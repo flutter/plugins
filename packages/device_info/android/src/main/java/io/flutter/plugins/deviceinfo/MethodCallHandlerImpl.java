@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.os.Build;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.Arrays;
@@ -27,7 +26,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private static final String[] EMPTY_STRING_LIST = new String[] {};
 
   /** Constructs DeviceInfo. The {@code contentResolver} must not be null. */
-  MethodCallHandlerImpl(@NonNull ContentResolver contentResolver) {
+  MethodCallHandlerImpl(ContentResolver contentResolver) {
     this.contentResolver = contentResolver;
   }
 
