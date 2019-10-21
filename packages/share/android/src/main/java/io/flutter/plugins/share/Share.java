@@ -6,7 +6,6 @@ package io.flutter.plugins.share;
 
 import android.app.Activity;
 import android.content.Intent;
-import androidx.annotation.Nullable;
 
 /** Handles share intent. */
 class Share {
@@ -18,7 +17,7 @@ class Share {
    * null when constructing the {@link Share} object and set to non-null when an activity is
    * available using {@link #setActivity(Activity)}.
    */
-  Share(@Nullable Activity activity) {
+  Share(Activity activity) {
     this.activity = activity;
   }
 
@@ -26,7 +25,7 @@ class Share {
    * Sets the activity when an activity is available. When the activity becomes unavailable, use
    * this method to set it to null.
    */
-  void setActivity(@Nullable Activity activity) {
+  void setActivity(Activity activity) {
     this.activity = activity;
   }
 

@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.share;
 
-import androidx.annotation.NonNull;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.Map;
@@ -14,7 +13,7 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
 
   private Share share;
 
-  MethodCallHandler(@NonNull Share share) {
+  MethodCallHandler(Share share) {
     this.share = share;
   }
 
