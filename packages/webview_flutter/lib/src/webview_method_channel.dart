@@ -103,6 +103,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         'removeJavascriptChannels', javascriptChannelNames.toList());
   }
 
+  @override
+  Future<String> getTitle() => _channel.invokeMethod<String>("getTitle");
+
   /// Method channel implementation for [WebViewPlatform.clearCookies].
   static Future<bool> clearCookies() {
     return _cookieManagerChannel
