@@ -3,7 +3,7 @@ description: Flutter plugin for sharing content via the platform share UI, using
   the ACTION_SEND intent on Android and UIActivityViewController on iOS.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/share
-version: 0.6.2+4
+version: 0.6.3
 
 flutter:
   plugin:
@@ -21,7 +21,8 @@ dev_dependencies:
   mockito: ^3.0.0
   flutter_test:
     sdk: flutter
+  e2e: ^0.2.0
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
-  flutter: ">=1.6.0 <2.0.0"
+  flutter: ">=1.6.7 <2.0.0"
