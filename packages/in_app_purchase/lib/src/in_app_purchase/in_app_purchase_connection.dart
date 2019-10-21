@@ -11,6 +11,8 @@ import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import './purchase_details.dart';
 
+export 'package:in_app_purchase/billing_client_wrappers.dart';
+
 /// Basic API for making in app purchases across multiple platforms.
 ///
 /// This is a generic abstraction built from `billing_client_wrapers` and
@@ -168,16 +170,23 @@ abstract class InAppPurchaseConnection {
   Future<bool> buyConsumable(
       {@required PurchaseParam purchaseParam, bool autoConsume = true});
 
-  /// (App Store only) Mark that purchased content has been delivered to the
+  /// Mark that purchased content has been delivered to the
   /// user.
   ///
   /// You are responsible for completing every [PurchaseDetails] whose
-  /// [PurchaseDetails.status] is [PurchaseStatus.purchased] or
-  /// [[PurchaseStatus.error]. Completing a [PurchaseStatus.pending] purchase
-  /// will cause an exception.
+  /// [PurchaseDetails.status] is [PurchaseStatus.purchased].
+  /// Additionally, the purchase needs to be completed if the [PurchaseDetails.status]
+  /// [[PurchaseStatus.error].
+  /// Completing a [PurchaseStatus.pending] purchase will cause an exception.
+  /// For convenience, [PurchaseDetails.pendingCompletePurchase] indicates if a purchase is pending for completion.
   ///
-  /// This throws an [UnsupportedError] on Android.
-  Future<void> completePurchase(PurchaseDetails purchase);
+  /// The method returns a [BillingResultWrapper] to indicate a detailed status of the complete process.
+  ///
+  /// Warning!Fail to call this method within 3 days of the purchase will result a refund on Android.
+  /// The [consumePurchase] acts as an implicit [completePurchase] on Android.
+  /// The optional parameter `developerPayload` only works on Android.
+  Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase,
+      {String developerPayload = null});
 
   /// (Play only) Mark that the user has consumed a product.
   ///
@@ -185,8 +194,11 @@ abstract class InAppPurchaseConnection {
   /// delivered. The user won't be able to buy the same product again until the
   /// purchase of the product is consumed.
   ///
+  /// The `developerPayload` can be specified to be associated with this consumption.
+  ///
   /// This throws an [UnsupportedError] on iOS.
-  Future<BillingResponse> consumePurchase(PurchaseDetails purchase);
+  Future<BillingResultWrapper> consumePurchase(PurchaseDetails purchase,
+      {String developerPayload = null});
 
   /// Query all previous purchases.
   ///

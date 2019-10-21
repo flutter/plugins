@@ -226,7 +226,7 @@ class _MyAppState extends State<MyApp> {
     // We recommend that you use your own server to verity the purchase data.
     Map<String, PurchaseDetails> purchases =
         Map.fromEntries(_purchases.map((PurchaseDetails purchase) {
-      if (Platform.isIOS) {
+      if (purchase.pendingCompletePurchase) {
         InAppPurchaseConnection.instance.completePurchase(purchase);
       }
       return MapEntry<String, PurchaseDetails>(purchase.productID, purchase);
@@ -374,12 +374,13 @@ class _MyAppState extends State<MyApp> {
             _handleInvalidPurchase(purchaseDetails);
           }
         }
-        if (Platform.isIOS) {
-          InAppPurchaseConnection.instance.completePurchase(purchaseDetails);
-        } else if (Platform.isAndroid) {
+        if (Platform.isAndroid) {
           if (!kAutoConsume && purchaseDetails.productID == _kConsumableId) {
             InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
           }
+        }
+        if (purchaseDetails.pendingCompletePurchase) {
+          InAppPurchaseConnection.instance.completePurchase(purchaseDetails);
         }
       }
     });

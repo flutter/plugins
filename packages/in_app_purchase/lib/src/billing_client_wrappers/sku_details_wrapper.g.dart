@@ -21,7 +21,9 @@ SkuDetailsWrapper _$SkuDetailsWrapperFromJson(Map json) {
       subscriptionPeriod: json['subscriptionPeriod'] as String,
       title: json['title'] as String,
       type: const SkuTypeConverter().fromJson(json['type'] as String),
-      isRewarded: json['isRewarded'] as bool);
+      isRewarded: json['isRewarded'] as bool,
+      originalPrice: json['originalPrice'] as String,
+      originalPriceAmountMicros: json['originalPriceAmountMicros'] as int);
 }
 
 Map<String, dynamic> _$SkuDetailsWrapperToJson(SkuDetailsWrapper instance) =>
@@ -39,13 +41,15 @@ Map<String, dynamic> _$SkuDetailsWrapperToJson(SkuDetailsWrapper instance) =>
       'subscriptionPeriod': instance.subscriptionPeriod,
       'title': instance.title,
       'type': const SkuTypeConverter().toJson(instance.type),
-      'isRewarded': instance.isRewarded
+      'isRewarded': instance.isRewarded,
+      'originalPrice': instance.originalPrice,
+      'originalPriceAmountMicros': instance.originalPriceAmountMicros
     };
 
 SkuDetailsResponseWrapper _$SkuDetailsResponseWrapperFromJson(Map json) {
   return SkuDetailsResponseWrapper(
-      responseCode: const BillingResponseConverter()
-          .fromJson(json['responseCode'] as int),
+      billingResult:
+          BillingResultWrapper.fromJson(json['billingResult'] as Map),
       skuDetailsList: (json['skuDetailsList'] as List)
           .map((e) => SkuDetailsWrapper.fromJson(e as Map))
           .toList());
@@ -54,7 +58,21 @@ SkuDetailsResponseWrapper _$SkuDetailsResponseWrapperFromJson(Map json) {
 Map<String, dynamic> _$SkuDetailsResponseWrapperToJson(
         SkuDetailsResponseWrapper instance) =>
     <String, dynamic>{
+      'billingResult': instance.billingResult,
+      'skuDetailsList': instance.skuDetailsList
+    };
+
+BillingResultWrapper _$BillingResultWrapperFromJson(Map json) {
+  return BillingResultWrapper(
+      responseCode: const BillingResponseConverter()
+          .fromJson(json['responseCode'] as int),
+      debugMessage: json['debugMessage'] as String);
+}
+
+Map<String, dynamic> _$BillingResultWrapperToJson(
+        BillingResultWrapper instance) =>
+    <String, dynamic>{
       'responseCode':
           const BillingResponseConverter().toJson(instance.responseCode),
-      'skuDetailsList': instance.skuDetailsList
+      'debugMessage': instance.debugMessage
     };

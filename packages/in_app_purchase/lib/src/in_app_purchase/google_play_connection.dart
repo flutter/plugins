@@ -6,7 +6,11 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
+import '../../billing_client_wrappers.dart';
+import '../../billing_client_wrappers.dart';
+import '../../billing_client_wrappers.dart';
 import '../../billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
@@ -50,10 +54,11 @@ class GooglePlayConnection
 
   @override
   Future<bool> buyNonConsumable({@required PurchaseParam purchaseParam}) async {
-    BillingResponse response = await billingClient.launchBillingFlow(
-        sku: purchaseParam.productDetails.id,
-        accountId: purchaseParam.applicationUserName);
-    return response == BillingResponse.ok;
+    BillingResultWrapper billingResultWrapper =
+        await billingClient.launchBillingFlow(
+            sku: purchaseParam.productDetails.id,
+            accountId: purchaseParam.applicationUserName);
+    return billingResultWrapper.responseCode == BillingResponse.ok;
   }
 
   @override
@@ -66,14 +71,21 @@ class GooglePlayConnection
   }
 
   @override
-  Future<void> completePurchase(PurchaseDetails purchase) {
-    throw UnsupportedError('complete purchase is not available on Android');
+  Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase,
+      {String developerPayload}) {
+    AcknowledgeParams params = AcknowledgeParams(
+        purchaseToken: purchase.verificationData.serverVerificationData,
+        developerPayload: developerPayload);
+    return billingClient.acknowledgePurchase(params);
   }
 
   @override
-  Future<BillingResponse> consumePurchase(PurchaseDetails purchase) {
-    return billingClient
-        .consumeAsync(purchase.verificationData.serverVerificationData);
+  Future<BillingResultWrapper> consumePurchase(PurchaseDetails purchase,
+      {String developerPayload}) {
+    ConsumeParams params = ConsumeParams(
+        purchaseToken: purchase.verificationData.serverVerificationData,
+        developerPayload: developerPayload);
+    return billingClient.consumeAsync(params);
   }
 
   @override
@@ -90,9 +102,21 @@ class GooglePlayConnection
       exception = e;
       responses = [
         PurchasesResultWrapper(
-            responseCode: BillingResponse.error, purchasesList: []),
+          responseCode: BillingResponse.error,
+          purchasesList: [],
+          billingResult: BillingResultWrapper(
+            responseCode: BillingResponse.error,
+            debugMessage: e.details.toString(),
+          ),
+        ),
         PurchasesResultWrapper(
-            responseCode: BillingResponse.error, purchasesList: [])
+          responseCode: BillingResponse.error,
+          purchasesList: [],
+          billingResult: BillingResultWrapper(
+            responseCode: BillingResponse.error,
+            debugMessage: e.details.toString(),
+          ),
+        )
       ];
     }
 
@@ -188,10 +212,14 @@ class GooglePlayConnection
       responses = [
         // ignore: invalid_use_of_visible_for_testing_member
         SkuDetailsResponseWrapper(
-            responseCode: BillingResponse.error, skuDetailsList: []),
+            billingResult: BillingResultWrapper(
+                responseCode: BillingResponse.error, debugMessage: e.code),
+            skuDetailsList: []),
         // ignore: invalid_use_of_visible_for_testing_member
         SkuDetailsResponseWrapper(
-            responseCode: BillingResponse.error, skuDetailsList: [])
+            billingResult: BillingResultWrapper(
+                responseCode: BillingResponse.error, debugMessage: e.code),
+            skuDetailsList: [])
       ];
     }
     List<ProductDetails> productDetailsList =
@@ -220,22 +248,18 @@ class GooglePlayConnection
   static Future<List<PurchaseDetails>> _getPurchaseDetailsFromResult(
       PurchasesResultWrapper resultWrapper) async {
     IAPError error;
-    PurchaseStatus status;
-    if (resultWrapper.responseCode == BillingResponse.ok) {
-      error = null;
-      status = PurchaseStatus.purchased;
-    } else {
+    if (resultWrapper.responseCode != BillingResponse.ok) {
       error = IAPError(
         source: IAPSource.GooglePlay,
         code: kPurchaseErrorCode,
         message: resultWrapper.responseCode.toString(),
+        details: resultWrapper.billingResult.debugMessage,
       );
-      status = PurchaseStatus.error;
     }
     final List<Future<PurchaseDetails>> purchases =
         resultWrapper.purchasesList.map((PurchaseWrapper purchase) {
       return _maybeAutoConsumePurchase(PurchaseDetails.fromPurchase(purchase)
-        ..status = status
+        ..status = _buildPurchaseStatus(purchase.purchaseState)
         ..error = error);
     }).toList();
     if (!purchases.isEmpty) {
@@ -260,18 +284,25 @@ class GooglePlayConnection
       return purchaseDetails;
     }
 
-    final BillingResponse consumedResponse =
+    final BillingResultWrapper billingResult =
         await instance.consumePurchase(purchaseDetails);
+    final BillingResponse consumedResponse = billingResult.responseCode;
     if (consumedResponse != BillingResponse.ok) {
-      purchaseDetails.status = PurchaseStatus.error;
       purchaseDetails.error = IAPError(
         source: IAPSource.GooglePlay,
         code: kConsumptionFailedErrorCode,
         message: consumedResponse.toString(),
+        details: billingResult.debugMessage,
       );
     }
+    purchaseDetails.status = _buildPurchaseStatus(
+        purchaseDetails.billingClientPurchase.purchaseState);
     _productIdsToConsume.remove(purchaseDetails.productID);
 
     return purchaseDetails;
+  }
+
+  static PurchaseStatus _buildPurchaseStatus(PurchaseStateWrapper state) {
+    return PurchaseStateConverter().toPurchaseStatus(state);
   }
 }

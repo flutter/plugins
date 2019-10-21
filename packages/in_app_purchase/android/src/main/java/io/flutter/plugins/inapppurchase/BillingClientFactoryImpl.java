@@ -14,6 +14,7 @@ final class BillingClientFactoryImpl implements BillingClientFactory {
   @Override
   public BillingClient createBillingClient(Context context, MethodChannel channel) {
     return BillingClient.newBuilder(context)
+        .enablePendingPurchases()
         .setListener(new PluginPurchaseListener(channel))
         .build();
   }
