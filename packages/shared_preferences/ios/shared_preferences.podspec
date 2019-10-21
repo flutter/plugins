@@ -16,6 +16,7 @@ A Flutter plugin for reading and writing simple key-value pairs.
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
   
-  s.ios.deployment_target = '8.0'
+  s.platform = :ios, '8.0'
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
 end
 

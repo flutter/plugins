@@ -1,6 +1,7 @@
 ## 4.0.9
 
 * Update and migrate iOS example project.
+* Define clang module for iOS.
 
 ## 4.0.8
 

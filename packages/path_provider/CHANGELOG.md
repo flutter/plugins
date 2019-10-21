@@ -1,3 +1,14 @@
+## 1.4.0
+
+* Support retrieving storage paths on Android devices with multiple external
+  storage options. This adds a new class `AndroidEnvironment` that shadows the
+  directory names from Androids `android.os.Environment` class.
+* Fixes `getLibraryDirectory` semantics & tests.
+
+## 1.3.1
+
+* Define clang module for iOS.
+
 ## 1.3.0
 
 * Added iOS-only support for `getLibraryDirectory`.

@@ -1,3 +1,15 @@
+## 0.3.1+1
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.3.1
+
+* Support the v2 Android embedder.
+
+## 0.3.0+6
+
+* Define clang module for iOS.
+
 ## 0.3.0+5
 
 * Fix Gradle version.

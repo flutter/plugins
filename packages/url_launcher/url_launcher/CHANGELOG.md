@@ -1,3 +1,30 @@
+## 5.2.3
+
+Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 5.2.2
+
+* Re-land embedder v2 support with correct Flutter SDK constraints.
+
+## 5.2.1
+
+* Revert the migration since the Flutter dependency was too low.
+
+## 5.2.0
+
+* Migrate the plugin to use the V2 Android engine embedding. This shouldn't
+  affect existing functionality. Plugin authors who use the V2 embedding can now
+  instantiate the plugin and expect that it correctly responds to app lifecycle
+  changes.
+
+## 5.1.7
+
+* Define clang module for iOS.
+
+## 5.1.6
+
+* Fixes bug where androidx app won't build with this plugin by enabling androidx and jetifier in the android `gradle.properties`.
+
 ## 5.1.5
 
 * Update homepage url after moving to federated directory.
