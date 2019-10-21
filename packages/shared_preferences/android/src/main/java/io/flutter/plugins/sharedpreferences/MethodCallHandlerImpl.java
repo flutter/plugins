@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Base64;
-import androidx.annotation.NonNull;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.ByteArrayInputStream;
@@ -42,7 +41,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
    * Constructs a {@link MethodCallHandlerImpl} instance. Creates a {@link
    * android.content.SharedPreferences} based on the {@code context}.
    */
-  MethodCallHandlerImpl(@NonNull Context context) {
+  MethodCallHandlerImpl(Context context) {
     preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
   }
 

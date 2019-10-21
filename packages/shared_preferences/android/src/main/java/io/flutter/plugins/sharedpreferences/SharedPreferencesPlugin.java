@@ -5,7 +5,6 @@
 package io.flutter.plugins.sharedpreferences;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
@@ -23,12 +22,12 @@ public class SharedPreferencesPlugin implements FlutterPlugin {
   }
 
   @Override
-  public void onAttachedToEngine(@NonNull FlutterPlugin.FlutterPluginBinding binding) {
+  public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
     setupChannel(binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext());
   }
 
   @Override
-  public void onDetachedFromEngine(@NonNull FlutterPlugin.FlutterPluginBinding binding) {
+  public void onDetachedFromEngine(FlutterPlugin.FlutterPluginBinding binding) {
     teardownChannel();
   }
 
