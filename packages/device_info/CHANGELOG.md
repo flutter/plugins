@@ -1,6 +1,17 @@
 ## 0.5.0
 * Added indicator for a firebase test lab device.
 
+## 0.4.1
+
+* Support the v2 Android embedding.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
+## 0.4.0+4
+
+* Define clang module for iOS.
+
 ## 0.4.0+3
 
 * Update and migrate iOS example project.

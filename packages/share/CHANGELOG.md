@@ -1,3 +1,22 @@
+## 0.6.3
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
+## 0.6.2+4
+
+* Define clang module for iOS.
+
+## 0.6.2+3
+
+* Fix iOS crash when setting subject to null.
+
+## 0.6.2+2
+
+* Update and migrate iOS example project.
+
 ## 0.6.2+1
 
 * Specify explicit type for `invokeMethod`.

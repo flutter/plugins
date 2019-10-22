@@ -7,5 +7,10 @@ dependencies:
   battery:
     path: ../
 
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  e2e: ^0.2.1
+
 flutter:
   uses-material-design: true

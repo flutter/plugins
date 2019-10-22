@@ -120,6 +120,11 @@ class Polygon {
     );
   }
 
+  /// Creates a new [Polygon] object whose values are the same as this instance.
+  Polygon clone() {
+    return copyWith(pointsParam: List<LatLng>.of(points));
+  }
+
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
@@ -179,7 +184,7 @@ Map<PolygonId, Polygon> _keyByPolygonId(Iterable<Polygon> polygons) {
     return <PolygonId, Polygon>{};
   }
   return Map<PolygonId, Polygon>.fromEntries(polygons.map((Polygon polygon) =>
-      MapEntry<PolygonId, Polygon>(polygon.polygonId, polygon)));
+      MapEntry<PolygonId, Polygon>(polygon.polygonId, polygon.clone())));
 }
 
 List<Map<String, dynamic>> _serializePolygonSet(Set<Polygon> polygons) {
