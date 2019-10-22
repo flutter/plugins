@@ -44,12 +44,12 @@ void main() {
     test('launch', () async {
       await launcher.launch(
         'http://example.com/',
-        true,
-        false,
-        false,
-        false,
-        false,
-        const <String, String>{},
+        useSafariVC: true,
+        useWebView: false,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: false,
+        headers: const <String, String>{},
       );
       expect(
         log,
@@ -70,12 +70,12 @@ void main() {
     test('launch with headers', () async {
       await launcher.launch(
         'http://example.com/',
-        true,
-        false,
-        false,
-        false,
-        false,
-        const <String, String>{'key': 'value'},
+        useSafariVC: true,
+        useWebView: false,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: false,
+        headers: const <String, String>{'key': 'value'},
       );
       expect(
         log,
@@ -96,12 +96,12 @@ void main() {
     test('launch force SafariVC', () async {
       await launcher.launch(
         'http://example.com/',
-        true,
-        false,
-        false,
-        false,
-        false,
-        const <String, String>{},
+        useSafariVC: true,
+        useWebView: false,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: false,
+        headers: const <String, String>{},
       );
       expect(
         log,
@@ -122,12 +122,12 @@ void main() {
     test('launch universal links only', () async {
       await launcher.launch(
         'http://example.com/',
-        false,
-        false,
-        false,
-        false,
-        true,
-        const <String, String>{},
+        useSafariVC: false,
+        useWebView: false,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: true,
+        headers: const <String, String>{},
       );
       expect(
         log,
@@ -148,12 +148,12 @@ void main() {
     test('launch force WebView', () async {
       await launcher.launch(
         'http://example.com/',
-        true,
-        true,
-        false,
-        false,
-        false,
-        const <String, String>{},
+        useSafariVC: true,
+        useWebView: true,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: false,
+        headers: const <String, String>{},
       );
       expect(
         log,
@@ -174,12 +174,12 @@ void main() {
     test('launch force WebView enable javascript', () async {
       await launcher.launch(
         'http://example.com/',
-        true,
-        true,
-        true,
-        false,
-        false,
-        const <String, String>{},
+        useSafariVC: true,
+        useWebView: true,
+        enableJavaScript: true,
+        enableDomStorage: false,
+        universalLinksOnly: false,
+        headers: const <String, String>{},
       );
       expect(
         log,
@@ -200,12 +200,12 @@ void main() {
     test('launch force WebView enable DOM storage', () async {
       await launcher.launch(
         'http://example.com/',
-        true,
-        true,
-        false,
-        true,
-        false,
-        const <String, String>{},
+        useSafariVC: true,
+        useWebView: true,
+        enableJavaScript: false,
+        enableDomStorage: true,
+        universalLinksOnly: false,
+        headers: const <String, String>{},
       );
       expect(
         log,
@@ -226,12 +226,12 @@ void main() {
     test('launch force SafariVC to false', () async {
       await launcher.launch(
         'http://example.com/',
-        false,
-        false,
-        false,
-        false,
-        false,
-        const <String, String>{},
+        useSafariVC: false,
+        useWebView: false,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: false,
+        headers: const <String, String>{},
       );
       expect(
         log,

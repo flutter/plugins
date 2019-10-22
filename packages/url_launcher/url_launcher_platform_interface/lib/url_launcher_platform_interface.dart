@@ -4,6 +4,8 @@
 
 import 'dart:async';
 
+import 'package:meta/meta.dart' show required;
+
 import 'method_channel_url_launcher.dart';
 
 /// The interface that implementations of url_launcher must implement.
@@ -26,7 +28,7 @@ abstract class UrlLauncherPlatform {
 
   /// Returns `true` if this platform is able to launch [url].
   Future<bool> canLaunch(String url) {
-    throw new UnimplementedError('canLaunch() has not been implemented.');
+    throw UnimplementedError('canLaunch() has not been implemented.');
   }
 
   /// Returns `true` if the given [url] was successfully launched.
@@ -34,19 +36,19 @@ abstract class UrlLauncherPlatform {
   /// For documentation on the other arguments, see the `launch` documentation
   /// in `package:url_launcher/url_launcher.dart`.
   Future<bool> launch(
-    String url,
-    bool useSafariVC,
-    bool useWebView,
-    bool enableJavaScript,
-    bool enableDomStorage,
-    bool universalLinksOnly,
-    Map<String, String> headers,
-  ) {
-    throw new UnimplementedError('launch() has not been implemented.');
+    String url, {
+    @required bool useSafariVC,
+    @required bool useWebView,
+    @required bool enableJavaScript,
+    @required bool enableDomStorage,
+    @required bool universalLinksOnly,
+    @required Map<String, String> headers,
+  }) {
+    throw UnimplementedError('launch() has not been implemented.');
   }
 
   /// Closes the WebView, if one was opened earlier by [launch].
   Future<void> closeWebView() {
-    throw new UnimplementedError('closeWebView() has not been implemented.');
+    throw UnimplementedError('closeWebView() has not been implemented.');
   }
 }
