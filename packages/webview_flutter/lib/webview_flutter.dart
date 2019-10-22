@@ -143,6 +143,7 @@ class WebView extends StatefulWidget {
     this.userAgent,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.allowsInlineMediaPlayback = false,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         super(key: key);
@@ -300,6 +301,13 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
+  /// Controls whether inline playback of HTML5 videos is allowed on iOS.
+  ///
+  /// This field is ignored on Android.
+  ///
+  /// By default `allowsInlineMediaPlayback` is false.
+  final bool allowsInlineMediaPlayback;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -372,6 +380,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     javascriptMode: widget.javascriptMode,
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
+    allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String>.of(widget.userAgent),
   );
 }
@@ -415,9 +424,7 @@ WebSettings _clearUnchangedWebSettings(
 
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
   final Set<String> channelNames = channels == null
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // ignore: prefer_collection_literals
-      ? Set<String>()
+      ? <String>{}
       : channels.map((JavascriptChannel channel) => channel.name).toSet();
   return channelNames;
 }

@@ -113,16 +113,14 @@ void main() {
             controllerCompleter.complete(controller);
           },
           javascriptMode: JavascriptMode.unrestricted,
-          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-          // ignore: prefer_collection_literals
-          javascriptChannels: <JavascriptChannel>[
+          javascriptChannels: <JavascriptChannel>{
             JavascriptChannel(
               name: 'Echo',
               onMessageReceived: (JavascriptMessage message) {
                 messagesReceived.add(message.message);
               },
             ),
-          ].toSet(),
+          },
           onPageFinished: (String url) {
             pageLoaded.complete(null);
           },
@@ -168,16 +166,14 @@ void main() {
       onWebViewCreated: (WebViewController controller) {
         controllerCompleter.complete(controller);
       },
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // ignore: prefer_collection_literals
-      javascriptChannels: <JavascriptChannel>[
+      javascriptChannels: <JavascriptChannel>{
         JavascriptChannel(
           name: 'Resize',
           onMessageReceived: (JavascriptMessage message) {
             resizeCompleter.complete(true);
           },
         ),
-      ].toSet(),
+      },
       onPageFinished: (String url) {
         pageLoaded.complete(null);
       },
@@ -399,7 +395,7 @@ void main() {
       expect(isPaused, _webviewBool(true));
     });
 
-    test('Changes to initialMediaPlaybackPolocy are ignored', () async {
+    test('Changes to initialMediaPlaybackPolicy are ignored', () async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       Completer<void> pageLoaded = Completer<void>();
