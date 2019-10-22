@@ -96,8 +96,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
    * to implement different behavior when running in Test Lab.
    */
   private boolean isTestLabDevice() {
-    String testLabSetting =
-        Settings.System.getString(contentResolver, "firebase.test.lab");
+    String testLabSetting = Settings.System.getString(contentResolver, "firebase.test.lab");
     return "true".equals(testLabSetting);
   }
 
