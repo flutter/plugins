@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:e2e/e2e.dart';
 
 void main() {
-  final Completer<String> completer = Completer<String>();
-  enableFlutterDriverExtension(handler: (_) => completer.future);
-  tearDownAll(() => completer.complete(null));
+  E2EWidgetsFlutterBinding.ensureInitialized();
 
   group('$SharedPreferences', () {
     const Map<String, dynamic> kTestValues = <String, dynamic>{
