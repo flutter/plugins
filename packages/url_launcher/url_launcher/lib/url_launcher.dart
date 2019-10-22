@@ -8,8 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import 'method_channel_url_launcher.dart';
-import 'url_launcher_platform_interface.dart';
+const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 
 /// Parses the specified URL string and delegates handling of it to the
 /// underlying platform.
@@ -85,14 +84,17 @@ Future<bool> launch(
         ? SystemUiOverlayStyle.dark
         : SystemUiOverlayStyle.light);
   }
-  final bool result = await urlLauncherPlatform.launch(
-    urlString,
-    forceSafariVC ?? isWebURL,
-    forceWebView ?? false,
-    enableJavaScript ?? false,
-    enableDomStorage ?? false,
-    universalLinksOnly ?? false,
-    headers ?? <String, String>{},
+  final bool result = await _channel.invokeMethod<bool>(
+    'launch',
+    <String, Object>{
+      'url': urlString,
+      'useSafariVC': forceSafariVC ?? isWebURL,
+      'useWebView': forceWebView ?? false,
+      'enableJavaScript': enableJavaScript ?? false,
+      'enableDomStorage': enableDomStorage ?? false,
+      'universalLinksOnly': universalLinksOnly ?? false,
+      'headers': headers ?? <String, String>{},
+    },
   );
   if (statusBarBrightness != null) {
     WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
@@ -107,7 +109,10 @@ Future<bool> canLaunch(String urlString) async {
   if (urlString == null) {
     return false;
   }
-  return await urlLauncherPlatform.canLaunch(urlString);
+  return await _channel.invokeMethod<bool>(
+    'canLaunch',
+    <String, Object>{'url': urlString},
+  );
 }
 
 /// Closes the current WebView, if one was previously opened via a call to [launch].
@@ -122,25 +127,5 @@ Future<bool> canLaunch(String urlString) async {
 /// SafariViewController is only available on IOS version >= 9.0, this method does not do anything
 /// on IOS version below 9.0
 Future<void> closeWebView() async {
-  return await urlLauncherPlatform.closeWebView();
-}
-
-UrlLauncherPlatform _platform;
-
-/// The [UrlLauncherPlatform] that will do the platform-specific work.
-///
-/// Defaults to [MethodChannelUrlLauncher].
-UrlLauncherPlatform get urlLauncherPlatform {
-  if (_platform == null) {
-    _platform = MethodChannelUrlLauncher();
-  }
-  return _platform;
-}
-
-/// Sets the [UrlLauncherPlatform] to use.
-///
-/// Set the platform if you have a platform-specific implementation of
-/// [UrlLauncherPlatform] that you would like to use.
-set urlLauncherPlatform(UrlLauncherPlatform newPlatform) {
-  _platform = newPlatform;
+  return await _channel.invokeMethod<void>('closeWebView');
 }
