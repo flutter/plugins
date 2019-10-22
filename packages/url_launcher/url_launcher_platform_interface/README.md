@@ -8,12 +8,19 @@ same interface.
 
 # Usage
 
-To implement a new platform-specific implementation of `url_launcher`, you can
-either implement the method channel calls (specified in
-[`method_channel_url_launcher.dart`][2]) or you can implement your own instance
-of [`UrlLauncherPlatform`][3] and register it with `package:url_launcher` by
-setting `urlLauncherPlatform`.
+To implement a new platform-specific implementation of `url_launcher`, extend
+[`UrlLauncherPlatform`][2] with an implementation that performs the
+platform-specific behavior, and when you register your plugin, set the default
+`UrlLauncherPlatform` by calling
+`UrlLauncherPlatform.instance = MyPlatformUrlLauncher()`.
+
+# Note on breaking changes
+
+Strongly prefer non-breaking changes (such as adding a method to the interface)
+over breaking changes for this package.
+
+See https://flutter.dev/go/platform-interface-breaking-changes for a discussion
+on why a less-clean interface is preferable to a breaking change.
 
 [1]: ../url_launcher
-[2]: lib/method_channel_url_launcher.dart
-[3]: lib/url_launcher_platform_interface.dart
+[2]: lib/url_launcher_platform_interface.dart
