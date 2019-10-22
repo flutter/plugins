@@ -40,17 +40,16 @@ static FlutterError *getFlutterError(NSError *error) {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
                                   binaryMessenger:[registrar messenger]];
-  FLTGoogleSignInPlugin *instance = [[FLTGoogleSignInPlugin alloc] initWithController:[registrar messenger]];
+  FLTGoogleSignInPlugin *instance = [[FLTGoogleSignInPlugin alloc] init];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithController:(id)controller {
+- (instancetype)init {
   self = [super init];
   if (self) {
     [GIDSignIn sharedInstance].delegate = self;
-    [GIDSignIn sharedInstance].presentingViewController = controller;
-
+    
     // On the iOS simulator, we get "Broken pipe" errors after sign-in for some
     // unknown reason. We can avoid crashing the app by ignoring them.
     signal(SIGPIPE, SIG_IGN);
@@ -89,6 +88,8 @@ static FlutterError *getFlutterError(NSError *error) {
   } else if ([call.method isEqualToString:@"isSignedIn"]) {
     result(@([[GIDSignIn sharedInstance] hasPreviousSignIn]));
   } else if ([call.method isEqualToString:@"signIn"]) {
+    [GIDSignIn sharedInstance].presentingViewController = [self topViewController];
+
     if ([self setAccountRequest:result]) {
       @try {
         [[GIDSignIn sharedInstance] signIn];
@@ -190,4 +191,36 @@ static FlutterError *getFlutterError(NSError *error) {
   result(error != nil ? getFlutterError(error) : account);
 }
 
+- (UIViewController *)topViewController {
+  return [self topViewControllerFromViewController:[UIApplication sharedApplication]
+          .keyWindow.rootViewController];
+}
+
+/**
+ * This method recursively iterate through the view hierarchy
+ * to return the top most view controller.
+ *
+ * It supports the following scenarios:
+ *
+ * - The view controller is presenting another view.
+ * - The view controller is a UINavigationController.
+ * - The view controller is a UITabBarController.
+ *
+ * @return The top most view controller.
+ */
+- (UIViewController *)topViewControllerFromViewController:(UIViewController *)viewController {
+  if ([viewController isKindOfClass:[UINavigationController class]]) {
+    UINavigationController *navigationController = (UINavigationController *)viewController;
+    return [self
+            topViewControllerFromViewController:[navigationController.viewControllers lastObject]];
+  }
+  if ([viewController isKindOfClass:[UITabBarController class]]) {
+    UITabBarController *tabController = (UITabBarController *)viewController;
+    return [self topViewControllerFromViewController:tabController.selectedViewController];
+  }
+  if (viewController.presentedViewController) {
+    return [self topViewControllerFromViewController:viewController.presentedViewController];
+  }
+  return viewController;
+}
 @end
