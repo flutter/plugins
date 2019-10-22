@@ -459,7 +459,7 @@ void main() {
     });
 
     test('Video plays inline when allowsInlineMediaPlayback is true', () async {
-      if(Platform.isIOS){
+      if (Platform.isIOS) {
         Completer<WebViewController> controllerCompleter =
             Completer<WebViewController>();
         Completer<void> pageLoaded = Completer<void>();
