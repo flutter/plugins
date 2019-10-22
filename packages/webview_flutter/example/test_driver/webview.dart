@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
@@ -307,34 +308,38 @@ void main() {
   });
 
   group('Media playback policy', () {
-    String audioTestBase64;
+    String videoTestBase64;
     setUpAll(() async {
-      final ByteData audioData =
-          await rootBundle.load('assets/sample_audio.ogg');
-      final String base64AudioData =
-          base64Encode(Uint8List.view(audioData.buffer));
-      final String audioTest = '''
+      final ByteData videoData =
+          await rootBundle.load('assets/sample_video.mp4');
+      final String base64VideoData =
+          base64Encode(Uint8List.view(videoData.buffer));
+      final String videoTest = '''
         <!DOCTYPE html><html>
-        <head><title>Audio auto play</title>
+        <head><title>Video auto play</title>
           <script type="text/javascript">
             function play() {
-              var audio = document.getElementById("audio");
-              audio.play();
+              var video = document.getElementById("video");
+              video.play();
             }
             function isPaused() {
-              var audio = document.getElementById("audio");
-              return audio.paused;
+              var video = document.getElementById("video");
+              return video.paused;
+            }
+            function isFullScreen() {
+              var video = document.getElementById("video");
+              return video.webkitDisplayingFullscreen;
             }
           </script>
         </head>
         <body onload="play();">
-        <audio controls id="audio">
-          <source src="data:audio/ogg;charset=utf-8;base64,$base64AudioData">
-        </audio>
+        <video controls playsinline autoplay id="video">
+          <source src="data:video/mp4;charset=utf-8;base64,$base64VideoData">
+        </video>
         </body>
         </html>
       ''';
-      audioTestBase64 = base64Encode(const Utf8Encoder().convert(audioTest));
+      videoTestBase64 = base64Encode(const Utf8Encoder().convert(videoTest));
     });
 
     test('Auto media playback', () async {
@@ -347,7 +352,7 @@ void main() {
           textDirection: TextDirection.ltr,
           child: WebView(
             key: GlobalKey(),
-            initialUrl: 'data:text/html;charset=utf-8;base64,$audioTestBase64',
+            initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
@@ -374,7 +379,7 @@ void main() {
           textDirection: TextDirection.ltr,
           child: WebView(
             key: GlobalKey(),
-            initialUrl: 'data:text/html;charset=utf-8;base64,$audioTestBase64',
+            initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
@@ -406,7 +411,7 @@ void main() {
           textDirection: TextDirection.ltr,
           child: WebView(
             key: key,
-            initialUrl: 'data:text/html;charset=utf-8;base64,$audioTestBase64',
+            initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
@@ -431,7 +436,7 @@ void main() {
           textDirection: TextDirection.ltr,
           child: WebView(
             key: key,
-            initialUrl: 'data:text/html;charset=utf-8;base64,$audioTestBase64',
+            initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
@@ -451,6 +456,67 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(false));
+    });
+
+    test('Video plays inline when allowsInlineMediaPlayback is true', () async {
+      if(Platform.isIOS){
+        Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+        Completer<void> pageLoaded = Completer<void>();
+
+        await pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: WebView(
+              key: GlobalKey(),
+              initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
+              onWebViewCreated: (WebViewController controller) {
+                controllerCompleter.complete(controller);
+              },
+              javascriptMode: JavascriptMode.unrestricted,
+              onPageFinished: (String url) {
+                pageLoaded.complete(null);
+              },
+              initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+              allowsInlineMediaPlayback: true,
+            ),
+          ),
+        );
+        WebViewController controller = await controllerCompleter.future;
+        await pageLoaded.future;
+
+        String isFullScreen = await controller.evaluateJavascript('isFullScreen();');
+        expect(isFullScreen, _webviewBool(false));
+
+        controllerCompleter = Completer<WebViewController>();
+        pageLoaded = Completer<void>();
+
+        await pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: WebView(
+              key: GlobalKey(),
+              initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
+              onWebViewCreated: (WebViewController controller) {
+                controllerCompleter.complete(controller);
+              },
+              javascriptMode: JavascriptMode.unrestricted,
+              onPageFinished: (String url) {
+                pageLoaded.complete(null);
+              },
+              initialMediaPlaybackPolicy:
+              AutoMediaPlaybackPolicy.always_allow,
+              allowsInlineMediaPlayback: false,
+            ),
+          ),
+        );
+
+        controller = await controllerCompleter.future;
+        await pageLoaded.future;
+
+        isFullScreen = await controller.evaluateJavascript('isFullScreen();');
+        expect(isFullScreen, _webviewBool(true));
+      }
     });
   });
 
