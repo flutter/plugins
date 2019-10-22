@@ -461,7 +461,7 @@ void main() {
     test('Video plays inline when allowsInlineMediaPlayback is true', () async {
       if(Platform.isIOS){
         Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
+            Completer<WebViewController>();
         Completer<void> pageLoaded = Completer<void>();
 
         await pumpWidget(
@@ -469,7 +469,8 @@ void main() {
             textDirection: TextDirection.ltr,
             child: WebView(
               key: GlobalKey(),
-              initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
+              initialUrl:
+                  'data:text/html;charset=utf-8;base64,$videoTestBase64',
               onWebViewCreated: (WebViewController controller) {
                 controllerCompleter.complete(controller);
               },
@@ -485,7 +486,8 @@ void main() {
         WebViewController controller = await controllerCompleter.future;
         await pageLoaded.future;
 
-        String isFullScreen = await controller.evaluateJavascript('isFullScreen();');
+        String isFullScreen =
+            await controller.evaluateJavascript('isFullScreen();');
         expect(isFullScreen, _webviewBool(false));
 
         controllerCompleter = Completer<WebViewController>();
@@ -496,7 +498,8 @@ void main() {
             textDirection: TextDirection.ltr,
             child: WebView(
               key: GlobalKey(),
-              initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
+              initialUrl:
+                  'data:text/html;charset=utf-8;base64,$videoTestBase64',
               onWebViewCreated: (WebViewController controller) {
                 controllerCompleter.complete(controller);
               },
@@ -504,8 +507,7 @@ void main() {
               onPageFinished: (String url) {
                 pageLoaded.complete(null);
               },
-              initialMediaPlaybackPolicy:
-              AutoMediaPlaybackPolicy.always_allow,
+              initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
               allowsInlineMediaPlayback: false,
             ),
           ),
