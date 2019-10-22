@@ -46,7 +46,7 @@ class MockUrlLauncherPlatform extends UrlLauncherPlatform {
   // Ignoring the `prefer_collection_literals` warning here because if we use
   // a set literal, it will give another warning saying this code is required
   // to run on versions of Dart that are older than 2.2 (when set literals were
-  // added.
+  // added.)
   // ignore: prefer_collection_literals
   Set<String> launchableUrls = Set<String>();
 
