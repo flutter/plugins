@@ -1,3 +1,15 @@
+## 0.4.1
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
+## 0.4.0+3
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
 ## 0.4.0+2
 
 * Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446
