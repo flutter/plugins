@@ -2,15 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:url_launcher_platform_interface/method_channel_url_launcher.dart';
-import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
+
+import '../lib/method_channel_url_launcher.dart';
+import '../lib/url_launcher_platform_interface.dart';
 
 void main() {
-  group('$MethodChannelUrlLauncher', () {
-    TestWidgetsFlutterBinding.ensureInitialized();
+  TestWidgetsFlutterBinding.ensureInitialized();
 
+  group('$UrlLauncherPlatform', () {
+    test('$MethodChannelUrlLauncher() is the default instance', () {
+      expect(UrlLauncherPlatform.instance,
+          isInstanceOf<MethodChannelUrlLauncher>());
+    });
+
+    test('Cannot be implemented with `implements`', () {
+      expect(() {
+        UrlLauncherPlatform.instance = ImplementsUrlLauncherPlatform();
+      }, throwsA(isInstanceOf<AssertionError>()));
+    });
+
+    test('Can be mocked with `implements`', () {
+      final ImplementsUrlLauncherPlatform mock =
+          ImplementsUrlLauncherPlatform();
+      when(mock.isMock).thenReturn(true);
+      UrlLauncherPlatform.instance = mock;
+    });
+
+    test('Can be extended', () {
+      UrlLauncherPlatform.instance = ExtendsUrlLauncherPlatform();
+    });
+  });
+
+  group('$MethodChannelUrlLauncher', () {
     const MethodChannel channel =
         MethodChannel('plugins.flutter.io/url_launcher');
     final List<MethodCall> log = <MethodCall>[];
@@ -22,11 +48,6 @@ void main() {
 
     tearDown(() {
       log.clear();
-    });
-
-    test('is the default $UrlLauncherPlatform instance', () {
-      expect(UrlLauncherPlatform.instance,
-          isInstanceOf<MethodChannelUrlLauncher>());
     });
 
     test('canLaunch', () async {
@@ -258,3 +279,8 @@ void main() {
     });
   });
 }
+
+class ImplementsUrlLauncherPlatform extends Mock
+    implements UrlLauncherPlatform {}
+
+class ExtendsUrlLauncherPlatform extends UrlLauncherPlatform {}
