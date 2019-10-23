@@ -10,6 +10,7 @@ import 'package:flutter/services.dart' show PlatformException;
 
 void main() {
   final MockUrlLauncher mock = MockUrlLauncher();
+  when(mock.isMock).thenReturn(true);
 
   UrlLauncherPlatform.instance = mock;
 
