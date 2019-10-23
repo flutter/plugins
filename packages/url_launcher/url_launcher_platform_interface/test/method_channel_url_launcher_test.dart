@@ -18,19 +18,19 @@ void main() {
           isInstanceOf<MethodChannelUrlLauncher>());
     });
 
-    test('Cannot be implemented with `implements', () {
+    test('Cannot be implemented with `implements`', () {
       expect(() {
         UrlLauncherPlatform.instance = ImplementsUrlLauncherPlatform();
       }, throwsA(isInstanceOf<AssertionError>()));
     });
 
-    test('Can be mocked with `implements', () {
+    test('Can be mocked with `implements`', () {
       final ImplementsUrlLauncherPlatform mock = ImplementsUrlLauncherPlatform();
       when(mock.isMock).thenReturn(true);
       UrlLauncherPlatform.instance = mock;
     });
 
-    test('Can be exteneded', () {
+    test('Can be extended', () {
       UrlLauncherPlatform.instance = ExtendsUrlLauncherPlatform();
     });
   });

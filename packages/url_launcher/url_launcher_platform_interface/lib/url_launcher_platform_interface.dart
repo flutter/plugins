@@ -35,6 +35,8 @@ abstract class UrlLauncherPlatform {
 
   static UrlLauncherPlatform get instance => _instance;
 
+  // TODO(amirh): Extract common platform interface logic.
+  // https://github.com/flutter/flutter/issues/43368
   static set instance(UrlLauncherPlatform instance) {
     if (!instance.isMock) {
       try {
