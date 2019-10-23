@@ -25,7 +25,8 @@ void main() {
     });
 
     test('Can be mocked with `implements`', () {
-      final ImplementsUrlLauncherPlatform mock = ImplementsUrlLauncherPlatform();
+      final ImplementsUrlLauncherPlatform mock =
+          ImplementsUrlLauncherPlatform();
       when(mock.isMock).thenReturn(true);
       UrlLauncherPlatform.instance = mock;
     });
