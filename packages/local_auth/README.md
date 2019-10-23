@@ -130,7 +130,20 @@ app has not been updated to use TouchID.
 Note that local_auth plugin requires the use of a FragmentActivity as
 opposed to Activity. This can be easily done by switching to use
 `FlutterFragmentActivity` as opposed to `FlutterActivity` in your
-manifest (or your own Activity class if you are extending the base class).
+manifest (or your own Activity class if you are extending the base class): 
+
+```java
+import io.flutter.app.FlutterFragmentActivity;
+
+import io.flutter.plugins.GeneratedPluginRegistrant
+
+class MainActivity: FlutterFragmentActivity() {
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    GeneratedPluginRegistrant.registerWith(this)
+  }
+}
+```
 
 Update your project's `AndroidManifest.xml` file to include the
 `USE_FINGERPRINT` permissions:
