@@ -21,7 +21,7 @@ public final class AndroidIntentPlugin implements FlutterPlugin, ActivityAware {
    * <p>See {@code io.flutter.plugins.androidintentexample.MainActivity} for an example.
    */
   public AndroidIntentPlugin() {
-    sender = new IntentSender(/*activity=*/ null, /*context=*/ null);
+    sender = new IntentSender(/*activity=*/ null, /*applicationContext=*/ null);
     impl = new MethodCallHandlerImpl(sender);
   }
 

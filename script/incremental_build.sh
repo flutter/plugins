@@ -22,7 +22,10 @@ else
 
   if [[ "$CHANGED_PACKAGES" == "" ]]; then
     echo "No changes detected in packages."
+    echo "Running for all packages"
+    (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
   else
+    echo running "${ACTIONS[@]}"
     (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING)
     echo "Running version check for changed packages"
     (cd "$REPO_DIR" && pub global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
