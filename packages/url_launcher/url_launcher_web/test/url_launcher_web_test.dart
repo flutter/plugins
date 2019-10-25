@@ -7,7 +7,6 @@
 import 'dart:html' as html;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
 
-import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
@@ -11,6 +10,9 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
     UrlLauncherPlatform.instance = UrlLauncherPlugin();
   }
 
+  /// Opens the given [url] in a new window.
+  ///
+  /// Returns the newly created window.
   @visibleForTesting
   html.WindowBase openNewWindow(String url) {
     return html.window.open(url, '');
@@ -25,10 +27,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
         parsedUrl.isScheme('http') || parsedUrl.isScheme('https'));
   }
 
-  /// Returns `true` if the given [url] was successfully launched.
-  ///
-  /// For documentation on the other arguments, see the `launch` documentation
-  /// in `package:url_launcher/url_launcher.dart`.
+  @override
   Future<bool> launch(
     String url, {
     @required bool useSafariVC,
