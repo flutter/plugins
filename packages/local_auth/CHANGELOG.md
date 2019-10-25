@@ -1,4 +1,4 @@
-## 0.6.0+3
+## 0.6.1
 
 * Added ability to stop authentication (For Android).
 

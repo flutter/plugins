@@ -38,7 +38,7 @@ public class LocalAuthPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
     if (call.method.equals("authenticateWithBiometrics")) {
-      if (!authInProgress.compareAndSet(false, true)) {
+      if (authInProgress.get()) {
         // Apps should not invoke another authentication request while one is in progress,
         // so we classify this as an error condition. If we ever find a legitimate use case for
         // this, we can try to cancel the ongoing auth and start a new one but for now, not worth
@@ -60,6 +60,7 @@ public class LocalAuthPlugin implements MethodCallHandler {
             null);
         return;
       }
+      authInProgress.set(true);
       authenticationHelper =
           new AuthenticationHelper(
               (FragmentActivity) activity,

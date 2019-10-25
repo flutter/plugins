@@ -91,6 +91,7 @@ class LocalAuthentication {
   }
 
   /// Returns true if auth was cancelled successfully.
+  /// This api only works for Android.
   /// Returns false if there was some error or no auth in progress.
   ///
   /// Returns [Future] bool true or false:
@@ -98,9 +99,7 @@ class LocalAuthentication {
     if (_platform.isAndroid) {
       return _channel.invokeMethod<bool>('stopAuthentication');
     }
-    final Future<bool> future = Future<bool>(() => true);
-    Completer<bool>().complete(future);
-    return future;
+    return Future<bool>.sync(() => true);
   }
 
   /// Returns true if device is capable of checking biometrics
