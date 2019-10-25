@@ -4,19 +4,26 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart' show required;
+import 'package:meta/meta.dart' show required, visibleForTesting;
 
 import 'method_channel_url_launcher.dart';
 
 /// The interface that implementations of url_launcher must implement.
 ///
-/// Platform implementations that live in a separate package should extend this
-/// class rather than implement it as `url_launcher` does not consider newly
-/// added methods to be breaking changes. Extending this class (using `extends`)
-/// ensures that the subclass will get the default implementation, while
-/// platform implementations that `implements` this interface will be broken by
-/// newly added [UrlLauncherPlatform] methods.
+/// Platform implementations should extend this class rather than implement it as `url_launcher`
+/// does not consider newly added methods to be breaking changes. Extending this class
+/// (using `extends`) ensures that the subclass will get the default implementation, while
+/// platform implementations that `implements` this interface will be broken by newly added
+/// [UrlLauncherPlatform] methods.
 abstract class UrlLauncherPlatform {
+  /// Only mock implementations should set this to true.
+  ///
+  /// Mockito mocks are implementing this class with `implements` which is forbidden for anything
+  /// other than mocks (see class docs). This property provides a backdoor for mockito mocks to
+  /// skip the verification that the class isn't implemented with `implements`.
+  @visibleForTesting
+  bool get isMock => false;
+
   /// The default instance of [UrlLauncherPlatform] to use.
   ///
   /// Platform-specific plugins should override this with their own
@@ -24,7 +31,23 @@ abstract class UrlLauncherPlatform {
   /// register themselves.
   ///
   /// Defaults to [MethodChannelUrlLauncher].
-  static UrlLauncherPlatform instance = MethodChannelUrlLauncher();
+  static UrlLauncherPlatform _instance = MethodChannelUrlLauncher();
+
+  static UrlLauncherPlatform get instance => _instance;
+
+  // TODO(amirh): Extract common platform interface logic.
+  // https://github.com/flutter/flutter/issues/43368
+  static set instance(UrlLauncherPlatform instance) {
+    if (!instance.isMock) {
+      try {
+        instance._verifyProvidesDefaultImplementations();
+      } on NoSuchMethodError catch (_) {
+        throw AssertionError(
+            'Platform interfaces must not be implemented with `implements`');
+      }
+    }
+    _instance = instance;
+  }
 
   /// Returns `true` if this platform is able to launch [url].
   Future<bool> canLaunch(String url) {
@@ -51,4 +74,12 @@ abstract class UrlLauncherPlatform {
   Future<void> closeWebView() {
     throw UnimplementedError('closeWebView() has not been implemented.');
   }
+
+  // This method makes sure that UrlLauncher isn't implemented with `implements`.
+  //
+  // See class doc for more details on why implementing this class is forbidden.
+  //
+  // This private method is called by the instance setter, which fails if the class is
+  // implemented with `implements`.
+  void _verifyProvidesDefaultImplementations() {}
 }
