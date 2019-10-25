@@ -28,7 +28,7 @@ import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
 public class MyPlugin implements FlutterPlugin {
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-    Lifecycle lifecycle = new FlutterLifecycleAdapter.getLifecycle(binding);
+    Lifecycle lifecycle = FlutterLifecycleAdapter.getLifecycle(binding);
     
     // Use lifecycle as desired.
   }
