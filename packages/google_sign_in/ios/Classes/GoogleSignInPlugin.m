@@ -49,7 +49,7 @@ static FlutterError *getFlutterError(NSError *error) {
   self = [super init];
   if (self) {
     [GIDSignIn sharedInstance].delegate = self;
-    
+
     // On the iOS simulator, we get "Broken pipe" errors after sign-in for some
     // unknown reason. We can avoid crashing the app by ignoring them.
     signal(SIGPIPE, SIG_IGN);
@@ -192,7 +192,7 @@ static FlutterError *getFlutterError(NSError *error) {
 
 - (UIViewController *)topViewController {
   return [self topViewControllerFromViewController:[UIApplication sharedApplication]
-          .keyWindow.rootViewController];
+                                                       .keyWindow.rootViewController];
 }
 
 /**
@@ -211,7 +211,7 @@ static FlutterError *getFlutterError(NSError *error) {
   if ([viewController isKindOfClass:[UINavigationController class]]) {
     UINavigationController *navigationController = (UINavigationController *)viewController;
     return [self
-            topViewControllerFromViewController:[navigationController.viewControllers lastObject]];
+        topViewControllerFromViewController:[navigationController.viewControllers lastObject]];
   }
   if ([viewController isKindOfClass:[UITabBarController class]]) {
     UITabBarController *tabController = (UITabBarController *)viewController;
