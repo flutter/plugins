@@ -1,3 +1,8 @@
+## 5.2.5
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
 ## 5.2.4
 
 * Use `package:url_launcher_platform_interface` to get the platform-specific implementation.
