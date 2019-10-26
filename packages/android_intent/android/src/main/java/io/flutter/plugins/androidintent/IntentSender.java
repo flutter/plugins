@@ -14,8 +14,8 @@ import androidx.annotation.Nullable;
 public final class IntentSender {
   private static final String TAG = "IntentSender";
 
-  private @Nullable Activity activity;
-  private @Nullable Context applicationContext;
+  @Nullable private Activity activity;
+  @Nullable private Context applicationContext;
 
   /**
    * Caches the given {@code activity} and {@code applicationContext} to use for sending intents
@@ -80,13 +80,13 @@ public final class IntentSender {
     }
     if (!TextUtils.isEmpty(packageName)) {
       intent.setPackage(packageName);
+      if (componentName != null) {
+        intent.setComponent(componentName);
+      }
       if (intent.resolveActivity(applicationContext.getPackageManager()) == null) {
         Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
         intent.setPackage(null);
       }
-    }
-    if (componentName != null) {
-      intent.setComponent(componentName);
     }
 
     Log.v(TAG, "Sending intent " + intent);
