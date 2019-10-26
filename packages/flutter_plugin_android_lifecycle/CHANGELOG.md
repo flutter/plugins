@@ -1,3 +1,6 @@
+## 1.0.2
+* Fix plugin instantiation typo in README.md
+
 ## 1.0.1
 * Register the E2E plugin in the example app.
 
