@@ -52,6 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
+
     print('DidChangeDependencies');
     quickActions.initialize((String shortcutType) {
       print('ShortcutType: $shortcutType');
