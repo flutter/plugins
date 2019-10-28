@@ -1,7 +1,7 @@
 # e2e
 
 This package enables self-driving testing of Flutter code on devices and emulators.
-It can adapt the test results in a format that is compatible with `flutter drive`
+It adapts flutter_test results into a format that is compatible with `flutter drive`
 and native Android instrumentation testing.
 
 iOS support is not available yet, but is planned in the future.
@@ -27,12 +27,19 @@ void main() {
 }
 ```
 
+## Test locations
+
+It is recommended to put e2e tests in the `test/` folder of the app or package.
+For example apps, if the e2e test references example app code, it should go in
+`example/test/`. It is also acceptable to put e2e tests in `test_driver/` folder
+so that they're alongside the runner app (see below).
+
 ## Using Flutter driver to run tests
 
 `E2EWidgetsTestBinding` supports launching the on-device tests with `flutter drive`.
 Note that the tests don't use the `FlutterDriver` API, they use `testWidgets` instead.
 
-Put the a file named `<package_name>_test.dart` in the app' `test_driver` directory:
+Put the a file named `<package_name>_e2e_test.dart` in the app' `test_driver` directory:
 
 ```
 import 'package:flutter_driver/flutter_driver.dart';
@@ -106,22 +113,27 @@ dependencies {
 To e2e test on a local Android device (emulated or physical):
 
 ```
-./gradlew connectedAndroidTest -Ptarget=`pwd`/../test_driver/<package_name>_e2e.dart
+./gradlew app:connectedAndroidTest -Ptarget=`pwd`/../test_driver/<package_name>_e2e.dart
 ```
 
 ## Firebase Test Lab
+
+If this is you first time testing with Firebase Test Lab, 
+you'll need to follow the guides in the
+[Firebase test lab documentation](https://firebase.google.com/docs/test-lab/?gclid=EAIaIQobChMIs5qVwqW25QIV8iCtBh3DrwyUEAAYASAAEgLFU_D_BwE)
+to set up a project.
 
 To run an e2e test on Android devices using Firebase Test Lab, use gradle commands to build an
 instrumentation test for Android.
 
 ```
 pushd android
-./gradlew assembleAndroidTest
-./gradlew assembleDebug -Ptarget=<path_to_test>.dart
+./gradlew app:assembleAndroidTest
+./gradlew app:assembleDebug -Ptarget=<path_to_test>.dart
 popd
 ```
 
-Upload to Firebase Test Lab, making sure to replace <PATH_TO_KEY_FILE>,
+Upload the build apks Firebase Test Lab, making sure to replace <PATH_TO_KEY_FILE>,
 <PROJECT_NAME>, <RESULTS_BUCKET>, and <RESULTS_DIRECTORY> with your values.
 
 ```
@@ -134,5 +146,9 @@ gcloud firebase test android run --type instrumentation \
   --results-bucket=<RESULTS_BUCKET> \
   --results-dir=<RESULTS_DIRECTORY>
 ```
+
+You can pass additional parameters on the command line, such as the
+devices you want to test on. See
+[gcloud firebase test android run](https://cloud.google.com/sdk/gcloud/reference/firebase/test/android/run).
 
 iOS support for Firebase Test Lab is not yet available, but is planned.
