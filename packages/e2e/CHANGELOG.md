@@ -1,3 +1,7 @@
+## 0.2.1+1
+
+* Updated README.
+
 ## 0.2.1
 
 * Support the v2 Android embedder.
