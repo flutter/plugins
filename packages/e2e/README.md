@@ -1,7 +1,8 @@
 # e2e
 
-Adapts flutter_test results as Android instrumentation tests, making them usable
-for Firebase Test Lab and other Android CI providers.
+This package enables self-driving testing of Flutter code on devices and emulators.
+It can adapt the test results in a format that is compatible with `flutter drive`
+and native Android instrumentation testing.
 
 iOS support is not available yet, but is planned in the future.
 
@@ -11,14 +12,14 @@ Add a dependency on the `e2e` package in the
 `dev_dependencies` section of pubspec.yaml. For plugins, do this in the
 pubspec.yaml of the example app.
 
-Invoke `InstrumentationAdapterFlutterBinding.ensureInitialized()` at the start
+Invoke `E2EWidgetsFlutterBinding.ensureInitialized()` at the start
 of a test file, e.g.
 
 ```dart
 import 'package:e2e/e2e.dart';
 
 void main() {
-  InstrumentationAdapterFlutterBinding.ensureInitialized();
+  E2EWidgetsFlutterBinding.ensureInitialized();
   testWidgets("failing test example", (WidgetTester tester) async {
     expect(2 + 2, equals(5));
   });

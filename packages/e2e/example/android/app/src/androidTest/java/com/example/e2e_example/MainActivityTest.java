@@ -1,7 +1,7 @@
 package com.example.e2e_example;
 
 import androidx.test.rule.ActivityTestRule;
-import dev.flutter.plugins.instrumentationadapter.FlutterRunner;
+import dev.flutter.plugins.e2e.FlutterRunner;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
