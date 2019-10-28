@@ -58,7 +58,6 @@ WillFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> 
       self.shortcutType = nil;
     }
   }
-  
   return YES;
 }
 
@@ -67,7 +66,6 @@ performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
   completionHandler:(void (^)(BOOL succeeded))completionHandler API_AVAILABLE(ios(9.0)){
   self.shortcutType = shortcutItem.type;
   [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
-  
   return YES;
 }
 
@@ -76,12 +74,10 @@ performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
 static void setShortcutItems(NSArray *items) {
   if (@available(iOS 9.0, *)) {
     NSMutableArray *newShortcuts = [[NSMutableArray alloc] init];
-    
     for (id item in items) {
       UIApplicationShortcutItem *shortcut = deserializeShortcutItem(item);
       [newShortcuts addObject:shortcut];
     }
-    
     [UIApplication sharedApplication].shortcutItems = newShortcuts;
   }
 }
