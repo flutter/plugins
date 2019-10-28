@@ -1,3 +1,7 @@
+## 0.5.21+9
+
+* Remove AndroidX warnings.
+
 ## 0.5.21+8
 
 * Add NS_ASSUME_NONNULL_* macro to reduce iOS compiler warnings.

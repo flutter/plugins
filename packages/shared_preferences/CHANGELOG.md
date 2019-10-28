@@ -1,6 +1,10 @@
-## 0.5.4+2
+## 0.5.4+3
 
 * Android: Suppress casting warnings.
+
+## 0.5.4+2
+
+* Remove AndroidX warnings.
 
 ## 0.5.4+1
 

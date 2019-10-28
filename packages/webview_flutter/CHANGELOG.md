@@ -1,3 +1,7 @@
+## 0.3.15+2
+
+* Remove AndroidX warnings.
+
 ## 0.3.15+1
 
 * Revert the prior embedding support add since it requires an API that hasn't

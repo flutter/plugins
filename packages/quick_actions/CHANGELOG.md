@@ -1,3 +1,7 @@
+## 0.3.2+4
+
+* Remove AndroidX warnings.
+
 ## 0.3.2+3
 
 * Define clang module for iOS.

@@ -1,3 +1,7 @@
+## 0.10.2+6
+
+* Remove AndroidX warnings.
+
 ## 0.10.2+5
 
 * Update unit test for compatibility with Flutter stable branch.
