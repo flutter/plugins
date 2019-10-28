@@ -66,7 +66,6 @@ WillFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> 
 - (BOOL)application:(UIApplication *)application
 performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
   completionHandler:(void (^)(BOOL succeeded))completionHandler API_AVAILABLE(ios(9.0)){
-    NSLog(@"Called via shortcuts: %@", shortcutItem.type);
     self.shortcutType = shortcutItem.type;
     [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
     
