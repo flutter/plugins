@@ -1,3 +1,7 @@
+## 0.5.4+2
+
+* Android: Suppress casting warnings.
+
 ## 0.5.4+1
 
 * Include lifecycle dependency as a compileOnly one on Android to resolve
