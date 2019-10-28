@@ -30,18 +30,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String shortcut = "no action set";
+  final QuickActions quickActions = QuickActions();
 
   @override
   void initState() {
     super.initState();
-
-    final QuickActions quickActions = QuickActions();
-    quickActions.initialize((String shortcutType) {
-      setState(() {
-        if (shortcutType != null) shortcut = shortcutType;
-      });
-    });
 
     quickActions.setShortcutItems(<ShortcutItem>[
       // NOTE: This first action icon will only work on iOS.
@@ -53,23 +46,53 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       // NOTE: This second action icon will only work on Android.
       // In a real world project keep the same file name for both platforms.
-      const ShortcutItem(
-          type: 'action_two',
-          localizedTitle: 'Action two',
-          icon: 'ic_launcher'),
+      const ShortcutItem(type: 'action_two', localizedTitle: 'Action two', icon: 'ic_launcher'),
     ]);
+  }
+
+  @override
+  void didChangeDependencies() {
+    print('DidChangeDependencies');
+    quickActions.initialize((String shortcutType) {
+      print('ShortcutType: $shortcutType');
+
+      _shortcutDialog(context, shortcutType);
+    });
+  }
+
+  Future<void> _shortcutDialog(BuildContext context, String shortcutType) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Opened via Actions'),
+          content: Text('Opened via shortcut: $shortcutType'),
+          actions: <Widget>[
+            FlatButton(
+              child: const Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$shortcut'),
+        title: const Text('Flutter Quick Actions Demo'),
       ),
-      body: const Center(
-        child: Text('On home screen, long press the app icon to '
-            'get Action one or Action two options. Tapping on that action should  '
-            'set the toolbar title.'),
+      body: const Padding(
+        padding: EdgeInsets.all(32.0),
+        child: Center(
+          child: Text('On home screen, long press the app icon to '
+              'get Action one or Action two options. Tapping on that action should  '
+              'show the dialog showing the selection.'),
+        ),
       ),
     );
   }
