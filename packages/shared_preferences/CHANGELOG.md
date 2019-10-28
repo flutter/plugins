@@ -1,3 +1,7 @@
+## 0.5.4+2
+
+* Remove AndroidX warnings.
+
 ## 0.5.4+1
 
 * Include lifecycle dependency as a compileOnly one on Android to resolve
