@@ -11,7 +11,6 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 
 /** SharedPreferencesPlugin */
-@SuppressWarnings("unchecked")
 public class SharedPreferencesPlugin implements FlutterPlugin {
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
   private MethodChannel channel;
