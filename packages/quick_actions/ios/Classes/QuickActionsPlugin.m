@@ -8,15 +8,15 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
 
 @interface FLTQuickActionsPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
-@property (nonatomic, strong) NSString *shortcutType;
+@property(nonatomic, strong) NSString *shortcutType;
 @end
 
 @implementation FLTQuickActionsPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-  [FlutterMethodChannel methodChannelWithName:CHANNEL_NAME
-                              binaryMessenger:[registrar messenger]];
+      [FlutterMethodChannel methodChannelWithName:CHANNEL_NAME
+                                  binaryMessenger:[registrar messenger]];
   FLTQuickActionsPlugin *instance = [[FLTQuickActionsPlugin alloc] init];
   instance.channel = channel;
   [registrar addApplicationDelegate:instance];
@@ -33,7 +33,8 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
     }
     result(nil);
   } else if ([call.method isEqualToString:@"getLaunchAction"]) {
-    result(self.shortcutType); // This is used when the app is killed and open the first time via quick actions
+    result(self.shortcutType);  // This is used when the app is killed and open the first time via
+                                // quick actions
     self.shortcutType = nil;
   } else {
     result(FlutterMethodNotImplemented);
@@ -46,10 +47,12 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
 }
 
 - (BOOL)application:(UIApplication *)application
-WillFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions {
+    WillFinishLaunchingWithOptions:
+        (NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions {
   if (@available(iOS 9.0, *)) {
-    UIApplicationShortcutItem *shortcutItem = launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
-    if(shortcutItem != NULL) {
+    UIApplicationShortcutItem *shortcutItem =
+        launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
+    if (shortcutItem != NULL) {
       self.shortcutType = shortcutItem.type;
       [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
       return NO;
@@ -62,8 +65,9 @@ WillFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> 
 }
 
 - (BOOL)application:(UIApplication *)application
-performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
-  completionHandler:(void (^)(BOOL succeeded))completionHandler API_AVAILABLE(ios(9.0)){
+    performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
+               completionHandler:(void (^)(BOOL succeeded))completionHandler
+    API_AVAILABLE(ios(9.0)) {
   self.shortcutType = shortcutItem.type;
   [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
   return YES;
@@ -85,10 +89,10 @@ static void setShortcutItems(NSArray *items) {
 API_AVAILABLE(ios(9.0))
 static UIApplicationShortcutItem *deserializeShortcutItem(NSDictionary *serialized) {
   UIApplicationShortcutIcon *icon =
-  [serialized[@"icon"] isKindOfClass:[NSNull class]]
-  ? nil
-  : [UIApplicationShortcutIcon iconWithTemplateImageName:serialized[@"icon"]];
-  
+      [serialized[@"icon"] isKindOfClass:[NSNull class]]
+          ? nil
+          : [UIApplicationShortcutIcon iconWithTemplateImageName:serialized[@"icon"]];
+
   return [[UIApplicationShortcutItem alloc] initWithType:serialized[@"type"]
                                           localizedTitle:serialized[@"localizedTitle"]
                                        localizedSubtitle:nil
