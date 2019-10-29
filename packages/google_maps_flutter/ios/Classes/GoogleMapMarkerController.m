@@ -189,7 +189,7 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
     } else {
       NSString* error =
           [NSString stringWithFormat:@"'fromAssetImage' should have exactly 3 arguments. Got: %lu",
-                                     iconData.count];
+                                     (unsigned long)iconData.count];
       NSException* exception = [NSException exceptionWithName:@"InvalidBitmapDescriptor"
                                                        reason:error
                                                      userInfo:nil];
@@ -209,7 +209,7 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
     } else {
       NSString* error = [NSString
           stringWithFormat:@"fromBytes should have exactly one argument, the bytes. Got: %lu",
-                           iconData.count];
+                           (unsigned long)iconData.count];
       NSException* exception = [NSException exceptionWithName:@"InvalidByteDescriptor"
                                                        reason:error
                                                      userInfo:nil];
