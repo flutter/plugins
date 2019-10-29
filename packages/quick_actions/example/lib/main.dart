@@ -46,7 +46,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       // NOTE: This second action icon will only work on Android.
       // In a real world project keep the same file name for both platforms.
-      const ShortcutItem(type: 'action_two', localizedTitle: 'Action two', icon: 'ic_launcher'),
+      const ShortcutItem(
+          type: 'action_two',
+          localizedTitle: 'Action two',
+          icon: 'ic_launcher'),
     ]);
   }
 
