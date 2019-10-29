@@ -26,6 +26,7 @@ import java.util.Set;
  * Implementation of the {@link MethodChannel.MethodCallHandler} for the plugin. It is also
  * responsible of managing the {@link android.content.SharedPreferences}.
  */
+@SuppressWarnings("unchecked")
 class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private static final String SHARED_PREFERENCES_NAME = "FlutterSharedPreferences";

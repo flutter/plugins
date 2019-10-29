@@ -6,8 +6,8 @@ import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../lib/method_channel_url_launcher.dart';
-import '../lib/url_launcher_platform_interface.dart';
+import 'package:url_launcher_platform_interface/method_channel_url_launcher.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

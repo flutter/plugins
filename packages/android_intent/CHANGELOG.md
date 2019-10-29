@@ -1,3 +1,12 @@
+##  0.3.4+5
+
+* Remove AndroidX warning.
+
+## 0.3.4+4
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
 ## 0.3.4+3
 
 * Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.

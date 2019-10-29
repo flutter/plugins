@@ -1,3 +1,7 @@
+## 1.4.1
+
+* Remove AndroidX warnings.
+
 ## 1.4.0
 
 * Support retrieving storage paths on Android devices with multiple external
