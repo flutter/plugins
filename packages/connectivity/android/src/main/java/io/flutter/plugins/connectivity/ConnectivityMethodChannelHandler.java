@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.connectivity;
 
-import androidx.annotation.NonNull;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
@@ -21,7 +20,7 @@ class ConnectivityMethodChannelHandler implements MethodChannel.MethodCallHandle
    * Construct the ConnectivityMethodChannelHandler with a {@code connectivity}. The {@code
    * connectivity} must not be null.
    */
-  ConnectivityMethodChannelHandler(@NonNull Connectivity connectivity) {
+  ConnectivityMethodChannelHandler(Connectivity connectivity) {
     assert (connectivity != null);
     this.connectivity = connectivity;
   }

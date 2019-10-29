@@ -11,8 +11,6 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /** Reports connectivity related information such as connectivity type and wifi information. */
 class Connectivity {
@@ -24,7 +22,6 @@ class Connectivity {
     this.wifiManager = wifiManager;
   }
 
-  @NonNull
   String getNetworkType() {
     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       Network network = connectivityManager.getActiveNetwork();
@@ -44,7 +41,6 @@ class Connectivity {
     return getNetworkTypeLegacy();
   }
 
-  @Nullable
   String getWifiName() {
     WifiInfo wifiInfo = getWifiInfo();
     String ssid = null;
@@ -53,7 +49,6 @@ class Connectivity {
     return ssid;
   }
 
-  @Nullable
   String getWifiBSSID() {
     WifiInfo wifiInfo = getWifiInfo();
     String bssid = null;
@@ -63,7 +58,6 @@ class Connectivity {
     return bssid;
   }
 
-  @Nullable
   String getWifiIPAddress() {
     WifiInfo wifiInfo = null;
     if (wifiManager != null) wifiInfo = wifiManager.getConnectionInfo();
@@ -81,7 +75,6 @@ class Connectivity {
     return ip;
   }
 
-  @Nullable
   private WifiInfo getWifiInfo() {
     return wifiManager == null ? null : wifiManager.getConnectionInfo();
   }

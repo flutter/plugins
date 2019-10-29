@@ -1,3 +1,26 @@
+##  0.3.4+5
+
+* Remove AndroidX warning.
+
+## 0.3.4+4
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.3.4+3
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.3.4+2
+
+* Fix resolveActivity not respecting the provided componentName.
+
+## 0.3.4+1
+
+* Fix minor lints in the Java platform code.
+* Add smoke e2e tests for the V2 embedding.
+* Fully migrate the example app to AndroidX.
+
 ## 0.3.4
 
 * Migrate the plugin to use the V2 Android engine embedding. This shouldn't
