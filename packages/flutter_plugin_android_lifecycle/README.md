@@ -2,7 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/flutter_plugin_android_lifecycle.svg)](https://pub.dartlang.org/packages/flutter_plugin_android_lifecycle)
 
-A Flutter plugin for Android to allow other Flutter plugins to access an Android `Lifecycle` object
+A Flutter plugin for Android to allow other Flutter plugins to access  Android `Lifecycle` objects
 in the plugin's binding.
 
 The purpose of having this plugin instead of exposing an Android `Lifecycle` object in the engine's
@@ -22,14 +22,14 @@ below:
 import androidx.lifecycle.Lifecycle;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding;
 import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
 
-public class MyPlugin implements FlutterPlugin {
+public class MyPlugin implements FlutterPlugin, ActivityAware {
   @Override
-  public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-    Lifecycle lifecycle = new FlutterLifecycleAdapter.getLifecycle(binding);
-    
+  public void onAttachedToActivity(ActivityPluginBinding binding) {
+    Lifecycle lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
     // Use lifecycle as desired.
   }
   
