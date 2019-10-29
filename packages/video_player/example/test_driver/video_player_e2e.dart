@@ -6,6 +6,8 @@ import 'package:e2e/e2e.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player/video_player.dart';
 
+const Duration _playDuration = Duration(seconds: 1);
+
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
   VideoPlayerController _controller;
@@ -31,7 +33,7 @@ void main() {
       await _controller.initialize();
 
       await _controller.play();
-      await tester.pump(const Duration(milliseconds: 750));
+      await tester.pump(_playDuration);
 
       expect(_controller.value.isPlaying, true);
       expect(_controller.value.position,
@@ -51,10 +53,10 @@ void main() {
 
       // Play for a second, then pause, and then wait a second.
       await _controller.play();
-      await tester.pump(const Duration(milliseconds: 750));
+      await tester.pump(_playDuration);
       await _controller.pause();
       final Duration pausedPosition = _controller.value.position;
-      await tester.pump(const Duration(milliseconds: 750));
+      await tester.pump(_playDuration);
 
       // Verify that we stopped playing after the pause.
       expect(_controller.value.isPlaying, false);
