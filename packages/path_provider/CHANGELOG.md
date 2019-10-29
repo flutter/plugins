@@ -1,3 +1,35 @@
+## 1.4.1
+
+* Remove AndroidX warnings.
+
+## 1.4.0
+
+* Support retrieving storage paths on Android devices with multiple external
+  storage options. This adds a new class `AndroidEnvironment` that shadows the
+  directory names from Androids `android.os.Environment` class.
+* Fixes `getLibraryDirectory` semantics & tests.
+
+## 1.3.1
+
+* Define clang module for iOS.
+
+## 1.3.0
+
+* Added iOS-only support for `getLibraryDirectory`.
+* Update integration tests and example test.
+* Update example app UI to use a `ListView` show the list of content.
+* Update .gitignore to include Xcode build output folder `**/DerivedData/`
+
+## 1.2.2
+
+* Correct the integration test for Android's `getApplicationSupportDirectory` call.
+* Introduce `setMockPathProviderPlatform` for API for tests.
+* Adds missing unit and integration tests.
+
+## 1.2.1
+
+* Fix fall through bug.
+
 ## 1.2.0
 
 * On Android, `getApplicationSupportDirectory` is now supported using `getFilesDir`.

@@ -1,3 +1,35 @@
+## 0.4.5+3
+
+* Remove AndroidX warnings.
+
+## 0.4.5+2
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.4.5+1
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.4.5
+
+* Support the v2 Android embedder.
+
+## 0.4.4+1
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
+## 0.4.4
+
+* Add `requestLocationServiceAuthorization` to request location authorization on iOS.
+* Add `getLocationServiceAuthorization` to get location authorization status on iOS.
+* Update README: add more information on iOS 13 updates with CNCopyCurrentNetworkInfo.
+
+## 0.4.3+7
+
+* Update README with the updated information about CNCopyCurrentNetworkInfo on iOS 13.
+
 ## 0.4.3+6
 
 * [Android] Fix the invalid suppression check (it should be "deprecation" not "deprecated").

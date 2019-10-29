@@ -1,3 +1,40 @@
+## 0.2.2+2
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.2.2+1
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.2.2
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
+## 0.2.1+5
+
+* Define clang module for iOS.
+* Fix iOS build warning.
+
+## 0.2.1+4
+
+* Update and migrate iOS example project.
+
+## 0.2.1+3
+
+* Android : Improved testability.
+
+## 0.2.1+2
+
+* Android: Require a non-null Activity to use the `launchBillingFlow` method.
+
+## 0.2.1+1
+
+* Remove skipped driver test.
+
 ## 0.2.1
 
 * iOS: Add currencyCode to priceLocale on productDetails.

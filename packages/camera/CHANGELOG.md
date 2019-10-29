@@ -1,3 +1,54 @@
+## 0.5.6+3
+
+* Remove AndroidX warning.
+
+## 0.5.6+2
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.5.6+1
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.5.6
+
+* Add support for the v2 Android embedding. This shouldn't affect existing
+  functionality.
+
+## 0.5.5+1
+
+* Fix event type check
+
+## 0.5.5
+
+* Define clang modules for iOS.
+
+## 0.5.4+3
+
+* Update and migrate iOS example project.
+
+## 0.5.4+2
+
+* Fix Android NullPointerException on devices with only front-facing camera.
+
+## 0.5.4+1
+
+* Fix Android pause and resume video crash when executing in APIs below 24.
+
+## 0.5.4
+
+* Add feature to pause and resume video recording.
+
+## 0.5.3+1
+
+* Fix too large request code for FragmentActivity users.
+
+## 0.5.3
+
+* Added new quality presets.
+* Now all quality presets can be used to control image capture quality.
+
 ## 0.5.2+2
 
 * Fix memory leak related to not unregistering stream handler in FlutterEventChannel when disposing camera.

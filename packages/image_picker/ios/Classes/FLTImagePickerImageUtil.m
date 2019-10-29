@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,12 +69,32 @@
     }
   }
 
+  // Scaling the image always rotate itself based on the current imageOrientation of the original
+  // Image. Set to orientationUp for the orignal image before scaling, so the scaled image doesn't
+  // mess up with the pixels.
+  UIImage *imageToScale = [UIImage imageWithCGImage:image.CGImage
+                                              scale:1
+                                        orientation:UIImageOrientationUp];
+
+  // The image orientation is manually set to UIImageOrientationUp which swapped the aspect ratio in
+  // some scenarios. For example, when the original image has orientation left, the horizontal
+  // pixels should be scaled to `width` and the vertical pixels should be scaled to `height`. After
+  // setting the orientation to up, we end up scaling the horizontal pixels to `height` and vertical
+  // to `width`. Below swap will solve this issue.
+  if ([image imageOrientation] == UIImageOrientationLeft ||
+      [image imageOrientation] == UIImageOrientationRight ||
+      [image imageOrientation] == UIImageOrientationLeftMirrored ||
+      [image imageOrientation] == UIImageOrientationRightMirrored) {
+    double temp = width;
+    width = height;
+    height = temp;
+  }
+
   UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
-  [image drawInRect:CGRectMake(0, 0, width, height)];
+  [imageToScale drawInRect:CGRectMake(0, 0, width, height)];
 
   UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
-
   return scaledImage;
 }
 
@@ -101,7 +121,7 @@
     NSDictionary *gifProperties = properties[(NSString *)kCGImagePropertyGIFDictionary];
 
     NSNumber *delay = gifProperties[(NSString *)kCGImagePropertyGIFUnclampedDelayTime];
-    if (!delay) {
+    if (delay == nil) {
       delay = gifProperties[(NSString *)kCGImagePropertyGIFDelayTime];
     }
 

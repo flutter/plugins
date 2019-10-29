@@ -6,6 +6,8 @@
 #import <GoogleMaps/GoogleMaps.h>
 #import "GoogleMapController.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 // Defines marker UI options writable from Flutter.
 @protocol FLTGoogleMapMarkerOptionsSink
 - (void)setAlpha:(float)alpha;
@@ -40,5 +42,8 @@
 - (void)changeMarkers:(NSArray*)markersToChange;
 - (void)removeMarkerIds:(NSArray*)markerIdsToRemove;
 - (BOOL)onMarkerTap:(NSString*)markerId;
+- (void)onMarkerDragEnd:(NSString*)markerId coordinate:(CLLocationCoordinate2D)coordinate;
 - (void)onInfoWindowTap:(NSString*)markerId;
 @end
+
+NS_ASSUME_NONNULL_END
