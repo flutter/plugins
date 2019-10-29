@@ -1,3 +1,7 @@
+## 0.5.6+4
+
+* Android: Use CameraDevice.TEMPLATE_RECORD to improve image streaming.
+
 ## 0.5.6+3
 
 * Remove AndroidX warning.
