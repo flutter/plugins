@@ -21,7 +21,6 @@
     <activity
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
       android:hardwareAccelerated="true"
-      android:launchMode="singleTop"
       android:name=".MainActivity"
       android:theme="@style/LaunchTheme"
       android:windowSoftInputMode="adjustResize">
