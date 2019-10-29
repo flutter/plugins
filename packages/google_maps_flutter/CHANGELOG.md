@@ -1,3 +1,7 @@
+## 0.5.21+10
+
+* Cast error.code to unsigned long to avoid using NSInteger as %ld format warnings.
+
 ## 0.5.21+9
 
 * Remove AndroidX warnings.
