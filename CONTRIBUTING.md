@@ -48,19 +48,19 @@ To run the integration tests using Flutter driver:
 
 ```console
 cd example
-flutter drive test/<name_of_plugin_test>.dart
+flutter drive test_driver/<name_of_plugin_test>.dart
 ```
 
 To run integration tests as instrumentation tests on a local Android device:
 
 ```console
-flutter build apk
 cd example
-(cd android && ./gradlew -Ptarget=$(pwd)/../test_live/<name_of_plugin>_test.dart connectedAndroidTest)
+flutter build apk
+cd android && ./gradlew -Ptarget=$(pwd)/../test_driver/<name_of_plugin>_test.dart app:connectedAndroidTest
 ```
 
-These tests may also live in "flutter_driver" folders, and have filenames ending
-with "e2e."
+These tests may also be in folders just named "test," or have filenames ending
+with "e2e".
 
 ### Dart unit tests
 
