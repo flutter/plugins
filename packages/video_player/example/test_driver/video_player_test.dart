@@ -25,5 +25,5 @@ Future<void> main() async {
     expect(health.status, HealthStatus.ok);
   },
       skip:
-          'This test works locally but fails on CI because of timing out on waitFor.');
+          'This test works locally but fails on CI because of timing out on waitFor. Un-skip this after iOS test is moved to firebase device lab on real devices');
 }
