@@ -62,9 +62,10 @@ afterEvaluate {
     if (!containsEmbeddingDependencies) {
         android {
             dependencies {
-                def lifecycle_version = "2.1.0"
-                api "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
-                api "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+                def lifecycle_version = "1.1.1"
+                compileOnly "android.arch.lifecycle:runtime:$lifecycle_version"
+                compileOnly "android.arch.lifecycle:common:$lifecycle_version"
+                compileOnly "android.arch.lifecycle:common-java8:$lifecycle_version"
             }
         }
     }

@@ -6,8 +6,6 @@ package io.flutter.plugins.quickactions;
 
 import android.app.Activity;
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -64,7 +62,7 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
   }
 
   private void setupChannel(
-      @NonNull BinaryMessenger messenger, @NonNull Context context, @Nullable Activity activity) {
+      BinaryMessenger messenger, Context context, Activity activity) {
     channel = new MethodChannel(messenger, CHANNEL_ID);
     handler = new MethodCallHandlerImpl(context, activity);
     channel.setMethodCallHandler(handler);

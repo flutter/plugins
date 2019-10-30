@@ -13,8 +13,6 @@ import android.content.pm.ShortcutManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Icon;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.ArrayList;
@@ -29,7 +27,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private final Context context;
   private Activity activity;
 
-  MethodCallHandlerImpl(@NonNull Context context, @Nullable Activity activity) {
+  MethodCallHandlerImpl(Context context, Activity activity) {
     this.context = context;
     this.activity = activity;
   }
