@@ -5,8 +5,6 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
-import android.view.View;
-import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;

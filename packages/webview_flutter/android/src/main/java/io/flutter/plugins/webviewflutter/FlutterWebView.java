@@ -36,8 +36,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       final Context context,
       int id,
       Map<String, Object> params,
-      PluginRegistry.Registrar registrar
-     ) {
+      PluginRegistry.Registrar registrar) {
     BinaryMessenger messenger = registrar.messenger();
     final View containerView = registrar.view();
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
@@ -52,7 +51,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView.getSettings().setDomStorageEnabled(true);
     // choose file
     webView.getSettings().setAllowFileAccess(true);
-    final FlutterWebViewChromeClient webViewChromeClient = new FlutterWebViewChromeClient(registrar);
+    final FlutterWebViewChromeClient webViewChromeClient =
+        new FlutterWebViewChromeClient(registrar);
     webView.setWebChromeClient(webViewChromeClient);
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
