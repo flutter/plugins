@@ -12,9 +12,7 @@ public class WebViewFlutterPlugin {
   public static void registerWith(Registrar registrar) {
     registrar
         .platformViewRegistry()
-        .registerViewFactory(
-            "plugins.flutter.io/webview",
-            new WebViewFactory(registrar.messenger(), registrar.view()));
+        .registerViewFactory("plugins.flutter.io/webview", new WebViewFactory(registrar));
     FlutterCookieManager.registerWith(registrar.messenger());
   }
 }
