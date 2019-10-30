@@ -33,7 +33,7 @@ void main() {
       await _controller.initialize();
 
       await _controller.play();
-      await tester.pump(_playDuration);
+      await tester.pumpAndSettle(_playDuration);
 
       expect(_controller.value.isPlaying, true);
       expect(_controller.value.position,
@@ -53,10 +53,10 @@ void main() {
 
       // Play for a second, then pause, and then wait a second.
       await _controller.play();
-      await tester.pump(_playDuration);
+      await tester.pumpAndSettle(_playDuration);
       await _controller.pause();
       final Duration pausedPosition = _controller.value.position;
-      await tester.pump(_playDuration);
+      await tester.pumpAndSettle(_playDuration);
 
       // Verify that we stopped playing after the pause.
       expect(_controller.value.isPlaying, false);
