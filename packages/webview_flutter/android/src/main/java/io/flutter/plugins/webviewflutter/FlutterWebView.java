@@ -17,6 +17,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
 import java.util.Collections;
 import java.util.List;
@@ -33,11 +34,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @SuppressWarnings("unchecked")
   FlutterWebView(
       final Context context,
-      BinaryMessenger messenger,
       int id,
       Map<String, Object> params,
-      final View containerView) {
-
+      PluginRegistry.Registrar registrar
+     ) {
+    BinaryMessenger messenger = registrar.messenger();
+    final View containerView = registrar.view();
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
     DisplayManager displayManager =
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
@@ -48,6 +50,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     platformThreadHandler = new Handler(context.getMainLooper());
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
+    // choose file
+    webView.getSettings().setAllowFileAccess(true);
+    final FlutterWebViewChromeClient webViewChromeClient = new FlutterWebViewChromeClient(registrar);
+    webView.setWebChromeClient(webViewChromeClient);
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
