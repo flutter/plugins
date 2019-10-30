@@ -1,18 +1,19 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package io.flutter.plugins.sharedpreferencesexample;
 
-import android.os.Bundle;
-import io.flutter.app.FlutterActivity;
-import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.flutter.embedding.android.FlutterActivity;
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin;
 
 public class MainActivity extends FlutterActivity {
-
+  // TODO(cyanglaz): Remove this once v2 of GeneratedPluginRegistrant rolls to stable.
+  // https://github.com/flutter/flutter/issues/42694
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    GeneratedPluginRegistrant.registerWith(this);
+  public void configureFlutterEngine(FlutterEngine flutterEngine) {
+    super.configureFlutterEngine(flutterEngine);
+    flutterEngine.getPlugins().add(new SharedPreferencesPlugin());
   }
 }

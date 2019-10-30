@@ -15,7 +15,7 @@ void main() {
   const MethodChannel channel =
       MethodChannel('plugins.flutter.io/path_provider');
   final List<MethodCall> log = <MethodCall>[];
-  String response;
+  dynamic response;
 
   channel.setMockMethodCallHandler((MethodCall methodCall) async {
     log.add(methodCall);
@@ -86,8 +86,17 @@ void main() {
     expect(directory, isNull);
   });
 
-  test('getLibraryDirectory test', () async {
-    response = null;
+  test('getLibraryDirectory Android test', () async {
+    try {
+      await getLibraryDirectory();
+      fail('should throw UnsupportedError');
+    } catch (e) {
+      expect(e, isUnsupportedError);
+    }
+  });
+  test('getLibraryDirectory iOS test', () async {
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+
     final Directory directory = await getLibraryDirectory();
     expect(
       log,
@@ -99,9 +108,59 @@ void main() {
   test('getExternalStorageDirectory iOS test', () async {
     setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
 
-    response = null;
     try {
       await getExternalStorageDirectory();
+      fail('should throw UnsupportedError');
+    } catch (e) {
+      expect(e, isUnsupportedError);
+    }
+  });
+
+  test('getExternalCacheDirectories test', () async {
+    response = <String>[];
+    final List<Directory> directories = await getExternalCacheDirectories();
+    expect(
+      log,
+      <Matcher>[isMethodCall('getExternalCacheDirectories', arguments: null)],
+    );
+    expect(directories, <Directory>[]);
+  });
+
+  test('getExternalCacheDirectories iOS test', () async {
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+
+    try {
+      await getExternalCacheDirectories();
+      fail('should throw UnsupportedError');
+    } catch (e) {
+      expect(e, isUnsupportedError);
+    }
+  });
+
+  for (StorageDirectory type
+      in StorageDirectory.values + <StorageDirectory>[null]) {
+    test('getExternalStorageDirectories test (type: $type)', () async {
+      response = <String>[];
+      final List<Directory> directories =
+          await getExternalStorageDirectories(type: type);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'getExternalStorageDirectories',
+            arguments: <String, dynamic>{'type': type?.index},
+          )
+        ],
+      );
+      expect(directories, <Directory>[]);
+    });
+  }
+
+  test('getExternalStorageDirectories iOS test', () async {
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+
+    try {
+      await getExternalStorageDirectories(type: StorageDirectory.music);
       fail('should throw UnsupportedError');
     } catch (e) {
       expect(e, isUnsupportedError);
@@ -137,6 +196,8 @@ void main() {
   });
 
   test('ApplicationLibraryDirectory path test', () async {
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+
     final String fakePath = "/foo/bar/baz";
     response = fakePath;
     final Directory directory = await getLibraryDirectory();
@@ -148,5 +209,21 @@ void main() {
     response = fakePath;
     final Directory directory = await getExternalStorageDirectory();
     expect(directory.path, equals(fakePath));
+  });
+
+  test('ExternalCacheDirectories path test', () async {
+    final List<String> paths = <String>["/foo/bar/baz", "/foo/bar/baz2"];
+    response = paths;
+    final List<Directory> directories = await getExternalCacheDirectories();
+    expect(directories.map((Directory d) => d.path).toList(), equals(paths));
+  });
+
+  test('ExternalStorageDirectories path test', () async {
+    final List<String> paths = <String>["/foo/bar/baz", "/foo/bar/baz2"];
+    response = paths;
+    final List<Directory> directories = await getExternalStorageDirectories(
+      type: StorageDirectory.music,
+    );
+    expect(directories.map((Directory d) => d.path).toList(), equals(paths));
   });
 }
