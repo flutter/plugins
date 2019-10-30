@@ -1,49 +1,46 @@
 import 'dart:async';
 import 'dart:html' as html;
 
-import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
-class UrlLauncherPlugin {
+/// The web implementation of [UrlLauncherPlatform].
+///
+/// This class implements the `package:url_launcher` functionality for the web.
+class UrlLauncherPlugin extends UrlLauncherPlatform {
+  /// Registers this class as the default instance of [UrlLauncherPlatform].
   static void registerWith(Registrar registrar) {
-    final MethodChannel channel = MethodChannel(
-        'plugins.flutter.io/url_launcher',
-        const StandardMethodCodec(),
-        registrar.messenger);
-    final UrlLauncherPlugin instance = UrlLauncherPlugin();
-    channel.setMethodCallHandler(instance.handleMethodCall);
+    UrlLauncherPlatform.instance = UrlLauncherPlugin();
   }
 
-  Future<dynamic> handleMethodCall(MethodCall call) async {
-    switch (call.method) {
-      case 'canLaunch':
-        final String url = call.arguments['url'];
-        return _canLaunch(url);
-      case 'launch':
-        final String url = call.arguments['url'];
-        return _launch(url);
-      default:
-        throw PlatformException(
-            code: 'Unimplemented',
-            details: "The url_launcher plugin for web doesn't implement "
-                "the method '${call.method}'");
-    }
-  }
-
-  bool _canLaunch(String url) {
-    final Uri parsedUrl = Uri.tryParse(url);
-    if (parsedUrl == null) return false;
-
-    return parsedUrl.isScheme('http') || parsedUrl.isScheme('https');
-  }
-
-  bool _launch(String url) {
-    return openNewWindow(url) != null;
-  }
-
+  /// Opens the given [url] in a new window.
+  ///
+  /// Returns the newly created window.
   @visibleForTesting
   html.WindowBase openNewWindow(String url) {
     return html.window.open(url, '');
+  }
+
+  @override
+  Future<bool> canLaunch(String url) {
+    final Uri parsedUrl = Uri.tryParse(url);
+    if (parsedUrl == null) return Future<bool>.value(false);
+
+    return Future<bool>.value(
+        parsedUrl.isScheme('http') || parsedUrl.isScheme('https'));
+  }
+
+  @override
+  Future<bool> launch(
+    String url, {
+    @required bool useSafariVC,
+    @required bool useWebView,
+    @required bool enableJavaScript,
+    @required bool enableDomStorage,
+    @required bool universalLinksOnly,
+    @required Map<String, String> headers,
+  }) {
+    return Future<bool>.value(openNewWindow(url) != null);
   }
 }

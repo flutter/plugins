@@ -13,19 +13,19 @@
 
 // Holding strong references to FIAPRequestHandlers. Remove the handlers from the set after
 // the request is finished.
-@property(strong, nonatomic) NSMutableSet *requestHandlers;
+@property(strong, nonatomic, readonly) NSMutableSet *requestHandlers;
 
 // After querying the product, the available products will be saved in the map to be used
 // for purchase.
-@property(copy, nonatomic) NSMutableDictionary *productsCache;
+@property(strong, nonatomic, readonly) NSMutableDictionary *productsCache;
 
 // Call back channel to dart used for when a listener function is triggered.
-@property(strong, nonatomic) FlutterMethodChannel *callbackChannel;
-@property(strong, nonatomic) NSObject<FlutterTextureRegistry> *registry;
-@property(strong, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
-@property(strong, nonatomic) NSObject<FlutterPluginRegistrar> *registrar;
+@property(strong, nonatomic, readonly) FlutterMethodChannel *callbackChannel;
+@property(strong, nonatomic, readonly) NSObject<FlutterTextureRegistry> *registry;
+@property(strong, nonatomic, readonly) NSObject<FlutterBinaryMessenger> *messenger;
+@property(strong, nonatomic, readonly) NSObject<FlutterPluginRegistrar> *registrar;
 
-@property(strong, nonatomic) FIAPReceiptManager *receiptManager;
+@property(strong, nonatomic, readonly) FIAPReceiptManager *receiptManager;
 
 @end
 
@@ -40,39 +40,40 @@
 }
 
 - (instancetype)initWithReceiptManager:(FIAPReceiptManager *)receiptManager {
-  self = [self init];
-  self.receiptManager = receiptManager;
+  self = [super init];
+  _receiptManager = receiptManager;
+  _requestHandlers = [NSMutableSet new];
+  _productsCache = [NSMutableDictionary new];
   return self;
 }
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   self = [self initWithReceiptManager:[FIAPReceiptManager new]];
-  self.registrar = registrar;
-  self.registry = [registrar textures];
-  self.messenger = [registrar messenger];
+  _registrar = registrar;
+  _registry = [registrar textures];
+  _messenger = [registrar messenger];
 
   __weak typeof(self) weakSelf = self;
-  self.paymentQueueHandler =
-      [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueue defaultQueue]
-          transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-            [weakSelf handleTransactionsUpdated:transactions];
-          }
-          transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-            [weakSelf handleTransactionsRemoved:transactions];
-          }
-          restoreTransactionFailed:^(NSError *_Nonnull error) {
-            [weakSelf handleTransactionRestoreFailed:error];
-          }
-          restoreCompletedTransactionsFinished:^{
-            [weakSelf restoreCompletedTransactionsFinished];
-          }
-          shouldAddStorePayment:^BOOL(SKPayment *payment, SKProduct *product) {
-            return [weakSelf shouldAddStorePayment:payment product:product];
-          }
-          updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
-            [weakSelf updatedDownloads:downloads];
-          }];
-  self.callbackChannel =
+  _paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueue defaultQueue]
+      transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+        [weakSelf handleTransactionsUpdated:transactions];
+      }
+      transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+        [weakSelf handleTransactionsRemoved:transactions];
+      }
+      restoreTransactionFailed:^(NSError *_Nonnull error) {
+        [weakSelf handleTransactionRestoreFailed:error];
+      }
+      restoreCompletedTransactionsFinished:^{
+        [weakSelf restoreCompletedTransactionsFinished];
+      }
+      shouldAddStorePayment:^BOOL(SKPayment *payment, SKProduct *product) {
+        return [weakSelf shouldAddStorePayment:payment product:product];
+      }
+      updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
+        [weakSelf updatedDownloads:downloads];
+      }];
+  _callbackChannel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase_callback"
                                   binaryMessenger:[registrar messenger]];
   return self;
@@ -318,22 +319,6 @@
 
 - (SKReceiptRefreshRequest *)getRefreshReceiptRequest:(NSDictionary *)properties {
   return [[SKReceiptRefreshRequest alloc] initWithReceiptProperties:properties];
-}
-
-#pragma mark - getter
-
-- (NSSet *)requestHandlers {
-  if (!_requestHandlers) {
-    _requestHandlers = [NSMutableSet new];
-  }
-  return _requestHandlers;
-}
-
-- (NSMutableDictionary *)productsCache {
-  if (!_productsCache) {
-    _productsCache = [NSMutableDictionary new];
-  }
-  return _productsCache;
 }
 
 @end

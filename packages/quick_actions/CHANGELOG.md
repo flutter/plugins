@@ -4,6 +4,14 @@
 * Add e2e tests.
 * Migrate to using the new e2e test binding.
 
+## 0.3.2+4
+
+* Remove AndroidX warnings.
+
+## 0.3.2+3
+
+* Define clang module for iOS.
+
 ## 0.3.2+2
 
 * Fix bug that would make the shortcut not open on Android.

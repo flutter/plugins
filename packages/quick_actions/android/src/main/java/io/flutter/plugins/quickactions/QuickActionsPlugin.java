@@ -61,8 +61,7 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
     onDetachedFromActivity();
   }
 
-  private void setupChannel(
-      BinaryMessenger messenger, Context context, Activity activity) {
+  private void setupChannel(BinaryMessenger messenger, Context context, Activity activity) {
     channel = new MethodChannel(messenger, CHANNEL_ID);
     handler = new MethodCallHandlerImpl(context, activity);
     channel.setMethodCallHandler(handler);
