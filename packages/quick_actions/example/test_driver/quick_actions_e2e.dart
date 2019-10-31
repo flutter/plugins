@@ -13,7 +13,7 @@ void main() {
     final QuickActions quickActions = QuickActions();
     quickActions.initialize(null);
 
-    final ShortcutItem shortCutItem = ShortcutItem(
+    const ShortcutItem shortCutItem = ShortcutItem(
       type: 'action_one',
       localizedTitle: 'Action one',
       icon: 'AppIcon',
