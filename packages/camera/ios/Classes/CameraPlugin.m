@@ -460,7 +460,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
       CVPixelBufferRef nextBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       CMTime nextSampleTime = CMTimeSubtract(_lastVideoSampleTime, _videoTimeOffset);
-      [_videoAdaptor appendPixelBuffer:nextBuffer withPresentationTime:nextSampleTime];
+      if (_videoAdaptor.assetWriterInput.readyForMoreMediaData) {
+        [_videoAdaptor appendPixelBuffer:nextBuffer withPresentationTime:nextSampleTime];
+      }
     } else {
       CMTime dur = CMSampleBufferGetDuration(sampleBuffer);
 
