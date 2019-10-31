@@ -1,3 +1,11 @@
+## 0.6.1
+
+* Added ability to stop authentication (For Android).
+
+## 0.6.0+3
+
+* Remove AndroidX warnings.
+
 ## 0.6.0+2
 
 * Update and migrate iOS example project.

@@ -1,3 +1,24 @@
+## 5.2.6
+
+*  Remove AndroidX warnings.
+
+## 5.2.5
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 5.2.4
+
+* Use `package:url_launcher_platform_interface` to get the platform-specific implementation.
+
+## 5.2.3
+
+Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 5.2.2
+
+* Re-land embedder v2 support with correct Flutter SDK constraints.
+
 ## 5.2.1
 
 * Revert the migration since the Flutter dependency was too low.
