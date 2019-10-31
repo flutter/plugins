@@ -1,5 +1,7 @@
+
 ## 0.5.6+4
 
+* iOS: Fix a crash when recording a video
 * Android: Use CameraDevice.TEMPLATE_RECORD to improve image streaming.
 
 ## 0.5.6+3
