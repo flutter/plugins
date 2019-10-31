@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
-import androidx.annotation.Nullable;
 
 /**
  * A WebView subclass that mirrors the same implementation hacks that the system WebView does in
@@ -27,14 +26,14 @@ final class InputAwareWebView extends WebView {
   private static final String TAG = "InputAwareWebView";
   private View threadedInputConnectionProxyView;
   private ThreadedInputConnectionProxyAdapterView proxyAdapterView;
-  private @Nullable View containerView;
+  private View containerView;
 
-  InputAwareWebView(Context context, @Nullable View containerView) {
+  InputAwareWebView(Context context, View containerView) {
     super(context);
     this.containerView = containerView;
   }
 
-  void setContainerView(@Nullable View containerView) {
+  void setContainerView(View containerView) {
     this.containerView = containerView;
 
     if (proxyAdapterView == null) {
