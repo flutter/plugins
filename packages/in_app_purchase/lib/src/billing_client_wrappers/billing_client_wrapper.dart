@@ -248,6 +248,9 @@ enum BillingResponse {
   // WARNING: Changes to this class need to be reflected in our generated code.
   // Run `flutter packages pub run build_runner watch` to rebuild and watch for
   // further changes.
+  @JsonValue(-3)
+  serviceTimeout,
+
   @JsonValue(-2)
   featureNotSupported,
 
