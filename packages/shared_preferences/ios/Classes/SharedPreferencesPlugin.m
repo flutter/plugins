@@ -79,7 +79,8 @@ NSString *customDomain;
 #pragma mark - Private
 
 static id domainUserDefaults() {
-    return customDomain != nil ? [[NSUserDefaults alloc] initWithSuiteName: customDomain] : [NSUserDefaults standardUserDefaults];
+  return customDomain != nil ? [[NSUserDefaults alloc] initWithSuiteName:customDomain]
+                             : [NSUserDefaults standardUserDefaults];
 }
 
 static NSMutableDictionary *getAllPrefs() {
