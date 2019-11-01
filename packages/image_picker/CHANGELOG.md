@@ -1,3 +1,8 @@
+## 0.6.1+11
+
+* Android: Fix a crash where scaled images are saved to a directory that does not exist
+* Android: Fix `shouldScale` check so that images are only scaled if necessary
+
 ## 0.6.1+10
 
 * iOS: Fix image orientation problems when scaling images.
