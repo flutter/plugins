@@ -80,9 +80,15 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     final Uri profileUri = Uri.parse(photoUrl);
     final List<String> pathSegments =
         List<String>.from(profileUri.pathSegments);
-    pathSegments
-      ..removeWhere(sizeDirective.hasMatch)
-      ..insert(pathSegments.length - 1, 's${size.round()}-c');
+    if (pathSegments.length <= 2) {
+      // New style URLs
+      pathSegments.last = '${pathSegments.last}=s${size.round()}-c';
+    } else {
+      // Old style URLs
+      pathSegments
+        ..removeWhere(sizeDirective.hasMatch)
+        ..insert(pathSegments.length - 1, 's${size.round()}-c');
+    }
     return Uri(
       scheme: profileUri.scheme,
       host: profileUri.host,
