@@ -154,7 +154,7 @@ class SharedPreferences {
 
   /// Set App Domain / Group
   /// This method only works for iOS and does nothing in Android
-  Future<void> setDomain(String domain) {
+  Future<void> setDomain(String domain) async {
     final Map<String, dynamic> params = <String, dynamic>{
       'domain': domain,
     };
