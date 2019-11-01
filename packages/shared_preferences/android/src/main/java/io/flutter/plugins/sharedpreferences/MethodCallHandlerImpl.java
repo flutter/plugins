@@ -107,6 +107,9 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           }
           commitAsync(clearEditor, result);
           break;
+        case "setDomain":
+          // Do nothing in Android because there is no such thing as App Groups
+          break;
         default:
           result.notImplemented();
           break;
