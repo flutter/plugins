@@ -1,3 +1,19 @@
+## 0.10.2+6
+
+* Remove AndroidX warnings.
+
+## 0.10.2+5
+
+* Update unit test for compatibility with Flutter stable branch.
+
+## 0.10.2+4
+
+* Define clang module for iOS.
+
+## 0.10.2+3
+
+* Fix bug where formatHint was not being pass down to network sources.
+
 ## 0.10.2+2
 
 * Update and migrate iOS example project.

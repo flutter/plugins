@@ -7,18 +7,18 @@
 import 'dart:html' as html;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 void main() {
   group('URL Launcher for Web', () {
     setUp(() {
-      TestWidgetsFlutterBinding.ensureInitialized();
-      webPluginRegistry.registerMessageHandler();
-      final Registrar registrar =
-          webPluginRegistry.registrarFor(UrlLauncherPlugin);
-      UrlLauncherPlugin.registerWith(registrar);
+      UrlLauncherPlatform.instance = UrlLauncherPlugin();
+    });
+
+    test('$UrlLauncherPlugin is the live instance', () {
+      expect(UrlLauncherPlatform.instance, isA<UrlLauncherPlugin>());
     });
 
     test('can launch "http" URLs', () {
@@ -44,6 +44,10 @@ void main() {
       expect(newWindow, isNotNull);
       expect(newWindow, isNot(equals(html.window)));
       expect(newWindow.opener, equals(html.window));
+    });
+
+    test('does not implement closeWebView()', () {
+      expect(closeWebView(), throwsUnimplementedError);
     });
   });
 }

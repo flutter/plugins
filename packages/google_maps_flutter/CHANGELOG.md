@@ -3,6 +3,18 @@
 * Fix references to `myLocationButtonEnabled` in test and example app.
 * Added `isMyLocationEnabled` to `GoogleMapsInspector`.
 
+## 0.5.21+10
+
+* Cast error.code to unsigned long to avoid using NSInteger as %ld format warnings.
+
+## 0.5.21+9
+
+* Remove AndroidX warnings.
+
+## 0.5.21+8
+
+* Add NS_ASSUME_NONNULL_* macro to reduce iOS compiler warnings.
+
 ## 0.5.21+7
 
 * Create a clone of cached elements in GoogleMap (Polyline, Polygon, etc.) to detect modifications
