@@ -239,16 +239,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         IconButton(
           icon: const Icon(Icons.zoom_in),
           color: Colors.blue,
-          onPressed: controller != null
-              ? onZoomInButtonPressed
-              : null,
+          onPressed: controller != null ? onZoomInButtonPressed : null,
         ),
         IconButton(
           icon: const Icon(Icons.zoom_out),
           color: Colors.blue,
-          onPressed: controller != null
-              ? onZoomOutButtonPressed
-              : null,
+          onPressed: controller != null ? onZoomOutButtonPressed : null,
         ),
       ],
     );
@@ -356,6 +352,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
     controller.zoomOut();
   }
+
   void onPauseButtonPressed() {
     pauseVideoRecording().then((_) {
       if (mounted) setState(() {});

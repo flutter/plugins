@@ -587,7 +587,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   Future<void> zoomIn() async {
-      await _channel.invokeMethod<void>('zoomIn');
+    await _channel.invokeMethod<void>('zoomIn');
   }
 
   ///

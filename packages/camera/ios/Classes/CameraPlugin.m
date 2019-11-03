@@ -206,7 +206,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 - (void)stopImageStream;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
-- (void)zoom:(NSUInteger *) step;
+- (void)zoom:(NSUInteger *)step;
 @end
 
 @implementation FLTCam {
@@ -222,7 +222,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                              error:(NSError **)error {
   self = [super init];
   _zoom = 1;
-    
+
   NSAssert(self, @"super init cannot be nil");
   @try {
     _resolutionPreset = getResolutionPresetForString(resolutionPreset);
@@ -277,16 +277,16 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 }
 
 - (void)zoom:(NSUInteger *)step {
-        _zoom += step;
+  _zoom += step;
 
-        if (_zoom < 1) {
-            _zoom = 1;
-            return;
-        }
+  if (_zoom < 1) {
+    _zoom = 1;
+    return;
+  }
 
-        [_captureDevice lockForConfiguration:NULL];
-        [_captureDevice setVideoZoomFactor:_zoom];
-        [_captureDevice unlockForConfiguration];
+  [_captureDevice lockForConfiguration:NULL];
+  [_captureDevice setVideoZoomFactor:_zoom];
+  [_captureDevice unlockForConfiguration];
 }
 
 - (void)captureToFile:(NSString *)path result:(FlutterResult)result {
@@ -889,15 +889,15 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     [_camera stopImageStream];
     result(nil);
   } else if ([@"zoomIn" isEqualToString:call.method]) {
-      [_camera zoom:1];
-      result(nil);
+    [_camera zoom:1];
+    result(nil);
   } else if ([@"zoomOut" isEqualToString:call.method]) {
     [_camera zoom:-1];
-      result(nil);
-  }  else if ([@"zoom" isEqualToString:call.method]) {
-      NSUInteger step = ((NSNumber *)argsMap[@"step"]).unsignedIntegerValue;
-      [_camera zoom:step];
-      result(nil);
+    result(nil);
+  } else if ([@"zoom" isEqualToString:call.method]) {
+    NSUInteger step = ((NSNumber *)call.arguments[@"step"]).unsignedIntegerValue;
+    [_camera zoom:step];
+    result(nil);
   } else if ([@"pauseVideoRecording" isEqualToString:call.method]) {
     [_camera pauseVideoRecording];
     result(nil);

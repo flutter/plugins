@@ -1,5 +1,8 @@
 package io.flutter.plugins.camera;
 
+import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
+import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -23,9 +26,10 @@ import android.os.Build;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
-
 import androidx.annotation.NonNull;
-
+import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,13 +39,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
-
-import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
-import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
 public class Camera {
   private final SurfaceTextureEntry flutterTexture;
@@ -546,11 +543,11 @@ public class Camera {
     int croppedWidth = rect.width() - Math.round((float) rect.width() * ratio);
     int croppedHeight = rect.height() - Math.round((float) rect.height() * ratio);
     zoom =
-            new Rect(
-                    croppedWidth / 2,
-                    croppedHeight / 2,
-                    rect.width() - croppedWidth / 2,
-                    rect.height() - croppedHeight / 2);
+        new Rect(
+            croppedWidth / 2,
+            croppedHeight / 2,
+            rect.width() - croppedWidth / 2,
+            rect.height() - croppedHeight / 2);
   }
 
   private void setScalerCropRegion(CaptureRequest.Builder captureRequestBuilder, Rect zoom) {
