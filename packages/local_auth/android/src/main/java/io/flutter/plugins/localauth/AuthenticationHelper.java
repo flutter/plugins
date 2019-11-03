@@ -63,6 +63,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   private final boolean isAuthSticky;
   private final UiThreadExecutor uiThreadExecutor;
   private boolean activityPaused = false;
+  private BiometricPrompt biometricPrompt;
 
   public AuthenticationHelper(
       FragmentActivity activity, MethodCall call, AuthCompletionHandler completionHandler) {
@@ -84,7 +85,16 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   /** Start the fingerprint listener. */
   public void authenticate() {
     activity.getApplication().registerActivityLifecycleCallbacks(this);
-    new BiometricPrompt(activity, uiThreadExecutor, this).authenticate(promptInfo);
+    biometricPrompt = new BiometricPrompt(activity, uiThreadExecutor, this);
+    biometricPrompt.authenticate(promptInfo);
+  }
+
+  /** Cancels the fingerprint authentication. */
+  public void stopAuthentication() {
+    if (biometricPrompt != null) {
+      biometricPrompt.cancelAuthentication();
+      biometricPrompt = null;
+    }
   }
 
   /** Stops the fingerprint listener. */
