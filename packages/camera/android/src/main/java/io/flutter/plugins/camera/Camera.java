@@ -105,8 +105,6 @@ public class Camera {
     this.enableAudio = enableAudio;
     this.flashMode = flashMode;
     this.autoFocusMode = autoFocusMode;
-    this.enableTorch = enableTorch;
-    this.enableAE = enableAE;
     this.flutterTexture = flutterTexture;
     this.dartMessenger = dartMessenger;
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);

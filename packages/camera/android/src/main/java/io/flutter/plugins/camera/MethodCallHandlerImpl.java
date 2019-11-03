@@ -1,6 +1,7 @@
 package io.flutter.plugins.camera;
 
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.hardware.camera2.CameraAccessException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
