@@ -1,3 +1,7 @@
+## 0.5.7
+
+* Add zoom feature.
+
 ## 0.5.6+4
 
 * Android: Use CameraDevice.TEMPLATE_RECORD to improve image streaming.
