@@ -77,10 +77,20 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           camera.takePicture(call.argument("path"), result);
           break;
         }
+      case "zoom":
+      {
+        try {
+          camera.zoom(call.argument("step"));
+          result.success(null);
+        } catch (CameraAccessException e) {
+          result.error("CameraAccess", e.getMessage(), null);
+        }
+        break;
+      }
       case "zoomIn":
       {
         try {
-          camera.zoomIn();
+          camera.zoom(1);
           result.success(null);
         } catch (CameraAccessException e) {
           result.error("CameraAccess", e.getMessage(), null);
@@ -90,7 +100,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       case "zoomOut":
       {
         try {
-          camera.zoomOut();
+          camera.zoom(-1);
           result.success(null);
         } catch (CameraAccessException e) {
           result.error("CameraAccess", e.getMessage(), null);

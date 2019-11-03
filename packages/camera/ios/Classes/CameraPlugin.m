@@ -206,8 +206,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 - (void)stopImageStream;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
-- (void)zoonIn;
-- (void)zoomOut;
+- (void)zoom:(NSUInteger *) step;
 @end
 
 @implementation FLTCam {
@@ -277,24 +276,17 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [_captureSession stopRunning];
 }
 
-- (void)zoomIn {
-    _zoom++;
-    [_captureDevice lockForConfiguration:NULL];
-    [_captureDevice setVideoZoomFactor:_zoom];
-    [_captureDevice unlockForConfiguration];
-}
+- (void)zoom:(NSUInteger *)step {
+        _zoom += step;
 
-- (void)zoomOut {
-    _zoom--;
-    
-    if (_zoom < 1) {
-        _zoom = 1;
-        return;
-    }
-    
-    [_captureDevice lockForConfiguration:NULL];
-    [_captureDevice setVideoZoomFactor:_zoom];
-    [_captureDevice unlockForConfiguration];
+        if (_zoom < 1) {
+            _zoom = 1;
+            return;
+        }
+
+        [_captureDevice lockForConfiguration:NULL];
+        [_captureDevice setVideoZoomFactor:_zoom];
+        [_captureDevice unlockForConfiguration];
 }
 
 - (void)captureToFile:(NSString *)path result:(FlutterResult)result {
@@ -897,10 +889,14 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     [_camera stopImageStream];
     result(nil);
   } else if ([@"zoomIn" isEqualToString:call.method]) {
-      [_camera zoomIn];
+      [_camera zoom:1];
       result(nil);
   } else if ([@"zoomOut" isEqualToString:call.method]) {
-      [_camera zoomOut];
+    [_camera zoom:-1];
+      result(nil);
+  }  else if ([@"zoom" isEqualToString:call.method]) {
+      NSUInteger step = ((NSNumber *)argsMap[@"step"]).unsignedIntegerValue;
+      [_camera zoom:step];
       result(nil);
   } else if ([@"pauseVideoRecording" isEqualToString:call.method]) {
     [_camera pauseVideoRecording];

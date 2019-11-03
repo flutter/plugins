@@ -66,7 +66,7 @@ public class Camera {
   private int currentOrientation = ORIENTATION_UNKNOWN;
 
   public float zoomLevel = 1f;
-  public Rect zoom;
+  private Rect zoom;
   protected CameraCharacteristics cameraCharacteristics;
 
   // Mirrors camera.dart
@@ -522,12 +522,8 @@ public class Camera {
     orientationEventListener.disable();
   }
 
-  public void zoomIn() throws CameraAccessException {
-    changeZoom(1);
-  }
-
-  public void zoomOut() throws CameraAccessException {
-    changeZoom(-1);
+  public void zoom(int step) throws CameraAccessException {
+    changeZoom(step);
   }
 
   private void changeZoom(int step) throws CameraAccessException {
