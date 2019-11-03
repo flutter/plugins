@@ -61,7 +61,13 @@ Future<Directory> getApplicationSupportDirectory() async {
 
 /// Path to the directory where application can store files that are persistent,
 /// backed up, and not visible to the user, such as sqlite.db.
+///
+/// On Android, this function throws an [UnsupportedError] as no equivalent
+/// path exists.
 Future<Directory> getLibraryDirectory() async {
+  if (_platform.isAndroid) {
+    throw UnsupportedError('Functionality not available on Android');
+  }
   final String path =
       await _channel.invokeMethod<String>('getLibraryDirectory');
   if (path == null) {
@@ -97,12 +103,80 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 ///
 /// On Android this uses the `getExternalFilesDir(null)`.
 Future<Directory> getExternalStorageDirectory() async {
-  if (_platform.isIOS)
-    throw UnsupportedError("Functionality not available on iOS");
+  if (_platform.isIOS) {
+    throw UnsupportedError('Functionality not available on iOS');
+  }
   final String path =
       await _channel.invokeMethod<String>('getStorageDirectory');
   if (path == null) {
     return null;
   }
   return Directory(path);
+}
+
+/// Paths to directories where application specific external cache data can be
+/// stored. These paths typically reside on external storage like separate
+/// partitions or SD cards. Phones may have multiple storage directories
+/// available.
+///
+/// The current operating system should be determined before issuing this
+/// function call, as this functionality is only available on Android.
+///
+/// On iOS, this function throws an UnsupportedError as it is not possible
+/// to access outside the app's sandbox.
+///
+/// On Android this returns Context.getExternalCacheDirs() or
+/// Context.getExternalCacheDir() on API levels below 19.
+Future<List<Directory>> getExternalCacheDirectories() async {
+  if (_platform.isIOS) {
+    throw UnsupportedError('Functionality not available on iOS');
+  }
+  final List<String> paths =
+      await _channel.invokeListMethod<String>('getExternalCacheDirectories');
+
+  return paths.map((String path) => Directory(path)).toList();
+}
+
+/// Corresponds to constants defined in Androids `android.os.Environment` class.
+///
+/// https://developer.android.com/reference/android/os/Environment.html#fields_1
+enum StorageDirectory {
+  music,
+  podcasts,
+  ringtones,
+  alarms,
+  notifications,
+  pictures,
+  movies,
+  downloads,
+  dcim,
+  documents,
+}
+
+/// Paths to directories where application specific data can be stored.
+/// These paths typically reside on external storage like separate partitions
+/// or SD cards. Phones may have multiple storage directories available.
+///
+/// The current operating system should be determined before issuing this
+/// function call, as this functionality is only available on Android.
+///
+/// On iOS, this function throws an UnsupportedError as it is not possible
+/// to access outside the app's sandbox.
+///
+/// On Android this returns Context.getExternalFilesDirs(String type) or
+/// Context.getExternalFilesDir(String type) on API levels below 19.
+Future<List<Directory>> getExternalStorageDirectories({
+  /// Optional parameter. See [StorageDirectory] for more informations on
+  /// how this type translates to Android storage directories.
+  StorageDirectory type,
+}) async {
+  if (_platform.isIOS) {
+    throw UnsupportedError('Functionality not available on iOS');
+  }
+  final List<String> paths = await _channel.invokeListMethod<String>(
+    'getExternalStorageDirectories',
+    <String, dynamic>{'type': type?.index},
+  );
+
+  return paths.map((String path) => Directory(path)).toList();
 }
