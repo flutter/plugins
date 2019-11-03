@@ -1,3 +1,99 @@
+## 0.10.2+6
+
+* Remove AndroidX warnings.
+
+## 0.10.2+5
+
+* Update unit test for compatibility with Flutter stable branch.
+
+## 0.10.2+4
+
+* Define clang module for iOS.
+
+## 0.10.2+3
+
+* Fix bug where formatHint was not being pass down to network sources.
+
+## 0.10.2+2
+
+* Update and migrate iOS example project.
+
+## 0.10.2+1
+
+* Use DefaultHttpDataSourceFactory only when network schemas and use
+DefaultHttpDataSourceFactory by default.
+
+## 0.10.2
+
+* **Android Only** Adds optional VideoFormat used to signal what format the plugin should try.
+
+## 0.10.1+7
+
+* Fix tests by ignoring deprecated member use.
+
+## 0.10.1+6
+
+* [iOS] Fixed a memory leak with notification observing.
+
+## 0.10.1+5
+
+* Fix race condition while disposing the VideoController.
+
+## 0.10.1+4
+
+* Fixed syntax error in README.md.
+
+## 0.10.1+3
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.10.1+2
+
+* Example: Fixed tab display and added scroll view
+
+## 0.10.1+1
+
+* iOS: Avoid deprecated `seekToTime` API
+
+## 0.10.1
+
+* iOS: Consider a player only `initialized` once duration is determined.
+
+## 0.10.0+8
+
+* iOS: Fix an issue where the player sends initialization message incorrectly.
+
+* Fix a few other IDE warnings.
+
+
+## 0.10.0+7
+
+* Android: Fix issue where buffering status in percentage instead of milliseconds
+
+* Android: Update buffering status everytime we notify for position change
+
+## 0.10.0+6
+
+* Android: Fix missing call to `event.put("event", "completed");` which makes it possible to detect when the video is over.
+
+## 0.10.0+5
+
+* Fixed iOS build warnings about implicit retains.
+
+## 0.10.0+4
+
+* Android: Upgrade ExoPlayer to 2.9.6.
+
+## 0.10.0+3
+
+* Fix divide by zero bug on iOS.
+
+## 0.10.0+2
+
+* Added supported format documentation in README.
+
 ## 0.10.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX

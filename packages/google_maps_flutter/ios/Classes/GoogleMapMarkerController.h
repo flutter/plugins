@@ -4,6 +4,9 @@
 
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import "GoogleMapController.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 // Defines marker UI options writable from Flutter.
 @protocol FLTGoogleMapMarkerOptionsSink
@@ -24,5 +27,23 @@
 // Defines marker controllable by Flutter.
 @interface FLTGoogleMapMarkerController : NSObject <FLTGoogleMapMarkerOptionsSink>
 @property(atomic, readonly) NSString* markerId;
-- (instancetype)initWithPosition:(CLLocationCoordinate2D)position mapView:(GMSMapView*)mapView;
+- (instancetype)initMarkerWithPosition:(CLLocationCoordinate2D)position
+                              markerId:(NSString*)markerId
+                               mapView:(GMSMapView*)mapView;
+- (BOOL)consumeTapEvents;
+- (void)removeMarker;
 @end
+
+@interface FLTMarkersController : NSObject
+- (instancetype)init:(FlutterMethodChannel*)methodChannel
+             mapView:(GMSMapView*)mapView
+           registrar:(NSObject<FlutterPluginRegistrar>*)registrar;
+- (void)addMarkers:(NSArray*)markersToAdd;
+- (void)changeMarkers:(NSArray*)markersToChange;
+- (void)removeMarkerIds:(NSArray*)markerIdsToRemove;
+- (BOOL)onMarkerTap:(NSString*)markerId;
+- (void)onMarkerDragEnd:(NSString*)markerId coordinate:(CLLocationCoordinate2D)coordinate;
+- (void)onInfoWindowTap:(NSString*)markerId;
+@end
+
+NS_ASSUME_NONNULL_END

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FlutterWebView.h"
+#import "FLTWKNavigationDelegate.h"
 #import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
@@ -40,13 +41,14 @@
   NSString* _currentUrl;
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
+  FLTWKNavigationDelegate* _navigationDelegate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
               binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
-  if ([super init]) {
+  if (self = [super init]) {
     _viewId = viewId;
 
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
@@ -60,16 +62,24 @@
       [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
     }
 
+    NSDictionary<NSString*, id>* settings = args[@"settings"];
+
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
     configuration.userContentController = userContentController;
+    [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
+                        inConfiguration:configuration];
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
+    _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
     }];
-    NSDictionary<NSString*, id>* settings = args[@"settings"];
+
     [self applySettings:settings];
+    // TODO(amirh): return an error if apply settings failed once it's possible to do so.
+    // https://github.com/flutter/flutter/issues/36228
 
     NSString* initialUrl = args[@"initialUrl"];
     if ([initialUrl isKindOfClass:[NSString class]]) {
@@ -108,22 +118,28 @@
     [self onRemoveJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"clearCache"]) {
     [self clearCache:result];
+  } else if ([[call method] isEqualToString:@"getTitle"]) {
+    [self onGetTitle:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
 - (void)onUpdateSettings:(FlutterMethodCall*)call result:(FlutterResult)result {
-  [self applySettings:[call arguments]];
-  result(nil);
+  NSString* error = [self applySettings:[call arguments]];
+  if (error == nil) {
+    result(nil);
+    return;
+  }
+  result([FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil]);
 }
 
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSString* url = [call arguments];
-  if (![self loadUrl:url]) {
-    result([FlutterError errorWithCode:@"loadUrl_failed"
-                               message:@"Failed parsing the URL"
-                               details:[NSString stringWithFormat:@"URL was: '%@'", url]]);
+  if (![self loadRequest:[call arguments]]) {
+    result([FlutterError
+        errorWithCode:@"loadUrl_failed"
+              message:@"Failed parsing the URL"
+              details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
   } else {
     result(nil);
   }
@@ -224,15 +240,35 @@
   }
 }
 
-- (void)applySettings:(NSDictionary<NSString*, id>*)settings {
+- (void)onGetTitle:(FlutterResult)result {
+  NSString* title = _webView.title;
+  result(title);
+}
+
+// Returns nil when successful, or an error message when one or more keys are unknown.
+- (NSString*)applySettings:(NSDictionary<NSString*, id>*)settings {
+  NSMutableArray<NSString*>* unknownKeys = [[NSMutableArray alloc] init];
   for (NSString* key in settings) {
     if ([key isEqualToString:@"jsMode"]) {
       NSNumber* mode = settings[key];
       [self updateJsMode:mode];
+    } else if ([key isEqualToString:@"hasNavigationDelegate"]) {
+      NSNumber* hasDartNavigationDelegate = settings[key];
+      _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
+    } else if ([key isEqualToString:@"debuggingEnabled"]) {
+      // no-op debugging is always enabled on iOS.
+    } else if ([key isEqualToString:@"userAgent"]) {
+      NSString* userAgent = settings[key];
+      [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
     } else {
-      NSLog(@"webview_flutter: unknown setting key: %@", key);
+      [unknownKeys addObject:key];
     }
   }
+  if ([unknownKeys count] == 0) {
+    return nil;
+  }
+  return [NSString stringWithFormat:@"webview_flutter: unknown setting keys: {%@}",
+                                    [unknownKeys componentsJoinedByString:@", "]];
 }
 
 - (void)updateJsMode:(NSNumber*)mode {
@@ -249,13 +285,58 @@
   }
 }
 
+- (void)updateAutoMediaPlaybackPolicy:(NSNumber*)policy
+                      inConfiguration:(WKWebViewConfiguration*)configuration {
+  switch ([policy integerValue]) {
+    case 0:  // require_user_action_for_all_media_types
+      if (@available(iOS 10.0, *)) {
+        configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeAll;
+      } else {
+        configuration.mediaPlaybackRequiresUserAction = true;
+      }
+      break;
+    case 1:  // always_allow
+      if (@available(iOS 10.0, *)) {
+        configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
+      } else {
+        configuration.mediaPlaybackRequiresUserAction = false;
+      }
+      break;
+    default:
+      NSLog(@"webview_flutter: unknown auto media playback policy: %@", policy);
+  }
+}
+
+- (bool)loadRequest:(NSDictionary<NSString*, id>*)request {
+  if (!request) {
+    return false;
+  }
+
+  NSString* url = request[@"url"];
+  if ([url isKindOfClass:[NSString class]]) {
+    id headers = request[@"headers"];
+    if ([headers isKindOfClass:[NSDictionary class]]) {
+      return [self loadUrl:url withHeaders:headers];
+    } else {
+      return [self loadUrl:url];
+    }
+  }
+
+  return false;
+}
+
 - (bool)loadUrl:(NSString*)url {
+  return [self loadUrl:url withHeaders:[NSMutableDictionary dictionary]];
+}
+
+- (bool)loadUrl:(NSString*)url withHeaders:(NSDictionary<NSString*, NSString*>*)headers {
   NSURL* nsUrl = [NSURL URLWithString:url];
   if (!nsUrl) {
     return false;
   }
-  NSURLRequest* req = [NSURLRequest requestWithURL:nsUrl];
-  [_webView loadRequest:req];
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
+  [request setAllHTTPHeaderFields:headers];
+  [_webView loadRequest:request];
   return true;
 }
 
@@ -273,6 +354,14 @@
                                injectionTime:WKUserScriptInjectionTimeAtDocumentStart
                             forMainFrameOnly:NO];
     [userContentController addUserScript:wrapperScript];
+  }
+}
+
+- (void)updateUserAgent:(NSString*)userAgent {
+  if (@available(iOS 9.0, *)) {
+    [_webView setCustomUserAgent:userAgent];
+  } else {
+    NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
   }
 }
 
