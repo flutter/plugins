@@ -1,3 +1,19 @@
+## 0.6.3+2
+
+* Remove AndroidX warnings.
+
+## 0.6.3+1
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.6.3
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
 ## 0.6.2+4
 
 * Define clang module for iOS.

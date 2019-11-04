@@ -79,8 +79,9 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     Bundle arguments = convertArguments((Map<String, ?>) call.argument("arguments"));
     String packageName = call.argument("package");
     ComponentName componentName =
-        (!TextUtils.isEmpty(packageName) && !TextUtils.isEmpty((String) call.argument("component")))
-            ? new ComponentName(packageName, (String) call.argument("component"))
+        (!TextUtils.isEmpty(packageName)
+                && !TextUtils.isEmpty((String) call.argument("componentName")))
+            ? new ComponentName(packageName, (String) call.argument("componentName"))
             : null;
 
     sender.send(action, flags, category, data, arguments, packageName, componentName);
