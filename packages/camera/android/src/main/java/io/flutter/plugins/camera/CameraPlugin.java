@@ -4,172 +4,108 @@
 
 package io.flutter.plugins.camera;
 
-import android.hardware.camera2.CameraAccessException;
+import android.app.Activity;
 import android.os.Build;
 import androidx.annotation.NonNull;
-import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
+import androidx.annotation.Nullable;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.flutter.view.FlutterView;
+import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
 import io.flutter.view.TextureRegistry;
 
-public class CameraPlugin implements MethodCallHandler {
+/**
+ * Platform implementation of the camera_plugin.
+ *
+ * <p>Instantiate this in an add to app scenario to gracefully handle activity and context changes.
+ * See {@code io.flutter.plugins.camera.MainActivity} for an example.
+ *
+ * <p>Call {@link #registerWith(Registrar)} to register an implementation of this that uses the
+ * stable {@code io.flutter.plugin.common} package.
+ */
+public final class CameraPlugin implements FlutterPlugin, ActivityAware {
 
-  private final CameraPermissions cameraPermissions = new CameraPermissions();
-  private final FlutterView view;
-  private final Registrar registrar;
-  private final EventChannel imageStreamChannel;
-  private Camera camera;
+  private static final String TAG = "CameraPlugin";
+  private @Nullable FlutterPluginBinding flutterPluginBinding;
+  private @Nullable MethodCallHandlerImpl methodCallHandler;
 
-  private CameraPlugin(Registrar registrar) {
-    this.registrar = registrar;
-    this.view = registrar.view();
-    this.imageStreamChannel =
-        new EventChannel(registrar.messenger(), "plugins.flutter.io/camera/imageStream");
-  }
+  /**
+   * Initialize this within the {@code #configureFlutterEngine} of a Flutter activity or fragment.
+   *
+   * <p>See {@code io.flutter.plugins.camera.MainActivity} for an example.
+   */
+  public CameraPlugin() {}
 
+  /**
+   * Registers a plugin implementation that uses the stable {@code io.flutter.plugin.common}
+   * package.
+   *
+   * <p>Calling this automatically initializes the plugin. However plugins initialized this way
+   * won't react to changes in activity or context, unlike {@link CameraPlugin}.
+   */
   public static void registerWith(Registrar registrar) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      // When a background flutter view tries to register the plugin, the registrar has no activity.
-      // We stop the registration process as this plugin is foreground only. Also, if the sdk is
-      // less than 21 (min sdk for Camera2) we don't register the plugin.
-      return;
-    }
-
-    final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/camera");
-
-    channel.setMethodCallHandler(new CameraPlugin(registrar));
-  }
-
-  private void instantiateCamera(MethodCall call, Result result) throws CameraAccessException {
-    String cameraName = call.argument("cameraName");
-    String resolutionPreset = call.argument("resolutionPreset");
-    boolean enableAudio = call.argument("enableAudio");
-    TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture = view.createSurfaceTexture();
-    DartMessenger dartMessenger =
-        new DartMessenger(registrar.messenger(), flutterSurfaceTexture.id());
-    camera =
-        new Camera(
-            registrar.activity(),
-            flutterSurfaceTexture,
-            dartMessenger,
-            cameraName,
-            resolutionPreset,
-            enableAudio);
-
-    camera.open(result);
+    CameraPlugin plugin = new CameraPlugin();
+    plugin.maybeStartListening(
+        registrar.activity(),
+        registrar.messenger(),
+        registrar::addRequestPermissionsResultListener,
+        registrar.view());
   }
 
   @Override
-  public void onMethodCall(@NonNull MethodCall call, @NonNull final Result result) {
-    switch (call.method) {
-      case "availableCameras":
-        try {
-          result.success(CameraUtils.getAvailableCameras(registrar.activity()));
-        } catch (Exception e) {
-          handleException(e, result);
-        }
-        break;
-      case "initialize":
-        {
-          if (camera != null) {
-            camera.close();
-          }
-          cameraPermissions.requestPermissions(
-              registrar,
-              call.argument("enableAudio"),
-              (String errCode, String errDesc) -> {
-                if (errCode == null) {
-                  try {
-                    instantiateCamera(call, result);
-                  } catch (Exception e) {
-                    handleException(e, result);
-                  }
-                } else {
-                  result.error(errCode, errDesc, null);
-                }
-              });
-
-          break;
-        }
-      case "takePicture":
-        {
-          camera.takePicture(call.argument("path"), result);
-          break;
-        }
-      case "prepareForVideoRecording":
-        {
-          // This optimization is not required for Android.
-          result.success(null);
-          break;
-        }
-      case "startVideoRecording":
-        {
-          camera.startVideoRecording(call.argument("filePath"), result);
-          break;
-        }
-      case "stopVideoRecording":
-        {
-          camera.stopVideoRecording(result);
-          break;
-        }
-      case "pauseVideoRecording":
-        {
-          camera.pauseVideoRecording(result);
-          break;
-        }
-      case "resumeVideoRecording":
-        {
-          camera.resumeVideoRecording(result);
-          break;
-        }
-      case "startImageStream":
-        {
-          try {
-            camera.startPreviewWithImageStream(imageStreamChannel);
-            result.success(null);
-          } catch (Exception e) {
-            handleException(e, result);
-          }
-          break;
-        }
-      case "stopImageStream":
-        {
-          try {
-            camera.startPreview();
-            result.success(null);
-          } catch (Exception e) {
-            handleException(e, result);
-          }
-          break;
-        }
-      case "dispose":
-        {
-          if (camera != null) {
-            camera.dispose();
-          }
-          result.success(null);
-          break;
-        }
-      default:
-        result.notImplemented();
-        break;
-    }
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+    this.flutterPluginBinding = binding;
   }
 
-  // We move catching CameraAccessException out of onMethodCall because it causes a crash
-  // on plugin registration for sdks incompatible with Camera2 (< 21). We want this plugin to
-  // to be able to compile with <21 sdks for apps that want the camera and support earlier version.
-  @SuppressWarnings("ConstantConditions")
-  private void handleException(Exception exception, Result result) {
-    if (exception instanceof CameraAccessException) {
-      result.error("CameraAccess", exception.getMessage(), null);
+  @Override
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+    this.flutterPluginBinding = null;
+  }
+
+  @Override
+  public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+    maybeStartListening(
+        binding.getActivity(),
+        flutterPluginBinding.getFlutterEngine().getDartExecutor(),
+        binding::addRequestPermissionsResultListener,
+        flutterPluginBinding.getFlutterEngine().getRenderer());
+  }
+
+  @Override
+  public void onDetachedFromActivity() {
+    if (methodCallHandler == null) {
+      // Could be on too low of an SDK to have started listening originally.
+      return;
     }
 
-    throw (RuntimeException) exception;
+    methodCallHandler.stopListening();
+    methodCallHandler = null;
+  }
+
+  @Override
+  public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+    onAttachedToActivity(binding);
+  }
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+    onDetachedFromActivity();
+  }
+
+  private void maybeStartListening(
+      Activity activity,
+      BinaryMessenger messenger,
+      PermissionsRegistry permissionsRegistry,
+      TextureRegistry textureRegistry) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      // If the sdk is less than 21 (min sdk for Camera2) we don't register the plugin.
+      return;
+    }
+
+    methodCallHandler =
+        new MethodCallHandlerImpl(
+            activity, messenger, new CameraPermissions(), permissionsRegistry, textureRegistry);
   }
 }
