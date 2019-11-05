@@ -11,9 +11,12 @@ dependencies:
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.androidalarmmanager
-    pluginClass: AndroidAlarmManagerPlugin
-    iosPrefix: FLT
+    platforms:
+      android:
+        package: io.flutter.plugins.androidalarmmanager
+        pluginClass: AndroidAlarmManagerPlugin
+      ios:
+        prefix: FLT
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"

@@ -7,6 +7,7 @@ package io.flutter.plugins.androidalarmmanager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.content.SharedPreferences;
 import android.util.Log;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.dart.DartExecutor;
