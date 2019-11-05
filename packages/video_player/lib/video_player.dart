@@ -170,7 +170,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
   VideoPlayerController.file(File file)
-      : dataSource = 'file://${file.path}',
+      : assert(Platform.isIOS ? file.path.split('/').last.contains('.') : true),
+        dataSource =
+            'file://${Platform.isIOS ? file.path.replaceAll(" ", "%20") : file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
