@@ -35,7 +35,7 @@ Future<int> readCounter() async {
     final String contents = await file.readAsString();
 
     return int.parse(contents);
-  // ignore: unused_catch_clause
+    // ignore: unused_catch_clause
   } on FileSystemException catch (e) {
     // If encountering an error, return 0.
     return 0;

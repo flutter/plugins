@@ -13,12 +13,7 @@ import android.os.Handler;
 import android.util.Log;
 import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.JobIntentService;
-import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
-import io.flutter.view.FlutterCallbackInformation;
-import io.flutter.view.FlutterMain;
-import io.flutter.view.FlutterNativeView;
-import io.flutter.view.FlutterRunArguments;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,7 +44,7 @@ public class AlarmService extends JobIntentService {
   }
 
   public static void startBackgroundIsolate(Context context, long callbackHandle) {
-    assert(backgroundExecutionContext == null);
+    assert (backgroundExecutionContext == null);
     backgroundExecutionContext = new BackgroundExecutionContext();
     backgroundExecutionContext.startBackgroundIsolate(context, callbackHandle);
   }

@@ -18,16 +18,11 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
 import io.flutter.view.FlutterCallbackInformation;
 import io.flutter.view.FlutterMain;
-import io.flutter.view.FlutterNativeView;
-import io.flutter.view.FlutterRunArguments;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.json.JSONArray;
-import org.json.JSONException;
 
 public class BackgroundExecutionContext implements MethodCallHandler {
   private static final String TAG = "BackgroundExecutionContext";
@@ -58,9 +53,7 @@ public class BackgroundExecutionContext implements MethodCallHandler {
     prefs.edit().putLong(CALLBACK_HANDLE_KEY, callbackHandle).apply();
   }
 
-  /**
-   * Returns true when the background isolate has started.
-   */
+  /** Returns true when the background isolate has started. */
   public boolean isRunning() {
     return isIsolateRunning.get();
   }
@@ -112,8 +105,8 @@ public class BackgroundExecutionContext implements MethodCallHandler {
    * <p>Preconditions:
    *
    * <ul>
-   *   <li>The given {@code callback} must correspond to a registered Dart callback. If the
-   *       handle does not resolve to a Dart callback then this method does nothing.
+   *   <li>The given {@code callback} must correspond to a registered Dart callback. If the handle
+   *       does not resolve to a Dart callback then this method does nothing.
    *   <li>A static {@link #pluginRegistrantCallback} must exist, otherwise a {@link
    *       PluginRegistrantException} will be thrown.
    * </ul>
@@ -156,8 +149,7 @@ public class BackgroundExecutionContext implements MethodCallHandler {
    * <p>The given {@code intent} should contain a {@code long} extra called "callbackHandle", which
    * corresponds to a callback registered with the Dart VM.
    */
-  public void executeDartCallbackInBackgroundIsolate(
-      Intent intent, final CountDownLatch latch) {
+  public void executeDartCallbackInBackgroundIsolate(Intent intent, final CountDownLatch latch) {
     // Grab the handle for the callback associated with this alarm. Pay close
     // attention to the type of the callback handle as storing this value in a
     // variable of the wrong size will cause the callback lookup to fail.
@@ -189,7 +181,9 @@ public class BackgroundExecutionContext implements MethodCallHandler {
     // care about the method name as we simply lookup and invoke the callback
     // provided.
     backgroundChannel.invokeMethod(
-        "invokeAlarmManagerCallback", new Object[] {callbackHandle, intent.getIntExtra("id", -1)}, result);
+        "invokeAlarmManagerCallback",
+        new Object[] {callbackHandle, intent.getIntExtra("id", -1)},
+        result);
   }
 
   private void initializeMethodChannel(BinaryMessenger isolate) {
@@ -199,10 +193,11 @@ public class BackgroundExecutionContext implements MethodCallHandler {
     //
     // This channel is also responsible for sending requests from Android to Dart to execute Dart
     // callbacks in the background isolate.
-    backgroundChannel = new MethodChannel(
-          isolate,
-          "plugins.flutter.io/android_alarm_manager_background",
-          JSONMethodCodec.INSTANCE);
+    backgroundChannel =
+        new MethodChannel(
+            isolate,
+            "plugins.flutter.io/android_alarm_manager_background",
+            JSONMethodCodec.INSTANCE);
     backgroundChannel.setMethodCallHandler(this);
   }
 }

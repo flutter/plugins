@@ -69,7 +69,7 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
   }
 
   public void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
-    synchronized(initializationLock) {
+    synchronized (initializationLock) {
       if (alarmManagerPluginChannel != null) {
         return;
       }
