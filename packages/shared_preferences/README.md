@@ -50,3 +50,15 @@ const MethodChannel('plugins.flutter.io/shared_preferences')
     return null;
   });
 ```
+
+### Tips
+
+
+When you add Flutter to existing apps, you want to get the value set by the Native App, you should know:
+
+
+1. All the key of prefs starts with `flutter.`;
+
+2. The default name of the Android sharing preferences file  is `FlutterSharedPreferences`;
+
+
