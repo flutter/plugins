@@ -5,6 +5,7 @@
 package io.flutter.plugins.androidalarmmanager;
 
 import android.content.Context;
+import android.util.Log;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.JSONMethodCodec;
@@ -40,9 +41,12 @@ import org.json.JSONException;
  * </ol>
  */
 public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandler {
+  private final String TAG = "AndroidAlarmManagerPlugin";
   private Context context;
+  private Object initializationLock = new Object();
   private MethodChannel alarmManagerPluginChannel;
-  private MethodChannel backgroundCallbackChannel;
+
+  private static AndroidAlarmManagerPlugin singleton;
 
   /**
    * Registers this plugin with an associated Flutter execution context, represented by the given
@@ -52,8 +56,10 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
    * connected to, and running against, the associated Flutter execution context.
    */
   public static void registerWith(Registrar registrar) {
-    final AndroidAlarmManagerPlugin plugin = new AndroidAlarmManagerPlugin();
-    plugin.onAttachedToEngine(registrar.context(), registrar.messenger());
+    if (singleton == null) {
+      singleton = new AndroidAlarmManagerPlugin();
+    }
+    singleton.onAttachedToEngine(registrar.context(), registrar.messenger());
   }
 
   @Override
@@ -63,53 +69,36 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
   }
 
   public void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
-    this.context = applicationContext;
+    synchronized(initializationLock) {
+      if (alarmManagerPluginChannel != null) {
+        return;
+      }
 
-    // alarmManagerPluginChannel is the channel responsible for receiving the following messages
-    // from the main Flutter app:
-    // - "AlarmService.start"
-    // - "Alarm.oneShotAt"
-    // - "Alarm.periodic"
-    // - "Alarm.cancel"
-    alarmManagerPluginChannel =
-        new MethodChannel(
-            messenger, "plugins.flutter.io/android_alarm_manager", JSONMethodCodec.INSTANCE);
+      Log.i(TAG, "onAttachedToEngine");
+      this.context = applicationContext;
 
-    // backgroundCallbackChannel is the channel responsible for receiving the following messages
-    // from the background isolate that was setup by this plugin:
-    // - "AlarmService.initialized"
-    //
-    // This channel is also responsible for sending requests from Android to Dart to execute Dart
-    // callbacks in the background isolate. Those messages are sent with an empty method name because
-    // they are the only messages that this channel sends to Dart.
-    backgroundCallbackChannel =
-        new MethodChannel(
-            messenger,
-            "plugins.flutter.io/android_alarm_manager_background",
-            JSONMethodCodec.INSTANCE);
+      // alarmManagerPluginChannel is the channel responsible for receiving the following messages
+      // from the main Flutter app:
+      // - "AlarmService.start"
+      // - "Alarm.oneShotAt"
+      // - "Alarm.periodic"
+      // - "Alarm.cancel"
+      alarmManagerPluginChannel =
+          new MethodChannel(
+              messenger, "plugins.flutter.io/android_alarm_manager", JSONMethodCodec.INSTANCE);
 
-    // Instantiate a new AndroidAlarmManagerPlugin and connect the primary and background
-    // method channels for Android/Flutter communication.
-    alarmManagerPluginChannel.setMethodCallHandler(this);
-    backgroundCallbackChannel.setMethodCallHandler(this);
-
-    // The AlarmService expects to hold a static reference to the plugin's background
-    // method channel.
-    // TODO(mattcarroll): this static reference implies that only one instance of this plugin
-    //                    can exist at a time. Moreover, calling registerWith() a 2nd time would
-    //                    seem to overwrite the previously registered background channel without
-    //                    notice.
-    AlarmService.setBackgroundChannel(backgroundCallbackChannel);
+      // Instantiate a new AndroidAlarmManagerPlugin and connect the primary method channel for
+      // Android/Flutter communication.
+      alarmManagerPluginChannel.setMethodCallHandler(this);
+    }
   }
 
   @Override
   public void onDetachedFromEngine(FlutterPluginBinding binding) {
+    Log.i(TAG, "onDetachedFromEngine");
     context = null;
     alarmManagerPluginChannel.setMethodCallHandler(null);
     alarmManagerPluginChannel = null;
-
-    backgroundCallbackChannel.setMethodCallHandler(null);
-    backgroundCallbackChannel = null;
   }
 
   public AndroidAlarmManagerPlugin() {}
@@ -130,13 +119,6 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
         // method channels.
         AlarmService.setCallbackDispatcher(context, callbackHandle);
         AlarmService.startBackgroundIsolate(context, callbackHandle);
-        result.success(true);
-      } else if (method.equals("AlarmService.initialized")) {
-        // This message is sent by the background method channel as soon as the background isolate
-        // is running. From this point forward, the Android side of this plugin can send
-        // callback handles through the background method channel, and the Dart side will execute
-        // the Dart methods corresponding to those callback handles.
-        AlarmService.onInitialized();
         result.success(true);
       } else if (method.equals("Alarm.periodic")) {
         // This message indicates that the Flutter app would like to schedule a periodic
