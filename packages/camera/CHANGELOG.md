@@ -1,3 +1,16 @@
+## 0.5.6+4
+
+* Android: Use CameraDevice.TEMPLATE_RECORD to improve image streaming.
+
+## 0.5.6+3
+
+* Remove AndroidX warning.
+
+## 0.5.6+2
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
 ## 0.5.6+1
 
 * Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.

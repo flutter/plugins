@@ -1,3 +1,11 @@
+## 4.0.11
+
+* Update iOS CocoaPod dependency to 5.0 to fix deprecated API usage issue.
+
+## 4.0.10
+
+* Remove AndroidX warning.
+
 ## 4.0.9
 
 * Update and migrate iOS example project.

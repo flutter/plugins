@@ -1,3 +1,12 @@
+## 0.6.3+2
+
+* Remove AndroidX warnings.
+
+## 0.6.3+1
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
 ## 0.6.3
 
 * Support the v2 Android embedder.
