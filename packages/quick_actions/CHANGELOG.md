@@ -1,3 +1,9 @@
+## 0.3.3
+
+* Support Android V2 embedding.
+* Add e2e tests.
+* Migrate to using the new e2e test binding.
+
 ## 0.3.2+4
 
 * Remove AndroidX warnings.
@@ -7,6 +13,7 @@
 * Define clang module for iOS.
 
 ## 0.3.2+2
+
 * Fix bug that would make the shortcut not open on Android.
 * Report shortcut used on Android.
 * Improves example.
@@ -17,7 +24,7 @@
 
 ## 0.3.2
 
-* Fixed the quick actions launch on Android when the app is killed. 
+* Fixed the quick actions launch on Android when the app is killed.
 
 ## 0.3.1
 
