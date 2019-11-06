@@ -26,7 +26,6 @@ flutter:
         pluginClass: WebViewFlutterPlugin
       macos:
         default_package: macos_webview_flutter
-        dartPluginClass: MacWebViewFlutter
       ios:
         prefix: FLT
         pluginClass: WebViewFlutterPlugin
