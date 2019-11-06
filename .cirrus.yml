@@ -13,7 +13,9 @@ task:
   activate_script: pub global activate flutter_plugin_tools
   matrix:
     - name: publishable
-      script: ./script/check_publish.sh
+      script:
+        - flutter channel stable
+        - ./script/check_publish.sh
     - name: format
       install_script:
         - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
