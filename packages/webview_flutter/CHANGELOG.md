@@ -1,3 +1,8 @@
+## 0.3.16
+
+* Add support for async NavigationDelegates. Synchronous NavigationDelegates
+  should still continue to function without any change in behavior.
+
 ## 0.3.15+3
 
 * Re-land support for the v2 Android embedding. This correctly sets the minimum
