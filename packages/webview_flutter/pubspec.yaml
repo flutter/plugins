@@ -25,5 +25,4 @@ flutter:
         package: io.flutter.plugins.webviewflutter
         pluginClass: WebViewFlutterPlugin
       ios:
-        prefix: FLT
-        pluginClass: WebViewFlutterPlugin
+        pluginClass: FLTWebViewFlutterPlugin
