@@ -11,7 +11,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  webview_flutter_platform_interface: ^0.1.0
 
 dev_dependencies:
   flutter_test:
@@ -21,7 +20,6 @@ dev_dependencies:
 
 flutter:
   plugin:
-    implements: webview_flutter
     platforms:
       android:
         package: io.flutter.plugins.webviewflutter
