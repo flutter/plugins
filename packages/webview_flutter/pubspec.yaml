@@ -24,8 +24,6 @@ flutter:
       android:
         package: io.flutter.plugins.webviewflutter
         pluginClass: WebViewFlutterPlugin
-      macos:
-        default_package: macos_webview_flutter
       ios:
         prefix: FLT
         pluginClass: WebViewFlutterPlugin
