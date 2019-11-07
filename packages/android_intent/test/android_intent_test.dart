@@ -23,7 +23,7 @@ void main() {
           flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
           channel: mockChannel,
           platform: FakePlatform(operatingSystem: 'android'));
-      androidIntent.launch();
+      await androidIntent.launch();
       verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
         'action': 'action_view',
         'data': Uri.encodeFull('https://flutter.io'),
@@ -35,7 +35,7 @@ void main() {
           action: null,
           channel: mockChannel,
           platform: FakePlatform(operatingSystem: 'android'));
-      androidIntent.launch();
+      await androidIntent.launch();
       verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
         'action': null,
       }));
@@ -46,7 +46,7 @@ void main() {
           action: null,
           channel: mockChannel,
           platform: FakePlatform(operatingSystem: 'ios'));
-      androidIntent.launch();
+      await androidIntent.launch();
       verifyZeroInteractions(mockChannel);
     });
   });

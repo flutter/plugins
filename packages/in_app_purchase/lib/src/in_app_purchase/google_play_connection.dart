@@ -186,10 +186,8 @@ class GooglePlayConnection
     } on PlatformException catch (e) {
       exception = e;
       responses = [
-        SkuDetailsResponseWrapper(
-            responseCode: BillingResponse.error, skuDetailsList: []),
-        SkuDetailsResponseWrapper(
-            responseCode: BillingResponse.error, skuDetailsList: [])
+        SkuDetailsResponseWrapper.error,
+        SkuDetailsResponseWrapper.error,
       ];
     }
     List<ProductDetails> productDetailsList =
@@ -236,7 +234,7 @@ class GooglePlayConnection
         ..status = status
         ..error = error);
     }).toList();
-    if (!purchases.isEmpty) {
+    if (purchases.isNotEmpty) {
       return Future.wait(purchases);
     } else {
       return [

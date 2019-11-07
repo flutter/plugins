@@ -142,6 +142,12 @@ class SkuDetailsResponseWrapper {
   factory SkuDetailsResponseWrapper.fromJson(Map<String, dynamic> map) =>
       _$SkuDetailsResponseWrapperFromJson(map);
 
+  static SkuDetailsResponseWrapper _errorInstance = SkuDetailsResponseWrapper(
+      responseCode: BillingResponse.error, skuDetailsList: []);
+
+  /// Returns an empty wrapper with an error response code.
+  static SkuDetailsResponseWrapper get error => _errorInstance;
+
   /// The final status of the [BillingClient.querySkuDetails] call.
   final BillingResponse responseCode;
 

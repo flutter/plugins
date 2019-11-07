@@ -71,7 +71,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
     if (_markerIcon == null) {
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
-      BitmapDescriptor.fromAssetImage(
+      await BitmapDescriptor.fromAssetImage(
               imageConfiguration, 'assets/red_square.png')
           .then(_updateBitmap);
     }

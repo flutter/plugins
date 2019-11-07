@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
 
-    _updateConnectionStatus(result);
+    await _updateConnectionStatus(result);
   }
 
   @override

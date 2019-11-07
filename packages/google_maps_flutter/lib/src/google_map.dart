@@ -253,34 +253,34 @@ class _GoogleMapState extends State<GoogleMap> {
       return;
     }
     final GoogleMapController controller = await _controller.future;
-    controller._updateMapOptions(updates);
+    await controller._updateMapOptions(updates);
     _googleMapOptions = newOptions;
   }
 
   void _updateMarkers() async {
     final GoogleMapController controller = await _controller.future;
-    controller._updateMarkers(
+    await controller._updateMarkers(
         _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
     _markers = _keyByMarkerId(widget.markers);
   }
 
   void _updatePolygons() async {
     final GoogleMapController controller = await _controller.future;
-    controller._updatePolygons(
+    await controller._updatePolygons(
         _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
     _polygons = _keyByPolygonId(widget.polygons);
   }
 
   void _updatePolylines() async {
     final GoogleMapController controller = await _controller.future;
-    controller._updatePolylines(
+    await controller._updatePolylines(
         _PolylineUpdates.from(_polylines.values.toSet(), widget.polylines));
     _polylines = _keyByPolylineId(widget.polylines);
   }
 
   void _updateCircles() async {
     final GoogleMapController controller = await _controller.future;
-    controller._updateCircles(
+    await controller._updateCircles(
         _CircleUpdates.from(_circles.values.toSet(), widget.circles));
     _circles = _keyByCircleId(widget.circles);
   }

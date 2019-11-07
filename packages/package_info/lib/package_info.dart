@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:pedantic/pedantic.dart';
 
 const MethodChannel _kChannel =
     MethodChannel('plugins.flutter.io/package_info');
@@ -32,7 +33,7 @@ class PackageInfo {
     if (_fromPlatform == null) {
       final Completer<PackageInfo> completer = Completer<PackageInfo>();
 
-      _kChannel.invokeMapMethod<String, dynamic>('getAll').then(
+      unawaited(_kChannel.invokeMapMethod<String, dynamic>('getAll').then(
           (dynamic result) {
         final Map<dynamic, dynamic> map = result;
 
@@ -42,7 +43,7 @@ class PackageInfo {
           version: map["version"],
           buildNumber: map["buildNumber"],
         ));
-      }, onError: completer.completeError);
+      }, onError: completer.completeError));
 
       _fromPlatform = completer.future;
     }

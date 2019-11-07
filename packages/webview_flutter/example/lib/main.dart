@@ -194,7 +194,7 @@ class SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     // Send a message with the user agent string to the Toaster JavaScript channel we registered
     // with the WebView.
-    controller.evaluateJavascript(
+    await controller.evaluateJavascript(
         'Toaster.postMessage("User Agent: " + navigator.userAgent);');
   }
 
@@ -250,7 +250,7 @@ class SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
-    controller.loadUrl('data:text/html;base64,$contentBase64');
+    await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
   Widget _getCookieList(String cookies) {
@@ -291,7 +291,7 @@ class NavigationControls extends StatelessWidget {
                   ? null
                   : () async {
                       if (await controller.canGoBack()) {
-                        controller.goBack();
+                        await controller.goBack();
                       } else {
                         Scaffold.of(context).showSnackBar(
                           const SnackBar(content: Text("No back history item")),
@@ -306,7 +306,7 @@ class NavigationControls extends StatelessWidget {
                   ? null
                   : () async {
                       if (await controller.canGoForward()) {
-                        controller.goForward();
+                        await controller.goForward();
                       } else {
                         Scaffold.of(context).showSnackBar(
                           const SnackBar(

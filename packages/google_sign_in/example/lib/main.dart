@@ -103,7 +103,7 @@ class SignInDemoState extends State<SignInDemo> {
   }
 
   Future<void> _handleSignOut() async {
-    _googleSignIn.disconnect();
+    await _googleSignIn.disconnect();
   }
 
   Widget _buildBody() {

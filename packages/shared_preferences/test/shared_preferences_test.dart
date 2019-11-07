@@ -108,12 +108,11 @@ void main() {
 
     test('removing', () async {
       const String key = 'testKey';
-      preferences
-        ..setString(key, null)
-        ..setBool(key, null)
-        ..setInt(key, null)
-        ..setDouble(key, null)
-        ..setStringList(key, null);
+      await preferences.setString(key, null);
+      await preferences.setBool(key, null);
+      await preferences.setInt(key, null);
+      await preferences.setDouble(key, null);
+      await preferences.setStringList(key, null);
       await preferences.remove(key);
       expect(
           log,
@@ -132,7 +131,7 @@ void main() {
 
       expect(false, preferences.containsKey(key));
 
-      preferences.setString(key, 'test');
+      await preferences.setString(key, 'test');
       expect(true, preferences.containsKey(key));
     });
 

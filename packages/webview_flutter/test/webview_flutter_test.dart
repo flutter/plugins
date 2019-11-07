@@ -83,7 +83,7 @@ void main() {
 
     expect(controller, isNotNull);
 
-    controller.loadUrl('https://flutter.io');
+    await controller.loadUrl('https://flutter.io');
 
     expect(await controller.currentUrl(), 'https://flutter.io');
   });
@@ -272,11 +272,11 @@ void main() {
 
     expect(await controller.currentUrl(), 'https://youtube.com');
 
-    controller.loadUrl('https://flutter.io');
+    await controller.loadUrl('https://flutter.io');
 
     expect(await controller.currentUrl(), 'https://flutter.io');
 
-    controller.goBack();
+    await controller.goBack();
 
     expect(await controller.currentUrl(), 'https://youtube.com');
   });
@@ -296,15 +296,15 @@ void main() {
 
     expect(await controller.currentUrl(), 'https://youtube.com');
 
-    controller.loadUrl('https://flutter.io');
+    await controller.loadUrl('https://flutter.io');
 
     expect(await controller.currentUrl(), 'https://flutter.io');
 
-    controller.goBack();
+    await controller.goBack();
 
     expect(await controller.currentUrl(), 'https://youtube.com');
 
-    controller.goForward();
+    await controller.goForward();
 
     expect(await controller.currentUrl(), 'https://flutter.io');
   });
@@ -324,13 +324,13 @@ void main() {
     // Test a WebView without an explicitly set first URL.
     expect(await controller.currentUrl(), isNull);
 
-    controller.loadUrl('https://youtube.com');
+    await controller.loadUrl('https://youtube.com');
     expect(await controller.currentUrl(), 'https://youtube.com');
 
-    controller.loadUrl('https://flutter.io');
+    await controller.loadUrl('https://flutter.io');
     expect(await controller.currentUrl(), 'https://flutter.io');
 
-    controller.goBack();
+    await controller.goBack();
     expect(await controller.currentUrl(), 'https://youtube.com');
   });
 
@@ -351,12 +351,12 @@ void main() {
     expect(platformWebView.currentUrl, 'https://flutter.io');
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
 
-    controller.reload();
+    await controller.reload();
 
     expect(platformWebView.currentUrl, 'https://flutter.io');
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 1);
 
-    controller.loadUrl('https://youtube.com');
+    await controller.loadUrl('https://youtube.com');
 
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
   });

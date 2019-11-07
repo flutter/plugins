@@ -1,0 +1,6 @@
+# This only exists so that we can include pedantic in the top level
+# analysis_options.yaml.
+name: plugins
+dependencies:
+  pedantic: ^1.8.0
+publish_to: none

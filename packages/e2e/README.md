@@ -47,7 +47,7 @@ import 'package:flutter_driver/flutter_driver.dart';
 Future<void> main() async {
   final FlutterDriver driver = await FlutterDriver.connect();
   await driver.requestData(null, timeout: const Duration(minutes: 1));
-  driver.close();
+  await driver.close();
   exit(result == 'pass' ? 0 : 1);
 }
 ```
@@ -118,7 +118,7 @@ To e2e test on a local Android device (emulated or physical):
 
 ## Firebase Test Lab
 
-If this is you first time testing with Firebase Test Lab, 
+If this is you first time testing with Firebase Test Lab,
 you'll need to follow the guides in the
 [Firebase test lab documentation](https://firebase.google.com/docs/test-lab/?gclid=EAIaIQobChMIs5qVwqW25QIV8iCtBh3DrwyUEAAYASAAEgLFU_D_BwE)
 to set up a project.

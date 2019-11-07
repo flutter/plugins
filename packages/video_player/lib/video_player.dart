@@ -324,7 +324,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    _channel.invokeMethod<void>(
+    await _channel.invokeMethod<void>(
       'setLooping',
       <String, dynamic>{'textureId': _textureId, 'looping': value.isLooping},
     );
