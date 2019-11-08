@@ -1,3 +1,7 @@
+## 4.1.0
+
+* Added support for getting `serverAuthCode`
+
 ## 4.0.11
 
 * Update iOS CocoaPod dependency to 5.0 to fix deprecated API usage issue.
