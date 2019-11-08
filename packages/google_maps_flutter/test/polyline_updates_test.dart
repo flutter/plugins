@@ -130,6 +130,25 @@ void main() {
     expect(update.geodesic, true);
   });
 
+  testWidgets("Mutate a polyline", (WidgetTester tester) async {
+    final Polyline p1 = Polyline(
+      polylineId: PolylineId("polyline_1"),
+      points: <LatLng>[const LatLng(0.0, 0.0)],
+    );
+    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
+
+    p1.points.add(const LatLng(1.0, 1.0));
+    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+    expect(platformGoogleMap.polylinesToChange.length, 1);
+    expect(platformGoogleMap.polylinesToChange.first, equals(p1));
+
+    expect(platformGoogleMap.polylineIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
+  });
+
   testWidgets("Multi Update", (WidgetTester tester) async {
     Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
     Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));

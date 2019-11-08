@@ -4,13 +4,13 @@
 # sure all first party plugins can be compiled together.
 
 # So that users can run this script from anywhere and it will work as expected.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
-REPO_DIR="$(dirname "$SCRIPT_DIR")"
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
+readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
 check_changed_packages > /dev/null
 
-(cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app --exclude instrumentation_adapter)
+(cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app --exclude instrumentation_adapter,url_launcher_platform_interface)
 
 function error() {
   echo "$@" 1>&2

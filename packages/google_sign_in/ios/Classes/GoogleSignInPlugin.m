@@ -31,7 +31,7 @@ static FlutterError *getFlutterError(NSError *error) {
                              details:error.localizedDescription];
 }
 
-@interface FLTGoogleSignInPlugin () <GIDSignInDelegate, GIDSignInUIDelegate>
+@interface FLTGoogleSignInPlugin () <GIDSignInDelegate>
 @end
 
 @implementation FLTGoogleSignInPlugin {
@@ -51,7 +51,6 @@ static FlutterError *getFlutterError(NSError *error) {
   self = [super init];
   if (self) {
     [GIDSignIn sharedInstance].delegate = self;
-    [GIDSignIn sharedInstance].uiDelegate = self;
 
     // On the iOS simulator, we get "Broken pipe" errors after sign-in for some
     // unknown reason. We can avoid crashing the app by ignoring them.
@@ -87,11 +86,13 @@ static FlutterError *getFlutterError(NSError *error) {
     }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
     if ([self setAccountRequest:result]) {
-      [[GIDSignIn sharedInstance] signInSilently];
+      [[GIDSignIn sharedInstance] restorePreviousSignIn];
     }
   } else if ([call.method isEqualToString:@"isSignedIn"]) {
-    result(@([[GIDSignIn sharedInstance] hasAuthInKeychain]));
+    result(@([[GIDSignIn sharedInstance] hasPreviousSignIn]));
   } else if ([call.method isEqualToString:@"signIn"]) {
+    [GIDSignIn sharedInstance].presentingViewController = [self topViewController];
+
     if ([self setAccountRequest:result]) {
       @try {
         [[GIDSignIn sharedInstance] signIn];
@@ -138,10 +139,7 @@ static FlutterError *getFlutterError(NSError *error) {
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
   NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
-  id annotation = options[UIApplicationOpenURLOptionsAnnotationKey];
-  return [[GIDSignIn sharedInstance] handleURL:url
-                             sourceApplication:sourceApplication
-                                    annotation:annotation];
+  return [[GIDSignIn sharedInstance] handleURL:url];
 }
 
 #pragma mark - <GIDSignInUIDelegate> protocol
@@ -196,4 +194,36 @@ static FlutterError *getFlutterError(NSError *error) {
   result(error != nil ? getFlutterError(error) : account);
 }
 
+- (UIViewController *)topViewController {
+  return [self topViewControllerFromViewController:[UIApplication sharedApplication]
+                                                       .keyWindow.rootViewController];
+}
+
+/**
+ * This method recursively iterate through the view hierarchy
+ * to return the top most view controller.
+ *
+ * It supports the following scenarios:
+ *
+ * - The view controller is presenting another view.
+ * - The view controller is a UINavigationController.
+ * - The view controller is a UITabBarController.
+ *
+ * @return The top most view controller.
+ */
+- (UIViewController *)topViewControllerFromViewController:(UIViewController *)viewController {
+  if ([viewController isKindOfClass:[UINavigationController class]]) {
+    UINavigationController *navigationController = (UINavigationController *)viewController;
+    return [self
+        topViewControllerFromViewController:[navigationController.viewControllers lastObject]];
+  }
+  if ([viewController isKindOfClass:[UITabBarController class]]) {
+    UITabBarController *tabController = (UITabBarController *)viewController;
+    return [self topViewControllerFromViewController:tabController.selectedViewController];
+  }
+  if (viewController.presentedViewController) {
+    return [self topViewControllerFromViewController:viewController.presentedViewController];
+  }
+  return viewController;
+}
 @end

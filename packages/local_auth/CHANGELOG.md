@@ -1,3 +1,16 @@
+## 0.6.1
+
+* Added ability to stop authentication (For Android).
+
+## 0.6.0+3
+
+* Remove AndroidX warnings.
+
+## 0.6.0+2
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
 ## 0.6.0+1
 
 * Update the `intl` constraint to ">=0.15.1 <0.17.0" (0.16.0 isn't really a breaking change).

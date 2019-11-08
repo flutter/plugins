@@ -1,6 +1,11 @@
+## 0.4.4+2
+
+* Remove AndroidX warning.
+
 ## 0.4.4+1
 
 * Update and migrate iOS example project.
+* Define clang module for iOS.
 
 ## 0.4.4
 
