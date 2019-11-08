@@ -200,7 +200,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"markers#isInfoWindowShown"]) {
     id markerId = call.arguments[@"markerId"];
     if ([markerId isKindOfClass:[NSString class]]) {
-      result([_markersController isMarkerInfoWindowShown:markerId]);
+      result([NSNumber numberWithBool:[_markersController isMarkerInfoWindowShown:markerId]]);
     }
   } else if ([call.method isEqualToString:@"polygons#update"]) {
     id polygonsToAdd = call.arguments[@"polygonsToAdd"];
