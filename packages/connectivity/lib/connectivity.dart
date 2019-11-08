@@ -15,7 +15,7 @@ import 'package:meta/meta.dart';
 /// None: Device not connected to any network
 enum ConnectivityResult { wifi, mobile, none }
 
-/// Discovers network connectivity configurations: Distinguish between WI-FI and cellular, check WI-FI status and more.
+/// Discover network connectivity configurations: Distinguish between WI-FI and cellular, check WI-FI status and more.
 class Connectivity {
   /// Constructs a singleton instance of [Connectivity].
   ///
