@@ -1,3 +1,7 @@
+## 0.6.1+11
+
+* Stability and Maintainability: update documentations, add unit tests.
+
 ## 0.6.1+10
 
 * iOS: Fix image orientation problems when scaling images.
