@@ -9,8 +9,9 @@
 @implementation FLTWebViewFlutterPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+  WKProcessPool* processPool = [[WKProcessPool alloc] init];
   FLTWebViewFactory* webviewFactory =
-      [[FLTWebViewFactory alloc] initWithMessenger:registrar.messenger];
+      [[FLTWebViewFactory alloc] initWithMessenger:registrar.messenger processPool:processPool];
   [registrar registerViewFactory:webviewFactory withId:@"plugins.flutter.io/webview"];
   [FLTCookieManager registerWithRegistrar:registrar];
 }

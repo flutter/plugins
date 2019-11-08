@@ -8,12 +8,15 @@
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
+  WKProcessPool* _processPool;
 }
 
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger
+                      processPool:(WKProcessPool*)processPool {
   self = [super init];
   if (self) {
     _messenger = messenger;
+    _processPool = processPool;
   }
   return self;
 }
@@ -25,10 +28,12 @@
 - (NSObject<FlutterPlatformView>*)createWithFrame:(CGRect)frame
                                    viewIdentifier:(int64_t)viewId
                                         arguments:(id _Nullable)args {
-  FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
-                                                                         viewIdentifier:viewId
-                                                                              arguments:args
-                                                                        binaryMessenger:_messenger];
+  FLTWebViewController* webviewController =
+      [[FLTWebViewController alloc] initWithFrame:frame
+                                   viewIdentifier:viewId
+                                        arguments:args
+                                  binaryMessenger:_messenger
+                                      processPool:_processPool];
   return webviewController;
 }
 
@@ -69,7 +74,8 @@
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
-              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger
+                  processPool:(WKProcessPool*)processPool {
   if (self = [super init]) {
     _viewId = viewId;
 
@@ -88,6 +94,13 @@
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
     configuration.userContentController = userContentController;
+    configuration.processPool = processPool;
+    if (@available(iOS 9.0, *)) {
+      configuration.websiteDataStore = [WKWebsiteDataStore defaultDataStore];
+    } else {
+      // Not supported on earlier versions so we don't set it. You will not
+      // have shared cookies, sorry :(
+    }
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
 
