@@ -5,16 +5,14 @@
 /// image, and "`c`" indicates we want the image cropped.
 final RegExp sizeDirective = RegExp(r'^s[0-9]{1,5}(-c)?$');
 
-/// Adds sizing information to [photoUrl], inserted as the last path segment
-/// before the image filename. The format is described in [sizeDirective].
+/// Adds [size] directive to [photoUrl].
 ///
-/// Falls back to the default profile photo if [photoUrl] is [null].
+/// Depending on the format of photoUrl, this might:
+///  * Insert information as the last path segment (old style URLs), before
+///    the image filename. The format is described in [sizeDirective].
+///  * Insert information at the end of the URL, after an = sign. The format
+///    is described within this method.
 String addSizeDirectiveToUrl(String photoUrl, double size) {
-  if (photoUrl == null) {
-    // If the user has no profile photo and no display name, fall back to
-    // the default profile photo as a last resort.
-    return 'https://lh3.googleusercontent.com/a/default-user=s${size.round()}-c';
-  }
   final Uri profileUri = Uri.parse(photoUrl);
   final List<String> pathSegments = List<String>.from(profileUri.pathSegments);
   if (pathSegments.length <= 2) {
