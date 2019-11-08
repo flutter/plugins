@@ -20,6 +20,8 @@ enum ImageSource {
   gallery,
 }
 
+/// Provides an easy way to pick an image/video from the image library,
+/// or to take a picture/video with the camera.
 class ImagePicker {
   static const MethodChannel _channel =
       MethodChannel('plugins.flutter.io/image_picker');
