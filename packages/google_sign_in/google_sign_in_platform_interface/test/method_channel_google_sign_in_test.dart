@@ -30,9 +30,8 @@ const Map<String, dynamic> kDefaultResponses = <String, dynamic>{
   'getTokens': kTokenData,
 };
 
-final GoogleSignInUserData kUser = nativeUserDataToPluginUserData(kUserData);
-final GoogleSignInTokenData kToken =
-    nativeTokenDataToPluginTokenData(kTokenData);
+final GoogleSignInUserData kUser = getUserDataFromMap(kUserData);
+final GoogleSignInTokenData kToken = getTokenDataFromMap(kTokenData);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

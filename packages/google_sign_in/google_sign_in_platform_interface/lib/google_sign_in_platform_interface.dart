@@ -71,7 +71,7 @@ abstract class GoogleSignInPlatform {
     throw UnimplementedError('init() has not been implemented.');
   }
 
-  /// Attempts to reuse pre-existing credentials to sign in again, without user interaction
+  /// Attempts to reuse pre-existing credentials to sign in again, without user interaction.
   Future<GoogleSignInUserData> signInSilently() async {
     throw UnimplementedError('signInSilently() has not been implemented.');
   }

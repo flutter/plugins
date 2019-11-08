@@ -19,11 +19,12 @@ class GoogleSignInUserData {
   bool operator ==(dynamic other) {
     if (identical(this, other)) return true;
     if (other is! GoogleSignInUserData) return false;
-    return other.displayName == displayName &&
-        other.email == email &&
-        other.id == id &&
-        other.photoUrl == photoUrl &&
-        other.idToken == idToken;
+    final GoogleSignInUserData otherUserData = other;
+    return otherUserData.displayName == displayName &&
+        otherUserData.email == email &&
+        otherUserData.id == id &&
+        otherUserData.photoUrl == photoUrl &&
+        otherUserData.idToken == idToken;
   }
 }
 
@@ -39,6 +40,8 @@ class GoogleSignInTokenData {
   bool operator ==(dynamic other) {
     if (identical(this, other)) return true;
     if (other is! GoogleSignInTokenData) return false;
-    return other.idToken == idToken && other.accessToken == accessToken;
+    final GoogleSignInTokenData otherTokenData = other;
+    return otherTokenData.idToken == idToken &&
+        otherTokenData.accessToken == accessToken;
   }
 }

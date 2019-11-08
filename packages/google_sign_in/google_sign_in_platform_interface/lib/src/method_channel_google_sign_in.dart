@@ -31,25 +31,26 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
 
   @override
   Future<GoogleSignInUserData> signInSilently() {
-    return channel.invokeMapMethod<String, dynamic>('signInSilently').then(
-        (Map<String, dynamic> data) => nativeUserDataToPluginUserData(data));
+    return channel
+        .invokeMapMethod<String, dynamic>('signInSilently')
+        .then(getUserDataFromMap);
   }
 
   @override
   Future<GoogleSignInUserData> signIn() {
-    return channel.invokeMapMethod<String, dynamic>('signIn').then(
-        (Map<String, dynamic> data) => nativeUserDataToPluginUserData(data));
+    return channel
+        .invokeMapMethod<String, dynamic>('signIn')
+        .then(getUserDataFromMap);
   }
 
   @override
   Future<GoogleSignInTokenData> getTokens(
       {String email, bool shouldRecoverAuth = true}) {
-    return channel.invokeMapMethod<String, dynamic>(
-        'getTokens', <String, dynamic>{
+    return channel
+        .invokeMapMethod<String, dynamic>('getTokens', <String, dynamic>{
       'email': email,
       'shouldRecoverAuth': shouldRecoverAuth,
-    }).then(
-        (Map<String, dynamic> data) => nativeTokenDataToPluginTokenData(data));
+    }).then(getTokenDataFromMap);
   }
 
   @override
