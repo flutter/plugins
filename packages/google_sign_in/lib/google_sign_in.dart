@@ -98,9 +98,7 @@ class GoogleSignInAccount implements GoogleIdentity {
       response['idToken'] = _idToken;
     }
 
-    if (response['serverAuthCode'] == null) {
-      response['serverAuthCode'] = _serverAuthCode;
-    }
+    response['serverAuthCode'] ??= _serverAuthCode;
     return GoogleSignInAuthentication._(response);
   }
 
