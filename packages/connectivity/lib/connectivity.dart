@@ -15,6 +15,7 @@ import 'package:meta/meta.dart';
 /// None: Device not connected to any network
 enum ConnectivityResult { wifi, mobile, none }
 
+/// Discover network connectivity configurations: Distinguish between WI-FI and cellular, check WI-FI status and more.
 class Connectivity {
   /// Constructs a singleton instance of [Connectivity].
   ///
@@ -35,11 +36,13 @@ class Connectivity {
 
   Stream<ConnectivityResult> _onConnectivityChanged;
 
+  /// Exposed for testing purposes and should not be used by users of the plugin.
   @visibleForTesting
   static const MethodChannel methodChannel = MethodChannel(
     'plugins.flutter.io/connectivity',
   );
 
+  /// Exposed for testing purposes and should not be used by users of the plugin.
   @visibleForTesting
   static const EventChannel eventChannel = EventChannel(
     'plugins.flutter.io/connectivity_status',
