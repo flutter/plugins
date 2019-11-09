@@ -182,12 +182,12 @@ class SharedPreferences {
   @visibleForTesting
   static void setMockInitialValues(Map<String, dynamic> values) {
     final Map<String, dynamic> newValues =
-        values.map((String key, dynamic value) {
+        values.map<String, dynamic>((String key, dynamic value) {
       String newKey = key;
       if (!key.startsWith(_prefix)) {
         newKey = '$_prefix$key';
       }
-      return MapEntry(newKey, value);
+      return MapEntry<String, dynamic>(newKey, value);
     });
     _kChannel.setMockMethodCallHandler((MethodCall methodCall) async {
       if (methodCall.method == 'getAll') {
