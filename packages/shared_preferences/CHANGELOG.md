@@ -1,3 +1,7 @@
+## 0.5.4+4
+
+* `setMockInitialValues` needs to handle non-prefixed keys since that's an implementation detail.
+
 ## 0.5.4+3
 
 * Android: Suppress casting warnings.
