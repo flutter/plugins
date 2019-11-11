@@ -458,6 +458,106 @@ void main() {
     });
   });
 
+  group('Navigation Delegate', () {
+    final String url200 = 'https://httpstat.us/200';
+    final String url301 = 'https://httpstat.us/301';
+    final String url301Location = 'https://httpstat.us/';
+
+    testWidgets('HTTP 200', (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final Completer<void> pageLoaded = Completer<void>();
+      final List<NavigationRequest> reqs = <NavigationRequest>[];
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: url200,
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            onPageFinished: (String url) {
+              pageLoaded.complete(null);
+            },
+            navigationDelegate: (NavigationRequest req) {
+              reqs.add(req);
+              return NavigationDecision.navigate;
+            },
+          ),
+        ),
+      );
+      final WebViewController controller = await controllerCompleter.future;
+      await pageLoaded.future;
+
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        expect(reqs.length, 1);
+
+        expect(reqs[0].url, url200);
+        expect(reqs[0].hasGesture, false);
+        expect(reqs[0].isForMainFrame, true);
+      } else if (defaultTargetPlatform == TargetPlatform.android) {
+        // WebViewClient.shouldOverrideUrlLoading is skipped for the initial url
+        expect(reqs.length, 0);
+      }
+
+      final String currentUrl = await controller.currentUrl();
+      expect(currentUrl, url200);
+    });
+
+    testWidgets('HTTP 301', (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final Completer<void> pageLoaded = Completer<void>();
+      final List<NavigationRequest> reqs = <NavigationRequest>[];
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: url301,
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            onPageFinished: (String url) {
+              pageLoaded.complete(null);
+            },
+            navigationDelegate: (NavigationRequest req) {
+              reqs.add(req);
+              return NavigationDecision.navigate;
+            },
+          ),
+        ),
+      );
+      final WebViewController controller = await controllerCompleter.future;
+      await pageLoaded.future;
+
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        expect(reqs.length, 2);
+
+        expect(reqs[0].url, url301);
+        expect(reqs[0].hasGesture, false);
+        expect(reqs[0].isForMainFrame, true);
+
+        expect(reqs[1].url, url301Location);
+        expect(reqs[1].hasGesture, false);
+        expect(reqs[1].isForMainFrame, true);
+      } else if (defaultTargetPlatform == TargetPlatform.android) {
+        // WebViewClient.shouldOverrideUrlLoading is skipped for the initial url
+        expect(reqs.length, 1);
+
+        expect(reqs[0].url, url301Location);
+        expect(reqs[0].hasGesture, false);
+        expect(reqs[0].isForMainFrame, true);
+      }
+
+      final String currentUrl = await controller.currentUrl();
+      expect(currentUrl, url301Location);
+    });
+  });
+
   testWidgets('getTitle', (WidgetTester tester) async {
     final String getTitleTest = '''
         <!DOCTYPE html><html>
