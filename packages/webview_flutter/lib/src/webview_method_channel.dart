@@ -33,6 +33,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       case 'navigationRequest':
         return _platformCallbacksHandler.onNavigationRequest(
           url: call.arguments['url'],
+          hasGesture: call.arguments['hasGesture'],
           isForMainFrame: call.arguments['isForMainFrame'],
         );
       case 'onPageFinished':

@@ -38,17 +38,21 @@ typedef void JavascriptMessageHandler(JavascriptMessage message);
 
 /// Information about a navigation action that is about to be executed.
 class NavigationRequest {
-  NavigationRequest._({this.url, this.isForMainFrame});
+  NavigationRequest._({this.url, this.hasGesture, this.isForMainFrame});
 
   /// The URL that will be loaded if the navigation is executed.
   final String url;
+
+  /// Whether a gesture (such as a click) was associated with the request.
+  /// For security reasons in certain situations this may be `false` even though the sequence of events which caused the request to be created was initiated by a user gesture.
+  final bool hasGesture;
 
   /// Whether the navigation request is to be loaded as the main frame.
   final bool isForMainFrame;
 
   @override
   String toString() {
-    return '$runtimeType(url: $url, isForMainFrame: $isForMainFrame)';
+    return '$runtimeType(url: $url, hasGesture: $hasGesture, isForMainFrame: $isForMainFrame)';
   }
 }
 
@@ -439,9 +443,9 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   }
 
   @override
-  bool onNavigationRequest({String url, bool isForMainFrame}) {
+  bool onNavigationRequest({String url, bool hasGesture, bool isForMainFrame}) {
     final NavigationRequest request =
-        NavigationRequest._(url: url, isForMainFrame: isForMainFrame);
+        NavigationRequest._(url: url, hasGesture: hasGesture, isForMainFrame: isForMainFrame);
     final bool allowNavigation = _widget.navigationDelegate == null ||
         _widget.navigationDelegate(request) == NavigationDecision.navigate;
     return allowNavigation;

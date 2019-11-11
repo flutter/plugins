@@ -35,7 +35,7 @@ class FlutterWebViewClient {
       return false;
     }
     notifyOnNavigationRequest(
-        request.getUrl().toString(), request.getRequestHeaders(), view, request.isForMainFrame());
+        request.getUrl().toString(), request.getRequestHeaders(), view, request.hasGesture(), request.isForMainFrame());
     // We must make a synchronous decision here whether to allow the navigation or not,
     // if the Dart code has set a navigation delegate we want that delegate to decide whether
     // to navigate or not, and as we cannot get a response from the Dart delegate synchronously we
@@ -62,7 +62,7 @@ class FlutterWebViewClient {
     Log.w(
         TAG,
         "Using a navigationDelegate with an old webview implementation, pages with frames or iframes will not work");
-    notifyOnNavigationRequest(url, null, view, true);
+    notifyOnNavigationRequest(url, null, view, false, true);
     return true;
   }
 
@@ -73,9 +73,10 @@ class FlutterWebViewClient {
   }
 
   private void notifyOnNavigationRequest(
-      String url, Map<String, String> headers, WebView webview, boolean isMainFrame) {
+      String url, Map<String, String> headers, WebView webview, boolean hasGesture, boolean isMainFrame) {
     HashMap<String, Object> args = new HashMap<>();
     args.put("url", url);
+    args.put("hasGesture", hasGesture);
     args.put("isForMainFrame", isMainFrame);
     if (isMainFrame) {
       methodChannel.invokeMethod(

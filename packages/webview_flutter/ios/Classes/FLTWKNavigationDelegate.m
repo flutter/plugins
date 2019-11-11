@@ -25,6 +25,7 @@
   }
   NSDictionary* arguments = @{
     @"url" : navigationAction.request.URL.absoluteString,
+    @"hasGesture" : @((BOOL) (navigationAction.navigationType != WKNavigationTypeOther)),
     @"isForMainFrame" : @(navigationAction.targetFrame.isMainFrame)
   };
   [_methodChannel invokeMethod:@"navigationRequest"
