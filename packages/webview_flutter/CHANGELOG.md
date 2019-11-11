@@ -1,3 +1,7 @@
+## 0.3.16
+
+* Add support for `NavigationRequest.hasGesture`
+
 ## 0.3.15+3
 
 * Re-land support for the v2 Android embedding. This correctly sets the minimum
