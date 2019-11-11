@@ -32,6 +32,7 @@ T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
 }
 
 const _$BillingResponseEnumMap = <BillingResponse, dynamic>{
+  BillingResponse.serviceTimeout: -3,
   BillingResponse.featureNotSupported: -2,
   BillingResponse.serviceDisconnected: -1,
   BillingResponse.ok: 0,
