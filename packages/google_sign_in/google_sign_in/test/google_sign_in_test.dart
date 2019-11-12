@@ -392,7 +392,8 @@ void main() {
     GoogleSignIn googleSignIn;
 
     setUp(() {
-      MethodChannelGoogleSignIn platformInstance = GoogleSignInPlatform.instance;
+      final MethodChannelGoogleSignIn platformInstance =
+          GoogleSignInPlatform.instance;
       platformInstance.channel.setMockMethodCallHandler(
           (FakeSignInBackend()..user = kUserData).handleMethodCall);
       googleSignIn = GoogleSignIn();
