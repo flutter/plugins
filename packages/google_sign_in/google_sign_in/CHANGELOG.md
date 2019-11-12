@@ -1,6 +1,6 @@
 ## 4.0.13
 
-* Fix GoogleUserCircleAvatar to handle new style profile image URLs.
+* Fix `GoogleUserCircleAvatar` to handle new style profile image URLs.
 
 ## 4.0.12
 
