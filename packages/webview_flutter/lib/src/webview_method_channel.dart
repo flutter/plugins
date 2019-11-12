@@ -119,10 +119,12 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         .then<bool>((dynamic result) => result);
   }
 
-  static Future<List<Cookie>> getCookies() {
-    return _cookieManagerChannel
-        .invokeListMethod<Map<dynamic, dynamic>>('getCookies')
-        .then<List<Cookie>>((List<Map<dynamic, dynamic>> results) {
+  /// Read out all cookies, or all cookies for a url when provided
+  static Future<List<Cookie>> getCookies([String currentUrl]) {
+    return _cookieManagerChannel.invokeListMethod<Map<dynamic, dynamic>>(
+        'getCookies', <dynamic, dynamic>{
+      'url': currentUrl
+    }).then<List<Cookie>>((List<Map<dynamic, dynamic>> results) {
       return results.map((Map<dynamic, dynamic> result) {
         final Cookie c = Cookie(result['name'], result['value']);
         // following values optionally work on iOS only
@@ -141,6 +143,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     });
   }
 
+  /// Set cookies into the web view
   static Future<void> setCookies(List<Cookie> cookies) {
     final List<Map<String, dynamic>> transferCookies = cookies.map((Cookie c) {
       final Map<String, dynamic> output = <String, dynamic>{
@@ -150,6 +153,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         'domain': c.domain,
         'secure': c.secure,
         'httpOnly': c.httpOnly,
+        'asString': c.toString(),
       };
 
       if (c.expires != null) {
