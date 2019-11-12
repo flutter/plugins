@@ -1,7 +1,10 @@
+## 0.5.21+11
+
+* Define clang module for iOS, fix analyzer warnings.
+
 ## 0.5.21+10
 
 * Cast error.code to unsigned long to avoid using NSInteger as %ld format warnings.
-* Define clang module for iOS, fix analyzer warnings.
 
 ## 0.5.21+9
 
