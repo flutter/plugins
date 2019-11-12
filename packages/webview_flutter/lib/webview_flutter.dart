@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -678,6 +679,22 @@ class CookieManager {
   ///
   /// Returns true if cookies were present before clearing, else false.
   Future<bool> clearCookies() => WebView.platform.clearCookies();
+
+  /// Gets the current cookies.
+  ///
+  /// This is a no op on iOS versions smaller than 11.
+  ///
+  /// On iOS, returns all cookies from the [WebView] instance.
+  /// On Android, only returns the cookies for the current URL from the [WebView] instance.
+  Future<List<Cookie>> getCookies() => WebView.platform.getCookies();
+
+  /// Sets the specified cookies.
+  ///
+  /// This is a no op on iOS versions smaller than 11.
+  ///
+  /// `cookies` must not be null.
+  Future<void> setCookies(List<Cookie> cookies) =>
+      WebView.platform.setCookies(cookies);
 }
 
 // Throws an ArgumentError if `url` is not a valid URL string.

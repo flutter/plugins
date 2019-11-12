@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -368,5 +369,24 @@ abstract class WebViewPlatform {
   Future<bool> clearCookies() {
     throw UnimplementedError(
         "WebView clearCookies is not implemented on the current platform");
+  }
+
+  /// Gets the current cookies.
+  ///
+  /// On iOS, returns all cookies from the [WebView] instance.
+  /// On Android, only returns the cookies for the current URL from the [WebView] instance.
+  Future<List<Cookie>> getCookies() {
+    throw UnimplementedError(
+        "WebView getCookies is not implemented on the current platform");
+  }
+
+  /// Sets the specified cookies.
+  ///
+  /// `cookies` must not be null.
+  Future<void> setCookies(
+    List<Cookie> cookies,
+  ) {
+    throw UnimplementedError(
+        "WebView setCookies is not implemented on the current platform");
   }
 }

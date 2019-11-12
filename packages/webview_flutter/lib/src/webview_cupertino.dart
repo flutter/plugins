@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -44,4 +45,12 @@ class CupertinoWebView implements WebViewPlatform {
 
   @override
   Future<bool> clearCookies() => MethodChannelWebViewPlatform.clearCookies();
+
+  @override
+  Future<List<Cookie>> getCookies() =>
+      MethodChannelWebViewPlatform.getCookies();
+
+  @override
+  Future<void> setCookies(List<Cookie> cookies) =>
+      MethodChannelWebViewPlatform.setCookies(cookies);
 }

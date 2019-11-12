@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -60,4 +61,16 @@ class AndroidWebView implements WebViewPlatform {
 
   @override
   Future<bool> clearCookies() => MethodChannelWebViewPlatform.clearCookies();
+
+  @override
+  Future<List<Cookie>> getCookies() {
+    // TODO: implement getCookies
+    return null;
+  }
+
+  @override
+  Future<void> setCookies(List<Cookie> cookies) {
+    // TODO: implement setCookies
+    return null;
+  }
 }

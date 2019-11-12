@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -1145,6 +1146,16 @@ class MyWebViewPlatform implements WebViewPlatform {
   @override
   Future<bool> clearCookies() {
     return Future<bool>.sync(() => null);
+  }
+
+  @override
+  Future<List<Cookie>> getCookies() {
+    return Future<List<Cookie>>.value(<Cookie>[]);
+  }
+
+  @override
+  Future<void> setCookies(List<Cookie> cookies) {
+    return Future<void>.value();
   }
 }
 
