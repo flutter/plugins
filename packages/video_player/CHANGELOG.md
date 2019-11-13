@@ -1,3 +1,8 @@
+## 0.10.3
+
+* Add support for the v2 Android embedding. This shouldn't impact existing
+  functionality.
+
 ## 0.10.2+6
 
 * Remove AndroidX warnings.
