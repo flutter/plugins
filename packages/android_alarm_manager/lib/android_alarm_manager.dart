@@ -54,6 +54,31 @@ void _alarmManagerCallbackDispatcher() {
   _channel.invokeMethod<void>('AlarmService.initialized');
 }
 
+/// This is a wrapper around a few static functions so that unit tests can mock
+/// them out in the test environment. This is only visible for the unit tests and
+/// should not be accessed directly by users of the plugin.
+@visibleForTesting
+class InstanceWrappers {
+  static Function _nowFn = () => DateTime.now();
+
+  /// Returns [DateTime.now] by default.
+  static DateTime now() => _nowFn();
+
+  /// Overrides the default [InstanceWrappers.now] with [nowFn].
+  static void setMockNowFn(Function nowFn) => _nowFn = nowFn;
+
+  static Function _getCallbackHandleFn =
+      (Function callback) => PluginUtilities.getCallbackHandle(callback);
+
+  /// Returns [PluginUtilities.getCallbackHandle] by default.
+  static CallbackHandle getCallbackHandle(Function callback) =>
+      _getCallbackHandleFn(callback);
+
+  /// Overrides the default [InstanceWrappers.now] with [nowFn].
+  static void setMockCallbackHandleFn(Function callbackHandleFn) =>
+      _getCallbackHandleFn = callbackHandleFn;
+}
+
 /// A Flutter plugin for registering Dart callbacks with the Android
 /// AlarmManager service.
 ///
@@ -63,6 +88,11 @@ class AndroidAlarmManager {
   static const MethodChannel _channel =
       MethodChannel(_channelName, JSONMethodCodec());
 
+  /// This is exposed for the unit tests to implement the platform layer. It
+  /// should not be accessed by users of the plugin.
+  @visibleForTesting
+  static MethodChannel get channel => _channel;
+
   /// Starts the [AndroidAlarmManager] service. This must be called before
   /// setting any alarms.
   ///
@@ -70,7 +100,7 @@ class AndroidAlarmManager {
   /// failure.
   static Future<bool> initialize() async {
     final CallbackHandle handle =
-        PluginUtilities.getCallbackHandle(_alarmManagerCallbackDispatcher);
+        InstanceWrappers.getCallbackHandle(_alarmManagerCallbackDispatcher);
     if (handle == null) {
       return false;
     }
@@ -127,7 +157,7 @@ class AndroidAlarmManager {
     bool rescheduleOnReboot = false,
   }) =>
       oneShotAt(
-        DateTime.now().add(delay),
+        InstanceWrappers.now().add(delay),
         id,
         callback,
         alarmClock: alarmClock,
@@ -188,7 +218,7 @@ class AndroidAlarmManager {
     assert(callback is Function() || callback is Function(int));
     assert(id.bitLength < 32);
     final int startMillis = time.millisecondsSinceEpoch;
-    final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
+    final CallbackHandle handle = InstanceWrappers.getCallbackHandle(callback);
     if (handle == null) {
       return false;
     }
@@ -251,11 +281,11 @@ class AndroidAlarmManager {
     // ignore: inference_failure_on_function_return_type
     assert(callback is Function() || callback is Function(int));
     assert(id.bitLength < 32);
-    final int now = DateTime.now().millisecondsSinceEpoch;
+    final int now = InstanceWrappers.now().millisecondsSinceEpoch;
     final int period = duration.inMilliseconds;
     final int first =
         startAt != null ? startAt.millisecondsSinceEpoch : now + period;
-    final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
+    final CallbackHandle handle = InstanceWrappers.getCallbackHandle(callback);
     if (handle == null) {
       return false;
     }
