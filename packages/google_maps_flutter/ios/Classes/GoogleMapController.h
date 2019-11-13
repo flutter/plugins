@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Defines map UI options writable from Flutter.
 @protocol FLTGoogleMapOptionsSink
-- (void)setCameraTargetBounds:(GMSCoordinateBounds *)bounds;
+- (void)setCameraTargetBounds:(nullable GMSCoordinateBounds *)bounds;
 - (void)setCompassEnabled:(BOOL)enabled;
 - (void)setIndoorEnabled:(BOOL)enabled;
 - (void)setTrafficEnabled:(BOOL)enabled;
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setZoomGesturesEnabled:(BOOL)enabled;
 - (void)setMyLocationEnabled:(BOOL)enabled;
 - (void)setMyLocationButtonEnabled:(BOOL)enabled;
-- (NSString *)setMapStyle:(NSString *)mapStyle;
+- (nullable NSString *)setMapStyle:(NSString *)mapStyle;
 @end
 
 // Defines map overlay controllable from Flutter.
@@ -35,13 +35,13 @@ NS_ASSUME_NONNULL_BEGIN
     : NSObject <GMSMapViewDelegate, FLTGoogleMapOptionsSink, FlutterPlatformView>
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
-                    arguments:(id _Nullable)args
+                    arguments:(nullable id)args
                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 - (void)showAtX:(CGFloat)x Y:(CGFloat)y;
 - (void)hide;
 - (void)animateWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
 - (void)moveWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
-- (GMSCameraPosition *)cameraPosition;
+- (nullable GMSCameraPosition *)cameraPosition;
 @end
 
 // Allows the engine to create new Google Map instances.

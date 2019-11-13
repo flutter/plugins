@@ -3,17 +3,20 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
+import 'package:video_player_example/main.dart' as app;
 
 Future<void> main() async {
   final FlutterDriver driver = await FlutterDriver.connect();
-  tearDownAll(() async {
-    driver.close();
-  });
+  final String result =
+      await driver.requestData(null, timeout: const Duration(minutes: 1));
+  app.main();
+  await driver.close();
+  exit(result == 'pass' ? 0 : 1);
 
-  //TODO(cyanglaz): Use TabBar tabs to navigate between pages after https://github.com/flutter/flutter/issues/16991 is fixed.
-  //TODO(cyanglaz): Un-skip the test after https://github.com/flutter/flutter/issues/43012 is fixed
   test('Push a page contains video and pop back, do not crash.', () async {
     final SerializableFinder pushTab = find.byValueKey('push_tab');
     await driver.waitFor(pushTab);
@@ -23,8 +26,5 @@ Future<void> main() async {
     await driver.waitUntilNoTransientCallbacks();
     final Health health = await driver.checkHealth();
     expect(health.status, HealthStatus.ok);
-  },
-      skip:
-          'This test would fail on CI because the simulator is not able to access the local video resources.'
-          'Un-skip this test after iOS integration test is moved to firebase device lab on real devices');
+  },);
 }

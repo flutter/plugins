@@ -12,6 +12,7 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
+  e2e: "^0.2.0"
   test: any
 
 flutter:
