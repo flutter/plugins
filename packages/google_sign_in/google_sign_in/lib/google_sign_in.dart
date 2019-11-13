@@ -76,8 +76,11 @@ class GoogleSignInAccount implements GoogleIdentity {
       throw StateError('User is no longer signed in.');
     }
 
-    final GoogleSignInTokenData response = await GoogleSignInPlatform.instance
-        .getTokens(email: email, shouldRecoverAuth: true);
+    final GoogleSignInTokenData response =
+        await GoogleSignInPlatform.instance.getTokens(
+      email: email,
+      shouldRecoverAuth: true,
+    );
 
     // On Android, there isn't an API for refreshing the idToken, so re-use
     // the one we obtained on login.
@@ -147,14 +150,17 @@ class GoogleSignIn {
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
   /// specified domain. By default, the list of accounts will not be restricted.
-  GoogleSignIn(
-      {this.signInOption = SignInOption.standard,
-      this.scopes = const <String>[],
-      this.hostedDomain});
+  GoogleSignIn({
+    this.signInOption = SignInOption.standard,
+    this.scopes = const <String>[],
+    this.hostedDomain,
+  });
 
   /// Factory for creating default sign in user experience.
-  factory GoogleSignIn.standard(
-      {List<String> scopes = const <String>[], String hostedDomain}) {
+  factory GoogleSignIn.standard({
+    List<String> scopes = const <String>[],
+    String hostedDomain,
+  }) {
     return GoogleSignIn(
         signInOption: SignInOption.standard,
         scopes: scopes,
@@ -247,8 +253,10 @@ class GoogleSignIn {
   ///
   /// At most one in flight call is allowed to prevent concurrent (out of order)
   /// updates to [currentUser] and [onCurrentUserChanged].
-  Future<GoogleSignInAccount> _addMethodCall(Function method,
-      {bool canSkipCall = false}) async {
+  Future<GoogleSignInAccount> _addMethodCall(
+    Function method, {
+    bool canSkipCall = false,
+  }) async {
     Future<GoogleSignInAccount> response;
     if (_lastMethodCall == null) {
       response = _callMethod(method);
@@ -288,8 +296,9 @@ class GoogleSignIn {
   /// returned Future completes with [PlatformException] whose `code` can be
   /// either [kSignInRequiredError] (when there is no authenticated user) or
   /// [kSignInFailedError] (when an unknown error occurred).
-  Future<GoogleSignInAccount> signInSilently(
-      {bool suppressErrors = true}) async {
+  Future<GoogleSignInAccount> signInSilently({
+    bool suppressErrors = true,
+  }) async {
     try {
       return await _addMethodCall(GoogleSignInPlatform.instance.signInSilently,
           canSkipCall: true);
