@@ -1,3 +1,7 @@
+## 0.4.5+5
+
+* Add an analyzer check for the public documentation.
+
 ## 0.4.5+4
 
 * Stability and Maintainability: update documentations.
