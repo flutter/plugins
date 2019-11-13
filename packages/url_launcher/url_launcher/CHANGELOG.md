@@ -1,3 +1,7 @@
+## 5.2.7
+
+* Minor unit test changes and added a lint for public DartDocs.
+
 ## 5.2.6
 
 *  Remove AndroidX warnings.
