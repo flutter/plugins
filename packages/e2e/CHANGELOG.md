@@ -1,3 +1,7 @@
+## 0.2.1+2
+
+* Fix bug in Gradle script.
+
 ## 0.2.1+1
 
 * Updated README.
