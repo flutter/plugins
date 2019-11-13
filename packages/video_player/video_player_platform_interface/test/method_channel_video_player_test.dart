@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -211,6 +213,31 @@ void main() {
         ],
       );
       expect(position, const Duration(milliseconds: 234));
+    });
+
+    test('videoEventsFor', () async {
+      defaultBinaryMessenger.setMockMessageHandler(
+        "flutter.io/videoPlayer/videoEvents123",
+        (ByteData message) async {
+          final MethodCall methodCall =
+              const StandardMethodCodec().decodeMethodCall(message);
+          if (methodCall.method == 'listen') {
+            defaultBinaryMessenger.handlePlatformMessage(
+                "flutter.io/videoPlayer/videoEvents123",
+                const StandardMethodCodec().encodeSuccessEnvelope(
+                    <String, dynamic>{'event': 'initialized'}),
+                (ByteData data) {});
+
+            return const StandardMethodCodec().encodeSuccessEnvelope(null);
+          } else if (methodCall.method == 'cancel') {
+            return const StandardMethodCodec().encodeSuccessEnvelope(null);
+          } else {
+            fail('Expected listen or cancel');
+          }
+        },
+      );
+      final Stream<VideoEvent> videoEvents = player.videoEventsFor(123);
+      expect(await videoEvents.first, VideoEvent.initialized);
     });
   });
 }

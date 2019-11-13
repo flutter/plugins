@@ -93,4 +93,31 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
       ),
     );
   }
+
+  @override
+  Stream<VideoEvent> videoEventsFor(int textureId) {
+    return _eventChannelFor(textureId)
+        .receiveBroadcastStream()
+        .map((dynamic event) {
+      final Map<dynamic, dynamic> map = event;
+      switch (map['event']) {
+        case 'initialized':
+          return VideoEvent.initialized;
+        case 'completed':
+          return VideoEvent.completed;
+        case 'bufferingUpdate':
+          return VideoEvent.bufferingUpdate;
+        case 'bufferingStart':
+          return VideoEvent.bufferingStart;
+        case 'bufferingEnd':
+          return VideoEvent.bufferingEnd;
+        default:
+          return VideoEvent.unknown;
+      }
+    });
+  }
+
+  EventChannel _eventChannelFor(int textureId) {
+    return EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
+  }
 }

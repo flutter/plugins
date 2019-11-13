@@ -69,11 +69,16 @@ abstract class VideoPlayerPlatform {
   ///
   /// For assets the [asset] key is mandatory. Optionally you can specify
   /// the [package].
-  /// TODO (cbenhagen): create a [DataSourceDescription] class
+  /// TODO (cbenhagen): create a [DataSource] class
   Future<int> create(
     Map<String, dynamic> dataSourceDescription,
   ) {
     throw UnimplementedError('create() has not been implemented.');
+  }
+
+  /// Returns a Stream of [VideoEvent]s.
+  Stream<VideoEvent> videoEventsFor(int textureId) {
+    throw UnimplementedError('videoEventsFor() has not been implemented.');
   }
 
   /// Sets the looping attribute of the video.
@@ -113,4 +118,13 @@ abstract class VideoPlayerPlatform {
   // This private method is called by the instance setter, which fails if the class is
   // implemented with `implements`.
   void _verifyProvidesDefaultImplementations() {}
+}
+
+enum VideoEvent {
+  initialized,
+  completed,
+  bufferingUpdate,
+  bufferingStart,
+  bufferingEnd,
+  unknown,
 }
