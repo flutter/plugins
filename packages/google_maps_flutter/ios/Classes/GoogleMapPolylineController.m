@@ -67,17 +67,17 @@ static UIColor* ToColor(NSNumber* data) { return [FLTGoogleMapJsonConversions to
 static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolylineOptionsSink> sink,
                                      NSObject<FlutterPluginRegistrar>* registrar) {
   NSNumber* consumeTapEvents = data[@"consumeTapEvents"];
-  if (consumeTapEvents) {
+  if (consumeTapEvents != nil) {
     [sink setConsumeTapEvents:ToBool(consumeTapEvents)];
   }
 
   NSNumber* visible = data[@"visible"];
-  if (visible) {
+  if (visible != nil) {
     [sink setVisible:ToBool(visible)];
   }
 
   NSNumber* zIndex = data[@"zIndex"];
-  if (zIndex) {
+  if (zIndex != nil) {
     [sink setZIndex:ToInt(zIndex)];
   }
 
@@ -87,12 +87,12 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
   }
 
   NSNumber* strokeColor = data[@"color"];
-  if (strokeColor) {
+  if (strokeColor != nil) {
     [sink setColor:ToColor(strokeColor)];
   }
 
   NSNumber* strokeWidth = data[@"width"];
-  if (strokeWidth) {
+  if (strokeWidth != nil) {
     [sink setStrokeWidth:ToInt(strokeWidth)];
   }
 }

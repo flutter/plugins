@@ -70,16 +70,8 @@ function lint_packages() {
     return
   fi
 
-  # TODO: These packages have linter errors. Remove plugins from this list as linter issues are fixed.
-  local skipped_packages=(
-    'google_maps_flutter'
-  )
-
   local failure_count=0
-  for package_name in "$@"; do
-    if [[ "${skipped_packages[*]}" =~ "${package_name}" ]]; then
-      continue
-    fi      
+  for package_name in "$@"; do   
     lint_package "${package_name}"
     failure_count+="$?"
   done
