@@ -39,8 +39,10 @@ void _alarmManagerCallbackDispatcher() {
       exit(-1);
     }
 
+    // ignore: inference_failure_on_function_return_type
     if (closure is Function()) {
       closure();
+      // ignore: inference_failure_on_function_return_type
     } else if (closure is Function(int)) {
       final int id = args[1];
       closure(id);
@@ -182,6 +184,7 @@ class AndroidAlarmManager {
     bool wakeup = false,
     bool rescheduleOnReboot = false,
   }) async {
+    // ignore: inference_failure_on_function_return_type
     assert(callback is Function() || callback is Function(int));
     assert(id.bitLength < 32);
     final int startMillis = time.millisecondsSinceEpoch;
@@ -245,6 +248,7 @@ class AndroidAlarmManager {
     bool wakeup = false,
     bool rescheduleOnReboot = false,
   }) async {
+    // ignore: inference_failure_on_function_return_type
     assert(callback is Function() || callback is Function(int));
     assert(id.bitLength < 32);
     final int now = DateTime.now().millisecondsSinceEpoch;
