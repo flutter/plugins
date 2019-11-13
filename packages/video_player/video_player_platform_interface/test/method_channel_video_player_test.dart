@@ -210,7 +210,7 @@ void main() {
           })
         ],
       );
-      expect(position, Duration(milliseconds: 234));
+      expect(position, const Duration(milliseconds: 234));
     });
   });
 }
