@@ -49,7 +49,10 @@ abstract class VideoPlayerPlatform {
     _instance = instance;
   }
 
-  /// Clears all open videos.
+  /// Initializes the platform interface and disposes all existing players.
+  ///
+  /// This method is called when the plugin is first initialized
+  /// and on every full restart.
   Future<void> init() {
     throw UnimplementedError('init() has not been implemented.');
   }
@@ -59,32 +62,46 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('dispose() has not been implemented.');
   }
 
+  /// Creates an instance of a video player.
+  ///
+  /// For network and file sources [dataSourceDescription] needs to have a
+  /// [uri] key. Optionally you can set a [formatHint].
+  ///
+  /// For assets the [asset] key is mandatory. Optionally you can specify
+  /// the [package].
+  /// TODO (cbenhagen): create a [DataSourceDescription] class
   Future<int> create(
     Map<String, dynamic> dataSourceDescription,
   ) {
     throw UnimplementedError('create() has not been implemented.');
   }
 
+  /// Sets the looping attribute of the video.
   Future<void> setLooping(int textureId, bool looping) {
     throw UnimplementedError('setLooping() has not been implemented.');
   }
 
+  /// Starts the video playback.
   Future<void> play(int textureId) {
     throw UnimplementedError('play() has not been implemented.');
   }
 
+  /// Stops the video playback.
   Future<void> pause(int textureId) {
     throw UnimplementedError('pause() has not been implemented.');
   }
 
+  /// Sets the volume to a range between 0.0 and 1.0.
   Future<void> setVolume(int textureId, double volume) {
     throw UnimplementedError('setVolume() has not been implemented.');
   }
 
+  /// Sets the video position to [milliseconds] from the start.
   Future<void> seekTo(int textureId, int milliseconds) {
     throw UnimplementedError('seekTo() has not been implemented.');
   }
 
+  /// Gets the video position as [Duration] from the start.
   Future<Duration> getPosition(int textureId) {
     throw UnimplementedError('getPosition() has not been implemented.');
   }
