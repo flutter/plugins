@@ -23,8 +23,5 @@ Future<void> main() async {
     await driver.waitUntilNoTransientCallbacks();
     final Health health = await driver.checkHealth();
     expect(health.status, HealthStatus.ok);
-  },
-      skip:
-          'This test would fail on CI because the simulator is not able to access the local video resources.'
-          'Un-skip this test after iOS integration test is moved to firebase device lab on real devices');
+  },);
 }
