@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:io';
 import 'package:e2e/e2e.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player/video_player.dart';
@@ -38,7 +39,7 @@ void main() {
       expect(_controller.value.isPlaying, true);
       expect(_controller.value.position,
           (Duration position) => position > const Duration(seconds: 0));
-    });
+    }, skip: Platform.isIOS);
 
     testWidgets('can seek', (WidgetTester tester) async {
       await _controller.initialize();
@@ -46,7 +47,7 @@ void main() {
       await _controller.seekTo(const Duration(seconds: 3));
 
       expect(_controller.value.position, const Duration(seconds: 3));
-    });
+    }, skip: Platform.isIOS);
 
     testWidgets('can be paused', (WidgetTester tester) async {
       await _controller.initialize();
@@ -61,6 +62,6 @@ void main() {
       // Verify that we stopped playing after the pause.
       expect(_controller.value.isPlaying, false);
       expect(_controller.value.position, pausedPosition);
-    });
+    }, skip: Platform.isIOS);
   });
 }
