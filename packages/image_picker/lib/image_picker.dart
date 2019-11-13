@@ -8,7 +8,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+/// Denotes that an image is being picked.
 const String kTypeImage = 'image';
+
+/// Denotes that a video is being picked.
 const String kTypeVideo = 'video';
 
 /// Specifies the source where the picked image should come from.
@@ -143,14 +146,17 @@ class ImagePicker {
 /// See also:
 /// * [ImagePicker.retrieveLostData] for more details on retrieving lost data.
 class LostDataResponse {
+  /// Creates an instance with the given [file], [exception], and [type]. Any of
+  /// the params may be null, but this is never considered to be empty.
   LostDataResponse({this.file, this.exception, this.type});
 
+  /// Initializes an instance with all member params set to null and considered
+  /// to be empty.
   LostDataResponse.empty()
       : file = null,
         exception = null,
-        type = null {
-    _empty = true;
-  }
+        type = null,
+        _empty = true;
 
   /// Whether it is an empty response.
   ///
@@ -178,4 +184,10 @@ class LostDataResponse {
 }
 
 /// The type of the retrieved data in a [LostDataResponse].
-enum RetrieveType { image, video }
+enum RetrieveType {
+  /// A static picture. See [ImagePicker.pickImage].
+  image,
+
+  /// A video. See [ImagePicker.pickVideo].
+  video
+}
