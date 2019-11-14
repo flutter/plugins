@@ -172,7 +172,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   VideoPlayerController.file(File file)
       : assert(Platform.isIOS ? file.path.split('/').last.contains('.') : true),
         dataSource =
-            'file://${Platform.isIOS ? file.path.replaceAll(" ", "%20") : file.path}',
+            'file://${Platform.isIOS ? Uri.encodeFull(file.path) : file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
