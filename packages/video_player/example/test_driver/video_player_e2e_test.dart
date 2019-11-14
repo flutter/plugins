@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_driver/flutter_driver.dart';
-import 'package:test/test.dart';
 import 'package:video_player_example/main.dart' as app;
 
 Future<void> main() async {
@@ -16,15 +15,4 @@ Future<void> main() async {
   app.main();
   await driver.close();
   exit(result == 'pass' ? 0 : 1);
-
-  test('Push a page contains video and pop back, do not crash.', () async {
-    final SerializableFinder pushTab = find.byValueKey('push_tab');
-    await driver.waitFor(pushTab);
-    await driver.tap(pushTab);
-    await driver.waitForAbsent(pushTab);
-    await driver.waitFor(find.byValueKey('home_page'));
-    await driver.waitUntilNoTransientCallbacks();
-    final Health health = await driver.checkHealth();
-    expect(health.status, HealthStatus.ok);
-  },);
 }
