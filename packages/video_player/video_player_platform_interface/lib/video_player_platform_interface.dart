@@ -63,13 +63,7 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('dispose() has not been implemented.');
   }
 
-  /// Creates an instance of a video player.
-  ///
-  /// For network and file sources [dataSourceDescription] needs to have a
-  /// [uri] key. Optionally you can set a [formatHint].
-  ///
-  /// For assets the [asset] key is mandatory. Optionally you can specify
-  /// the [package].
+  /// Creates an instance of a video player and returns its textureId.
   Future<int> create(DataSource dataSource) {
     throw UnimplementedError('create() has not been implemented.');
   }
