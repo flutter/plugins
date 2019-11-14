@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
 
@@ -23,9 +24,5 @@ Future<void> main() async {
     await driver.waitUntilNoTransientCallbacks();
     final Health health = await driver.checkHealth();
     expect(health.status, HealthStatus.ok);
-  },);
-
-  test('failure', () async{
-    expect(true, false);
-  });
+  }, skip: Platform.isIOS);
 }
