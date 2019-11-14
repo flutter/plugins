@@ -1,6 +1,6 @@
-## 0.10.4
+## 0.10.3+1
 
-* Add platform interface.
+* Update the homepage to point to the new plugin location
 
 ## 0.10.3
 
