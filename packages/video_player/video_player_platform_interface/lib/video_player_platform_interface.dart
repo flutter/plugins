@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:meta/meta.dart' show required, visibleForTesting;
 
@@ -73,7 +74,7 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('create() has not been implemented.');
   }
 
-  /// Returns a Stream of [VideoEvent]s.
+  /// Returns a Stream of [VideoEventType]s.
   Stream<VideoEvent> videoEventsFor(int textureId) {
     throw UnimplementedError('videoEventsFor() has not been implemented.');
   }
@@ -128,7 +129,7 @@ class DataSource {
 
   final DataSourceType sourceType;
   final String uri;
-  final FormatHint formatHint;
+  final VideoFormat formatHint;
   final String asset;
   final String package;
 }
@@ -139,18 +140,50 @@ enum DataSourceType {
   file,
 }
 
-enum FormatHint {
+enum VideoFormat {
   dash,
   hls,
   ss,
   other,
 }
 
-enum VideoEvent {
+class VideoEvent {
+  VideoEvent({
+    @required this.eventType,
+    this.duration,
+    this.size,
+    this.buffered,
+  });
+
+  final VideoEventType eventType;
+  final Duration duration;
+  final Size size;
+  final List<DurationRange> buffered;
+}
+
+enum VideoEventType {
   initialized,
   completed,
   bufferingUpdate,
   bufferingStart,
   bufferingEnd,
   unknown,
+}
+
+class DurationRange {
+  DurationRange(this.start, this.end);
+
+  final Duration start;
+  final Duration end;
+
+  double startFraction(Duration duration) {
+    return start.inMilliseconds / duration.inMilliseconds;
+  }
+
+  double endFraction(Duration duration) {
+    return end.inMilliseconds / duration.inMilliseconds;
+  }
+
+  @override
+  String toString() => '$runtimeType(start: $start, end: $end)';
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/services.dart';
 
@@ -122,17 +123,29 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
       final Map<dynamic, dynamic> map = event;
       switch (map['event']) {
         case 'initialized':
-          return VideoEvent.initialized;
+          return VideoEvent(
+            eventType: VideoEventType.initialized,
+            duration: Duration(milliseconds: map['duration']),
+            size: Size(map['width']?.toDouble() ?? 0.0,
+                map['height']?.toDouble() ?? 0.0),
+          );
         case 'completed':
-          return VideoEvent.completed;
+          final List<dynamic> values = map['values'];
+
+          return VideoEvent(
+            eventType: VideoEventType.completed,
+            buffered: values.map<DurationRange>(_toDurationRange).toList(),
+          );
         case 'bufferingUpdate':
-          return VideoEvent.bufferingUpdate;
+          return VideoEvent(
+            eventType: VideoEventType.completed,
+          );
         case 'bufferingStart':
-          return VideoEvent.bufferingStart;
+          return VideoEvent(eventType: VideoEventType.bufferingStart);
         case 'bufferingEnd':
-          return VideoEvent.bufferingEnd;
+          return VideoEvent(eventType: VideoEventType.bufferingEnd);
         default:
-          return VideoEvent.unknown;
+          return VideoEvent(eventType: VideoEventType.unknown);
       }
     });
   }
@@ -141,11 +154,19 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
     return EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
   }
 
-  static const Map<FormatHint, String> _videoFormatStringMap =
-      <FormatHint, String>{
-    FormatHint.ss: 'ss',
-    FormatHint.hls: 'hls',
-    FormatHint.dash: 'dash',
-    FormatHint.other: 'other',
+  static const Map<VideoFormat, String> _videoFormatStringMap =
+      <VideoFormat, String>{
+    VideoFormat.ss: 'ss',
+    VideoFormat.hls: 'hls',
+    VideoFormat.dash: 'dash',
+    VideoFormat.other: 'other',
   };
+
+  DurationRange _toDurationRange(dynamic value) {
+    final List<dynamic> pair = value;
+    return DurationRange(
+      Duration(milliseconds: pair[0]),
+      Duration(milliseconds: pair[1]),
+    );
+  }
 }

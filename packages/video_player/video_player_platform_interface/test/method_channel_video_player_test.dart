@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
@@ -103,7 +104,7 @@ void main() {
       final int textureId = await player.create(DataSource(
         sourceType: DataSourceType.network,
         uri: 'someUri',
-        formatHint: FormatHint.dash,
+        formatHint: VideoFormat.dash,
       ));
       expect(
         log,
@@ -235,8 +236,13 @@ void main() {
             // ignore: deprecated_member_use
             defaultBinaryMessenger.handlePlatformMessage(
                 "flutter.io/videoPlayer/videoEvents123",
-                const StandardMethodCodec().encodeSuccessEnvelope(
-                    <String, dynamic>{'event': 'initialized'}),
+                const StandardMethodCodec()
+                    .encodeSuccessEnvelope(<String, dynamic>{
+                  'event': 'initialized',
+                  'duration': 98765,
+                  'width': 1920,
+                  'height': 1080,
+                }),
                 (ByteData data) {});
 
             return const StandardMethodCodec().encodeSuccessEnvelope(null);
@@ -248,7 +254,15 @@ void main() {
         },
       );
       final Stream<VideoEvent> videoEvents = player.videoEventsFor(123);
-      expect(await videoEvents.first, VideoEvent.initialized);
+      expect((await videoEvents.first).eventType, VideoEventType.initialized);
+      expect(
+        (await videoEvents.first).duration,
+        const Duration(milliseconds: 98765),
+      );
+      expect(
+        (await videoEvents.first).size,
+        const Size(1920, 1080),
+      );
     });
   });
 }
