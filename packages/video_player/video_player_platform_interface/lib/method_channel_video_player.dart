@@ -130,14 +130,14 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
                 map['height']?.toDouble() ?? 0.0),
           );
         case 'completed':
+          return VideoEvent(
+            eventType: VideoEventType.completed,
+          );
+        case 'bufferingUpdate':
           final List<dynamic> values = map['values'];
 
           return VideoEvent(
-            eventType: VideoEventType.completed,
             buffered: values.map<DurationRange>(_toDurationRange).toList(),
-          );
-        case 'bufferingUpdate':
-          return VideoEvent(
             eventType: VideoEventType.completed,
           );
         case 'bufferingStart':
