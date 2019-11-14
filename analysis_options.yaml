@@ -12,9 +12,8 @@
 
 analyzer:
   language:
-    enableStrictCallChecks: true
-    enableSuperMixins: true
-    enableAssertInitializer: true
+    strict-inference: true
+    strict-raw-types: true
   strong-mode:
     implicit-dynamic: false
   errors:
@@ -117,7 +116,6 @@ linter:
     - slash_for_doc_comments
     - sort_constructors_first
     - sort_unnamed_constructors_first
-    - super_goes_last
     # - type_annotate_public_apis # subset of always_specify_types
     - type_init_formals
     # - unawaited_futures # https://github.com/flutter/flutter/issues/5793

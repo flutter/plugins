@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'src/common.dart';
+import 'src/fife.dart' as fife;
 
 /// Builds a CircleAvatar profile image of the appropriate resolution
 class GoogleUserCircleAvatar extends StatelessWidget {
@@ -33,7 +34,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   ///
   /// The format is is "`/sNN-c/`", where `NN` is the max width/height of the
   /// image, and "`c`" indicates we want the image cropped.
-  static final RegExp sizeDirective = RegExp(r'^s[0-9]{1,5}(-c)?$');
+  static final RegExp sizeDirective = fife.sizeDirective;
 
   /// The Google user's identity; guaranteed to be non-null.
   final GoogleIdentity identity;
@@ -67,8 +68,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     );
   }
 
-  /// Adds sizing information to [photoUrl], inserted as the last path segment
-  /// before the image filename. The format is described in [sizeDirective].
+  /// Adds correct sizing information to [photoUrl].
   ///
   /// Falls back to the default profile photo if [photoUrl] is [null].
   static String _sizedProfileImageUrl(String photoUrl, double size) {
@@ -77,17 +77,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
       // the default profile photo as a last resort.
       return 'https://lh3.googleusercontent.com/a/default-user=s${size.round()}-c';
     }
-    final Uri profileUri = Uri.parse(photoUrl);
-    final List<String> pathSegments =
-        List<String>.from(profileUri.pathSegments);
-    pathSegments
-      ..removeWhere(sizeDirective.hasMatch)
-      ..insert(pathSegments.length - 1, 's${size.round()}-c');
-    return Uri(
-      scheme: profileUri.scheme,
-      host: profileUri.host,
-      pathSegments: pathSegments,
-    ).toString();
+    return fife.addSizeDirectiveToUrl(photoUrl, size);
   }
 
   Widget _buildClippedImage(BuildContext context, BoxConstraints constraints) {

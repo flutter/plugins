@@ -87,11 +87,11 @@ Future<void> _handleSignIn() async {
 
 ## Example
 
-Find the example wiring in the [Google sign-in example application](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/example/lib/main.dart).
+Find the example wiring in the [Google sign-in example application](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/google_sign_in/example/lib/main.dart).
 
 ## API details
 
-See the [google_sign_in.dart](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/lib/google_sign_in.dart) for more API details.
+See the [google_sign_in.dart](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/google_sign_in/lib/google_sign_in.dart) for more API details.
 
 ## Issues and feedback
 
