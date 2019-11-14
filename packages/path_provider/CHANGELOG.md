@@ -1,6 +1,10 @@
+## 1.4.2+1
+
+* Update driver tests in the example app to e2e tests.
+
 ## 1.4.2
 
-* Update and migrate iOS example project by removing flutter_assets, change 
+* Update and migrate iOS example project by removing flutter_assets, change
   "English" to "en", remove extraneous xcconfigs, update to Xcode 11 build
   settings, remove ARCHS, and build pods as libraries instead of frameworks.
 
