@@ -26,7 +26,27 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<int> create(Map<String, dynamic> dataSourceDescription) async {
+  Future<int> create(DataSource dataSource) async {
+    Map<String, dynamic> dataSourceDescription;
+
+    switch (dataSource.sourceType) {
+      case DataSourceType.asset:
+        dataSourceDescription = <String, dynamic>{
+          'asset': dataSource.asset,
+          'package': dataSource.package,
+        };
+        break;
+      case DataSourceType.network:
+        dataSourceDescription = <String, dynamic>{
+          'uri': dataSource.uri,
+          'formatHint': _videoFormatStringMap[dataSource.formatHint]
+        };
+        break;
+      case DataSourceType.file:
+        dataSourceDescription = <String, dynamic>{'uri': dataSource.uri};
+        break;
+    }
+
     final Map<String, dynamic> response =
         await _channel.invokeMapMethod<String, dynamic>(
       'create',
@@ -120,4 +140,12 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   EventChannel _eventChannelFor(int textureId) {
     return EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
   }
+
+  static const Map<FormatHint, String> _videoFormatStringMap =
+      <FormatHint, String>{
+    FormatHint.ss: 'ss',
+    FormatHint.hls: 'hls',
+    FormatHint.dash: 'dash',
+    FormatHint.other: 'other',
+  };
 }

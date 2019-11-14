@@ -78,16 +78,17 @@ void main() {
         log.add(methodCall);
         return <String, dynamic>{'textureId': 3};
       });
-      final int textureId = await player.create(<String, dynamic>{
-        'asset': 'someAsset',
-        'package': 'somePacket',
-      });
+      final int textureId = await player.create(DataSource(
+        sourceType: DataSourceType.asset,
+        asset: 'someAsset',
+        package: 'somePackage',
+      ));
       expect(
         log,
         <Matcher>[
           isMethodCall('create', arguments: <String, Object>{
             'asset': 'someAsset',
-            'package': 'somePacket'
+            'package': 'somePackage',
           })
         ],
       );
@@ -99,10 +100,11 @@ void main() {
         log.add(methodCall);
         return <String, dynamic>{'textureId': 3};
       });
-      final int textureId = await player.create(<String, dynamic>{
-        'uri': 'someUri',
-        'formatHint': 'dash',
-      });
+      final int textureId = await player.create(DataSource(
+        sourceType: DataSourceType.network,
+        uri: 'someUri',
+        formatHint: FormatHint.dash,
+      ));
       expect(
         log,
         <Matcher>[
@@ -120,9 +122,10 @@ void main() {
         log.add(methodCall);
         return <String, dynamic>{'textureId': 3};
       });
-      final int textureId = await player.create(<String, dynamic>{
-        'uri': 'someUri',
-      });
+      final int textureId = await player.create(DataSource(
+        sourceType: DataSourceType.file,
+        uri: 'someUri',
+      ));
       expect(
         log,
         <Matcher>[

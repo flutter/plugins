@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart' show visibleForTesting;
+import 'package:meta/meta.dart' show required, visibleForTesting;
 
 import 'method_channel_video_player.dart';
 
@@ -69,10 +69,7 @@ abstract class VideoPlayerPlatform {
   ///
   /// For assets the [asset] key is mandatory. Optionally you can specify
   /// the [package].
-  /// TODO (cbenhagen): create a [DataSource] class
-  Future<int> create(
-    Map<String, dynamic> dataSourceDescription,
-  ) {
+  Future<int> create(DataSource dataSource) {
     throw UnimplementedError('create() has not been implemented.');
   }
 
@@ -118,6 +115,35 @@ abstract class VideoPlayerPlatform {
   // This private method is called by the instance setter, which fails if the class is
   // implemented with `implements`.
   void _verifyProvidesDefaultImplementations() {}
+}
+
+class DataSource {
+  DataSource({
+    @required this.sourceType,
+    this.uri,
+    this.formatHint,
+    this.asset,
+    this.package,
+  });
+
+  final DataSourceType sourceType;
+  final String uri;
+  final FormatHint formatHint;
+  final String asset;
+  final String package;
+}
+
+enum DataSourceType {
+  asset,
+  network,
+  file,
+}
+
+enum FormatHint {
+  dash,
+  hls,
+  ss,
+  other,
 }
 
 enum VideoEvent {
