@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as path;
 
 final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
   // This will clear all open videos on the platform when a full restart is
@@ -170,7 +171,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
   VideoPlayerController.file(File file)
-      : assert(Platform.isIOS ? file.path.split('/').last.contains('.') : true),
+      : assert(Platform.isIOS ? path.extension(file.path).isNotEmpty : true),
         dataSource =
             'file://${Platform.isIOS ? Uri.encodeFull(file.path) : file.path}',
         dataSourceType = DataSourceType.file,
