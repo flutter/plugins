@@ -189,7 +189,7 @@ void main() {
     });
 
     test('seekTo', () async {
-      await player.seekTo(1, 12345);
+      await player.seekTo(1, const Duration(milliseconds: 12345));
       expect(
         log,
         <Matcher>[
