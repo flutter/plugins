@@ -13,6 +13,7 @@ flutter:
 
 dependencies:
   meta: "^1.0.5"
+  path: "^1.6.4"
   flutter:
     sdk: flutter
 
