@@ -186,7 +186,7 @@ void main() {
       );
     });
 
-    test('cannot a non-web in webview', () async {
+    test('cannot launch a non-web in webview', () async {
       expect(() async => await launch('tel:555-555-5555', forceWebView: true),
           throwsA(isA<PlatformException>()));
     });
