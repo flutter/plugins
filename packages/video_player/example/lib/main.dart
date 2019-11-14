@@ -403,11 +403,11 @@ class App extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.only(top: 20.0),
                   ),
-                    const Text('With remote mp4'),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: NetworkPlayerLifeCycle(
-                        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+                  const Text('With remote mp4'),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    child: NetworkPlayerLifeCycle(
+                      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
                       (BuildContext context,
                               VideoPlayerController controller) =>
                           AspectRatioVideo(controller),
