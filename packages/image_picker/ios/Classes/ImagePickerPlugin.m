@@ -93,7 +93,7 @@ static const int SOURCE_GALLERY = 1;
     _arguments = call.arguments;
 
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
-    if ([_arguments objectForKey:@"maxDuration"]) {
+    if ([[_arguments objectForKey:@"maxDuration"] isKindOfClass:[NSNumber class]]) {
         NSTimeInterval max = [[_arguments objectForKey:@"maxDuration"] doubleValue];
         _imagePickerController.videoMaximumDuration = max;
     }
