@@ -139,7 +139,7 @@ class GoogleSignIn {
   /// Initializes global sign-in configuration settings.
   ///
   /// The [signInOption] determines the user experience. [SigninOption.games]
-  /// must not be used on iOS or web.
+  /// is only supported on Android.
   ///
   /// The list of [scopes] are OAuth scope codes to request when signing in.
   /// These scope codes will determine the level of data access that is granted
@@ -167,8 +167,8 @@ class GoogleSignIn {
         hostedDomain: hostedDomain);
   }
 
-  /// Factory for creating sign in suitable for games. This option must not be
-  /// used on iOS or web because the games API is not supported.
+  /// Factory for creating sign in suitable for games. This option is only
+  /// supported on Android.
   factory GoogleSignIn.games() {
     return GoogleSignIn(signInOption: SignInOption.games);
   }
@@ -186,8 +186,8 @@ class GoogleSignIn {
   /// Error code indicating that attempt to sign in failed.
   static const String kSignInFailedError = 'sign_in_failed';
 
-  /// Option to determine the sign in user experience. [SignInOption.games] must
-  /// not be used on iOS or web.
+  /// Option to determine the sign in user experience. [SignInOption.games] is
+  /// only supported on Android.
   final SignInOption signInOption;
 
   /// The list of [scopes] are OAuth scope codes requested when signing in.
@@ -253,6 +253,10 @@ class GoogleSignIn {
   ///
   /// At most one in flight call is allowed to prevent concurrent (out of order)
   /// updates to [currentUser] and [onCurrentUserChanged].
+  ///
+  /// The optional, named parameter [canSkipCall] lets the plugin know that the
+  /// method call may be skipped, if there's already [_currentUser] information.
+  /// This is used from the [signIn] and [signInSilently] methods.
   Future<GoogleSignInAccount> _addMethodCall(
     Function method, {
     bool canSkipCall = false,
