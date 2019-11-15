@@ -22,7 +22,7 @@
 
 @implementation FLTConnectivityPlugin {
   FlutterEventSink _eventSink;
-  Reachability *_reachabilityForInternetConnection;
+  Reachability* _reachabilityForInternetConnection;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
