@@ -22,6 +22,7 @@
 
 @implementation FLTConnectivityPlugin {
   FlutterEventSink _eventSink;
+  Reachability* _reachabilityForInternetConnection;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -174,12 +175,16 @@
                                            selector:@selector(onReachabilityDidChange:)
                                                name:kReachabilityChangedNotification
                                              object:nil];
-  [[Reachability reachabilityForInternetConnection] startNotifier];
+  _reachabilityForInternetConnection = [Reachability reachabilityForInternetConnection];
+  [_reachabilityForInternetConnection startNotifier];
   return nil;
 }
 
 - (FlutterError*)onCancelWithArguments:(id)arguments {
-  [[Reachability reachabilityForInternetConnection] stopNotifier];
+  if (_reachabilityForInternetConnection) {
+    [_reachabilityForInternetConnection stopNotifier];
+    _reachabilityForInternetConnection = nil;
+  }
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   _eventSink = nil;
   return nil;
