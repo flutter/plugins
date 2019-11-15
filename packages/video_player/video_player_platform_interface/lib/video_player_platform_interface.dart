@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart' show required, visibleForTesting;
 
 import 'method_channel_video_player.dart';
@@ -101,6 +102,11 @@ abstract class VideoPlayerPlatform {
   /// Gets the video position as [Duration] from the start.
   Future<Duration> getPosition(int textureId) {
     throw UnimplementedError('getPosition() has not been implemented.');
+  }
+
+  /// Returns a widget displaying the video with a given textureID.
+  Widget buildView(int textureId) {
+    throw UnimplementedError('buildView() has not been implemented.');
   }
 
   // This method makes sure that VideoPlayer isn't implemented with `implements`.

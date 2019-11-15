@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 import 'video_player_platform_interface.dart';
 
@@ -148,6 +149,11 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
           return VideoEvent(eventType: VideoEventType.unknown);
       }
     });
+  }
+
+  @override
+  Widget buildView(int textureId) {
+    return Texture(textureId: textureId);
   }
 
   EventChannel _eventChannelFor(int textureId) {
