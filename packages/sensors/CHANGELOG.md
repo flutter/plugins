@@ -1,3 +1,7 @@
+## 0.4.1+3
+
+* Improve documentation and add unit test coverage.
+
 ## 0.4.1+2
 
 * Remove AndroidX warnings.

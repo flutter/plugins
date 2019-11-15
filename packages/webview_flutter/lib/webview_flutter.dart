@@ -67,7 +67,8 @@ enum NavigationDecision {
 /// `navigation` should be handled.
 ///
 /// See also: [WebView.navigationDelegate].
-typedef NavigationDecision NavigationDelegate(NavigationRequest navigation);
+typedef FutureOr<NavigationDecision> NavigationDelegate(
+    NavigationRequest navigation);
 
 /// Signature for when a [WebView] has finished loading a page.
 typedef void PageFinishedCallback(String url);
@@ -439,11 +440,12 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   }
 
   @override
-  bool onNavigationRequest({String url, bool isForMainFrame}) {
+  FutureOr<bool> onNavigationRequest({String url, bool isForMainFrame}) async {
     final NavigationRequest request =
         NavigationRequest._(url: url, isForMainFrame: isForMainFrame);
     final bool allowNavigation = _widget.navigationDelegate == null ||
-        _widget.navigationDelegate(request) == NavigationDecision.navigate;
+        await _widget.navigationDelegate(request) ==
+            NavigationDecision.navigate;
     return allowNavigation;
   }
 
