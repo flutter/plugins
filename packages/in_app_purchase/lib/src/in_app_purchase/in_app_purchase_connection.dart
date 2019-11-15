@@ -71,7 +71,7 @@ abstract class InAppPurchaseConnection {
   /// See the [example readme](../../../../example/README.md) for steps on how
   /// to initialize products on both payment platforms.
   Future<ProductDetailsResponse> queryProductDetails(Set<String> identifiers);
-
+  Future<List<PurchaseDetails>> getUndealPurchases();
   /// Buy a non consumable product or subscription.
   ///
   /// Non consumable items can only be bought once. For example, a purchase that

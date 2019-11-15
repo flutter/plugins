@@ -217,6 +217,11 @@ class GooglePlayConnection
                 details: exception.details));
   }
 
+  @override
+  Future<List<PurchaseDetails>> getUndealPurchases() async{
+
+  }
+
   static Future<List<PurchaseDetails>> _getPurchaseDetailsFromResult(
       PurchasesResultWrapper resultWrapper) async {
     IAPError error;

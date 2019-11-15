@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-
+import 'package:in_app_purchase/src/channel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
@@ -169,6 +169,35 @@ class AppStoreConnection implements InAppPurchaseConnection {
               details: exception.details),
     );
     return productDetailsResponse;
+  }
+
+  @override
+  Future<List<PurchaseDetails>> getUndealPurchases() async{
+    var res = await channel.invokeMethod<dynamic>('-[SKPaymentQueue getUndealPurchases:]');
+    final List<SKPaymentTransactionWrapper> transactions = res
+        .map<SKPaymentTransactionWrapper>(
+            (dynamic map) => SKPaymentTransactionWrapper.fromJson(map))
+        .toList();
+
+    List<PurchaseDetails> targetList = [];
+    await SKRequestMaker().startRefreshReceiptRequest();
+    String receipt = await SKReceiptManager.retrieveReceiptData();
+    for (SKPaymentTransactionWrapper transaction in transactions) {
+      PurchaseDetails purchaseDetails =
+      PurchaseDetails.fromSKTransaction(transaction, receipt)
+        ..status = SKTransactionStatusConverter()
+            .toPurchaseStatus(transaction.transactionState)
+        ..error = transaction.error != null
+            ? IAPError(
+          source: IAPSource.AppStore,
+          code: kPurchaseErrorCode,
+          message: transaction.error.domain,
+          details: transaction.error.userInfo,
+        ) : null;
+      targetList.add(purchaseDetails);
+    }
+    return targetList;
+
   }
 }
 
