@@ -1,3 +1,7 @@
+## 4.0.14
+
+* Port plugin code to use the federated Platform Interface, instead of a MethodChannel directly.
+
 ## 4.0.13
 
 * Fix `GoogleUserCircleAvatar` to handle new style profile image URLs.
