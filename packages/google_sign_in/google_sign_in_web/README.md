@@ -2,7 +2,26 @@
 
 The web implementation of [google_sign_in](https://pub.dev/google_sign_in/google_sign_in)
 
-## Web integration
+## Usage
+
+### Import the package
+To use this plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#pub-pkg-tab-installing).
+
+Remember that for web plugins you need to depend both on the "native" version that provides the Dart interface that you'll use in your app), and the "web" version, that provides the implementation of the plugin for the web platform.
+
+This is what the above means to your `pubspec.yaml`:
+
+```
+...
+dependencies:
+  ...
+  google_sign_in: ^4.0.14
+  google_sign_in_web: ^1.0.0
+  ...
+...
+```
+
+### Web integration
 
 First, go through the instructions [here](https://developers.google.com/identity/sign-in/web/sign-in#before_you_begin) to create your Google Sign-In OAuth client ID.
 
@@ -15,11 +34,6 @@ On your `web/index.html` file, add the following `meta` tag, somewhere in the
 
 Read the rest of the instructions if you need to add extra APIs (like Google People API).
 
-
-## Usage
-
-### Import the package
-To use this plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#pub-pkg-tab-installing).
 
 ### Use the plugin
 Add the following import to your Dart code:

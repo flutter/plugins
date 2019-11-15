@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,8 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
         .querySelector(_kClientIdMetaSelector)
         ?.getAttribute(_kClientIdAttributeName);
 
-    _isGapiInitialized = gapi.inject(gapiUrl).then((_) => gapi.init()).then((_) {
+    _isGapiInitialized =
+        gapi.inject(gapiUrl).then((_) => gapi.init()).then((_) {
       isInitialized = true;
     });
   }
@@ -38,8 +39,9 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
   @visibleForTesting
   Future<void> get isInitializing => _isGapiInitialized;
+
   @visibleForTesting
-  bool isInitialized;
+  bool isInitialized = false;
 
   String _autoDetectedClientId;
   FutureOr<auth2.GoogleUser> _lastSeenUser;
@@ -61,9 +63,14 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
         '<meta name="google-signin-client_id" content="CLIENT_ID" /> tag,'
         ' or pass clientId when calling init()');
 
+    assert(
+        !scopes.any((String scope) => scope.contains(' ')),
+        'OAuth 2.0 Scopes for Google APIs can\'t contain spaces.'
+        'Check https://developers.google.com/identity/protocols/googlescopes '
+        'for a list of valid OAuth 2.0 scopes.');
+
     await _isGapiInitialized;
 
-    // This init returns an  user, so let's wait for its future
     final auth2.GoogleAuth auth = auth2.init(auth2.ClientConfig(
       hosted_domain: hostedDomain,
       // The js lib wants a space-separated list of values
@@ -71,7 +78,8 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       client_id: appClientId,
     ));
 
-    // Subscribe to changes in the auth user, and cache the latest seen for signInSilently
+    // Subscribe to changes in the auth instance returned by init,
+    // and cache the _lastSeenUser as we get notified of new values.
     final Completer<auth2.GoogleUser> initUserCompleter =
         Completer<auth2.GoogleUser>();
 

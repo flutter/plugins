@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 @JS()
 library gapi_onload;
 
@@ -15,10 +19,12 @@ external set gapiOnloadCallback(Function callback);
 // This name must match the external setter above
 @visibleForTesting
 const String kGapiOnloadCallbackFunctionName = "gapiOnloadCallback";
-String _addOnloadToScript(String url) => url.startsWith('data:') ? url : '$url?onload=$kGapiOnloadCallbackFunctionName';
+String _addOnloadToScript(String url) => url.startsWith('data:')
+    ? url
+    : '$url?onload=$kGapiOnloadCallbackFunctionName';
 
 /// Injects the GAPI library by its [url], and other additional [libraries].
-/// 
+///
 /// GAPI has an onload API where it'll call a callback when it's ready, JSONP style.
 Future<void> inject(String url, {List<String> libraries = const <String>[]}) {
   // Inject the GAPI library, and configure the onload global
@@ -29,9 +35,11 @@ Future<void> inject(String url, {List<String> libraries = const <String>[]}) {
   });
 
   // Attach the onload callback to the main url
-  final List<String> allLibraries = <String>[_addOnloadToScript(url)]..addAll(libraries);
+  final List<String> allLibraries = <String>[_addOnloadToScript(url)]
+    ..addAll(libraries);
 
-  return Future.wait(<Future<void>>[injectJSLibraries(allLibraries), gapiOnLoad.future]);
+  return Future.wait(
+      <Future<void>>[injectJSLibraries(allLibraries), gapiOnLoad.future]);
 }
 
 /// Initialize the global gapi object so 'auth2' can be used.

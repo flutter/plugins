@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 @TestOn('browser')
 
 import 'dart:html' as html;
@@ -11,10 +15,22 @@ void main() {
   gapiUrl = toBase64Url(gapi_mocks.gapiInitSuccess);
 
   test('Plugin is initialized after GAPI fully loads', () async {
-    expect(html.querySelector('script[src^="data:"]'), isNull, reason: 'Mock script not present before instantiating the plugin');
+    expect(
+      html.querySelector('script[src^="data:"]'),
+      isNull,
+      reason: 'Mock script not present before instantiating the plugin',
+    );
     final GoogleSignInPlugin plugin = GoogleSignInPlugin();
-    expect(html.querySelector('script[src^="data:"]'), isNotNull, reason: 'Mock script should be injected');
+    expect(
+      html.querySelector('script[src^="data:"]'),
+      isNotNull,
+      reason: 'Mock script should be injected',
+    );
     await plugin.isInitializing;
-    expect(plugin.isInitialized, isTrue, reason:'Plugin is initialized after awaiting the isInitializing future');
+    expect(
+      plugin.isInitialized,
+      isTrue,
+      reason: 'Plugin is initialized after awaiting the isInitializing future',
+    );
   });
 }
