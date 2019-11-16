@@ -1,0 +1,11 @@
+# This exists to add a lint for missing API docs just on this specific package,
+# since not all packages have coverage for all their public members yet and
+# adding it in would be non-trivial. `public_member_api_docs` should be applied
+# to new packages going forward, and ideally the main `analysis_options.yaml`
+# file as soon as possible.
+
+include: ../../analysis_options.yaml
+
+linter:
+  rules:
+    - public_member_api_docs

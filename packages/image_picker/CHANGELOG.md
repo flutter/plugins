@@ -2,6 +2,34 @@
 
 * New feature : Set maximum duration for video recording.
 
+## 0.6.1+11
+
+* Stability and Maintainability: update documentations, add unit tests.
+
+## 0.6.1+10
+
+* iOS: Fix image orientation problems when scaling images.
+
+## 0.6.1+9
+
+* Remove AndroidX warning.
+
+## 0.6.1+8
+
+* Fix iOS build and analyzer warnings.
+
+## 0.6.1+7
+
+* Android: Fix ImagePickerPlugin#onCreate casting context which causes exception.
+
+## 0.6.1+6
+
+* Define clang module for iOS
+
+## 0.6.1+5
+
+* Update and migrate iOS example project.
+
 ## 0.6.1+4
 
 * Android: Fix a regression where the `retrieveLostImage` does not work anymore.

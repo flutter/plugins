@@ -21,7 +21,7 @@ abstract class WebViewPlatformCallbacksHandler {
   /// Invoked by [WebViewPlatformController] when a navigation request is pending.
   ///
   /// If true is returned the navigation is allowed, otherwise it is blocked.
-  bool onNavigationRequest({String url, bool isForMainFrame});
+  FutureOr<bool> onNavigationRequest({String url, bool isForMainFrame});
 
   /// Invoked by [WebViewPlatformController] when a page has finished loading.
   void onPageFinished(String url);
@@ -157,6 +157,12 @@ abstract class WebViewPlatformController {
   Future<void> removeJavascriptChannels(Set<String> javascriptChannelNames) {
     throw UnimplementedError(
         "WebView removeJavascriptChannels is not implemented on the current platform");
+  }
+
+  /// Returns the title of the currently loaded page.
+  Future<String> getTitle() {
+    throw UnimplementedError(
+        "WebView getTitle is not implemented on the current platform");
   }
 }
 

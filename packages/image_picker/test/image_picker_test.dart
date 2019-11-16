@@ -151,13 +151,14 @@ void main() {
         expect(
           log,
           <Matcher>[
+
             isMethodCall('pickVideo',
                 arguments: <String, dynamic>{'source': 0, 'maxDuration': null}),
             isMethodCall('pickVideo',
-                arguments: <String, dynamic>{'source': 1, 'maxDuration': null}),
-          ],
+                arguments: <String, dynamic>{'source': 1, 'maxDuration': null}),          ],
         );
       });
+
 
       test('passes the duration argument correctly', () async {
         await ImagePicker.pickVideo(source: ImageSource.camera);
@@ -183,6 +184,7 @@ void main() {
       });
 
       test('handles a null video path response gracefully', () async {
+
         channel.setMockMethodCallHandler((MethodCall methodCall) => null);
 
         expect(

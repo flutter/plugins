@@ -1,3 +1,24 @@
+## 1.4.2
+
+* Update and migrate iOS example project by removing flutter_assets, change 
+  "English" to "en", remove extraneous xcconfigs, update to Xcode 11 build
+  settings, remove ARCHS, and build pods as libraries instead of frameworks.
+
+## 1.4.1
+
+* Remove AndroidX warnings.
+
+## 1.4.0
+
+* Support retrieving storage paths on Android devices with multiple external
+  storage options. This adds a new class `AndroidEnvironment` that shadows the
+  directory names from Androids `android.os.Environment` class.
+* Fixes `getLibraryDirectory` semantics & tests.
+
+## 1.3.1
+
+* Define clang module for iOS.
+
 ## 1.3.0
 
 * Added iOS-only support for `getLibraryDirectory`.

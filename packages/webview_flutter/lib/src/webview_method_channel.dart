@@ -31,7 +31,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         _platformCallbacksHandler.onJavaScriptChannelMessage(channel, message);
         return true;
       case 'navigationRequest':
-        return _platformCallbacksHandler.onNavigationRequest(
+        return await _platformCallbacksHandler.onNavigationRequest(
           url: call.arguments['url'],
           isForMainFrame: call.arguments['isForMainFrame'],
         );
@@ -102,6 +102,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     return _channel.invokeMethod<void>(
         'removeJavascriptChannels', javascriptChannelNames.toList());
   }
+
+  @override
+  Future<String> getTitle() => _channel.invokeMethod<String>("getTitle");
 
   /// Method channel implementation for [WebViewPlatform.clearCookies].
   static Future<bool> clearCookies() {
