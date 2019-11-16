@@ -170,6 +170,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
+  /// **iOS only**: the file name must include a supported extension by the AVPlayer.
+  /// **iOS only**: the file path must be Uri encoded, this is not done on the native side.
   VideoPlayerController.file(File file)
       : assert(Platform.isIOS ? p.extension(file.path).isNotEmpty : true),
         dataSource =

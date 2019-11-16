@@ -1,3 +1,8 @@
+## 0.10.3+1
+
+* iOS: Fix a bug which file path was not encoded correctly.
+  https://github.com/flutter/flutter/issues/40429
+
 ## 0.10.3
 
 * Add support for the v2 Android embedding. This shouldn't impact existing
