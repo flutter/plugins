@@ -4,17 +4,5 @@
 
 part of gapi_mocks;
 
-const String gapiInitSuccess = '''
-(function() {
-    function Gapi() {};
-    Gapi.prototype.load = function (script, callback) {
-        window.setTimeout(() => {
-          callback();
-        }, 30);
-    };
-
-    window.gapi = new Gapi();
-  
-    window['$kGapiOnloadCallbackFunctionName']();
-  })();
-''';
+// JS mock of a raw GAPI object.
+String gapiInitSuccess() => testIife(gapi());

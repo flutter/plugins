@@ -12,7 +12,7 @@ import 'gapi_mocks/gapi_mocks.dart' as gapi_mocks;
 import 'utils.dart';
 
 void main() {
-  gapiUrl = toBase64Url(gapi_mocks.gapiInitSuccess);
+  gapiUrl = toBase64Url(gapi_mocks.gapiInitSuccess());
 
   test('Plugin is initialized after GAPI fully loads', () async {
     expect(

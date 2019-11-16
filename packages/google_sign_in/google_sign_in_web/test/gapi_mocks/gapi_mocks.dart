@@ -4,7 +4,11 @@
 
 library gapi_mocks;
 
-import 'package:google_sign_in_web/src/load_gapi.dart'
-    show kGapiOnloadCallbackFunctionName;
+import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
+
+import 'src/gapi.dart';
+import 'src/google_user.dart';
+import 'src/test_iife.dart';
 
 part 'src/gapi_load.dart';
+part 'src/auth2_init.dart';
