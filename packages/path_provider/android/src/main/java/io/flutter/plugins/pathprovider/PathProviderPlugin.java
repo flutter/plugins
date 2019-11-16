@@ -4,11 +4,11 @@
 
 package io.flutter.plugins.pathprovider;
 
-import android.support.annotation.NonNull;
-import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import android.content.Context;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.support.annotation.NonNull;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -24,7 +24,7 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
   private Context context;
   private MethodChannel channel;
 
-  public PathProviderPlugin() { }
+  public PathProviderPlugin() {}
 
   public static void registerWith(Registrar registrar) {
     PathProviderPlugin instance = new PathProviderPlugin();
