@@ -180,8 +180,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
         .toList();
 
     List<PurchaseDetails> targetList = [];
-    await SKRequestMaker().startRefreshReceiptRequest();
-    String receipt = await SKReceiptManager.retrieveReceiptData();
+    String receipt = await _observer.getReceiptData();
     for (SKPaymentTransactionWrapper transaction in transactions) {
       PurchaseDetails purchaseDetails =
       PurchaseDetails.fromSKTransaction(transaction, receipt)
