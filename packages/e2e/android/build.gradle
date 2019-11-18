@@ -59,9 +59,8 @@ afterEvaluate {
         android {
             dependencies {
                 def lifecycle_version = "1.1.1"
-                compileOnly "android.arch.lifecycle:runtime:$lifecycle_version"
-                compileOnly "android.arch.lifecycle:common:$lifecycle_version"
-                compileOnly "android.arch.lifecycle:common-java8:$lifecycle_version"
+                implementation "android.arch.lifecycle:runtime:$lifecycle_version"
+                implementation "android.arch.lifecycle:common:$lifecycle_version"
             }
         }
     }
