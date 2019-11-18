@@ -8,16 +8,18 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
-import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
+
 import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
 
 class FlutterCookieManager implements MethodCallHandler {
   private final MethodChannel methodChannel;
@@ -48,74 +50,72 @@ class FlutterCookieManager implements MethodCallHandler {
     methodChannel.setMethodCallHandler(null);
   }
 
-  private static void getCookies(final MethodCall methodCall, final Result result) {
+  private String getUrlArgument(MethodCall methodCall, final Result result) {
     if (!(methodCall.arguments() instanceof Map)) {
       result.error(
-          "Invalid argument. Expected Map<String,String>, received "
-              + (methodCall.arguments().getClass().getSimpleName()),
-          null,
-          null);
+        "Invalid argument. Expected Map<String, dynamic>, received " + (methodCall.arguments()
+          .getClass()
+          .getSimpleName()), null, null);
+      return null;
+    }
+
+    String url = methodCall.argument("url");
+    if (url == null || url.length() == 0) {
+      result.error("Missing url argument", null, null);
+      return null;
+    }
+    return url;
+  }
+
+  private void getCookies(final MethodCall methodCall, final Result result) {
+    String url = getUrlArgument(methodCall, result);
+    if (url == null) {
       return;
     }
 
-    final Map<String, String> arguments = methodCall.arguments();
-
     CookieManager cookieManager = CookieManager.getInstance();
-
-    final String allCookiesString = cookieManager.getCookie(arguments.get("url"));
-    final ArrayList<String> individualCookieStrings =
-        new ArrayList<>(Arrays.asList(allCookiesString.split(";")));
-
-    ArrayList<Map<String, String>> serializedCookies = new ArrayList<>();
-    for (String cookieString : individualCookieStrings) {
-      try {
-        final HttpCookie cookie = HttpCookie.parse(cookieString).get(0);
-        final CookieDto dto = CookieDto.fromHttpCookie(cookie);
-        serializedCookies.add(dto.toMap());
-      } catch (IllegalArgumentException e) {
-        // Cookie is invalid. Ignoring.
-      }
-    }
-
-    result.success(serializedCookies);
+    final String cookie = cookieManager.getCookie(url);
+    result.success(cookie != null ? cookie : "");
   }
 
-  private static void setCookies(final MethodCall methodCall, final Result result) {
-    if (!(methodCall.arguments() instanceof List)) {
-      result.error(
-          "Invalid argument. Expected List<Map<String,String>>, received "
-              + (methodCall.arguments().getClass().getSimpleName()),
-          null,
-          null);
+  private void setCookies(final MethodCall methodCall, final Result result) {
+    String url = getUrlArgument(methodCall, result);
+    if (url == null) {
       return;
     }
 
-    final List<Map<String, String>> serializedCookies = methodCall.arguments();
-
-    CookieManager cookieManager = CookieManager.getInstance();
-
-    for (Map<String, String> serializedCookie : serializedCookies) {
-      final CookieDto cookie = CookieDto.fromMap(serializedCookie);
-      cookieManager.setCookie(cookie.getName(), cookie.getValue());
+    final List<String> cookies = methodCall.argument("cookies");
+    if (cookies == null) {
+      result.error("Missing cookies argument", null, null);
+      return;
     }
 
-    result.success(null);
-  }
+    final CookieManager cookieManager = CookieManager.getInstance();
+    for (String cookie : cookies) {
+      cookieManager.setCookie(url, cookie);
+    }
 
-  private static void clearCookies(final Result result) {
-    CookieManager cookieManager = CookieManager.getInstance();
-    final boolean hasCookies = cookieManager.hasCookies();
     if (Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      cookieManager.removeAllCookies(
-          new ValueCallback<Boolean>() {
-            @Override
-            public void onReceiveValue(Boolean value) {
-              result.success(hasCookies);
-            }
-          });
-    } else {
+      cookieManager.flush();
+    }
+
+    result.success(true);
+  }
+
+  private void clearCookies(final Result result) {
+    final CookieManager cookieManager = CookieManager.getInstance();
+    if (Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+      cookieManager.removeAllCookies(new ValueCallback<Boolean>() {
+        @Override
+        public void onReceiveValue(Boolean value) {
+          cookieManager.flush();
+          result.success(value);
+        }
+      });
+    }
+    else {
       cookieManager.removeAllCookie();
-      result.success(hasCookies);
+      result.success(true);
     }
   }
 }

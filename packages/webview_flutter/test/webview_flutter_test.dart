@@ -1084,12 +1084,12 @@ class MyWebViewPlatform implements WebViewPlatform {
   }
 
   @override
-  Future<List<Cookie>> getCookies() {
+  Future<List<Cookie>> getCookies(String url) {
     return Future<List<Cookie>>.sync(() => null);
   }
 
   @override
-  Future<void> setCookies(List<Cookie> cookies) {
+  Future<void> setCookies(String url, List<Cookie> cookies) {
     return Future<void>.sync(() => null);
   }
 }
@@ -1120,13 +1120,13 @@ class MyWebViewPlatformController extends WebViewPlatformController {
   }
 
   @override
-  Future<List<Cookie>> getCookies() {
+  Future<List<Cookie>> getCookies(String url) {
     // TODO: implement getCookies
     return null;
   }
 
   @override
-  Future<void> setCookies(List<Cookie> cookies) {
+  Future<void> setCookies(String url, List<Cookie> cookies) {
     // TODO: implement setCookies
     return null;
   }

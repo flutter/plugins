@@ -652,14 +652,14 @@ class CookieManager {
   ///
   /// On iOS, returns all cookies from the [WebView] instance.
   /// On Android, only returns the cookies for the current URL from the [WebView] instance.
-  Future<List<Cookie>> getCookies() => WebView.platform.getCookies();
+  Future<List<Cookie>> getCookies(String url) => WebView.platform.getCookies(url);
 
   /// Sets the specified cookies.
   ///
   /// This is a no op on iOS versions smaller than 11.
   ///
   /// `cookies` must not be null.
-  Future<void> setCookies(List<Cookie> cookies) => WebView.platform.setCookies(cookies);
+  Future<void> setCookies(String url, List<Cookie> cookies) => WebView.platform.setCookies(url, cookies);
 
   /// Clears all cookies for all [WebView] instances.
   ///

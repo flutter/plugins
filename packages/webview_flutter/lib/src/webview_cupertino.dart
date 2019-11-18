@@ -49,10 +49,10 @@ class CupertinoWebView implements WebViewPlatform {
   }
 
   @override
-  Future<List<Cookie>> getCookies() => platformController?.getCookies();
+  Future<List<Cookie>> getCookies(String url) => platformController?.getCookies(url);
 
   @override
-  Future<void> setCookies(List<Cookie> cookies) => platformController?.setCookies(cookies);
+  Future<void> setCookies(String url, List<Cookie> cookies) => platformController?.setCookies(url, cookies);
 
   @override
   Future<bool> clearCookies() => platformController?.clearCookies();

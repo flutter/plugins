@@ -8,7 +8,6 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 import '../platform_interface.dart';
-import 'cookie_dto.dart';
 
 /// A [WebViewPlatformController] that uses a method channel to control the webview.
 class MethodChannelWebViewPlatform implements WebViewPlatformController {
@@ -108,35 +107,40 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   @override
   Future<String> getTitle() => _channel.invokeMethod<String>("getTitle");
 
+  final RegExp _cookieSeparator = RegExp(r';\s*');
+  final RegExp _cookieKeyValSeparator = RegExp(r'={1}');
+
   /// Method channel implementation for [WebViewPlatform.getCookies].
   @override
-  Future<List<Cookie>> getCookies() async {
-    final List<dynamic> serialized = await _cookieManagerChannel
-        .invokeListMethod<dynamic>(
-            'getCookies', <String, String>{'url': await currentUrl()});
-    final List<Cookie> cookies = serialized
-        .map((dynamic cookieJson) => CookieDto.fromJson(cookieJson))
-        .map((CookieDto dto) => dto.toCookie())
-        .toList();
-    return cookies;
+  Future<List<Cookie>> getCookies(String url) async {
+    final String cookieHeader = await _cookieManagerChannel.invokeMethod<String>(
+      'getCookies',
+      <String, String>{
+        'url': url,
+      },
+    );
+    return cookieHeader.trim().split(_cookieSeparator).map((String cookie) {
+      final List<String> parts = cookie.split(_cookieKeyValSeparator);
+      return Cookie(parts[0], parts[1])..httpOnly = false;
+    }).toList(growable: false);
   }
 
   /// Method channel implementation for [WebViewPlatform.setCookies].
   @override
-  Future<void> setCookies(List<Cookie> cookies) async {
-    final List<Map<String, String>> serialized = cookies
-        .map((Cookie cookie) => CookieDto.fromCookie(cookie))
-        .map((CookieDto dto) => dto.toJson())
-        .toList();
-    await _cookieManagerChannel.invokeMethod<void>('setCookies', serialized);
+  Future<bool> setCookies(String url, List<Cookie> cookies) async {
+    return await _cookieManagerChannel.invokeMethod<bool>(
+      'setCookies',
+      <String, dynamic>{
+        'url': url,
+        'cookies': cookies.map((Cookie cookie) => cookie.toString()).toList(growable: false),
+      },
+    );
   }
 
   /// Method channel implementation for [WebViewPlatform.clearCookies].
   @override
   Future<bool> clearCookies() {
-    return _cookieManagerChannel
-        .invokeMethod<bool>('clearCookies')
-        .then<bool>((dynamic result) => result);
+    return _cookieManagerChannel.invokeMethod<bool>('clearCookies');
   }
 
   static Map<String, dynamic> _webSettingsToMap(WebSettings settings) {
