@@ -362,6 +362,7 @@ void main() {
     final double padding = 0;
     await mapController
         .moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, padding));
+    await tester.pumpAndSettle();
 
     final LatLngBounds secondVisibleRegion =
         await mapController.getVisibleRegion();
