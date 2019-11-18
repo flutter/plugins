@@ -1,6 +1,27 @@
-## 0.10.2+3
+## 0.10.3+1
 
 * iOS: fixed some videos being rendered black
+
+## 0.10.3
+
+* Add support for the v2 Android embedding. This shouldn't impact existing
+  functionality.
+
+## 0.10.2+6
+
+* Remove AndroidX warnings.
+
+## 0.10.2+5
+
+* Update unit test for compatibility with Flutter stable branch.
+
+## 0.10.2+4
+
+* Define clang module for iOS.
+
+## 0.10.2+3
+
+* Fix bug where formatHint was not being pass down to network sources.
 
 ## 0.10.2+2
 

@@ -1,3 +1,35 @@
+## 0.3.16
+
+* Add support for async NavigationDelegates. Synchronous NavigationDelegates
+  should still continue to function without any change in behavior.
+
+## 0.3.15+3
+
+* Re-land support for the v2 Android embedding. This correctly sets the minimum
+  SDK to the latest stable and avoid any compile errors. *WARNING:* the V2
+  embedding itself still requires the current Flutter master channel
+  (flutter/flutter@1d4d63a) for text input to work properly on all Android
+  versions.
+
+## 0.3.15+2
+
+* Remove AndroidX warnings.
+
+## 0.3.15+1
+
+* Revert the prior embedding support add since it requires an API that hasn't
+  rolled to stable.
+
+## 0.3.15
+
+* Add support for the v2 Android embedding. This shouldn't affect existing
+  functionality. Plugin authors who use the V2 embedding can now register the
+  plugin and expect that it correctly responds to app lifecycle changes.
+
+## 0.3.14+2
+
+* Define clang module for iOS.
+
 ## 0.3.14+1
 
 * Allow underscores anywhere for Javascript Channel name.
@@ -9,7 +41,7 @@
 ## 0.3.13
 
 * Add an optional `userAgent` property to set a custom User Agent.
-  
+
 ## 0.3.12+1
 
 * Temporarily revert getTitle (doing this as a patch bump shortly after publishing).

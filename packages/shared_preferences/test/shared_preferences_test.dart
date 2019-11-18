@@ -197,4 +197,13 @@ void main() {
       expect(preferences.getStringList('myList'), <String>[]);
     });
   });
+
+  test('calling mock initial values with non-prefixed keys succeeds', () async {
+    SharedPreferences.setMockInitialValues(<String, String>{
+      'test': 'foo',
+    });
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String value = prefs.getString('test');
+    expect(value, 'foo');
+  });
 }

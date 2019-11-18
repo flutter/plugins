@@ -186,8 +186,10 @@ class GooglePlayConnection
     } on PlatformException catch (e) {
       exception = e;
       responses = [
+        // ignore: invalid_use_of_visible_for_testing_member
         SkuDetailsResponseWrapper(
             responseCode: BillingResponse.error, skuDetailsList: []),
+        // ignore: invalid_use_of_visible_for_testing_member
         SkuDetailsResponseWrapper(
             responseCode: BillingResponse.error, skuDetailsList: [])
       ];

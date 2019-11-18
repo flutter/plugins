@@ -426,7 +426,7 @@ public class Camera {
 
   public void startPreviewWithImageStream(EventChannel imageStreamChannel)
       throws CameraAccessException {
-    createCaptureSession(CameraDevice.TEMPLATE_STILL_CAPTURE, imageStreamReader.getSurface());
+    createCaptureSession(CameraDevice.TEMPLATE_RECORD, imageStreamReader.getSurface());
 
     imageStreamChannel.setStreamHandler(
         new EventChannel.StreamHandler() {
