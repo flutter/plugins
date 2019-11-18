@@ -112,6 +112,12 @@ class FlutterWebViewClient {
       }
 
       @Override
+      public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError er) {
+        // Ignore SSL certificate errors
+        handler.proceed();
+      }
+
+      @Override
       public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
         // Deliberately empty. Occasionally the webview will mark events as having failed to be
         // handled even though they were handled. We don't want to propagate those as they're not
