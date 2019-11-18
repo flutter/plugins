@@ -25,9 +25,14 @@ import io.flutter.view.FlutterMain;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BackgroundExecutionContext implements MethodCallHandler {
-  private static final String TAG = "BackgroundExecutionContext";
+/**
+ * An background execution abstraction which handles initializing a background isolate running a
+ * callback dispatcher, used to invoke Dart callbacks while backgrounded.
+ */
+public class FlutterBackgroundExecutor implements MethodCallHandler {
+  private static final String TAG = "FlutterBackgroundExecutor";
   private static final String CALLBACK_HANDLE_KEY = "callback_handle";
+  private static PluginRegistrantCallback pluginRegistrantCallback;
 
   /**
    * The {@link MethodChannel} that connects the Android side of this plugin with the background
@@ -37,10 +42,16 @@ public class BackgroundExecutionContext implements MethodCallHandler {
 
   private FlutterEngine backgroundFlutterEngine;
 
-  private AtomicBoolean isIsolateRunning = new AtomicBoolean(false);
+  private AtomicBoolean isCallbackDispatcherReady = new AtomicBoolean(false);
 
-  private static PluginRegistrantCallback pluginRegistrantCallback;
-
+  /**
+   * Sets the {@code PluginRegistrantCallback} used to register plugins with the newly spawned
+   * isolate.
+   *
+   * <p>Note: this is only necessary for applications using the V1 engine embedding API as plugins
+   * are automatically registered via reflection in the V2 engine embedding API. If not set, alarm
+   * callbacks will not be able to utilize functionality from other plugins.
+   */
   public static void setPluginRegistrant(PluginRegistrantCallback callback) {
     pluginRegistrantCallback = callback;
   }
@@ -54,13 +65,13 @@ public class BackgroundExecutionContext implements MethodCallHandler {
     prefs.edit().putLong(CALLBACK_HANDLE_KEY, callbackHandle).apply();
   }
 
-  /** Returns true when the background isolate has started. */
+  /** Returns true when the background isolate has started and is ready to handle alarms. */
   public boolean isRunning() {
-    return isIsolateRunning.get();
+    return isCallbackDispatcherReady.get();
   }
 
   private void onInitialized() {
-    isIsolateRunning.set(true);
+    isCallbackDispatcherReady.set(true);
     AlarmService.onInitialized();
   }
 
@@ -84,6 +95,28 @@ public class BackgroundExecutionContext implements MethodCallHandler {
     }
   }
 
+  /**
+   * Starts running a background Dart isolate within a new {@link FlutterEngine} using a previously
+   * used entrypoint.
+   *
+   * <p>The isolate is configured as follows:
+   *
+   * <ul>
+   *   <li>Bundle Path: {@code FlutterMain.findAppBundlePath(context)}.
+   *   <li>Entrypoint: The Dart method used the last time this plugin was initialized in the
+   *       foreground.
+   *   <li>Run args: none.
+   * </ul>
+   *
+   * <p>Preconditions:
+   *
+   * <ul>
+   *   <li>The given callback must correspond to a registered Dart callback. If the handle does not
+   *       resolve to a Dart callback then this method does nothing.
+   *   <li>A static {@link #pluginRegistrantCallback} must exist, otherwise a {@link
+   *       PluginRegistrantException} will be thrown.
+   * </ul>
+   */
   public void startBackgroundIsolate(Context context) {
     if (!isRunning()) {
       SharedPreferences p = context.getSharedPreferences(AlarmService.SHARED_PREFERENCES_KEY, 0);
@@ -99,15 +132,15 @@ public class BackgroundExecutionContext implements MethodCallHandler {
    *
    * <ul>
    *   <li>Bundle Path: {@code FlutterMain.findAppBundlePath(context)}.
-   *   <li>Entrypoint: The Dart method represented by {@code callback}.
+   *   <li>Entrypoint: The Dart method represented by {@code callbackHandle}.
    *   <li>Run args: none.
    * </ul>
    *
    * <p>Preconditions:
    *
    * <ul>
-   *   <li>The given {@code callback} must correspond to a registered Dart callback. If the handle
-   *       does not resolve to a Dart callback then this method does nothing.
+   *   <li>The given {@code callbackHandle} must correspond to a registered Dart callback. If the
+   *       handle does not resolve to a Dart callback then this method does nothing.
    *   <li>A static {@link #pluginRegistrantCallback} must exist, otherwise a {@link
    *       PluginRegistrantException} will be thrown.
    * </ul>
@@ -118,7 +151,6 @@ public class BackgroundExecutionContext implements MethodCallHandler {
       return;
     }
 
-    FlutterMain.ensureInitializationComplete(context, null);
     FlutterCallbackInformation flutterCallback =
         FlutterCallbackInformation.lookupCallbackInformation(callbackHandle);
     if (flutterCallback == null) {
@@ -136,8 +168,8 @@ public class BackgroundExecutionContext implements MethodCallHandler {
 
       executor.executeDartCallback(dartCallback);
 
-      // TODO(bkonyi): handle registration in V2 embedding.
-      // The pluginRegistrantCallback should only be set in the V1 embedding.
+      // The pluginRegistrantCallback should only be set in the V1 embedding as
+      // plugin registration is done via reflection in the V2 embedding.
       if (pluginRegistrantCallback != null) {
         pluginRegistrantCallback.registerWith(new ShimPluginRegistry(backgroundFlutterEngine));
       }

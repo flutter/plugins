@@ -41,12 +41,11 @@ import org.json.JSONException;
  * </ol>
  */
 public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandler {
+  private static AndroidAlarmManagerPlugin instance;
   private final String TAG = "AndroidAlarmManagerPlugin";
   private Context context;
   private Object initializationLock = new Object();
   private MethodChannel alarmManagerPluginChannel;
-
-  private static AndroidAlarmManagerPlugin singleton;
 
   /**
    * Registers this plugin with an associated Flutter execution context, represented by the given
@@ -56,10 +55,10 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
    * connected to, and running against, the associated Flutter execution context.
    */
   public static void registerWith(Registrar registrar) {
-    if (singleton == null) {
-      singleton = new AndroidAlarmManagerPlugin();
+    if (instance == null) {
+      instance = new AndroidAlarmManagerPlugin();
     }
-    singleton.onAttachedToEngine(registrar.context(), registrar.messenger());
+    instance.onAttachedToEngine(registrar.context(), registrar.messenger());
   }
 
   @Override

@@ -36,34 +36,49 @@ public class AlarmService extends JobIntentService {
   private static List<Intent> alarmQueue = Collections.synchronizedList(new LinkedList<Intent>());
 
   /** Background Dart execution context. */
-  private static BackgroundExecutionContext backgroundExecutionContext;
+  private static FlutterBackgroundExecutor flutterBackgroundExecutor;
 
-  // Schedule the alarm to be handled by the AlarmService.
+  /** Schedule the alarm to be handled by the {@link AlarmService}. */
   public static void enqueueAlarmProcessing(Context context, Intent alarmContext) {
     enqueueWork(context, AlarmService.class, JOB_ID, alarmContext);
   }
 
+  /**
+   * Starts the background isolate for the {@link AlarmService}.
+   *
+   * <p>Preconditions:
+   *
+   * <ul>
+   *   <li>The given {@code callbackHandle} must correspond to a registered Dart callback. If the
+   *       handle does not resolve to a Dart callback then this method does nothing.
+   *   <li>A static {@link #pluginRegistrantCallback} must exist, otherwise a {@link
+   *       PluginRegistrantException} will be thrown.
+   * </ul>
+   */
   public static void startBackgroundIsolate(Context context, long callbackHandle) {
-    assert (backgroundExecutionContext == null);
-    backgroundExecutionContext = new BackgroundExecutionContext();
-    backgroundExecutionContext.startBackgroundIsolate(context, callbackHandle);
+    if (flutterBackgroundExecutor != null) {
+      Log.w(TAG, "Attempted to start a duplicate background isolate. Returning...");
+      return;
+    }
+    flutterBackgroundExecutor = new FlutterBackgroundExecutor();
+    flutterBackgroundExecutor.startBackgroundIsolate(context, callbackHandle);
   }
 
   /**
-   * Called once the Dart isolate ({@code backgroundFlutterView}) has finished initializing.
+   * Called once the Dart isolate ({@code flutterBackgroundExecutor}) has finished initializing.
    *
    * <p>Invoked by {@link AndroidAlarmManagerPlugin} when it receives the {@code
    * AlarmService.initialized} message. Processes all alarm events that came in while the isolate
    * was starting.
    */
-  static void onInitialized() {
+  /* package */ static void onInitialized() {
     Log.i(TAG, "AlarmService started!");
     synchronized (alarmQueue) {
       // Handle all the alarm events received before the Dart isolate was
       // initialized, then clear the queue.
       Iterator<Intent> i = alarmQueue.iterator();
       while (i.hasNext()) {
-        backgroundExecutionContext.executeDartCallbackInBackgroundIsolate(i.next(), null);
+        flutterBackgroundExecutor.executeDartCallbackInBackgroundIsolate(i.next(), null);
       }
       alarmQueue.clear();
     }
@@ -74,12 +89,21 @@ public class AlarmService extends JobIntentService {
    * background Dart isolate, preparing it to receive Dart callback tasks requests.
    */
   public static void setCallbackDispatcher(Context context, long callbackHandle) {
-    BackgroundExecutionContext.setCallbackDispatcher(context, callbackHandle);
+    FlutterBackgroundExecutor.setCallbackDispatcher(context, callbackHandle);
   }
 
+  /**
+   * Sets the {@link PluginRegistrantCallback} used to register the plugins used by an application
+   * with the newly spawned background isolate.
+   *
+   * <p>This should be invoked in {@link Application.onCreate} with {@link
+   * GeneratedPluginRegistrant} in applications using the V1 embedding API in order to use other
+   * plugins in the background isolate. For applications using the V2 embedding API, it is not
+   * necessary to set a {@link PluginRegistrantCallback} as plugins are registered automatically.
+   */
   public static void setPluginRegistrant(PluginRegistrantCallback callback) {
-    // Indirectly set in BackgroundExecutionContext for backwards compatibility.
-    BackgroundExecutionContext.setPluginRegistrant(callback);
+    // Indirectly set in FlutterBackgroundExecutor for backwards compatibility.
+    FlutterBackgroundExecutor.setPluginRegistrant(callback);
   }
 
   private static void scheduleAlarm(
@@ -152,6 +176,7 @@ public class AlarmService extends JobIntentService {
     }
   }
 
+  /** Schedules a one-shot alarm to be executed once in the future. */
   public static void setOneShot(Context context, AndroidAlarmManagerPlugin.OneShotRequest request) {
     final boolean repeating = false;
     scheduleAlarm(
@@ -168,6 +193,7 @@ public class AlarmService extends JobIntentService {
         request.callbackHandle);
   }
 
+  /** Schedules a periodic alarm to be executed repeatedly in the future. */
   public static void setPeriodic(
       Context context, AndroidAlarmManagerPlugin.PeriodicRequest request) {
     final boolean repeating = true;
@@ -187,6 +213,7 @@ public class AlarmService extends JobIntentService {
         request.callbackHandle);
   }
 
+  /** Cancels an alarm with ID {@code requestCode}. */
   public static void cancel(Context context, int requestCode) {
     // Clear the alarm if it was set to be rescheduled after reboots.
     clearPersistentAlarm(context, requestCode);
@@ -316,11 +343,11 @@ public class AlarmService extends JobIntentService {
   @Override
   public void onCreate() {
     super.onCreate();
-    if (backgroundExecutionContext == null) {
-      backgroundExecutionContext = new BackgroundExecutionContext();
+    if (flutterBackgroundExecutor == null) {
+      flutterBackgroundExecutor = new FlutterBackgroundExecutor();
     }
     Context context = getApplicationContext();
-    backgroundExecutionContext.startBackgroundIsolate(context);
+    flutterBackgroundExecutor.startBackgroundIsolate(context);
   }
 
   /**
@@ -341,7 +368,7 @@ public class AlarmService extends JobIntentService {
     // If we're in the middle of processing queued alarms, add the incoming
     // intent to the queue and return.
     synchronized (alarmQueue) {
-      if (!backgroundExecutionContext.isRunning()) {
+      if (!flutterBackgroundExecutor.isRunning()) {
         Log.i(TAG, "AlarmService has not yet started.");
         alarmQueue.add(intent);
         return;
@@ -356,7 +383,7 @@ public class AlarmService extends JobIntentService {
             new Runnable() {
               @Override
               public void run() {
-                backgroundExecutionContext.executeDartCallbackInBackgroundIsolate(intent, latch);
+                flutterBackgroundExecutor.executeDartCallbackInBackgroundIsolate(intent, latch);
               }
             });
 
