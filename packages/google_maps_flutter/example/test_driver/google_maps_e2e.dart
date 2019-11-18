@@ -363,9 +363,17 @@ void main() {
     await mapController
         .moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, padding));
     await tester.pumpAndSettle();
+    await Future<dynamic>.delayed(const Duration(seconds: 3));
 
     final LatLngBounds secondVisibleRegion =
         await mapController.getVisibleRegion();
+
+    print('first visible region: $firstVisibleRegion');
+    print('southWest: $southWest');
+    print('northEast: $northEast');
+    print('latLngBounds $latLngBounds');
+    print('second visible region: $secondVisibleRegion');
+    print('new center: $newCenter');
 
     expect(secondVisibleRegion, isNotNull);
     expect(secondVisibleRegion.southwest, isNotNull);
