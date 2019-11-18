@@ -1,3 +1,7 @@
+## 0.10.3+3
+
+* Add DartDocs and unit tests.
+
 ## 0.10.3+2
 
 * Update the homepage to point to the new plugin location
