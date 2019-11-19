@@ -29,19 +29,13 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
         .querySelector(_kClientIdMetaSelector)
         ?.getAttribute(_kClientIdAttributeName);
 
-    _isGapiInitialized =
-        gapi.inject(gapiUrl).then((_) => gapi.init()).then((_) {
-      isInitialized = true;
-    });
+    _isGapiInitialized = gapi.inject(gapiUrl).then((_) => gapi.init());
   }
 
   Future<void> _isGapiInitialized;
 
   @visibleForTesting
-  Future<void> get isInitializing => _isGapiInitialized;
-
-  @visibleForTesting
-  bool isInitialized = false;
+  Future<void> get initialized => _isGapiInitialized;
 
   String _autoDetectedClientId;
   FutureOr<auth2.GoogleUser> _lastSeenUser;
@@ -69,7 +63,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
         'Check https://developers.google.com/identity/protocols/googlescopes '
         'for a list of valid OAuth 2.0 scopes.');
 
-    await _isGapiInitialized;
+    await initialized;
 
     final auth2.GoogleAuth auth = auth2.init(auth2.ClientConfig(
       hosted_domain: hostedDomain,
@@ -97,14 +91,14 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
   @override
   Future<GoogleSignInUserData> signInSilently() async {
-    await _isGapiInitialized;
+    await initialized;
 
     return gapiUserToPluginUserData(await _lastSeenUser);
   }
 
   @override
   Future<GoogleSignInUserData> signIn() async {
-    await _isGapiInitialized;
+    await initialized;
 
     return gapiUserToPluginUserData(await auth2.getAuthInstance().signIn());
   }
@@ -112,7 +106,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   @override
   Future<GoogleSignInTokenData> getTokens(
       {@required String email, bool shouldRecoverAuth}) async {
-    await _isGapiInitialized;
+    await initialized;
 
     final auth2.GoogleUser currentUser =
         auth2.getAuthInstance()?.currentUser?.get();
@@ -124,14 +118,14 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
   @override
   Future<void> signOut() async {
-    await _isGapiInitialized;
+    await initialized;
 
     return auth2.getAuthInstance().signOut();
   }
 
   @override
   Future<void> disconnect() async {
-    await _isGapiInitialized;
+    await initialized;
 
     final auth2.GoogleUser currentUser =
         auth2.getAuthInstance()?.currentUser?.get();
@@ -140,7 +134,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
   @override
   Future<bool> isSignedIn() async {
-    await _isGapiInitialized;
+    await initialized;
 
     final auth2.GoogleUser currentUser =
         auth2.getAuthInstance()?.currentUser?.get();
@@ -149,7 +143,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
   @override
   Future<void> clearAuthCache({String token}) async {
-    await _isGapiInitialized;
+    await initialized;
 
     _lastSeenUser = null;
     return auth2.getAuthInstance().disconnect();

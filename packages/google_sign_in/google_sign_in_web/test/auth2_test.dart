@@ -29,7 +29,7 @@ void main() {
 
   setUp(() async {
     plugin = GoogleSignInPlugin();
-    await plugin.isInitializing;
+    await plugin.initialized;
   });
 
   test('Init requires clientId', () async {

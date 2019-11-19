@@ -26,11 +26,11 @@ void main() {
       isNotNull,
       reason: 'Mock script should be injected',
     );
-    await plugin.isInitializing;
+    await plugin.initialized;
     expect(
-      plugin.isInitialized,
-      isTrue,
-      reason: 'Plugin is initialized after awaiting the isInitializing future',
+      plugin.initialized,
+      completes,
+      reason: 'The plugin should complete the future once initialized.',
     );
   });
 }
