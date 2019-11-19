@@ -14,8 +14,9 @@ import 'package:e2e/e2e.dart';
 import 'google_map_inspector.dart';
 
 const LatLng _kInitialMapCenter = LatLng(0, 0);
+const double _kInitialZoomLevel = 11;
 const CameraPosition _kInitialCameraPosition =
-    CameraPosition(target: _kInitialMapCenter);
+    CameraPosition(target: _kInitialMapCenter, zoom: _kInitialZoomLevel);
 
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
@@ -320,14 +321,13 @@ void main() {
         },
       ),
     ));
-    await tester.pumpAndSettle();
     // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
     // initialization. https://github.com/flutter/flutter/issues/24806
     // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
     // still being investigated.
     // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
     // https://github.com/flutter/flutter/issues/27550
-    await Future<dynamic>.delayed(const Duration(seconds: 3));
+    await tester.pumpAndSettle(const Duration(seconds: 3));
     final GoogleMapController mapController =
         await mapControllerCompleter.future;
 
@@ -363,7 +363,6 @@ void main() {
     await mapController
         .moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, padding));
     await tester.pumpAndSettle();
-    await Future<dynamic>.delayed(const Duration(seconds: 3));
 
     final LatLngBounds secondVisibleRegion =
         await mapController.getVisibleRegion();
