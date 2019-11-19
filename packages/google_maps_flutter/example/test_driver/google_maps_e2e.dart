@@ -14,7 +14,7 @@ import 'package:e2e/e2e.dart';
 import 'google_map_inspector.dart';
 
 const LatLng _kInitialMapCenter = LatLng(0, 0);
-const double _kInitialZoomLevel = 11;
+const double _kInitialZoomLevel = 5;
 const CameraPosition _kInitialCameraPosition =
     CameraPosition(target: _kInitialMapCenter, zoom: _kInitialZoomLevel);
 
