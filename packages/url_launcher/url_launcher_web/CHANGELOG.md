@@ -1,3 +1,7 @@
+# 0.0.3
+
+- Update docs and pubspec.
+
 # 0.0.2
 
 - Switch to using `url_launcher_platform_interface`.

@@ -4,11 +4,15 @@ The web implementation of [`url_launcher`][1].
 
 ## Usage
 
+### Import the package
 To use this plugin in your Flutter Web app, simply add it as a dependency in
-your pubspec using a `git` dependency. This is only temporary: in the future
-we hope to make this package an "endorsed" implementation of `url_launcher`,
-so that it is automatically included in your Flutter Web app when you depend
-on `package:url_launcher`.
+your pubspec alongside the base `url_launcher` plugin.
+
+_(This is only temporary: in the future we hope to make this package an
+"endorsed" implementation of `url_launcher`, so that it is automatically
+included in your Flutter Web app when you depend on `package:url_launcher`.)_
+
+This is what the above means to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
@@ -19,7 +23,8 @@ dependencies:
       path: packages/url_launcher/url_launcher_web
 ```
 
+### Use the plugin
 Once you have the `url_launcher_web` dependency in your pubspec, you should
 be able to use `package:url_launcher` as normal.
 
-[1]: ../url_launcher
+[1]: ../url_launcher/url_launcher
