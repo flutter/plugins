@@ -15,12 +15,12 @@ included in your Flutter Web app when you depend on `package:url_launcher`.)_
 This is what the above means to your `pubspec.yaml`:
 
 ```yaml
+...
 dependencies:
+  ...
   url_launcher: ^5.1.4
-  url_launcher_web:
-    git:
-      url: git://github.com/flutter/plugins.git
-      path: packages/url_launcher/url_launcher_web
+  url_launcher_web: ^0.1.0
+  ...
 ```
 
 ### Use the plugin
