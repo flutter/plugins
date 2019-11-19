@@ -9,9 +9,6 @@ import 'package:flutter/widgets.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import '../../billing_client_wrappers.dart';
-import '../../billing_client_wrappers.dart';
-import '../../billing_client_wrappers.dart';
-import '../../billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
 import 'product_details.dart';
 
@@ -258,9 +255,8 @@ class GooglePlayConnection
     }
     final List<Future<PurchaseDetails>> purchases =
         resultWrapper.purchasesList.map((PurchaseWrapper purchase) {
-      return _maybeAutoConsumePurchase(PurchaseDetails.fromPurchase(purchase)
-        ..status = _buildPurchaseStatus(purchase.purchaseState)
-        ..error = error);
+      return _maybeAutoConsumePurchase(
+          PurchaseDetails.fromPurchase(purchase)..error = error);
     }).toList();
     if (!purchases.isEmpty) {
       return Future.wait(purchases);
@@ -288,6 +284,7 @@ class GooglePlayConnection
         await instance.consumePurchase(purchaseDetails);
     final BillingResponse consumedResponse = billingResult.responseCode;
     if (consumedResponse != BillingResponse.ok) {
+      purchaseDetails.status = PurchaseStatus.error;
       purchaseDetails.error = IAPError(
         source: IAPSource.GooglePlay,
         code: kConsumptionFailedErrorCode,
@@ -295,8 +292,6 @@ class GooglePlayConnection
         details: billingResult.debugMessage,
       );
     }
-    purchaseDetails.status = _buildPurchaseStatus(
-        purchaseDetails.billingClientPurchase.purchaseState);
     _productIdsToConsume.remove(purchaseDetails.productID);
 
     return purchaseDetails;

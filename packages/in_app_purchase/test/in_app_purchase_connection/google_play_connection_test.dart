@@ -505,7 +505,7 @@ void main() {
           value: buildBillingResultMap(expectedBillingResultForConsume),
           additionalStepBeforeReturn: (dynamic args) {
             String purchaseToken = args['purchaseToken'];
-            consumeCompleter.complete((purchaseToken));
+            consumeCompleter.complete(purchaseToken);
           });
 
       Completer completer = Completer();

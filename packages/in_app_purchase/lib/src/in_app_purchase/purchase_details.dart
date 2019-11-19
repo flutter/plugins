@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/purchase_wrapper.dart';
+import 'package:in_app_purchase/src/store_kit_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_payment_transaction_wrappers.dart';
 import './in_app_purchase_connection.dart';
 import './product_details.dart';
@@ -190,7 +191,8 @@ class PurchaseDetails {
             : null,
         this.skPaymentTransaction = transaction,
         this.billingClientPurchase = null {
-    this.status = PurchaseStatus.pending;
+    this.status = SKTransactionStatusConverter()
+        .toPurchaseStatus(transaction.transactionState);
     _platform = _kPlatformIOS;
   }
 
@@ -205,7 +207,8 @@ class PurchaseDetails {
         this.transactionDate = purchase.purchaseTime.toString(),
         this.skPaymentTransaction = null,
         this.billingClientPurchase = purchase {
-    this.status = PurchaseStatus.pending;
+    this.status =
+        PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState);
     _platform = _kPlatformAndroid;
   }
 }
