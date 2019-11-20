@@ -8,6 +8,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter/scheduler.dart';
 
 /// Controls play and pause of [controller].
 ///
@@ -28,7 +29,7 @@ class VideoPlayPause extends StatefulWidget {
 class _VideoPlayPauseState extends State<VideoPlayPause> {
   _VideoPlayPauseState() {
     listener = () {
-      setState(() {});
+      SchedulerBinding.instance.addPostFrameCallback((_) => setState(() {}));
     };
   }
 
@@ -48,8 +49,11 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
 
   @override
   void deactivate() {
-    controller.setVolume(0.0);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+          controller.setVolume(0.0);
     controller.removeListener(listener);
+    });
+
     super.deactivate();
   }
 
