@@ -1,3 +1,7 @@
+## 0.3.1+4
+
+* Update and migrate iOS example project.
+
 ## 0.3.1+3
 
 * Remove AndroidX warning.

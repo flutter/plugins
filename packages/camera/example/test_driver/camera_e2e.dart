@@ -200,4 +200,39 @@ void main() {
 
     expect(duration, lessThan(recordingTime - timePaused));
   }, skip: !Platform.isAndroid);
+
+  testWidgets(
+    'Android image streaming',
+    (WidgetTester tester) async {
+      final List<CameraDescription> cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        return;
+      }
+
+      final CameraController controller = CameraController(
+        cameras[0],
+        ResolutionPreset.low,
+        enableAudio: false,
+      );
+
+      await controller.initialize();
+      bool _isDetecting = false;
+
+      await controller.startImageStream((CameraImage image) {
+        if (_isDetecting) return;
+
+        _isDetecting = true;
+
+        expectLater(image, isNotNull).whenComplete(() => _isDetecting = false);
+      });
+
+      expect(controller.value.isStreamingImages, true);
+
+      sleep(const Duration(milliseconds: 500));
+
+      await controller.stopImageStream();
+      controller.dispose();
+    },
+    skip: !Platform.isAndroid,
+  );
 }

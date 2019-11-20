@@ -32,7 +32,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         _platformCallbacksHandler.onJavaScriptChannelMessage(channel, message);
         return true;
       case 'navigationRequest':
-        return _platformCallbacksHandler.onNavigationRequest(
+        return await _platformCallbacksHandler.onNavigationRequest(
           url: call.arguments['url'],
           isForMainFrame: call.arguments['isForMainFrame'],
         );

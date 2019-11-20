@@ -1,3 +1,11 @@
+## 0.6.2
+
+* iOS: Fixes an issue where picking conent from Gallery would result in a crash on iOS 13.
+
+## 0.6.1+11
+
+* Stability and Maintainability: update documentations, add unit tests.
+
 ## 0.6.1+10
 
 * iOS: Fix image orientation problems when scaling images.
