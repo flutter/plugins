@@ -71,17 +71,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
-      Map<String, Object> postParameters = (Map<String, Object>) params.get("initialPostParameters");
-      if(postParameters != null && !postParameters.isEmpty()) {
-        try {
-          webView.postUrl(url, initialParametersToString(postParameters).getBytes());
-        } catch (UnsupportedEncodingException e) {
-          Log.e(TAG, "" + e.getMessage(), e);
-        }
-      } else {
-        webView.loadUrl(url);
-      }
-
+      webView.loadUrl(url);
     }
   }
 
@@ -115,6 +105,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     switch (methodCall.method) {
       case "loadUrl":
         loadUrl(methodCall, result);
+        break;
+      case "postUrl":
+        postUrl(methodCall,result);
         break;
       case "updateSettings":
         updateSettings(methodCall, result);
@@ -175,6 +168,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       headers = Collections.emptyMap();
     }
     webView.loadUrl(url, headers);
+    result.success(null);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void postUrl(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    String url = (String) request.get("url");
+
+    byte[] params = (byte[]) request.get("params");
+
+    webView.postUrl(url, params);
+    
     result.success(null);
   }
 

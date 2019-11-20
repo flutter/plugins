@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -59,6 +60,18 @@ abstract class WebViewPlatformController {
   ) {
     throw UnimplementedError(
         "WebView loadUrl is not implemented on the current platform");
+  }
+
+  /// Post to the specified URL.
+  ///
+  /// `url` must not be null
+  /// `params` must not be null
+  ///
+  /// `params` have to be ascii encoded
+  /// Throws an ArgumentError if `url` is not a valid URL string.
+  Future<void> postUrl(String url, Uint8List params) {
+    throw UnimplementedError(
+        "Webview postUrl is not implemented on the current platform");
   }
 
   /// Updates the webview settings.
@@ -260,7 +273,6 @@ class WebSettings {
 class CreationParams {
   CreationParams({
     this.initialUrl,
-    this.initialPostParameters,
     this.webSettings,
     this.javascriptChannelNames,
     this.userAgent,
@@ -272,9 +284,6 @@ class CreationParams {
   ///
   /// When null the webview will be created without loading any page.
   final String initialUrl;
-
-  /// The initial POST parameters used on initial URL load.
-  final Map initialPostParameters;
 
   /// The initial [WebSettings] for the new webview.
   ///
@@ -304,7 +313,7 @@ class CreationParams {
 
   @override
   String toString() {
-    return '$runtimeType(initialUrl: $initialUrl, initialPostParameters: $initialPostParameters, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent)';
+    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent)';
   }
 }
 

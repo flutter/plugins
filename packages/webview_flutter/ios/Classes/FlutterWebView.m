@@ -5,6 +5,7 @@
 #import "FlutterWebView.h"
 #import "FLTWKNavigationDelegate.h"
 #import "JavaScriptChannelHandler.h"
+#import <os/log.h>
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
@@ -83,13 +84,7 @@
       
       NSString* initialUrl = args[@"initialUrl"];
       if ([initialUrl isKindOfClass:[NSString class]]) {
-          NSMutableDictionary<NSString *, NSObject*>* initialPostParameters = args[@"initialPostParameters"];
-          if(initialPostParameters == nil || initialPostParameters == (id)[NSNull null]) {
-              [self loadUrl:initialUrl];
-          } else {
-              [self loadUrlPost:initialUrl withHeaders:[NSMutableDictionary dictionary] initialParams:initialPostParameters];
-          }
-          
+          [self loadUrl:initialUrl];
       }
   }
   return self;
@@ -104,6 +99,8 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"postUrl"]) {
+    [self postUrl:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -346,38 +343,28 @@
   return true;
 }
 
-- (bool)loadUrlPost:(NSString*)url withHeaders:(NSDictionary<NSString*, NSString*>*)headers initialParams:(NSDictionary<NSString*, NSObject*>*)params {
+- (bool) postUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSDictionary<NSString*, NSObject*>* args = [call arguments];
     
+    NSString* url = (NSString*)args[@"url"];
     NSURL* nsUrl = [NSURL URLWithString:url];
     if (!nsUrl) {
         return false;
     }
 
-    NSLog(@"got params %@", params);
-    NSMutableString *resultString = [NSMutableString string];
-    for (NSString* key in [params allKeys]){
-        if ([resultString length]>0)
-            [resultString appendString:@"&"];
-        [resultString appendFormat:@"%@=%@", key, [params objectForKey:key]];
-    }
-    
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
-
-
-    NSData *postData = [resultString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
-    NSString *contentLength = [NSString stringWithFormat:@"%d", postData.length];
+    FlutterStandardTypedData* postData = (FlutterStandardTypedData*)args[@"params"];
+    NSString* contentLength = @(postData.data.length).stringValue;
     
-
     [request setHTTPMethod:@"POST"];
-    [request setHTTPBody:postData];
-    [request setValue:contentLength forHTTPHeaderField:@"Content-Length"];
+    [request setHTTPBody:postData.data];
+    
+    [request setValue:contentLength  forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
 
-    
-
-    [request setAllHTTPHeaderFields:headers];
     [_webView loadRequest:request];
     return true;
+
 }
 
 - (void)registerJavaScriptChannels:(NSSet*)channelNames

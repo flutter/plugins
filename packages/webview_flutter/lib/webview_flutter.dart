@@ -134,7 +134,6 @@ class WebView extends StatefulWidget {
     Key key,
     this.onWebViewCreated,
     this.initialUrl,
-    this.initialPostParameters,
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -197,9 +196,6 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String initialUrl;
-
-  /// The initial POST parameters used on initial URL load.
-  final Map initialPostParameters;
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -364,7 +360,6 @@ class _WebViewState extends State<WebView> {
 CreationParams _creationParamsfromWidget(WebView widget) {
   return CreationParams(
     initialUrl: widget.initialUrl,
-    initialPostParameters: widget.initialPostParameters,
     webSettings: _webSettingsFromWidget(widget),
     javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
     userAgent: widget.userAgent,
@@ -506,6 +501,20 @@ class WebViewController {
     assert(url != null);
     _validateUrlString(url);
     return _webViewPlatformController.loadUrl(url, headers);
+  }
+
+  /// Post to the specified URL.
+  ///
+  /// `url` must not be null
+  /// `params` must not be null
+  ///
+  /// `params` have to be ascii encoded
+  /// Throws an ArgumentError if `url` is not a valid URL string.
+  Future<void> postUrl(String url, List<int> params) async {
+    assert(url != null);
+    assert(params != null);
+    _validateUrlString(url);
+    return _webViewPlatformController.postUrl(url, params);
   }
 
   /// Accessor to the current URL that the WebView is displaying.
