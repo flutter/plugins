@@ -7,29 +7,25 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:e2e/e2e.dart';
 
 import 'google_map_inspector.dart';
-import 'test_widgets.dart';
 
 const LatLng _kInitialMapCenter = LatLng(0, 0);
+const double _kInitialZoomLevel = 5;
 const CameraPosition _kInitialCameraPosition =
-    CameraPosition(target: _kInitialMapCenter);
+    CameraPosition(target: _kInitialMapCenter, zoom: _kInitialZoomLevel);
 
 void main() {
-  final Completer<String> allTestsCompleter = Completer<String>();
-  enableFlutterDriverExtension(handler: (_) => allTestsCompleter.future);
+  E2EWidgetsFlutterBinding.ensureInitialized();
 
-  tearDownAll(() => allTestsCompleter.complete(null));
-
-  test('testCompassToggle', () async {
+  testWidgets('testCompassToggle', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
-
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -48,7 +44,7 @@ void main() {
     bool compassEnabled = await inspector.isCompassEnabled();
     expect(compassEnabled, false);
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -64,12 +60,12 @@ void main() {
     expect(compassEnabled, true);
   });
 
-  test('testMapToolbarToggle', () async {
+  testWidgets('testMapToolbarToggle', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -88,7 +84,7 @@ void main() {
     bool mapToolbarEnabled = await inspector.isMapToolbarEnabled();
     expect(mapToolbarEnabled, false);
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -104,7 +100,7 @@ void main() {
     expect(mapToolbarEnabled, Platform.isAndroid);
   });
 
-  test('updateMinMaxZoomLevels', () async {
+  testWidgets('updateMinMaxZoomLevels', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
@@ -112,7 +108,7 @@ void main() {
     const MinMaxZoomPreference initialZoomLevel = MinMaxZoomPreference(2, 4);
     const MinMaxZoomPreference finalZoomLevel = MinMaxZoomPreference(3, 8);
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -131,7 +127,7 @@ void main() {
     MinMaxZoomPreference zoomLevel = await inspector.getMinMaxZoomLevels();
     expect(zoomLevel, equals(initialZoomLevel));
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -147,12 +143,12 @@ void main() {
     expect(zoomLevel, equals(finalZoomLevel));
   });
 
-  test('testZoomGesturesEnabled', () async {
+  testWidgets('testZoomGesturesEnabled', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -171,7 +167,7 @@ void main() {
     bool zoomGesturesEnabled = await inspector.isZoomGesturesEnabled();
     expect(zoomGesturesEnabled, false);
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -187,12 +183,12 @@ void main() {
     expect(zoomGesturesEnabled, true);
   });
 
-  test('testRotateGesturesEnabled', () async {
+  testWidgets('testRotateGesturesEnabled', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -211,7 +207,7 @@ void main() {
     bool rotateGesturesEnabled = await inspector.isRotateGesturesEnabled();
     expect(rotateGesturesEnabled, false);
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -227,12 +223,12 @@ void main() {
     expect(rotateGesturesEnabled, true);
   });
 
-  test('testTiltGesturesEnabled', () async {
+  testWidgets('testTiltGesturesEnabled', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -251,7 +247,7 @@ void main() {
     bool tiltGesturesEnabled = await inspector.isTiltGesturesEnabled();
     expect(tiltGesturesEnabled, false);
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -267,12 +263,12 @@ void main() {
     expect(tiltGesturesEnabled, true);
   });
 
-  test('testScrollGesturesEnabled', () async {
+  testWidgets('testScrollGesturesEnabled', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -291,7 +287,7 @@ void main() {
     bool scrollGesturesEnabled = await inspector.isScrollGesturesEnabled();
     expect(scrollGesturesEnabled, false);
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -307,7 +303,7 @@ void main() {
     expect(scrollGesturesEnabled, true);
   });
 
-  test('testGetVisibleRegion', () async {
+  testWidgets('testGetVisibleRegion', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final LatLngBounds zeroLatLngBounds = LatLngBounds(
         southwest: const LatLng(0, 0), northeast: const LatLng(0, 0));
@@ -315,7 +311,7 @@ void main() {
     final Completer<GoogleMapController> mapControllerCompleter =
         Completer<GoogleMapController>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -325,16 +321,15 @@ void main() {
         },
       ),
     ));
-    final GoogleMapController mapController =
-        await mapControllerCompleter.future;
-
     // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
     // initialization. https://github.com/flutter/flutter/issues/24806
     // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
     // still being investigated.
     // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
     // https://github.com/flutter/flutter/issues/27550
-    await Future<dynamic>.delayed(const Duration(seconds: 3));
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+    final GoogleMapController mapController =
+        await mapControllerCompleter.future;
 
     final LatLngBounds firstVisibleRegion =
         await mapController.getVisibleRegion();
@@ -345,8 +340,12 @@ void main() {
     expect(firstVisibleRegion, isNot(zeroLatLngBounds));
     expect(firstVisibleRegion.contains(_kInitialMapCenter), isTrue);
 
-    const LatLng southWest = LatLng(60, 75);
-    const LatLng northEast = LatLng(65, 80);
+    // Making a new `LatLngBounds` about (10, 10) distance south west to the `firstVisibleRegion`.
+    // The size of the `LatLngBounds` is 10 by 10.
+    final LatLng southWest = LatLng(firstVisibleRegion.southwest.latitude - 20,
+        firstVisibleRegion.southwest.longitude - 20);
+    final LatLng northEast = LatLng(firstVisibleRegion.southwest.latitude - 10,
+        firstVisibleRegion.southwest.longitude - 10);
     final LatLng newCenter = LatLng(
       (northEast.latitude + southWest.latitude) / 2,
       (northEast.longitude + southWest.longitude) / 2,
@@ -363,6 +362,7 @@ void main() {
     final double padding = 0;
     await mapController
         .moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, padding));
+    await tester.pumpAndSettle(const Duration(seconds: 3));
 
     final LatLngBounds secondVisibleRegion =
         await mapController.getVisibleRegion();
@@ -376,12 +376,12 @@ void main() {
     expect(secondVisibleRegion.contains(newCenter), isTrue);
   });
 
-  test('testTraffic', () async {
+  testWidgets('testTraffic', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -401,12 +401,12 @@ void main() {
     expect(isTrafficEnabled, true);
   });
 
-  test('testMyLocationButtonToggle', () async {
+  testWidgets('testMyLocationButtonToggle', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -426,7 +426,7 @@ void main() {
     bool myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
     expect(myLocationButtonEnabled, true);
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -443,12 +443,13 @@ void main() {
     expect(myLocationButtonEnabled, false);
   });
 
-  test('testMyLocationButton initial value false', () async {
+  testWidgets('testMyLocationButton initial value false',
+      (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -470,12 +471,13 @@ void main() {
     expect(myLocationButtonEnabled, false);
   });
 
-  test('testMyLocationButton initial value true', () async {
+  testWidgets('testMyLocationButton initial value true',
+      (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -497,12 +499,12 @@ void main() {
     expect(myLocationButtonEnabled, true);
   });
 
-  test('testSetMapStyle valid Json String', () async {
+  testWidgets('testSetMapStyle valid Json String', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapController> controllerCompleter =
         Completer<GoogleMapController>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -519,12 +521,13 @@ void main() {
     await controller.setMapStyle(mapStyle);
   });
 
-  test('testSetMapStyle invalid Json String', () async {
+  testWidgets('testSetMapStyle invalid Json String',
+      (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapController> controllerCompleter =
         Completer<GoogleMapController>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -546,12 +549,12 @@ void main() {
     }
   });
 
-  test('testSetMapStyle null string', () async {
+  testWidgets('testSetMapStyle null string', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapController> controllerCompleter =
         Completer<GoogleMapController>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -566,12 +569,12 @@ void main() {
     await controller.setMapStyle(null);
   });
 
-  test('testGetLatLng', () async {
+  testWidgets('testGetLatLng', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapController> controllerCompleter =
         Completer<GoogleMapController>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -590,7 +593,7 @@ void main() {
     // still being investigated.
     // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
     // https://github.com/flutter/flutter/issues/27550
-    await Future<dynamic>.delayed(const Duration(seconds: 3));
+    await tester.pumpAndSettle(const Duration(seconds: 3));
 
     final LatLngBounds visibleRegion = await controller.getVisibleRegion();
     final LatLng topLeft =
@@ -603,12 +606,12 @@ void main() {
     expect(topLeft, northWest);
   });
 
-  test('testScreenCoordinate', () async {
+  testWidgets('testScreenCoordinate', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapController> controllerCompleter =
         Completer<GoogleMapController>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -618,7 +621,6 @@ void main() {
         },
       ),
     ));
-
     final GoogleMapController controller = await controllerCompleter.future;
 
     // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
@@ -627,7 +629,7 @@ void main() {
     // still being investigated.
     // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
     // https://github.com/flutter/flutter/issues/27550
-    await Future<dynamic>.delayed(const Duration(seconds: 3));
+    await tester.pumpAndSettle(const Duration(seconds: 3));
 
     final LatLngBounds visibleRegion = await controller.getVisibleRegion();
     final LatLng northWest = LatLng(
@@ -636,11 +638,10 @@ void main() {
     );
     final ScreenCoordinate topLeft =
         await controller.getScreenCoordinate(northWest);
-
     expect(topLeft, const ScreenCoordinate(x: 0, y: 0));
   });
 
-  test('testResizeWidget', () async {
+  testWidgets('testResizeWidget', (WidgetTester tester) async {
     final Completer<GoogleMapController> controllerCompleter =
         Completer<GoogleMapController>();
     final GoogleMap map = GoogleMap(
@@ -649,14 +650,14 @@ void main() {
         controllerCompleter.complete(controller);
       },
     );
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
         textDirection: TextDirection.ltr,
         child: MaterialApp(
             home: Scaffold(
                 body: SizedBox(height: 100, width: 100, child: map)))));
     final GoogleMapController controller = await controllerCompleter.future;
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
         textDirection: TextDirection.ltr,
         child: MaterialApp(
             home: Scaffold(
@@ -668,7 +669,7 @@ void main() {
     // still being investigated.
     // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
     // https://github.com/flutter/flutter/issues/27550
-    await Future<dynamic>.delayed(const Duration(seconds: 3));
+    await tester.pumpAndSettle(const Duration(seconds: 3));
 
     // Simple call to make sure that the app hasn't crashed.
     final LatLngBounds bounds1 = await controller.getVisibleRegion();
