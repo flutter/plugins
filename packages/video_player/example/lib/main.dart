@@ -50,8 +50,8 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
   @override
   void deactivate() {
     SchedulerBinding.instance.addPostFrameCallback((_) {
-          controller.setVolume(0.0);
-    controller.removeListener(listener);
+      controller.setVolume(0.0);
+      controller.removeListener(listener);
     });
 
     super.deactivate();
