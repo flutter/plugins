@@ -360,9 +360,13 @@ void main() {
     // TODO(iskakaushik): non-zero padding is needed for some device configurations
     // https://github.com/flutter/flutter/issues/30575
     final double padding = 0;
-    await mapController
+    // await mapController
+    //     .moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, padding));
+    await tester.runAsync<dynamic>((){
+      return mapController
         .moveCamera(CameraUpdate.newLatLngBounds(latLngBounds, padding));
-    await tester.pumpAndSettle();
+    });
+    // await tester.pumpAndSettle();
 
     final LatLngBounds secondVisibleRegion =
         await mapController.getVisibleRegion();
