@@ -367,13 +367,6 @@ void main() {
     final LatLngBounds secondVisibleRegion =
         await mapController.getVisibleRegion();
 
-    print('first visible region: $firstVisibleRegion');
-    print('southWest: $southWest');
-    print('northEast: $northEast');
-    print('latLngBounds $latLngBounds');
-    print('second visible region: $secondVisibleRegion');
-    print('new center: $newCenter');
-
     expect(secondVisibleRegion, isNotNull);
     expect(secondVisibleRegion.southwest, isNotNull);
     expect(secondVisibleRegion.northeast, isNotNull);

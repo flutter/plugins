@@ -1,5 +1,6 @@
 name: e2e_example
 description: Demonstrates how to use the e2e plugin.
+version: 0.0.1
 publish_to: 'none'
 
 environment:
