@@ -5,31 +5,29 @@
 import 'dart:async';
 
 import 'dart:io';
-import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:e2e/e2e.dart';
 
 void main() {
-  final Completer<String> allTestsCompleter = Completer<String>();
-  enableFlutterDriverExtension(handler: (_) => allTestsCompleter.future);
-  tearDownAll(() => allTestsCompleter.complete(null));
+  E2EWidgetsFlutterBinding.ensureInitialized();
 
-  test('getTemporaryDirectory', () async {
+  testWidgets('getTemporaryDirectory', (WidgetTester tester) async {
     final Directory result = await getTemporaryDirectory();
     _verifySampleFile(result, 'temporaryDirectory');
   });
 
-  test('getApplicationDocumentsDirectory', () async {
+  testWidgets('getApplicationDocumentsDirectory', (WidgetTester tester) async {
     final Directory result = await getApplicationDocumentsDirectory();
     _verifySampleFile(result, 'applicationDocuments');
   });
 
-  test('getApplicationSupportDirectory', () async {
+  testWidgets('getApplicationSupportDirectory', (WidgetTester tester) async {
     final Directory result = await getApplicationSupportDirectory();
     _verifySampleFile(result, 'applicationSupport');
   });
 
-  test('getLibraryDirectory', () async {
+  testWidgets('getLibraryDirectory', (WidgetTester tester) async {
     if (Platform.isIOS) {
       final Directory result = await getLibraryDirectory();
       _verifySampleFile(result, 'library');
@@ -39,7 +37,7 @@ void main() {
     }
   });
 
-  test('getExternalStorageDirectory', () async {
+  testWidgets('getExternalStorageDirectory', (WidgetTester tester) async {
     if (Platform.isIOS) {
       final Future<Directory> result = getExternalStorageDirectory();
       expect(result, throwsA(isInstanceOf<UnsupportedError>()));
@@ -49,7 +47,7 @@ void main() {
     }
   });
 
-  test('getExternalCacheDirectories', () async {
+  testWidgets('getExternalCacheDirectories', (WidgetTester tester) async {
     if (Platform.isIOS) {
       final Future<List<Directory>> result = getExternalCacheDirectories();
       expect(result, throwsA(isInstanceOf<UnsupportedError>()));

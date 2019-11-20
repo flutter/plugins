@@ -1,5 +1,10 @@
+## 1.4.4
+
+* Update driver tests in the example app to e2e tests.
+
 ## 1.4.3
 
+* Update driver tests in the example app to e2e tests.
 * Add missing DartDocs and a lint to prevent further regressions.
 
 ## 1.4.2

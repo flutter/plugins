@@ -1,3 +1,7 @@
+## 0.5.21+12
+
+* Update driver tests in the example app to e2e tests.
+
 ## 0.5.21+11
 
 * Define clang module for iOS, fix analyzer warnings.
