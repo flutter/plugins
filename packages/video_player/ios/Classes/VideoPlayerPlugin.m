@@ -495,10 +495,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       [_players removeObjectForKey:@(textureId)];
       // If the Flutter contains https://github.com/flutter/engine/pull/12695,
       // the `player` is disposed via `onTextureUnregistered` at the right time.
-      // Without https://github.com/flutter/engine/pull/12695, there is no guarantee that the texture
-      // has completed the un-reregistration. It may leads a crash if we dispose the `player` before the
-      // texture is unregistered. We add a dispatch_after hack to make sure the texture is
-      // unregistered before we dispose the `player`.
+      // Without https://github.com/flutter/engine/pull/12695, there is no guarantee that the
+      // texture has completed the un-reregistration. It may leads a crash if we dispose the
+      // `player` before the texture is unregistered. We add a dispatch_after hack to make sure the
+      // texture is unregistered before we dispose the `player`.
       //
       // TODO(cyanglaz): Remove this dispatch block when
       // https://github.com/flutter/flutter/commit/8159a9906095efc9af8b223f5e232cb63542ad0b is in
