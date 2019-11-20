@@ -1,3 +1,9 @@
+## 0.10.3+1
+
+* Dispose `FLTVideoPlayer` in `onTextureUnregistered` callback on iOS.
+* Add a temporary fix to dispose the `FLTVideoPlayer` with a delay to avoid race condition.
+* Updated the example app to include a new page that pop back after video is done playing.
+
 ## 0.10.3
 
 * Add support for the v2 Android embedding. This shouldn't impact existing
