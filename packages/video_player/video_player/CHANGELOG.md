@@ -1,6 +1,12 @@
-## 0.10.3+1
+## 0.10.3+2
 
 * Update the homepage to point to the new plugin location
+
+## 0.10.3+1
+
+* Dispose `FLTVideoPlayer` in `onTextureUnregistered` callback on iOS.
+* Add a temporary fix to dispose the `FLTVideoPlayer` with a delay to avoid race condition.
+* Updated the example app to include a new page that pop back after video is done playing.
 
 ## 0.10.3
 

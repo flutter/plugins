@@ -8,6 +8,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter/scheduler.dart';
 
 /// Controls play and pause of [controller].
 ///
@@ -28,7 +29,7 @@ class VideoPlayPause extends StatefulWidget {
 class _VideoPlayPauseState extends State<VideoPlayPause> {
   _VideoPlayPauseState() {
     listener = () {
-      setState(() {});
+      SchedulerBinding.instance.addPostFrameCallback((_) => setState(() {}));
     };
   }
 
@@ -48,8 +49,11 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
 
   @override
   void deactivate() {
-    controller.setVolume(0.0);
-    controller.removeListener(listener);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      controller.setVolume(0.0);
+      controller.removeListener(listener);
+    });
+
     super.deactivate();
   }
 
@@ -360,73 +364,152 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   }
 }
 
-void main() {
-  runApp(
-    MaterialApp(
-      home: DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Video player example'),
-            bottom: const TabBar(
-              isScrollable: true,
-              tabs: <Widget>[
-                Tab(
-                  icon: Icon(Icons.cloud),
-                  text: "Remote",
-                ),
-                Tab(icon: Icon(Icons.insert_drive_file), text: "Asset"),
-                Tab(icon: Icon(Icons.list), text: "List example"),
-              ],
-            ),
-          ),
-          body: TabBarView(
-            children: <Widget>[
-              SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.only(top: 20.0),
-                    ),
-                    const Text('With remote mp4'),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: NetworkPlayerLifeCycle(
-                        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-                        (BuildContext context,
-                                VideoPlayerController controller) =>
-                            AspectRatioVideo(controller),
-                      ),
-                    ),
-                  ],
-                ),
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        key: const ValueKey<String>('home_page'),
+        appBar: AppBar(
+          title: const Text('Video player example'),
+          actions: <Widget>[
+            IconButton(
+              key: const ValueKey<String>('push_tab'),
+              icon: const Icon(Icons.navigation),
+              onPressed: () {
+                Navigator.push<PlayerVideoAndPopPage>(
+                  context,
+                  MaterialPageRoute<PlayerVideoAndPopPage>(
+                      builder: (BuildContext context) =>
+                          PlayerVideoAndPopPage()),
+                );
+              },
+            )
+          ],
+          bottom: const TabBar(
+            isScrollable: true,
+            tabs: <Widget>[
+              Tab(
+                icon: Icon(Icons.cloud),
+                text: "Remote",
               ),
-              SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.only(top: 20.0),
-                    ),
-                    const Text('With assets mp4'),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: AssetPlayerLifeCycle(
-                          'assets/Butterfly-209.mp4',
-                          (BuildContext context,
-                                  VideoPlayerController controller) =>
-                              AspectRatioVideo(controller)),
-                    ),
-                  ],
-                ),
-              ),
-              AssetPlayerLifeCycle(
-                  'assets/Butterfly-209.mp4',
-                  (BuildContext context, VideoPlayerController controller) =>
-                      VideoInListOfCards(controller)),
+              Tab(icon: Icon(Icons.insert_drive_file), text: "Asset"),
+              Tab(icon: Icon(Icons.list), text: "List example"),
             ],
           ),
         ),
+        body: TabBarView(
+          children: <Widget>[
+            SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.only(top: 20.0),
+                  ),
+                  const Text('With remote mp4'),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    child: NetworkPlayerLifeCycle(
+                      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+                      (BuildContext context,
+                              VideoPlayerController controller) =>
+                          AspectRatioVideo(controller),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.only(top: 20.0),
+                  ),
+                  const Text('With assets mp4'),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    child: AssetPlayerLifeCycle(
+                        'assets/Butterfly-209.mp4',
+                        (BuildContext context,
+                                VideoPlayerController controller) =>
+                            AspectRatioVideo(controller)),
+                  ),
+                ],
+              ),
+            ),
+            AssetPlayerLifeCycle(
+                'assets/Butterfly-209.mp4',
+                (BuildContext context, VideoPlayerController controller) =>
+                    VideoInListOfCards(controller)),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      home: App(),
     ),
   );
+}
+
+class PlayerVideoAndPopPage extends StatefulWidget {
+  @override
+  _PlayerVideoAndPopPageState createState() => _PlayerVideoAndPopPageState();
+}
+
+class _PlayerVideoAndPopPageState extends State<PlayerVideoAndPopPage> {
+  VideoPlayerController _videoPlayerController;
+  bool startedPlaying = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _videoPlayerController =
+        VideoPlayerController.asset('assets/Butterfly-209.mp4');
+    _videoPlayerController.addListener(() {
+      if (startedPlaying && !_videoPlayerController.value.isPlaying) {
+        Navigator.pop(context);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    super.dispose();
+  }
+
+  Future<bool> started() async {
+    await _videoPlayerController.initialize();
+    await _videoPlayerController.play();
+    startedPlaying = true;
+    return true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      elevation: 0,
+      child: Center(
+        child: FutureBuilder<bool>(
+          future: started(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.data == true) {
+              return AspectRatio(
+                  aspectRatio: _videoPlayerController.value.aspectRatio,
+                  child: VideoPlayer(_videoPlayerController));
+            } else {
+              return const Text('waiting for video to load');
+            }
+          },
+        ),
+      ),
+    );
+  }
 }

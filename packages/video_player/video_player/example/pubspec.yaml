@@ -4,6 +4,8 @@ description: Demonstrates how to use the video_player plugin.
 dependencies:
   flutter:
     sdk: flutter
+  video_player:
+    path: ../
 
 dev_dependencies:
   flutter_test:
@@ -11,8 +13,7 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   e2e: "^0.2.0"
-  video_player:
-    path: ../
+  test: any
 
 flutter:
   uses-material-design: true
