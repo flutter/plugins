@@ -1,6 +1,7 @@
 ## 0.6.2+1
 
 * Android: Fix a crash when a non-image file is picked.
+* Android: Fix unwanted bitmap scaling.
 
 ## 0.6.2
 
