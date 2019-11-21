@@ -7,7 +7,7 @@ package io.flutter.plugins.pathprovider;
 import android.content.Context;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -35,7 +35,7 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-    channel = new MethodChannel(binding.getBinaryMessenger(), "plugins.flutter.io/path_provider");
+    channel = new MethodChannel(binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/path_provider");
     context = binding.getApplicationContext();
     channel.setMethodCallHandler(this);
   }
