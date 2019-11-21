@@ -9,7 +9,6 @@ import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebViewClient;
@@ -19,7 +18,6 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collections;
@@ -127,7 +125,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         loadUrl(methodCall, result);
         break;
       case "postUrl":
-        postUrl(methodCall,result);
+        postUrl(methodCall, result);
         break;
       case "updateSettings":
         updateSettings(methodCall, result);
@@ -170,10 +168,15 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
-  private static String initialParametersToString(Map<String, Object> parameters) throws UnsupportedEncodingException {
+  private static String initialParametersToString(Map<String, Object> parameters)
+      throws UnsupportedEncodingException {
     StringBuilder sb = new StringBuilder();
     for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-      sb.append(URLEncoder.encode(entry.getKey(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue().toString(), "UTF-8") + "&");
+      sb.append(
+          URLEncoder.encode(entry.getKey(), "UTF-8")
+              + "="
+              + URLEncoder.encode(entry.getValue().toString(), "UTF-8")
+              + "&");
     }
 
     return sb.deleteCharAt(sb.length() - 1).toString();
@@ -199,7 +202,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     byte[] params = (byte[]) request.get("params");
 
     webView.postUrl(url, params);
-    
+
     result.success(null);
   }
 

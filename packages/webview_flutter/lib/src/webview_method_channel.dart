@@ -60,7 +60,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   Future<void> postUrl(String url, Uint8List params) async {
     assert(url != null);
     assert(params != null);
-    return _channel.invokeMethod('postUrl', <String, dynamic> {
+    return _channel.invokeMethod('postUrl', <String, dynamic>{
       'url': url,
       'params': params,
     });

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #import "FlutterWebView.h"
+#import <os/log.h>
 #import "FLTWKNavigationDelegate.h"
 #import "JavaScriptChannelHandler.h"
-#import <os/log.h>
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
@@ -78,14 +78,14 @@
       [weakSelf onMethodCall:call result:result];
     }];
 
-      [self applySettings:settings];
-      // TODO(amirh): return an error if apply settings failed once it's possible to do so.
-      // https://github.com/flutter/flutter/issues/36228
-      
-      NSString* initialUrl = args[@"initialUrl"];
-      if ([initialUrl isKindOfClass:[NSString class]]) {
-          [self loadUrl:initialUrl];
-      }
+    [self applySettings:settings];
+    // TODO(amirh): return an error if apply settings failed once it's possible to do so.
+    // https://github.com/flutter/flutter/issues/36228
+
+    NSString* initialUrl = args[@"initialUrl"];
+    if ([initialUrl isKindOfClass:[NSString class]]) {
+      [self loadUrl:initialUrl];
+    }
   }
   return self;
 }
@@ -343,28 +343,27 @@
   return true;
 }
 
-- (bool) postUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
-    NSDictionary<NSString*, NSObject*>* args = [call arguments];
-    
-    NSString* url = (NSString*)args[@"url"];
-    NSURL* nsUrl = [NSURL URLWithString:url];
-    if (!nsUrl) {
-        return false;
-    }
+- (bool)postUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSDictionary<NSString*, NSObject*>* args = [call arguments];
 
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
-    FlutterStandardTypedData* postData = (FlutterStandardTypedData*)args[@"params"];
-    NSString* contentLength = @(postData.data.length).stringValue;
-    
-    [request setHTTPMethod:@"POST"];
-    [request setHTTPBody:postData.data];
-    
-    [request setValue:contentLength  forHTTPHeaderField:@"Content-Length"];
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+  NSString* url = (NSString*)args[@"url"];
+  NSURL* nsUrl = [NSURL URLWithString:url];
+  if (!nsUrl) {
+    return false;
+  }
 
-    [_webView loadRequest:request];
-    return true;
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
+  FlutterStandardTypedData* postData = (FlutterStandardTypedData*)args[@"params"];
+  NSString* contentLength = @(postData.data.length).stringValue;
 
+  [request setHTTPMethod:@"POST"];
+  [request setHTTPBody:postData.data];
+
+  [request setValue:contentLength forHTTPHeaderField:@"Content-Length"];
+  [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+
+  [_webView loadRequest:request];
+  return true;
 }
 
 - (void)registerJavaScriptChannels:(NSSet*)channelNames
