@@ -5,34 +5,16 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
-  // This will clear all open videos on the platform when a full restart is
-  // performed.
-  ..invokeMethod<void>('init');
+import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
-class DurationRange {
-  DurationRange(this.start, this.end);
-
-  final Duration start;
-  final Duration end;
-
-  double startFraction(Duration duration) {
-    return start.inMilliseconds / duration.inMilliseconds;
-  }
-
-  double endFraction(Duration duration) {
-    return end.inMilliseconds / duration.inMilliseconds;
-  }
-
-  @override
-  String toString() => '$runtimeType(start: $start, end: $end)';
-}
-
-enum VideoFormat { dash, hls, ss, other }
+// This will clear all open videos on the platform when a full restart is
+// performed.
+final VideoPlayerPlatform _ = VideoPlayerPlatform.instance..init();
 
 /// The duration, current position, buffering state, error state and settings
 /// of a [VideoPlayerController].
@@ -88,7 +70,9 @@ class VideoPlayerValue {
   final Size size;
 
   bool get initialized => duration != null;
+
   bool get hasError => errorDescription != null;
+
   double get aspectRatio => size != null ? size.width / size.height : 1.0;
 
   VideoPlayerValue copyWith({
@@ -129,8 +113,6 @@ class VideoPlayerValue {
         'errorDescription: $errorDescription)';
   }
 }
-
-enum DataSourceType { asset, network, file }
 
 /// Controls a platform video player, and provides updates when the state is
 /// changing.
@@ -198,74 +180,65 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
     _lifeCycleObserver.initialize();
     _creatingCompleter = Completer<void>();
-    Map<dynamic, dynamic> dataSourceDescription;
+
+    DataSource dataSourceDescription;
     switch (dataSourceType) {
       case DataSourceType.asset:
-        dataSourceDescription = <String, dynamic>{
-          'asset': dataSource,
-          'package': package
-        };
+        dataSourceDescription = DataSource(
+          sourceType: DataSourceType.asset,
+          asset: dataSource,
+          package: package,
+        );
         break;
       case DataSourceType.network:
-        dataSourceDescription = <String, dynamic>{
-          'uri': dataSource,
-          'formatHint': _videoFormatStringMap[formatHint]
-        };
+        dataSourceDescription = DataSource(
+          sourceType: DataSourceType.network,
+          uri: dataSource,
+          formatHint: formatHint,
+        );
         break;
       case DataSourceType.file:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource};
+        dataSourceDescription = DataSource(
+          sourceType: DataSourceType.file,
+          uri: dataSource,
+        );
         break;
     }
-    final Map<String, dynamic> response =
-        await _channel.invokeMapMethod<String, dynamic>(
-      'create',
-      dataSourceDescription,
-    );
-    _textureId = response['textureId'];
+    _textureId =
+        await VideoPlayerPlatform.instance.create(dataSourceDescription);
     _creatingCompleter.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
 
-    DurationRange toDurationRange(dynamic value) {
-      final List<dynamic> pair = value;
-      return DurationRange(
-        Duration(milliseconds: pair[0]),
-        Duration(milliseconds: pair[1]),
-      );
-    }
-
-    void eventListener(dynamic event) {
+    void eventListener(VideoEvent event) {
       if (_isDisposed) {
         return;
       }
 
-      final Map<dynamic, dynamic> map = event;
-      switch (map['event']) {
-        case 'initialized':
+      switch (event.eventType) {
+        case VideoEventType.initialized:
           value = value.copyWith(
-            duration: Duration(milliseconds: map['duration']),
-            size: Size(map['width']?.toDouble() ?? 0.0,
-                map['height']?.toDouble() ?? 0.0),
+            duration: event.duration,
+            size: event.size,
           );
           initializingCompleter.complete(null);
           _applyLooping();
           _applyVolume();
           _applyPlayPause();
           break;
-        case 'completed':
+        case VideoEventType.completed:
           value = value.copyWith(isPlaying: false, position: value.duration);
           _timer?.cancel();
           break;
-        case 'bufferingUpdate':
-          final List<dynamic> values = map['values'];
-          value = value.copyWith(
-            buffered: values.map<DurationRange>(toDurationRange).toList(),
-          );
+        case VideoEventType.bufferingUpdate:
+          value = value.copyWith(buffered: event.buffered);
           break;
-        case 'bufferingStart':
+        case VideoEventType.bufferingStart:
           value = value.copyWith(isBuffering: true);
           break;
-        case 'bufferingEnd':
+        case VideoEventType.bufferingEnd:
           value = value.copyWith(isBuffering: false);
+          break;
+        case VideoEventType.unknown:
           break;
       }
     }
@@ -276,14 +249,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       _timer?.cancel();
     }
 
-    _eventSubscription = _eventChannelFor(_textureId)
-        .receiveBroadcastStream()
+    _eventSubscription = VideoPlayerPlatform.instance
+        .videoEventsFor(_textureId)
         .listen(eventListener, onError: errorListener);
     return initializingCompleter.future;
-  }
-
-  EventChannel _eventChannelFor(int textureId) {
-    return EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
   }
 
   @override
@@ -294,10 +263,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         _isDisposed = true;
         _timer?.cancel();
         await _eventSubscription?.cancel();
-        await _channel.invokeMethod<void>(
-          'dispose',
-          <String, dynamic>{'textureId': _textureId},
-        );
+        await VideoPlayerPlatform.instance.dispose(_textureId);
       }
       _lifeCycleObserver.dispose();
     }
@@ -324,10 +290,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    _channel.invokeMethod<void>(
-      'setLooping',
-      <String, dynamic>{'textureId': _textureId, 'looping': value.isLooping},
-    );
+    VideoPlayerPlatform.instance.setLooping(_textureId, value.isLooping);
   }
 
   Future<void> _applyPlayPause() async {
@@ -335,10 +298,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
     if (value.isPlaying) {
-      await _channel.invokeMethod<void>(
-        'play',
-        <String, dynamic>{'textureId': _textureId},
-      );
+      VideoPlayerPlatform.instance.play(_textureId);
       _timer = Timer.periodic(
         const Duration(milliseconds: 500),
         (Timer timer) async {
@@ -354,10 +314,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       );
     } else {
       _timer?.cancel();
-      await _channel.invokeMethod<void>(
-        'pause',
-        <String, dynamic>{'textureId': _textureId},
-      );
+      VideoPlayerPlatform.instance.pause(_textureId);
     }
   }
 
@@ -365,10 +322,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    await _channel.invokeMethod<void>(
-      'setVolume',
-      <String, dynamic>{'textureId': _textureId, 'volume': value.volume},
-    );
+    VideoPlayerPlatform.instance.setVolume(_textureId, value.volume);
   }
 
   /// The position in the current video.
@@ -376,28 +330,20 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (_isDisposed) {
       return null;
     }
-    return Duration(
-      milliseconds: await _channel.invokeMethod<int>(
-        'position',
-        <String, dynamic>{'textureId': _textureId},
-      ),
-    );
+    return await VideoPlayerPlatform.instance.getPosition(_textureId);
   }
 
-  Future<void> seekTo(Duration moment) async {
+  Future<void> seekTo(Duration position) async {
     if (_isDisposed) {
       return;
     }
-    if (moment > value.duration) {
-      moment = value.duration;
-    } else if (moment < const Duration()) {
-      moment = const Duration();
+    if (position > value.duration) {
+      position = value.duration;
+    } else if (position < const Duration()) {
+      position = const Duration();
     }
-    await _channel.invokeMethod<void>('seekTo', <String, dynamic>{
-      'textureId': _textureId,
-      'location': moment.inMilliseconds,
-    });
-    value = value.copyWith(position: moment);
+    VideoPlayerPlatform.instance.seekTo(_textureId, position);
+    value = value.copyWith(position: position);
   }
 
   /// Sets the audio volume of [this].
@@ -408,14 +354,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     value = value.copyWith(volume: volume.clamp(0.0, 1.0));
     await _applyVolume();
   }
-
-  static const Map<VideoFormat, String> _videoFormatStringMap =
-      <VideoFormat, String>{
-    VideoFormat.ss: 'ss',
-    VideoFormat.hls: 'hls',
-    VideoFormat.dash: 'dash',
-    VideoFormat.other: 'other',
-  };
 }
 
 class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
@@ -499,7 +437,9 @@ class _VideoPlayerState extends State<VideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return _textureId == null ? Container() : Texture(textureId: _textureId);
+    return _textureId == null
+        ? Container()
+        : VideoPlayerPlatform.instance.buildView(_textureId);
   }
 }
 
