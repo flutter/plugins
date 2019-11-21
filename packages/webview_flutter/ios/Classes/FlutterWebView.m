@@ -5,6 +5,7 @@
 #import "FlutterWebView.h"
 #import "FLTWKNavigationDelegate.h"
 #import "JavaScriptChannelHandler.h"
+#import "TYSnapshotScroll.h"
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
@@ -82,6 +83,7 @@
     // https://github.com/flutter/flutter/issues/36228
 
     NSString* initialUrl = args[@"initialUrl"];
+    [initialUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     if ([initialUrl isKindOfClass:[NSString class]]) {
       [self loadUrl:initialUrl];
     }
@@ -242,17 +244,88 @@
   }
 }
 
-- (void)capturebase64:(FlutterResult)result {
-//    NSSet* cacheDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
-//    WKWebsiteDataStore* dataStore = [WKWebsiteDataStore defaultDataStore];
-//    NSDate* dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
-//    [dataStore removeDataOfTypes:cacheDataTypes
-//                   modifiedSince:dateFrom
-//               completionHandler:^{
-//                   result(nil);
-//               }];
 
-}  
+- (void)WKWebViewScroll:(WKWebView *)webView CaptureCompletionHandler:(void(^)(UIImage *capturedImage))completionHandler {
+    
+    // 制作了一个UIView的副本
+    UIView *snapShotView = [webView snapshotViewAfterScreenUpdates:YES];
+    
+    snapShotView.frame = CGRectMake(webView.frame.origin.x, webView.frame.origin.y, snapShotView.frame.size.width, snapShotView.frame.size.height);
+    
+    [webView.superview addSubview:snapShotView];
+    
+    // 获取当前UIView可滚动的内容长度
+    CGPoint scrollOffset = webView.scrollView.contentOffset;
+    
+    // 向上取整数 － 可滚动长度与UIView本身屏幕边界坐标相差倍数
+    float maxIndex = ceilf(webView.scrollView.contentSize.height/webView.bounds.size.height);
+    
+    // 保持清晰度
+    UIGraphicsBeginImageContextWithOptions(webView.scrollView.contentSize, false, [UIScreen mainScreen].scale);
+    
+    NSLog(@"--index--%d", (int)maxIndex);
+    
+    // 滚动截图
+    [self ZTContentScroll:webView PageDraw:0 maxIndex:(int)maxIndex drawCallback:^{
+        UIImage *capturedImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        // 恢复原UIView
+        [webView.scrollView setContentOffset:scrollOffset animated:NO];
+        [snapShotView removeFromSuperview];
+        
+//        UIImage *resultImg = [UIImage imageWithData:UIImageJPEGRepresentation(capturedImage, 0.5)];
+        
+        completionHandler(capturedImage);
+        
+    }];
+}
+
+// 滚动截图
+- (void)ZTContentScroll:(WKWebView *)webView PageDraw:(int)index maxIndex:(int)maxIndex drawCallback:(void(^)(void))drawCallback{
+    [webView.scrollView setContentOffset:CGPointMake(0, (float)index * webView.frame.size.height)];
+    CGRect splitFrame = CGRectMake(0, (float)index * webView.frame.size.height, webView.bounds.size.width, webView.bounds.size.height);
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [webView drawViewHierarchyInRect:splitFrame afterScreenUpdates:YES];
+        if(index < maxIndex){
+            [self ZTContentScroll:webView PageDraw: index + 1 maxIndex:maxIndex drawCallback:drawCallback];
+        }else{
+            drawCallback();
+        }
+    });
+}
+
+
+
+- (void)capturebase64:(FlutterResult)result {
+//    if (@available(iOS 10.13, *)){
+//    [_webView takeSnapshotWithConfiguration:<#(nullable WKSnapshotConfiguration *)#> completionHandler:<#^(UIImage * _Nullable snapshotImage, NSError * _Nullable error)completionHandler#>]
+        
+//        [self WKWebViewScroll:(_webView]
+        
+//        RetainPtr<WKSnapshotConfiguration> snapshotConfiguration = adoptNS([[WKSnapshotConfiguration alloc] init]);
+//        [snapshotConfiguration setRect:NSMakeRect(0, 0, viewWidth, viewHeight)];
+//        [snapshotConfiguration setSnapshotWidth:@(viewWidth)];
+//
+//        [_webView takeSnapshotWithConfiguration:snapshotConfiguration.get() completionHandler:^(PlatformImage snapshotImage, NSError *error) {
+//            EXPECT_NULL(snapshotImage);
+//            EXPECT_WK_STREQ(@"WKErrorDomain", error.domain);
+//
+//            isDone = true;
+//        }];
+        
+//    }
+    
+    [TYSnapshotScroll screenSnapshot:_webView finishBlock:^(UIImage *snapShotImage) {
+//        NSString* ret = [@"data:image/jpeg;base64," stringByAppendingString:[UIImageJPEGRepresentation(snapShotImage,0.9f) base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];
+        NSString* ret = [UIImageJPEGRepresentation(snapShotImage,0.9f) base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+        result(ret);
+        
+    }];
+
+}
+
 
 - (void)onGetTitle:(FlutterResult)result {
   NSString* title = _webView.title;
@@ -327,6 +400,7 @@
   }
 
   NSString* url = request[@"url"];
+  [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
   if ([url isKindOfClass:[NSString class]]) {
     id headers = request[@"headers"];
     if ([headers isKindOfClass:[NSDictionary class]]) {
