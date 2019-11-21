@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 public class ImageResizerTest {
 
@@ -46,12 +45,9 @@ public class ImageResizerTest {
     when(mockScaledBitMap.getWidth()).thenReturn(100);
     when(mockScaledBitMap.getHeight()).thenReturn(100);
     doAnswer(
-            new Answer() {
-              @Override
-              public Object answer(InvocationOnMock invocation) throws Throwable {
-                when(mockFile.getPath()).thenReturn("scaledFolder" + invocation.getArgument(1));
-                return mockFile;
-              }
+            (InvocationOnMock invocation) -> {
+              when(mockFile.getPath()).thenReturn("scaledFolder" + invocation.getArgument(1));
+              return mockFile;
             })
         .when(resizer)
         .createFile(any(File.class), any(String.class));
