@@ -1,3 +1,7 @@
+## 0.10.3+2
+
+* Update the homepage to point to the new plugin location
+
 ## 0.10.3+1
 
 * Dispose `FLTVideoPlayer` in `onTextureUnregistered` callback on iOS.
