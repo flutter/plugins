@@ -1,7 +1,11 @@
+## 0.5.4+6
+
+* Add missing documentation and a lint to prevent further undocumented APIs.
+
 ## 0.5.4+5
 
-* Update and migrate iOS example project by removing flutter_assets, change 
-  "English" to "en", remove extraneous xcconfigs and framework outputs, 
+* Update and migrate iOS example project by removing flutter_assets, change
+  "English" to "en", remove extraneous xcconfigs and framework outputs,
   update to Xcode 11 build settings, and remove ARCHS.
 
 ## 0.5.4+4
