@@ -1,6 +1,12 @@
+## 0.3.4
+
+* Add missing documentation. Some of the public methods should have been
+  annotated as `@visibleForTesting` previously and were not, so the annotations
+  have been added now.
+
 ## 0.3.3+1
 
-* Update and migrate iOS example project by removing flutter_assets, change 
+* Update and migrate iOS example project by removing flutter_assets, change
   "English" to "en", remove extraneous xcconfigs, update to Xcode 11 build
   settings, and remove ARCHS and DEVELOPMENT_TEAM.
 
