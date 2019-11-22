@@ -8,6 +8,12 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_plugin_android_lifecycle:
+    git:
+      url: git://github.com/flutter/plugins.git
+      path: packages/flutter_plugin_android_lifecycle
+      ref: master
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

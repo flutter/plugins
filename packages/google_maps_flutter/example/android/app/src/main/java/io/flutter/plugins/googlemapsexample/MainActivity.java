@@ -1,13 +1,16 @@
 package io.flutter.plugins.googlemapsexample;
 
-import android.os.Bundle;
-import io.flutter.app.FlutterActivity;
+import io.flutter.embedding.android.FlutterActivity;
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
 import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.flutter.plugins.googlemaps.GoogleMapsPlugin;
 
 public class MainActivity extends FlutterActivity {
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    GeneratedPluginRegistrant.registerWith(this);
+  public void configureFlutterEngine(FlutterEngine flutterEngine) {
+//    ShimPluginRegistry shimPluginRegistry = new ShimPluginRegistry(flutterEngine);
+//    GeneratedPluginRegistrant.registerWith(shimPluginRegistry);
+    flutterEngine.getPlugins().add(new GoogleMapsPlugin());
   }
 }

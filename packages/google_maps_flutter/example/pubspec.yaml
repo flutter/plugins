@@ -9,6 +9,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.0
 
+  flutter_plugin_android_lifecycle:
+    git:
+      url: git://github.com/flutter/plugins.git
+      path: packages/flutter_plugin_android_lifecycle
+      ref: master
+
 dev_dependencies:
   google_maps_flutter:
     path: ../

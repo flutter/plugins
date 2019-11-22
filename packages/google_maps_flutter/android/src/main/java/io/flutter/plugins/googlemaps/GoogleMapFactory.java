@@ -7,7 +7,9 @@ package io.flutter.plugins.googlemaps;
 import static io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import android.content.Context;
+import androidx.lifecycle.Lifecycle;
 import com.google.android.gms.maps.model.CameraPosition;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
@@ -16,13 +18,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class GoogleMapFactory extends PlatformViewFactory {
 
-  private final AtomicInteger mActivityState;
-  private final Registrar mPluginRegistrar;
+  private final Lifecycle mLifecycle;
+  private final BinaryMessenger binaryMessenger;
 
-  GoogleMapFactory(AtomicInteger state, Registrar registrar) {
+  GoogleMapFactory(Lifecycle lifecycle, BinaryMessenger binaryMessenger) {
     super(StandardMessageCodec.INSTANCE);
-    mActivityState = state;
-    mPluginRegistrar = registrar;
+    mLifecycle = lifecycle;
+    this.binaryMessenger = binaryMessenger;
   }
 
   @SuppressWarnings("unchecked")
@@ -48,6 +50,6 @@ public class GoogleMapFactory extends PlatformViewFactory {
     if (params.containsKey("circlesToAdd")) {
       builder.setInitialCircles(params.get("circlesToAdd"));
     }
-    return builder.build(id, context, mActivityState, mPluginRegistrar);
+    return builder.build(id, context, mLifecycle, binaryMessenger);
   }
 }

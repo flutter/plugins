@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
-        android:name="io.flutter.app.FlutterApplication"
         android:label="google_maps_flutter_example"
         android:icon="@mipmap/ic_launcher">
       <meta-data
@@ -14,7 +13,7 @@
         <!-- Update this value to your google maps api key. -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${mapsApiKey}" />
+            android:value="AIzaSyCuts_LieGfhT7Mok9VZq2U9WXbNiaenyo" />
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

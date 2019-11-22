@@ -21,6 +21,10 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.State;
+import androidx.lifecycle.LifecycleOwner;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -34,9 +38,10 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding.OnSaveInstanceStateListener;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +52,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
-    implements Application.ActivityLifecycleCallbacks,
+    implements DefaultLifecycleObserver,
+        OnSaveInstanceStateListener,
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraMoveStartedListener,
@@ -66,9 +72,8 @@ final class GoogleMapController
 
   private static final String TAG = "GoogleMapController";
   private final int id;
-  private final AtomicInteger activityState;
+  private final Lifecycle activityLifecycle;
   private final MethodChannel methodChannel;
-  private final PluginRegistry.Registrar registrar;
   private final MapView mapView;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
@@ -79,7 +84,6 @@ final class GoogleMapController
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
-  private final int registrarActivityHashCode;
   private final Context context;
   private final MarkersController markersController;
   private final PolygonsController polygonsController;
@@ -93,19 +97,17 @@ final class GoogleMapController
   GoogleMapController(
       int id,
       Context context,
-      AtomicInteger activityState,
-      PluginRegistry.Registrar registrar,
+      Lifecycle activityLifecycle,
+      BinaryMessenger binaryMessenger,
       GoogleMapOptions options) {
     this.id = id;
     this.context = context;
-    this.activityState = activityState;
-    this.registrar = registrar;
+    this.activityLifecycle = activityLifecycle;
     this.mapView = new MapView(context, options);
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_maps_" + id);
+        new MethodChannel(binaryMessenger, "plugins.flutter.io/google_maps_" + id);
     methodChannel.setMethodCallHandler(this);
-    this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
     this.polygonsController = new PolygonsController(methodChannel);
     this.polylinesController = new PolylinesController(methodChannel, density);
@@ -118,40 +120,8 @@ final class GoogleMapController
   }
 
   void init() {
-    switch (activityState.get()) {
-      case STOPPED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        mapView.onResume();
-        mapView.onPause();
-        mapView.onStop();
-        break;
-      case PAUSED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        mapView.onResume();
-        mapView.onPause();
-        break;
-      case RESUMED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        mapView.onResume();
-        break;
-      case STARTED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        break;
-      case CREATED:
-        mapView.onCreate(null);
-        break;
-      case DESTROYED:
-        // Nothing to do, the activity has been completely destroyed.
-        break;
-      default:
-        throw new IllegalArgumentException(
-            "Cannot interpret " + activityState.get() + " as an activity state");
-    }
-    registrar.activity().getApplication().registerActivityLifecycleCallbacks(this);
+    Log.w(TAG, "init()");
+    activityLifecycle.addObserver(this);
     mapView.getMapAsync(this);
   }
 
@@ -463,9 +433,9 @@ final class GoogleMapController
       return;
     }
     disposed = true;
+    activityLifecycle.removeObserver(this);
     methodChannel.setMethodCallHandler(null);
     mapView.onDestroy();
-    registrar.activity().getApplication().unregisterActivityLifecycleCallbacks(this);
   }
 
   // @Override
@@ -483,56 +453,71 @@ final class GoogleMapController
   };
 
   @Override
-  public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+  public void onCreate(LifecycleOwner owner) {
+    Log.w(TAG, "onCreate()");
+    if (disposed) {
+      return;
+    }
+    mapView.onCreate(null);
+  }
+
+  public void onRestoreInstanceState(Bundle savedInstanceState) {
+    Log.w(TAG, "onRestoreIntanceState(): " + savedInstanceState);
+    if (disposed) {
       return;
     }
     mapView.onCreate(savedInstanceState);
   }
 
   @Override
-  public void onActivityStarted(Activity activity) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+  public void onStart(LifecycleOwner owner) {
+    Log.w(TAG, "onStart()");
+    if (disposed) {
       return;
     }
     mapView.onStart();
   }
 
   @Override
-  public void onActivityResumed(Activity activity) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+  public void onResume(LifecycleOwner owner) {
+    Log.w(TAG, "onResume()");
+    if (disposed) {
       return;
     }
     mapView.onResume();
   }
 
   @Override
-  public void onActivityPaused(Activity activity) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+  public void onPause(LifecycleOwner owner) {
+    Log.w(TAG, "onPause()");
+    if (disposed) {
       return;
     }
     mapView.onPause();
   }
 
   @Override
-  public void onActivityStopped(Activity activity) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+  public void onStop(LifecycleOwner owner) {
+    Log.w(TAG, "onStop()");
+    if (disposed) {
       return;
     }
     mapView.onStop();
   }
 
   @Override
-  public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+  public void onSaveInstanceState(Bundle outState) {
+    Log.w(TAG, "onSaveInstanceState()");
+    if (disposed) {
       return;
     }
     mapView.onSaveInstanceState(outState);
   }
 
   @Override
-  public void onActivityDestroyed(Activity activity) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+  public void onDestroy(LifecycleOwner owner) {
+    Log.w(TAG, "onDestroy()");
+    if (disposed) {
       return;
     }
     mapView.onDestroy();
