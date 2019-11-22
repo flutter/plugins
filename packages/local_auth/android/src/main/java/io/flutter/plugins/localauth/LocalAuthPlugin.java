@@ -8,6 +8,11 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import androidx.fragment.app.FragmentActivity;
+
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -19,21 +24,27 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** LocalAuthPlugin */
 @SuppressWarnings("deprecation")
-public class LocalAuthPlugin implements MethodCallHandler {
-  private final Registrar registrar;
+public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
+  private static final String CHANNEL_NAME = "plugins.flutter.io/local_auth";
+
+  private Activity activity;
+  // This is only used with v2 embedding api. This is null when using the original embedding.
+  private MethodChannel channel;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
   private AuthenticationHelper authenticationHelper;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/local_auth");
-    channel.setMethodCallHandler(new LocalAuthPlugin(registrar));
+        new MethodChannel(registrar.messenger(), CHANNEL_NAME);
+    channel.setMethodCallHandler(new LocalAuthPlugin(registrar.activity()));
   }
 
-  private LocalAuthPlugin(Registrar registrar) {
-    this.registrar = registrar;
+  private LocalAuthPlugin(Activity activity) {
+    this.activity = activity;
   }
+
+  public LocalAuthPlugin() {}
 
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
@@ -47,7 +58,6 @@ public class LocalAuthPlugin implements MethodCallHandler {
         return;
       }
 
-      Activity activity = registrar.activity();
       if (activity == null || activity.isFinishing()) {
         result.error("no_activity", "local_auth plugin requires a foreground activity", null);
         return;
@@ -90,7 +100,6 @@ public class LocalAuthPlugin implements MethodCallHandler {
       authenticationHelper.authenticate();
     } else if (call.method.equals("getAvailableBiometrics")) {
       try {
-        Activity activity = registrar.activity();
         if (activity == null || activity.isFinishing()) {
           result.error("no_activity", "local_auth plugin requires a foreground activity", null);
           return;
@@ -136,5 +145,36 @@ public class LocalAuthPlugin implements MethodCallHandler {
     } catch (Exception e) {
       result.success(false);
     }
+  }
+
+  @Override
+  public void onAttachedToEngine(FlutterPluginBinding binding) {
+    channel = new MethodChannel(binding.getBinaryMessenger(), CHANNEL_NAME);
+  }
+
+  @Override
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+
+  }
+
+  @Override
+  public void onAttachedToActivity(ActivityPluginBinding binding) {
+    activity = binding.getActivity();
+    channel.setMethodCallHandler(this);
+  }
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+    activity = null;
+  }
+
+  @Override
+  public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+    activity = binding.getActivity();
+  }
+
+  @Override
+  public void onDetachedFromActivity() {
+    activity = null;
   }
 }
