@@ -18,8 +18,7 @@
 
 #pragma mark - WKNavigationDelegate conformance
 
-- (void)webView:(WKWebView*)webView
-didStartProvisionalNavigation:(WKNavigation*)navigation {
+- (void)webView:(WKWebView*)webView didStartProvisionalNavigation:(WKNavigation*)navigation {
   [_methodChannel invokeMethod:@"onPageStarted" arguments:@{@"url" : webView.URL.absoluteString}];
 }
 
