@@ -135,10 +135,11 @@ class VideoPlayerValue {
   /// Is null when [initialized] is false.
   final Size size;
 
-  /// False when [duration] is null, true otherwise.
+  /// Indicates whether or not the video has been loaded and is ready to play.
   bool get initialized => duration != null;
 
-  /// Whether or not [errorDescription] is null.
+  /// Indicates whether or not the video is in an error state. If this is true
+  /// [errorDescription] should have information about the problem.
   bool get hasError => errorDescription != null;
 
   /// Returns [size.width] / [size.height] when size is non-null, or `1.0.` when
@@ -385,8 +386,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Starts playing the video.
   ///
-  /// This finishes as soon as the "play" command has been sent to the platform,
-  /// not when playback is complete.
+  /// This method returns a future that completes as soon as the "play" command
+  /// has been sent to the platform, not when playback itself is totally
+  /// finished.
   Future<void> play() async {
     value = value.copyWith(isPlaying: true);
     await _applyPlayPause();
@@ -599,8 +601,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
 /// Used to configure the [VideoProgressIndicator] widget's colors for how it
 /// describes the video's status.
 ///
-/// Normally the widget uses certain default colors, but this is customizeable
-/// through this class.
+/// The widget uses default colors that are customizeable through this class.
 class VideoProgressColors {
   /// Any property can be set to any color. They each have defaults.
   ///
