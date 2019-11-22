@@ -4,7 +4,7 @@
 # to new packages going forward, and ideally the main `analysis_options.yaml`
 # file as soon as possible.
 
-include: ../../analysis_options.yaml
+include: ../../../analysis_options.yaml
 
 linter:
   rules:
