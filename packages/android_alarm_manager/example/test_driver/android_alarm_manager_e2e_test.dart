@@ -9,7 +9,6 @@ import 'package:flutter_driver/flutter_driver.dart';
 
 Future<StreamSubscription> resumeIsolatesOnPause(FlutterDriver driver) async {
     final vm = await driver.serviceClient.getVM();
-    // // unpause any paused isolated
     for (final isolateRef in vm.isolates) {
       final isolate = await isolateRef.load();
       if (isolate.isPaused) {
