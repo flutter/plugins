@@ -8,11 +8,9 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import androidx.fragment.app.FragmentActivity;
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
-import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -35,8 +33,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), CHANNEL_NAME);
+    final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
     channel.setMethodCallHandler(new LocalAuthPlugin(registrar.activity()));
   }
 
@@ -153,9 +150,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {
-
-  }
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {}
 
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
