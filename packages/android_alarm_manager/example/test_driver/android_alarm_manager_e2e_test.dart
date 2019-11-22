@@ -31,7 +31,7 @@ Future<void> main() async {
   // for this plugin will need to be resumed for the test to pass.
   final subscription = await resumeIsolatesOnPause(driver);
   final String result =
-      await driver.requestData(null, timeout: const Duration(minutes: 2));
+      await driver.requestData(null, timeout: const Duration(minutes: 5));
   driver.close();
   subscription.cancel();
   exit(result == 'pass' ? 0 : 1);
