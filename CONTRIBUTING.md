@@ -42,26 +42,46 @@ USB and debugging enabled on that device.
 
 ## Running the tests
 
-Flutter plugins have both unit tests of their Dart API and integration tests that run on a virtual or actual device.
-
-To run the unit tests:
-
-```
-flutter test test/<name_of_plugin>_test.dart
-```
+### Integration tests
 
 To run the integration tests using Flutter driver:
 
-```
+```console
 cd example
-flutter drive test/<name_of_plugin>.dart
+flutter drive test_driver/<name_of_plugin_test>.dart
 ```
 
 To run integration tests as instrumentation tests on a local Android device:
 
-```
+```console
 cd example
-(cd android && ./gradlew -Ptarget=$(pwd)/../test_live/<name_of_plugin>_test.dart connectedAndroidTest)
+flutter build apk
+cd android && ./gradlew -Ptarget=$(pwd)/../test_driver/<name_of_plugin>_test.dart app:connectedAndroidTest
+```
+
+These tests may also be in folders just named "test," or have filenames ending
+with "e2e".
+
+### Dart unit tests
+
+To run the unit tests:
+
+```console
+flutter test test/<name_of_plugin>_test.dart
+```
+
+### Java unit tests
+
+These can be ran through Android Studio once the example app is opened as an
+Android project.
+
+Without Android Studio, they can be ran through the terminal.
+
+```console
+cd example
+flutter build apk
+cd android
+./gradlew test
 ```
 
 ## Contributing code
