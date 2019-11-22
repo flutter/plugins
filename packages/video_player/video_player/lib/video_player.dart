@@ -14,16 +14,46 @@ final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
   // performed.
   ..invokeMethod<void>('init');
 
+/// Describes a discrete segment of time within a video using a [start] and
+/// [end] [Duration].
 class DurationRange {
+  /// Trusts that the given [start] and [end] are actually in order. They should
+  /// both be non-null.
   DurationRange(this.start, this.end);
 
+  /// The beginning of the segment described relative to the beginning of the
+  /// entire video. Should be shorter than or equal to [end].
+  ///
+  /// For example, if the entire video is 4 minutes long and the range is from
+  /// 1:00-2:00, this should be a `Duration` of one minute.
   final Duration start;
+
+  /// The end of the segment described as a duration relative to the beginning of
+  /// the entire video. This is expected to be non-null and longer than or equal
+  /// to [start].
+  ///
+  /// For example, if the entire video is 4 minutes long and the range is from
+  /// 1:00-2:00, this should be a `Duration` of two minutes.
   final Duration end;
 
+  /// Assumes that [duration] is the total length of the video that this
+  /// DurationRange is a segment form. It returns the percentage that [start] is
+  /// through the entire video.
+  ///
+  /// For example, assume that the entire video is 4 minutes long. If [start] has
+  /// a duration of one minute, this will return `0.25` since the DurationRange
+  /// starts 25% of the way through the video's total length.
   double startFraction(Duration duration) {
     return start.inMilliseconds / duration.inMilliseconds;
   }
 
+  /// Assumes that [duration] is the total length of the video that this
+  /// DurationRange is a segment form. It returns the percentage that [start] is
+  /// through the entire video.
+  ///
+  /// For example, assume that the entire video is 4 minutes long. If [end] has a
+  /// duration of two minutes, this will return `0.5` since the DurationRange
+  /// ends 50% of the way through the video's total length.
   double endFraction(Duration duration) {
     return end.inMilliseconds / duration.inMilliseconds;
   }
@@ -32,11 +62,26 @@ class DurationRange {
   String toString() => '$runtimeType(start: $start, end: $end)';
 }
 
-enum VideoFormat { dash, hls, ss, other }
+/// The file format of the given video.
+enum VideoFormat {
+  /// Dynamic Adaptive Streaming over HTTP, also known as MPEG-DASH.
+  dash,
+
+  /// HTTP Live Streaming.
+  hls,
+
+  /// Smooth Streaming.
+  ss,
+
+  /// Any format other than the other ones defined in this enum.
+  other
+}
 
 /// The duration, current position, buffering state, error state and settings
 /// of a [VideoPlayerController].
 class VideoPlayerValue {
+  /// Constructs a video with the given values. Only [duration] is required. The
+  /// rest will initialize with default values when unset.
   VideoPlayerValue({
     @required this.duration,
     this.size,
@@ -49,8 +94,11 @@ class VideoPlayerValue {
     this.errorDescription,
   });
 
+  /// Returns an instance with a `null` [Duration].
   VideoPlayerValue.uninitialized() : this(duration: null);
 
+  /// Returns an instance with a `null` [Duration] and the given
+  /// [errorDescription].
   VideoPlayerValue.erroneous(String errorDescription)
       : this(duration: null, errorDescription: errorDescription);
 
@@ -87,10 +135,19 @@ class VideoPlayerValue {
   /// Is null when [initialized] is false.
   final Size size;
 
+  /// Indicates whether or not the video has been loaded and is ready to play.
   bool get initialized => duration != null;
+
+  /// Indicates whether or not the video is in an error state. If this is true
+  /// [errorDescription] should have information about the problem.
   bool get hasError => errorDescription != null;
+
+  /// Returns [size.width] / [size.height] when size is non-null, or `1.0.` when
+  /// it is.
   double get aspectRatio => size != null ? size.width / size.height : 1.0;
 
+  /// Returns a new instance that has the same values as this current instance,
+  /// except for any overrides passed in as arguments to [copyWidth].
   VideoPlayerValue copyWith({
     Duration duration,
     Size size,
@@ -130,7 +187,19 @@ class VideoPlayerValue {
   }
 }
 
-enum DataSourceType { asset, network, file }
+/// The way in which the video was originally loaded. This has nothing to do
+/// with the video's file type. It's just the place from which the video is
+/// fetched from.
+enum DataSourceType {
+  /// The video was included in the app's asset files.
+  asset,
+
+  /// The video was downloaded from the internet.
+  network,
+
+  /// The video was loaded off of the local filesystem.
+  file
+}
 
 /// Controls a platform video player, and provides updates when the state is
 /// changing.
@@ -177,13 +246,20 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         super(VideoPlayerValue(duration: null));
 
   int _textureId;
+
+  /// The URI to the video file. This will be in different formats depending on
+  /// the [DataSourceType] of the original video.
   final String dataSource;
+
+  /// **Android only**. Will override the platform's generic file format
+  /// detection with whatever is set here.
   final VideoFormat formatHint;
 
   /// Describes the type of data source this [VideoPlayerController]
   /// is constructed with.
   final DataSourceType dataSourceType;
 
+  /// Only set for [asset] videos. The package that the asset was loaded from.
   final String package;
   Timer _timer;
   bool _isDisposed = false;
@@ -191,9 +267,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   StreamSubscription<dynamic> _eventSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
 
+  /// This is just exposed for testing. It shouldn't be used by anyone depending
+  /// on the plugin.
   @visibleForTesting
   int get textureId => _textureId;
 
+  /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
     _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
     _lifeCycleObserver.initialize();
@@ -305,16 +384,24 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     super.dispose();
   }
 
+  /// Starts playing the video.
+  ///
+  /// This method returns a future that completes as soon as the "play" command
+  /// has been sent to the platform, not when playback itself is totally
+  /// finished.
   Future<void> play() async {
     value = value.copyWith(isPlaying: true);
     await _applyPlayPause();
   }
 
+  /// Sets whether or not the video should loop after playing once. See also
+  /// [VideoPlayerValue.isLooping].
   Future<void> setLooping(bool looping) async {
     value = value.copyWith(isLooping: looping);
     await _applyLooping();
   }
 
+  /// Pauses the video.
   Future<void> pause() async {
     value = value.copyWith(isPlaying: false);
     await _applyPlayPause();
@@ -384,6 +471,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
   }
 
+  /// Sets the video's current timestamp to be at [moment]. The next
+  /// time the video is played it will resume from the given [moment].
+  ///
+  /// If [moment] is outside of the video's full range it will be automatically
+  /// and silently clamped.
   Future<void> seekTo(Duration moment) async {
     if (_isDisposed) {
       return;
@@ -449,10 +541,13 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
   }
 }
 
-/// Displays the video controlled by [controller].
+/// Widget that displays the video controlled by [controller].
 class VideoPlayer extends StatefulWidget {
+  /// Uses the given [controller] for all video rendered in this widget.
   VideoPlayer(this.controller);
 
+  /// The [VideoPlayerController] responsible for the video being rendered in
+  /// this widget.
   final VideoPlayerController controller;
 
   @override
@@ -503,15 +598,43 @@ class _VideoPlayerState extends State<VideoPlayer> {
   }
 }
 
+/// Used to configure the [VideoProgressIndicator] widget's colors for how it
+/// describes the video's status.
+///
+/// The widget uses default colors that are customizeable through this class.
 class VideoProgressColors {
+  /// Any property can be set to any color. They each have defaults.
+  ///
+  /// [playedColor] defaults to red at 70% opacity. This fills up a portion of
+  /// the [VideoProgressIndicator] to represent how much of the video has played
+  /// so far.
+  ///
+  /// [bufferedColor] defaults to blue at 20% opacity. This fills up a portion
+  /// of [VideoProgressIndicator] to represent how much of the video has
+  /// buffered so far.
+  ///
+  /// [backgroundColor] defaults to gray at 50% opacity. This is the background
+  /// color behind both [playedColor] and [bufferedColor] to denote the total
+  /// size of the video compared to either of those values.
   VideoProgressColors({
     this.playedColor = const Color.fromRGBO(255, 0, 0, 0.7),
     this.bufferedColor = const Color.fromRGBO(50, 50, 200, 0.2),
     this.backgroundColor = const Color.fromRGBO(200, 200, 200, 0.5),
   });
 
+  /// [playedColor] defaults to red at 70% opacity. This fills up a portion of
+  /// the [VideoProgressIndicator] to represent how much of the video has played
+  /// so far.
   final Color playedColor;
+
+  /// [bufferedColor] defaults to blue at 20% opacity. This fills up a portion
+  /// of [VideoProgressIndicator] to represent how much of the video has
+  /// buffered so far.
   final Color bufferedColor;
+
+  /// [backgroundColor] defaults to gray at 50% opacity. This is the background
+  /// color behind both [playedColor] and [bufferedColor] to denote the total
+  /// size of the video compared to either of those values.
   final Color backgroundColor;
 }
 
@@ -584,6 +707,12 @@ class _VideoScrubberState extends State<_VideoScrubber> {
 /// [padding] allows to specify some extra padding around the progress indicator
 /// that will also detect the gestures.
 class VideoProgressIndicator extends StatefulWidget {
+  /// Construct an instance that displays the play/buffering status of the video
+  /// controlled by [controller].
+  ///
+  /// Defaults will be used for everything except [controller] if they're not
+  /// provided. [allowScrubbing] defaults to false, and [padding] will default
+  /// to `top: 5.0`.
   VideoProgressIndicator(
     this.controller, {
     VideoProgressColors colors,
@@ -591,9 +720,25 @@ class VideoProgressIndicator extends StatefulWidget {
     this.padding = const EdgeInsets.only(top: 5.0),
   }) : colors = colors ?? VideoProgressColors();
 
+  /// The [VideoPlayerController] that actually associates a video with this
+  /// widget.
   final VideoPlayerController controller;
+
+  /// The default colors used throughout the indicator.
+  ///
+  /// See [VideoProgressColors] for default values.
   final VideoProgressColors colors;
+
+  /// When true, the widget will detect touch input and try to seek the video
+  /// accordingly. The widget ignores such input when false.
+  ///
+  /// Defaults to false.
   final bool allowScrubbing;
+
+  /// This allows for visual padding around the progress indicator that can
+  /// still detect gestures via [allowScrubbing].
+  ///
+  /// Defaults to `top: 5.0`.
   final EdgeInsets padding;
 
   @override
