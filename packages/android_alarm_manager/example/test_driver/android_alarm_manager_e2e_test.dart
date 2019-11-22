@@ -6,30 +6,33 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_driver/flutter_driver.dart';
+import 'package:vm_service_client/vm_service_client.dart';
 
-Future<StreamSubscription> resumeIsolatesOnPause(FlutterDriver driver) async {
-    final vm = await driver.serviceClient.getVM();
-    for (final isolateRef in vm.isolates) {
-      final isolate = await isolateRef.load();
-      if (isolate.isPaused) {
-        isolate.resume();
-      }
+Future<StreamSubscription<VMIsolateRef>> resumeIsolatesOnPause(
+    FlutterDriver driver) async {
+  final VM vm = await driver.serviceClient.getVM();
+  for (VMIsolateRef isolateRef in vm.isolates) {
+    final VMIsolate isolate = await isolateRef.load();
+    if (isolate.isPaused) {
+      isolate.resume();
     }
-    return driver.serviceClient.onIsolateRunnable
-        .asBroadcastStream()
-        .listen((isolateRef) async {
-      final isolate = await isolateRef.load();
-      if (isolate.isPaused) {
-        isolate.resume();
-      }
-    });
+  }
+  return driver.serviceClient.onIsolateRunnable
+      .asBroadcastStream()
+      .listen((VMIsolateRef isolateRef) async {
+    final VMIsolate isolate = await isolateRef.load();
+    if (isolate.isPaused) {
+      isolate.resume();
+    }
+  });
 }
 
 Future<void> main() async {
   final FlutterDriver driver = await FlutterDriver.connect();
   // flutter drive causes isolates to be paused on spawn. The background isolate
   // for this plugin will need to be resumed for the test to pass.
-  final subscription = await resumeIsolatesOnPause(driver);
+  final StreamSubscription<VMIsolateRef> subscription =
+      await resumeIsolatesOnPause(driver);
   final String result =
       await driver.requestData(null, timeout: const Duration(minutes: 5));
   driver.close();
