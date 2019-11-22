@@ -127,7 +127,7 @@ class ImageResizer {
   }
 
   private boolean isImageQualityValid(Integer imageQuality) {
-    return imageQuality != null && imageQuality > 0 && imageQuality <= 100;
+    return imageQuality != null && imageQuality > 0 && imageQuality < 100;
   }
 
   private File createImageOnExternalDirectory(String name, Bitmap bitmap, int imageQuality)
