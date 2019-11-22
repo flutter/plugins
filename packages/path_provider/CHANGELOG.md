@@ -1,3 +1,7 @@
+## 1.4.5
+
+* Add support for v2 plugins APIs.
+
 ## 1.4.4
 
 * Update driver tests in the example app to e2e tests.
