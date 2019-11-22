@@ -9,16 +9,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  String invalidCallback(String foo) => foo;
+  void validCallback(int id) => null;
+
+  const MethodChannel testChannel = MethodChannel(
+      'plugins.flutter.io/android_alarm_manager', JSONMethodCodec());
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() {
-    AndroidAlarmManager.channel
-        .setMockMethodCallHandler((MethodCall call) => null);
+    testChannel.setMockMethodCallHandler((MethodCall call) => null);
   });
 
   test('${AndroidAlarmManager.initialize}', () async {
-    AndroidAlarmManager.channel
-        .setMockMethodCallHandler((MethodCall call) async {
+    testChannel.setMockMethodCallHandler((MethodCall call) async {
       assert(call.method == 'AlarmService.start');
       return true;
     });
@@ -32,12 +35,11 @@ void main() {
     test('validates input', () async {
       final DateTime validTime = DateTime.utc(1993);
       final int validId = 1;
-      final Function validCallback = (int id) => null;
 
       // Callback should take a single int param.
       expect(
           () => AndroidAlarmManager.oneShotAt(
-              validTime, validId, ((String foo) => foo)),
+              validTime, validId, invalidCallback),
           throwsAssertionError);
 
       // ID should be less than 32 bits.
@@ -50,8 +52,9 @@ void main() {
     test('sends arguments to the platform', () async {
       final DateTime alarm = DateTime(1993);
       const int rawHandle = 4;
-      InstanceWrappers.setMockCallbackHandleFn(
-          (Function _) => CallbackHandle.fromRawHandle(rawHandle));
+      AndroidAlarmManager.setTestOverides(
+          getCallbackHandle: (Function _) =>
+              CallbackHandle.fromRawHandle(rawHandle));
 
       final int id = 1;
       final bool alarmClock = true;
@@ -60,8 +63,7 @@ void main() {
       final bool wakeup = true;
       final bool rescheduleOnReboot = true;
 
-      AndroidAlarmManager.channel
-          .setMockMethodCallHandler((MethodCall call) async {
+      testChannel.setMockMethodCallHandler((MethodCall call) async {
         expect(call.method, 'Alarm.oneShotAt');
         expect(call.arguments[0], id);
         expect(call.arguments[1], alarmClock);
@@ -88,10 +90,11 @@ void main() {
 
   test('${AndroidAlarmManager.oneShot} calls through to oneShotAt', () async {
     final DateTime now = DateTime(1993);
-    InstanceWrappers.setMockNowFn(() => now);
     const int rawHandle = 4;
-    InstanceWrappers.setMockCallbackHandleFn(
-        (Function _) => CallbackHandle.fromRawHandle(rawHandle));
+    AndroidAlarmManager.setTestOverides(
+        now: () => now,
+        getCallbackHandle: (Function _) =>
+            CallbackHandle.fromRawHandle(rawHandle));
 
     const Duration alarm = Duration(seconds: 1);
     final int id = 1;
@@ -101,8 +104,7 @@ void main() {
     final bool wakeup = true;
     final bool rescheduleOnReboot = true;
 
-    AndroidAlarmManager.channel
-        .setMockMethodCallHandler((MethodCall call) async {
+    testChannel.setMockMethodCallHandler((MethodCall call) async {
       expect(call.method, 'Alarm.oneShotAt');
       expect(call.arguments[0], id);
       expect(call.arguments[1], alarmClock);
@@ -131,12 +133,11 @@ void main() {
     test('validates input', () async {
       const Duration validDuration = Duration(seconds: 0);
       final int validId = 1;
-      final Function validCallback = (int id) => null;
 
       // Callback should take a single int param.
       expect(
           () => AndroidAlarmManager.periodic(
-              validDuration, validId, ((String foo) => foo)),
+              validDuration, validId, invalidCallback),
           throwsAssertionError);
 
       // ID should be less than 32 bits.
@@ -148,10 +149,11 @@ void main() {
 
     test('sends arguments through to the platform', () async {
       final DateTime now = DateTime(1993);
-      InstanceWrappers.setMockNowFn(() => now);
       const int rawHandle = 4;
-      InstanceWrappers.setMockCallbackHandleFn(
-          (Function _) => CallbackHandle.fromRawHandle(rawHandle));
+      AndroidAlarmManager.setTestOverides(
+          now: () => now,
+          getCallbackHandle: (Function _) =>
+              CallbackHandle.fromRawHandle(rawHandle));
 
       final int id = 1;
       final bool exact = true;
@@ -159,16 +161,13 @@ void main() {
       final bool rescheduleOnReboot = true;
       const Duration period = Duration(seconds: 1);
 
-      AndroidAlarmManager.channel
-          .setMockMethodCallHandler((MethodCall call) async {
+      testChannel.setMockMethodCallHandler((MethodCall call) async {
         expect(call.method, 'Alarm.periodic');
         expect(call.arguments[0], id);
         expect(call.arguments[1], exact);
         expect(call.arguments[2], wakeup);
-        expect(
-            call.arguments[3],
-            (InstanceWrappers.now().millisecondsSinceEpoch +
-                period.inMilliseconds));
+        expect(call.arguments[3],
+            (now.millisecondsSinceEpoch + period.inMilliseconds));
         expect(call.arguments[4], period.inMilliseconds);
         expect(call.arguments[5], rescheduleOnReboot);
         expect(call.arguments[6], rawHandle);
@@ -190,8 +189,7 @@ void main() {
 
   test('${AndroidAlarmManager.cancel}', () async {
     final int id = 1;
-    AndroidAlarmManager.channel
-        .setMockMethodCallHandler((MethodCall call) async {
+    testChannel.setMockMethodCallHandler((MethodCall call) async {
       assert(call.method == 'Alarm.cancel' && call.arguments[0] == id);
       return true;
     });
