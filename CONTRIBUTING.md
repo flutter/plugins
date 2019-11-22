@@ -121,13 +121,6 @@ Plugins tests are run automatically on contributions using Cirrus CI. However, d
 cost constraints, pull requests from non-committers may not run all the tests
 automatically.
 
-The plugins team prefers that unit tests are written using `setMockMethodCallHandler`
-rather than using mockito to mock out `MethodChannel`. For a list of the plugins that
-are still using the mockito testing style and need to be converted, see
-[issue 34284](https://github.com/flutter/flutter/issues/34284). If you are contributing
-tests to an existing plugin that uses mockito `MethodChannel`, consider converting
-them to use `setMockMethodCallHandler` instead.
-
 Once you've gotten an LGTM from a project maintainer and once your PR has received
 the green light from all our automated testing, wait for one the package maintainers
 to merge the pull request and `pub submit` any affected packages.
