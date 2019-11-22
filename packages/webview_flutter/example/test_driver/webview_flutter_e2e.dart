@@ -494,6 +494,123 @@ void main() {
     final String title = await controller.getTitle();
     expect(title, 'Some title');
   });
+
+  group('NavigationDelegate', () {
+    final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
+    final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,' +
+        base64Encode(const Utf8Encoder().convert(blankPage));
+
+    testWidgets('can allow requests', (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final StreamController<String> pageLoads =
+          StreamController<String>.broadcast();
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: blankPageEncoded,
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            javascriptMode: JavascriptMode.unrestricted,
+            navigationDelegate: (NavigationRequest request) {
+              return (request.url.contains('youtube.com'))
+                  ? NavigationDecision.prevent
+                  : NavigationDecision.navigate;
+            },
+            onPageFinished: (String url) => pageLoads.add(url),
+          ),
+        ),
+      );
+
+      await pageLoads.stream.first; // Wait for initial page load.
+      final WebViewController controller = await controllerCompleter.future;
+      await controller
+          .evaluateJavascript('location.href = "https://www.google.com/"');
+
+      await pageLoads.stream.first; // Wait for the next page load.
+      final String currentUrl = await controller.currentUrl();
+      expect(currentUrl, 'https://www.google.com/');
+    });
+
+    testWidgets('can block requests', (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final StreamController<String> pageLoads =
+          StreamController<String>.broadcast();
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: blankPageEncoded,
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            javascriptMode: JavascriptMode.unrestricted,
+            navigationDelegate: (NavigationRequest request) {
+              return (request.url.contains('youtube.com'))
+                  ? NavigationDecision.prevent
+                  : NavigationDecision.navigate;
+            },
+            onPageFinished: (String url) => pageLoads.add(url),
+          ),
+        ),
+      );
+
+      await pageLoads.stream.first; // Wait for initial page load.
+      final WebViewController controller = await controllerCompleter.future;
+      await controller
+          .evaluateJavascript('location.href = "https://www.youtube.com/"');
+
+      // There should never be any second page load, since our new URL is
+      // blocked. Still wait for a potential page change for some time in order
+      // to give the test a chance to fail.
+      await pageLoads.stream.first
+          .timeout(const Duration(milliseconds: 500), onTimeout: () => null);
+      final String currentUrl = await controller.currentUrl();
+      expect(currentUrl, isNot(contains('youtube.com')));
+    });
+
+    testWidgets('supports asynchronous decisions', (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final StreamController<String> pageLoads =
+          StreamController<String>.broadcast();
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: blankPageEncoded,
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            javascriptMode: JavascriptMode.unrestricted,
+            navigationDelegate: (NavigationRequest request) async {
+              NavigationDecision decision = NavigationDecision.prevent;
+              decision = await Future<NavigationDecision>.delayed(
+                  const Duration(milliseconds: 10),
+                  () => NavigationDecision.navigate);
+              return decision;
+            },
+            onPageFinished: (String url) => pageLoads.add(url),
+          ),
+        ),
+      );
+
+      await pageLoads.stream.first; // Wait for initial page load.
+      final WebViewController controller = await controllerCompleter.future;
+      await controller
+          .evaluateJavascript('location.href = "https://www.google.com"');
+
+      await pageLoads.stream.first; // Wait for second page to load.
+      final String currentUrl = await controller.currentUrl();
+      expect(currentUrl, 'https://www.google.com/');
+    });
+  });
 }
 
 // JavaScript booleans evaluate to different string values on Android and iOS.

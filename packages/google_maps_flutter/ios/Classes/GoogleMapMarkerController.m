@@ -95,7 +95,7 @@ static NSArray* PositionToJson(CLLocationCoordinate2D data) {
 static void InterpretMarkerOptions(NSDictionary* data, id<FLTGoogleMapMarkerOptionsSink> sink,
                                    NSObject<FlutterPluginRegistrar>* registrar) {
   NSNumber* alpha = data[@"alpha"];
-  if (alpha) {
+  if (alpha != nil) {
     [sink setAlpha:ToFloat(alpha)];
   }
   NSArray* anchor = data[@"anchor"];
@@ -103,7 +103,7 @@ static void InterpretMarkerOptions(NSDictionary* data, id<FLTGoogleMapMarkerOpti
     [sink setAnchor:ToPoint(anchor)];
   }
   NSNumber* draggable = data[@"draggable"];
-  if (draggable) {
+  if (draggable != nil) {
     [sink setDraggable:ToBool(draggable)];
   }
   NSArray* icon = data[@"icon"];
@@ -112,11 +112,11 @@ static void InterpretMarkerOptions(NSDictionary* data, id<FLTGoogleMapMarkerOpti
     [sink setIcon:image];
   }
   NSNumber* flat = data[@"flat"];
-  if (flat) {
+  if (flat != nil) {
     [sink setFlat:ToBool(flat)];
   }
   NSNumber* consumeTapEvents = data[@"consumeTapEvents"];
-  if (consumeTapEvents) {
+  if (consumeTapEvents != nil) {
     [sink setConsumeTapEvents:ToBool(consumeTapEvents)];
   }
   InterpretInfoWindow(sink, data);
@@ -125,15 +125,15 @@ static void InterpretMarkerOptions(NSDictionary* data, id<FLTGoogleMapMarkerOpti
     [sink setPosition:ToLocation(position)];
   }
   NSNumber* rotation = data[@"rotation"];
-  if (rotation) {
+  if (rotation != nil) {
     [sink setRotation:ToDouble(rotation)];
   }
   NSNumber* visible = data[@"visible"];
-  if (visible) {
+  if (visible != nil) {
     [sink setVisible:ToBool(visible)];
   }
   NSNumber* zIndex = data[@"zIndex"];
-  if (zIndex) {
+  if (zIndex != nil) {
     [sink setZIndex:ToInt(zIndex)];
   }
 }

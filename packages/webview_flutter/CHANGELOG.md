@@ -1,6 +1,11 @@
-## 0.3.15+4
+## 0.3.17
 
-* Added support for loading progress trackinging.
+* Add progress tracking support.
+
+## 0.3.16
+
+* Add support for async NavigationDelegates. Synchronous NavigationDelegates
+  should still continue to function without any change in behavior.
 
 ## 0.3.15+3
 
