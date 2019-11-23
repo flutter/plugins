@@ -1,3 +1,7 @@
+## 0.6.1+1
+
+* Support v2 embedding.
+
 ## 0.6.1
 
 * Added ability to stop authentication (For Android).
