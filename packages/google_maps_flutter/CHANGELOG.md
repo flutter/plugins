@@ -1,3 +1,7 @@
+## 0.5.22+13
+
+* iOS: add a cache for defaultMarker(WithHue) and fromBytes icons.
+
 ## 0.5.21+12
 
 * Update driver tests in the example app to e2e tests.
