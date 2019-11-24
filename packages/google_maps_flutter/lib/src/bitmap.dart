@@ -79,8 +79,13 @@ class BitmapDescriptor {
 
   /// Creates a BitmapDescriptor using an array of bytes that must be encoded
   /// as PNG.
-  static BitmapDescriptor fromBytes(Uint8List byteData) {
-    return BitmapDescriptor._(<dynamic>['fromBytes', byteData]);
+  /// iOS only: Set `tag` to cache the image with this tag.
+  static BitmapDescriptor fromBytes(Uint8List byteData, {String tag}) {
+    if (tag == null) {
+      return BitmapDescriptor._(<dynamic>['fromBytes', byteData]);
+    } else {
+      return BitmapDescriptor._(<dynamic>['fromBytes', byteData, tag]);
+    }
   }
 
   final dynamic _json;

@@ -168,12 +168,24 @@ static UIImage* scaleImage(UIImage* image, NSNumber* scaleParam) {
 
 static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray* iconData) {
   UIImage* image;
+  static NSMutableDictionary* iconsCache;
+
+  if (iconsCache == nil) {
+    iconsCache = [NSMutableDictionary dictionary];
+  }
+
+  NSString *key;
   if ([iconData.firstObject isEqualToString:@"defaultMarker"]) {
     CGFloat hue = (iconData.count == 1) ? 0.0f : ToDouble(iconData[1]);
+    key = [NSString stringWithFormat:@"%@/%f", iconData.firstObject, hue];
+    if (iconsCache[key] != nil) {
+      return iconsCache[key];
+    }
     image = [GMSMarker markerImageWithColor:[UIColor colorWithHue:hue / 360.0
-                                                       saturation:1.0
-                                                       brightness:0.7
-                                                            alpha:1.0]];
+                                                    saturation:1.0
+                                                    brightness:0.7
+                                                    alpha:1.0]];
+    iconsCache[key] = image;
   } else if ([iconData.firstObject isEqualToString:@"fromAsset"]) {
     if (iconData.count == 2) {
       image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
@@ -183,6 +195,7 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
     }
   } else if ([iconData.firstObject isEqualToString:@"fromAssetImage"]) {
     if (iconData.count == 3) {
+      // imageNamed already uses its own caching system (see iOS doc)
       image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
       NSNumber* scaleParam = iconData[2];
       image = scaleImage(image, scaleParam);
@@ -196,11 +209,21 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
       @throw exception;
     }
   } else if ([iconData[0] isEqualToString:@"fromBytes"]) {
-    if (iconData.count == 2) {
+    if ((iconData.count == 2) || (iconData.count == 3)) {
+      key = nil;
+      if (iconData.count == 3) {
+          key = [NSString stringWithFormat:@"%@/%f", iconData[0], iconData[2]];
+          if (iconsCache[key] != nil) {
+            return iconsCache[key];
+          }
+      }
       @try {
         FlutterStandardTypedData* byteData = iconData[1];
         CGFloat screenScale = [[UIScreen mainScreen] scale];
         image = [UIImage imageWithData:[byteData data] scale:screenScale];
+        if (key != nil) {
+          iconsCache[key] = image;
+        }
       } @catch (NSException* exception) {
         @throw [NSException exceptionWithName:@"InvalidByteDescriptor"
                                        reason:@"Unable to interpret bytes as a valid image."
@@ -208,7 +231,7 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
       }
     } else {
       NSString* error = [NSString
-          stringWithFormat:@"fromBytes should have exactly one argument, the bytes. Got: %lu",
+          stringWithFormat:@"fromBytes should have exactly 2 or 3 arguments. Got: %lu",
                            (unsigned long)iconData.count];
       NSException* exception = [NSException exceptionWithName:@"InvalidByteDescriptor"
                                                        reason:error

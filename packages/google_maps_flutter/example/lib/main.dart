@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'animate_camera.dart';
+import 'many_markers.dart';
 import 'map_click.dart';
 import 'map_coordinates.dart';
 import 'map_ui.dart';
@@ -30,6 +31,7 @@ final List<Page> _allPages = <Page>[
   PlacePolygonPage(),
   PlaceCirclePage(),
   PaddingPage(),
+  ManyMarkersPage(),
 ];
 
 class MapsDemo extends StatelessWidget {
@@ -48,6 +50,7 @@ class MapsDemo extends StatelessWidget {
       body: ListView.builder(
         itemCount: _allPages.length,
         itemBuilder: (_, int index) => ListTile(
+          key: Key(_allPages[index].title),
           leading: _allPages[index].leading,
           title: Text(_allPages[index].title),
           onTap: () => _pushPage(context, _allPages[index]),
