@@ -79,8 +79,10 @@ abstract class SharedPreferencesStorePlatform {
 ///
 /// Data does not persist across application restarts. This is useful in unit-tests.
 class InMemorySharedPreferencesStore extends SharedPreferencesStorePlatform {
+  /// Instantiates an empty in-memory preferences store.
   InMemorySharedPreferencesStore.empty() : _data = <String, Object>{};
 
+  /// Instantiates an in-memory preferences store containing a copy of [data].
   InMemorySharedPreferencesStore.withData(Map<String, Object> data)
       : _data = Map<String, Object>.from(data);
 
