@@ -19,6 +19,11 @@ class SharedPreferences {
 
   static const String _prefix = 'flutter.';
   static Completer<SharedPreferences> _completer;
+
+  /// Loads and parses the [SharedPreferences] for this app from disk.
+  ///
+  /// Because this is reading from disk, it shouldn't be awaited in
+  /// performance-sensitive blocks.
   static Future<SharedPreferences> getInstance() async {
     if (_completer == null) {
       _completer = Completer<SharedPreferences>();

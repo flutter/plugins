@@ -42,26 +42,46 @@ USB and debugging enabled on that device.
 
 ## Running the tests
 
-Flutter plugins have both unit tests of their Dart API and integration tests that run on a virtual or actual device.
-
-To run the unit tests:
-
-```
-flutter test test/<name_of_plugin>_test.dart
-```
+### Integration tests
 
 To run the integration tests using Flutter driver:
 
-```
+```console
 cd example
-flutter drive test/<name_of_plugin>.dart
+flutter drive test_driver/<name_of_plugin_test>.dart
 ```
 
 To run integration tests as instrumentation tests on a local Android device:
 
-```
+```console
 cd example
-(cd android && ./gradlew -Ptarget=$(pwd)/../test_live/<name_of_plugin>_test.dart connectedAndroidTest)
+flutter build apk
+cd android && ./gradlew -Ptarget=$(pwd)/../test_driver/<name_of_plugin>_test.dart app:connectedAndroidTest
+```
+
+These tests may also be in folders just named "test," or have filenames ending
+with "e2e".
+
+### Dart unit tests
+
+To run the unit tests:
+
+```console
+flutter test test/<name_of_plugin>_test.dart
+```
+
+### Java unit tests
+
+These can be ran through Android Studio once the example app is opened as an
+Android project.
+
+Without Android Studio, they can be ran through the terminal.
+
+```console
+cd example
+flutter build apk
+cd android
+./gradlew test
 ```
 
 ## Contributing code
@@ -100,13 +120,6 @@ Please make sure all your checkins have detailed commit messages explaining the 
 Plugins tests are run automatically on contributions using Cirrus CI. However, due to
 cost constraints, pull requests from non-committers may not run all the tests
 automatically.
-
-The plugins team prefers that unit tests are written using `setMockMethodCallHandler`
-rather than using mockito to mock out `MethodChannel`. For a list of the plugins that
-are still using the mockito testing style and need to be converted, see
-[issue 34284](https://github.com/flutter/flutter/issues/34284). If you are contributing
-tests to an existing plugin that uses mockito `MethodChannel`, consider converting
-them to use `setMockMethodCallHandler` instead.
 
 Once you've gotten an LGTM from a project maintainer and once your PR has received
 the green light from all our automated testing, wait for one the package maintainers

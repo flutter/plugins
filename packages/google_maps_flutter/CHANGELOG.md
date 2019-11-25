@@ -1,6 +1,10 @@
-## 0.5.21+12
+## 0.5.21+13
 
 * Add documentation.
+
+## 0.5.21+12
+
+* Update driver tests in the example app to e2e tests.
 
 ## 0.5.21+11
 
