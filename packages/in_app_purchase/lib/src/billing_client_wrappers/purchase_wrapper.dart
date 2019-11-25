@@ -282,19 +282,20 @@ enum PurchaseStateWrapper {
   @JsonValue(0)
   unspecified_state,
 
-  /// The state is purchased.
+  /// The user has completed the purchase process.
   ///
-  /// The production should be delivered and the purchase should be acknowledged on this state.
+  /// The production should be delivered and then the purchase should be acknowledged.
   /// * See also [BillingClient.acknowledgePurchase] for more details on acknowledging purchases.
   @JsonValue(1)
   purchased,
 
-  /// The state is pending.
+  /// The user has started the purchase process.
   ///
-  /// No actions on the [PurchaseWrapper] should be performed on this state.
-  /// Wait for the state becomes [PurchaseStateWrapper.purchased] to perform further actions.
+  /// The user should follow the instructions that were given to them by the Play
+  /// Billing Library to complete the purchase.
   ///
-  /// A UI can be also displayed on this state to indicate the purchase is in action.
+  /// You can also choose to remind the user to complete the purchase if you detected a
+  /// [PurchaseWrapper] is still in the `pending` state in the future while calling [BillingClient.queryPurchases].
   @JsonValue(2)
   pending,
 }

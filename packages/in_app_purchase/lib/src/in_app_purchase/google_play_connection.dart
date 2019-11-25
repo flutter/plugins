@@ -69,8 +69,11 @@ class GooglePlayConnection
 
   @override
   Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase,
-      {String developerPayload}) {
-    return billingClient.acknowledgePurchase(
+      {String developerPayload}) async {
+    if (purchase.billingClientPurchase.isAcknowledged) {
+      return BillingResultWrapper(responseCode: BillingResponse.ok);
+    }
+    return await billingClient.acknowledgePurchase(
         purchase.verificationData.serverVerificationData,
         developerPayload: developerPayload);
   }
