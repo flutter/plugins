@@ -37,13 +37,13 @@ void main() {
       final int validId = 1;
 
       // Callback should take a single int param.
-      expect(
+      await expectLater(
           () => AndroidAlarmManager.oneShotAt(
               validTime, validId, invalidCallback),
           throwsAssertionError);
 
       // ID should be less than 32 bits.
-      expect(
+      await expectLater(
           () => AndroidAlarmManager.oneShotAt(
               validTime, 2147483648, validCallback),
           throwsAssertionError);
@@ -77,7 +77,7 @@ void main() {
       });
 
       final bool result = await AndroidAlarmManager.oneShotAt(
-          alarm, id, (int id) => id,
+          alarm, id, validCallback,
           alarmClock: alarmClock,
           allowWhileIdle: allowWhileIdle,
           exact: exact,
@@ -119,7 +119,7 @@ void main() {
     });
 
     final bool result = await AndroidAlarmManager.oneShot(
-        alarm, id, (int id) => id,
+        alarm, id, validCallback,
         alarmClock: alarmClock,
         allowWhileIdle: allowWhileIdle,
         exact: exact,
@@ -135,13 +135,13 @@ void main() {
       final int validId = 1;
 
       // Callback should take a single int param.
-      expect(
+      await expectLater(
           () => AndroidAlarmManager.periodic(
               validDuration, validId, invalidCallback),
           throwsAssertionError);
 
       // ID should be less than 32 bits.
-      expect(
+      await expectLater(
           () => AndroidAlarmManager.periodic(
               validDuration, 2147483648, validCallback),
           throwsAssertionError);
