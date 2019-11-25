@@ -158,6 +158,16 @@ public class TranslatorTest {
     assertEquals(billingResultMap.get("debugMessage"), newBillingResult.getDebugMessage());
   }
 
+  @Test
+  public void fromBillingResult_dubugMessageNull() throws JSONException {
+    BillingResult newBillingResult =
+        BillingResult.newBuilder().setResponseCode(BillingClient.BillingResponseCode.OK).build();
+    Map<String, Object> billingResultMap = Translator.fromBillingResult(newBillingResult);
+
+    assertEquals(billingResultMap.get("responseCode"), newBillingResult.getResponseCode());
+    assertEquals(billingResultMap.get("debugMessage"), newBillingResult.getDebugMessage());
+  }
+
   private void assertSerialized(SkuDetails expected, Map<String, Object> serialized) {
     assertEquals(expected.getDescription(), serialized.get("description"));
     assertEquals(expected.getFreeTrialPeriod(), serialized.get("freeTrialPeriod"));

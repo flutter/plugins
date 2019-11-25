@@ -109,9 +109,15 @@ class PurchaseWrapper {
   final String developerPayload;
 
   /// Whether the purchase has been acknowledged.
+  ///
+  /// A successful purchase has to be acknowledged within 3 days after the purchase via [BillingClient.acknowledgePurchase].
+  /// * See also [BillingClient.acknowledgePurchase] for more details on acknowledging purchases.
   final bool isAcknowledged;
 
-  /// The state of purchase.
+  /// Determines the current state of the purchase.
+  ///
+  /// [BillingClient.acknowledgePurchase] should only be called when the `purchaseState` is [PurchaseStateWrapper.purchased].
+  /// * See also [BillingClient.acknowledgePurchase] for more details on acknowledging purchases.
   final PurchaseStateWrapper purchaseState;
 }
 
@@ -264,57 +270,31 @@ class PurchasesHistoryResult {
   final List<PurchaseHistoryRecordWrapper> purchaseHistoryRecordList;
 }
 
-/// The parameter object used when consuming a purchase.
-///
-/// See also [BillingClient.consumeAsync] for consuming a purchase.
-class ConsumeParams {
-  /// Constructs the [ConsumeParams].
-  ///
-  /// The `purchaseToken` must not be null.
-  /// The default value of `developerPayload` is null.
-  ConsumeParams({@required this.purchaseToken, this.developerPayload = null});
-
-  /// The developer data associated with the purchase to be consumed.
-  ///
-  /// Defaults to null.
-  final String developerPayload;
-
-  /// The token that identifies the purchase to be consumed.
-  final String purchaseToken;
-}
-
-/// The parameter object used when acknowledge a purchase.
-///
-/// See also [BillingClient.acknowledgePurchase] for acknowledging a purchase.
-class AcknowledgeParams {
-  /// Constructs the [AcknowledgeParams].
-  ///
-  /// The `purchaseToken` must not be null.
-  /// The default value of `developerPayload` is null.
-  AcknowledgeParams(
-      {@required this.purchaseToken, this.developerPayload = null});
-
-  /// The developer data associated with the purchase to be acknowledged.
-  ///
-  /// Defaults to null.
-  final String developerPayload;
-
-  /// The token that identifies the purchase to be acknowledged.
-  final String purchaseToken;
-}
-
 /// Possible state of a [PurchaseWrapper].
 ///
 /// Wraps
 /// [`BillingClient.api.Purchase.PurchaseState`](https://developer.android.com/reference/com/android/billingclient/api/Purchase.PurchaseState.html).
 /// * See also: [PurchaseWrapper].
 enum PurchaseStateWrapper {
+  /// The state is unspecified.
+  ///
+  /// No actions on the [PurchaseWrapper] should be performed on this state.
   @JsonValue(0)
   unspecified_state,
 
+  /// The state is purchased.
+  ///
+  /// The production should be delivered and the purchase should be acknowledged on this state.
+  /// * See also [BillingClient.acknowledgePurchase] for more details on acknowledging purchases.
   @JsonValue(1)
   purchased,
 
+  /// The state is pending.
+  ///
+  /// No actions on the [PurchaseWrapper] should be performed on this state.
+  /// Wait for the state becomes [PurchaseStateWrapper.purchased] to perform further actions.
+  ///
+  /// A UI can be also displayed on this state to indicate the purchase is in action.
   @JsonValue(2)
   pending,
 }

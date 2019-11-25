@@ -176,7 +176,7 @@ class SkuDetailsResponseWrapper {
   int get hashCode => hashValues(billingResult, skuDetailsList);
 }
 
-/// Params containing the response code and the debug message from In-app Billing API response.
+/// Params containing the response code and the debug message from the Play Billing API response.
 @JsonSerializable()
 @BillingResponseConverter()
 class BillingResultWrapper {
@@ -190,10 +190,10 @@ class BillingResultWrapper {
   factory BillingResultWrapper.fromJson(Map map) =>
       _$BillingResultWrapperFromJson(map);
 
-  /// Response code returned in In-app Billing API calls.
+  /// Response code returned in the Play Billing API calls.
   final BillingResponse responseCode;
 
-  /// Debug message returned in In-app Billing API calls.
+  /// Debug message returned in the Play Billing API calls.
   ///
   /// This message uses an en-US locale and should not be shown to users.
   final String debugMessage;

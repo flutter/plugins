@@ -295,11 +295,8 @@ void main() {
           name: consumeMethodName,
           value: buildBillingResultMap(expectedBillingResult));
 
-      final ConsumeParams params = ConsumeParams(
-          purchaseToken: 'dummy token', developerPayload: 'dummy payload');
-
-      final BillingResultWrapper billingResult =
-          await billingClient.consumeAsync(params);
+      final BillingResultWrapper billingResult = await billingClient
+          .consumeAsync('dummy token', developerPayload: 'dummy payload');
 
       expect(billingResult, equals(expectedBillingResult));
     });
@@ -317,11 +314,9 @@ void main() {
           name: acknowledgeMethodName,
           value: buildBillingResultMap(expectedBillingResult));
 
-      final AcknowledgeParams params = AcknowledgeParams(
-          purchaseToken: 'dummy token', developerPayload: 'dummy payload');
-
       final BillingResultWrapper billingResult =
-          await billingClient.acknowledgePurchase(params);
+          await billingClient.acknowledgePurchase('dummy token',
+              developerPayload: 'dummy payload');
 
       expect(billingResult, equals(expectedBillingResult));
     });

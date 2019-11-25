@@ -70,19 +70,17 @@ class GooglePlayConnection
   @override
   Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase,
       {String developerPayload}) {
-    AcknowledgeParams params = AcknowledgeParams(
-        purchaseToken: purchase.verificationData.serverVerificationData,
+    return billingClient.acknowledgePurchase(
+        purchase.verificationData.serverVerificationData,
         developerPayload: developerPayload);
-    return billingClient.acknowledgePurchase(params);
   }
 
   @override
   Future<BillingResultWrapper> consumePurchase(PurchaseDetails purchase,
       {String developerPayload}) {
-    ConsumeParams params = ConsumeParams(
-        purchaseToken: purchase.verificationData.serverVerificationData,
+    return billingClient.consumeAsync(
+        purchase.verificationData.serverVerificationData,
         developerPayload: developerPayload);
-    return billingClient.consumeAsync(params);
   }
 
   @override

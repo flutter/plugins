@@ -206,21 +206,23 @@ class BillingClient {
   /// Consuming can only be done on an item that's owned, and as a result of consumption, the user will no longer own it.
   /// Consumption is done asynchronously. The method returns a Future containing a [BillingResultWrapper].
   ///
-  /// The `params` must not be null.
+  /// The `purchaseToken` must not be null.
+  /// The `developerPayload` is the developer data associated with the purchase to be consumed, it defaults to null.
   ///
   /// This wraps [`BillingClient#consumeAsync(String, ConsumeResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#consumeAsync(java.lang.String,%20com.android.billingclient.api.ConsumeResponseListener))
-  Future<BillingResultWrapper> consumeAsync(ConsumeParams params) async {
-    assert(params != null);
+  Future<BillingResultWrapper> consumeAsync(String purchaseToken,
+      {String developerPayload}) async {
+    assert(purchaseToken != null);
     return BillingResultWrapper.fromJson(await channel
         .invokeMapMethod<String, dynamic>(
             'BillingClient#consumeAsync(String, ConsumeResponseListener)',
             <String, String>{
-          'purchaseToken': params.purchaseToken,
-          'developerPayload': params.developerPayload,
+          'purchaseToken': purchaseToken,
+          'developerPayload': developerPayload,
         }));
   }
 
-  /// Acknowledge an In-App purchase.
+  /// Acknowledge an in-app purchase.
   ///
   /// The developer is required to acknowledge that they have granted entitlement for all in-app purchases.
   ///
@@ -235,18 +237,19 @@ class BillingClient {
   /// Please refer to https://developer.android.com/google/play/billing/billing_library_overview#acknowledge for more
   /// details.
   ///
-  /// The `params` must not be null.
+  /// The `purchaseToken` must not be null.
+  /// The `developerPayload` is the developer data associated with the purchase to be consumed, it defaults to null.
   ///
   /// This wraps [`BillingClient#acknowledgePurchase(String, AcknowledgePurchaseResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#acknowledgePurchase(com.android.billingclient.api.AcknowledgePurchaseParams,%20com.android.billingclient.api.AcknowledgePurchaseResponseListener))
-  Future<BillingResultWrapper> acknowledgePurchase(
-      AcknowledgeParams params) async {
-    assert(params != null);
+  Future<BillingResultWrapper> acknowledgePurchase(String purchaseToken,
+      {String developerPayload}) async {
+    assert(purchaseToken != null);
     return BillingResultWrapper.fromJson(await channel.invokeMapMethod<String,
             dynamic>(
         'BillingClient#(AcknowledgePurchaseParams params, (AcknowledgePurchaseParams, AcknowledgePurchaseResponseListener)',
         <String, String>{
-          'purchaseToken': params.purchaseToken,
-          'developerPayload': params.developerPayload,
+          'purchaseToken': purchaseToken,
+          'developerPayload': developerPayload,
         }));
   }
 

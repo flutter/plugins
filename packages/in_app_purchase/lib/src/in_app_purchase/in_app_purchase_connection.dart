@@ -174,16 +174,16 @@ abstract class InAppPurchaseConnection {
   /// user.
   ///
   /// You are responsible for completing every [PurchaseDetails] whose
-  /// [PurchaseDetails.status] is [PurchaseStatus.purchased].
-  /// Additionally, the purchase needs to be completed if the [PurchaseDetails.status]
-  /// [[PurchaseStatus.error].
+  /// [PurchaseDetails.status] is [PurchaseStatus.purchased]. Additionally on iOS,
+  /// the purchase needs to be completed if the [PurchaseDetails.status] is [PurchaseStatus.error].
   /// Completing a [PurchaseStatus.pending] purchase will cause an exception.
   /// For convenience, [PurchaseDetails.pendingCompletePurchase] indicates if a purchase is pending for completion.
   ///
   /// The method returns a [BillingResultWrapper] to indicate a detailed status of the complete process.
   ///
-  /// Warning!Fail to call this method within 3 days of the purchase will result a refund on Android.
+  /// Warning!Failure to call this method within 3 days of the purchase will result a refund on Android.
   /// The [consumePurchase] acts as an implicit [completePurchase] on Android.
+  ///
   /// The optional parameter `developerPayload` only works on Android.
   Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase,
       {String developerPayload = null});

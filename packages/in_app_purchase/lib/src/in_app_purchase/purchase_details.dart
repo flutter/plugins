@@ -131,12 +131,12 @@ class PurchaseDetails {
     if (_platform == _kPlatformIOS) {
       if (status == PurchaseStatus.purchased ||
           status == PurchaseStatus.error) {
-        pendingCompletePurchase = true;
+        _pendingCompletePurchase = true;
       }
     }
     if (_platform == _kPlatformAndroid) {
       if (status == PurchaseStatus.purchased) {
-        pendingCompletePurchase = true;
+        _pendingCompletePurchase = true;
       }
     }
     _status = status;
@@ -157,11 +157,13 @@ class PurchaseDetails {
   /// This is null on Android.
   final PurchaseWrapper billingClientPurchase;
 
-  /// The developer has to call [InAppPurchaseConnection.completePurchase] if the value is `true`.
+  /// The developer has to call [InAppPurchaseConnection.completePurchase] if the value is `true`
+  /// and the product has been delivered to the user.
   ///
   /// The initial value is `false`.
   /// * See also [InAppPurchaseConnection.completePurchase] for more details on completing purchases.
-  bool pendingCompletePurchase = false;
+  bool get pendingCompletePurchase => _pendingCompletePurchase;
+  bool _pendingCompletePurchase = false;
 
   // The platform that the object is created on.
   //
@@ -190,9 +192,9 @@ class PurchaseDetails {
             ? (transaction.transactionTimeStamp * 1000).toInt().toString()
             : null,
         this.skPaymentTransaction = transaction,
-        this.billingClientPurchase = null {
-    this.status = SKTransactionStatusConverter()
-        .toPurchaseStatus(transaction.transactionState);
+        this.billingClientPurchase = null,
+        _status = SKTransactionStatusConverter()
+            .toPurchaseStatus(transaction.transactionState) {
     _platform = _kPlatformIOS;
   }
 
@@ -206,9 +208,9 @@ class PurchaseDetails {
             source: IAPSource.GooglePlay),
         this.transactionDate = purchase.purchaseTime.toString(),
         this.skPaymentTransaction = null,
-        this.billingClientPurchase = purchase {
-    this.status =
-        PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState);
+        this.billingClientPurchase = purchase,
+        _status =
+            PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState) {
     _platform = _kPlatformAndroid;
   }
 }

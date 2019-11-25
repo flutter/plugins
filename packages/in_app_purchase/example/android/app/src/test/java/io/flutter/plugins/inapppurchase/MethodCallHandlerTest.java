@@ -513,7 +513,7 @@ public class MethodCallHandlerTest {
   }
 
   @Test
-  public void acknowledgetPurchase() {
+  public void acknowledgePurchase() {
     establishConnectedBillingClient(null, null);
     ArgumentCaptor<BillingResult> resultCaptor = ArgumentCaptor.forClass(BillingResult.class);
     BillingResult billingResult =

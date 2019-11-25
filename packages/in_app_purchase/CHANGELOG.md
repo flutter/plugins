@@ -1,4 +1,4 @@
-## 0.3.2
+## 0.3.0
 
 * Migrate the `Google Play Library` to 2.0.3.
      * Introduce a new class `BillingResultWrapper` which contains a detailed result of a BillingClient operation.
