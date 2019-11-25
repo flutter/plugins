@@ -1,3 +1,7 @@
+## 0.5.21+12
+
+* Add documentation.
+
 ## 0.5.21+11
 
 * Define clang module for iOS, fix analyzer warnings.
