@@ -139,7 +139,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
 
           return VideoEvent(
             buffered: values.map<DurationRange>(_toDurationRange).toList(),
-            eventType: VideoEventType.completed,
+            eventType: VideoEventType.bufferingUpdate,
           );
         case 'bufferingStart':
           return VideoEvent(eventType: VideoEventType.bufferingStart);
