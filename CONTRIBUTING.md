@@ -178,14 +178,19 @@ Some things to keep in mind before publishing the release:
 
 Releasing a package is a two-step process.
 
-1. Push the package update to [pub.dev](https://pub.dev).
+1. Push the package update to [pub.dev](https://pub.dev) using `pub publish`.
 2. Tag the commit with git in the format of `<package_name>-v<package_version>`,
-   and then push the tag to `flutter/plugins` master branch.
+   and then push the tag to the `flutter/plugins` master branch. This can be
+   done manually with `git tag $tagname && git push upstream $tagname` while
+   checked out on the commit that updated `version` in `pubspec.yaml`.
 
 We've recently updated
 [flutter_plugin_tools](https://github.com/flutter/plugin_tools) to wrap both of
-those steps into one command to make it a little easier. Install the tool by
-running:
+those steps into one command to make it a little easier. This new tool is
+experimental. Feel free to fall back on manually running `pub publish` and
+creating and pushing the tag in git if there are issues with it.
+
+Install the tool by running:
 
 ```terminal
 $ pub global activate flutter_plugin_tools
