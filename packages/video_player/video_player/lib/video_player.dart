@@ -16,7 +16,7 @@ export 'package:video_player_platform_interface/video_player_platform_interface.
 
 // This will clear all open videos on the platform when a full restart is
 // performed.
-final VideoPlayerPlatform _ = VideoPlayerPlatform.instance..init();
+final VideoPlayerPlatform _ = VideoPlayerPlatform.instance..init(); // ignore: unused_element
 
 /// The duration, current position, buffering state, error state and settings
 /// of a [VideoPlayerController].
