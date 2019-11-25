@@ -20,7 +20,7 @@ class ShortcutItem {
   /// Constructs an instance with the given [type], [localizedTitle], and
   /// [icon].
   ///
-  /// Only [icon] should be nullable. It will remain null if unset.
+  /// Only [icon] should be nullable. It will remain `null` if unset.
   const ShortcutItem({
     @required this.type,
     @required this.localizedTitle,

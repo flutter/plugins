@@ -75,7 +75,7 @@ void main() {
     await expectLater(await quickActionsHandler.future, isTrue);
   });
 
-  test('ShortCut item can be constructed', () {
+  test('Shortcut item can be constructed', () {
     const String type = 'type';
     const String localizedTitle = 'title';
     const String icon = 'foo';
