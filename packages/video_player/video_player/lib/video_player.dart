@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
-    show DurationRange, DataSourceType;
+    show DurationRange, DataSourceType, VideoFormat;
 
 // This will clear all open videos on the platform when a full restart is
 // performed.
