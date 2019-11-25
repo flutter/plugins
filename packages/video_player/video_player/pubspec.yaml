@@ -13,7 +13,7 @@ flutter:
 
 dependencies:
   meta: "^1.0.5"
-  video_player_platform_interface: ^1.0.0
+  video_player_platform_interface: ^1.0.1
 
   flutter:
     sdk: flutter
