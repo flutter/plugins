@@ -4,6 +4,10 @@
 
 part of google_maps_flutter;
 
+/// Callback method for when the map is ready to be used.
+///
+/// Pass to [GoogleMap.onMapCreated] to receive a [GoogleMapController] when the
+/// map is created.
 typedef void MapCreatedCallback(GoogleMapController controller);
 
 /// Callback that receives updates to the camera position.
@@ -14,6 +18,7 @@ typedef void MapCreatedCallback(GoogleMapController controller);
 /// This is used in [GoogleMap.onCameraMove].
 typedef void CameraPositionCallback(CameraPosition position);
 
+/// A widget which displays a map with data obtained from the Google Maps service.
 class GoogleMap extends StatefulWidget {
   const GoogleMap({
     Key key,
@@ -48,6 +53,9 @@ class GoogleMap extends StatefulWidget {
   })  : assert(initialCameraPosition != null),
         super(key: key);
 
+  /// Callback method for when the map is ready to be used.
+  ///
+  /// Used to receive a [GoogleMapController] for this [GoogleMap].
   final MapCreatedCallback onMapCreated;
 
   /// The initial position of the map's camera.
@@ -179,6 +187,7 @@ class GoogleMap extends StatefulWidget {
   /// were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
+  /// Creates a [State] for this [GoogleMap].
   @override
   State createState() => _GoogleMapState();
 }

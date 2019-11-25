@@ -14,6 +14,10 @@ class GoogleMapController {
     channel.setMethodCallHandler(_handleMethodCall);
   }
 
+  /// Initialize control of a [GoogleMap] with [id].
+  ///
+  /// Mainly for internal use when instantiating a [GoogleMapController] passed
+  /// in [GoogleMap.onMapCreated] callback.
   static Future<GoogleMapController> init(
     int id,
     CameraPosition initialCameraPosition,

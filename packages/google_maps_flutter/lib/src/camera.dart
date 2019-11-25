@@ -51,6 +51,9 @@ class CameraPosition {
   /// will be silently clamped to the supported range.
   final double zoom;
 
+  /// Serializes [CameraPosition].
+  ///
+  /// Mainly for internal use when calling [CameraUpdate.newCameraPosition].
   dynamic toMap() => <String, dynamic>{
         'bearing': bearing,
         'target': target._toJson(),
@@ -58,6 +61,9 @@ class CameraPosition {
         'zoom': zoom,
       };
 
+  /// Deserializes [CameraPosition] from a map.
+  ///
+  /// Mainly for internal use.
   static CameraPosition fromMap(dynamic json) {
     if (json == null) {
       return null;
