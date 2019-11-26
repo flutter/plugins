@@ -1,8 +1,7 @@
 group 'com.example.espresso'
-version '1.0-SNAPSHOT'
+version '1.0'
 
 buildscript {
-    ext.kotlin_version = '1.3.50'
     repositories {
         google()
         jcenter()
@@ -10,7 +9,6 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -22,14 +20,10 @@ rootProject.allprojects {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 28
 
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
     defaultConfig {
         minSdkVersion 16
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -37,8 +31,4 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
-}
-
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
