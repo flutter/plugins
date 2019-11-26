@@ -25,8 +25,6 @@ public final class SharedPreferencesIntegrationTest {
 
     @Test
     public void tapToCheckPersistentData() throws Exception {
-        onFlutterWidget(FlutterMatchers.withText("Shared Preferences Sample"))
-                .perform(FlutterActions.click());
         onFlutterWidget(FlutterMatchers.withTooltip("Clear")).perform(FlutterActions.click());
         onFlutterWidget(FlutterMatchers.withTooltip("Increment")).perform(FlutterActions.click());
         onFlutterWidget(FlutterMatchers.withValueKey("ResultText"))
