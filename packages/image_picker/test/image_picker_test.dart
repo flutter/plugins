@@ -162,9 +162,11 @@ void main() {
       test('passes the duration argument correctly', () async {
         await ImagePicker.pickVideo(source: ImageSource.camera);
         await ImagePicker.pickVideo(
-            source: ImageSource.camera, maxDuration: const Duration(seconds: 10));
+            source: ImageSource.camera,
+            maxDuration: const Duration(seconds: 10));
         await ImagePicker.pickVideo(
-            source: ImageSource.camera, maxDuration: const Duration(minutes: 1));
+            source: ImageSource.camera,
+            maxDuration: const Duration(minutes: 1));
         await ImagePicker.pickVideo(
             source: ImageSource.camera, maxDuration: const Duration(hours: 1));
         expect(
