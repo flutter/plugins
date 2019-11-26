@@ -71,7 +71,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   private boolean activityPaused = false;
   private BiometricPrompt biometricPrompt;
 
-  public AuthenticationHelper(
+  AuthenticationHelper(
       Lifecycle lifecycle,
       FragmentActivity activity,
       MethodCall call,
@@ -277,7 +277,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   public void onCreate(@NonNull LifecycleOwner owner) {}
 
   private static class UiThreadExecutor implements Executor {
-    public final Handler handler = new Handler(Looper.getMainLooper());
+    final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     public void execute(Runnable command) {

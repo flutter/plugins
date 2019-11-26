@@ -22,7 +22,11 @@ import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** LocalAuthPlugin */
+/**
+ * Flutter plugin providing access to local authentication.
+ *
+ * <p>Instantiate this in an add to app scenario to gracefully handle activity and context changes.
+ */
 @SuppressWarnings("deprecation")
 public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
   private static final String CHANNEL_NAME = "plugins.flutter.io/local_auth";
@@ -35,7 +39,16 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   private MethodChannel channel;
   private Lifecycle lifecycle;
 
-  /** Plugin registration. */
+  /**
+   * Registers a plugin with the v1 embedding api {@code io.flutter.plugin.common}.
+   *
+   * <p>Calling this will register the plugin with the passed registrar. However, plugins
+   * initialized this way won't react to changes in activity or context.
+   *
+   * @param registrar attaches this plugin's {@link
+   *     io.flutter.plugin.common.MethodChannel.MethodCallHandler} to the registrar's {@link
+   *     io.flutter.plugin.common.BinaryMessenger}.
+   */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
     channel.setMethodCallHandler(new LocalAuthPlugin(registrar.activity()));
@@ -45,6 +58,11 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     this.activity = activity;
   }
 
+  /**
+   * Default constructor for LocalAuthPlugin.
+   *
+   * <p>Use this constructor when adding this plugin to an app with v2 embedding.
+   */
   public LocalAuthPlugin() {}
 
   @Override
