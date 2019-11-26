@@ -1,11 +1,11 @@
 ## 0.4.0
 
-* Add missing documentation. Some of the public methods should have been
-  annotated as `@visibleForTesting` previously and were not, so the annotations
-  have been added now. **Potentially breaking change** this also removes a
-  public method that originally should have been private. It's unlikely that
-  this API has ever been used by consumers of the plugin, but the semantic
-  version has been upgraded anyway out of an abundance of caution.
+- Added missing documentation.
+- **Breaking change**. `channel` and `withMethodChannel` are now
+  `@visibleForTesting`. These methods are for plugin unit tests only and may be
+  removed in the future.
+- **Breaking change**. Removed `runLaunchAction` from public API. This method
+  was not meant to be used by consumers of the plugin.
 
 ## 0.3.3+1
 
