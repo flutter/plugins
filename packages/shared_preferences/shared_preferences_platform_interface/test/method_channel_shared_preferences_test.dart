@@ -43,9 +43,6 @@ void main() {
         if (methodCall.method == 'clear') {
           return await testData.clear();
         }
-        if (methodCall.method == 'commit') {
-          return await testData.commit();
-        }
         final RegExp setterRegExp = RegExp(r'set(.*)');
         final Match match = setterRegExp.matchAsPrefix(methodCall.method);
         if (match.groupCount == 1) {
@@ -110,11 +107,6 @@ void main() {
       expect(await store.clear(), true);
       expect(await testData.getAll(), isEmpty);
       expect(log.single.method, 'clear');
-    });
-
-    test('commit', () async {
-      expect(await store.commit(), true);
-      expect(log.single.method, 'commit');
     });
   });
 }

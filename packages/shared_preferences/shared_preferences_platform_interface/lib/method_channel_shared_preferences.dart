@@ -50,11 +50,6 @@ class MethodChannelSharedPreferencesStore
   }
 
   @override
-  Future<bool> commit() {
-    return _kChannel.invokeMethod<bool>('commit');
-  }
-
-  @override
   Future<Map<String, Object>> getAll() {
     return _kChannel.invokeMapMethod<String, Object>('getAll');
   }

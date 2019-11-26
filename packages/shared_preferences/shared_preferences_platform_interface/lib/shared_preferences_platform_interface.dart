@@ -55,11 +55,6 @@ abstract class SharedPreferencesStorePlatform {
   /// * Value type "StringList" must be passed if the value is of type `List<String>`.
   Future<bool> setValue(String valueType, String key, Object value);
 
-  /// This does not do anything.
-  ///
-  /// It is only here for backwards-compatibility.
-  Future<bool> commit();
-
   /// Removes all keys and values in the store.
   Future<bool> clear();
 
@@ -91,11 +86,6 @@ class InMemorySharedPreferencesStore extends SharedPreferencesStorePlatform {
   @override
   Future<bool> clear() async {
     _data.clear();
-    return true;
-  }
-
-  @override
-  Future<bool> commit() async {
     return true;
   }
 
