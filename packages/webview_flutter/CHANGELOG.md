@@ -1,3 +1,7 @@
+## 1.0.0+1
+
+* Support inline media on iPhone if the HTML5 content requests it.
+
 ## 1.0.0 - Out of developer preview 🎉.
 
 * Bumped the minimal Flutter SDK to 1.22 where platform views are out of developer preview, and
