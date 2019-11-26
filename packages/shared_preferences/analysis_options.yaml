@@ -1,11 +1,11 @@
-# This exists to add a lint for missing API docs just on this specific package,
-# since not all packages have coverage for all their public members yet and
-# adding it in would be non-trivial. `public_member_api_docs` should be applied
-# to new packages going forward, and ideally the main `analysis_options.yaml`
-# file as soon as possible.
+# This is a temporary file to allow us to land a new set of linter rules in a
+# series of manageable patches instead of one gigantic PR. It disables some of
+# the new lints that are already failing on this plugin, for this plugin. It
+# should be deleted and the failing lints addressed as soon as possible.
 
 include: ../../analysis_options.yaml
 
-linter:
-  rules:
-    - public_member_api_docs
+analyzer:
+  errors:
+    curly_braces_in_flow_control_structures: ignore
+    unawaited_futures: ignore
