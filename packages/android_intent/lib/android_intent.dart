@@ -37,7 +37,7 @@ class AndroidIntent {
     this.componentName,
     Platform platform,
   })  : assert(action != null),
-        _channel = const MethodChannel(_kChannelName),
+        _instanceChannel = const MethodChannel(_kChannelName),
         _platform = platform ?? const LocalPlatform();
 
   /// This constructor is only exposed for unit testing. Do not rely on this in
@@ -53,7 +53,7 @@ class AndroidIntent {
     this.arguments,
     this.package,
     this.componentName,
-  })  : _channel = channel,
+  })  : _instanceChannel = channel,
         _platform = platform;
 
   /// This is the general verb that the intent should attempt to do. This
@@ -94,7 +94,8 @@ class AndroidIntent {
   ///
   /// See https://developer.android.com/reference/android/content/Intent.html#setComponent(android.content.ComponentName).
   final String componentName;
-  final MethodChannel _channel;
+  static final MethodChannel _channel = const MethodChannel(_kChannelName);
+  final MethodChannel _instanceChannel;
   final Platform _platform;
 
   bool _isPowerOfTwo(int x) {
@@ -142,6 +143,28 @@ class AndroidIntent {
         args['componentName'] = componentName;
       }
     }
-    await _channel.invokeMethod<void>('launch', args);
+    await _instanceChannel.invokeMethod<void>('launch', args);
+  }
+
+  /// Obtain the Intent's extras
+  static Future<Map<dynamic, dynamic>> getIntentExtras() async {
+    final Map<dynamic, dynamic> extras =
+        await _channel.invokeMethod('getIntentExtras');
+    return extras;
+  }
+
+  /// Set the Intent's extras
+  static Future<void> setIntentExtra(String name, dynamic value) async {
+    final Map<String, dynamic> args = <String, dynamic>{
+      'name': name,
+      'value': value
+    };
+    await _channel.invokeMethod<void>('setIntentExtra', args);
+  }
+
+  /// Obtain the Intent's data
+  static Future<String> getIntentData() async {
+    final String data = await _channel.invokeMethod('getIntentData');
+    return data;
   }
 }

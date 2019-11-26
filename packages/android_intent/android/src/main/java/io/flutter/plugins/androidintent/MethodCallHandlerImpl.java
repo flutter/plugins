@@ -15,6 +15,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /** Forwards incoming {@link MethodCall}s to {@link IntentSender#send}. */
@@ -72,21 +73,40 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
    */
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-    String action = convertAction((String) call.argument("action"));
-    Integer flags = call.argument("flags");
-    String category = call.argument("category");
-    Uri data = call.argument("data") != null ? Uri.parse((String) call.argument("data")) : null;
-    Bundle arguments = convertArguments((Map<String, ?>) call.argument("arguments"));
-    String packageName = call.argument("package");
-    ComponentName componentName =
-        (!TextUtils.isEmpty(packageName)
-                && !TextUtils.isEmpty((String) call.argument("componentName")))
-            ? new ComponentName(packageName, (String) call.argument("componentName"))
-            : null;
+    if (call.method.equals("launch")) {
+      String action = convertAction((String) call.argument("action"));
+      Integer flags = call.argument("flags");
+      String category = call.argument("category");
+      Uri data = call.argument("data") != null ? Uri.parse((String) call.argument("data")) : null;
+      Bundle arguments = convertMapToBundle((Map<String, ?>) call.argument("arguments"));
+      String packageName = call.argument("package");
+      ComponentName componentName =
+          (!TextUtils.isEmpty(packageName)
+                  && !TextUtils.isEmpty((String) call.argument("componentName")))
+              ? new ComponentName(packageName, (String) call.argument("componentName"))
+              : null;
 
-    sender.send(action, flags, category, data, arguments, packageName, componentName);
+      sender.send(action, flags, category, data, arguments, packageName, componentName);
 
-    result.success(null);
+      result.success(null);
+    } else if (call.method.equals("getIntentExtras")) {
+      if (sender.getActivity() != null) {
+        Intent intent = sender.getActivity().getIntent();
+        result.success(convertBundleToMap(intent.getExtras()));
+      }
+    } else if (call.method.equals("setIntentExtra")) {
+      if (sender.getActivity() != null) {
+        Intent intent = sender.getActivity().getIntent();
+        Map extras = new HashMap(1);
+        extras.put((String) call.argument("name"), call.argument("value"));
+        intent.putExtras(convertMapToBundle(extras));
+      }
+    } else if (call.method.equals("getIntentData")) {
+      if (sender.getActivity() != null) {
+        Intent intent = sender.getActivity().getIntent();
+        result.success(intent.getData());
+      }
+    }
   }
 
   private static String convertAction(String action) {
@@ -106,7 +126,7 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     }
   }
 
-  private static Bundle convertArguments(Map<String, ?> arguments) {
+  private static Bundle convertMapToBundle(Map<String, ?> arguments) {
     Bundle bundle = new Bundle();
     if (arguments == null) {
       return bundle;
@@ -136,12 +156,50 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
       } else if (isTypedArrayList(value, String.class)) {
         bundle.putStringArrayList(key, (ArrayList<String>) value);
       } else if (isStringKeyedMap(value)) {
-        bundle.putBundle(key, convertArguments((Map<String, ?>) value));
+        bundle.putBundle(key, convertMapToBundle((Map<String, ?>) value));
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value);
       }
     }
     return bundle;
+  }
+
+  private Map<String, Object> convertBundleToMap(Bundle bundle) {
+    Map<String, Object> arguments = new HashMap<String, Object>();
+    if (bundle != null) {
+      for (String key : bundle.keySet()) {
+        Object value = bundle.get(key);
+
+        if (value instanceof Integer) {
+          arguments.put(key, (Integer) value);
+        } else if (value instanceof String) {
+          arguments.put(key, (String) value);
+        } else if (value instanceof Boolean) {
+          arguments.put(key, (Boolean) value);
+        } else if (value instanceof Double) {
+          arguments.put(key, (Double) value);
+        } else if (value instanceof Long) {
+          arguments.put(key, (Long) value);
+        } else if (value instanceof byte[]) {
+          arguments.put(key, (byte[]) value);
+        } else if (value instanceof int[]) {
+          arguments.put(key, (int[]) value);
+        } else if (value instanceof long[]) {
+          arguments.put(key, (long[]) value);
+        } else if (value instanceof double[]) {
+          arguments.put(key, (double[]) value);
+        } else if (isTypedArrayList(value, Integer.class)) {
+          arguments.put(key, (ArrayList<Integer>) value);
+        } else if (isTypedArrayList(value, String.class)) {
+          arguments.put(key, (ArrayList<String>) value);
+        } else if (value instanceof Bundle) {
+          arguments.put(key, convertBundleToMap((Bundle) value));
+        } else {
+          throw new UnsupportedOperationException("Unsupported type " + value);
+        }
+      }
+    }
+    return arguments;
   }
 
   private static boolean isTypedArrayList(Object value, Class<?> type) {

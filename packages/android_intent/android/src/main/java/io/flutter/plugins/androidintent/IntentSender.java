@@ -64,7 +64,27 @@ public final class IntentSender {
       return;
     }
 
-    Intent intent = new Intent(action);
+    Intent intent = null;
+
+    if (action.equals("action_app")) {
+      try {
+        intent =
+            applicationContext
+                .getPackageManager()
+                .getLeanbackLaunchIntentForPackage(applicationContext.getPackageName());
+      } catch (java.lang.NoSuchMethodError e) {
+      }
+
+      if (intent == null)
+        intent =
+            applicationContext
+                .getPackageManager()
+                .getLaunchIntentForPackage(applicationContext.getPackageName());
+
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    } else {
+      intent = new Intent(action);
+    }
 
     if (flags != null) {
       intent.addFlags(flags);
@@ -98,9 +118,17 @@ public final class IntentSender {
     }
   }
 
+  Activity getActivity() {
+    return this.activity;
+  }
+
   /** Caches the given {@code activity} to use for {@link #send}. */
   void setActivity(@Nullable Activity activity) {
     this.activity = activity;
+  }
+
+  Context getApplicationContext() {
+    return this.applicationContext;
   }
 
   /** Caches the given {@code applicationContext} to use for {@link #send}. */
