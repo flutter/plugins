@@ -1,3 +1,7 @@
+## 0.4.4+3
+
+* Add unit tests and DartDocs.
+
 ## 0.4.4+2
 
 * Remove AndroidX warning.
