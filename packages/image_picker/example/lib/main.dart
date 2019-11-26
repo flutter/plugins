@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if (isVideo) {
       final File file = await ImagePicker.pickVideo(
-          source: source, maxDuration: Duration(seconds: 10));
+          source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
     } else {
       try {
