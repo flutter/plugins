@@ -75,7 +75,7 @@ void main() {
           exact: true, wakeup: true);
       await Future<void>.delayed(const Duration(seconds: 2));
       // poll until file is updated
-      for (int i = 0; i < 10 && await readCounter() == startingValue; i++) {
+      while (await readCounter() == startingValue) {
         await Future<void>.delayed(const Duration(seconds: 1));
       }
       expect(await readCounter(), startingValue + 1);
@@ -90,7 +90,7 @@ void main() {
         const Duration(seconds: 1), alarmId, incrementCounter,
         wakeup: true, exact: true);
     // poll until file is updated
-    for (int i = 0; i < 100 && await readCounter() < startingValue + 2; i++) {
+    while(await readCounter() < startingValue + 2) {
       await Future<void>.delayed(const Duration(seconds: 1));
     }
     expect(await readCounter(), startingValue + 2);
