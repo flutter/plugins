@@ -20,6 +20,9 @@ typedef void CameraPositionCallback(CameraPosition position);
 
 /// A widget which displays a map with data obtained from the Google Maps service.
 class GoogleMap extends StatefulWidget {
+  /// Creates a widget displaying data from Google Maps services.
+  ///
+  /// [AssertionError] will be thrown if [initialCameraPosition] is null;
   const GoogleMap({
     Key key,
     @required this.initialCameraPosition,
@@ -262,12 +265,14 @@ class _GoogleMapState extends State<GoogleMap> {
       return;
     }
     final GoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
     controller._updateMapOptions(updates);
     _googleMapOptions = newOptions;
   }
 
   void _updateMarkers() async {
     final GoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
     controller._updateMarkers(
         _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
     _markers = _keyByMarkerId(widget.markers);
@@ -275,6 +280,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void _updatePolygons() async {
     final GoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
     controller._updatePolygons(
         _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
     _polygons = _keyByPolygonId(widget.polygons);
@@ -282,6 +288,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void _updatePolylines() async {
     final GoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
     controller._updatePolylines(
         _PolylineUpdates.from(_polylines.values.toSet(), widget.polylines));
     _polylines = _keyByPolylineId(widget.polylines);
@@ -289,6 +296,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void _updateCircles() async {
     final GoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
     controller._updateCircles(
         _CircleUpdates.from(_circles.values.toSet(), widget.circles));
     _circles = _keyByCircleId(widget.circles);

@@ -4,10 +4,15 @@
 
 part of google_maps_flutter;
 
-/// The position of the map "camera", the view point from which the world is
-/// shown in the map view. Aggregates the camera's [target] geographical
-/// location, its [zoom] level, [tilt] angle, and [bearing].
+/// The position of the map "camera", the view point from which the world is shown in the map view.
+///
+/// Aggregates the camera's [target] geographical location, its [zoom] level,
+/// [tilt] angle, and [bearing].
 class CameraPosition {
+  /// Creates a immutable representation of the [GoogleMap] camera.
+  ///
+  /// [AssertionError] is thrown if [bearing], [target], [tilt], or [zoom] are
+  /// null.
   const CameraPosition({
     this.bearing = 0.0,
     @required this.target,

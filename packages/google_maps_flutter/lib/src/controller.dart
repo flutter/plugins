@@ -34,6 +34,9 @@ class GoogleMapController {
     );
   }
 
+  /// Used to communicate with the native platform.
+  ///
+  /// Accessible only for testing.
   @visibleForTesting
   final MethodChannel channel;
 
