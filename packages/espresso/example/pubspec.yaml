@@ -1,0 +1,28 @@
+name: espresso_example
+description: Demonstrates how to use the espresso plugin.
+version: 0.0.1
+publish_to: 'none'
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.6.7 <2.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  espresso:
+    path: ../
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+flutter:
+  uses-material-design: true
