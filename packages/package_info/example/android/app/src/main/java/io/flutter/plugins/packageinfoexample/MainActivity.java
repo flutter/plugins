@@ -15,6 +15,5 @@ public class MainActivity extends FlutterActivity {
   @Override
   public void configureFlutterEngine(FlutterEngine flutterEngine) {
     flutterEngine.getPlugins().add(new PackageInfoPlugin());
-    flutterEngine.getPlugins().add(new E2EPlugin());
   }
 }
