@@ -90,7 +90,7 @@ void main() {
         const Duration(seconds: 1), alarmId, incrementCounter,
         wakeup: true, exact: true);
     // poll until file is updated
-    while(await readCounter() < startingValue + 2) {
+    while (await readCounter() < startingValue + 2) {
       await Future<void>.delayed(const Duration(seconds: 1));
     }
     expect(await readCounter(), startingValue + 2);
