@@ -10,7 +10,9 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
-  activate_script: pub global activate flutter_plugin_tools
+      #  activate_script: pub global activate flutter_plugin_tools
+      #  TODO(bkonyi): remove before landing
+  activate_script: git clone https://github.com/bkonyi/plugin_tools.git flutter_plugin_tools && pub global activate flutter_plugin_tools -s path
   matrix:
     - name: publishable
       script:
