@@ -63,7 +63,7 @@ void main() {
 
   test('initialize', () async {
     final Completer<bool> quickActionsHandler = Completer<bool>();
-    quickActions.initialize((String _) => quickActionsHandler.complete(true));
+    quickActions.initialize((_) => quickActionsHandler.complete(true));
     expect(
       log,
       <Matcher>[
@@ -72,7 +72,7 @@ void main() {
     );
     log.clear();
 
-    await expectLater(await quickActionsHandler.future, isTrue);
+    expect(quickActionsHandler.future, completion(isTrue));
   });
 
   test('Shortcut item can be constructed', () {

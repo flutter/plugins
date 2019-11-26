@@ -65,15 +65,6 @@ class QuickActions {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
-    // ignore: deprecated_member_use_from_same_package
-    runLaunchAction(handler);
-  }
-
-  /// This is only exposed for the unit tests. Do not rely on it, it may break
-  /// without warning in the future.
-  @visibleForTesting
-  @deprecated
-  void runLaunchAction(QuickActionHandler handler) async {
     final String action = await channel.invokeMethod<String>('getLaunchAction');
     if (action != null) {
       handler(action);

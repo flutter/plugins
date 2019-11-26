@@ -1,8 +1,11 @@
-## 0.3.4
+## 0.4.0
 
 * Add missing documentation. Some of the public methods should have been
   annotated as `@visibleForTesting` previously and were not, so the annotations
-  have been added now.
+  have been added now. **Potentially breaking change** this also removes a
+  public method that originally should have been private. It's unlikely that
+  this API has ever been used by consumers of the plugin, but the semantic
+  version has been upgraded anyway out of an abundance of caution.
 
 ## 0.3.3+1
 
