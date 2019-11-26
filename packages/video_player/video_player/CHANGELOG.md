@@ -1,3 +1,7 @@
+## 0.10.4+1
+
+* Fix pedantic lints. This shouldn't affect existing functionality.
+
 ## 0.10.4
 
 * Port plugin code to use the federated Platform Interface, instead of a MethodChannel directly.
