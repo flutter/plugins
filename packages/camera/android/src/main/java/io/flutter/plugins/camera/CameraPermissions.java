@@ -7,20 +7,30 @@ import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.plugin.common.PluginRegistry.RequestPermissionsResultListener;
 
-public class CameraPermissions {
+final class CameraPermissions {
+  interface PermissionsRegistry {
+    void addListener(RequestPermissionsResultListener handler);
+  }
+
+  interface ResultCallback {
+    void onResult(String errorCode, String errorDescription);
+  }
+
   private static final int CAMERA_REQUEST_ID = 9796;
   private boolean ongoing = false;
 
-  public void requestPermissions(
-      Registrar registrar, boolean enableAudio, ResultCallback callback) {
+  void requestPermissions(
+      Activity activity,
+      PermissionsRegistry permissionsRegistry,
+      boolean enableAudio,
+      ResultCallback callback) {
     if (ongoing) {
       callback.onResult("cameraPermission", "Camera permission request ongoing");
     }
-    Activity activity = registrar.activity();
     if (!hasCameraPermission(activity) || (enableAudio && !hasAudioPermission(activity))) {
-      registrar.addRequestPermissionsResultListener(
+      permissionsRegistry.addListener(
           new CameraRequestPermissionsListener(
               (String errorCode, String errorDescription) -> {
                 ongoing = false;
@@ -51,6 +61,7 @@ public class CameraPermissions {
 
   private static class CameraRequestPermissionsListener
       implements PluginRegistry.RequestPermissionsResultListener {
+
     final ResultCallback callback;
 
     private CameraRequestPermissionsListener(ResultCallback callback) {
@@ -72,9 +83,5 @@ public class CameraPermissions {
       }
       return false;
     }
-  }
-
-  interface ResultCallback {
-    void onResult(String errorCode, String errorDescription);
   }
 }

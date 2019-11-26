@@ -1,3 +1,37 @@
+## 1.4.5
+
+* Add support for v2 plugins APIs.
+
+## 1.4.4
+
+* Update driver tests in the example app to e2e tests.
+
+## 1.4.3
+
+* Update driver tests in the example app to e2e tests.
+* Add missing DartDocs and a lint to prevent further regressions.
+
+## 1.4.2
+
+* Update and migrate iOS example project by removing flutter_assets, change
+  "English" to "en", remove extraneous xcconfigs, update to Xcode 11 build
+  settings, remove ARCHS, and build pods as libraries instead of frameworks.
+
+## 1.4.1
+
+* Remove AndroidX warnings.
+
+## 1.4.0
+
+* Support retrieving storage paths on Android devices with multiple external
+  storage options. This adds a new class `AndroidEnvironment` that shadows the
+  directory names from Androids `android.os.Environment` class.
+* Fixes `getLibraryDirectory` semantics & tests.
+
+## 1.3.1
+
+* Define clang module for iOS.
+
 ## 1.3.0
 
 * Added iOS-only support for `getLibraryDirectory`.
