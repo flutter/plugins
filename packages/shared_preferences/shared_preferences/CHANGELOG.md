@@ -1,3 +1,7 @@
+## 0.5.4+7
+
+* Restructure the project for Web support.
+
 ## 0.5.4+6
 
 * Add missing documentation and a lint to prevent further undocumented APIs.

@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart' show required, visibleForTesting;
 
@@ -159,6 +160,24 @@ class VideoEvent {
   final Duration duration;
   final Size size;
   final List<DurationRange> buffered;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is VideoEvent &&
+            runtimeType == other.runtimeType &&
+            eventType == other.eventType &&
+            duration == other.duration &&
+            size == other.size &&
+            listEquals(buffered, other.buffered);
+  }
+
+  @override
+  int get hashCode =>
+      eventType.hashCode ^
+      duration.hashCode ^
+      size.hashCode ^
+      buffered.hashCode;
 }
 
 enum VideoEventType {
@@ -186,4 +205,15 @@ class DurationRange {
 
   @override
   String toString() => '$runtimeType(start: $start, end: $end)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DurationRange &&
+          runtimeType == other.runtimeType &&
+          start == other.start &&
+          end == other.end;
+
+  @override
+  int get hashCode => start.hashCode ^ end.hashCode;
 }

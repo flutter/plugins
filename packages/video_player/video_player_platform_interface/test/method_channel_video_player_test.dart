@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:mockito/mockito.dart';
@@ -245,6 +244,58 @@ void main() {
                 }),
                 (ByteData data) {});
 
+            // TODO(cbenhagen): This has been deprecated and should be replaced
+            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
+            // available on all the versions of Flutter that we test.
+            // ignore: deprecated_member_use
+            defaultBinaryMessenger.handlePlatformMessage(
+                "flutter.io/videoPlayer/videoEvents123",
+                const StandardMethodCodec()
+                    .encodeSuccessEnvelope(<String, dynamic>{
+                  'event': 'completed',
+                }),
+                (ByteData data) {});
+
+            // TODO(cbenhagen): This has been deprecated and should be replaced
+            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
+            // available on all the versions of Flutter that we test.
+            // ignore: deprecated_member_use
+            defaultBinaryMessenger.handlePlatformMessage(
+                "flutter.io/videoPlayer/videoEvents123",
+                const StandardMethodCodec()
+                    .encodeSuccessEnvelope(<String, dynamic>{
+                  'event': 'bufferingUpdate',
+                  'values': <List<dynamic>>[
+                    <int>[0, 1234],
+                    <int>[1235, 4000],
+                  ],
+                }),
+                (ByteData data) {});
+
+            // TODO(cbenhagen): This has been deprecated and should be replaced
+            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
+            // available on all the versions of Flutter that we test.
+            // ignore: deprecated_member_use
+            defaultBinaryMessenger.handlePlatformMessage(
+                "flutter.io/videoPlayer/videoEvents123",
+                const StandardMethodCodec()
+                    .encodeSuccessEnvelope(<String, dynamic>{
+                  'event': 'bufferingStart',
+                }),
+                (ByteData data) {});
+
+            // TODO(cbenhagen): This has been deprecated and should be replaced
+            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
+            // available on all the versions of Flutter that we test.
+            // ignore: deprecated_member_use
+            defaultBinaryMessenger.handlePlatformMessage(
+                "flutter.io/videoPlayer/videoEvents123",
+                const StandardMethodCodec()
+                    .encodeSuccessEnvelope(<String, dynamic>{
+                  'event': 'bufferingEnd',
+                }),
+                (ByteData data) {});
+
             return const StandardMethodCodec().encodeSuccessEnvelope(null);
           } else if (methodCall.method == 'cancel') {
             return const StandardMethodCodec().encodeSuccessEnvelope(null);
@@ -253,16 +304,30 @@ void main() {
           }
         },
       );
-      final Stream<VideoEvent> videoEvents = player.videoEventsFor(123);
-      expect((await videoEvents.first).eventType, VideoEventType.initialized);
       expect(
-        (await videoEvents.first).duration,
-        const Duration(milliseconds: 98765),
-      );
-      expect(
-        (await videoEvents.first).size,
-        const Size(1920, 1080),
-      );
+          player.videoEventsFor(123),
+          emitsInOrder(<dynamic>[
+            VideoEvent(
+              eventType: VideoEventType.initialized,
+              duration: const Duration(milliseconds: 98765),
+              size: const Size(1920, 1080),
+            ),
+            VideoEvent(eventType: VideoEventType.completed),
+            VideoEvent(
+                eventType: VideoEventType.bufferingUpdate,
+                buffered: <DurationRange>[
+                  DurationRange(
+                    const Duration(milliseconds: 0),
+                    const Duration(milliseconds: 1234),
+                  ),
+                  DurationRange(
+                    const Duration(milliseconds: 1235),
+                    const Duration(milliseconds: 4000),
+                  ),
+                ]),
+            VideoEvent(eventType: VideoEventType.bufferingStart),
+            VideoEvent(eventType: VideoEventType.bufferingEnd),
+          ]));
     });
   });
 }
