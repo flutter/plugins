@@ -7,6 +7,6 @@ void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('canCheckBiometrics', (WidgetTester tester) async {
-    expect(LocalAuthentication().canCheckBiometrics, completion(isTrue));
+    expect(LocalAuthentication().getAvailableBiometrics(), completion(isList));
   });
 }
