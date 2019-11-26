@@ -14,7 +14,7 @@ Future<StreamSubscription<VMIsolateRef>> resumeIsolatesOnPause(
   for (VMIsolateRef isolateRef in vm.isolates) {
     final VMIsolate isolate = await isolateRef.load();
     if (isolate.isPaused) {
-      isolate.resume();
+      await isolate.resume();
     }
   }
   return driver.serviceClient.onIsolateRunnable
@@ -22,7 +22,7 @@ Future<StreamSubscription<VMIsolateRef>> resumeIsolatesOnPause(
       .listen((VMIsolateRef isolateRef) async {
     final VMIsolate isolate = await isolateRef.load();
     if (isolate.isPaused) {
-      isolate.resume();
+      await isolate.resume();
     }
   });
 }
@@ -35,7 +35,7 @@ Future<void> main() async {
       await resumeIsolatesOnPause(driver);
   final String result =
       await driver.requestData(null, timeout: const Duration(minutes: 5));
-  driver.close();
-  subscription.cancel();
+  await driver.close();
+  await subscription.cancel();
   exit(result == 'pass' ? 0 : 1);
 }
