@@ -20,7 +20,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
         await _channel.invokeMethod<void>(
             'allTestsFinished', <String, dynamic>{'results': _results});
       } on MissingPluginException {
-        print('Warning: E2E test plugin was not detected.');
+        print('Warning: E2E teasdfst plugin was not detected.');
       }
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
     });
