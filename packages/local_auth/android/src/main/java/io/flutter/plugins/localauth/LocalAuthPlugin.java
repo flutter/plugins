@@ -8,9 +8,11 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -26,10 +28,12 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   private static final String CHANNEL_NAME = "plugins.flutter.io/local_auth";
 
   private Activity activity;
-  // This is only used with v2 embedding api. This is null when using the original embedding.
-  private MethodChannel channel;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
   private AuthenticationHelper authenticationHelper;
+
+  // These are null when not using v2 embedding.
+  private MethodChannel channel;
+  private Lifecycle lifecycle;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
@@ -70,6 +74,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       authInProgress.set(true);
       authenticationHelper =
           new AuthenticationHelper(
+              lifecycle,
               (FragmentActivity) activity,
               call,
               new AuthCompletionHandler() {
@@ -155,21 +160,26 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
     activity = binding.getActivity();
+    lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
     channel.setMethodCallHandler(this);
   }
 
   @Override
   public void onDetachedFromActivityForConfigChanges() {
+    lifecycle = null;
     activity = null;
   }
 
   @Override
   public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
     activity = binding.getActivity();
+    lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
   }
 
   @Override
   public void onDetachedFromActivity() {
     activity = null;
+    lifecycle = null;
+    channel.setMethodCallHandler(null);
   }
 }
