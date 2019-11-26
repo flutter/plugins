@@ -51,8 +51,6 @@ public class MainActivityTest {
                 onFlutterWidget(withTooltip("Increment")).perform(click(), click()).perform(click());
         assertThat(interaction).isNotNull();
         onFlutterWidget(withValueKey("CountText")).check(matches(withText("Button tapped 3 times.")));
-        onFlutterWidget(withValueKey("CountRichText"))
-                .check(matches(withText("Button tapped 3 times.")));
     }
 
     @Test
@@ -61,8 +59,6 @@ public class MainActivityTest {
                 onFlutterWidget(withTooltip("Increment")).perform(syntheticClick());
         assertThat(interaction).isNotNull();
         onFlutterWidget(withValueKey("CountText")).check(matches(withText("Button tapped 1 time.")));
-        onFlutterWidget(withValueKey("CountRichText"))
-                .check(matches(withText("Button tapped 1 time.")));
     }
 
     @Test
@@ -71,30 +67,6 @@ public class MainActivityTest {
                 onFlutterWidget(withTooltip("Increment")).perform(syntheticClick(), syntheticClick());
         assertThat(interaction).isNotNull();
         onFlutterWidget(withValueKey("CountText")).check(matches(withText("Button tapped 2 times.")));
-        onFlutterWidget(withValueKey("CountRichText"))
-                .check(matches(withText("Button tapped 2 times.")));
-    }
-
-    @Test
-    public void isDescendantMatcher() {
-        onFlutterWidget(withTooltip("Increment")).perform(click());
-        onFlutterWidget(isDescendantOf(withValueKey("TwoTimesCounterContainer"), withType("Text")))
-                .check(matches(withText("Button tapped 2 times.")));
-    }
-
-    @Test
-    public void isDescendantMatcher_multipleMatches() {
-        onFlutterWidget(withTooltip("Increment")).perform(click());
-        try {
-            onFlutterWidget(isDescendantOf(withType("ListView"), withType("Text")))
-                    .check(matches(withText("Button tapped 2 times.")));
-            fail("Espresso should fail when there are more than one matched widgets.");
-        } catch (Exception e) {
-            assertThat(e)
-                    .hasCauseThat()
-                    .hasMessageThat()
-                    .contains("Error occurred during retrieving widget's diagnostics info.");
-        }
     }
 
     @Test
@@ -107,19 +79,5 @@ public class MainActivityTest {
     public void isAppBarExists() {
         onFlutterWidget(FlutterMatchers.withType("AppBar"))
                 .check(FlutterAssertions.matches(FlutterMatchers.isExisting()));
-    }
-
-    @Test
-    public void isWidgetNonExists() {
-        try {
-            onFlutterWidget(FlutterMatchers.withType("AppBar2"))
-                    .check(FlutterAssertions.matches(FlutterMatchers.isExisting()));
-            fail("Espresso should fail when none of the widgets matches the given matcher.");
-        } catch (Exception e) {
-            assertThat(e)
-                    .hasCauseThat()
-                    .hasMessageThat()
-                    .contains("Error occurred during retrieving widget's diagnostics info.");
-        }
     }
 }
