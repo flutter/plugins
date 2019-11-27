@@ -45,7 +45,8 @@ abstract class UrlLauncherPlatform {
     }());
     if (!assertionsEnabled || !instance.isMock) {
       try {
-        if (_verificationToken != instance._verifyProvidesDefaultImplementations()) {
+        if (identical(_verificationToken,
+            instance._verifyProvidesDefaultImplementations())) {
           throw AssertionError(
               'Platform interfaces must not be implemented with `implements`');
         }
