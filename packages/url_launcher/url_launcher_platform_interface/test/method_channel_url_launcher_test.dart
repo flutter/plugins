@@ -25,8 +25,8 @@ void main() {
     });
 
     test('Can be mocked with `implements`', () {
-      final ImplementsUrlLauncherPlatform mock =
-          ImplementsUrlLauncherPlatform();
+      final UrlLauncherPlatform mock =
+          ImplementsUrlLauncherPlatformUsingMockPlatformInterface();
       UrlLauncherPlatform.instance = mock;
     });
 
@@ -279,8 +279,11 @@ void main() {
   });
 }
 
-class ImplementsUrlLauncherPlatform extends Mock with MockPlatformInterface
-    implements UrlLauncherPlatform {
-}
+class ImplementsUrlLauncherPlatform extends Mock
+    implements UrlLauncherPlatform {}
+
+class ImplementsUrlLauncherPlatformUsingMockPlatformInterface extends Mock
+    with MockPlatformInterface
+    implements UrlLauncherPlatform {}
 
 class ExtendsUrlLauncherPlatform extends UrlLauncherPlatform {}

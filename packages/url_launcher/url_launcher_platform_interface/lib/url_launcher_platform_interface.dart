@@ -13,10 +13,10 @@ import 'method_channel_url_launcher.dart';
 /// Provides helper methods for ensuring that platform interfaces are
 /// implemented using `extends` instead of `implements`.
 class PlatformInterface {
-  PlatformInterface({ Object token }) : _token = token;
+  PlatformInterface({Object token}) : _instanceToken = token;
 
   // Pass a `const Object()` here to distinguish
-  final Object _token;
+  final Object _instanceToken;
 
   // Mock implementations can return true here using `noSuchMethod`.
   //
@@ -29,8 +29,10 @@ class PlatformInterface {
   /// Return true if the platform instance has a token that matches the
   /// provided token. This is used to ensure that implementers are using
   /// `extends` rather than `implements`.
+  ///
+  /// Subclasses of [MockPlatformInterface] are assumed to be valid.
   static bool isValid(PlatformInterface instance, Object token) {
-    return _isMock || identical(token, instance._token);
+    return instance._isMock || identical(token, instance._instanceToken);
   }
 }
 
