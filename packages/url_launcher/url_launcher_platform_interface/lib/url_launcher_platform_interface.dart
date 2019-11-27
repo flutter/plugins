@@ -32,11 +32,11 @@ abstract class PlatformInterface {
         assertionsEnabled = true;
         return true;
       }());
-      if (!assertionsEnabled) {
+      if (assertionsEnabled) {
+        return true;
+      } else {
         throw AssertionError(
             '`MockPlatformInterface` is not intended for use in release builds.');
-      } else {
-        return true;
       }
     }
     return identical(token, instance._instanceToken);
