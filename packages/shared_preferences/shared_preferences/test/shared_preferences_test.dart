@@ -205,7 +205,8 @@ void main() {
 }
 
 class FakeSharedPreferencesStore implements SharedPreferencesStorePlatform {
-  FakeSharedPreferencesStore(Map<String, Object> data) : backend = InMemorySharedPreferencesStore.withData(data);
+  FakeSharedPreferencesStore(Map<String, Object> data)
+      : backend = InMemorySharedPreferencesStore.withData(data);
 
   final InMemorySharedPreferencesStore backend;
   final List<MethodCall> log = <MethodCall>[];
