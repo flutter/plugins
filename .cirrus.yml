@@ -122,8 +122,8 @@ task:
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh ios --no-codesign
-    - name: lint_darwin_plugins
-      script: ./script/lint_darwin_plugins.sh
+    - name: lint_podspecs
+      script: dart ./script/lint_podspecs.dart
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
