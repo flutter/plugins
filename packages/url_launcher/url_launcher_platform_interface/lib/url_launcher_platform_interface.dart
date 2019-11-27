@@ -91,7 +91,7 @@ abstract class UrlLauncherPlatform {
   // implemented with `implements`.
   Object _verifyProvidesDefaultImplementations() => _verificationToken;
 
-  // Private object used to determine whether  mocks from instances of  genuine  if _verifyProvidesDefaultImplementations
-  // has been overridden with noSuchMethod.
+  // Private object used to determine if `_verifyProvidesDefaultImplementations`
+  // has been overridden with `noSuchMethod`.
   static Object _verificationToken = Object();
 }
