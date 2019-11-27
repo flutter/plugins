@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -58,12 +57,10 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
    * @return An instance of {@link SharedPreferences}.
    */
   private SharedPreferences getPreferences(String filename) {
+    if (filename == null) filename = SHARED_PREFERENCES_DEFAULT_NAME;
     SharedPreferences instance = instances.get(filename);
     if (instance == null) {
-      instance =
-          context.getSharedPreferences(
-              Optional.ofNullable(filename).orElse(SHARED_PREFERENCES_DEFAULT_NAME),
-              Context.MODE_PRIVATE);
+      instance = context.getSharedPreferences(filename, Context.MODE_PRIVATE);
       instances.put(filename, instance);
     }
     return instance;
