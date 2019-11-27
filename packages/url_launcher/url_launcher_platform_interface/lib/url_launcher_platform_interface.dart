@@ -12,6 +12,8 @@ import 'method_channel_url_launcher.dart';
 ///
 /// Provides helper methods for ensuring that platform interfaces are
 /// implemented using `extends` instead of `implements`.
+// TODO(amirh): Extract common platform interface logic.
+// https://github.com/flutter/flutter/issues/43368
 class PlatformInterface {
   PlatformInterface({Object token}) : _instanceToken = token;
 
@@ -77,8 +79,6 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
 
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [UrlLauncherPlatform] when they register themselves.
-  // TODO(amirh): Extract common platform interface logic.
-  // https://github.com/flutter/flutter/issues/43368
   static set instance(UrlLauncherPlatform instance) {
     assert(PlatformInterface.isValid(instance, _token));
     _instance = instance;
