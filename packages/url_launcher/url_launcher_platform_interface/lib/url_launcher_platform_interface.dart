@@ -26,7 +26,8 @@ abstract class PlatformInterface {
   /// This is used to ensure that implementers are using `extends` rather than
   /// `implements`.
   ///
-  /// Subclasses of [MockPlatformInterface] are assumed to be valid.
+  /// Subclasses of [MockPlatformInterface] are assumed to be valid in debug
+  /// builds.
   ///
   /// This is implemented as a static method so that it cannot be overridden
   /// with `noSuchMethod`.
@@ -51,9 +52,10 @@ abstract class PlatformInterface {
 
 /// A [PlatformInterface] mixin that can be combined with mockito's `Mock`.
 ///
-/// It always returns `true` when passed to [PlatformInterface.isValid].
+/// It passes the [PlatformInterface.verifyToken] check even though it isn't
+/// using `extends`.
 ///
-/// For use in testing only. Throws `AssertionError` when used in release mode.
+/// This class is intended for use in tests only.
 @visibleForTesting
 abstract class MockPlatformInterface implements PlatformInterface {
   static const Object _token = const Object();
