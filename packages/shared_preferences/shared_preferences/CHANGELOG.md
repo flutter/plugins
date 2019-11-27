@@ -1,3 +1,8 @@
+## 0.5.4+8
+
+* Switch `package:shared_preferences` to `package:shared_preferences_platform_interface`.
+  No code changes are necessary in Flutter apps. This is not a breaking change.
+
 ## 0.5.4+7
 
 * Restructure the project for Web support.
