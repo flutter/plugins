@@ -42,7 +42,7 @@ abstract class UrlLauncherPlatform {
     assert(() {
       assertionsEnabled = true;
       return true;
-    });
+    }());
     if (!assertionsEnabled || !instance.isMock) {
       try {
         if (_verificationToken != instance._verifyProvidesDefaultImplementations()) {
