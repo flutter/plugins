@@ -20,21 +20,26 @@ abstract class PlatformInterface {
 
   final Object _instanceToken;
 
-  // Mock implementations can return true here using `noSuchMethod`.
-  //
-  // Mockito mocks are implementing this class with `implements` which is forbidden for anything
-  // other than mocks (see class docs). This property provides `MockPlatformInterface`
-  // a backdoor for mockito mocks to skip the verification that the class isn't
-  // implemented with `implements`.
-  bool get _isMock => false;
-
   /// Return true if the platform instance has a token that matches the
   /// provided token. This is used to ensure that implementers are using
   /// `extends` rather than `implements`.
   ///
   /// Subclasses of [MockPlatformInterface] are assumed to be valid.
   static bool isValid(PlatformInterface instance, Object token) {
-    return instance._isMock || identical(token, instance._instanceToken);
+    if (identical(instance._instanceToken, MockPlatformInterface._token)) {
+      bool assertionsEnabled = false;
+      assert(() {
+        assertionsEnabled = true;
+        return true;
+      }());
+      if (!assertionsEnabled) {
+        throw AssertionError(
+            '`MockPlatformInterface` is not intended for use in release builds.');
+      } else {
+        return true;
+      }
+    }
+    return identical(token, instance._instanceToken);
   }
 }
 
@@ -45,19 +50,10 @@ abstract class PlatformInterface {
 /// For use in testing only. Throws `AssertionError` when used in release mode.
 @visibleForTesting
 abstract class MockPlatformInterface implements PlatformInterface {
+  static const Object _token = const Object();
+
   @override
-  bool get _isMock {
-    bool assertionsEnabled = false;
-    assert(() {
-      assertionsEnabled = true;
-      return true;
-    }());
-    if (!assertionsEnabled) {
-      throw AssertionError(
-          '`MockPlatformInterface` is not intended for use in release builds.');
-    }
-    return true;
-  }
+  final Object _instanceToken = _token;
 }
 
 /// The interface that implementations of url_launcher must implement.
