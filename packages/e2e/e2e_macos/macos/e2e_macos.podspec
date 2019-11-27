@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 Runs tests that use the flutter_test API as integration tests.
                        DESC
-  s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/e2e'
+  s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/e2e/e2e_macos'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :path => '.' }
@@ -16,7 +16,7 @@ Runs tests that use the flutter_test API as integration tests.
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'FlutterMacOS'
 
-  s.platform = :osx, '10.11'
+  s.platform = :osx
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
 end
 
