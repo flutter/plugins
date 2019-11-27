@@ -10,14 +10,14 @@ import 'method_channel_url_launcher.dart';
 
 /// Base class for platform interfaces.
 ///
-/// Provides helper methods for ensuring that platform interfaces are
+/// Provides a static helper method for ensuring that platform interfaces are
 /// implemented using `extends` instead of `implements`.
 // TODO(amirh): Extract common platform interface logic.
 // https://github.com/flutter/flutter/issues/43368
-class PlatformInterface {
+abstract class PlatformInterface {
+  /// Pass a class-specific `const Object()` as the `token`.
   PlatformInterface({Object token}) : _instanceToken = token;
 
-  // Pass a `const Object()` here to distinguish
   final Object _instanceToken;
 
   // Mock implementations can return true here using `noSuchMethod`.
@@ -38,11 +38,13 @@ class PlatformInterface {
   }
 }
 
-/// A [PlatformInterface] that can be mocked with mockito.
+/// A [PlatformInterface] mixin that can be combined with mockito's `Mock`.
+///
+/// It always returns true when passed to [PlatformInterface.isValid].
 ///
 /// Throws an `AssertionError` when used in release builds.
 @visibleForTesting
-class MockPlatformInterface extends PlatformInterface {
+abstract class MockPlatformInterface extends PlatformInterface {
   @override
   bool get _isMock {
     bool assertionsEnabled = false;
