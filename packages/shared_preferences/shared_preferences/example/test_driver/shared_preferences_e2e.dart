@@ -69,7 +69,6 @@ void main() {
         preferences1.setInt('int', kTestValues2['flutter.int']),
         preferences1.setDouble('double', kTestValues2['flutter.double']),
         preferences1.setStringList('List', kTestValues2['flutter.List']),
-
         preferences2.setString('String', kTestValues2['flutter.String']),
         preferences2.setBool('bool', kTestValues2['flutter.bool']),
         preferences2.setInt('int', kTestValues2['flutter.int']),
@@ -81,7 +80,7 @@ void main() {
       expect(preferences1.getInt('int'), kTestValues2['flutter.int']);
       expect(preferences1.getDouble('double'), kTestValues2['flutter.double']);
       expect(preferences1.getStringList('List'), kTestValues2['flutter.List']);
-      
+
       expect(preferences2.getString('String'), kTestValues2['flutter.String']);
       expect(preferences2.getBool('bool'), kTestValues2['flutter.bool']);
       expect(preferences2.getInt('int'), kTestValues2['flutter.int']);
@@ -99,7 +98,7 @@ void main() {
         ..setStringList(key, kTestValues['flutter.List']);
       await preferences1.remove(key);
       expect(preferences1.get('testKey'), isNull);
-      
+
       preferences2
         ..setString(key, kTestValues['flutter.String'])
         ..setBool(key, kTestValues['flutter.bool'])
