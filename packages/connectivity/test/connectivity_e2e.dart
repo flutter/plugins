@@ -24,10 +24,7 @@ void main() {
         case ConnectivityResult.wifi:
           expect(_connectivity.getWifiName(), completes);
           expect(_connectivity.getWifiBSSID(), completes);
-          // TODO: This is not implemented in macOS. Check why.
-          if (!Platform.isMacOS) {
-            expect((await _connectivity.getWifiIP()), isNotNull);
-          }
+          expect((await _connectivity.getWifiIP()), isNotNull);
           break;
         default:
           break;

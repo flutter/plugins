@@ -50,6 +50,8 @@ public class ConnectivityPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
       result(cwinterface?.ssid())
     case "wifiBSSID":
       result(cwinterface?.bssid())
+    case "wifiIPAddress":
+      result(getWifiIP())
     default:
       result(FlutterMethodNotImplemented)
     }
