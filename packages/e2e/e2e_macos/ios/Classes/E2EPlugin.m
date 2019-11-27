@@ -1,6 +1,6 @@
-#import "ConnectivityPlugin.h"
+#import "E2EPlugin.h"
 
-@implementation ConnectivityPlugin
+@implementation E2EPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
 }
 
