@@ -8,6 +8,61 @@ import 'package:meta/meta.dart' show required, visibleForTesting;
 
 import 'method_channel_url_launcher.dart';
 
+/// Base class for platform interfaces.
+///
+/// Provides helper methods for ensuring that platform interfaces are
+/// implemented using `extends` instead of `implements`.
+class PlatformInterface {
+  PlatformInterface({ Object token }) : _verificationToken = token;
+
+  final Object _token;
+
+  // Mock implementations can return true here using `noSuchMethod`.
+  //
+  // Mockito mocks are implementing this class with `implements` which is forbidden for anything
+  // other than mocks (see class docs). This property provides `MockPlatformInterface`
+  // a backdoor for mockito mocks to skip the verification that the class isn't
+  // implemented with `implements`.
+  bool get _isMock => false;
+
+  /// Returns the instance.
+  static void verifyToken<T>(Object token, PlatformInterface instance) {
+    assert(identical(token, instance._token));
+  }
+
+  // This method makes sure that UrlLauncher isn't implemented with `implements`.
+  //
+  // See class doc for more details on why implementing this class is forbidden.
+  //
+  // This private method is called by the instance setter, which fails if the class is
+  // implemented with `implements`.
+  Object _verifyProvidesDefaultImplementations() => _verificationToken;
+
+  // Private object used to ensure that `_verifyProvidesDefaultImplementations`
+  // cannot be implemented using `noSuchMethod`.
+  static const Object _verificationToken = const Object();
+}
+
+/// A [PlatformInterface] that can be mocked with mockito.
+///
+/// Throws an `AssertionError` when used in release builds.
+@visibleForTesting
+class MockPlatformInterface extends PlatformInterface {
+  @override
+  bool get _isMock {
+    bool assertionsEnabled = false;
+    assert(() {
+      assertionsEnabled = true;
+      return true;
+    }());
+    if (!assertionsEnabled) {
+      throw AssertionError(
+          '`MockPlatformInterface` is not intended for use in release builds.');
+    }
+    return true;
+  }
+}
+
 /// The interface that implementations of url_launcher must implement.
 ///
 /// Platform implementations should extend this class rather than implement it as `url_launcher`
@@ -15,18 +70,12 @@ import 'method_channel_url_launcher.dart';
 /// (using `extends`) ensures that the subclass will get the default implementation, while
 /// platform implementations that `implements` this interface will be broken by newly added
 /// [UrlLauncherPlatform] methods.
-abstract class UrlLauncherPlatform {
-  /// Only mock implementations should set this to true.
-  ///
-  /// Mockito mocks are implementing this class with `implements` which is forbidden for anything
-  /// other than mocks (see class docs). This property provides a backdoor for mockito mocks to
-  /// skip the verification that the class isn't implemented with `implements`.
-  ///
-  /// This flag has no effect in release builds.
-  @visibleForTesting
-  bool get isMock => false;
+abstract class UrlLauncherPlatform extends PlatformInterface {
+  UrlLauncherPlatform() : super(token: _token);
 
   static UrlLauncherPlatform _instance = MethodChannelUrlLauncher();
+
+  static const Object _token = const Object();
 
   /// The default instance of [UrlLauncherPlatform] to use.
   ///
@@ -38,23 +87,7 @@ abstract class UrlLauncherPlatform {
   // TODO(amirh): Extract common platform interface logic.
   // https://github.com/flutter/flutter/issues/43368
   static set instance(UrlLauncherPlatform instance) {
-    bool assertionsEnabled = false;
-    assert(() {
-      assertionsEnabled = true;
-      return true;
-    }());
-    if (!assertionsEnabled || !instance.isMock) {
-      try {
-        if (!identical(_verificationToken,
-            instance._verifyProvidesDefaultImplementations())) {
-          throw AssertionError(
-              'Platform interfaces must not be implemented with `implements`');
-        }
-      } on NoSuchMethodError catch (_) {
-        throw AssertionError(
-            'Platform interfaces must not be implemented with `implements`');
-      }
-    }
+    PlatformInterface.verifyToken(_token, instance);
     _instance = instance;
   }
 
@@ -83,16 +116,4 @@ abstract class UrlLauncherPlatform {
   Future<void> closeWebView() {
     throw UnimplementedError('closeWebView() has not been implemented.');
   }
-
-  // This method makes sure that UrlLauncher isn't implemented with `implements`.
-  //
-  // See class doc for more details on why implementing this class is forbidden.
-  //
-  // This private method is called by the instance setter, which fails if the class is
-  // implemented with `implements`.
-  Object _verifyProvidesDefaultImplementations() => _verificationToken;
-
-  // Private object used to ensure that `_verifyProvidesDefaultImplementations`
-  // cannot be implemented using `noSuchMethod`.
-  static const Object _verificationToken = const Object();
 }

@@ -27,7 +27,6 @@ void main() {
     test('Can be mocked with `implements`', () {
       final ImplementsUrlLauncherPlatform mock =
           ImplementsUrlLauncherPlatform();
-      when(mock.isMock).thenReturn(true);
       UrlLauncherPlatform.instance = mock;
     });
 
@@ -280,7 +279,8 @@ void main() {
   });
 }
 
-class ImplementsUrlLauncherPlatform extends Mock
-    implements UrlLauncherPlatform {}
+class ImplementsUrlLauncherPlatform extends Mock with MockPlatformInterface
+    implements UrlLauncherPlatform {
+}
 
 class ExtendsUrlLauncherPlatform extends UrlLauncherPlatform {}

@@ -13,7 +13,6 @@ import 'package:flutter/services.dart' show PlatformException;
 
 void main() {
   final MockUrlLauncher mock = MockUrlLauncher();
-  when(mock.isMock).thenReturn(true);
   UrlLauncherPlatform.instance = mock;
 
   test('closeWebView default behavior', () async {
@@ -208,4 +207,4 @@ void main() {
   });
 }
 
-class MockUrlLauncher extends Mock implements UrlLauncherPlatform {}
+class MockUrlLauncher extends Mock with MockPlatformInterface implements UrlLauncherPlatform {}
