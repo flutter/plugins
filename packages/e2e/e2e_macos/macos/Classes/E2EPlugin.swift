@@ -1,6 +1,6 @@
 import FlutterMacOS
 
-class E2EPlugin: NSObject, FlutterPlugin {
+public class E2EPlugin: NSObject, FlutterPlugin {
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
