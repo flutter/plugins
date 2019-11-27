@@ -4,11 +4,9 @@
 
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
-const MethodChannel _kChannel =
-    MethodChannel('plugins.flutter.io/shared_preferences');
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 /// a persistent store for simple data.
@@ -19,6 +17,9 @@ class SharedPreferences {
 
   static const String _prefix = 'flutter.';
   static Completer<SharedPreferences> _completer;
+
+  static SharedPreferencesStorePlatform get _store =>
+      SharedPreferencesStorePlatform.instance;
 
   /// Loads and parses the [SharedPreferences] for this app from disk.
   ///
@@ -124,14 +125,10 @@ class SharedPreferences {
   Future<bool> remove(String key) => _setValue(null, key, null);
 
   Future<bool> _setValue(String valueType, String key, Object value) {
-    final Map<String, dynamic> params = <String, dynamic>{
-      'key': '$_prefix$key',
-    };
+    final String prefixedKey = '$_prefix$key';
     if (value == null) {
       _preferenceCache.remove(key);
-      return _kChannel
-          .invokeMethod<bool>('remove', params)
-          .then<bool>((dynamic result) => result);
+      return _store.remove(prefixedKey);
     } else {
       if (value is List<String>) {
         // Make a copy of the list so that later mutations won't propagate
@@ -139,22 +136,19 @@ class SharedPreferences {
       } else {
         _preferenceCache[key] = value;
       }
-      params['value'] = value;
-      return _kChannel
-          .invokeMethod<bool>('set$valueType', params)
-          .then<bool>((dynamic result) => result);
+      return _store.setValue(valueType, prefixedKey, value);
     }
   }
 
   /// Always returns true.
   /// On iOS, synchronize is marked deprecated. On Android, we commit every set.
   @deprecated
-  Future<bool> commit() async => await _kChannel.invokeMethod<bool>('commit');
+  Future<bool> commit() async => true;
 
   /// Completes with true once the user preferences for the app has been cleared.
-  Future<bool> clear() async {
+  Future<bool> clear() {
     _preferenceCache.clear();
-    return await _kChannel.invokeMethod<bool>('clear');
+    return _store.clear();
   }
 
   /// Fetches the latest values from the host platform.
@@ -169,8 +163,7 @@ class SharedPreferences {
   }
 
   static Future<Map<String, Object>> _getSharedPreferencesMap() async {
-    final Map<String, Object> fromSystem =
-        await _kChannel.invokeMapMethod<String, Object>('getAll');
+    final Map<String, Object> fromSystem = await _store.getAll();
     assert(fromSystem != null);
     // Strip the flutter. prefix from the returned preferences.
     final Map<String, Object> preferencesMap = <String, Object>{};
@@ -194,12 +187,8 @@ class SharedPreferences {
       }
       return MapEntry<String, dynamic>(newKey, value);
     });
-    _kChannel.setMockMethodCallHandler((MethodCall methodCall) async {
-      if (methodCall.method == 'getAll') {
-        return newValues;
-      }
-      return null;
-    });
+    SharedPreferencesStorePlatform.instance =
+        InMemorySharedPreferencesStore.withData(newValues);
     _completer = null;
   }
 }
