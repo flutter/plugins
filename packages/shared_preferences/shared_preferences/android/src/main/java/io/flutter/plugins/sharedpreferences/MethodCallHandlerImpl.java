@@ -58,12 +58,15 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
    * @return An instance of {@link SharedPreferences}.
    */
   private SharedPreferences getPreferences(String filename) {
-    return instances.computeIfAbsent(
-        filename,
-        k ->
-            context.getSharedPreferences(
-                Optional.ofNullable(k).orElse(SHARED_PREFERENCES_DEFAULT_NAME),
-                Context.MODE_PRIVATE));
+    SharedPreferences instance = instances.get(filename);
+    if (instance == null) {
+      instance =
+          context.getSharedPreferences(
+              Optional.ofNullable(filename).orElse(SHARED_PREFERENCES_DEFAULT_NAME),
+              Context.MODE_PRIVATE);
+      instances.put(filename, instance);
+    }
+    return instance;
   }
 
   @Override
