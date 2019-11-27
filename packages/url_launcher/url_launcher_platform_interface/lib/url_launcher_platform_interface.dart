@@ -16,7 +16,7 @@ import 'method_channel_url_launcher.dart';
 // https://github.com/flutter/flutter/issues/43368
 abstract class PlatformInterface {
   /// Pass a class-specific `const Object()` as the `token`.
-  PlatformInterface({Object token}) : _instanceToken = token;
+  PlatformInterface({ @required Object token }) : _instanceToken = token;
 
   final Object _instanceToken;
 
@@ -42,9 +42,9 @@ abstract class PlatformInterface {
 ///
 /// It always returns true when passed to [PlatformInterface.isValid].
 ///
-/// Throws an `AssertionError` when used in release builds.
+/// For use in testing only. Throws `AssertionError` when used in release mode.
 @visibleForTesting
-abstract class MockPlatformInterface extends PlatformInterface {
+abstract class MockPlatformInterface implements PlatformInterface {
   @override
   bool get _isMock {
     bool assertionsEnabled = false;
