@@ -24,10 +24,15 @@ abstract class SharedPreferencesStorePlatform {
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [SharedPreferencesStorePlatform] when they register themselves.
   static set instance(SharedPreferencesStorePlatform value) {
-    try {
-      instance._verifyProvidesDefaultImplementations();
-      _instance = value;
-    } on NoSuchMethodError catch (_) {}
+    if (!value.isMock) {
+      try {
+        value._verifyProvidesDefaultImplementations();
+      } on NoSuchMethodError catch (_) {
+        throw AssertionError(
+            'Platform interfaces must not be implemented with `implements`');
+      }
+    }
+    _instance = value;
   }
 
   static SharedPreferencesStorePlatform _instance =
