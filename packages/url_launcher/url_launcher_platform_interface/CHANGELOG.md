@@ -1,3 +1,8 @@
+## 1.0.4
+
+* Use an assertion to ensure `isMock` is not used in release builds.
+* Prevent `noSuchMethod` from being used to bypass `isMock`.
+
 ## 1.0.3
 
 * Minor DartDoc changes and add a lint for missing DartDocs.

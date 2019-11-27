@@ -21,6 +21,8 @@ abstract class UrlLauncherPlatform {
   /// Mockito mocks are implementing this class with `implements` which is forbidden for anything
   /// other than mocks (see class docs). This property provides a backdoor for mockito mocks to
   /// skip the verification that the class isn't implemented with `implements`.
+  ///
+  /// This flag has no effect in release builds.
   @visibleForTesting
   bool get isMock => false;
 
@@ -36,9 +38,17 @@ abstract class UrlLauncherPlatform {
   // TODO(amirh): Extract common platform interface logic.
   // https://github.com/flutter/flutter/issues/43368
   static set instance(UrlLauncherPlatform instance) {
-    if (!instance.isMock) {
+    bool assertionsEnabled = false;
+    assert(() {
+      assertionsEnabled = true;
+      return true;
+    });
+    if (!assertionsEnabled || !instance.isMock) {
       try {
-        instance._verifyProvidesDefaultImplementations();
+        if (_verificationToken != instance._verifyProvidesDefaultImplementations()) {
+          throw AssertionError(
+              'Platform interfaces must not be implemented with `implements`');
+        }
       } on NoSuchMethodError catch (_) {
         throw AssertionError(
             'Platform interfaces must not be implemented with `implements`');
@@ -79,5 +89,9 @@ abstract class UrlLauncherPlatform {
   //
   // This private method is called by the instance setter, which fails if the class is
   // implemented with `implements`.
-  void _verifyProvidesDefaultImplementations() {}
+  Object _verifyProvidesDefaultImplementations() => _verificationToken;
+
+  // Private object used to determine whether  mocks from instances of  genuine  if _verifyProvidesDefaultImplementations
+  // has been overridden with noSuchMethod.
+  static Object _verificationToken = Object();
 }
