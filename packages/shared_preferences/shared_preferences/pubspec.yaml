@@ -15,8 +15,7 @@ dependencies:
   meta: ^1.0.4
   flutter:
     sdk: flutter
-  shared_preferences_platform_interface:
-    path: ../shared_preferences_platform_interface
+  shared_preferences_platform_interface: ^1.0.0
 
 dev_dependencies:
   flutter_test:
