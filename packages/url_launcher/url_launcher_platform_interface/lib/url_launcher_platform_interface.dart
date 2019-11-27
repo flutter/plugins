@@ -15,23 +15,37 @@ import 'method_channel_url_launcher.dart';
 // TODO(amirh): Extract common platform interface logic.
 // https://github.com/flutter/flutter/issues/43368
 abstract class PlatformInterface {
-  /// Pass a class-specific `const Object()` as the `token`.
+  /// Pass a private, class-specific `const Object()` as the `token`.
   PlatformInterface({@required Object token}) : _instanceToken = token;
 
   final Object _instanceToken;
 
-  /// Return `true `if the platform instance has a token that matches the
-  /// provided token.
+  /// Ensures that the platform instance has a token that matches the
+  /// provided token and throws [AssertionError] if not.
   /// 
   /// This is used to ensure that implementers are using `extends` rather than
   /// `implements`.
   ///
   /// Subclasses of [MockPlatformInterface] are assumed to be valid.
-  static bool isValid(PlatformInterface instance, Object token) {
+  ///
+  /// This is implemented as a static method so that it cannot be overridden
+  /// with `noSuchMethod`.
+  static void verifyToken(PlatformInterface instance, Object token) {
     if (identical(instance._instanceToken, MockPlatformInterface._token)) {
-      return true;
+      bool assertionsEnabled = false;
+      assert(() {
+        assertionsEnabled = true;
+        return true;
+      }());
+      if (!assertionsEnabled) {
+        throw AssertionError(
+            '`MockPlatformInterface` is not intended for use in release builds.');
+      }
     }
-    return identical(token, instance._instanceToken);
+    if (!identical(token, instance._instanceToken)) {
+      throw AssertionError(
+          'Platform interfaces must not be implemented with `implements`');
+    }
   }
 }
 
@@ -45,19 +59,7 @@ abstract class MockPlatformInterface implements PlatformInterface {
   static const Object _token = const Object();
 
   @override
-  Object get _instanceToken {
-    bool assertionsEnabled = false;
-    assert(() {
-      assertionsEnabled = true;
-      return true;
-    }());
-    if (assertionsEnabled) {
-      return _token;
-    } else {
-      throw AssertionError(
-          '`MockPlatformInterface` is not intended for use in release builds.');
-    }
-  }
+  Object get _instanceToken => _token;
 }
 
 /// The interface that implementations of url_launcher must implement.
@@ -82,7 +84,7 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [UrlLauncherPlatform] when they register themselves.
   static set instance(UrlLauncherPlatform instance) {
-    assert(PlatformInterface.isValid(instance, _token));
+    PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }
 

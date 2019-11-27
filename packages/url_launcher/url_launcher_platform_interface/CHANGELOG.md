@@ -1,7 +1,7 @@
 ## 1.0.4
 
 * Remove `@visibleForTesting` API `isMock`.
-* Introduces `MockPlatformInterface` and `PlatformInterface`.
+* Introduces `MockPlatformInterface` and `PlatformInterface` classes.
 
 ## 1.0.3
 
