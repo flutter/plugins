@@ -16,7 +16,7 @@ import 'method_channel_url_launcher.dart';
 // https://github.com/flutter/flutter/issues/43368
 abstract class PlatformInterface {
   /// Pass a class-specific `const Object()` as the `token`.
-  PlatformInterface({ @required Object token }) : _instanceToken = token;
+  PlatformInterface({@required Object token}) : _instanceToken = token;
 
   final Object _instanceToken;
 
