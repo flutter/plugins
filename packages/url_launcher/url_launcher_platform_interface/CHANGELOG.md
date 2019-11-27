@@ -1,7 +1,8 @@
 ## 1.0.4
 
 * Use an assertion to ensure `isMock` is not used in release builds.
-* Prevent `noSuchMethod` from being used to bypass `isMock`.
+* Prevent `noSuchMethod` from being used to bypass checks that
+  `UrlLauncherPlatform` isn't implemented with `implements`.
 
 ## 1.0.3
 
