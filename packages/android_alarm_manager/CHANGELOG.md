@@ -1,3 +1,7 @@
+## 0.4.5
+
+* Add support for Flutter Android embedding V2
+
 ## 0.4.4+3
 
 * Add unit tests and DartDocs.

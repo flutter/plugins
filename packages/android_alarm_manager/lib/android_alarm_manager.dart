@@ -13,17 +13,16 @@ const String _backgroundName =
     'plugins.flutter.io/android_alarm_manager_background';
 
 // This is the entrypoint for the background isolate. Since we can only enter
-// an isolate once, we setup a MethodChannel to listen for method invokations
+// an isolate once, we setup a MethodChannel to listen for method invocations
 // from the native portion of the plugin. This allows for the plugin to perform
 // any necessary processing in Dart (e.g., populating a custom object) before
 // invoking the provided callback.
 void _alarmManagerCallbackDispatcher() {
-  const MethodChannel _channel =
-      MethodChannel(_backgroundName, JSONMethodCodec());
-
-  // Setup Flutter state needed for MethodChannels.
+  // Initialize state necessary for MethodChannels.
   WidgetsFlutterBinding.ensureInitialized();
 
+  const MethodChannel _channel =
+      MethodChannel(_backgroundName, JSONMethodCodec());
   // This is where the magic happens and we handle background events from the
   // native portion of the plugin.
   _channel.setMethodCallHandler((MethodCall call) async {
