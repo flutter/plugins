@@ -22,7 +22,7 @@ abstract class PlatformInterface {
 
   /// Ensures that the platform instance has a token that matches the
   /// provided token and throws [AssertionError] if not.
-  /// 
+  ///
   /// This is used to ensure that implementers are using `extends` rather than
   /// `implements`.
   ///
