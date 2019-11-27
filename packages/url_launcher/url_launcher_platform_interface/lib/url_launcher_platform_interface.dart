@@ -20,9 +20,11 @@ abstract class PlatformInterface {
 
   final Object _instanceToken;
 
-  /// Return true if the platform instance has a token that matches the
-  /// provided token. This is used to ensure that implementers are using
-  /// `extends` rather than `implements`.
+  /// Return `true `if the platform instance has a token that matches the
+  /// provided token.
+  /// 
+  /// This is used to ensure that implementers are using `extends` rather than
+  /// `implements`.
   ///
   /// Subclasses of [MockPlatformInterface] are assumed to be valid.
   static bool isValid(PlatformInterface instance, Object token) {
@@ -45,7 +47,7 @@ abstract class PlatformInterface {
 
 /// A [PlatformInterface] mixin that can be combined with mockito's `Mock`.
 ///
-/// It always returns true when passed to [PlatformInterface.isValid].
+/// It always returns `true` when passed to [PlatformInterface.isValid].
 ///
 /// For use in testing only. Throws `AssertionError` when used in release mode.
 @visibleForTesting
