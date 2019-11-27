@@ -63,23 +63,21 @@ void main() {
 
     test('removing', () async {
       const String key = 'testKey';
-      preferences
-        ..setString(key, kTestValues['flutter.String'])
-        ..setBool(key, kTestValues['flutter.bool'])
-        ..setInt(key, kTestValues['flutter.int'])
-        ..setDouble(key, kTestValues['flutter.double'])
-        ..setStringList(key, kTestValues['flutter.List']);
+      await preferences.setString(key, kTestValues['flutter.String']);
+      await preferences.setBool(key, kTestValues['flutter.bool']);
+      await preferences.setInt(key, kTestValues['flutter.int']);
+      await preferences.setDouble(key, kTestValues['flutter.double']);
+      await preferences.setStringList(key, kTestValues['flutter.List']);
       await preferences.remove(key);
       expect(preferences.get('testKey'), isNull);
     });
 
     test('clearing', () async {
-      preferences
-        ..setString('String', kTestValues['flutter.String'])
-        ..setBool('bool', kTestValues['flutter.bool'])
-        ..setInt('int', kTestValues['flutter.int'])
-        ..setDouble('double', kTestValues['flutter.double'])
-        ..setStringList('List', kTestValues['flutter.List']);
+      await preferences.setString('String', kTestValues['flutter.String']);
+      await preferences.setBool('bool', kTestValues['flutter.bool']);
+      await preferences.setInt('int', kTestValues['flutter.int']);
+      await preferences.setDouble('double', kTestValues['flutter.double']);
+      await preferences.setStringList('List', kTestValues['flutter.List']);
       await preferences.clear();
       expect(preferences.getString('String'), null);
       expect(preferences.getBool('bool'), null);

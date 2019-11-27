@@ -67,13 +67,14 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
                   case ConnectionState.waiting:
                     return const CircularProgressIndicator();
                   default:
-                    if (snapshot.hasError)
+                    if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
-                    else
+                    } else {
                       return Text(
                         'Button tapped ${snapshot.data} time${snapshot.data == 1 ? '' : 's'}.\n\n'
                         'This should persist across restarts.',
                       );
+                    }
                 }
               })),
       floatingActionButton: FloatingActionButton(
