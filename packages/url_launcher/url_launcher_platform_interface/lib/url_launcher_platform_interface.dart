@@ -29,17 +29,7 @@ abstract class PlatformInterface {
   /// Subclasses of [MockPlatformInterface] are assumed to be valid.
   static bool isValid(PlatformInterface instance, Object token) {
     if (identical(instance._instanceToken, MockPlatformInterface._token)) {
-      bool assertionsEnabled = false;
-      assert(() {
-        assertionsEnabled = true;
-        return true;
-      }());
-      if (assertionsEnabled) {
-        return true;
-      } else {
-        throw AssertionError(
-            '`MockPlatformInterface` is not intended for use in release builds.');
-      }
+      return true;
     }
     return identical(token, instance._instanceToken);
   }
@@ -55,7 +45,19 @@ abstract class MockPlatformInterface implements PlatformInterface {
   static const Object _token = const Object();
 
   @override
-  final Object _instanceToken = _token;
+  Object get _instanceToken {
+    bool assertionsEnabled = false;
+    assert(() {
+      assertionsEnabled = true;
+      return true;
+    }());
+    if (assertionsEnabled) {
+      return _token;
+    } else {
+      throw AssertionError(
+          '`MockPlatformInterface` is not intended for use in release builds.');
+    }
+  }
 }
 
 /// The interface that implementations of url_launcher must implement.
