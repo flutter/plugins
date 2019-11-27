@@ -13,8 +13,9 @@ import 'method_channel_url_launcher.dart';
 /// Provides helper methods for ensuring that platform interfaces are
 /// implemented using `extends` instead of `implements`.
 class PlatformInterface {
-  PlatformInterface({ Object token }) : _verificationToken = token;
+  PlatformInterface({ Object token }) : _token = token;
 
+  // Pass a `const Object()` here to distinguish
   final Object _token;
 
   // Mock implementations can return true here using `noSuchMethod`.
@@ -25,22 +26,12 @@ class PlatformInterface {
   // implemented with `implements`.
   bool get _isMock => false;
 
-  /// Returns the instance.
-  static void verifyToken<T>(Object token, PlatformInterface instance) {
-    assert(identical(token, instance._token));
+  /// Return true if the platform instance has a token that matches the
+  /// provided token. This is used to ensure that implementers are using
+  /// `extends` rather than `implements`.
+  static bool isValid(PlatformInterface instance, Object token) {
+    return _isMock || identical(token, instance._token);
   }
-
-  // This method makes sure that UrlLauncher isn't implemented with `implements`.
-  //
-  // See class doc for more details on why implementing this class is forbidden.
-  //
-  // This private method is called by the instance setter, which fails if the class is
-  // implemented with `implements`.
-  Object _verifyProvidesDefaultImplementations() => _verificationToken;
-
-  // Private object used to ensure that `_verifyProvidesDefaultImplementations`
-  // cannot be implemented using `noSuchMethod`.
-  static const Object _verificationToken = const Object();
 }
 
 /// A [PlatformInterface] that can be mocked with mockito.
@@ -87,7 +78,7 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
   // TODO(amirh): Extract common platform interface logic.
   // https://github.com/flutter/flutter/issues/43368
   static set instance(UrlLauncherPlatform instance) {
-    PlatformInterface.verifyToken(_token, instance);
+    assert(PlatformInterface.isValid(instance, _token));
     _instance = instance;
   }
 
