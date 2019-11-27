@@ -20,104 +20,116 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
- * Implementation of the {@link MethodChannel.MethodCallHandler} for the plugin. It is also
- * responsible of managing the {@link android.content.SharedPreferences}.
+ * Implementation of the {@link MethodChannel.MethodCallHandler} for the plugin.
+ * It is also responsible of managing the
+ * {@link android.content.SharedPreferences}.
  */
 @SuppressWarnings("unchecked")
 class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
-  private static final String SHARED_PREFERENCES_NAME = "FlutterSharedPreferences";
+  private static final String SHARED_PREFERENCES_DEFAULT_NAME = "FlutterSharedPreferences";
+  private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
+  private static final String PREFIX = "flutter.";
 
-  // Fun fact: The following is a base64 encoding of the string "This is the prefix for a list."
+  // Fun fact: The following is a base64 encoding of the string "This is the
+  // prefix for a list."
   private static final String LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
   private static final String BIG_INTEGER_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy";
   private static final String DOUBLE_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu";
 
-  private final android.content.SharedPreferences preferences;
+  private final Context context;
 
   /**
-   * Constructs a {@link MethodCallHandlerImpl} instance. Creates a {@link
-   * android.content.SharedPreferences} based on the {@code context}.
+   * Constructs a {@link MethodCallHandlerImpl} instance, and sets the
+   * {@link Context}. This should be used as a singleton. Use
+   * {@link #getPreferences} to get an instance of {@link SharedPreferences}
+   * associated to a specific file.
    */
   MethodCallHandlerImpl(Context context) {
-    preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    this.context = context;
+  }
+
+  /**
+   * 
+   * @param filename The file to store the preferences.
+   * @return An instance of {@link SharedPreferences}.
+   */
+  private SharedPreferences getPreferences(String filename) {
+    return context.getSharedPreferences(Optional.ofNullable(filename).orElse(SHARED_PREFERENCES_DEFAULT_NAME),
+        Context.MODE_PRIVATE);
   }
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    String key = call.argument("key");
+    final String key = call.argument("key");
+    final String filename = call.argument("filename");
+    final SharedPreferences preferences = getPreferences(filename);
     try {
       switch (call.method) {
-        case "setBool":
-          commitAsync(preferences.edit().putBoolean(key, (boolean) call.argument("value")), result);
-          break;
-        case "setDouble":
-          double doubleValue = ((Number) call.argument("value")).doubleValue();
-          String doubleValueStr = Double.toString(doubleValue);
-          commitAsync(preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr), result);
-          break;
-        case "setInt":
-          Number number = call.argument("value");
-          if (number instanceof BigInteger) {
-            BigInteger integerValue = (BigInteger) number;
-            commitAsync(
-                preferences
-                    .edit()
-                    .putString(
-                        key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX)),
-                result);
-          } else {
-            commitAsync(preferences.edit().putLong(key, number.longValue()), result);
-          }
-          break;
-        case "setString":
-          String value = (String) call.argument("value");
-          if (value.startsWith(LIST_IDENTIFIER) || value.startsWith(BIG_INTEGER_PREFIX)) {
-            result.error(
-                "StorageError",
-                "This string cannot be stored as it clashes with special identifier prefixes.",
-                null);
-            return;
-          }
-          commitAsync(preferences.edit().putString(key, value), result);
-          break;
-        case "setStringList":
-          List<String> list = call.argument("value");
+      case "setBool":
+        commitAsync(preferences.edit().putBoolean(key, (boolean) call.argument("value")), result);
+        break;
+      case "setDouble":
+        final double doubleValue = ((Number) call.argument("value")).doubleValue();
+        final String doubleValueStr = Double.toString(doubleValue);
+        commitAsync(preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr), result);
+        break;
+      case "setInt":
+        final Number number = call.argument("value");
+        if (number instanceof BigInteger) {
+          final BigInteger integerValue = (BigInteger) number;
           commitAsync(
-              preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list)), result);
-          break;
-        case "commit":
-          // We've been committing the whole time.
-          result.success(true);
-          break;
-        case "getAll":
-          result.success(getAllPrefs());
+              preferences.edit().putString(key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX)),
+              result);
+        } else {
+          commitAsync(preferences.edit().putLong(key, number.longValue()), result);
+        }
+        break;
+      case "setString":
+        final String value = (String) call.argument("value");
+        if (value.startsWith(LIST_IDENTIFIER) || value.startsWith(BIG_INTEGER_PREFIX)) {
+          result.error("StorageError", "This string cannot be stored as it clashes with special identifier prefixes.",
+              null);
           return;
-        case "remove":
-          commitAsync(preferences.edit().remove(key), result);
-          break;
-        case "clear":
-          Set<String> keySet = getAllPrefs().keySet();
-          SharedPreferences.Editor clearEditor = preferences.edit();
-          for (String keyToDelete : keySet) {
-            clearEditor.remove(keyToDelete);
-          }
-          commitAsync(clearEditor, result);
-          break;
-        default:
-          result.notImplemented();
-          break;
+        }
+        commitAsync(preferences.edit().putString(key, value), result);
+        break;
+      case "setStringList":
+        final List<String> list = call.argument("value");
+        commitAsync(preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list)), result);
+        break;
+      case "commit":
+        // We've been committing the whole time.
+        result.success(true);
+        break;
+      case "getAll":
+        result.success(getAllPrefs(filename));
+        return;
+      case "remove":
+        commitAsync(preferences.edit().remove(key), result);
+        break;
+      case "clear":
+        final Set<String> keySet = getAllPrefs(filename).keySet();
+        final SharedPreferences.Editor clearEditor = preferences.edit();
+        for (String keyToDelete : keySet) {
+          clearEditor.remove(keyToDelete);
+        }
+        commitAsync(clearEditor, result);
+        break;
+      default:
+        result.notImplemented();
+        break;
       }
     } catch (IOException e) {
       result.error("IOException encountered", call.method, e);
     }
   }
 
-  private void commitAsync(
-      final SharedPreferences.Editor editor, final MethodChannel.Result result) {
+  private void commitAsync(final SharedPreferences.Editor editor, final MethodChannel.Result result) {
     new AsyncTask<Void, Void, Boolean>() {
       @Override
       protected Boolean doInBackground(Void... voids) {
@@ -161,36 +173,35 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   }
 
   // Filter preferences to only those set by the flutter app.
-  private Map<String, Object> getAllPrefs() throws IOException {
-    Map<String, ?> allPrefs = preferences.getAll();
-    Map<String, Object> filteredPrefs = new HashMap<>();
+  private Map<String, Object> getAllPrefs(String filename) throws IOException {
+    final SharedPreferences preferences = getPreferences(filename);
+    final Map<String, ?> allPrefs = preferences.getAll();
+    final Map<String, Object> filteredPrefs = new HashMap<>();
     for (String key : allPrefs.keySet()) {
-      if (key.startsWith("flutter.")) {
+      if (key.startsWith(PREFIX)) {
         Object value = allPrefs.get(key);
         if (value instanceof String) {
-          String stringValue = (String) value;
+          final String stringValue = (String) value;
           if (stringValue.startsWith(LIST_IDENTIFIER)) {
             value = decodeList(stringValue.substring(LIST_IDENTIFIER.length()));
           } else if (stringValue.startsWith(BIG_INTEGER_PREFIX)) {
-            String encoded = stringValue.substring(BIG_INTEGER_PREFIX.length());
+            final String encoded = stringValue.substring(BIG_INTEGER_PREFIX.length());
             value = new BigInteger(encoded, Character.MAX_RADIX);
           } else if (stringValue.startsWith(DOUBLE_PREFIX)) {
-            String doubleStr = stringValue.substring(DOUBLE_PREFIX.length());
+            final String doubleStr = stringValue.substring(DOUBLE_PREFIX.length());
             value = Double.valueOf(doubleStr);
           }
         } else if (value instanceof Set) {
           // This only happens for previous usage of setStringSet. The app expects a list.
-          List<String> listValue = new ArrayList<>((Set) value);
+          final List<String> listValue = new ArrayList<>((Set) value);
           // Let's migrate the value too while we are at it.
-          boolean success =
-              preferences
-                  .edit()
-                  .remove(key)
-                  .putString(key, LIST_IDENTIFIER + encodeList(listValue))
-                  .commit();
+          final boolean success = preferences.edit().remove(key).putString(key, LIST_IDENTIFIER + encodeList(listValue))
+              .commit();
           if (!success) {
-            // If we are unable to migrate the existing preferences, it means we potentially lost them.
-            // In this case, an error from getAllPrefs() is appropriate since it will alert the app during plugin initialization.
+            // If we are unable to migrate the existing preferences, it means we potentially
+            // lost them.
+            // In this case, an error from getAllPrefs() is appropriate since it will alert
+            // the app during plugin initialization.
             throw new IOException("Could not migrate set to list");
           }
           value = listValue;

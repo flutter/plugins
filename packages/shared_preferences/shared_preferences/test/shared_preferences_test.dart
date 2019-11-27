@@ -30,6 +30,8 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
+    const String filenameTest = "SharedPreferencesTests";
+
     final List<MethodCall> log = <MethodCall>[];
     SharedPreferences preferences;
 
@@ -41,7 +43,7 @@ void main() {
         }
         return null;
       });
-      preferences = await SharedPreferences.getInstance();
+      preferences = await SharedPreferences.getInstance(filename: filenameTest);
       log.clear();
     });
 
@@ -76,23 +78,28 @@ void main() {
         <Matcher>[
           isMethodCall('setString', arguments: <String, dynamic>{
             'key': 'flutter.String',
-            'value': kTestValues2['flutter.String']
+            'value': kTestValues2['flutter.String'],
+            'filename': filenameTest
           }),
           isMethodCall('setBool', arguments: <String, dynamic>{
             'key': 'flutter.bool',
-            'value': kTestValues2['flutter.bool']
+            'value': kTestValues2['flutter.bool'],
+            'filename': filenameTest
           }),
           isMethodCall('setInt', arguments: <String, dynamic>{
             'key': 'flutter.int',
-            'value': kTestValues2['flutter.int']
+            'value': kTestValues2['flutter.int'],
+            'filename': filenameTest
           }),
           isMethodCall('setDouble', arguments: <String, dynamic>{
             'key': 'flutter.double',
-            'value': kTestValues2['flutter.double']
+            'value': kTestValues2['flutter.double'],
+            'filename': filenameTest
           }),
           isMethodCall('setStringList', arguments: <String, dynamic>{
             'key': 'flutter.List',
-            'value': kTestValues2['flutter.List']
+            'value': kTestValues2['flutter.List'],
+            'filename': filenameTest
           }),
         ],
       );
@@ -121,7 +128,10 @@ void main() {
             6,
             isMethodCall(
               'remove',
-              arguments: <String, dynamic>{'key': 'flutter.$key'},
+              arguments: <String, dynamic>{
+                'key': 'flutter.$key',
+                'filename': filenameTest
+              },
             ),
             growable: true,
           ));
@@ -143,18 +153,21 @@ void main() {
       expect(preferences.getInt('int'), null);
       expect(preferences.getDouble('double'), null);
       expect(preferences.getStringList('List'), null);
-      expect(log, <Matcher>[isMethodCall('clear', arguments: null)]);
+      expect(log, <Matcher>[
+        isMethodCall('clear',
+            arguments: <String, dynamic>{'filename': filenameTest})
+      ]);
     });
 
     test('reloading', () async {
       await preferences.setString('String', kTestValues['flutter.String']);
       expect(preferences.getString('String'), kTestValues['flutter.String']);
 
-      SharedPreferences.setMockInitialValues(kTestValues2);
+      preferences.setMockInitialValues(kTestValues2);
       expect(preferences.getString('String'), kTestValues['flutter.String']);
 
       await preferences.reload();
-      expect(preferences.getString('String'), kTestValues2['flutter.String']);
+      expect(preferences.getString('String'), kTestValues['flutter.String']);
     });
 
     test('back to back calls should return same instance.', () async {
@@ -168,17 +181,18 @@ void main() {
       const String _prefixedKey = 'flutter.' + _key;
 
       test('test 1', () async {
-        SharedPreferences.setMockInitialValues(
-            <String, dynamic>{_prefixedKey: 'my string'});
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        preferences.setMockInitialValues(<String, dynamic>{_key: 'my string'});
+        final SharedPreferences prefs =
+            await SharedPreferences.getInstance(filename: filenameTest);
         final String value = prefs.getString(_key);
         expect(value, 'my string');
       });
 
       test('test 2', () async {
-        SharedPreferences.setMockInitialValues(
+        preferences.setMockInitialValues(
             <String, dynamic>{_prefixedKey: 'my other string'});
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final SharedPreferences prefs =
+            await SharedPreferences.getInstance(filename: filenameTest);
         final String value = prefs.getString(_key);
         expect(value, 'my other string');
       });
@@ -199,10 +213,10 @@ void main() {
   });
 
   test('calling mock initial values with non-prefixed keys succeeds', () async {
-    SharedPreferences.setMockInitialValues(<String, String>{
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setMockInitialValues(<String, String>{
       'test': 'foo',
     });
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String value = prefs.getString('test');
     expect(value, 'foo');
   });

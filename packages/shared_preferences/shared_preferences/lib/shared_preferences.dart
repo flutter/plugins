@@ -15,33 +15,46 @@ const MethodChannel _kChannel =
 ///
 /// Data is persisted to disk asynchronously.
 class SharedPreferences {
-  SharedPreferences._(this._preferenceCache);
+  SharedPreferences._(this._preferenceCache, {@required this.filename});
 
   static const String _prefix = 'flutter.';
-  static Completer<SharedPreferences> _completer;
+  static final Map<String, Future<SharedPreferences>> _openedInstances =
+      <String, Future<SharedPreferences>>{};
 
-  /// Loads and parses the [SharedPreferences] for this app from disk.
+  /// Returns an instance of [SharedPreferences]
+  /// with values corresponding to those stored under the file with the specified [filename].
   ///
   /// Because this is reading from disk, it shouldn't be awaited in
   /// performance-sensitive blocks.
-  static Future<SharedPreferences> getInstance() async {
-    if (_completer == null) {
-      _completer = Completer<SharedPreferences>();
-      try {
+  ///
+  /// WARNING: [filename] argument for now only works on Android.
+  /// On iOs, the default name will always be used, even with different value in parameter.
+  ///
+  /// The values in [SharedPreferences] are cached.
+  /// A new instance is actually created only the first time this method is called with the specified [filename].
+  ///
+  /// If a file with the specified [filename] doesn't already exist, it will automatically be created.
+  /// The [filename] cannot be null ; otherwise an [ArgumentError] will be thrown.
+  /// The default value of [filename] is the name of the file used in the previous version of this plugin.
+  ///
+  /// For Android, see https://developer.android.com/training/data-storage/shared-preferences.html for more details on the platform implementation.
+  static Future<SharedPreferences> getInstance(
+      {String filename = "FlutterSharedPreferences"}) async {
+    ArgumentError.checkNotNull(filename);
+    try {
+      return await _openedInstances.putIfAbsent(filename, () async {
         final Map<String, Object> preferencesMap =
-            await _getSharedPreferencesMap();
-        _completer.complete(SharedPreferences._(preferencesMap));
-      } on Exception catch (e) {
-        // If there's an error, explicitly return the future with an error.
-        // then set the completer to null so we can retry.
-        _completer.completeError(e);
-        final Future<SharedPreferences> sharedPrefsFuture = _completer.future;
-        _completer = null;
-        return sharedPrefsFuture;
-      }
+            await _getSharedPreferencesMap(filename: filename);
+        return SharedPreferences._(preferencesMap, filename: filename);
+      });
+    } on Exception {
+      _openedInstances.remove(filename);
+      rethrow;
     }
-    return _completer.future;
   }
+
+  /// Name of the file under which preferences are stored.
+  final String filename;
 
   /// The cache that holds all preferences.
   ///
@@ -126,6 +139,7 @@ class SharedPreferences {
   Future<bool> _setValue(String valueType, String key, Object value) {
     final Map<String, dynamic> params = <String, dynamic>{
       'key': '$_prefix$key',
+      'filename': filename
     };
     if (value == null) {
       _preferenceCache.remove(key);
@@ -149,12 +163,14 @@ class SharedPreferences {
   /// Always returns true.
   /// On iOS, synchronize is marked deprecated. On Android, we commit every set.
   @deprecated
-  Future<bool> commit() async => await _kChannel.invokeMethod<bool>('commit');
+  Future<bool> commit() async => await _kChannel
+      .invokeMethod<bool>('commit', <String, dynamic>{'filename': filename});
 
   /// Completes with true once the user preferences for the app has been cleared.
   Future<bool> clear() async {
     _preferenceCache.clear();
-    return await _kChannel.invokeMethod<bool>('clear');
+    return await _kChannel
+        .invokeMethod<bool>('clear', <String, dynamic>{'filename': filename});
   }
 
   /// Fetches the latest values from the host platform.
@@ -163,14 +179,16 @@ class SharedPreferences {
   /// (without using the plugin) while the app is running.
   Future<void> reload() async {
     final Map<String, Object> preferences =
-        await SharedPreferences._getSharedPreferencesMap();
+        await SharedPreferences._getSharedPreferencesMap(filename: filename);
     _preferenceCache.clear();
     _preferenceCache.addAll(preferences);
   }
 
-  static Future<Map<String, Object>> _getSharedPreferencesMap() async {
+  static Future<Map<String, Object>> _getSharedPreferencesMap(
+      {@required String filename}) async {
+    final Map<String, dynamic> args = <String, dynamic>{'filename': filename};
     final Map<String, Object> fromSystem =
-        await _kChannel.invokeMapMethod<String, Object>('getAll');
+        await _kChannel.invokeMapMethod<String, Object>('getAll', args);
     assert(fromSystem != null);
     // Strip the flutter. prefix from the returned preferences.
     final Map<String, Object> preferencesMap = <String, Object>{};
@@ -182,10 +200,8 @@ class SharedPreferences {
   }
 
   /// Initializes the shared preferences with mock values for testing.
-  ///
-  /// If the singleton instance has been initialized already, it is nullified.
   @visibleForTesting
-  static void setMockInitialValues(Map<String, dynamic> values) {
+  void setMockInitialValues(Map<String, dynamic> values) {
     final Map<String, dynamic> newValues =
         values.map<String, dynamic>((String key, dynamic value) {
       String newKey = key;
@@ -200,6 +216,5 @@ class SharedPreferences {
       }
       return null;
     });
-    _completer = null;
   }
 }

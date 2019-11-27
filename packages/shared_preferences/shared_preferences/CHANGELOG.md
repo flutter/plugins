@@ -1,3 +1,7 @@
+## 0.6.0
+
+* Possibility to specify the file under which the preferences are stored on Android.
+
 ## 0.5.4+7
 
 * Restructure the project for Web support.
