@@ -19,7 +19,7 @@
 #include <arpa/inet.h>
 #include <ifaddrs.h>
 
-NSString *getWifiIP() {
+NSString* getWifiIP() {
   NSString* address = @"error";
   struct ifaddrs* interfaces = NULL;
   struct ifaddrs* temp_addr = NULL;
