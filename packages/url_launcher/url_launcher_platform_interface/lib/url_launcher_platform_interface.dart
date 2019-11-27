@@ -58,7 +58,7 @@ abstract class PlatformInterface {
 /// This class is intended for use in tests only.
 @visibleForTesting
 abstract class MockPlatformInterface implements PlatformInterface {
-  static const Object _token = const Object();
+  static const Object _token = Object();
 
   @override
   Object get _instanceToken => _token;
@@ -76,7 +76,7 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
 
   static UrlLauncherPlatform _instance = MethodChannelUrlLauncher();
 
-  static const Object _token = const Object();
+  static const Object _token = Object();
 
   /// The default instance of [UrlLauncherPlatform] to use.
   ///
