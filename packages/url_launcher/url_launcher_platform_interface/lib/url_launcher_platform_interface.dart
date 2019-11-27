@@ -45,7 +45,7 @@ abstract class UrlLauncherPlatform {
     }());
     if (!assertionsEnabled || !instance.isMock) {
       try {
-        if (identical(_verificationToken,
+        if (!identical(_verificationToken,
             instance._verifyProvidesDefaultImplementations())) {
           throw AssertionError(
               'Platform interfaces must not be implemented with `implements`');
@@ -94,5 +94,5 @@ abstract class UrlLauncherPlatform {
 
   // Private object used to determine if `_verifyProvidesDefaultImplementations`
   // has been overridden with `noSuchMethod`.
-  static Object _verificationToken = Object();
+  static const Object _verificationToken = const Object();
 }
