@@ -10,15 +10,21 @@
         android:label="android_alarm_manager_example"
         android:icon="@mipmap/ic_launcher">
         <activity
+          android:name="io.flutter.plugins.androidalarmmanagerexample.EmbeddingV1Activity"
+          android:launchMode="singleTop"
+          android:theme="@style/LaunchTheme"
+          android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
+          android:hardwareAccelerated="true"
+          android:windowSoftInputMode="adjustResize"
+          android:exported="true">
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
-            <meta-data
-                android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
-                android:value="true" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
