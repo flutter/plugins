@@ -3,13 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
-import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
-const MethodChannel _kChannel =
-    MethodChannel('plugins.flutter.io/shared_preferences');
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 /// a persistent store for simple data.
@@ -18,41 +15,33 @@ const MethodChannel _kChannel =
 class SharedPreferences {
   SharedPreferences._(this._preferenceCache, {@required this.filename});
 
-  /// Default file under which preferences are stored.
-  static const String defaultFilename = 'FlutterSharedPreferences';
   static const String _prefix = 'flutter.';
   static final Map<String, Future<SharedPreferences>> _openedInstances =
       <String, Future<SharedPreferences>>{};
 
-  /// Returns an instance of [SharedPreferences] with the default file.
-  ///
-  /// Because this is reading from disk, it shouldn't be awaited in
-  /// performance-sensitive blocks.
-  ///
-  /// The values in [SharedPreferences] are cached.
-  /// A new instance is actually created only the first time this method is called with the specified [filename].
-  static Future<SharedPreferences> getInstance() async => getInstanceForFile();
+  static SharedPreferencesStorePlatform get _store =>
+      SharedPreferencesStorePlatform.instance;
 
   /// Returns an instance of [SharedPreferences]
   /// with values corresponding to those stored under the file with the specified [filename].
   ///
-  /// If a file with the specified [filename] doesn't already exist, it will automatically be created.
-  /// The [filename] cannot be null.
-  ///
   /// Because this is reading from disk, it shouldn't be awaited in
   /// performance-sensitive blocks.
   ///
-  /// **WARNING**: this method for now only works on Android.
-  /// On iOS, use the [getInstance] method, otherwise an [AssertionError] will be thrown.
+  /// WARNING: [filename] argument for now only works on Android.
+  /// On iOs, the default name will always be used, even with different value in parameter.
   ///
   /// The values in [SharedPreferences] are cached.
   /// A new instance is actually created only the first time this method is called with the specified [filename].
   ///
-  /// See https://developer.android.com/training/data-storage/shared-preferences.html for more details on the platform implementation.
-  static Future<SharedPreferences> getInstanceForFile(
-      {String filename = defaultFilename}) async {
+  /// If a file with the specified [filename] doesn't already exist, it will automatically be created.
+  /// The [filename] cannot be null ; otherwise an [ArgumentError] will be thrown.
+  /// The default value of [filename] is the name of the file used in the previous version of this plugin.
+  ///
+  /// For Android, see https://developer.android.com/training/data-storage/shared-preferences.html for more details on the platform implementation.
+  static Future<SharedPreferences> getInstance(
+      {String filename = "FlutterSharedPreferences"}) async {
     ArgumentError.checkNotNull(filename);
-    assert(filename == defaultFilename || Platform.isAndroid);
     try {
       return await _openedInstances.putIfAbsent(filename, () async {
         final Map<String, Object> preferencesMap =
@@ -149,15 +138,10 @@ class SharedPreferences {
   Future<bool> remove(String key) => _setValue(null, key, null);
 
   Future<bool> _setValue(String valueType, String key, Object value) {
-    final Map<String, dynamic> params = <String, dynamic>{
-      'key': '$_prefix$key',
-      'filename': filename
-    };
+    final String prefixedKey = '$_prefix$key';
     if (value == null) {
       _preferenceCache.remove(key);
-      return _kChannel
-          .invokeMethod<bool>('remove', params)
-          .then<bool>((dynamic result) => result);
+      return _store.remove(prefixedKey); // TODO add the filename
     } else {
       if (value is List<String>) {
         // Make a copy of the list so that later mutations won't propagate
@@ -165,24 +149,20 @@ class SharedPreferences {
       } else {
         _preferenceCache[key] = value;
       }
-      params['value'] = value;
-      return _kChannel
-          .invokeMethod<bool>('set$valueType', params)
-          .then<bool>((dynamic result) => result);
+      return _store.setValue(
+          valueType, prefixedKey, value); // TODO add the filename
     }
   }
 
   /// Always returns true.
   /// On iOS, synchronize is marked deprecated. On Android, we commit every set.
   @deprecated
-  Future<bool> commit() async => await _kChannel
-      .invokeMethod<bool>('commit', <String, dynamic>{'filename': filename});
+  Future<bool> commit() async => true;
 
   /// Completes with true once the user preferences for the app has been cleared.
-  Future<bool> clear() async {
+  Future<bool> clear() {
     _preferenceCache.clear();
-    return await _kChannel
-        .invokeMethod<bool>('clear', <String, dynamic>{'filename': filename});
+    return _store.clear(); // TODO add the filename
   }
 
   /// Fetches the latest values from the host platform.
@@ -196,11 +176,11 @@ class SharedPreferences {
     _preferenceCache.addAll(preferences);
   }
 
-  static Future<Map<String, Object>> _getSharedPreferencesMap(
-      {@required String filename}) async {
-    final Map<String, dynamic> args = <String, dynamic>{'filename': filename};
+  static Future<Map<String, Object>> _getSharedPreferencesMap({
+    @required String filename,
+  }) async {
     final Map<String, Object> fromSystem =
-        await _kChannel.invokeMapMethod<String, Object>('getAll', args);
+        await _store.getAll(); // TODO add the filename
     assert(fromSystem != null);
     // Strip the flutter. prefix from the returned preferences.
     final Map<String, Object> preferencesMap = <String, Object>{};
@@ -222,11 +202,7 @@ class SharedPreferences {
       }
       return MapEntry<String, dynamic>(newKey, value);
     });
-    _kChannel.setMockMethodCallHandler((MethodCall methodCall) async {
-      if (methodCall.method == 'getAll') {
-        return newValues;
-      }
-      return null;
-    });
+    SharedPreferencesStorePlatform.instance =
+        InMemorySharedPreferencesStore.withData(newValues);
   }
 }

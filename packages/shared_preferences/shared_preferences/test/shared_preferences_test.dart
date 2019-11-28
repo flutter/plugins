@@ -5,15 +5,12 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$SharedPreferences', () {
-    const MethodChannel channel = MethodChannel(
-      'plugins.flutter.io/shared_preferences',
-    );
-
+  group('SharedPreferences', () {
     const Map<String, dynamic> kTestValues = <String, dynamic>{
       'flutter.String': 'hello world',
       'flutter.bool': true,
@@ -30,6 +27,7 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
+<<<<<<< HEAD
     const String filenameTest = "SharedPreferencesTests";
 
     final List<MethodCall> log = <MethodCall>[];
@@ -46,10 +44,20 @@ void main() {
       preferences =
           await SharedPreferences.getInstanceForFile(filename: filenameTest);
       log.clear();
+=======
+    FakeSharedPreferencesStore store;
+    SharedPreferences preferences;
+
+    setUp(() async {
+      store = FakeSharedPreferencesStore(kTestValues);
+      SharedPreferencesStorePlatform.instance = store;
+      preferences = await SharedPreferences.getInstance();
+      store.log.clear();
+>>>>>>> upstream/master
     });
 
-    tearDown(() {
-      preferences.clear();
+    tearDown(() async {
+      await preferences.clear();
     });
 
     test('reading', () async {
@@ -63,7 +71,7 @@ void main() {
       expect(preferences.getInt('int'), kTestValues['flutter.int']);
       expect(preferences.getDouble('double'), kTestValues['flutter.double']);
       expect(preferences.getStringList('List'), kTestValues['flutter.List']);
-      expect(log, <Matcher>[]);
+      expect(store.log, <Matcher>[]);
     });
 
     test('writing', () async {
@@ -75,8 +83,9 @@ void main() {
         preferences.setStringList('List', kTestValues2['flutter.List'])
       ]);
       expect(
-        log,
+        store.log,
         <Matcher>[
+<<<<<<< HEAD
           isMethodCall('setString', arguments: <String, dynamic>{
             'key': 'flutter.String',
             'value': kTestValues2['flutter.String'],
@@ -102,37 +111,67 @@ void main() {
             'value': kTestValues2['flutter.List'],
             'filename': filenameTest
           }),
+=======
+          isMethodCall('setValue', arguments: <dynamic>[
+            'String',
+            'flutter.String',
+            kTestValues2['flutter.String'],
+          ]),
+          isMethodCall('setValue', arguments: <dynamic>[
+            'Bool',
+            'flutter.bool',
+            kTestValues2['flutter.bool'],
+          ]),
+          isMethodCall('setValue', arguments: <dynamic>[
+            'Int',
+            'flutter.int',
+            kTestValues2['flutter.int'],
+          ]),
+          isMethodCall('setValue', arguments: <dynamic>[
+            'Double',
+            'flutter.double',
+            kTestValues2['flutter.double'],
+          ]),
+          isMethodCall('setValue', arguments: <dynamic>[
+            'StringList',
+            'flutter.List',
+            kTestValues2['flutter.List'],
+          ]),
+>>>>>>> upstream/master
         ],
       );
-      log.clear();
+      store.log.clear();
 
       expect(preferences.getString('String'), kTestValues2['flutter.String']);
       expect(preferences.getBool('bool'), kTestValues2['flutter.bool']);
       expect(preferences.getInt('int'), kTestValues2['flutter.int']);
       expect(preferences.getDouble('double'), kTestValues2['flutter.double']);
       expect(preferences.getStringList('List'), kTestValues2['flutter.List']);
-      expect(log, equals(<MethodCall>[]));
+      expect(store.log, equals(<MethodCall>[]));
     });
 
     test('removing', () async {
       const String key = 'testKey';
-      preferences
-        ..setString(key, null)
-        ..setBool(key, null)
-        ..setInt(key, null)
-        ..setDouble(key, null)
-        ..setStringList(key, null);
+      await preferences.setString(key, null);
+      await preferences.setBool(key, null);
+      await preferences.setInt(key, null);
+      await preferences.setDouble(key, null);
+      await preferences.setStringList(key, null);
       await preferences.remove(key);
       expect(
-          log,
+          store.log,
           List<Matcher>.filled(
             6,
             isMethodCall(
               'remove',
+<<<<<<< HEAD
               arguments: <String, dynamic>{
                 'key': 'flutter.$key',
                 'filename': filenameTest
               },
+=======
+              arguments: 'flutter.$key',
+>>>>>>> upstream/master
             ),
             growable: true,
           ));
@@ -143,7 +182,7 @@ void main() {
 
       expect(false, preferences.containsKey(key));
 
-      preferences.setString(key, 'test');
+      await preferences.setString(key, 'test');
       expect(true, preferences.containsKey(key));
     });
 
@@ -154,10 +193,14 @@ void main() {
       expect(preferences.getInt('int'), null);
       expect(preferences.getDouble('double'), null);
       expect(preferences.getStringList('List'), null);
+<<<<<<< HEAD
       expect(log, <Matcher>[
         isMethodCall('clear',
             arguments: <String, dynamic>{'filename': filenameTest})
       ]);
+=======
+      expect(store.log, <Matcher>[isMethodCall('clear', arguments: null)]);
+>>>>>>> upstream/master
     });
 
     test('reloading', () async {
@@ -221,4 +264,39 @@ void main() {
     final String value = prefs.getString('test');
     expect(value, 'foo');
   });
+}
+
+class FakeSharedPreferencesStore implements SharedPreferencesStorePlatform {
+  FakeSharedPreferencesStore(Map<String, Object> data)
+      : backend = InMemorySharedPreferencesStore.withData(data);
+
+  final InMemorySharedPreferencesStore backend;
+  final List<MethodCall> log = <MethodCall>[];
+
+  @override
+  bool get isMock => true;
+
+  @override
+  Future<bool> clear() {
+    log.add(MethodCall('clear'));
+    return backend.clear();
+  }
+
+  @override
+  Future<Map<String, Object>> getAll() {
+    log.add(MethodCall('getAll'));
+    return backend.getAll();
+  }
+
+  @override
+  Future<bool> remove(String key) {
+    log.add(MethodCall('remove', key));
+    return backend.remove(key);
+  }
+
+  @override
+  Future<bool> setValue(String valueType, String key, Object value) {
+    log.add(MethodCall('setValue', <dynamic>[valueType, key, value]));
+    return backend.setValue(valueType, key, value);
+  }
 }

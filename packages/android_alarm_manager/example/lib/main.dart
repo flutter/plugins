@@ -18,6 +18,8 @@ Future<void> main() async {
   final int periodicID = 0;
   final int oneShotID = 1;
 
+  WidgetsFlutterBinding.ensureInitialized();
+
   // Start the AlarmManager service.
   await AndroidAlarmManager.initialize();
 
@@ -27,7 +29,7 @@ Future<void> main() async {
           Text('See device log for output', textDirection: TextDirection.ltr)));
   await AndroidAlarmManager.periodic(
       const Duration(seconds: 5), periodicID, printPeriodic,
-      wakeup: true);
+      wakeup: true, exact: true);
   await AndroidAlarmManager.oneShot(
       const Duration(seconds: 5), oneShotID, printOneShot);
 }

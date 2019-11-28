@@ -24,10 +24,15 @@ abstract class SharedPreferencesStorePlatform {
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [SharedPreferencesStorePlatform] when they register themselves.
   static set instance(SharedPreferencesStorePlatform value) {
-    try {
-      instance._verifyProvidesDefaultImplementations();
-      _instance = value;
-    } on NoSuchMethodError catch (_) {}
+    if (!value.isMock) {
+      try {
+        value._verifyProvidesDefaultImplementations();
+      } on NoSuchMethodError catch (_) {
+        throw AssertionError(
+            'Platform interfaces must not be implemented with `implements`');
+      }
+    }
+    _instance = value;
   }
 
   static SharedPreferencesStorePlatform _instance =
@@ -42,7 +47,7 @@ abstract class SharedPreferencesStorePlatform {
   bool get isMock => false;
 
   /// Removes the value associated with the [key].
-  Future<bool> remove(String key);
+  Future<bool> remove({@required String key, @required String filename});
 
   /// Stores the [value] associated with the [key].
   ///
@@ -53,13 +58,18 @@ abstract class SharedPreferencesStorePlatform {
   /// * Value type "Int" must be passed if the value is of type `int`.
   /// * Value type "String" must be passed if the value is of type `String`.
   /// * Value type "StringList" must be passed if the value is of type `List<String>`.
-  Future<bool> setValue(String valueType, String key, Object value);
+  Future<bool> setValue({
+    @required String filename,
+    @required String valueType,
+    @required String key,
+    @required Object value,
+  });
 
   /// Removes all keys and values in the store.
-  Future<bool> clear();
+  Future<bool> clear({@required String filename});
 
   /// Returns all key/value pairs persisted in this store.
-  Future<Map<String, Object>> getAll();
+  Future<Map<String, Object>> getAll({@required String filename});
 
   // This method makes sure that SharedPreferencesStorePlatform isn't implemented with `implements`.
   //
@@ -84,24 +94,29 @@ class InMemorySharedPreferencesStore extends SharedPreferencesStorePlatform {
   final Map<String, Object> _data;
 
   @override
-  Future<bool> clear() async {
+  Future<bool> clear({String filename}) async {
     _data.clear();
     return true;
   }
 
   @override
-  Future<Map<String, Object>> getAll() async {
+  Future<Map<String, Object>> getAll({String filename}) async {
     return Map<String, Object>.from(_data);
   }
 
   @override
-  Future<bool> remove(String key) async {
+  Future<bool> remove({@required String key, String filename}) async {
     _data.remove(key);
     return true;
   }
 
   @override
-  Future<bool> setValue(String valueType, String key, Object value) async {
+  Future<bool> setValue({
+    @required String valueType,
+    @required String key,
+    @required Object value,
+    String filename,
+  }) async {
     _data[key] = value;
     return true;
   }

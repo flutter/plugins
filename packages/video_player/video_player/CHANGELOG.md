@@ -1,3 +1,7 @@
+## 0.10.4
+
+* Port plugin code to use the federated Platform Interface, instead of a MethodChannel directly.
+
 ## 0.10.3+3
 
 * Add DartDocs and unit tests.

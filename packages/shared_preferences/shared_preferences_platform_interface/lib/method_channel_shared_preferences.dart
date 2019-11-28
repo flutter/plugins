@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 import 'shared_preferences_platform_interface.dart';
 
@@ -18,17 +19,24 @@ const MethodChannel _kChannel =
 class MethodChannelSharedPreferencesStore
     extends SharedPreferencesStorePlatform {
   @override
-  Future<bool> remove(String key) {
+  Future<bool> remove({@required String key, @required String filename}) {
     return _invokeBoolMethod('remove', <String, dynamic>{
       'key': key,
+      'filename': filename,
     });
   }
 
   @override
-  Future<bool> setValue(String valueType, String key, Object value) {
+  Future<bool> setValue({
+    @required String valueType,
+    @required String key,
+    @required Object value,
+    @required String filename,
+  }) {
     return _invokeBoolMethod('set$valueType', <String, dynamic>{
       'key': key,
       'value': value,
+      'filename': filename,
     });
   }
 
@@ -45,12 +53,18 @@ class MethodChannelSharedPreferencesStore
   }
 
   @override
-  Future<bool> clear() {
-    return _kChannel.invokeMethod<bool>('clear');
+  Future<bool> clear({@required String filename}) {
+    return _kChannel.invokeMethod<bool>(
+      'clear',
+      <String, dynamic>{'filename': filename},
+    );
   }
 
   @override
-  Future<Map<String, Object>> getAll() {
-    return _kChannel.invokeMapMethod<String, Object>('getAll');
+  Future<Map<String, Object>> getAll({@required String filename}) {
+    return _kChannel.invokeMapMethod<String, Object>(
+      'getAll',
+      <String, dynamic>{'filename': filename},
+    );
   }
 }

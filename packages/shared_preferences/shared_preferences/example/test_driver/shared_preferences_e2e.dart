@@ -90,6 +90,7 @@ void main() {
 
     test('removing', () async {
       const String key = 'testKey';
+<<<<<<< HEAD
       preferences1
         ..setString(key, kTestValues['flutter.String'])
         ..setBool(key, kTestValues['flutter.bool'])
@@ -135,6 +136,29 @@ void main() {
       expect(preferences2.getInt('int'), null);
       expect(preferences2.getDouble('double'), null);
       expect(preferences2.getStringList('List'), null);
+=======
+      await preferences.setString(key, kTestValues['flutter.String']);
+      await preferences.setBool(key, kTestValues['flutter.bool']);
+      await preferences.setInt(key, kTestValues['flutter.int']);
+      await preferences.setDouble(key, kTestValues['flutter.double']);
+      await preferences.setStringList(key, kTestValues['flutter.List']);
+      await preferences.remove(key);
+      expect(preferences.get('testKey'), isNull);
+    });
+
+    test('clearing', () async {
+      await preferences.setString('String', kTestValues['flutter.String']);
+      await preferences.setBool('bool', kTestValues['flutter.bool']);
+      await preferences.setInt('int', kTestValues['flutter.int']);
+      await preferences.setDouble('double', kTestValues['flutter.double']);
+      await preferences.setStringList('List', kTestValues['flutter.List']);
+      await preferences.clear();
+      expect(preferences.getString('String'), null);
+      expect(preferences.getBool('bool'), null);
+      expect(preferences.getInt('int'), null);
+      expect(preferences.getDouble('double'), null);
+      expect(preferences.getStringList('List'), null);
+>>>>>>> upstream/master
     });
   });
 }
