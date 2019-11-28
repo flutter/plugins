@@ -43,7 +43,8 @@ void main() {
         }
         return null;
       });
-      preferences = await SharedPreferences.getInstance(filename: filenameTest);
+      preferences =
+          await SharedPreferences.getInstanceForFile(filename: filenameTest);
       log.clear();
     });
 
@@ -183,7 +184,7 @@ void main() {
       test('test 1', () async {
         preferences.setMockInitialValues(<String, dynamic>{_key: 'my string'});
         final SharedPreferences prefs =
-            await SharedPreferences.getInstance(filename: filenameTest);
+            await SharedPreferences.getInstanceForFile(filename: filenameTest);
         final String value = prefs.getString(_key);
         expect(value, 'my string');
       });
@@ -192,7 +193,7 @@ void main() {
         preferences.setMockInitialValues(
             <String, dynamic>{_prefixedKey: 'my other string'});
         final SharedPreferences prefs =
-            await SharedPreferences.getInstance(filename: filenameTest);
+            await SharedPreferences.getInstanceForFile(filename: filenameTest);
         final String value = prefs.getString(_key);
         expect(value, 'my other string');
       });

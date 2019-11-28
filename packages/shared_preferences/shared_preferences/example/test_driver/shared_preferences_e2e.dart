@@ -30,8 +30,8 @@ void main() {
     SharedPreferences preferences2;
 
     setUp(() async {
-      preferences1 = await SharedPreferences.getInstance(filename: filename1);
-      preferences2 = await SharedPreferences.getInstance(filename: filename2);
+      preferences1 = await SharedPreferences.getInstanceForFile(filename: filename1);
+      preferences2 = await SharedPreferences.getInstanceForFile(filename: filename2);
     });
 
     tearDown(() {

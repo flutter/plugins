@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
@@ -17,30 +18,41 @@ const MethodChannel _kChannel =
 class SharedPreferences {
   SharedPreferences._(this._preferenceCache, {@required this.filename});
 
+  /// Default file under which preferences are stored.
+  static const String defaultFilename = 'FlutterSharedPreferences';
   static const String _prefix = 'flutter.';
   static final Map<String, Future<SharedPreferences>> _openedInstances =
       <String, Future<SharedPreferences>>{};
 
-  /// Returns an instance of [SharedPreferences]
-  /// with values corresponding to those stored under the file with the specified [filename].
+  /// Returns an instance of [SharedPreferences] with the default file.
   ///
   /// Because this is reading from disk, it shouldn't be awaited in
   /// performance-sensitive blocks.
   ///
-  /// WARNING: [filename] argument for now only works on Android.
-  /// On iOs, the default name will always be used, even with different value in parameter.
+  /// The values in [SharedPreferences] are cached.
+  /// A new instance is actually created only the first time this method is called with the specified [filename].
+  static Future<SharedPreferences> getInstance() async => getInstanceForFile();
+
+  /// Returns an instance of [SharedPreferences]
+  /// with values corresponding to those stored under the file with the specified [filename].
+  ///
+  /// If a file with the specified [filename] doesn't already exist, it will automatically be created.
+  /// The [filename] cannot be null.
+  ///
+  /// Because this is reading from disk, it shouldn't be awaited in
+  /// performance-sensitive blocks.
+  ///
+  /// **WARNING**: this method for now only works on Android.
+  /// On iOS, use the [getInstance] method, otherwise an [AssertionError] will be thrown.
   ///
   /// The values in [SharedPreferences] are cached.
   /// A new instance is actually created only the first time this method is called with the specified [filename].
   ///
-  /// If a file with the specified [filename] doesn't already exist, it will automatically be created.
-  /// The [filename] cannot be null ; otherwise an [ArgumentError] will be thrown.
-  /// The default value of [filename] is the name of the file used in the previous version of this plugin.
-  ///
-  /// For Android, see https://developer.android.com/training/data-storage/shared-preferences.html for more details on the platform implementation.
-  static Future<SharedPreferences> getInstance(
-      {String filename = "FlutterSharedPreferences"}) async {
+  /// See https://developer.android.com/training/data-storage/shared-preferences.html for more details on the platform implementation.
+  static Future<SharedPreferences> getInstanceForFile(
+      {String filename = defaultFilename}) async {
     ArgumentError.checkNotNull(filename);
+    assert(filename == defaultFilename || Platform.isAndroid);
     try {
       return await _openedInstances.putIfAbsent(filename, () async {
         final Map<String, Object> preferencesMap =
