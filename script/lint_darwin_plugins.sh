@@ -16,6 +16,7 @@ function lint_package() {
   # These podspecs are temporary multi-platform adoption dummy files.
   local skipped_podspecs=(
     "url_launcher_web.podspec"
+    "google_sign_in_web.podspec"
   )
   
   # TODO: These packages have analyzer warnings. Remove plugins from this list as issues are fixed.

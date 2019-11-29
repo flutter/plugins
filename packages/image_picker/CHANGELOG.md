@@ -1,3 +1,12 @@
+## 0.6.2+1
+
+* Android: Fix a crash when a non-image file is picked.
+* Android: Fix unwanted bitmap scaling.
+
+## 0.6.2
+
+* iOS: Fixes an issue where picking content from Gallery would result in a crash on iOS 13.
+
 ## 0.6.1+11
 
 * Stability and Maintainability: update documentations, add unit tests.
