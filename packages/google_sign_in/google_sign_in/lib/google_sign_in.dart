@@ -5,38 +5,36 @@
 import 'dart:async';
 import 'dart:ui' show hashValues;
 
-import 'package:flutter/services.dart' show MethodChannel, PlatformException;
-import 'package:meta/meta.dart' show visibleForTesting;
+import 'package:flutter/services.dart' show PlatformException;
+import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 
 import 'src/common.dart';
 
 export 'src/common.dart';
 export 'widgets.dart';
 
-enum SignInOption { standard, games }
-
 class GoogleSignInAuthentication {
   GoogleSignInAuthentication._(this._data);
 
-  final Map<String, dynamic> _data;
+  final GoogleSignInTokenData _data;
 
   /// An OpenID Connect ID token that identifies the user.
-  String get idToken => _data['idToken'];
+  String get idToken => _data.idToken;
 
   /// The OAuth2 access token to access Google services.
-  String get accessToken => _data['accessToken'];
+  String get accessToken => _data.accessToken;
 
   @override
   String toString() => 'GoogleSignInAuthentication:$_data';
 }
 
 class GoogleSignInAccount implements GoogleIdentity {
-  GoogleSignInAccount._(this._googleSignIn, Map<String, dynamic> data)
-      : displayName = data['displayName'],
-        email = data['email'],
-        id = data['id'],
-        photoUrl = data['photoUrl'],
-        _idToken = data['idToken'] {
+  GoogleSignInAccount._(this._googleSignIn, GoogleSignInUserData data)
+      : displayName = data.displayName,
+        email = data.email,
+        id = data.id,
+        photoUrl = data.photoUrl,
+        _idToken = data.idToken {
     assert(id != null);
   }
 
@@ -78,18 +76,16 @@ class GoogleSignInAccount implements GoogleIdentity {
       throw StateError('User is no longer signed in.');
     }
 
-    final Map<String, dynamic> response =
-        await GoogleSignIn.channel.invokeMapMethod<String, dynamic>(
-      'getTokens',
-      <String, dynamic>{
-        'email': email,
-        'shouldRecoverAuth': true,
-      },
+    final GoogleSignInTokenData response =
+        await GoogleSignInPlatform.instance.getTokens(
+      email: email,
+      shouldRecoverAuth: true,
     );
+
     // On Android, there isn't an API for refreshing the idToken, so re-use
     // the one we obtained on login.
-    if (response['idToken'] == null) {
-      response['idToken'] = _idToken;
+    if (response.idToken == null) {
+      response.idToken = _idToken;
     }
     return GoogleSignInAuthentication._(response);
   }
@@ -108,10 +104,7 @@ class GoogleSignInAccount implements GoogleIdentity {
   /// this method and grab `authHeaders` once again.
   Future<void> clearAuthCache() async {
     final String token = (await authentication).accessToken;
-    await GoogleSignIn.channel.invokeMethod<void>(
-      'clearAuthCache',
-      <String, dynamic>{'token': token},
-    );
+    await GoogleSignInPlatform.instance.clearAuthCache(token: token);
   }
 
   @override
@@ -146,7 +139,7 @@ class GoogleSignIn {
   /// Initializes global sign-in configuration settings.
   ///
   /// The [signInOption] determines the user experience. [SigninOption.games]
-  /// must not be used on iOS.
+  /// is only supported on Android.
   ///
   /// The list of [scopes] are OAuth scope codes to request when signing in.
   /// These scope codes will determine the level of data access that is granted
@@ -157,18 +150,25 @@ class GoogleSignIn {
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
   /// specified domain. By default, the list of accounts will not be restricted.
-  GoogleSignIn({this.signInOption, this.scopes, this.hostedDomain});
+  GoogleSignIn({
+    this.signInOption = SignInOption.standard,
+    this.scopes = const <String>[],
+    this.hostedDomain,
+  });
 
   /// Factory for creating default sign in user experience.
-  factory GoogleSignIn.standard({List<String> scopes, String hostedDomain}) {
+  factory GoogleSignIn.standard({
+    List<String> scopes = const <String>[],
+    String hostedDomain,
+  }) {
     return GoogleSignIn(
         signInOption: SignInOption.standard,
         scopes: scopes,
         hostedDomain: hostedDomain);
   }
 
-  /// Factory for creating sign in suitable for games. This option must not be
-  /// used on iOS because the games API is not supported.
+  /// Factory for creating sign in suitable for games. This option is only
+  /// supported on Android.
   factory GoogleSignIn.games() {
     return GoogleSignIn(signInOption: SignInOption.games);
   }
@@ -186,13 +186,8 @@ class GoogleSignIn {
   /// Error code indicating that attempt to sign in failed.
   static const String kSignInFailedError = 'sign_in_failed';
 
-  /// The [MethodChannel] over which this class communicates.
-  @visibleForTesting
-  static const MethodChannel channel =
-      MethodChannel('plugins.flutter.io/google_sign_in');
-
-  /// Option to determine the sign in user experience. [SignInOption.games] must
-  /// not be used on iOS.
+  /// Option to determine the sign in user experience. [SignInOption.games] is
+  /// only supported on Android.
   final SignInOption signInOption;
 
   /// The list of [scopes] are OAuth scope codes requested when signing in.
@@ -211,12 +206,12 @@ class GoogleSignIn {
   // Future that completes when we've finished calling `init` on the native side
   Future<void> _initialization;
 
-  Future<GoogleSignInAccount> _callMethod(String method) async {
+  Future<GoogleSignInAccount> _callMethod(Function method) async {
     await _ensureInitialized();
 
-    final Map<String, dynamic> response =
-        await channel.invokeMapMethod<String, dynamic>(method);
-    return _setCurrentUser(response != null && response.isNotEmpty
+    final dynamic response = await method();
+
+    return _setCurrentUser(response != null && response is GoogleSignInUserData
         ? GoogleSignInAccount._(this, response)
         : null);
   }
@@ -230,16 +225,14 @@ class GoogleSignIn {
   }
 
   Future<void> _ensureInitialized() {
-    return _initialization ??=
-        channel.invokeMethod<void>('init', <String, dynamic>{
-      'signInOption': (signInOption ?? SignInOption.standard).toString(),
-      'scopes': scopes ?? <String>[],
-      'hostedDomain': hostedDomain,
-    })
-          ..catchError((dynamic _) {
-            // Invalidate initialization if it errored out.
-            _initialization = null;
-          });
+    return _initialization ??= GoogleSignInPlatform.instance.init(
+      signInOption: signInOption,
+      scopes: scopes,
+      hostedDomain: hostedDomain,
+    )..catchError((dynamic _) {
+        // Invalidate initialization if it errors out.
+        _initialization = null;
+      });
   }
 
   /// The most recently scheduled method call.
@@ -251,6 +244,7 @@ class GoogleSignIn {
     final Completer<void> completer = Completer<void>();
     future.whenComplete(completer.complete).catchError((dynamic _) {
       // Ignore if previous call completed with an error.
+      // TODO: Should we log errors here, if debug or similar?
     });
     return completer.future;
   }
@@ -259,26 +253,29 @@ class GoogleSignIn {
   ///
   /// At most one in flight call is allowed to prevent concurrent (out of order)
   /// updates to [currentUser] and [onCurrentUserChanged].
-  Future<GoogleSignInAccount> _addMethodCall(String method) async {
+  ///
+  /// The optional, named parameter [canSkipCall] lets the plugin know that the
+  /// method call may be skipped, if there's already [_currentUser] information.
+  /// This is used from the [signIn] and [signInSilently] methods.
+  Future<GoogleSignInAccount> _addMethodCall(
+    Function method, {
+    bool canSkipCall = false,
+  }) async {
     Future<GoogleSignInAccount> response;
     if (_lastMethodCall == null) {
       response = _callMethod(method);
     } else {
       response = _lastMethodCall.then((_) {
         // If after the last completed call `currentUser` is not `null` and requested
-        // method is a sign in method, re-use the same authenticated user
+        // method can be skipped (`canSkipCall`), re-use the same authenticated user
         // instead of making extra call to the native side.
-        const List<String> kSignInMethods = <String>[
-          'signIn',
-          'signInSilently'
-        ];
-        if (kSignInMethods.contains(method) && _currentUser != null) {
+        if (canSkipCall && _currentUser != null) {
           return _currentUser;
-        } else {
-          return _callMethod(method);
         }
+        return _callMethod(method);
       });
     }
+    // Add the current response to the currently running Promise of all pending responses
     _lastMethodCall = _waitFor(response);
     return response;
   }
@@ -303,10 +300,12 @@ class GoogleSignIn {
   /// returned Future completes with [PlatformException] whose `code` can be
   /// either [kSignInRequiredError] (when there is no authenticated user) or
   /// [kSignInFailedError] (when an unknown error occurred).
-  Future<GoogleSignInAccount> signInSilently(
-      {bool suppressErrors = true}) async {
+  Future<GoogleSignInAccount> signInSilently({
+    bool suppressErrors = true,
+  }) async {
     try {
-      return await _addMethodCall('signInSilently');
+      return await _addMethodCall(GoogleSignInPlatform.instance.signInSilently,
+          canSkipCall: true);
     } catch (_) {
       if (suppressErrors) {
         return null;
@@ -319,7 +318,7 @@ class GoogleSignIn {
   /// Returns a future that resolves to whether a user is currently signed in.
   Future<bool> isSignedIn() async {
     await _ensureInitialized();
-    return await channel.invokeMethod<bool>('isSignedIn');
+    return GoogleSignInPlatform.instance.isSignedIn();
   }
 
   /// Starts the interactive sign-in process.
@@ -333,16 +332,19 @@ class GoogleSignIn {
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
   Future<GoogleSignInAccount> signIn() {
-    final Future<GoogleSignInAccount> result = _addMethodCall('signIn');
+    final Future<GoogleSignInAccount> result =
+        _addMethodCall(GoogleSignInPlatform.instance.signIn, canSkipCall: true);
     bool isCanceled(dynamic error) =>
         error is PlatformException && error.code == kSignInCanceledError;
     return result.catchError((dynamic _) => null, test: isCanceled);
   }
 
   /// Marks current user as being in the signed out state.
-  Future<GoogleSignInAccount> signOut() => _addMethodCall('signOut');
+  Future<GoogleSignInAccount> signOut() =>
+      _addMethodCall(GoogleSignInPlatform.instance.signOut);
 
   /// Disconnects the current user from the app and revokes previous
   /// authentication.
-  Future<GoogleSignInAccount> disconnect() => _addMethodCall('disconnect');
+  Future<GoogleSignInAccount> disconnect() =>
+      _addMethodCall(GoogleSignInPlatform.instance.disconnect);
 }

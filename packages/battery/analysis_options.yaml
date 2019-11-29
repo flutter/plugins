@@ -1,0 +1,11 @@
+# This is a temporary file to allow us to land a new set of linter rules in a
+# series of manageable patches instead of one gigantic PR. It disables some of
+# the new lints that are already failing on this plugin, for this plugin. It
+# should be deleted and the failing lints addressed as soon as possible.
+
+include: ../../analysis_options.yaml
+
+analyzer:
+  errors:
+    public_member_api_docs: ignore
+    unawaited_futures: ignore

@@ -1,3 +1,11 @@
+##  0.3.4+7
+
+* Fix pedantic linter errors.
+
+##  0.3.4+6
+
+* Add missing DartDocs for public members.
+
 ##  0.3.4+5
 
 * Remove AndroidX warning.

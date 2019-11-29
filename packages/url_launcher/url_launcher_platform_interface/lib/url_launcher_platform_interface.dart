@@ -24,17 +24,15 @@ abstract class UrlLauncherPlatform {
   @visibleForTesting
   bool get isMock => false;
 
-  /// The default instance of [UrlLauncherPlatform] to use.
-  ///
-  /// Platform-specific plugins should override this with their own
-  /// platform-specific class that extends [UrlLauncherPlatform] when they
-  /// register themselves.
-  ///
-  /// Defaults to [MethodChannelUrlLauncher].
   static UrlLauncherPlatform _instance = MethodChannelUrlLauncher();
 
+  /// The default instance of [UrlLauncherPlatform] to use.
+  ///
+  /// Defaults to [MethodChannelUrlLauncher].
   static UrlLauncherPlatform get instance => _instance;
 
+  /// Platform-specific plugins should set this with their own platform-specific
+  /// class that extends [UrlLauncherPlatform] when they register themselves.
   // TODO(amirh): Extract common platform interface logic.
   // https://github.com/flutter/flutter/issues/43368
   static set instance(UrlLauncherPlatform instance) {

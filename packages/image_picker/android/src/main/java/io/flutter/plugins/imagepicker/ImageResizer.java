@@ -7,6 +7,7 @@ package io.flutter.plugins.imagepicker;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import androidx.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,31 +29,39 @@ class ImageResizer {
    * <p>If no resizing is needed, returns the path for the original image.
    */
   String resizeImageIfNeeded(
-      String imagePath, Double maxWidth, Double maxHeight, int imageQuality) {
+      String imagePath,
+      @Nullable Double maxWidth,
+      @Nullable Double maxHeight,
+      @Nullable Integer imageQuality) {
     boolean shouldScale =
-        maxWidth != null || maxHeight != null || (imageQuality > -1 && imageQuality < 101);
-
-    if (!shouldScale) {
-      return imagePath;
+        maxWidth != null || maxHeight != null || isImageQualityValid(imageQuality);
+    String[] pathParts = imagePath.split("/");
+    String imageName = pathParts[pathParts.length - 1];
+    File file;
+    Bitmap bmp = decodeFile(imagePath);
+    if (bmp == null) {
+      return null;
     }
-
     try {
-      File scaledImage = resizedImage(imagePath, maxWidth, maxHeight, imageQuality);
-      exifDataCopier.copyExif(imagePath, scaledImage.getPath());
-
-      return scaledImage.getPath();
+      if (!shouldScale) {
+        file = createImageOnExternalDirectory(imageName, bmp, 100);
+      } else {
+        file = resizedImage(bmp, maxWidth, maxHeight, imageQuality, imageName);
+      }
+      copyExif(imagePath, file.getPath());
+      return file.getPath();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  private File resizedImage(String path, Double maxWidth, Double maxHeight, int imageQuality)
+  private File resizedImage(
+      Bitmap bmp, Double maxWidth, Double maxHeight, Integer imageQuality, String outputImageName)
       throws IOException {
-    Bitmap bmp = BitmapFactory.decodeFile(path);
     double originalWidth = bmp.getWidth() * 1.0;
     double originalHeight = bmp.getHeight() * 1.0;
 
-    if (imageQuality < 0 || imageQuality > 100) {
+    if (!isImageQualityValid(imageQuality)) {
       imageQuality = 100;
     }
 
@@ -91,24 +100,51 @@ class ImageResizer {
       }
     }
 
-    Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, width.intValue(), height.intValue(), false);
+    Bitmap scaledBmp = createScaledBitmap(bmp, width.intValue(), height.intValue(), false);
+    File file =
+        createImageOnExternalDirectory("/scaled_" + outputImageName, scaledBmp, imageQuality);
+    return file;
+  }
+
+  private File createFile(File externalFilesDirectory, String child) {
+    return new File(externalFilesDirectory, child);
+  }
+
+  private FileOutputStream createOutputStream(File imageFile) throws IOException {
+    return new FileOutputStream(imageFile);
+  }
+
+  private void copyExif(String filePathOri, String filePathDest) {
+    exifDataCopier.copyExif(filePathOri, filePathDest);
+  }
+
+  private Bitmap decodeFile(String path) {
+    return BitmapFactory.decodeFile(path);
+  }
+
+  private Bitmap createScaledBitmap(Bitmap bmp, int width, int height, boolean filter) {
+    return Bitmap.createScaledBitmap(bmp, width, height, filter);
+  }
+
+  private boolean isImageQualityValid(Integer imageQuality) {
+    return imageQuality != null && imageQuality > 0 && imageQuality < 100;
+  }
+
+  private File createImageOnExternalDirectory(String name, Bitmap bitmap, int imageQuality)
+      throws IOException {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    boolean saveAsPNG = bmp.hasAlpha();
+    boolean saveAsPNG = bitmap.hasAlpha();
     if (saveAsPNG) {
       Log.d(
           "ImageResizer",
           "image_picker: compressing is not supported for type PNG. Returning the image with original quality");
     }
-    scaledBmp.compress(
+    bitmap.compress(
         saveAsPNG ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG,
         imageQuality,
         outputStream);
-
-    String[] pathParts = path.split("/");
-    String imageName = pathParts[pathParts.length - 1];
-
-    File imageFile = new File(externalFilesDirectory, "/scaled_" + imageName);
-    FileOutputStream fileOutput = new FileOutputStream(imageFile);
+    File imageFile = createFile(externalFilesDirectory, name);
+    FileOutputStream fileOutput = createOutputStream(imageFile);
     fileOutput.write(outputStream.toByteArray());
     fileOutput.close();
     return imageFile;
