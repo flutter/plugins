@@ -1,3 +1,7 @@
+## 0.2.2+3
+
+* Update version of json_annotation, resolve conflicts with other packages e.g. flutter_tools from sdk.
+
 ## 0.2.2+2
 
 * Include lifecycle dependency as a compileOnly one on Android to resolve
