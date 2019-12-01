@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:html';
 import 'dart:ui' as ui;
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
@@ -33,8 +32,8 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   }
 
   void _disposeAllPlayers() {
-    _videoPlayers
-        .forEach((_, _VideoPlayer videoPlayer) => videoPlayer.dispose());
+    _videoPlayers.values
+        .forEach((_VideoPlayer videoPlayer) => videoPlayer.dispose());
     _videoPlayers.clear();
   }
 
@@ -92,7 +91,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 
   @override
   Widget buildView(int textureId) {
-    return HtmlElementView(viewType: textureId.toString());
+    return HtmlElementView(viewType: 'videoPlayer-$textureId');
   }
 }
 
@@ -114,9 +113,10 @@ class _VideoPlayer {
       ..controls = false
       ..style.border = 'none';
 
+    // TODO(hterkelsen): Use initialization parameters once they are available
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
-        textureId.toString(), (int viewId) => videoElement);
+        'videoPlayer-$textureId', (int viewId) => videoElement);
 
     videoElement.onCanPlay.listen((dynamic _) {
       if (!isInitialized) {
