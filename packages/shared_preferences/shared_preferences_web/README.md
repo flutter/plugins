@@ -1,16 +1,17 @@
-# url_launcher_web
+# shared_preferences_web
 
-The web implementation of [`url_launcher`][1].
+The web implementation of [`shared_preferences`][1].
 
 ## Usage
 
 ### Import the package
+
 To use this plugin in your Flutter Web app, simply add it as a dependency in
-your pubspec alongside the base `url_launcher` plugin.
+your `pubspec.yaml` alongside the base `shared_preferences` plugin.
 
 _(This is only temporary: in the future we hope to make this package an
-"endorsed" implementation of `url_launcher`, so that it is automatically
-included in your Flutter Web app when you depend on `package:url_launcher`.)_
+"endorsed" implementation of `shared_preferences`, so that it is automatically
+included in your Flutter Web app when you depend on `package:shared_preferences`.)_
 
 This is what the above means to your `pubspec.yaml`:
 
@@ -18,13 +19,14 @@ This is what the above means to your `pubspec.yaml`:
 ...
 dependencies:
   ...
-  url_launcher: ^5.1.4
-  url_launcher_web: ^0.1.0
+  shared_preferences: ^0.5.4+8
+  shared_preferences_web: ^0.0.1
   ...
 ```
 
 ### Use the plugin
-Once you have the `url_launcher_web` dependency in your pubspec, you should
-be able to use `package:url_launcher` as normal.
 
-[1]: ../url_launcher/url_launcher
+Once you have the `shared_preferences_web` dependency in your pubspec, you should
+be able to use `package:shared_preferences` as normal.
+
+[1]: ../shared_preferences/shared_preferences
