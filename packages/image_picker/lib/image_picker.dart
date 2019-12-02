@@ -23,6 +23,18 @@ enum ImageSource {
   gallery,
 }
 
+/// Specifies the video quality to be picked from Camera.
+enum VideoQuality {
+  /// High Qulaity Video with Maximum size.
+  High,
+
+  /// Medium Qulaity Video.
+  Medium,
+
+  /// Low Qulaity Video.
+  Low,
+}
+
 /// Provides an easy way to pick an image/video from the image library,
 /// or to take a picture/video with the camera.
 class ImagePicker {
@@ -79,16 +91,25 @@ class ImagePicker {
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
+  /// The [quality] optional argument controls the video quality and its size on correspondence. This can
+  /// be either [VideoQuality.High] (default), [VideoQuality.Medium](supported in iOS only) or [VideoQuality.Low].
+  ///
+  /// The [durationInSeconds] optional argument controls the video length in seconds. The default value is Zero - which means a limitless video length.
+  ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   static Future<File> pickVideo({
     @required ImageSource source,
+    VideoQuality quality = VideoQuality.High,
+    int durationInSeconds = 0, // Zero Means limitless video duration
   }) async {
     assert(source != null);
     final String path = await _channel.invokeMethod<String>(
       'pickVideo',
       <String, dynamic>{
         'source': source.index,
+        'quality' : quality.index,
+        'duration' : durationInSeconds,
       },
     );
     return path == null ? null : File(path);
