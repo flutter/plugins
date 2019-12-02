@@ -75,6 +75,13 @@ public class ImagePickerDelegate
   @VisibleForTesting static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION = 2354;
   @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
 
+  @VisibleForTesting static final int VIDEO_QUALITY_HIGH = 1;
+  @VisibleForTesting static final int VIDEO_QUALITY_LOW = 0;
+
+  @VisibleForTesting static final int FLUTTER_VIDEO_QUALITY_HIGH = 0;
+  @VisibleForTesting static final int FLUTTER_VIDEO_QUALITY_MEDIUM = 1; // Mapped to Low Quality Video Recording
+  @VisibleForTesting static final int FLUTTER_VIDEO_QUALITY_LOW = 2;
+
   @VisibleForTesting final String fileProviderName;
 
   private final Activity activity;
@@ -278,6 +285,26 @@ public class ImagePickerDelegate
     if (!canTakePhotos) {
       finishWithError("no_available_camera", "No cameras available for taking pictures.");
       return;
+    }
+
+    if (methodCall != null) {
+      int quality =
+              methodCall.argument("quality") == null
+                      ? FLUTTER_VIDEO_QUALITY_HIGH
+                      : (int) methodCall.argument("quality");
+      int videoQuality = (quality == FLUTTER_VIDEO_QUALITY_HIGH) ? VIDEO_QUALITY_HIGH : VIDEO_QUALITY_LOW;
+      intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, videoQuality);
+
+
+      int durationInSeconds =
+              methodCall.argument("duration") == null
+                      ? 0 // Zero means a limitless video recording session
+                      : (int) methodCall.argument("duration");
+      if (durationInSeconds < 0) {
+        finishWithError("not_valid_duration_input", "Duration in seconds can not be a negative number");
+        return;
+      }
+      intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, durationInSeconds);
     }
 
     File videoFile = createTemporaryWritableVideoFile();
