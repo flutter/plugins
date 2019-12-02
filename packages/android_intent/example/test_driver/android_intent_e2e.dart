@@ -1,12 +1,11 @@
 import 'dart:io';
 
+import 'package:android_intent/android_intent.dart';
 import 'package:android_intent_example/main.dart';
 import 'package:e2e/e2e.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../lib/android_intent.dart';
 
 /// This is a smoke test that verifies that the example app builds and loads.
 /// Because this plugin works by launching Android platform UIs it's not
