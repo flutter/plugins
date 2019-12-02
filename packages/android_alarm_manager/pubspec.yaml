@@ -22,5 +22,4 @@ flutter:
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
-  # TODO(bkonyi): set minimum Flutter version to next stable release
-  flutter: ">=1.2.0 <2.0.0"
+  flutter: ">=1.12.0 <2.0.0"
