@@ -297,8 +297,4 @@ class GooglePlayConnection
 
     return purchaseDetails;
   }
-
-  static PurchaseStatus _buildPurchaseStatus(PurchaseStateWrapper state) {
-    return PurchaseStateConverter().toPurchaseStatus(state);
-  }
 }
