@@ -279,6 +279,7 @@ enum PurchaseStateWrapper {
   /// The state is unspecified.
   ///
   /// No actions on the [PurchaseWrapper] should be performed on this state.
+  /// This is a catch-all. It should never be returned by the Play Billing Library.
   @JsonValue(0)
   unspecified_state,
 

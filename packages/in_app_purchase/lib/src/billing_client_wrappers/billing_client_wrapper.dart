@@ -224,17 +224,18 @@ class BillingClient {
 
   /// Acknowledge an in-app purchase.
   ///
-  /// The developer is required to acknowledge that they have granted entitlement for all in-app purchases.
+  /// The developer must acknowledge all in-app purchases after they have been granted to the user.
+  /// If this doesn't happen within three days of the purchase, the purchase will be refunded.
   ///
-  /// Warning! The acknowledgement has to be happen within the 3 days of the purchase.
-  /// Failure to do so will result the purchase to be refunded.
+  /// Consumables are already implicitly acknowledged by calls to [consumeAsync] and
+  /// do not need to be explicitly acknowledged by using this method.
+  /// However this method can be called for them in order to explicitly acknowledge them if desired.
   ///
-  /// For consumable items, calling [consumeAsync] acts as an implicit acknowledgement. This method can also
-  /// be called for explicitly acknowledging a consumable purchase.
+  /// Be sure to only acknowledge a purchase after it has been granted to the user.
+  /// [PurchaseWrapper.purchaseState] should be [PurchaseStateWrapper.purchased] and
+  /// the purchase should be validated. See [Verify a purchase](https://developer.android.com/google/play/billing/billing_library_overview#Verify) on verifying purchases.
   ///
-  /// Be sure to only acknowledge a purchase when the [PurchaseWrapper.purchaseState] is [PurchaseStateWrapper.purchased].
-  ///
-  /// Please refer to https://developer.android.com/google/play/billing/billing_library_overview#acknowledge for more
+  /// Please refer to [acknowledge](https://developer.android.com/google/play/billing/billing_library_overview#acknowledge) for more
   /// details.
   ///
   /// The `purchaseToken` must not be null.

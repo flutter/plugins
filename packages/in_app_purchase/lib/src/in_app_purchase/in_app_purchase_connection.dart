@@ -94,7 +94,7 @@ abstract class InAppPurchaseConnection {
   /// purchasing process.
   ///
   /// This method does return whether or not the purchase request was initially
-  /// sent succesfully.
+  /// sent successfully.
   ///
   /// Consumable items are defined differently by the different underlying
   /// payment platforms, and there's no way to query for whether or not the
@@ -180,8 +180,12 @@ abstract class InAppPurchaseConnection {
   /// For convenience, [PurchaseDetails.pendingCompletePurchase] indicates if a purchase is pending for completion.
   ///
   /// The method returns a [BillingResultWrapper] to indicate a detailed status of the complete process.
+  /// If the result contains [BillingResponse.error] or [BillingResponse.serviceUnavailable], the developer should try
+  /// to complete the purchase via this method again, or retry the [completePurchase] it at a later time.
+  /// If the result indicates other errors, there might be some issue with
+  /// the app's code. The developer is responsible to fix the issue.
   ///
-  /// Warning!Failure to call this method within 3 days of the purchase will result a refund on Android.
+  /// Warning!Failure to call this method and get a successful response within 3 days of the purchase will result a refund on Android.
   /// The [consumePurchase] acts as an implicit [completePurchase] on Android.
   ///
   /// The optional parameter `developerPayload` only works on Android.
