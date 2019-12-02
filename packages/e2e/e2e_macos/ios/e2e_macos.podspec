@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.version          = '0.0.1'
   s.summary          = 'No-op implementation of the e2e desktop plugin to avoid build issues on iOS'
   s.description      = <<-DESC
-  No-op implementation of connectivity_macos to avoid build issues on iOS.
+  No-op implementation of e2e to avoid build issues on iOS.
   See https://github.com/flutter/flutter/issues/39659
                        DESC
   s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/e2e/e2e_macos'

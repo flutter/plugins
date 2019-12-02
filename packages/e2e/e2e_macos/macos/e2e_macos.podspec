@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.version          = '0.0.1'
   s.summary          = 'Adapter for e2e tests.'
   s.description      = <<-DESC
-Runs tests that use the flutter_test API as integration tests.
+Runs tests that use the flutter_test API as integration tests on macOS.
                        DESC
   s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/e2e/e2e_macos'
   s.license          = { :file => '../LICENSE' }
