@@ -26,9 +26,11 @@ void main() {
     });
 
     test('registers itself', () {
-      expect(SharedPreferencesStorePlatform.instance, isNot(isA<SharedPreferencesPlugin>()));
+      expect(SharedPreferencesStorePlatform.instance,
+          isNot(isA<SharedPreferencesPlugin>()));
       SharedPreferencesPlugin.registerWith(null);
-      expect(SharedPreferencesStorePlatform.instance, isA<SharedPreferencesPlugin>());
+      expect(SharedPreferencesStorePlatform.instance,
+          isA<SharedPreferencesPlugin>());
     });
 
     test('getAll', () async {
