@@ -20,7 +20,7 @@ This is what the above means to your `pubspec.yaml`:
 dependencies:
   ...
   shared_preferences: ^0.5.4+8
-  shared_preferences_web: ^0.0.1
+  shared_preferences_web: ^0.1.0
   ...
 ```
 
