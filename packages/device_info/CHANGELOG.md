@@ -1,3 +1,8 @@
+## 0.4.1+3
+
+* Fix pedantic errors. Adds some missing documentation and fixes unawaited
+  futures in the tests.
+
 ## 0.4.1+2
 
 * Remove AndroidX warning.
