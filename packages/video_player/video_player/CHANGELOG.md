@@ -1,6 +1,7 @@
 ## 0.10.4+1
 
-* Fix pedantic lints. This shouldn't affect existing functionality.
+* Fix pedantic lints. This fixes some potential race conditions in cases where
+  futures within some video_player methods weren't being awaited correctly.
 
 ## 0.10.4
 
