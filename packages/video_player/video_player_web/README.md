@@ -22,4 +22,8 @@ dependencies:
 Once you have the `video_player_web` dependency in your pubspec, you should
 be able to use `package:video_player` as normal.
 
+## Autoplay
+Playing videos without prior interaction with the site might be prohibited
+by the browser and lead to runtime errors. See also: https://goo.gl/xX8pDD.
+
 [1]: ../video_player
