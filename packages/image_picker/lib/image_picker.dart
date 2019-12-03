@@ -104,6 +104,11 @@ class ImagePicker {
     int durationInSeconds = 0, // Zero Means limitless video duration
   }) async {
     assert(source != null);
+
+    if (durationInSeconds != null && durationInSeconds < 0) {
+      throw ArgumentError.value(durationInSeconds, 'DurationInSeconds can not be a negative number');
+    }
+
     final String path = await _channel.invokeMethod<String>(
       'pickVideo',
       <String, dynamic>{

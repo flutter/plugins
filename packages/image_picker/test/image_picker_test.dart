@@ -147,18 +147,59 @@ void main() {
       test('passes the image source argument correctly', () async {
         await ImagePicker.pickVideo(source: ImageSource.camera);
         await ImagePicker.pickVideo(source: ImageSource.gallery);
+        await ImagePicker.pickVideo(source: ImageSource.camera, quality: VideoQuality.Medium, );
+        await ImagePicker.pickVideo(source: ImageSource.camera, quality: VideoQuality.Low);
+        await ImagePicker.pickVideo(source: ImageSource.camera, quality: VideoQuality.Low, durationInSeconds: 15);
+        await ImagePicker.pickVideo(source: ImageSource.camera, durationInSeconds: 15);
 
         expect(
           log,
           <Matcher>[
             isMethodCall('pickVideo', arguments: <String, dynamic>{
               'source': 0,
+              'quality': 0,
+              'duration': 0
             }),
             isMethodCall('pickVideo', arguments: <String, dynamic>{
               'source': 1,
+              'quality': 0,
+              'duration': 0
+            }),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'quality': 1,
+              'duration': 0
+            }),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'quality': 2,
+              'duration': 0
+            }),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'quality': 2,
+              'duration': 15
+            }),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'quality': 0,
+              'duration': 15
             }),
           ],
         );
+      });
+
+      test('does not accept a negative durationInSeconds argument', () {
+        expect(
+          ImagePicker.pickVideo(source: ImageSource.camera, durationInSeconds: -10),
+          throwsArgumentError,
+        );
+
+        expect(
+          ImagePicker.pickVideo(source: ImageSource.camera, quality: VideoQuality.Low, durationInSeconds: -10),
+          throwsArgumentError,
+        );
+
       });
 
       test('handles a null image path response gracefully', () async {
