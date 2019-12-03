@@ -147,10 +147,23 @@ void main() {
       test('passes the image source argument correctly', () async {
         await ImagePicker.pickVideo(source: ImageSource.camera);
         await ImagePicker.pickVideo(source: ImageSource.gallery);
-        await ImagePicker.pickVideo(source: ImageSource.camera, quality: VideoQuality.Medium, );
-        await ImagePicker.pickVideo(source: ImageSource.camera, quality: VideoQuality.Low);
-        await ImagePicker.pickVideo(source: ImageSource.camera, quality: VideoQuality.Low, durationInSeconds: 15);
-        await ImagePicker.pickVideo(source: ImageSource.camera, durationInSeconds: 15);
+        await ImagePicker.pickVideo(
+          source: ImageSource.camera,
+          quality: VideoQuality.Medium,
+        );
+        await ImagePicker.pickVideo(
+          source: ImageSource.camera,
+          quality: VideoQuality.Low,
+        );
+        await ImagePicker.pickVideo(
+          source: ImageSource.camera,
+          quality: VideoQuality.Low,
+          durationInSeconds: 15,
+        );
+        await ImagePicker.pickVideo(
+          source: ImageSource.camera,
+          durationInSeconds: 15,
+        );
 
         expect(
           log,
@@ -191,15 +204,21 @@ void main() {
 
       test('does not accept a negative durationInSeconds argument', () {
         expect(
-          ImagePicker.pickVideo(source: ImageSource.camera, durationInSeconds: -10),
+          ImagePicker.pickVideo(
+            source: ImageSource.camera,
+            durationInSeconds: -10,
+          ),
           throwsArgumentError,
         );
 
         expect(
-          ImagePicker.pickVideo(source: ImageSource.camera, quality: VideoQuality.Low, durationInSeconds: -10),
+          ImagePicker.pickVideo(
+            source: ImageSource.camera,
+            quality: VideoQuality.Low,
+            durationInSeconds: -10,
+          ),
           throwsArgumentError,
         );
-
       });
 
       test('handles a null image path response gracefully', () async {
