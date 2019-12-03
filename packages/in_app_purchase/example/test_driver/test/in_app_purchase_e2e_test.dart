@@ -10,6 +10,6 @@ Future<void> main() async {
   final FlutterDriver driver = await FlutterDriver.connect();
   final String result =
       await driver.requestData(null, timeout: const Duration(minutes: 1));
-  driver.close();
+  await driver.close();
   exit(result == 'pass' ? 0 : 1);
 }
