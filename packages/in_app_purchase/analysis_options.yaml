@@ -7,10 +7,4 @@ include: ../../analysis_options.yaml
 
 analyzer:
   errors:
-    avoid_init_to_null: ignore
-    prefer_is_empty: ignore
-    prefer_is_not_empty: ignore
     public_member_api_docs: ignore
-    type_init_formals: ignore
-    unnecessary_new: ignore
-    unawaited_futures: ignore
