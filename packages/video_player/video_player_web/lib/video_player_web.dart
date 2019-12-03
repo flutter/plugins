@@ -135,7 +135,7 @@ class _VideoPlayer {
   void sendBufferingUpdate() {
     eventController.add(VideoEvent(
       buffered: _toDurationRange(videoElement.buffered),
-      eventType: VideoEventType.completed,
+      eventType: VideoEventType.bufferingUpdate,
     ));
   }
 
