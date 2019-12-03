@@ -95,8 +95,9 @@ static const int QUALITY_LOW = 2;
     self.result = result;
     _arguments = call.arguments;
       
-    NSNumber* quality = [_arguments objectForKey:@"quality"];
-    int videoQuality = ([quality respondsToSelector:@selector(intValue)]) ? [quality intValue] : QUALITY_HIGH;
+    NSNumber *quality = [_arguments objectForKey:@"quality"];
+    int videoQuality =
+      ([quality respondsToSelector:@selector(intValue)]) ? [quality intValue] : QUALITY_HIGH;
     switch (videoQuality) {
       case QUALITY_HIGH:
         _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
@@ -112,14 +113,15 @@ static const int QUALITY_LOW = 2;
         break;
     }
     
-    NSNumber* duration = [_arguments objectForKey:@"duration"];
-    int videoDuration = ([duration respondsToSelector:@selector(intValue)]) ? [duration intValue] : 0;
-      if(videoDuration < 0){
-          result([FlutterError errorWithCode:@"not_valid_duration_input"
-          message:@"Duration in seconds can not be a negative number"
-          details:nil]);
-          return;
-      }
+    NSNumber *duration = [_arguments objectForKey:@"duration"];
+    int videoDuration =
+      ([duration respondsToSelector:@selector(intValue)]) ? [duration intValue] : 0;
+    if (videoDuration < 0) {
+      result([FlutterError errorWithCode:@"not_valid_duration_input"
+                                 message:@"Duration in seconds can not be a negative number"
+                                 details:nil]);
+      return;
+    }
     _imagePickerController.videoMaximumDuration = videoDuration;
 
     int imageSource = [[_arguments objectForKey:@"source"] intValue];

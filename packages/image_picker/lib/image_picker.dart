@@ -106,15 +106,16 @@ class ImagePicker {
     assert(source != null);
 
     if (durationInSeconds != null && durationInSeconds < 0) {
-      throw ArgumentError.value(durationInSeconds, 'DurationInSeconds can not be a negative number');
+      throw ArgumentError.value(
+          durationInSeconds, 'DurationInSeconds can not be a negative number');
     }
 
     final String path = await _channel.invokeMethod<String>(
       'pickVideo',
       <String, dynamic>{
         'source': source.index,
-        'quality' : quality.index,
-        'duration' : durationInSeconds,
+        'quality': quality.index,
+        'duration': durationInSeconds,
       },
     );
     return path == null ? null : File(path);
