@@ -20,7 +20,7 @@ and the value `YES`.
 
 ## Keyboard support - not ready for production use
 Keyboard support within webviews is experimental. The Android version relies on some low-level knobs that have not been well tested
-on a broad spectrum of devices yet, and therefore **it is not recommended to rely on webview keybaord in production apps yet**.
+on a broad spectrum of devices yet, and therefore **it is not recommended to rely on webview keyboard in production apps yet**.
 See the [webview-keyboard](https://github.com/flutter/flutter/issues?q=is%3Aopen+is%3Aissue+label%3A%22p%3A+webview-keyboard%22) for known issues with keyboard input.
 
 ## Setup
