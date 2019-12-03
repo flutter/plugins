@@ -299,7 +299,6 @@ public class ImagePickerDelegate
           (quality == FLUTTER_VIDEO_QUALITY_HIGH) ? VIDEO_QUALITY_HIGH : VIDEO_QUALITY_LOW;
       intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, videoQuality);
 
-
       int durationInSeconds =
           methodCall.argument("duration") == null
               ? 0 // Zero means a limitless video recording session
