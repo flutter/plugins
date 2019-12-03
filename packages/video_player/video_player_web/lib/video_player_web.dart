@@ -47,7 +47,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
       textureId: textureId,
     );
 
-    player.setupVideoPlayer();
+    player.initialize();
 
     _videoPlayers[textureId] = player;
     return textureId;
@@ -106,7 +106,7 @@ class _VideoPlayer {
   VideoElement videoElement;
   bool isInitialized = false;
 
-  void setupVideoPlayer() {
+  void initialize() {
     videoElement = VideoElement()
       ..src = uri.toString()
       ..autoplay = false
