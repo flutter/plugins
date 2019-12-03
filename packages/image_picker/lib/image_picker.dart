@@ -25,13 +25,13 @@ enum ImageSource {
 
 /// Specifies the video quality to be picked from Camera.
 enum VideoQuality {
-  /// High Qulaity Video with Maximum size.
+  /// High Quality Video with Maximum size.
   High,
 
-  /// Medium Qulaity Video.
+  /// Medium Quality Video.
   Medium,
 
-  /// Low Qulaity Video.
+  /// Low Quality Video.
   Low,
 }
 
@@ -94,7 +94,8 @@ class ImagePicker {
   /// The [quality] optional argument controls the video quality and its size on correspondence. This can
   /// be either [VideoQuality.High] (default), [VideoQuality.Medium](supported in iOS only) or [VideoQuality.Low].
   ///
-  /// The [durationInSeconds] optional argument controls the video length in seconds. The default value is Zero - which means a limitless video length.
+  /// The [durationInSeconds] optional argument controls the video length in seconds.
+  /// The default value is Zero - which means a limitless video length.
   ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
