@@ -129,7 +129,6 @@ task:
   osx_instance:
     image: mojave-xcode-11.2.1-flutter
   setup_script:
-    - flutter config --enable-macos-desktop
     - pod repo update
   upgrade_script:
     - flutter channel master
@@ -140,7 +139,8 @@ task:
     - name: build_all_plugins_ipa
       script:
         - flutter channel master
-        - ./script/build_all_plugins_app.sh macos --no-codesign
+        - flutter config --enable-macos-desktop
+        - ./script/build_all_plugins_app.sh macos
     - name: lint_darwin_plugins
       script: ./script/lint_darwin_plugins.sh
     - name: build-apps+drive-examples
@@ -154,5 +154,6 @@ task:
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       build_script:
         - flutter channel master
+        - flutter config --enable-macos-desktop
         - ./script/incremental_build.sh drive-examples
 
