@@ -159,7 +159,7 @@ public class TranslatorTest {
   }
 
   @Test
-  public void fromBillingResult_dubugMessageNull() throws JSONException {
+  public void fromBillingResult_debugMessageNull() throws JSONException {
     BillingResult newBillingResult =
         BillingResult.newBuilder().setResponseCode(BillingClient.BillingResponseCode.OK).build();
     Map<String, Object> billingResultMap = Translator.fromBillingResult(newBillingResult);

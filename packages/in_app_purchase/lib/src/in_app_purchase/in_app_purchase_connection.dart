@@ -185,7 +185,7 @@ abstract class InAppPurchaseConnection {
   /// If the result indicates other errors, there might be some issue with
   /// the app's code. The developer is responsible to fix the issue.
   ///
-  /// Warning!Failure to call this method and get a successful response within 3 days of the purchase will result a refund on Android.
+  /// Warning! Failure to call this method and get a successful response within 3 days of the purchase will result a refund on Android.
   /// The [consumePurchase] acts as an implicit [completePurchase] on Android.
   ///
   /// The optional parameter `developerPayload` only works on Android.

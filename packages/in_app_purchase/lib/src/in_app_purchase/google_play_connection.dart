@@ -259,7 +259,7 @@ class GooglePlayConnection
       return _maybeAutoConsumePurchase(
           PurchaseDetails.fromPurchase(purchase)..error = error);
     }).toList();
-    if (!purchases.isEmpty) {
+    if (purchases.isNotEmpty) {
       return Future.wait(purchases);
     } else {
       return [

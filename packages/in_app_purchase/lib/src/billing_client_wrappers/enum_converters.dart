@@ -9,8 +9,9 @@ import 'package:json_annotation/json_annotation.dart';
 part 'enum_converters.g.dart';
 
 /// Serializer for [BillingResponse].
-// Use these in `@JsonSerializable()` classes by annotating them with
-// `@BillingResponseConverter()`.
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@BillingResponseConverter()`.
 class BillingResponseConverter implements JsonConverter<BillingResponse, int> {
   const BillingResponseConverter();
 
@@ -23,8 +24,9 @@ class BillingResponseConverter implements JsonConverter<BillingResponse, int> {
 }
 
 /// Serializer for [SkuType].
-// Use these in `@JsonSerializable()` classes by annotating them with
-// `@SkuTypeConverter()`.
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@SkuTypeConverter()`.
 class SkuTypeConverter implements JsonConverter<SkuType, String> {
   const SkuTypeConverter();
 
@@ -45,8 +47,9 @@ class _SerializedEnums {
 }
 
 /// Serializer for [PurchaseStateWrapper].
-// Use these in `@JsonSerializable()` classes by annotating them with
-// `@PurchaseStateConverter()`.
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@PurchaseStateConverter()`.
 class PurchaseStateConverter
     implements JsonConverter<PurchaseStateWrapper, int> {
   const PurchaseStateConverter();

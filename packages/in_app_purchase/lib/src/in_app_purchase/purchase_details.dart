@@ -175,8 +175,8 @@ class PurchaseDetails {
     @required this.productID,
     @required this.verificationData,
     @required this.transactionDate,
-    this.skPaymentTransaction = null,
-    this.billingClientPurchase = null,
+    this.skPaymentTransaction,
+    this.billingClientPurchase,
   });
 
   /// Generate a [PurchaseDetails] object based on an iOS [SKTransactionWrapper] object.
@@ -194,9 +194,8 @@ class PurchaseDetails {
         this.skPaymentTransaction = transaction,
         this.billingClientPurchase = null,
         _status = SKTransactionStatusConverter()
-            .toPurchaseStatus(transaction.transactionState) {
-    _platform = _kPlatformIOS;
-  }
+            .toPurchaseStatus(transaction.transactionState),
+        _platform = _kPlatformIOS;
 
   /// Generate a [PurchaseDetails] object based on an Android [Purchase] object.
   PurchaseDetails.fromPurchase(PurchaseWrapper purchase)
@@ -210,9 +209,8 @@ class PurchaseDetails {
         this.skPaymentTransaction = null,
         this.billingClientPurchase = purchase,
         _status =
-            PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState) {
-    _platform = _kPlatformAndroid;
-  }
+            PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState),
+        _platform = _kPlatformAndroid;
 }
 
 /// The response object for fetching the past purchases.
