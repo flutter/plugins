@@ -1,3 +1,7 @@
+## 4.0.14+1
+
+* Make plugin example meet naming convention.
+
 ## 4.0.14
 
 * Port plugin code to use the federated Platform Interface, instead of a MethodChannel directly.
