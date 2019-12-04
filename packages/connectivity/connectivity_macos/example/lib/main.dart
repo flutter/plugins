@@ -161,6 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
         break;
       case ConnectivityResult.mobile:
+      case ConnectivityResult.ethernet:
       case ConnectivityResult.none:
         setState(() => _connectionStatus = result.toString());
         break;
