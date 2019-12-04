@@ -1,3 +1,8 @@
+## 0.2.2+1
+
+* Fix pedantic lints. Adds a missing await in the example test and some missing
+  documentation.
+
 ## 0.2.2
 
 * Added a stub macos implementation

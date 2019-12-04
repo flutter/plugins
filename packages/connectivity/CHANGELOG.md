@@ -1,3 +1,7 @@
+## 0.4.5+7
+
+* Fix unawaited futures in the example app and tests.
+
 ## 0.4.5+6
 
 * Fix singleton Reachability problem on iOS.

@@ -142,8 +142,8 @@ class PurchaseDetails {
     @required this.productID,
     @required this.verificationData,
     @required this.transactionDate,
-    this.skPaymentTransaction = null,
-    this.billingClientPurchase = null,
+    this.skPaymentTransaction,
+    this.billingClientPurchase,
   });
 
   /// Generate a [PurchaseDetails] object based on an iOS [SKTransactionWrapper] object.

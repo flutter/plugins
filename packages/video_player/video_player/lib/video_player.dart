@@ -323,7 +323,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    VideoPlayerPlatform.instance.setLooping(_textureId, value.isLooping);
+    await VideoPlayerPlatform.instance.setLooping(_textureId, value.isLooping);
   }
 
   Future<void> _applyPlayPause() async {
@@ -331,7 +331,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
     if (value.isPlaying) {
-      VideoPlayerPlatform.instance.play(_textureId);
+      await VideoPlayerPlatform.instance.play(_textureId);
       _timer = Timer.periodic(
         const Duration(milliseconds: 500),
         (Timer timer) async {
@@ -347,7 +347,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       );
     } else {
       _timer?.cancel();
-      VideoPlayerPlatform.instance.pause(_textureId);
+      await VideoPlayerPlatform.instance.pause(_textureId);
     }
   }
 
@@ -355,7 +355,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    VideoPlayerPlatform.instance.setVolume(_textureId, value.volume);
+    await VideoPlayerPlatform.instance.setVolume(_textureId, value.volume);
   }
 
   /// The position in the current video.
@@ -380,7 +380,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     } else if (position < const Duration()) {
       position = const Duration();
     }
-    VideoPlayerPlatform.instance.seekTo(_textureId, position);
+    await VideoPlayerPlatform.instance.seekTo(_textureId, position);
     value = value.copyWith(position: position);
   }
 
