@@ -198,9 +198,9 @@ class PurchaseHistoryRecordWrapper {
 @BillingResponseConverter()
 class PurchasesResultWrapper {
   PurchasesResultWrapper(
-      {@required BillingResponse this.responseCode,
-      @required BillingResultWrapper this.billingResult,
-      @required List<PurchaseWrapper> this.purchasesList});
+      {@required this.responseCode,
+      @required this.billingResult,
+      @required this.purchasesList});
 
   factory PurchasesResultWrapper.fromJson(Map<String, dynamic> map) =>
       _$PurchasesResultWrapperFromJson(map);
@@ -241,10 +241,7 @@ class PurchasesResultWrapper {
 @BillingResponseConverter()
 class PurchasesHistoryResult {
   PurchasesHistoryResult(
-      {@required
-          BillingResultWrapper this.billingResult,
-      @required
-          List<PurchaseHistoryRecordWrapper> this.purchaseHistoryRecordList});
+      {@required this.billingResult, @required this.purchaseHistoryRecordList});
 
   factory PurchasesHistoryResult.fromJson(Map<String, dynamic> map) =>
       _$PurchasesHistoryResultFromJson(map);

@@ -13,6 +13,7 @@ dynamic _offsetToJson(Offset offset) {
 
 /// Text labels for a [Marker] info window.
 class InfoWindow {
+  /// Creates an immutable representation of a label on for [Marker].
   const InfoWindow({
     this.title,
     this.snippet,
@@ -100,6 +101,7 @@ class InfoWindow {
 /// This does not have to be globally unique, only unique among the list.
 @immutable
 class MarkerId {
+  /// Creates an immutable identifier for a [Marker].
   MarkerId(this.value) : assert(value != null);
 
   /// value of the [MarkerId].
@@ -146,6 +148,8 @@ class Marker {
   /// * has an axis-aligned icon; [rotation] is 0.0
   /// * is visible; [visible] is true
   /// * is placed at the base of the drawing order; [zIndex] is 0.0
+  /// * reports [onTap] events
+  /// * reports [onDragEnd] events
   const Marker({
     @required this.markerId,
     this.alpha = 1.0,
@@ -217,6 +221,7 @@ class Marker {
   /// Callbacks to receive tap events for markers placed on this map.
   final VoidCallback onTap;
 
+  /// Signature reporting the new [LatLng] at the end of a drag event.
   final ValueChanged<LatLng> onDragEnd;
 
   /// Creates a new [Marker] object whose values are the same as this instance,

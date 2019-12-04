@@ -17,6 +17,11 @@
      * Misc: Some documentation updates reflecting the `BillingClient` migration and some documentation fixes.
      * Refer to [Google Play Billing Library Release Note](https://developer.android.com/google/play/billing/billing_library_releases_notes#release-2_0) for a detailed information on the update.
 
+## 0.2.2+3
+
+* Fix failing pedantic lints. None of these fixes should have any change in
+  functionality.
+
 ## 0.2.2+2
 
 * Include lifecycle dependency as a compileOnly one on Android to resolve
