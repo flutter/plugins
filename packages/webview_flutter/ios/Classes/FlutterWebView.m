@@ -260,6 +260,10 @@
     } else if ([key isEqualToString:@"userAgent"]) {
       NSString* userAgent = settings[key];
       [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
+    } else if ([key isEqualToString:@"allowsBackForwardNavigationGestures"]) {
+      NSNumber* allowsBackForwardNavigationGestures = settings[key];
+      _webView.allowsBackForwardNavigationGestures =
+          [allowsBackForwardNavigationGestures boolValue];
     } else {
       [unknownKeys addObject:key];
     }

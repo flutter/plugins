@@ -151,6 +151,7 @@ class WebView extends StatefulWidget {
     this.userAgent,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.allowsBackForwardNavigationGestures,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         super(key: key);
@@ -311,6 +312,13 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
+  /// A Boolean value indicating whether horizontal swipe gestures will trigger back-forward list navigations.
+  ///
+  /// This only works on iOS.
+  ///
+  /// By default `allowsBackForwardNavigationGestures` is false.
+  final bool allowsBackForwardNavigationGestures;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -384,6 +392,8 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
     userAgent: WebSetting<String>.of(widget.userAgent),
+    allowsBackForwardNavigationGestures:
+        widget.allowsBackForwardNavigationGestures,
   );
 }
 

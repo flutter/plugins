@@ -822,6 +822,7 @@ void main() {
       await tester.pumpWidget(
         const WebView(
           initialUrl: 'https://youtube.com',
+          allowsBackForwardNavigationGestures: true,
         ),
       );
 
@@ -837,6 +838,7 @@ void main() {
               hasNavigationDelegate: false,
               debuggingEnabled: false,
               userAgent: WebSetting<String>.of(null),
+              allowsBackForwardNavigationGestures: true,
             ),
             // TODO(iskakaushik): Remove this when collection literals makes it to stable.
             // ignore: prefer_collection_literals
@@ -1193,7 +1195,9 @@ class MatchesWebSettings extends Matcher {
         _webSettings.hasNavigationDelegate ==
             webSettings.hasNavigationDelegate &&
         _webSettings.debuggingEnabled == webSettings.debuggingEnabled &&
-        _webSettings.userAgent == webSettings.userAgent;
+        _webSettings.userAgent == webSettings.userAgent &&
+        _webSettings.allowsBackForwardNavigationGestures ==
+            webSettings.allowsBackForwardNavigationGestures;
   }
 }
 
