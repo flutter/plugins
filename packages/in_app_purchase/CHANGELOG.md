@@ -1,6 +1,11 @@
-## 0.2.2+3
+## 0.2.2+4
 
 * Update version of json_annotation, resolve conflicts with other packages e.g. flutter_tools from sdk.
+
+## 0.2.2+3
+
+* Fix failing pedantic lints. None of these fixes should have any change in
+  functionality.
 
 ## 0.2.2+2
 

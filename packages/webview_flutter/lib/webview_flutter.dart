@@ -12,8 +12,11 @@ import 'platform_interface.dart';
 import 'src/webview_android.dart';
 import 'src/webview_cupertino.dart';
 
+/// Optional callback invoked when a web view is first created. [controller] is
+/// the [WebViewController] for the created web view.
 typedef void WebViewCreatedCallback(WebViewController controller);
 
+/// Describes the state of JavaScript support in a given web view.
 enum JavascriptMode {
   /// JavaScript execution is disabled.
   disabled,
@@ -589,10 +592,11 @@ class WebViewController {
     final Set<String> channelsToRemove =
         currentChannels.difference(newChannelNames);
     if (channelsToRemove.isNotEmpty) {
-      _webViewPlatformController.removeJavascriptChannels(channelsToRemove);
+      await _webViewPlatformController
+          .removeJavascriptChannels(channelsToRemove);
     }
     if (channelsToAdd.isNotEmpty) {
-      _webViewPlatformController.addJavascriptChannels(channelsToAdd);
+      await _webViewPlatformController.addJavascriptChannels(channelsToAdd);
     }
     _platformCallbacksHandler._updateJavascriptChannelsFromSet(newChannels);
   }
