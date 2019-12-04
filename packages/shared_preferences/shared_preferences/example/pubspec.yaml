@@ -6,6 +6,8 @@ dependencies:
     sdk: flutter
   shared_preferences:
     path: ../
+  shared_preferences_macos:
+    path: ../../shared_preferences_macos
 
 dev_dependencies:
   flutter_driver:
