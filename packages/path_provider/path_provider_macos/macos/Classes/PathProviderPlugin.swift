@@ -47,6 +47,8 @@ public class PathProviderPlugin: NSObject, FlutterPlugin {
         }
       }
       result(path)
+    case "getLibraryDirectory":
+      result(getDirectory(ofType: FileManager.SearchPathDirectory.libraryDirectory))
     default:
       result(FlutterMethodNotImplemented)
     }
