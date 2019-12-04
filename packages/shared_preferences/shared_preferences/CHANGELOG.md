@@ -1,3 +1,7 @@
+## 0.5.5
+
+* Add macos support.
+
 ## 0.5.4+8
 
 * Switch `package:shared_preferences` to `package:shared_preferences_platform_interface`.
