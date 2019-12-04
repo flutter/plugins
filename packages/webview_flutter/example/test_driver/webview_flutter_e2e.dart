@@ -17,7 +17,8 @@ void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('initalUrl', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -36,7 +37,8 @@ void main() {
   });
 
   testWidgets('loadUrl', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -58,7 +60,8 @@ void main() {
   // enable this once https://github.com/flutter/flutter/issues/31510
   // is resolved.
   testWidgets('loadUrl with headers', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
     final StreamController<String> pageStarts = StreamController<String>();
     final StreamController<String> pageLoads = StreamController<String>();
     await tester.pumpWidget(
@@ -81,20 +84,25 @@ void main() {
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
-    final Map<String, String> headers = <String, String>{'test_header': 'flutter_test_header'};
-    await controller.loadUrl('https://flutter-header-echo.herokuapp.com/', headers: headers);
+    final Map<String, String> headers = <String, String>{
+      'test_header': 'flutter_test_header'
+    };
+    await controller.loadUrl('https://flutter-header-echo.herokuapp.com/',
+        headers: headers);
     final String currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
 
     await pageStarts.stream.firstWhere((String url) => url == currentUrl);
     await pageLoads.stream.firstWhere((String url) => url == currentUrl);
 
-    final String content = await controller.evaluateJavascript('document.documentElement.innerText');
+    final String content = await controller
+        .evaluateJavascript('document.documentElement.innerText');
     expect(content.contains('flutter_test_header'), isTrue);
   });
 
   testWidgets('JavaScriptChannel', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
     final Completer<void> pageStarted = Completer<void>();
     final Completer<void> pageLoaded = Completer<void>();
     final List<String> messagesReceived = <String>[];
@@ -104,7 +112,8 @@ void main() {
         child: WebView(
           key: GlobalKey(),
           // This is the data URL for: '<!DOCTYPE html>'
-          initialUrl: 'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
+          initialUrl:
+              'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
@@ -154,11 +163,13 @@ void main() {
         </body>
         </html>
       ''';
-    final String resizeTestBase64 = base64Encode(const Utf8Encoder().convert(resizeTest));
+    final String resizeTestBase64 =
+        base64Encode(const Utf8Encoder().convert(resizeTest));
     final Completer<void> resizeCompleter = Completer<void>();
     final Completer<void> pageStarted = Completer<void>();
     final Completer<void> pageLoaded = Completer<void>();
-    final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
     final GlobalKey key = GlobalKey();
 
     final WebView webView = WebView(
@@ -262,8 +273,10 @@ void main() {
     expect(customUserAgent2, 'Custom_User_Agent2');
   });
 
-  testWidgets('use default platform userAgent after webView is rebuilt', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
+  testWidgets('use default platform userAgent after webView is rebuilt',
+      (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
     final GlobalKey _globalKey = GlobalKey();
     // Build the webView with no user agent to get the default platform user agent.
     await tester.pumpWidget(
@@ -314,8 +327,10 @@ void main() {
   group('Media playback policy', () {
     String audioTestBase64;
     setUpAll(() async {
-      final ByteData audioData = await rootBundle.load('assets/sample_audio.ogg');
-      final String base64AudioData = base64Encode(Uint8List.view(audioData.buffer));
+      final ByteData audioData =
+          await rootBundle.load('assets/sample_audio.ogg');
+      final String base64AudioData =
+          base64Encode(Uint8List.view(audioData.buffer));
       final String audioTest = '''
         <!DOCTYPE html><html>
         <head><title>Audio auto play</title>
@@ -341,7 +356,8 @@ void main() {
     });
 
     testWidgets('Auto media playback', (WidgetTester tester) async {
-      Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
+      Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
       Completer<void> pageStarted = Completer<void>();
       Completer<void> pageLoaded = Completer<void>();
 
@@ -393,7 +409,8 @@ void main() {
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
-            initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+            initialMediaPlaybackPolicy:
+                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           ),
         ),
       );
@@ -406,7 +423,8 @@ void main() {
       expect(isPaused, _webviewBool(true));
     });
 
-    testWidgets('Changes to initialMediaPlaybackPolocy are ignored', (WidgetTester tester) async {
+    testWidgets('Changes to initialMediaPlaybackPolocy are ignored',
+        (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
       Completer<void> pageStarted = Completer<void>();
       Completer<void> pageLoaded = Completer<void>();
@@ -458,7 +476,8 @@ void main() {
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
-            initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+            initialMediaPlaybackPolicy:
+                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           ),
         ),
       );
@@ -482,10 +501,12 @@ void main() {
         </body>
         </html>
       ''';
-    final String getTitleTestBase64 = base64Encode(const Utf8Encoder().convert(getTitleTest));
+    final String getTitleTestBase64 =
+        base64Encode(const Utf8Encoder().convert(getTitleTest));
     final Completer<void> pageStarted = Completer<void>();
     final Completer<void> pageLoaded = Completer<void>();
-    final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
 
     await tester.pumpWidget(
       Directionality(
@@ -515,8 +536,8 @@ void main() {
 
   group('NavigationDelegate', () {
     final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
-    final String blankPageEncoded =
-        'data:text/html;charset=utf-8;base64,' + base64Encode(const Utf8Encoder().convert(blankPage));
+    final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,' +
+        base64Encode(const Utf8Encoder().convert(blankPage));
 
     testWidgets('can allow requests', (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
@@ -532,7 +553,9 @@ void main() {
             },
             javascriptMode: JavascriptMode.unrestricted,
             navigationDelegate: (NavigationRequest request) {
-              return (request.url.contains('youtube.com')) ? NavigationDecision.prevent : NavigationDecision.navigate;
+              return (request.url.contains('youtube.com'))
+                  ? NavigationDecision.prevent
+                  : NavigationDecision.navigate;
             },
             onPageFinished: (String url) => pageLoads.add(url),
           ),
@@ -541,7 +564,8 @@ void main() {
 
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
-      await controller.evaluateJavascript('location.href = "https://www.google.com/"');
+      await controller
+          .evaluateJavascript('location.href = "https://www.google.com/"');
 
       await pageLoads.stream.first; // Wait for the next page load.
       final String currentUrl = await controller.currentUrl();
@@ -549,8 +573,10 @@ void main() {
     });
 
     testWidgets('can block requests', (WidgetTester tester) async {
-      final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
-      final StreamController<String> pageLoads = StreamController<String>.broadcast();
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final StreamController<String> pageLoads =
+          StreamController<String>.broadcast();
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
@@ -562,7 +588,9 @@ void main() {
             },
             javascriptMode: JavascriptMode.unrestricted,
             navigationDelegate: (NavigationRequest request) {
-              return (request.url.contains('youtube.com')) ? NavigationDecision.prevent : NavigationDecision.navigate;
+              return (request.url.contains('youtube.com'))
+                  ? NavigationDecision.prevent
+                  : NavigationDecision.navigate;
             },
             onPageFinished: (String url) => pageLoads.add(url),
           ),
@@ -571,19 +599,23 @@ void main() {
 
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
-      await controller.evaluateJavascript('location.href = "https://www.youtube.com/"');
+      await controller
+          .evaluateJavascript('location.href = "https://www.youtube.com/"');
 
       // There should never be any second page load, since our new URL is
       // blocked. Still wait for a potential page change for some time in order
       // to give the test a chance to fail.
-      await pageLoads.stream.first.timeout(const Duration(milliseconds: 500), onTimeout: () => null);
+      await pageLoads.stream.first
+          .timeout(const Duration(milliseconds: 500), onTimeout: () => null);
       final String currentUrl = await controller.currentUrl();
       expect(currentUrl, isNot(contains('youtube.com')));
     });
 
     testWidgets('supports asynchronous decisions', (WidgetTester tester) async {
-      final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
-      final StreamController<String> pageLoads = StreamController<String>.broadcast();
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final StreamController<String> pageLoads =
+          StreamController<String>.broadcast();
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
@@ -597,7 +629,8 @@ void main() {
             navigationDelegate: (NavigationRequest request) async {
               NavigationDecision decision = NavigationDecision.prevent;
               decision = await Future<NavigationDecision>.delayed(
-                  const Duration(milliseconds: 10), () => NavigationDecision.navigate);
+                  const Duration(milliseconds: 10),
+                  () => NavigationDecision.navigate);
               return decision;
             },
             onPageFinished: (String url) => pageLoads.add(url),
@@ -607,7 +640,8 @@ void main() {
 
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
-      await controller.evaluateJavascript('location.href = "https://www.google.com"');
+      await controller
+          .evaluateJavascript('location.href = "https://www.google.com"');
 
       await pageLoads.stream.first; // Wait for second page to load.
       final String currentUrl = await controller.currentUrl();
@@ -630,5 +664,6 @@ Future<String> _getUserAgent(WebViewController controller) async {
   if (defaultTargetPlatform == TargetPlatform.iOS) {
     return await controller.evaluateJavascript('navigator.userAgent;');
   }
-  return jsonDecode(await controller.evaluateJavascript('navigator.userAgent;'));
+  return jsonDecode(
+      await controller.evaluateJavascript('navigator.userAgent;'));
 }
