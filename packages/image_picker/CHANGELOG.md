@@ -1,3 +1,7 @@
+## 0.6.2+2
+
+* Android: Fix a crash when `externalFilesDirectory` does not exist
+
 ## 0.6.2+1
 
 * Android: Fix a crash when a non-image file is picked.
