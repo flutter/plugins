@@ -14,5 +14,6 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  shared_preferences_platform_interface: ^1.0.0
   flutter:
     sdk: flutter
