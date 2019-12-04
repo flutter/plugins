@@ -237,7 +237,8 @@ void main() {
   });
 
   testWidgets('set custom userAgent', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter1 = Completer<WebViewController>();
+    final Completer<WebViewController> controllerCompleter1 =
+        Completer<WebViewController>();
     final GlobalKey _globalKey = GlobalKey();
     await tester.pumpWidget(
       Directionality(
@@ -425,7 +426,8 @@ void main() {
 
     testWidgets('Changes to initialMediaPlaybackPolocy are ignored',
         (WidgetTester tester) async {
-      final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
       Completer<void> pageStarted = Completer<void>();
       Completer<void> pageLoaded = Completer<void>();
 
@@ -540,8 +542,10 @@ void main() {
         base64Encode(const Utf8Encoder().convert(blankPage));
 
     testWidgets('can allow requests', (WidgetTester tester) async {
-      final Completer<WebViewController> controllerCompleter = Completer<WebViewController>();
-      final StreamController<String> pageLoads = StreamController<String>.broadcast();
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final StreamController<String> pageLoads =
+          StreamController<String>.broadcast();
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
