@@ -1,3 +1,7 @@
+## 0.3.17+1
+
+* Fix an iOS 13 bug where the scroll indicator shows at random location.
+
 ## 0.3.17
 
 * Fix pedantic lint errors. Added missing documentation and awaited some futures
