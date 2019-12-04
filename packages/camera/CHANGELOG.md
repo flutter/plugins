@@ -1,3 +1,7 @@
+## 0.5.7
+
+* Fix unawaited futures.
+
 ## 0.5.6+4
 
 * Android: Use CameraDevice.TEMPLATE_RECORD to improve image streaming.

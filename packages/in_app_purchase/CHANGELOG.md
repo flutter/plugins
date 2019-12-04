@@ -1,3 +1,8 @@
+## 0.2.2+3
+
+* Fix failing pedantic lints. None of these fixes should have any change in
+  functionality.
+
 ## 0.2.2+2
 
 * Include lifecycle dependency as a compileOnly one on Android to resolve

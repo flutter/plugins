@@ -1,6 +1,15 @@
+## 0.4.0
+
+- Added missing documentation.
+- **Breaking change**. `channel` and `withMethodChannel` are now
+  `@visibleForTesting`. These methods are for plugin unit tests only and may be
+  removed in the future.
+- **Breaking change**. Removed `runLaunchAction` from public API. This method
+  was not meant to be used by consumers of the plugin.
+
 ## 0.3.3+1
 
-* Update and migrate iOS example project by removing flutter_assets, change 
+* Update and migrate iOS example project by removing flutter_assets, change
   "English" to "en", remove extraneous xcconfigs, update to Xcode 11 build
   settings, and remove ARCHS and DEVELOPMENT_TEAM.
 

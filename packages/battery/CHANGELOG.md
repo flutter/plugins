@@ -1,3 +1,7 @@
+## 0.3.1+5
+
+* Fix pedantic linter errors.
+
 ## 0.3.1+4
 
 * Update and migrate iOS example project.
