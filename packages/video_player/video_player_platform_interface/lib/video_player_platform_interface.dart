@@ -123,6 +123,18 @@ abstract class VideoPlayerPlatform {
 /// the video player.
 class DataSource {
   /// Constructs an instance of [DataSource].
+  ///
+  /// The [sourceType] is always required.
+  ///
+  /// The [uri] argument takes the form of `'https://example.com/video.mp4'` or
+  /// `'file://${file.path}'`.
+  ///
+  /// The [formatHint] argument can be null.
+  ///
+  /// The [asset] argument takes the form of `'assets/video.mp4'`.
+  ///
+  /// The [package] argument must be non-null when the asset comes from a
+  /// package and null otherwise.
   DataSource({
     @required this.sourceType,
     this.uri,
@@ -188,6 +200,11 @@ enum VideoFormat {
 /// Event emitted from the platform implementation.
 class VideoEvent {
   /// Creates an instance of [VideoEvent].
+  ///
+  /// The [eventType] argument is required.
+  ///
+  /// Depending on the [eventType], the [duration], [size] and [buffered]
+  /// arguments can be null.
   VideoEvent({
     @required this.eventType,
     this.duration,
