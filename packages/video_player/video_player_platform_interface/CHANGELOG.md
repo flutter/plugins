@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Document public API.
+
 ## 1.0.2
 
 * Fix unawaited futures in the tests.

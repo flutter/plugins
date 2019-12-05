@@ -119,7 +119,22 @@ abstract class VideoPlayerPlatform {
   void _verifyProvidesDefaultImplementations() {}
 }
 
+/// Description of the data source used to create an instance of
+/// the video player.
 class DataSource {
+  /// Constructs an instance of [DataSource].
+  ///
+  /// The [sourceType] is always required.
+  ///
+  /// The [uri] argument takes the form of `'https://example.com/video.mp4'` or
+  /// `'file://${file.path}'`.
+  ///
+  /// The [formatHint] argument can be null.
+  ///
+  /// The [asset] argument takes the form of `'assets/video.mp4'`.
+  ///
+  /// The [package] argument must be non-null when the asset comes from a
+  /// package and null otherwise.
   DataSource({
     @required this.sourceType,
     this.uri,
@@ -128,16 +143,34 @@ class DataSource {
     this.package,
   });
 
+  /// The way in which the video was originally loaded.
+  ///
+  /// This has nothing to do with the video's file type. It's just the place
+  /// from which the video is fetched from.
   final DataSourceType sourceType;
+
+  /// The URI to the video file.
+  ///
+  /// This will be in different formats depending on the [DataSourceType] of
+  /// the original video.
   final String uri;
+
+  /// **Android only**. Will override the platform's generic file format
+  /// detection with whatever is set here.
   final VideoFormat formatHint;
+
+  /// The name of the asset. Only set for [DataSourceType.asset] videos.
   final String asset;
+
+  /// The package that the asset was loaded from. Only set for
+  /// [DataSourceType.asset] videos.
   final String package;
 }
 
-/// The way in which the video was originally loaded. This has nothing to do
-/// with the video's file type. It's just the place from which the video is
-/// fetched from.
+/// The way in which the video was originally loaded.
+///
+/// This has nothing to do with the video's file type. It's just the place
+/// from which the video is fetched from.
 enum DataSourceType {
   /// The video was included in the app's asset files.
   asset,
@@ -164,7 +197,14 @@ enum VideoFormat {
   other
 }
 
+/// Event emitted from the platform implementation.
 class VideoEvent {
+  /// Creates an instance of [VideoEvent].
+  ///
+  /// The [eventType] argument is required.
+  ///
+  /// Depending on the [eventType], the [duration], [size] and [buffered]
+  /// arguments can be null.
   VideoEvent({
     @required this.eventType,
     this.duration,
@@ -172,9 +212,22 @@ class VideoEvent {
     this.buffered,
   });
 
+  /// The type of the event.
   final VideoEventType eventType;
+
+  /// Duration of the video.
+  ///
+  /// Only used if [eventType] is [VideoEventType.initialized].
   final Duration duration;
+
+  /// Size of the video.
+  ///
+  /// Only used if [eventType] is [VideoEventType.initialized].
   final Size size;
+
+  /// Buffered parts of the video.
+  ///
+  /// Only used if [eventType] is [VideoEventType.bufferingUpdate].
   final List<DurationRange> buffered;
 
   @override
@@ -196,12 +249,27 @@ class VideoEvent {
       buffered.hashCode;
 }
 
+/// Type of the event.
+///
+/// Emitted by the platform implementation when the video is initialized or
+/// completed or to communicate buffering events.
 enum VideoEventType {
+  /// The video has been initialized.
   initialized,
+
+  /// The playback has ended.
   completed,
+
+  /// Updated information on the buffering state.
   bufferingUpdate,
+
+  /// The video started to buffer.
   bufferingStart,
+
+  /// The video stopped to buffer.
   bufferingEnd,
+
+  /// An unknown event has been received.
   unknown,
 }
 
