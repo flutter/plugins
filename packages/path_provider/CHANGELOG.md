@@ -1,4 +1,4 @@
-## 1.4.6
+## 1.5.0
 
 * Add macOS support.
 
