@@ -4,9 +4,11 @@
 
 package io.flutter.plugins.pathprovider;
 
+import android.content.Context;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import androidx.annotation.NonNull;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -17,19 +19,33 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PathProviderPlugin implements MethodCallHandler {
+public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
 
-  private final Registrar mRegistrar;
+  private Context context;
+  private MethodChannel channel;
+
+  public PathProviderPlugin() {}
 
   public static void registerWith(Registrar registrar) {
-    MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/path_provider");
-    PathProviderPlugin instance = new PathProviderPlugin(registrar);
-    channel.setMethodCallHandler(instance);
+    PathProviderPlugin instance = new PathProviderPlugin();
+    instance.channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/path_provider");
+    instance.context = registrar.context();
+    instance.channel.setMethodCallHandler(instance);
   }
 
-  private PathProviderPlugin(Registrar registrar) {
-    this.mRegistrar = registrar;
+  @Override
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+    channel =
+        new MethodChannel(
+            binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/path_provider");
+    context = binding.getApplicationContext();
+    channel.setMethodCallHandler(this);
+  }
+
+  @Override
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+    channel.setMethodCallHandler(null);
+    channel = null;
   }
 
   @Override
@@ -61,19 +77,19 @@ public class PathProviderPlugin implements MethodCallHandler {
   }
 
   private String getPathProviderTemporaryDirectory() {
-    return mRegistrar.context().getCacheDir().getPath();
+    return context.getCacheDir().getPath();
   }
 
   private String getApplicationSupportDirectory() {
-    return PathUtils.getFilesDir(mRegistrar.context());
+    return PathUtils.getFilesDir(context);
   }
 
   private String getPathProviderApplicationDocumentsDirectory() {
-    return PathUtils.getDataDirectory(mRegistrar.context());
+    return PathUtils.getDataDirectory(context);
   }
 
   private String getPathProviderStorageDirectory() {
-    final File dir = mRegistrar.context().getExternalFilesDir(null);
+    final File dir = context.getExternalFilesDir(null);
     if (dir == null) {
       return null;
     }
@@ -84,13 +100,13 @@ public class PathProviderPlugin implements MethodCallHandler {
     final List<String> paths = new ArrayList<>();
 
     if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
-      for (File dir : mRegistrar.context().getExternalCacheDirs()) {
+      for (File dir : context.getExternalCacheDirs()) {
         if (dir != null) {
           paths.add(dir.getAbsolutePath());
         }
       }
     } else {
-      File dir = mRegistrar.context().getExternalCacheDir();
+      File dir = context.getExternalCacheDir();
       if (dir != null) {
         paths.add(dir.getAbsolutePath());
       }
@@ -103,13 +119,13 @@ public class PathProviderPlugin implements MethodCallHandler {
     final List<String> paths = new ArrayList<>();
 
     if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
-      for (File dir : mRegistrar.context().getExternalFilesDirs(type)) {
+      for (File dir : context.getExternalFilesDirs(type)) {
         if (dir != null) {
           paths.add(dir.getAbsolutePath());
         }
       }
     } else {
-      File dir = mRegistrar.context().getExternalFilesDir(type);
+      File dir = context.getExternalFilesDir(type);
       if (dir != null) {
         paths.add(dir.getAbsolutePath());
       }
