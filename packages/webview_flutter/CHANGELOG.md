@@ -1,3 +1,8 @@
+## 0.3.17
+
+* Fix pedantic lint errors. Added missing documentation and awaited some futures
+  in tests and the example app.
+
 ## 0.3.16
 
 * Add support for async NavigationDelegates. Synchronous NavigationDelegates

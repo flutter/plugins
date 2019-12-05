@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 Future<void> main() async {
   final FlutterDriver driver = await FlutterDriver.connect();
   tearDownAll(() async {
-    driver.close();
+    await driver.close();
   });
 
   //TODO(cyanglaz): Use TabBar tabs to navigate between pages after https://github.com/flutter/flutter/issues/16991 is fixed.
