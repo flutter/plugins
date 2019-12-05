@@ -12,8 +12,9 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class ConnectivityPlugin implements FlutterPlugin, MethodCallHandler {
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    final MethodChannel channel = new MethodChannel(
-        flutterPluginBinding.getFlutterEngine().getDartExecutor(), "connectivity");
+    final MethodChannel channel =
+        new MethodChannel(
+            flutterPluginBinding.getFlutterEngine().getDartExecutor(), "connectivity");
     channel.setMethodCallHandler(new ConnectivityPlugin());
   }
 
