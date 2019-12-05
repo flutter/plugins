@@ -27,6 +27,8 @@ abstract class VideoPlayerPlatform {
   @visibleForTesting
   bool get isMock => false;
 
+  static VideoPlayerPlatform _instance = MethodChannelVideoPlayer();
+
   /// The default instance of [VideoPlayerPlatform] to use.
   ///
   /// Platform-specific plugins should override this with their own
@@ -34,8 +36,6 @@ abstract class VideoPlayerPlatform {
   /// register themselves.
   ///
   /// Defaults to [MethodChannelVideoPlayer].
-  static VideoPlayerPlatform _instance = MethodChannelVideoPlayer();
-
   static VideoPlayerPlatform get instance => _instance;
 
   // TODO(amirh): Extract common platform interface logic.
