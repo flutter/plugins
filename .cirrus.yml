@@ -82,9 +82,14 @@ task:
 task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-11.2.1-flutter
+    image: mojave-flutter
+  environment:
+    COCOAPODS_DISABLE_STATS: true
+    PATH: $PATH:/usr/local/bin
   setup_script:
-    - pod repo update
+    - pod --version
+    - sudo gem list cocoapods
+    - pod repo remove master
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -107,7 +112,6 @@ task:
       script: ./script/lint_darwin_plugins.sh
     - name: build-ipas+drive-examples
       env:
-        PATH: $PATH:/usr/local/bin
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
