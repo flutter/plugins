@@ -1,3 +1,7 @@
+## 0.4.5+7
+
+* Update documentation to explain when connectivity updates are received on Android.
+
 ## 0.4.5+6
 
 * Fix singleton Reachability problem on iOS.
