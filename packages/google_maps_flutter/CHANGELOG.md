@@ -2,6 +2,59 @@
 
 * Add support for holes in Polygons
 
+## 0.5.21+13
+
+* Add documentation.
+
+## 0.5.21+12
+
+* Update driver tests in the example app to e2e tests.
+
+## 0.5.21+11
+
+* Define clang module for iOS, fix analyzer warnings.
+
+## 0.5.21+10
+
+* Cast error.code to unsigned long to avoid using NSInteger as %ld format warnings.
+
+## 0.5.21+9
+
+* Remove AndroidX warnings.
+
+## 0.5.21+8
+
+* Add NS_ASSUME_NONNULL_* macro to reduce iOS compiler warnings.
+
+## 0.5.21+7
+
+* Create a clone of cached elements in GoogleMap (Polyline, Polygon, etc.) to detect modifications
+  if these objects are mutated instead of modified by copy.
+
+## 0.5.21+6
+
+* Override a default method to work around flutter/flutter#40126.
+
+## 0.5.21+5
+
+* Update and migrate iOS example project.
+
+## 0.5.21+4
+
+* Support projection methods to translate between screen and latlng coordinates.
+
+## 0.5.21+3
+
+* Fix `myLocationButton` bug in `google_maps_flutter` iOS.
+
+## 0.5.21+2
+
+* Fix more `prefer_const_constructors` analyzer warnings in example app.
+
+## 0.5.21+1
+
+* Fix `prefer_const_constructors` analyzer warnings in example app.
+
 ## 0.5.21
 
 * Don't recreate map elements if they didn't change since last widget build.

@@ -63,6 +63,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   private final boolean isAuthSticky;
   private final UiThreadExecutor uiThreadExecutor;
   private boolean activityPaused = false;
+  private BiometricPrompt biometricPrompt;
 
   public AuthenticationHelper(
       FragmentActivity activity, MethodCall call, AuthCompletionHandler completionHandler) {
@@ -77,13 +78,23 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             .setTitle((String) call.argument("signInTitle"))
             .setSubtitle((String) call.argument("fingerprintHint"))
             .setNegativeButtonText((String) call.argument("cancelButton"))
+            .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
             .build();
   }
 
   /** Start the fingerprint listener. */
   public void authenticate() {
     activity.getApplication().registerActivityLifecycleCallbacks(this);
-    new BiometricPrompt(activity, uiThreadExecutor, this).authenticate(promptInfo);
+    biometricPrompt = new BiometricPrompt(activity, uiThreadExecutor, this);
+    biometricPrompt.authenticate(promptInfo);
+  }
+
+  /** Cancels the fingerprint authentication. */
+  public void stopAuthentication() {
+    if (biometricPrompt != null) {
+      biometricPrompt.cancelAuthentication();
+      biometricPrompt = null;
+    }
   }
 
   /** Stops the fingerprint listener. */
@@ -95,13 +106,11 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   @Override
   public void onAuthenticationError(int errorCode, CharSequence errString) {
     switch (errorCode) {
-        // TODO(mehmetf): Re-enable when biometric alpha05 is released.
-        // https://developer.android.com/jetpack/androidx/releases/biometric
-        // case BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL:
-        //   completionHandler.onError(
-        //       "PasscodeNotSet",
-        //       "Phone not secured by PIN, pattern or password, or SIM is currently locked.");
-        //   break;
+      case BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL:
+        completionHandler.onError(
+            "PasscodeNotSet",
+            "Phone not secured by PIN, pattern or password, or SIM is currently locked.");
+        break;
       case BiometricPrompt.ERROR_NO_SPACE:
       case BiometricPrompt.ERROR_NO_BIOMETRICS:
         if (call.argument("useErrorDialogs")) {

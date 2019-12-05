@@ -130,6 +130,25 @@ void main() {
     expect(update.geodesic, true);
   });
 
+  testWidgets("Mutate a polygon", (WidgetTester tester) async {
+    final Polygon p1 = Polygon(
+      polygonId: PolygonId("polygon_1"),
+      points: <LatLng>[const LatLng(0.0, 0.0)],
+    );
+    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
+
+    p1.points.add(const LatLng(1.0, 1.0));
+    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+    expect(platformGoogleMap.polygonsToChange.length, 1);
+    expect(platformGoogleMap.polygonsToChange.first, equals(p1));
+
+    expect(platformGoogleMap.polygonIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
+  });
+
   testWidgets("Multi Update", (WidgetTester tester) async {
     Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
     Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
