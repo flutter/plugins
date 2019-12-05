@@ -12,7 +12,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class ConnectivityPlugin implements FlutterPlugin, MethodCallHandler {
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {}
-  
+
   public static void registerWith(Registrar registrar) {}
 
   @Override
