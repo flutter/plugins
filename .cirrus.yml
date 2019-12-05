@@ -27,8 +27,10 @@ task:
     - name: build-apks+java-test+drive-examples
       env:
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
@@ -70,10 +72,12 @@ task:
       env:
         PATH: $PATH:/usr/local/bin
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 6
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 6"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 6"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 6"
+          PLUGIN_SHARDING: "--shardIndex 4 --shardCount 6"
+          PLUGIN_SHARDING: "--shardIndex 5 --shardCount 6"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       build_script:
         - ./script/incremental_build.sh build-examples --ipa
