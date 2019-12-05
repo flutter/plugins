@@ -8,10 +8,8 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /** PathProviderPlugin */
 public class PathProviderPlugin implements MethodCallHandler {
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
-  }
+  public static void registerWith(Registrar registrar) {}
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
-  }
+  public void onMethodCall(MethodCall call, Result result) {}
 }
