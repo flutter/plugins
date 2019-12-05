@@ -46,8 +46,10 @@ task:
     - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
@@ -109,10 +111,12 @@ task:
       env:
         PATH: $PATH:/usr/local/bin
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 6
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 6"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 6"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 6"
+          PLUGIN_SHARDING: "--shardIndex 4 --shardCount 6"
+          PLUGIN_SHARDING: "--shardIndex 5 --shardCount 6"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
