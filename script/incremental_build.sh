@@ -17,9 +17,8 @@ CUSTOM_ANALYSIS_PLUGINS=(
   "in_app_purchase"
   "camera"
   "google_sign_in/google_sign_in"
-  "google_sign_in/google_sign_in_web"
   "google_sign_in/google_sign_in_platform_interface"
-  "video_player/video_player_platform_interface"
+  "google_sign_in/google_sign_in_web"
 )
 # Comma-separated string of the list above
 readonly CUSTOM_FLAG=$(IFS=, ; echo "${CUSTOM_ANALYSIS_PLUGINS[*]}")
