@@ -6,10 +6,28 @@ readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
 
+# Plugins that deliberately use their own analysis_options.yaml.
+#
+# This list should only be deleted from, never added to. This only exists
+# because we adopted stricter analysis rules recently and needed to exclude
+# already failing packages to start linting the repo as a whole.
+#
+# TODO(mklim): Remove everything from this list. https://github.com/flutter/flutter/issues/45440
+CUSTOM_ANALYSIS_PLUGINS=(
+  "in_app_purchase"
+  "camera"
+  "google_sign_in/google_sign_in"
+  "google_sign_in/google_sign_in_platform_interface"
+  "google_sign_in/google_sign_in_web"
+)
+# Comma-separated string of the list above
+readonly CUSTOM_FLAG=$(IFS=, ; echo "${CUSTOM_ANALYSIS_PLUGINS[*]}")
 # Set some default actions if run without arguments.
 ACTIONS=("$@")
 if [[ "${#ACTIONS[@]}" == 0 ]]; then
-  ACTIONS=("test" "analyze" "java-test")
+  ACTIONS=("analyze" "--custom-analysis" "$CUSTOM_FLAG" "test" "java-test")
+elif [ "${ACTIONS[@]}" == "analyze" ]; then
+  ACTIONS=("analyze" "--custom-analysis" "$CUSTOM_FLAG")
 fi
 
 BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
