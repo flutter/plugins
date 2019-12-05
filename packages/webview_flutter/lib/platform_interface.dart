@@ -220,6 +220,10 @@ class WebSetting<T> {
 ///
 /// The `userAgent` parameter must not be null.
 class WebSettings {
+  /// Construct an instance with initial settings. Future setting changes can be
+  /// sent with [WebviewPlatform#updateSettings].
+  ///
+  /// The `userAgent` parameter must not be null.
   WebSettings({
     this.javascriptMode,
     this.hasNavigationDelegate,
@@ -258,6 +262,10 @@ class WebSettings {
 ///
 /// The `autoMediaPlaybackPolicy` parameter must not be null.
 class CreationParams {
+  /// Constructs an instance to use when creating a new
+  /// [WebViewPlatformController].
+  ///
+  /// The `autoMediaPlaybackPolicy` parameter must not be null.
   CreationParams({
     this.initialUrl,
     this.webSettings,

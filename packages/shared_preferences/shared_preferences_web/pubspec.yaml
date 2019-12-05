@@ -1,0 +1,28 @@
+name: shared_preferences_web
+description: Web platform implementation of shared_preferences
+author: Flutter Team <flutter-dev@googlegroups.com>
+homepage: https://github.com/flutter/plugins/tree/master/packages/shared_preferences/shared_preferences_web
+version: 0.1.0
+
+flutter:
+  plugin:
+    platforms:
+      web:
+        pluginClass: SharedPreferencesPlugin
+        fileName: shared_preferences_web.dart
+
+dependencies:
+  shared_preferences_platform_interface: ^1.0.0
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  meta: ^1.1.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+environment:
+  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  flutter: ">=1.5.0 <2.0.0"
