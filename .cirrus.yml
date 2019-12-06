@@ -2,7 +2,7 @@ flutter_skip_web_template: &FLUTTER_SKIP_WEB_TEMPLATE
   remove_web_plugins_script:
     # TODO(jackson): Allow web plugins once supported on stable
     # https://github.com/flutter/flutter/issues/42864
-    - find . | grep _web$ | xargs rm -rf
+    - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
 
 # fingerprint_script doesn't seem to work in templates.
 # To keep OS caches from colliding, split them into separate caches.
@@ -22,11 +22,6 @@ cache_stable_macos_template: &CACHE_STABLE_MACOS_TEMPLATE
   flutter_artifacts_macos_cache:
     folder: $FLUTTER_HOME/bin/cache/artifacts
 
-
-flutter_pkg_linux_cache:
-  folder: $FLUTTER_HOME/bin/cache/pkg
-flutter_artifacts_linux_cache:
-  folder: $FLUTTER_HOME/bin/cache/artifacts
 task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   container:
@@ -35,11 +30,7 @@ task:
     memory: 16G
   environment:
     PATH: $PATH:$HOME/.pub-cache/bin
-    CHANNEL: "stable" # Default to flutter stable to leverage caching.
-  pub_cache:
-    folder: $HOME/.pub-cache
-    fingerprint_script: echo $CIRRUS_OS
-    only_if: $CHANNEL == "stable"
+    CHANNEL: "stable" # Default to flutter stable, tests can override.
   upgrade_script:
     - which flutter
     - flutter channel $CHANNEL
@@ -63,9 +54,9 @@ task:
         - sudo apt-get update
         - sudo apt-get install -y --allow-unauthenticated clang-format-7
         - date
-      format_script:
-        - ./script/incremental_build.sh format --travis --clang-format=clang-format-7
+      format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-7
     - name: test
+      << : *FLUTTER_SKIP_WEB_TEMPLATE
       environment:
         matrix:
           CHANNEL: "master"
@@ -86,6 +77,7 @@ task:
         - format
         - publishable
     - name: build-apks+java-test+firebase-test-lab
+      << : *FLUTTER_SKIP_WEB_TEMPLATE
       environment:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
@@ -129,11 +121,7 @@ task:
   environment:
     COCOAPODS_DISABLE_STATS: true
     PATH: $PATH:/usr/local/bin:$HOME/.pub-cache/bin
-    CHANNEL: "stable" # Default to flutter stable to leverage caching.
-  pub_cache:
-    folder: $HOME/.pub-cache
-    fingerprint_script: echo $CIRRUS_OS
-    only_if: $CHANNEL == "stable"
+    CHANNEL: "stable" # Default to flutter stable, tests can override.
   upgrade_script:
     - which flutter
     - flutter channel $CHANNEL
@@ -157,6 +145,7 @@ task:
       script:
         - ./script/lint_darwin_plugins.sh
     - name: build-ipas+drive-examples
+      << : *FLUTTER_SKIP_WEB_TEMPLATE
       environment:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
