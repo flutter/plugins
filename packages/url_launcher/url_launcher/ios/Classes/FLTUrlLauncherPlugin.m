@@ -4,7 +4,7 @@
 
 #import <SafariServices/SafariServices.h>
 
-#import "UrlLauncherPlugin.h"
+#import "FLTUrlLauncherPlugin.h"
 
 API_AVAILABLE(ios(9.0))
 @interface FLTUrlLaunchSession : NSObject <SFSafariViewControllerDelegate>
