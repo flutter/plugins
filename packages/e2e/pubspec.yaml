@@ -1,6 +1,6 @@
 name: e2e
 description: Runs tests that use the flutter_test API as integration tests.
-version: 0.2.2+1
+version: 0.2.2+2
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/e2e
 
