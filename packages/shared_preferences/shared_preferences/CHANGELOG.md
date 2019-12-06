@@ -1,4 +1,4 @@
-## 0.5.5
+## 0.6.0
 
 * Add macos support.
 
