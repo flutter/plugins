@@ -70,9 +70,9 @@ task:
     - name: test
       matrix:
         - name: master
-        << : *FLUTTER_MASTER_TEMPLATE
+          << : *FLUTTER_MASTER_TEMPLATE
         - name: stable
-        << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
+          << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
       test_script:
         - date
         - ./script/incremental_build.sh test
