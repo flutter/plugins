@@ -1,3 +1,8 @@
+## 4.1.0
+
+* Support web by default.
+* Use the new plugins pubspec schema.
+
 ## 4.0.15
 
 * Export SignInOption from interface since it is used in the frontend as a type.
