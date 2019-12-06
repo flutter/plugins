@@ -1,3 +1,7 @@
+## 0.5.7+1
+
+* Fix example null exception.
+
 ## 0.5.7
 
 * Fix unawaited futures.
