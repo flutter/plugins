@@ -1,7 +1,7 @@
 pub_cache:
   folder: $HOME/.pub-cache
   fingerprint_script: echo $OS; grep -r --include=pubspec.yaml 'PUBSPEC CHECKSUM' "$CIRRUS_WORKING_DIR"
-upgrade_script:
+setup_script:
   - date
   - git fetch origin master
   - date
@@ -13,8 +13,9 @@ activate_script:
 flutter_master_template: &FLUTTER_MASTER_TEMPLATE
   environment:
     CHANNEL: "master"
-  upgrade_script:
+  setup_script:
     - date
+    - which flutter
     - flutter channel $CHANNEL
     - flutter upgrade
     - date
@@ -22,13 +23,10 @@ flutter_master_template: &FLUTTER_MASTER_TEMPLATE
 flutter_stable_template: &FLUTTER_STABLE_TEMPLATE
   environment:
     CHANNEL: "stable"
-  flutter_artifacts_cache:
-    folder: $FLUTTER_HOME/bin/cache/artifacts
-    fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
   flutter_pkg_cache:
     folder: $FLUTTER_HOME/bin/cache/pkg
     fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
-  upgrade_script:
+  setup_script:
     - date
     - flutter channel $CHANNEL
     - flutter upgrade
@@ -36,7 +34,7 @@ flutter_stable_template: &FLUTTER_STABLE_TEMPLATE
 
 flutter_stable_skip_web_template: &FLUTTER_STABLE_SKIP_WEB_TEMPLATE
   << : *FLUTTER_STABLE_TEMPLATE
-  test_script:
+  setup_script:
     # TODO(jackson): Allow web plugins once supported on stable
     # https://github.com/flutter/flutter/issues/42864
     - find . | grep _web$ | xargs rm -rf; fi
