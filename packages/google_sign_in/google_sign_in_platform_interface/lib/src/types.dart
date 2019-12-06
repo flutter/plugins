@@ -58,7 +58,7 @@ class GoogleSignInUserData {
   /// Not guaranteed to be present for all users, even when configured.
   String photoUrl;
 
-  /// An token that can be sent to your own server to verify the authentication
+  /// A token that can be sent to your own server to verify the authentication
   /// data.
   String idToken;
 
