@@ -89,7 +89,6 @@ task:
   setup_script:
     - pod --version
     - sudo gem list cocoapods
-    - pod repo remove master
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
