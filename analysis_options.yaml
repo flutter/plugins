@@ -4,6 +4,8 @@ analyzer:
     # Ignore generated files
     - '**/*.g.dart'
     - 'lib/src/generated/*.dart'
+  enable-experiment:
+    - extension-methods
 linter:
   rules:
     - public_member_api_docs

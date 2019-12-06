@@ -4,8 +4,10 @@ flutter_template: &FLUTTER_TEMPLATE
     - flutter channel $CHANNEL
     - date
     - flutter upgrade
-    - date
     - git fetch origin master
+    - date
+  activate_script:
+    - date
     - pub global activate flutter_plugin_tools
     - date
 
@@ -32,6 +34,8 @@ task:
     dockerfile: .ci/Dockerfile
     cpu: 8
     memory: 16G
+  environment:
+    PATH: $PATH:$HOME/.pub-cache/bin
   matrix:
     - name: publishable
       << : *FLUTTER_STABLE_TEMPLATE
@@ -63,10 +67,8 @@ task:
         - date
     - name: test
       matrix:
-        - name: master
-          << : *FLUTTER_MASTER_TEMPLATE
-        - name: stable
-          << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
+        - << : *FLUTTER_MASTER_TEMPLATE
+        - << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
       test_script:
         - date
         - ./script/incremental_build.sh test
@@ -92,10 +94,8 @@ task:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
         matrix:
-          - name: master
-            << : *FLUTTER_MASTER_TEMPLATE
-          - name: stable
-            << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
+          - << : *FLUTTER_MASTER_TEMPLATE
+          - << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
       script:
@@ -131,7 +131,7 @@ task:
     image: mojave-flutter
   environment:
     COCOAPODS_DISABLE_STATS: true
-    PATH: $PATH:/usr/local/bin
+    PATH: $PATH:/usr/local/bin:$HOME/.pub-cache/bin
   create_simulator_script:
     - date
     - xcrun simctl list
@@ -158,10 +158,8 @@ task:
           PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
-          - name: master
-            << : *FLUTTER_MASTER_TEMPLATE
-          - name: stable
-            << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
+          - << : *FLUTTER_MASTER_TEMPLATE
+          - << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       script:
         - date
