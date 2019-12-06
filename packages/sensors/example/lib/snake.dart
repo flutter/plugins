@@ -73,12 +73,14 @@ class SnakeState extends State<Snake> {
   void initState() {
     super.initState();
     accelerometerEvents.listen((AccelerometerEvent event) {
+      if (!mounted) return;
       setState(() {
         acceleration = event;
       });
     });
 
     Timer.periodic(const Duration(milliseconds: 200), (_) {
+      if (!mounted) return;
       setState(() {
         _step();
       });
