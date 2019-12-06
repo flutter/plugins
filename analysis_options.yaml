@@ -3,7 +3,7 @@ analyzer:
   exclude:
     # Ignore generated files
     - '**/*.g.dart'
-    - 'lib/src/generated/*.dart'
+    - '**/lib/src/generated/*.dart'
   enable-experiment:
     - extension-methods
 linter:
