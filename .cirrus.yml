@@ -58,12 +58,15 @@ task:
         - ./script/incremental_build.sh format --travis --clang-format=clang-format-7
     - name: test
         matrix:
-          - environment:
-              CHANNEL: "master"
-          - environment:
-              CHANNEL: "stable"
+          - name: test-master 
             << : *CACHE_STABLE_LINUX_TEMPLATE
+            environment:
+              CHANNEL: "master"
+          - name: test-stable 
             << : *FLUTTER_SKIP_WEB_TEMPLATE
+            environment:
+              CHANNEL: "stable"
+            
       test_script:
         - ./script/incremental_build.sh test
     - name: analyze
@@ -85,12 +88,14 @@ task:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
         matrix:
-          - environment:
-              CHANNEL: "master"
-          - environment:
-              CHANNEL: "stable"
+          - name: test-master 
             << : *CACHE_STABLE_LINUX_TEMPLATE
+            environment:
+              CHANNEL: "master"
+          - name: test-stable 
             << : *FLUTTER_SKIP_WEB_TEMPLATE
+            environment:
+              CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
       script:
@@ -158,12 +163,14 @@ task:
           PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
-          - environment:
-              CHANNEL: "master"
-          - environment:
-              CHANNEL: "stable"
+          - name: test-master 
             << : *CACHE_STABLE_MACOS_TEMPLATE
+            environment:
+              CHANNEL: "master"
+          - name: test-stable 
             << : *FLUTTER_SKIP_WEB_TEMPLATE
+            environment:
+              CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       script:
         - date
