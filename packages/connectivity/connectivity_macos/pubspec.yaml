@@ -1,0 +1,19 @@
+name: connectivity_macos
+description: macOS implementation of the connectivity plugin.
+version: 0.0.1
+author: Flutter Team <flutter-dev@googlegroups.com>
+homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity/connectivity_macos
+
+flutter:
+  plugin:
+    platforms:
+      macos:
+        pluginClass: ConnectivityPlugin
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.9.1+hotfix.6 <2.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
