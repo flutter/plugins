@@ -1,4 +1,6 @@
-flutter_template: &FLUTTER_TEMPLATE
+flutter_master_template: &FLUTTER_MASTER_TEMPLATE
+  environment:
+    CHANNEL: "master"
   upgrade_script:
     - which flutter
     - flutter channel $CHANNEL
@@ -11,15 +13,20 @@ flutter_template: &FLUTTER_TEMPLATE
     - pub global activate flutter_plugin_tools
     - date
 
-flutter_master_template: &FLUTTER_MASTER_TEMPLATE
-  << : *FLUTTER_TEMPLATE
-  environment:
-    CHANNEL: "master"
-
 flutter_stable_template: &FLUTTER_STABLE_TEMPLATE
-  << : *FLUTTER_TEMPLATE
   environment:
     CHANNEL: "stable"
+  upgrade_script:
+    - which flutter
+    - flutter channel $CHANNEL
+    - date
+    - flutter upgrade
+    - git fetch origin master
+    - date
+  activate_script:
+    - date
+    - pub global activate flutter_plugin_tools
+    - date
 
 flutter_stable_skip_web_template: &FLUTTER_STABLE_SKIP_WEB_TEMPLATE
   << : *FLUTTER_STABLE_TEMPLATE
@@ -98,6 +105,7 @@ task:
         - ./script/build_all_plugins_app.sh apk
         - date
       depends_on:
+        - analyze
         - publishable
     - name: build-apks+java-test+firebase-test-lab
       environment:
@@ -134,6 +142,7 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
         - date
       depends_on:
+        - analyze
         - publishable
 
 task:
@@ -181,4 +190,5 @@ task:
         - ./script/incremental_build.sh drive-examples
         - date
   depends_on:
+    - analyze
     - publishable
