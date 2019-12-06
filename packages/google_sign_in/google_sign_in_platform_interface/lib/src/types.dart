@@ -4,15 +4,37 @@
 
 import 'package:quiver/core.dart';
 
-enum SignInOption { standard, games }
+/// Holds default configuration options to use when signing in.
+enum SignInOption {
+  /// Default configuration. Provides stable user ID and basic profile information.
+  standard,
 
+  /// Recommended configuration for Games sign in.
+  games
+}
+
+/// Data struct representing information about the signed in user.
 class GoogleSignInUserData {
+  /// Uses the given data to construct an instance. Any of these parameters
+  /// could be null.
   GoogleSignInUserData(
       {this.displayName, this.email, this.id, this.photoUrl, this.idToken});
+
+  /// The human readable display name of the signed in user.
   String displayName;
+
+  /// The email address of the signed in user. This may change over time and is
+  /// not a unique identifier.
   String email;
+
+  /// A token uniquely identifying the account.
   String id;
+
+  /// A URL to the profile picture of the user.
   String photoUrl;
+
+  /// An token that can be sent to your own server to verify the authentication
+  /// data.
   String idToken;
 
   @override

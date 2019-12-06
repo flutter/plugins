@@ -17,7 +17,6 @@ CUSTOM_ANALYSIS_PLUGINS=(
   "in_app_purchase"
   "camera"
   "google_sign_in/google_sign_in"
-  "google_sign_in/google_sign_in_platform_interface"
   "google_sign_in/google_sign_in_web"
 )
 # Comma-separated string of the list above
