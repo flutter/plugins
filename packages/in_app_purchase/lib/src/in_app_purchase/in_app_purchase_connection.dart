@@ -190,7 +190,7 @@ abstract class InAppPurchaseConnection {
   ///
   /// The optional parameter `developerPayload` only works on Android.
   Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase,
-      {String developerPayload = null});
+      {String developerPayload});
 
   /// (Play only) Mark that the user has consumed a product.
   ///
@@ -202,7 +202,7 @@ abstract class InAppPurchaseConnection {
   ///
   /// This throws an [UnsupportedError] on iOS.
   Future<BillingResultWrapper> consumePurchase(PurchaseDetails purchase,
-      {String developerPayload = null});
+      {String developerPayload});
 
   /// Query all previous purchases.
   ///
