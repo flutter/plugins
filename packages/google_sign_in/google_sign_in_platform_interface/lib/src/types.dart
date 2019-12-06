@@ -54,9 +54,15 @@ class GoogleSignInUserData {
   }
 }
 
+/// Holds authentication data after sign in.
 class GoogleSignInTokenData {
+  /// Either or both parameters may be null.
   GoogleSignInTokenData({this.idToken, this.accessToken});
+
+  /// An OpenID Connect ID token for the authenticated user.
   String idToken;
+
+  /// The OAuth2 access token used to access Google services.
   String accessToken;
 
   @override
