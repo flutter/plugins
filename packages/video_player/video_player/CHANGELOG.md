@@ -1,3 +1,8 @@
+## 0.10.5
+
+* Support web by default.
+* Use the new plugins pubspec schema.
+
 ## 0.10.4+1
 
 * Fix pedantic lints. This fixes some potential race conditions in cases where
