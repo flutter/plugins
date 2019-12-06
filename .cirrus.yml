@@ -1,14 +1,13 @@
-pub_cache:
-  folder: $HOME/.pub-cache
-  fingerprint_script: echo $OS; grep -r --include=pubspec.yaml 'PUBSPEC CHECKSUM' "$CIRRUS_WORKING_DIR"
-fetch_plugins_script:
-  - date
-  - git fetch origin master
-  - date
-activate_script: 
-  - date
-  - pub global activate flutter_plugin_tools
-  - date
+base_task_template: &BASE_TASK_TEMPLATE
+  pub_cache:
+    folder: $HOME/.pub-cache
+    fingerprint_script: echo $OS; grep -r --include=pubspec.yaml 'PUBSPEC CHECKSUM' "$CIRRUS_WORKING_DIR"
+  upgrade_script:
+    - date
+    - git fetch origin master
+    - date
+    - pub global activate flutter_plugin_tools
+    - date
 
 flutter_master_template: &FLUTTER_MASTER_TEMPLATE
   environment:
@@ -42,6 +41,7 @@ task:
     dockerfile: .ci/Dockerfile
     cpu: 8
     memory: 16G
+  << : *BASE_TASK_TEMPLATE
   matrix:
     - name: publishable
       << : *FLUTTER_STABLE_TEMPLATE
@@ -130,6 +130,7 @@ task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
     image: mojave-flutter
+  << : *BASE_TASK_TEMPLATE
   environment:
     COCOAPODS_DISABLE_STATS: true
     PATH: $PATH:/usr/local/bin
