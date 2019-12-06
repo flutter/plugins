@@ -38,7 +38,7 @@ class ImageResizer {
       return null;
     }
     boolean shouldScale =
-            maxWidth != null || maxHeight != null || isImageQualityValid(imageQuality);
+        maxWidth != null || maxHeight != null || isImageQualityValid(imageQuality);
     if (!shouldScale) {
       return imagePath;
     }
