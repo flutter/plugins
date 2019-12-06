@@ -1,7 +1,4 @@
 base_task_template: &BASE_TASK_TEMPLATE
-  pub_cache:
-    folder: $HOME/.pub-cache
-    fingerprint_script: echo $OS; grep -r --include=pubspec.yaml 'PUBSPEC CHECKSUM' .
   upgrade_script:
     - date
     - git fetch origin master
@@ -22,6 +19,9 @@ flutter_master_template: &FLUTTER_MASTER_TEMPLATE
 flutter_stable_template: &FLUTTER_STABLE_TEMPLATE
   environment:
     CHANNEL: "stable"
+  pub_cache:
+    folder: $HOME/.pub-cache
+    fingerprint_script: echo $OS; grep -r --include=pubspec.yaml "\:.*[0-9]\+"\. . | grep -v version | grep -v flutter | xargs
   setup_script:
     - date
     - flutter channel $CHANNEL
