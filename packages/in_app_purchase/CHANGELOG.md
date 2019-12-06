@@ -1,6 +1,8 @@
 ## 0.3.0
 
 * Migrate the `Google Play Library` to 2.0.3.
+     * **[Breaking Change]:**  Added `enablePendingPurchases` in `InAppPurchaseConnection`. The application has
+       to call this method when initializing the `InAppPurchaseConnection` on Android.
      * Introduce a new class `BillingResultWrapper` which contains a detailed result of a BillingClient operation.
           * **[Breaking Change]:**  All the BillingClient methods that previously return a `BillingResponse` now return a `BillingResultWrapper`, including: `launchBillingFlow`, `startConnection` and `consumeAsync`.
           * **[Breaking Change]:**  The `SkuDetailsResponseWrapper` now contains a `billingResult` field in place of `billingResponse` field.

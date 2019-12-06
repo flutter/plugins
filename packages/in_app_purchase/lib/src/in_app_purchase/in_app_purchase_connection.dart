@@ -60,8 +60,25 @@ abstract class InAppPurchaseConnection {
     return _purchaseUpdatedStream;
   }
 
+  /// Whether pending purchase is enabled.
+  ///
+  /// See also [enablePendingPurchases] for more on pending purchases.
+  static bool get enablePendingPurchase => _enablePendingPurchase;
+  static bool _enablePendingPurchase = false;
+
   /// Returns true if the payment platform is ready and available.
   Future<bool> isAvailable();
+
+  /// Enable the [InAppPurchaseConnection] to handle pending purchases.
+  ///
+  /// Android Only: This method is required to be called when initialize the application.
+  /// It is to acknowledge your application has been updated to support pending purchases.
+  /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
+  /// for more details.
+  /// Failure to call this method before access [instance] will throw an exception.
+  ///
+  /// It is an no-op on iOS.
+  static void enablePendingPurchases(){_enablePendingPurchase = true;}
 
   /// Query product details for the given set of IDs.
   ///

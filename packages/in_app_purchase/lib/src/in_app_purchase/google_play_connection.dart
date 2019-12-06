@@ -24,6 +24,9 @@ class GooglePlayConnection
           _purchaseUpdatedController
               .add(await _getPurchaseDetailsFromResult(resultWrapper));
         }) {
+    if (InAppPurchaseConnection.enablePendingPurchase) {
+      billingClient.enablePendingPurchases();
+    }
     _readyFuture = _connect();
     WidgetsBinding.instance.addObserver(this);
     _purchaseUpdatedController = StreamController.broadcast();

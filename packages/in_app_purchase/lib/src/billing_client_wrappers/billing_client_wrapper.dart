@@ -49,6 +49,9 @@ typedef void PurchasesUpdatedListener(PurchasesResultWrapper purchasesResult);
 /// some minor changes to account for language differences. Callbacks have been
 /// converted to futures where appropriate.
 class BillingClient {
+
+  bool _enablePendingPurchases = false;
+
   BillingClient(PurchasesUpdatedListener onPurchasesUpdated) {
     assert(onPurchasesUpdated != null);
     channel.setMethodCallHandler(callHandler);
@@ -71,6 +74,17 @@ class BillingClient {
   Future<bool> isReady() async =>
       await channel.invokeMethod<bool>('BillingClient#isReady()');
 
+  /// Enable the [BillingClientWrapper] to handle pending purchases.
+  ///
+  /// This method is required to be called when initialize the application.
+  /// It is to acknowledge your application has been updated to support pending purchases.
+  /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
+  /// for more details.
+  /// Failure to call this method before any other method in the [startConnection] will throw an exception.
+  void enablePendingPurchases() {
+    _enablePendingPurchases = true;
+  }
+
   /// Calls
   /// [`BillingClient#startConnection(BillingClientStateListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#startconnection)
   /// to create and connect a `BillingClient` instance.
@@ -84,13 +98,15 @@ class BillingClient {
   Future<BillingResultWrapper> startConnection(
       {@required
           OnBillingServiceDisconnected onBillingServiceDisconnected}) async {
+    assert(_enablePendingPurchases, 'enablePendingPurchases() must be called before calling startConnection');
     List<Function> disconnectCallbacks =
         _callbacks[_kOnBillingServiceDisconnected] ??= [];
     disconnectCallbacks.add(onBillingServiceDisconnected);
     return BillingResultWrapper.fromJson(await channel
         .invokeMapMethod<String, dynamic>(
             "BillingClient#startConnection(BillingClientStateListener)",
-            <String, dynamic>{'handle': disconnectCallbacks.length - 1}));
+            <String, dynamic>{'handle': disconnectCallbacks.length - 1,
+            'enablePendingPurchases': _enablePendingPurchases}));
   }
 
   /// Calls

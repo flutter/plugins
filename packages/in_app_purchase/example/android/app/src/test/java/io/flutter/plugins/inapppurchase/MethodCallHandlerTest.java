@@ -76,8 +76,7 @@ public class MethodCallHandlerTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-
-    factory = (context, channel) -> mockBillingClient;
+    factory = (context, channel, true) -> mockBillingClient;
     methodChannelHandler = new MethodCallHandlerImpl(activity, context, mockMethodChannel, factory);
   }
 
