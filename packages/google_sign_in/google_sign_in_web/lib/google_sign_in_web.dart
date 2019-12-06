@@ -19,11 +19,17 @@ import 'src/utils.dart' show gapiUserToPluginUserData;
 const String _kClientIdMetaSelector = 'meta[name=google-signin-client_id]';
 const String _kClientIdAttributeName = 'content';
 
+/// This is only exposed for testing. It shouldn't be accessed by users of the
+/// plugin as it could break at any point.
 @visibleForTesting
 String gapiUrl = 'https://apis.google.com/js/platform.js';
 
-/// Implementation of the google_sign_in plugin for Web
+/// Implementation of the google_sign_in plugin for Web.
 class GoogleSignInPlugin extends GoogleSignInPlatform {
+  /// Constructs the plugin immediately and begins initializing it in the
+  /// background.
+  ///
+  /// The plugin is completely initialized when [initialized] completed.
   GoogleSignInPlugin() {
     _autoDetectedClientId = html
         .querySelector(_kClientIdMetaSelector)
@@ -34,12 +40,15 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
   Future<void> _isGapiInitialized;
 
+  /// This is only exposed for testing. It shouldn't be accessed by users of the
+  /// plugin as it could break at any point.
   @visibleForTesting
   Future<void> get initialized => _isGapiInitialized;
 
   String _autoDetectedClientId;
   FutureOr<auth2.GoogleUser> _lastSeenUser;
 
+  /// Factory method that initializes the plugin with [GoogleSignInPlatform].
   static void registerWith(Registrar registrar) {
     GoogleSignInPlatform.instance = GoogleSignInPlugin();
   }
