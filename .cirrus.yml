@@ -86,7 +86,6 @@ task:
         - ./script/build_all_plugins_app.sh apk
         - date
       depends_on:
-        - format
         - publishable
     - name: build-apks+java-test+firebase-test-lab
       environment:
@@ -122,7 +121,6 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
         - date
       depends_on:
-        - format
         - publishable
 
 task:
@@ -167,5 +165,4 @@ task:
         - ./script/incremental_build.sh drive-examples
         - date
   depends_on:
-    - format
     - publishable
