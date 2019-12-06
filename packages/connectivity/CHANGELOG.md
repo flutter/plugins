@@ -1,3 +1,7 @@
+## 0.4.5+8
+
+* Update documentation to explain when connectivity updates are received on Android.
+
 ## 0.4.5+7
 
 * Fix unawaited futures in the example app and tests.

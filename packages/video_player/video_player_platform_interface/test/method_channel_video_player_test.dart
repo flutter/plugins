@@ -233,7 +233,7 @@ void main() {
             // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
             // available on all the versions of Flutter that we test.
             // ignore: deprecated_member_use
-            defaultBinaryMessenger.handlePlatformMessage(
+            await defaultBinaryMessenger.handlePlatformMessage(
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
@@ -248,7 +248,7 @@ void main() {
             // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
             // available on all the versions of Flutter that we test.
             // ignore: deprecated_member_use
-            defaultBinaryMessenger.handlePlatformMessage(
+            await defaultBinaryMessenger.handlePlatformMessage(
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
@@ -260,7 +260,7 @@ void main() {
             // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
             // available on all the versions of Flutter that we test.
             // ignore: deprecated_member_use
-            defaultBinaryMessenger.handlePlatformMessage(
+            await defaultBinaryMessenger.handlePlatformMessage(
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
@@ -276,7 +276,7 @@ void main() {
             // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
             // available on all the versions of Flutter that we test.
             // ignore: deprecated_member_use
-            defaultBinaryMessenger.handlePlatformMessage(
+            await defaultBinaryMessenger.handlePlatformMessage(
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
@@ -288,7 +288,7 @@ void main() {
             // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
             // available on all the versions of Flutter that we test.
             // ignore: deprecated_member_use
-            defaultBinaryMessenger.handlePlatformMessage(
+            await defaultBinaryMessenger.handlePlatformMessage(
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{

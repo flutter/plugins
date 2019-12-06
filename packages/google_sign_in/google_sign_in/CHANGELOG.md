@@ -1,6 +1,10 @@
-## 4.0.15
+## 4.0.16
 
 * Make plugin example meet naming convention.
+
+## 4.0.15
+
+* Export SignInOption from interface since it is used in the frontend as a type.
 
 ## 4.0.14
 
