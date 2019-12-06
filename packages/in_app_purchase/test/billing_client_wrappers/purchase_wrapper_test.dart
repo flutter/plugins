@@ -22,6 +22,20 @@ final PurchaseWrapper dummyPurchase = PurchaseWrapper(
   purchaseState: PurchaseStateWrapper.purchased,
 );
 
+final PurchaseWrapper dummyUnacknowledgedPurchase = PurchaseWrapper(
+  orderId: 'orderId',
+  packageName: 'packageName',
+  purchaseTime: 0,
+  signature: 'signature',
+  sku: 'sku',
+  purchaseToken: 'purchaseToken',
+  isAutoRenewing: false,
+  originalJson: '',
+  developerPayload: 'dummy payload',
+  isAcknowledged: false,
+  purchaseState: PurchaseStateWrapper.purchased,
+);
+
 final PurchaseHistoryRecordWrapper dummyPurchaseHistoryRecord =
     PurchaseHistoryRecordWrapper(
   purchaseTime: 0,

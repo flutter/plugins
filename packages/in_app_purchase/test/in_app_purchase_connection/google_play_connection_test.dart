@@ -620,7 +620,7 @@ void main() {
   });
 
   group('complete purchase', () {
-    const String consumeMethodName =
+    const String completeMethodName =
         'BillingClient#(AcknowledgePurchaseParams params, (AcknowledgePurchaseParams, AcknowledgePurchaseResponseListener)';
     test('complete purchase success', () async {
       final BillingResponse expectedCode = BillingResponse.ok;
@@ -628,11 +628,11 @@ void main() {
       final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: expectedCode, debugMessage: debugMessage);
       stubPlatform.addResponse(
-        name: consumeMethodName,
+        name: completeMethodName,
         value: buildBillingResultMap(expectedBillingResult),
       );
       PurchaseDetails purchaseDetails =
-          PurchaseDetails.fromPurchase(dummyPurchase);
+          PurchaseDetails.fromPurchase(dummyUnacknowledgedPurchase);
       Completer completer = Completer();
       purchaseDetails.status = PurchaseStatus.purchased;
       if (purchaseDetails.pendingCompletePurchase) {
@@ -640,6 +640,10 @@ void main() {
             await GooglePlayConnection.instance.completePurchase(
                 purchaseDetails,
                 developerPayload: 'dummy payload');
+        print('pending ${billingResultWrapper.responseCode}');
+        print('expectedBillingResult ${expectedBillingResult.responseCode}');
+        print('pending ${billingResultWrapper.debugMessage}');
+        print('expectedBillingResult ${expectedBillingResult.debugMessage}');
         expect(billingResultWrapper, equals(expectedBillingResult));
         completer.complete(billingResultWrapper);
       }
