@@ -22,6 +22,15 @@ cache_stable_macos_template: &CACHE_STABLE_MACOS_TEMPLATE
   flutter_artifacts_macos_cache:
     folder: $FLUTTER_HOME/bin/cache/artifacts
 
+pub_linux_cache:
+  folder: $HOME/.pub-cache
+  fingerprint_script: echo $CIRRUS_OS
+  only_if: $CHANNEL == "stable"
+
+flutter_pkg_linux_cache:
+  folder: $FLUTTER_HOME/bin/cache/pkg
+flutter_artifacts_linux_cache:
+  folder: $FLUTTER_HOME/bin/cache/artifacts
 task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   container:
@@ -59,11 +68,9 @@ task:
     - name: test
         matrix:
           - name: test-master 
-            << : *CACHE_STABLE_LINUX_TEMPLATE
             environment:
               CHANNEL: "master"
           - name: test-stable 
-            << : *FLUTTER_SKIP_WEB_TEMPLATE
             environment:
               CHANNEL: "stable"
             
@@ -89,11 +96,9 @@ task:
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
         matrix:
           - name: test-master 
-            << : *CACHE_STABLE_LINUX_TEMPLATE
             environment:
               CHANNEL: "master"
           - name: test-stable 
-            << : *FLUTTER_SKIP_WEB_TEMPLATE
             environment:
               CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
@@ -164,11 +169,9 @@ task:
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           - name: test-master 
-            << : *CACHE_STABLE_MACOS_TEMPLATE
             environment:
               CHANNEL: "master"
           - name: test-stable 
-            << : *FLUTTER_SKIP_WEB_TEMPLATE
             environment:
               CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
