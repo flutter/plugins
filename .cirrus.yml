@@ -128,7 +128,6 @@ task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
     image: mojave-flutter
-  << : *BASE_TASK_TEMPLATE
   environment:
     COCOAPODS_DISABLE_STATS: true
     PATH: $PATH:/usr/local/bin
