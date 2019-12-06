@@ -22,10 +22,6 @@ cache_stable_macos_template: &CACHE_STABLE_MACOS_TEMPLATE
   flutter_artifacts_macos_cache:
     folder: $FLUTTER_HOME/bin/cache/artifacts
 
-pub_linux_cache:
-  folder: $HOME/.pub-cache
-  fingerprint_script: echo $CIRRUS_OS
-  only_if: $CHANNEL == "stable"
 
 flutter_pkg_linux_cache:
   folder: $FLUTTER_HOME/bin/cache/pkg
@@ -40,6 +36,10 @@ task:
   environment:
     PATH: $PATH:$HOME/.pub-cache/bin
     CHANNEL: "stable" # Default to flutter stable to leverage caching.
+  pub_cache:
+    folder: $HOME/.pub-cache
+    fingerprint_script: echo $CIRRUS_OS
+    only_if: $CHANNEL == "stable"
   upgrade_script:
     - which flutter
     - flutter channel $CHANNEL
@@ -130,6 +130,10 @@ task:
     COCOAPODS_DISABLE_STATS: true
     PATH: $PATH:/usr/local/bin:$HOME/.pub-cache/bin
     CHANNEL: "stable" # Default to flutter stable to leverage caching.
+  pub_cache:
+    folder: $HOME/.pub-cache
+    fingerprint_script: echo $CIRRUS_OS
+    only_if: $CHANNEL == "stable"
   upgrade_script:
     - which flutter
     - flutter channel $CHANNEL
