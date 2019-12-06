@@ -12,8 +12,6 @@ dev_dependencies:
     sdk: flutter
   test: any
   e2e: ^0.2.0
-  espresso:
-    path: ../../../espresso
 
 flutter:
   uses-material-design: true
