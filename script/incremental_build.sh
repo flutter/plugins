@@ -26,7 +26,7 @@ readonly CUSTOM_FLAG=$(IFS=, ; echo "${CUSTOM_ANALYSIS_PLUGINS[*]}")
 ACTIONS=("$@")
 if [[ "${#ACTIONS[@]}" == 0 ]]; then
   ACTIONS=("analyze" "--custom-analysis" "$CUSTOM_FLAG" "test" "java-test")
-elif [ "${ACTIONS[@]}" == "analyze" ]; then
+elif [[ "${ACTIONS[@]}" == "analyze" ]]; then
   ACTIONS=("analyze" "--custom-analysis" "$CUSTOM_FLAG")
 fi
 
