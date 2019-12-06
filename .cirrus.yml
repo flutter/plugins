@@ -21,7 +21,7 @@ flutter_stable_template: &FLUTTER_STABLE_TEMPLATE
     CHANNEL: "stable"
   pub_cache:
     folder: $HOME/.pub-cache
-    fingerprint_script: echo $OS; grep -r --include=pubspec.yaml "\:.*[0-9]\+"\. . | grep -v version | grep -v flutter | xargs
+    fingerprint_script: echo $OS; grep -r --include=pubspec.yaml '\:.*[0-9]\+\.' . | grep -v 'version\|flutter\|sdk'| xargs
   setup_script:
     - date
     - flutter channel $CHANNEL
