@@ -1,3 +1,7 @@
+## 0.5.21+14
+
+* Adds support for toggling 3D buildings.
+
 ## 0.5.21+13
 
 * Add documentation.
