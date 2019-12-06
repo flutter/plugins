@@ -1,3 +1,7 @@
+## 0.3.18
+
+* Add support for onPageStarted event.
+
 ## 0.3.17
 
 * Fix pedantic lint errors. Added missing documentation and awaited some futures
