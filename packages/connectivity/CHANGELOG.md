@@ -1,3 +1,7 @@
+## 0.4.6
+
+* Add macOS support.
+
 ## 0.4.5+8
 
 * Update documentation to explain when connectivity updates are received on Android.
