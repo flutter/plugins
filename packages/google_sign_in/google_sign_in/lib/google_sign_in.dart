@@ -10,6 +10,8 @@ import 'package:google_sign_in_platform_interface/google_sign_in_platform_interf
 
 import 'src/common.dart';
 
+export 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart'
+    show SignInOption;
 export 'src/common.dart';
 export 'widgets.dart';
 
