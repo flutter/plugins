@@ -1,7 +1,7 @@
 base_task_template: &BASE_TASK_TEMPLATE
   pub_cache:
     folder: $HOME/.pub-cache
-    fingerprint_script: echo $OS; grep -r --include=pubspec.yaml 'PUBSPEC CHECKSUM' "$CIRRUS_WORKING_DIR"
+    fingerprint_script: echo $OS; grep -r --include=pubspec.yaml 'PUBSPEC CHECKSUM' .
   upgrade_script:
     - date
     - git fetch origin master
