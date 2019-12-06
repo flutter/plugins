@@ -48,7 +48,7 @@ void main() {
 
   group('Successful .init, then', () {
     setUp(() async {
-      plugin.init(
+      await plugin.init(
         hostedDomain: 'foo',
         scopes: <String>['some', 'scope'],
         clientId: '1234',
