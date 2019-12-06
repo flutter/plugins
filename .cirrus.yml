@@ -1,9 +1,10 @@
 flutter_template: &FLUTTER_TEMPLATE
   upgrade_script:
-    - date
     - which flutter
     - flutter channel $CHANNEL
+    - date
     - flutter upgrade
+    - date
     - git fetch origin master
     - pub global activate flutter_plugin_tools
     - date
@@ -16,15 +17,6 @@ flutter_master_template: &FLUTTER_MASTER_TEMPLATE
 flutter_stable_template: &FLUTTER_STABLE_TEMPLATE
   environment:
     CHANNEL: "stable"
-  pub_cache:
-    folder: $HOME/.pub-cache
-    fingerprint_script: echo $CIRRUS_OS
-  flutter_pkg_cache:
-    folder: $FLUTTER_HOME/bin/cache/pkg
-    fingerprint_script: echo $CIRRUS_OS
-  flutter_artifacts_cache:
-    folder: $FLUTTER_HOME/bin/cache/artifacts
-    fingerprint_script: echo $CIRRUS_OS
   << : *FLUTTER_TEMPLATE
 
 flutter_stable_skip_web_template: &FLUTTER_STABLE_SKIP_WEB_TEMPLATE
@@ -48,6 +40,15 @@ task:
         - ./script/check_publish.sh
         - date
     - name: format
+      pub_cache:
+        folder: $HOME/.pub-cache
+        fingerprint_script: echo $CIRRUS_OS
+      flutter_pkg_cache:
+        folder: $FLUTTER_HOME/bin/cache/pkg
+        fingerprint_script: echo $CIRRUS_OS; cat $FLUTTER_HOME/bin/internal/*.version
+      flutter_artifacts_cache:
+        folder: $FLUTTER_HOME/bin/cache/artifacts
+        fingerprint_script: echo $CIRRUS_OS; cat $FLUTTER_HOME/bin/internal/*.version
       << : *FLUTTER_STABLE_TEMPLATE
       install_script:
         - date
