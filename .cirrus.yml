@@ -1,35 +1,4 @@
-flutter_master_template: &FLUTTER_MASTER_TEMPLATE
-  environment:
-    CHANNEL: "master"
-  upgrade_script:
-    - which flutter
-    - flutter channel $CHANNEL
-    - date
-    - flutter upgrade
-    - git fetch origin master
-    - date
-  activate_script:
-    - date
-    - pub global activate flutter_plugin_tools
-    - date
-
-flutter_stable_template: &FLUTTER_STABLE_TEMPLATE
-  environment:
-    CHANNEL: "stable"
-  upgrade_script:
-    - which flutter
-    - flutter channel $CHANNEL
-    - date
-    - flutter upgrade
-    - git fetch origin master
-    - date
-  activate_script:
-    - date
-    - pub global activate flutter_plugin_tools
-    - date
-
-flutter_stable_skip_web_template: &FLUTTER_STABLE_SKIP_WEB_TEMPLATE
-  << : *FLUTTER_STABLE_TEMPLATE
+flutter_skip_web_template: &FLUTTER_SKIP_WEB_TEMPLATE
   remove_web_plugins_script:
     # TODO(jackson): Allow web plugins once supported on stable
     # https://github.com/flutter/flutter/issues/42864
@@ -61,16 +30,23 @@ task:
     memory: 16G
   environment:
     PATH: $PATH:$HOME/.pub-cache/bin
+    CHANNEL: "stable" # Default to flutter stable to leverage caching.
+  upgrade_script:
+    - which flutter
+    - flutter channel $CHANNEL
+    - date
+    - flutter upgrade
+    - git fetch origin master
+    - date
+  activate_script: pub global activate flutter_plugin_tools
   matrix:
     - name: publishable
       << : *CACHE_STABLE_LINUX_TEMPLATE
-      << : *FLUTTER_STABLE_TEMPLATE
       script:
-        - date
         - ./script/check_publish.sh
-        - date
     - name: format
-      << : *FLUTTER_MASTER_TEMPLATE
+      environment:
+         CHANNEL: "master"
       install_script:
         - date
         - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
@@ -79,33 +55,29 @@ task:
         - sudo apt-get install -y --allow-unauthenticated clang-format-7
         - date
       format_script:
-        - date
         - ./script/incremental_build.sh format --travis --clang-format=clang-format-7
-        - date
     - name: test
-      matrix:
-        - << : *FLUTTER_MASTER_TEMPLATE
-        - << : *CACHE_STABLE_LINUX_TEMPLATE
-          << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
+        matrix:
+          - environment:
+              CHANNEL: "master"
+          - environment:
+              CHANNEL: "stable"
+            << : *CACHE_STABLE_LINUX_TEMPLATE
+            << : *FLUTTER_SKIP_WEB_TEMPLATE
       test_script:
-        - date
         - ./script/incremental_build.sh test
-        - date
     - name: analyze
-      << : *FLUTTER_MASTER_TEMPLATE
+      environment:
+         CHANNEL: "master"
       script:
-        - date
         - ./script/incremental_build.sh analyze
-        - date        
     - name: build_all_plugins_apk
       << : *CACHE_STABLE_LINUX_TEMPLATE
-      << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
+      << : *FLUTTER_SKIP_WEB_TEMPLATE
       script:
-        - date
         - ./script/build_all_plugins_app.sh apk
-        - date
       depends_on:
-        - analyze
+        - format
         - publishable
     - name: build-apks+java-test+firebase-test-lab
       environment:
@@ -113,9 +85,12 @@ task:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
         matrix:
-          - << : *FLUTTER_MASTER_TEMPLATE
-          - << : *CACHE_STABLE_LINUX_TEMPLATE
-            << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
+          - environment:
+              CHANNEL: "master"
+          - environment:
+              CHANNEL: "stable"
+            << : *CACHE_STABLE_LINUX_TEMPLATE
+            << : *FLUTTER_SKIP_WEB_TEMPLATE
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
       script:
@@ -142,7 +117,7 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
         - date
       depends_on:
-        - analyze
+        - format
         - publishable
 
 task:
@@ -152,26 +127,29 @@ task:
   environment:
     COCOAPODS_DISABLE_STATS: true
     PATH: $PATH:/usr/local/bin:$HOME/.pub-cache/bin
-  create_simulator_script:
+    CHANNEL: "stable" # Default to flutter stable to leverage caching.
+  upgrade_script:
+    - which flutter
+    - flutter channel $CHANNEL
     - date
+    - flutter upgrade
+    - git fetch origin master
+    - date
+  activate_script: pub global activate flutter_plugin_tools
+  create_simulator_script:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-2 | xargs xcrun simctl boot
-    - date
   matrix:
     - name: build_all_plugins_ipa
       << : *CACHE_STABLE_MACOS_TEMPLATE
-      << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
+      << : *FLUTTER_SKIP_WEB_TEMPLATE
       script:
-        - date
         - ./script/build_all_plugins_app.sh ios --no-codesign
-        - date
     - name: lint_darwin_plugins
       << : *CACHE_STABLE_MACOS_TEMPLATE
-      << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
+      << : *FLUTTER_SKIP_WEB_TEMPLATE
       script:
-        - date
         - ./script/lint_darwin_plugins.sh
-        - date
     - name: build-ipas+drive-examples
       environment:
         matrix:
@@ -180,15 +158,19 @@ task:
           PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
-          - << : *FLUTTER_MASTER_TEMPLATE
-          - << : *CACHE_STABLE_MACOS_TEMPLATE
-            << : *FLUTTER_STABLE_SKIP_WEB_TEMPLATE
+          - environment:
+              CHANNEL: "master"
+          - environment:
+              CHANNEL: "stable"
+            << : *CACHE_STABLE_MACOS_TEMPLATE
+            << : *FLUTTER_SKIP_WEB_TEMPLATE
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       script:
         - date
         - ./script/incremental_build.sh build-examples --ipa
+        - date
         - ./script/incremental_build.sh drive-examples
         - date
   depends_on:
-    - analyze
+    - format
     - publishable
