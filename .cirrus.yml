@@ -23,9 +23,6 @@ flutter_master_template: &FLUTTER_MASTER_TEMPLATE
 flutter_stable_template: &FLUTTER_STABLE_TEMPLATE
   environment:
     CHANNEL: "stable"
-  flutter_pkg_cache:
-    folder: $FLUTTER_HOME/bin/cache/pkg
-    fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
   setup_script:
     - date
     - flutter channel $CHANNEL
