@@ -9,8 +9,8 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:video_player/video_player.dart';
 
 /// Controls play and pause of [controller].
 ///
@@ -198,13 +198,13 @@ abstract class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
   /// by this method.
   void initState() {
     super.initState();
-    controller = createVideoPlayerController();
+    controller = VideoPlayerController();
     controller.addListener(() {
       if (controller.value.hasError) {
         print(controller.value.errorDescription);
       }
     });
-    controller.initialize();
+    setDataSource();
     controller.setLooping(true);
     controller.play();
   }
@@ -225,20 +225,20 @@ abstract class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
     return widget.childBuilder(context, controller);
   }
 
-  VideoPlayerController createVideoPlayerController();
+  Future<void> setDataSource();
 }
 
 class _NetworkPlayerLifeCycleState extends _PlayerLifeCycleState {
   @override
-  VideoPlayerController createVideoPlayerController() {
-    return VideoPlayerController.network(widget.dataSource);
+  Future<void> setDataSource() {
+    return controller.setNetworkDataSource(widget.dataSource);
   }
 }
 
 class _AssetPlayerLifeCycleState extends _PlayerLifeCycleState {
   @override
-  VideoPlayerController createVideoPlayerController() {
-    return VideoPlayerController.asset(widget.dataSource);
+  Future<void> setDataSource() {
+    return controller.setAssetDataSource(widget.dataSource);
   }
 }
 
@@ -472,8 +472,7 @@ class _PlayerVideoAndPopPageState extends State<PlayerVideoAndPopPage> {
   void initState() {
     super.initState();
 
-    _videoPlayerController =
-        VideoPlayerController.asset('assets/Butterfly-209.mp4');
+    _videoPlayerController = VideoPlayerController();
     _videoPlayerController.addListener(() {
       if (startedPlaying && !_videoPlayerController.value.isPlaying) {
         Navigator.pop(context);
@@ -488,7 +487,7 @@ class _PlayerVideoAndPopPageState extends State<PlayerVideoAndPopPage> {
   }
 
   Future<bool> started() async {
-    await _videoPlayerController.initialize();
+    await _videoPlayerController.setAssetDataSource('assets/Butterfly-209.mp4');
     await _videoPlayerController.play();
     startedPlaying = true;
     return true;

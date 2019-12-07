@@ -66,13 +66,23 @@ abstract class VideoPlayerPlatform {
   }
 
   /// Creates an instance of a video player and returns its textureId.
-  Future<int> create(DataSource dataSource) {
+  Future<int> create() {
     throw UnimplementedError('create() has not been implemented.');
+  }
+
+  /// Set data source of video.
+  Future<void> setDataSource(int textureId, DataSource dataSource) {
+    throw UnimplementedError('setDataSource() has not been implemented.');
   }
 
   /// Returns a Stream of [VideoEventType]s.
   Stream<VideoEvent> videoEventsFor(int textureId) {
     throw UnimplementedError('videoEventsFor() has not been implemented.');
+  }
+
+  /// Returns an empty Stream only for video controller errors.
+  Stream<void> videoControllerErrorsFor(int textureId) {
+    throw UnimplementedError('videoControllerErrorsFor() has not been implemented.');
   }
 
   /// Sets the looping attribute of the video.
@@ -141,8 +151,11 @@ class DataSource {
     this.formatHint,
     this.asset,
     this.package,
-  });
+  }) : assert(uri == null || asset == null);
 
+  /// Describes the type of data source this [VideoPlayerController]
+  /// is constructed with.
+  ///
   /// The way in which the video was originally loaded.
   ///
   /// This has nothing to do with the video's file type. It's just the place
@@ -159,12 +172,52 @@ class DataSource {
   /// detection with whatever is set here.
   final VideoFormat formatHint;
 
+  /// **Android only**. String representation of a formatHint.
+  String get rawFormalHint {
+    switch (formatHint) {
+      case VideoFormat.ss:
+        return 'ss';
+      case VideoFormat.hls:
+        return 'hls';
+      case VideoFormat.dash:
+        return 'dash';
+      case VideoFormat.other:
+        return 'other';
+    }
+
+    return null;
+  }
+
   /// The name of the asset. Only set for [DataSourceType.asset] videos.
   final String asset;
 
   /// The package that the asset was loaded from. Only set for
   /// [DataSourceType.asset] videos.
   final String package;
+
+  /// The URI to the video file. This will be in different formats depending on
+  /// the [DataSourceType] of the original video.
+  String get dataSource => uri ?? asset;
+
+  /// Key to compare DataSource
+  String get key {
+    uri ?? ((package ?? "") + ":" + asset) + ":" + (formatHint ?? "");
+    String result = "";
+
+    if (uri != null && uri.isNotEmpty) {
+      result = uri;
+    } else if (package != null && package.isNotEmpty) {
+      result = "$package:$asset";
+    } else {
+      result = "$asset";
+    }
+
+    if (formatHint != null) {
+      result = "$result:${rawFormalHint}";
+    }
+
+    return result;
+  }
 }
 
 /// The way in which the video was originally loaded.
@@ -207,6 +260,7 @@ class VideoEvent {
   /// arguments can be null.
   VideoEvent({
     @required this.eventType,
+    @required this.key,
     this.duration,
     this.size,
     this.buffered,
@@ -214,6 +268,11 @@ class VideoEvent {
 
   /// The type of the event.
   final VideoEventType eventType;
+
+  /// Data source of the video.
+  ///
+  /// Used to determine which video the event belongs to.
+  final String key;
 
   /// Duration of the video.
   ///

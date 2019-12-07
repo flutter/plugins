@@ -4,11 +4,12 @@
 
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:video_player/video_player.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 class FakeController extends ValueNotifier<VideoPlayerValue>
@@ -25,28 +26,43 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   String get dataSource => '';
+
   @override
-  DataSourceType get dataSourceType => DataSourceType.file;
+  DataSourceType get _dataSourceType => DataSourceType.file;
+
   @override
-  String get package => null;
+  String get _package => null;
+
   @override
   Future<Duration> get position async => value.position;
 
   @override
   Future<void> seekTo(Duration moment) async {}
+
   @override
   Future<void> setVolume(double volume) async {}
-  @override
-  Future<void> initialize() async {}
+
   @override
   Future<void> pause() async {}
+
   @override
   Future<void> play() async {}
+
   @override
   Future<void> setLooping(bool looping) async {}
 
   @override
   VideoFormat get formatHint => null;
+
+  @override
+  Future<void> setAssetDataSource(String dataSource, {String package}) {}
+
+  @override
+  Future<void> setFileDataSource(File file) {}
+
+  @override
+  Future<void> setNetworkDataSource(String dataSource,
+      {VideoFormat formatHint}) {}
 }
 
 void main() {
@@ -91,69 +107,120 @@ void main() {
       fakeVideoPlayerPlatform = FakeVideoPlayerPlatform();
     });
 
-    group('initialize', () {
+    group('create and set data source', () {
       test('asset', () async {
-        final VideoPlayerController controller = VideoPlayerController.asset(
-          'a.avi',
-        );
-        await controller.initialize();
+        final VideoPlayerController controller = VideoPlayerController();
+        await controller.setAssetDataSource('a.avi');
 
-        expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0],
-            <String, dynamic>{
-              'asset': 'a.avi',
-              'package': null,
-            });
+        expect(fakeVideoPlayerPlatform.dataSourceDescription, <String, dynamic>{
+          'key': 'a.avi',
+          'asset': 'a.avi',
+          'package': null,
+        });
       });
 
       test('network', () async {
-        final VideoPlayerController controller = VideoPlayerController.network(
-          'https://127.0.0.1',
-        );
-        await controller.initialize();
+        final VideoPlayerController controller = VideoPlayerController();
+        await controller.setNetworkDataSource('https://127.0.0.1');
 
-        expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0],
-            <String, dynamic>{
-              'uri': 'https://127.0.0.1',
-              'formatHint': null,
-            });
+        expect(fakeVideoPlayerPlatform.dataSourceDescription, <String, dynamic>{
+          'key': 'https://127.0.0.1',
+          'uri': 'https://127.0.0.1',
+          'formatHint': null,
+        });
       });
 
       test('network with hint', () async {
-        final VideoPlayerController controller = VideoPlayerController.network(
-            'https://127.0.0.1',
-            formatHint: VideoFormat.dash);
-        await controller.initialize();
+        final VideoPlayerController controller = VideoPlayerController();
+        await controller.setNetworkDataSource(
+          'https://127.0.0.1',
+          formatHint: VideoFormat.dash,
+        );
 
-        expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0],
-            <String, dynamic>{
-              'uri': 'https://127.0.0.1',
-              'formatHint': 'dash',
-            });
+        expect(fakeVideoPlayerPlatform.dataSourceDescription, <String, dynamic>{
+          'key': 'https://127.0.0.1:dash',
+          'uri': 'https://127.0.0.1',
+          'formatHint': 'dash',
+        });
       });
 
       test('file', () async {
-        final VideoPlayerController controller =
-            VideoPlayerController.file(File('a.avi'));
-        await controller.initialize();
+        final VideoPlayerController controller = VideoPlayerController();
+        await controller.setFileDataSource(File('a.avi'));
 
-        expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0],
-            <String, dynamic>{
-              'uri': 'file://a.avi',
-            });
+        expect(fakeVideoPlayerPlatform.dataSourceDescription, <String, dynamic>{
+          'key': 'file://a.avi',
+          'uri': 'file://a.avi',
+        });
+      });
+    });
+
+    test('reuse video controller for another data source', () async {
+      final VideoPlayerController controller = VideoPlayerController();
+      await controller.setAssetDataSource('a.avi');
+
+      expect(fakeVideoPlayerPlatform.dataSourceDescription, <String, dynamic>{
+        'key': 'a.avi',
+        'asset': 'a.avi',
+        'package': null,
+      });
+
+      await controller.setNetworkDataSource('https://127.0.0.1');
+
+      expect(fakeVideoPlayerPlatform.dataSourceDescription, <String, dynamic>{
+        'key': 'https://127.0.0.1',
+        'uri': 'https://127.0.0.1',
+        'formatHint': null,
+      });
+    });
+
+    test('correctly change video controller state during setting new data source',
+        () async {
+      final VideoPlayerController controller = VideoPlayerController();
+      await controller.setAssetDataSource('a.avi');
+
+      expect(fakeVideoPlayerPlatform.dataSourceDescription, <String, dynamic>{
+        'key': 'a.avi',
+        'asset': 'a.avi',
+        'package': null,
+      });
+
+      expect(controller.value.size, Size(100, 100));
+      expect(controller.value.duration, Duration(seconds: 1));
+
+      await controller.setLooping(true);
+      await controller.setVolume(0.5);
+
+      expect(controller.value.volume, equals(0.5));
+      expect(controller.value.isLooping, true);
+
+      expect(controller.value.initialized, isTrue);
+      Future setNetworkDataSourceFuture =
+          controller.setNetworkDataSource('https://127.0.0.1');
+      expect(controller.value.initialized, isFalse);
+
+      expect(controller.value.size, isNull);
+      expect(controller.value.duration, isNull);
+      expect(controller.value.volume, equals(0.5));
+      expect(controller.value.isLooping, true);
+
+      await setNetworkDataSourceFuture;
+      expect(controller.value.initialized, isTrue);
+
+      expect(controller.value.size, Size(100, 100));
+      expect(controller.value.duration, Duration(seconds: 1));
+
+      expect(fakeVideoPlayerPlatform.dataSourceDescription, <String, dynamic>{
+        'key': 'https://127.0.0.1',
+        'uri': 'https://127.0.0.1',
+        'formatHint': null,
       });
     });
 
     test('dispose', () async {
-      final VideoPlayerController controller = VideoPlayerController.network(
-        'https://127.0.0.1',
-      );
-      expect(controller.textureId, isNull);
-      expect(await controller.position, const Duration(seconds: 0));
-      await controller.initialize();
+      final VideoPlayerController controller = VideoPlayerController();
+      await controller.setNetworkDataSource('https://127.0.0.1');
+      expect(await controller.position, Duration(seconds: 0));
 
       await controller.dispose();
 
@@ -162,10 +229,8 @@ void main() {
     });
 
     test('play', () async {
-      final VideoPlayerController controller = VideoPlayerController.network(
-        'https://127.0.0.1',
-      );
-      await controller.initialize();
+      final VideoPlayerController controller = VideoPlayerController();
+      await controller.setNetworkDataSource('https://127.0.0.1');
       expect(controller.value.isPlaying, isFalse);
       await controller.play();
 
@@ -174,10 +239,8 @@ void main() {
     });
 
     test('setLooping', () async {
-      final VideoPlayerController controller = VideoPlayerController.network(
-        'https://127.0.0.1',
-      );
-      await controller.initialize();
+      final VideoPlayerController controller = VideoPlayerController();
+      await controller.setNetworkDataSource('https://127.0.0.1');
       expect(controller.value.isLooping, isFalse);
       await controller.setLooping(true);
 
@@ -185,10 +248,8 @@ void main() {
     });
 
     test('pause', () async {
-      final VideoPlayerController controller = VideoPlayerController.network(
-        'https://127.0.0.1',
-      );
-      await controller.initialize();
+      final VideoPlayerController controller = VideoPlayerController();
+      await controller.setNetworkDataSource('https://127.0.0.1');
       await controller.play();
       expect(controller.value.isPlaying, isTrue);
 
@@ -200,10 +261,8 @@ void main() {
 
     group('seekTo', () {
       test('works', () async {
-        final VideoPlayerController controller = VideoPlayerController.network(
-          'https://127.0.0.1',
-        );
-        await controller.initialize();
+        final VideoPlayerController controller = VideoPlayerController();
+        await controller.setNetworkDataSource('https://127.0.0.1');
         expect(await controller.position, const Duration(seconds: 0));
 
         await controller.seekTo(const Duration(milliseconds: 500));
@@ -212,10 +271,8 @@ void main() {
       });
 
       test('clamps values that are too high or low', () async {
-        final VideoPlayerController controller = VideoPlayerController.network(
-          'https://127.0.0.1',
-        );
-        await controller.initialize();
+        final VideoPlayerController controller = VideoPlayerController();
+        await controller.setNetworkDataSource('https://127.0.0.1');
         expect(await controller.position, const Duration(seconds: 0));
 
         await controller.seekTo(const Duration(seconds: 100));
@@ -228,10 +285,8 @@ void main() {
 
     group('setVolume', () {
       test('works', () async {
-        final VideoPlayerController controller = VideoPlayerController.network(
-          'https://127.0.0.1',
-        );
-        await controller.initialize();
+        final VideoPlayerController controller = VideoPlayerController();
+        await controller.setNetworkDataSource('https://127.0.0.1');
         expect(controller.value.volume, 1.0);
 
         const double volume = 0.5;
@@ -241,10 +296,8 @@ void main() {
       });
 
       test('clamps values that are too high or low', () async {
-        final VideoPlayerController controller = VideoPlayerController.network(
-          'https://127.0.0.1',
-        );
-        await controller.initialize();
+        final VideoPlayerController controller = VideoPlayerController();
+        await controller.setNetworkDataSource('https://127.0.0.1');
         expect(controller.value.volume, 1.0);
 
         await controller.setVolume(-1);
@@ -257,10 +310,8 @@ void main() {
 
     group('Platform callbacks', () {
       testWidgets('playing completed', (WidgetTester tester) async {
-        final VideoPlayerController controller = VideoPlayerController.network(
-          'https://127.0.0.1',
-        );
-        await controller.initialize();
+        final VideoPlayerController controller = VideoPlayerController();
+        await controller.setNetworkDataSource('https://127.0.0.1');
         expect(controller.value.isPlaying, isFalse);
         await controller.play();
         expect(controller.value.isPlaying, isTrue);
@@ -268,8 +319,10 @@ void main() {
             fakeVideoPlayerPlatform.streams[controller.textureId];
         assert(fakeVideoEventStream != null);
 
-        fakeVideoEventStream.eventsChannel
-            .sendEvent(<String, dynamic>{'event': 'completed'});
+        fakeVideoEventStream.eventsChannel.sendEvent(<String, dynamic>{
+          'event': 'completed',
+          'key': 'https://127.0.0.1',
+        });
         await tester.pumpAndSettle();
 
         expect(controller.value.isPlaying, isFalse);
@@ -277,18 +330,18 @@ void main() {
       });
 
       testWidgets('buffering status', (WidgetTester tester) async {
-        final VideoPlayerController controller = VideoPlayerController.network(
-          'https://127.0.0.1',
-        );
-        await controller.initialize();
+        final VideoPlayerController controller = VideoPlayerController();
+        await controller.setNetworkDataSource('https://127.0.0.1');
         expect(controller.value.isBuffering, false);
         expect(controller.value.buffered, isEmpty);
         final FakeVideoEventStream fakeVideoEventStream =
             fakeVideoPlayerPlatform.streams[controller.textureId];
         assert(fakeVideoEventStream != null);
 
-        fakeVideoEventStream.eventsChannel
-            .sendEvent(<String, dynamic>{'event': 'bufferingStart'});
+        fakeVideoEventStream.eventsChannel.sendEvent(<String, dynamic>{
+          'event': 'bufferingStart',
+          'key': 'https://127.0.0.1',
+        });
         await tester.pumpAndSettle();
         expect(controller.value.isBuffering, isTrue);
 
@@ -296,6 +349,7 @@ void main() {
         const Duration bufferEnd = Duration(milliseconds: 500);
         fakeVideoEventStream.eventsChannel.sendEvent(<String, dynamic>{
           'event': 'bufferingUpdate',
+          'key': 'https://127.0.0.1',
           'values': <List<int>>[
             <int>[bufferStart.inMilliseconds, bufferEnd.inMilliseconds]
           ],
@@ -306,8 +360,10 @@ void main() {
         expect(controller.value.buffered[0].toString(),
             DurationRange(bufferStart, bufferEnd).toString());
 
-        fakeVideoEventStream.eventsChannel
-            .sendEvent(<String, dynamic>{'event': 'bufferingEnd'});
+        fakeVideoEventStream.eventsChannel.sendEvent(<String, dynamic>{
+          'event': 'bufferingEnd',
+          'key': 'https://127.0.0.1',
+        });
         await tester.pumpAndSettle();
         expect(controller.value.isBuffering, isFalse);
       });
@@ -435,7 +491,7 @@ class FakeVideoPlayerPlatform {
 
   Completer<bool> initialized = Completer<bool>();
   List<MethodCall> calls = <MethodCall>[];
-  List<Map<String, dynamic>> dataSourceDescriptions = <Map<String, dynamic>>[];
+  Map<String, dynamic> dataSourceDescription = <String, dynamic>{};
   final Map<int, FakeVideoEventStream> streams = <int, FakeVideoEventStream>{};
   int nextTextureId = 0;
   final Map<int, Duration> _positions = <int, Duration>{};
@@ -449,13 +505,18 @@ class FakeVideoPlayerPlatform {
       case 'create':
         streams[nextTextureId] = FakeVideoEventStream(
             nextTextureId, 100, 100, const Duration(seconds: 1));
-        final Map<dynamic, dynamic> dataSource = call.arguments;
-        dataSourceDescriptions.add(dataSource.cast<String, dynamic>());
         return Future<Map<String, int>>.sync(() {
           return <String, int>{
             'textureId': nextTextureId++,
           };
         });
+        break;
+      case 'setDataSource':
+        final textureId = call.arguments['textureId'];
+        final Map<dynamic, dynamic> dataSource = call.arguments['dataSource'];
+        dataSourceDescription = dataSource.cast<String, dynamic>();
+        streams[textureId].sendInitializedEvent(dataSource['key']);
+        return Future.value();
         break;
       case 'position':
         final Duration position = _positions[call.arguments['textureId']] ??
@@ -483,7 +544,7 @@ class FakeVideoPlayerPlatform {
 class FakeVideoEventStream {
   FakeVideoEventStream(this.textureId, this.width, this.height, this.duration) {
     eventsChannel = FakeEventsChannel(
-        'flutter.io/videoPlayer/videoEvents$textureId', onListen);
+        'flutter.io/videoPlayer/videoEvents$textureId', () {});
   }
 
   int textureId;
@@ -492,9 +553,10 @@ class FakeVideoEventStream {
   Duration duration;
   FakeEventsChannel eventsChannel;
 
-  void onListen() {
+  sendInitializedEvent(String key) {
     final Map<String, dynamic> initializedEvent = <String, dynamic>{
       'event': 'initialized',
+      'key': key,
       'duration': duration.inMilliseconds,
       'width': width,
       'height': height,

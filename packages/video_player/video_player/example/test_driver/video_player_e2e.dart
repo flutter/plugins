@@ -12,15 +12,17 @@ const Duration _playDuration = Duration(seconds: 1);
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
   VideoPlayerController _controller;
-  tearDown(() async => _controller.dispose());
+  tearDown(() => _controller.dispose());
+
+  final assetDataSource = 'assets/Butterfly-209.mp4';
 
   group('asset videos', () {
     setUp(() {
-      _controller = VideoPlayerController.asset('assets/Butterfly-209.mp4');
+      _controller = VideoPlayerController();
     });
 
     testWidgets('can be initialized', (WidgetTester tester) async {
-      await _controller.initialize();
+      await _controller.setAssetDataSource(assetDataSource);
 
       expect(_controller.value.initialized, true);
       expect(_controller.value.position, const Duration(seconds: 0));
@@ -30,7 +32,7 @@ void main() {
     });
 
     testWidgets('can be played', (WidgetTester tester) async {
-      await _controller.initialize();
+      await _controller.setAssetDataSource(assetDataSource);
 
       await _controller.play();
       await tester.pumpAndSettle(_playDuration);
@@ -41,7 +43,7 @@ void main() {
     }, skip: Platform.isIOS);
 
     testWidgets('can seek', (WidgetTester tester) async {
-      await _controller.initialize();
+      await _controller.setAssetDataSource(assetDataSource);
 
       await _controller.seekTo(const Duration(seconds: 3));
 
@@ -49,7 +51,7 @@ void main() {
     }, skip: Platform.isIOS);
 
     testWidgets('can be paused', (WidgetTester tester) async {
-      await _controller.initialize();
+      await _controller.setAssetDataSource(assetDataSource);
 
       // Play for a second, then pause, and then wait a second.
       await _controller.play();

@@ -7,6 +7,9 @@ package io.flutter.plugins.videoplayer;
 import android.content.Context;
 import android.util.Log;
 import android.util.LongSparseArray;
+
+import java.util.Map;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
@@ -103,36 +106,18 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
               new EventChannel(
                   flutterState.binaryMessenger, "flutter.io/videoPlayer/videoEvents" + handle.id());
 
-          VideoPlayer player;
-          if (call.argument("asset") != null) {
-            String assetLookupKey;
-            if (call.argument("package") != null) {
-              assetLookupKey =
-                  flutterState.keyForAssetAndPackageName.get(
-                      call.argument("asset"), call.argument("package"));
-            } else {
-              assetLookupKey = flutterState.keyForAsset.get(call.argument("asset"));
-            }
-            player =
-                new VideoPlayer(
-                    flutterState.applicationContext,
-                    eventChannel,
-                    handle,
-                    "asset:///" + assetLookupKey,
-                    result,
-                    null);
+          EventChannel errorChannel =
+              new EventChannel(
+                  flutterState.binaryMessenger, "flutter.io/videoPlayer/videoErrors" + handle.id());
+
+            VideoPlayer player = new VideoPlayer(
+                flutterState.applicationContext,
+                eventChannel,
+                errorChannel,
+                handle,
+                result);
+
             videoPlayers.put(handle.id(), player);
-          } else {
-            player =
-                new VideoPlayer(
-                    flutterState.applicationContext,
-                    eventChannel,
-                    handle,
-                    call.argument("uri"),
-                    result,
-                    call.argument("formatHint"));
-            videoPlayers.put(handle.id(), player);
-          }
           break;
         }
       default:
@@ -154,6 +139,36 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
 
   private void onMethodCall(MethodCall call, Result result, long textureId, VideoPlayer player) {
     switch (call.method) {
+      case "setDataSource":
+      {
+        Map<String, String> dataSource = call.argument("dataSource");
+        String key = dataSource.get("key");
+        if (dataSource.get("asset") != null) {
+          String assetLookupKey;
+          if (dataSource.get("package") != null) {
+            assetLookupKey =
+                flutterState.keyForAssetAndPackageName.get(
+                        dataSource.get("asset"), dataSource.get("package"));
+          } else {
+            assetLookupKey = flutterState.keyForAsset.get(dataSource.get("asset"));
+          }
+
+          player.setDataSource(
+              flutterState.applicationContext,
+              key,
+              "asset:///" + assetLookupKey,
+              null,
+              result);
+        } else {
+          player.setDataSource(
+               flutterState.applicationContext,
+               key,
+               dataSource.get("uri"),
+               dataSource.get("formatHint"),
+               result);
+        }
+        break;
+      }
       case "setLooping":
         player.setLooping(call.argument("looping"));
         result.success(null);

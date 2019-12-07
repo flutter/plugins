@@ -6,11 +6,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
     show DurationRange, DataSourceType, VideoFormat;
 
@@ -140,60 +140,24 @@ class VideoPlayerValue {
 ///
 /// After [dispose] all further calls are ignored.
 class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
-  /// Constructs a [VideoPlayerController] playing a video from an asset.
-  ///
-  /// The name of the asset is given by the [dataSource] argument and must not be
-  /// null. The [package] argument must be non-null when the asset comes from a
-  /// package and null otherwise.
-  VideoPlayerController.asset(this.dataSource, {this.package})
-      : dataSourceType = DataSourceType.asset,
-        formatHint = null,
-        super(VideoPlayerValue(duration: null));
-
-  /// Constructs a [VideoPlayerController] playing a video from obtained from
-  /// the network.
-  ///
-  /// The URI for the video is given by the [dataSource] argument and must not be
-  /// null.
-  /// **Android only**: The [formatHint] option allows the caller to override
-  /// the video format detection code.
-  VideoPlayerController.network(this.dataSource, {this.formatHint})
-      : dataSourceType = DataSourceType.network,
-        package = null,
-        super(VideoPlayerValue(duration: null));
-
-  /// Constructs a [VideoPlayerController] playing a video from a file.
-  ///
-  /// This will load the file from the file-URI given by:
-  /// `'file://${file.path}'`.
-  VideoPlayerController.file(File file)
-      : dataSource = 'file://${file.path}',
-        dataSourceType = DataSourceType.file,
-        package = null,
-        formatHint = null,
-        super(VideoPlayerValue(duration: null));
+  /// Constructs a [VideoPlayerController] and creates video controller on platform side.
+  VideoPlayerController() : super(VideoPlayerValue(duration: null)) {
+    _create();
+  }
 
   int _textureId;
 
-  /// The URI to the video file. This will be in different formats depending on
-  /// the [DataSourceType] of the original video.
-  final String dataSource;
+  DataSource _dataSource;
 
-  /// **Android only**. Will override the platform's generic file format
-  /// detection with whatever is set here.
-  final VideoFormat formatHint;
-
-  /// Describes the type of data source this [VideoPlayerController]
-  /// is constructed with.
-  final DataSourceType dataSourceType;
-
-  /// Only set for [asset] videos. The package that the asset was loaded from.
-  final String package;
   Timer _timer;
   bool _isDisposed = false;
-  Completer<void> _creatingCompleter;
+  final Completer<void> _creatingCompleter = Completer<void>();
+  Completer<void> _initializingCompleter;
   StreamSubscription<dynamic> _eventSubscription;
+  StreamSubscription<dynamic> _errorSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
+
+  bool get _created => _creatingCompleter.isCompleted;
 
   /// This is just exposed for testing. It shouldn't be used by anyone depending
   /// on the plugin.
@@ -201,41 +165,93 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   int get textureId => _textureId;
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
-  Future<void> initialize() async {
+  Future<void> _create() async {
+    _textureId = await VideoPlayerPlatform.instance.create();
+    _creatingCompleter.complete(null);
+
+    _applyLooping();
+    _applyVolume();
+
+    void errorListener(Object obj) {
+      final PlatformException e = obj;
+      value = VideoPlayerValue.erroneous(e.message);
+      _timer?.cancel();
+    }
+
+    _errorSubscription = VideoPlayerPlatform.instance
+        .videoControllerErrorsFor(_textureId)
+        .listen((_) {}, onError: errorListener);
+  }
+
+  /// Set data source for playing a video from an asset.
+  ///
+  /// The name of the asset is given by the [dataSource] argument and must not be
+  /// null. The [package] argument must be non-null when the asset comes from a
+  /// package and null otherwise.
+  Future<void> setAssetDataSource(String dataSource, {String package}) {
+    return _setDataSource(
+      DataSource(
+        sourceType: DataSourceType.asset,
+        asset: dataSource,
+        package: package,
+      ),
+    );
+  }
+
+  /// Set data source for playing a video from obtained from
+  /// the network.
+  ///
+  /// The URI for the video is given by the [dataSource] argument and must not be
+  /// null.
+  /// **Android only**: The [formatHint] option allows the caller to override
+  /// the video format detection code.
+  Future<void> setNetworkDataSource(String dataSource,
+      {VideoFormat formatHint}) {
+    return _setDataSource(
+      DataSource(
+        sourceType: DataSourceType.network,
+        uri: dataSource,
+        formatHint: formatHint,
+      ),
+    );
+  }
+
+  /// Set data source for playing a video from a file.
+  ///
+  /// This will load the file from the file-URI given by:
+  /// `'file://${file.path}'`.
+  Future<void> setFileDataSource(File file) {
+    return _setDataSource(
+      DataSource(
+        sourceType: DataSourceType.file,
+        uri: 'file://${file.path}',
+      ),
+    );
+  }
+
+  Future<void> _setDataSource(DataSource dataSourceDescription) async {
+    if (_isDisposed) {
+      return;
+    }
+
+    this._dataSource = dataSourceDescription;
+
+    value = VideoPlayerValue(
+      duration: null,
+      size: null,
+      isLooping: value.isLooping,
+      volume: value.volume,
+    );
+
+    if (!_creatingCompleter.isCompleted) await _creatingCompleter.future;
+
     _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
     _lifeCycleObserver.initialize();
-    _creatingCompleter = Completer<void>();
 
-    DataSource dataSourceDescription;
-    switch (dataSourceType) {
-      case DataSourceType.asset:
-        dataSourceDescription = DataSource(
-          sourceType: DataSourceType.asset,
-          asset: dataSource,
-          package: package,
-        );
-        break;
-      case DataSourceType.network:
-        dataSourceDescription = DataSource(
-          sourceType: DataSourceType.network,
-          uri: dataSource,
-          formatHint: formatHint,
-        );
-        break;
-      case DataSourceType.file:
-        dataSourceDescription = DataSource(
-          sourceType: DataSourceType.file,
-          uri: dataSource,
-        );
-        break;
-    }
-    _textureId =
-        await VideoPlayerPlatform.instance.create(dataSourceDescription);
-    _creatingCompleter.complete(null);
-    final Completer<void> initializingCompleter = Completer<void>();
+    final key = this._dataSource.key;
 
     void eventListener(VideoEvent event) {
-      if (_isDisposed) {
+      if (_isDisposed || event.key != key) {
         return;
       }
 
@@ -245,9 +261,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             duration: event.duration,
             size: event.size,
           );
-          initializingCompleter.complete(null);
-          _applyLooping();
-          _applyVolume();
+          _initializingCompleter.complete(null);
           _applyPlayPause();
           break;
         case VideoEventType.completed:
@@ -268,16 +282,16 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       }
     }
 
-    void errorListener(Object obj) {
-      final PlatformException e = obj;
-      value = VideoPlayerValue.erroneous(e.message);
-      _timer?.cancel();
-    }
+    await _eventSubscription?.cancel();
 
     _eventSubscription = VideoPlayerPlatform.instance
         .videoEventsFor(_textureId)
-        .listen(eventListener, onError: errorListener);
-    return initializingCompleter.future;
+        .listen(eventListener);
+
+    _initializingCompleter = Completer<void>();
+    await VideoPlayerPlatform.instance
+        .setDataSource(_textureId, dataSourceDescription);
+    return _initializingCompleter.future;
   }
 
   @override
@@ -286,11 +300,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       await _creatingCompleter.future;
       if (!_isDisposed) {
         _isDisposed = true;
+        value = VideoPlayerValue.uninitialized();
         _timer?.cancel();
         await _eventSubscription?.cancel();
+        await _errorSubscription?.cancel();
         await VideoPlayerPlatform.instance.dispose(_textureId);
       }
-      _lifeCycleObserver.dispose();
+      _lifeCycleObserver?.dispose();
     }
     _isDisposed = true;
     super.dispose();
@@ -320,14 +336,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   Future<void> _applyLooping() async {
-    if (!value.initialized || _isDisposed) {
+    if (!_created || _isDisposed) {
       return;
     }
     await VideoPlayerPlatform.instance.setLooping(_textureId, value.isLooping);
   }
 
   Future<void> _applyPlayPause() async {
-    if (!value.initialized || _isDisposed) {
+    if (!_created || _isDisposed) {
       return;
     }
     if (value.isPlaying) {
@@ -352,7 +368,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   Future<void> _applyVolume() async {
-    if (!value.initialized || _isDisposed) {
+    if (!_created || _isDisposed) {
       return;
     }
     await VideoPlayerPlatform.instance.setVolume(_textureId, value.volume);
@@ -360,7 +376,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// The position in the current video.
   Future<Duration> get position async {
-    if (_isDisposed) {
+    if (!value.initialized && _isDisposed) {
       return null;
     }
     return await VideoPlayerPlatform.instance.getPosition(_textureId);

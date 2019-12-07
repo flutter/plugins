@@ -52,35 +52,51 @@ final class VideoPlayer {
   private final TextureRegistry.SurfaceTextureEntry textureEntry;
 
   private QueuingEventSink eventSink = new QueuingEventSink();
+  private QueuingEventSink errorSink = new QueuingEventSink();
 
   private final EventChannel eventChannel;
+  private final EventChannel errorChannel;
 
   private boolean isInitialized = false;
+
+  private String key;
 
   VideoPlayer(
       Context context,
       EventChannel eventChannel,
+      EventChannel errorChannel,
       TextureRegistry.SurfaceTextureEntry textureEntry,
-      String dataSource,
-      Result result,
-      String formatHint) {
+      Result result) {
     this.eventChannel = eventChannel;
+    this.errorChannel = errorChannel;
     this.textureEntry = textureEntry;
 
     TrackSelector trackSelector = new DefaultTrackSelector();
     exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
 
-    Uri uri = Uri.parse(dataSource);
+    setupVideoPlayer(eventChannel, textureEntry, result);
+  }
 
+  void setDataSource(
+      Context context,
+      String key,
+      String dataSource,
+      String formatHint,
+      Result result) {
+    this.key = key;
+
+    isInitialized = false;
+
+    Uri uri = Uri.parse(dataSource);
     DataSource.Factory dataSourceFactory;
     if (isHTTP(uri)) {
       dataSourceFactory =
-          new DefaultHttpDataSourceFactory(
-              "ExoPlayer",
-              null,
-              DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-              DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
-              true);
+         new DefaultHttpDataSourceFactory(
+             "ExoPlayer",
+             null,
+             DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+             DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+             true);
     } else {
       dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
     }
@@ -88,7 +104,7 @@ final class VideoPlayer {
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
     exoPlayer.prepare(mediaSource);
 
-    setupVideoPlayer(eventChannel, textureEntry, result);
+    result.success(null);
   }
 
   private static boolean isHTTP(Uri uri) {
@@ -163,6 +179,19 @@ final class VideoPlayer {
           }
         });
 
+    errorChannel.setStreamHandler(
+        new EventChannel.StreamHandler() {
+          @Override
+          public void onListen(Object o, EventChannel.EventSink sink) {
+            errorSink.setDelegate(sink);
+          }
+
+          @Override
+          public void onCancel(Object o) {
+            errorSink.setDelegate(null);
+          }
+        });
+
     surface = new Surface(textureEntry.surfaceTexture());
     exoPlayer.setVideoSurface(surface);
     setAudioAttributes(exoPlayer);
@@ -182,14 +211,15 @@ final class VideoPlayer {
             } else if (playbackState == Player.STATE_ENDED) {
               Map<String, Object> event = new HashMap<>();
               event.put("event", "completed");
+              event.put("key", key);
               eventSink.success(event);
             }
           }
 
           @Override
           public void onPlayerError(final ExoPlaybackException error) {
-            if (eventSink != null) {
-              eventSink.error("VideoError", "Video player had error " + error, null);
+            if (errorSink != null) {
+              errorSink.error("VideoError", "Video player had error " + error, null);
             }
           }
         });
@@ -248,6 +278,7 @@ final class VideoPlayer {
     if (isInitialized) {
       Map<String, Object> event = new HashMap<>();
       event.put("event", "initialized");
+      event.put("key", key);
       event.put("duration", exoPlayer.getDuration());
 
       if (exoPlayer.getVideoFormat() != null) {
@@ -273,6 +304,7 @@ final class VideoPlayer {
     }
     textureEntry.release();
     eventChannel.setStreamHandler(null);
+    errorChannel.setStreamHandler(null);
     if (surface != null) {
       surface.release();
     }

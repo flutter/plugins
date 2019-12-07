@@ -4,10 +4,9 @@
 
 import 'dart:ui';
 
-import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:mockito/mockito.dart';
 import 'package:video_player_platform_interface/method_channel_video_player.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
@@ -73,65 +72,92 @@ void main() {
       );
     });
 
-    test('create with asset', () async {
+    test('create controller and set asset data source', () async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         return <String, dynamic>{'textureId': 3};
       });
-      final int textureId = await player.create(DataSource(
-        sourceType: DataSourceType.asset,
-        asset: 'someAsset',
-        package: 'somePackage',
-      ));
+      final int textureId = await player.create();
+      await player.setDataSource(
+        textureId,
+        DataSource(
+          sourceType: DataSourceType.asset,
+          asset: 'someAsset',
+          package: 'somePackage',
+        ),
+      );
       expect(
         log,
         <Matcher>[
-          isMethodCall('create', arguments: <String, Object>{
-            'asset': 'someAsset',
-            'package': 'somePackage',
-          })
+          isMethodCall('create', arguments: null),
+          isMethodCall('setDataSource', arguments: <String, Object>{
+            'textureId': 3,
+            'dataSource': {
+              'key': 'somePackage:someAsset',
+              'asset': 'someAsset',
+              'package': 'somePackage',
+            },
+          }),
         ],
       );
       expect(textureId, 3);
     });
 
-    test('create with network', () async {
+    test('create controller and set network data source', () async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         return <String, dynamic>{'textureId': 3};
       });
-      final int textureId = await player.create(DataSource(
-        sourceType: DataSourceType.network,
-        uri: 'someUri',
-        formatHint: VideoFormat.dash,
-      ));
+      final int textureId = await player.create();
+      await player.setDataSource(
+        textureId,
+        DataSource(
+          sourceType: DataSourceType.network,
+          uri: 'someUri',
+          formatHint: VideoFormat.dash,
+        ),
+      );
       expect(
         log,
         <Matcher>[
-          isMethodCall('create', arguments: <String, Object>{
-            'uri': 'someUri',
-            'formatHint': 'dash'
-          })
+          isMethodCall('create', arguments: null),
+          isMethodCall('setDataSource', arguments: <String, Object>{
+            'textureId': 3,
+            'dataSource': {
+              'key': 'someUri:dash',
+              'uri': 'someUri',
+              'formatHint': 'dash',
+            },
+          }),
         ],
       );
       expect(textureId, 3);
     });
 
-    test('create with file', () async {
+    test('create controller and set file data source', () async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         return <String, dynamic>{'textureId': 3};
       });
-      final int textureId = await player.create(DataSource(
-        sourceType: DataSourceType.file,
-        uri: 'someUri',
-      ));
+      final int textureId = await player.create();
+      await player.setDataSource(
+        textureId,
+        DataSource(
+          sourceType: DataSourceType.file,
+          uri: 'someUri',
+        ),
+      );
       expect(
         log,
         <Matcher>[
-          isMethodCall('create', arguments: <String, Object>{
-            'uri': 'someUri',
-          })
+          isMethodCall('create', arguments: null),
+          isMethodCall('setDataSource', arguments: <String, Object>{
+            'textureId': 3,
+            'dataSource': {
+              'key': 'someUri',
+              'uri': 'someUri',
+            },
+          }),
         ],
       );
       expect(textureId, 3);
