@@ -1,3 +1,7 @@
+## 0.4.1+4
+
+* Fix example setState() called after dispose() by canceling the timer.
+
 ## 0.4.1+3
 
 * Improve documentation and add unit test coverage.
