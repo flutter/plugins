@@ -63,10 +63,17 @@ class SnakeState extends State<Snake> {
   double cellSize;
   GameState state;
   AccelerometerEvent acceleration;
+  Timer _timer;
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(painter: SnakeBoardPainter(state, cellSize));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _timer.cancel();
   }
 
   @override
@@ -78,7 +85,7 @@ class SnakeState extends State<Snake> {
       });
     });
 
-    Timer.periodic(const Duration(milliseconds: 200), (_) {
+    _timer = Timer.periodic(const Duration(milliseconds: 200), (_) {
       setState(() {
         _step();
       });
