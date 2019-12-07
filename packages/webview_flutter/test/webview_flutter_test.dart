@@ -758,8 +758,8 @@ void main() {
       expect(platformWebView.currentUrl, 'https://youtube.com');
       expect(navigationRequests.length, 1);
       expect(navigationRequests[0].url, 'https://www.google.com');
-      expect(navigationRequests[0].hasGesture, true);
       expect(navigationRequests[0].isForMainFrame, true);
+      expect(navigationRequests[0].type, NavigationType.other);
 
       platformWebView.fakeNavigate('https://flutter.dev');
       await tester.pump();
@@ -1011,7 +1011,6 @@ class FakePlatformWebView {
     final StandardMethodCodec codec = const StandardMethodCodec();
     final Map<String, dynamic> arguments = <String, dynamic>{
       'url': url,
-      'hasGesture': true,
       'isForMainFrame': true
     };
     final ByteData data =

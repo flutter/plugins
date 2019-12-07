@@ -652,104 +652,161 @@ void main() {
       expect(currentUrl, 'https://www.google.com/');
     });
 
-    group('hasGesture', () {
+    group('NavigationType', () {
       final String url200 = 'https://httpstat.us/200';
       final String url301 = 'https://httpstat.us/301';
       final String url301Location = 'https://httpstat.us/';
 
-      testWidgets('on http 200', (WidgetTester tester) async {
+      final pumpWidget = (
+        WidgetTester tester,
+        String initialUrl, {
+        PageFinishedCallback onPageFinished,
+        NavigationDelegate navigationDelegate,
+      }) async {
         final Completer<WebViewController> controllerCompleter =
             Completer<WebViewController>();
-        final Completer<void> pageLoaded = Completer<void>();
-        final List<NavigationRequest> reqs = <NavigationRequest>[];
 
         await tester.pumpWidget(
           Directionality(
             textDirection: TextDirection.ltr,
             child: WebView(
               key: GlobalKey(),
-              initialUrl: url200,
+              initialUrl: initialUrl,
               onWebViewCreated: (WebViewController controller) {
                 controllerCompleter.complete(controller);
               },
-              onPageFinished: (String url) {
-                pageLoaded.complete(null);
-              },
-              navigationDelegate: (NavigationRequest req) {
-                reqs.add(req);
-                return NavigationDecision.navigate;
-              },
+              onPageFinished: onPageFinished,
+              navigationDelegate: navigationDelegate,
             ),
           ),
         );
-        final WebViewController controller = await controllerCompleter.future;
+
+        return await controllerCompleter.future;
+      };
+
+      testWidgets('on http 200', (WidgetTester tester) async {
+        final Completer<void> pageLoaded = Completer<void>();
+        final List<NavigationRequest> reqs = <NavigationRequest>[];
+
+        await pumpWidget(
+          tester,
+          url200,
+          onPageFinished: (String url) => pageLoaded.complete(null),
+          navigationDelegate: (NavigationRequest req) {
+            reqs.add(req);
+            return NavigationDecision.navigate;
+          },
+        );
+
         await pageLoaded.future;
 
         if (defaultTargetPlatform == TargetPlatform.iOS) {
           expect(reqs.length, 1);
-
-          expect(reqs[0].url, url200);
-          expect(reqs[0].hasGesture, false);
-          expect(reqs[0].isForMainFrame, true);
+          expect(reqs[0].type, NavigationType.other);
         } else if (defaultTargetPlatform == TargetPlatform.android) {
           // WebViewClient.shouldOverrideUrlLoading is skipped for the initial url
           expect(reqs.length, 0);
         }
-
-        final String currentUrl = await controller.currentUrl();
-        expect(currentUrl, url200);
       });
 
       testWidgets('on http 301', (WidgetTester tester) async {
-        final Completer<WebViewController> controllerCompleter =
-            Completer<WebViewController>();
         final Completer<void> pageLoaded = Completer<void>();
         final List<NavigationRequest> reqs = <NavigationRequest>[];
 
-        await tester.pumpWidget(
-          Directionality(
-            textDirection: TextDirection.ltr,
-            child: WebView(
-              key: GlobalKey(),
-              initialUrl: url301,
-              onWebViewCreated: (WebViewController controller) {
-                controllerCompleter.complete(controller);
-              },
-              onPageFinished: (String url) {
-                pageLoaded.complete(null);
-              },
-              navigationDelegate: (NavigationRequest req) {
-                reqs.add(req);
-                return NavigationDecision.navigate;
-              },
-            ),
-          ),
+        final WebViewController controller = await pumpWidget(
+          tester,
+          url301,
+          onPageFinished: (String url) => pageLoaded.complete(null),
+          navigationDelegate: (NavigationRequest req) {
+            reqs.add(req);
+            return NavigationDecision.navigate;
+          },
         );
-        final WebViewController controller = await controllerCompleter.future;
+
         await pageLoaded.future;
+        final String currentUrl = await controller.currentUrl();
+        expect(currentUrl, url301Location);
 
         if (defaultTargetPlatform == TargetPlatform.iOS) {
           expect(reqs.length, 2);
-
-          expect(reqs[0].url, url301);
-          expect(reqs[0].hasGesture, false);
-          expect(reqs[0].isForMainFrame, true);
-
-          expect(reqs[1].url, url301Location);
-          expect(reqs[1].hasGesture, false);
-          expect(reqs[1].isForMainFrame, true);
+          expect(reqs[0].type, NavigationType.other);
+          expect(reqs[1].type, NavigationType.other);
         } else if (defaultTargetPlatform == TargetPlatform.android) {
-          // WebViewClient.shouldOverrideUrlLoading is skipped for the initial url
           expect(reqs.length, 1);
-
-          expect(reqs[0].url, url301Location);
-          expect(reqs[0].hasGesture, false);
-          expect(reqs[0].isForMainFrame, true);
+          expect(reqs[0].type, NavigationType.other);
         }
-
-        final String currentUrl = await controller.currentUrl();
-        expect(currentUrl, url301Location);
       });
+
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        testWidgets('on reload', (WidgetTester tester) async {
+          final Completer<void> pageLoaded = Completer<void>();
+          final Completer<void> pageReloaded = Completer<void>();
+          final List<NavigationRequest> reqs = <NavigationRequest>[];
+
+          final WebViewController controller = await pumpWidget(
+            tester,
+            url200,
+            onPageFinished: (String url) {
+              if (!pageLoaded.isCompleted) {
+                pageLoaded.complete(null);
+                return;
+              }
+
+              pageReloaded.complete(null);
+            },
+            navigationDelegate: (NavigationRequest req) {
+              reqs.add(req);
+              return NavigationDecision.navigate;
+            },
+          );
+
+          await pageLoaded.future;
+
+          await controller.reload();
+          await pageReloaded.future;
+
+          expect(reqs.last.type, NavigationType.reload);
+        });
+
+        testWidgets('on back', (WidgetTester tester) async {
+          final Completer<void> page1Loaded = Completer<void>();
+          final Completer<void> page2Loaded = Completer<void>();
+          final Completer<void> page1Reloaded = Completer<void>();
+          final List<NavigationRequest> reqs = <NavigationRequest>[];
+
+          final WebViewController controller = await pumpWidget(
+            tester,
+            url200,
+            onPageFinished: (String url) {
+              if (!page1Loaded.isCompleted) {
+                page1Loaded.complete(null);
+                return;
+              }
+
+              if (!page2Loaded.isCompleted) {
+                page2Loaded.complete(null);
+                return;
+              }
+
+              page1Reloaded.complete(null);
+            },
+            navigationDelegate: (NavigationRequest req) {
+              reqs.add(req);
+              return NavigationDecision.navigate;
+            },
+          );
+
+          await page1Loaded.future;
+
+          await controller.loadUrl('https://flutter.dev');
+          await page2Loaded.future;
+
+          await controller.goBack();
+          await page1Reloaded.future;
+
+          expect(reqs.last.type, NavigationType.back_forward);
+        });
+      }
     });
   });
 }

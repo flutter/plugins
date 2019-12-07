@@ -83,8 +83,8 @@ class FlutterWebViewClient {
       String url, Map<String, String> headers, WebView webview, boolean hasGesture, boolean isMainFrame) {
     HashMap<String, Object> args = new HashMap<>();
     args.put("url", url);
-    args.put("hasGesture", hasGesture);
     args.put("isForMainFrame", isMainFrame);
+    args.put("type", hasGesture ? "has_gesture" : "other");
     if (isMainFrame) {
       methodChannel.invokeMethod(
           "navigationRequest", args, new OnNavigationRequestResult(url, headers, webview));

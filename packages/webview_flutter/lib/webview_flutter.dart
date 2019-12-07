@@ -39,23 +39,49 @@ class JavascriptMessage {
 /// Callback type for handling messages sent from Javascript running in a web view.
 typedef void JavascriptMessageHandler(JavascriptMessage message);
 
+/// The type of action triggering a navigation.
+/// Android document: https://developer.android.com/reference/android/webkit/WebResourceRequest.html#hasGesture()
+/// iOS document: https://developer.apple.com/documentation/webkit/wknavigationtype
+enum NavigationType {
+  /// A gesture (such as a click) was associated with the request (Android only).
+  has_gesture,
+
+  /// An item from the back-forward list was requested (iOS only).
+  back_forward,
+
+  /// A form was submitted (iOS only).
+  form_submitted,
+
+  /// A form was resubmitted (for example by going back, going forward, or reloading) (iOS only).
+  form_resubmitted,
+
+  /// A link with an `href` attribute was activated by the user (iOS only).
+  link_activated,
+
+  /// The webpage was reloaded (iOS only).
+  reload,
+
+  /// Navigation is taking place for some other reason.
+  other,
+}
+
 /// Information about a navigation action that is about to be executed.
 class NavigationRequest {
-  NavigationRequest._({this.url, this.hasGesture, this.isForMainFrame});
+  NavigationRequest._({this.url, this.isForMainFrame, this.type});
 
   /// The URL that will be loaded if the navigation is executed.
   final String url;
 
-  /// Whether a gesture (such as a click) was associated with the request.
-  /// For security reasons in certain situations this may be `false` even though the sequence of events which caused the request to be created was initiated by a user gesture.
-  final bool hasGesture;
-
   /// Whether the navigation request is to be loaded as the main frame.
   final bool isForMainFrame;
 
+  /// Additional type information of the navigation action.
+  /// For security reasons in certain situations this may be [NavigationType.other] even though the sequence of events which caused the request to be created was initiated by a user gesture.
+  final NavigationType type;
+
   @override
   String toString() {
-    return '$runtimeType(url: $url, hasGesture: $hasGesture, isForMainFrame: $isForMainFrame)';
+    return '$runtimeType(url: $url, isForMainFrame: $isForMainFrame, type: $type)';
   }
 }
 
@@ -454,9 +480,16 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   }
 
   @override
-  FutureOr<bool> onNavigationRequest({String url, bool hasGesture, bool isForMainFrame}) async {
-    final NavigationRequest request =
-        NavigationRequest._(url: url, hasGesture: hasGesture, isForMainFrame: isForMainFrame);
+  FutureOr<bool> onNavigationRequest(
+      {String url, bool isForMainFrame, String type}) async {
+    final NavigationRequest request = NavigationRequest._(
+      url: url,
+      isForMainFrame: isForMainFrame,
+      type: NavigationType.values.firstWhere(
+        (e) => describeEnum(e) == type,
+        orElse: () => NavigationType.other,
+      ),
+    );
     final bool allowNavigation = _widget.navigationDelegate == null ||
         await _widget.navigationDelegate(request) ==
             NavigationDecision.navigate;

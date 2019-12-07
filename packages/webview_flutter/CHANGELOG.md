@@ -1,6 +1,6 @@
 ## 0.3.19
 
-* Add support for `NavigationRequest.hasGesture`
+* Add support for `NavigationRequest.type`
 
 ## 0.3.18
 

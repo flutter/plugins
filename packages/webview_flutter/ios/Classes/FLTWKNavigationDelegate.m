@@ -29,10 +29,32 @@
     decisionHandler(WKNavigationActionPolicyAllow);
     return;
   }
+
+  NSString *type = nil;
+  switch(navigationAction.navigationType) {
+    case WKNavigationTypeBackForward:
+      type = @"back_forward";
+      break;
+    case WKNavigationTypeFormSubmitted:
+      type = @"form_submitted";
+      break;
+    case WKNavigationTypeFormResubmitted:
+      type = @"form_resubmitted";
+      break;
+    case WKNavigationTypeLinkActivated:
+      type = @"link_activated";
+      break;
+    case WKNavigationTypeReload:
+      type = @"reload";
+      break;
+    default:
+      type = @"other";
+  }
+
   NSDictionary* arguments = @{
     @"url" : navigationAction.request.URL.absoluteString,
-    @"hasGesture" : @((BOOL) (navigationAction.navigationType != WKNavigationTypeOther)),
-    @"isForMainFrame" : @(navigationAction.targetFrame.isMainFrame)
+    @"isForMainFrame" : @(navigationAction.targetFrame.isMainFrame),
+    @"type" : type
   };
   [_methodChannel invokeMethod:@"navigationRequest"
                      arguments:arguments
