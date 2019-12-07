@@ -1,3 +1,7 @@
+# 0.1.0+1
+
+- Add an android/ folder with no-op implementation to workaround https://github.com/flutter/flutter/issues/46304.
+
 # 0.1.0
 
 - Update docs and pubspec.
