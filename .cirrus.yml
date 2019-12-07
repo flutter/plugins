@@ -12,10 +12,9 @@ task:
     memory: 16G
   environment:
     PATH: $PATH:$HOME/.pub-cache/bin
-    CHANNEL: "stable" # Default to flutter stable, tests can override.
-  pub_cache:
-    folder: $HOME/.pub-cache
-    fingerprint_script: echo $OS; grep -r --include=pubspec.yaml '\:.*[0-9]\+\.' . | grep -v 'version\|flutter\|sdk'| xargs
+    CHANNEL: "master" # Default to flutter master, tests can override.
+  channel_script:
+    - flutter channel $CHANNEL
   flutter_pkg_cache:
     folder: $FLUTTER_HOME/bin/cache/pkg
     fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
@@ -23,22 +22,22 @@ task:
     folder: $FLUTTER_HOME/bin/cache/artifacts
     fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
   upgrade_script:
-    - flutter channel $CHANNEL
     - flutter upgrade
     - git fetch origin master
   activate_script: pub global activate flutter_plugin_tools
   matrix:
     - name: publishable
+      environment:
+         CHANNEL: "stable"
       script:
         - ./script/check_publish.sh
     - name: format
-      environment:
-         CHANNEL: "master"
       install_script:
         - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
         - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main"
         - sudo apt-get update
         - sudo apt-get install -y --allow-unauthenticated clang-format-7
+        - dpkg -L clang-format-7
       format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-7
     - name: test
       << : *FLUTTER_SKIP_WEB_TEMPLATE
@@ -48,18 +47,20 @@ task:
           CHANNEL: "stable"
       test_script:
         - ./script/incremental_build.sh test
+      depends_on:
+        - publishable # Upload the stable cache first.
+        - format # Upload the master cache first.
     - name: analyze
-      environment:
-         CHANNEL: "master"
       script:
         - ./script/incremental_build.sh analyze
+      depends_on:
+        - format # Upload the master cache first.
     - name: build_all_plugins_apk
       << : *FLUTTER_SKIP_WEB_TEMPLATE
       script:
         - ./script/build_all_plugins_app.sh apk
       depends_on:
-        - format
-        - publishable
+        - format # Upload the master cache first.
     - name: build-apks+java-test+firebase-test-lab
       << : *FLUTTER_SKIP_WEB_TEMPLATE
       environment:
@@ -93,8 +94,8 @@ task:
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
       depends_on:
-        - format
         - publishable
+        - format
 
 task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
@@ -103,10 +104,7 @@ task:
   environment:
     COCOAPODS_DISABLE_STATS: true
     PATH: $PATH:/usr/local/bin:$HOME/.pub-cache/bin
-    CHANNEL: "stable" # Default to flutter stable, tests can override.
-  pub_cache:
-    folder: $HOME/.pub-cache
-    fingerprint_script: echo $OS; echo $CHANNEL; grep -r --include=pubspec.yaml '\:.*[0-9]\+\.' . | grep -v 'version\|flutter\|sdk'| xargs
+    CHANNEL: "master" # Default to flutter master, tests can override.
   flutter_pkg_cache:
     folder: $FLUTTER_HOME/bin/cache/pkg
     fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
@@ -119,20 +117,20 @@ task:
     - flutter upgrade
     - git fetch origin master
   activate_script: pub global activate flutter_plugin_tools
+  << : *FLUTTER_SKIP_WEB_TEMPLATE
   create_simulator_script:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-2 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
-      << : *FLUTTER_SKIP_WEB_TEMPLATE
       script:
         - ./script/build_all_plugins_app.sh ios --no-codesign
     - name: lint_darwin_plugins
-      << : *FLUTTER_SKIP_WEB_TEMPLATE
+      environment:
+         CHANNEL: "stable"
       script:
         - ./script/lint_darwin_plugins.sh
     - name: build-ipas+drive-examples
-      << : *FLUTTER_SKIP_WEB_TEMPLATE
       environment:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
@@ -146,6 +144,6 @@ task:
       script:
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh drive-examples
-  depends_on:
-    - format
-    - publishable
+      depends_on:
+        - build_all_plugins_ipa # Upload the master cache first.
+        - lint_darwin_plugins # Upload the stable cache first.
