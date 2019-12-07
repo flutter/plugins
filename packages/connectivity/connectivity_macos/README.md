@@ -20,7 +20,7 @@ This is what the above means to your `pubspec.yaml`:
 dependencies:
   ...
   connectivity: ^0.4.6
-  connectivity_macos: ^0.0.0
+  connectivity_macos: ^0.0.1
   ...
 ```
 
