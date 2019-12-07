@@ -1,3 +1,19 @@
+## 0.4.5+8
+
+* Update documentation to explain when connectivity updates are received on Android.
+
+## 0.4.5+7
+
+* Fix unawaited futures in the example app and tests.
+
+## 0.4.5+6
+
+* Fix singleton Reachability problem on iOS.
+
+## 0.4.5+5
+
+* Add an analyzer check for the public documentation.
+
 ## 0.4.5+4
 
 * Stability and Maintainability: update documentations.
