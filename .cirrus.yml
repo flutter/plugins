@@ -16,7 +16,7 @@ task:
       script:
         # Temporarily disabling CI on stable to allow using new Flutter features closely
         # before a new release.
-        # TODO(amirh): re-enable this
+        # TODO(franciscojma): re-enable this
         - flutter channel master
         - ./script/check_publish.sh
     - name: format
