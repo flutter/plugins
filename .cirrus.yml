@@ -15,6 +15,7 @@ task:
     CHANNEL: "master" # Default to flutter master, tests can override.
   channel_script:
     - flutter channel $CHANNEL
+    - if [[ -f "$FLUTTER_HOME" ]]; then rm -rf $FLUTTER_HOME/bin/cache/*; fi
   # flutter_pkg_cache:
   #   folder: $FLUTTER_HOME/bin/cache/pkg
   #   fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
@@ -110,6 +111,7 @@ task:
     CHANNEL: "master" # Default to flutter master, tests can override.
   channel_script:
     - flutter channel $CHANNEL
+    - if [[ -f "$FLUTTER_HOME" ]]; then rm -rf $FLUTTER_HOME/bin/cache/*; fi
   # flutter_pkg_cache:
   #   folder: $FLUTTER_HOME/bin/cache/pkg
   #   fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
