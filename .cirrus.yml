@@ -15,12 +15,15 @@ task:
     CHANNEL: "master" # Default to flutter master, tests can override.
   channel_script:
     - flutter channel $CHANNEL
-  flutter_pkg_cache:
-    folder: $FLUTTER_HOME/bin/cache/pkg
-    fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
-  flutter_artifacts_cache:
-    folder: $FLUTTER_HOME/bin/cache/artifacts
-    fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
+  # flutter_pkg_cache:
+  #   folder: $FLUTTER_HOME/bin/cache/pkg
+  #   fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
+  # flutter_artifacts_cache:
+  #   folder: $FLUTTER_HOME/bin/cache/artifacts
+  #   fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
+  # dart_cache:
+  #   folder: $FLUTTER_HOME/bin/cache/dart-sdk
+  #   fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
   upgrade_script:
     - flutter upgrade
     - git fetch origin master
@@ -47,20 +50,20 @@ task:
           CHANNEL: "stable"
       test_script:
         - ./script/incremental_build.sh test
-      depends_on:
-        - publishable # Upload the stable cache first.
-        - format # Upload the master cache first.
+      # depends_on:
+      #   - publishable # Upload the stable cache first.
+      #   - format # Upload the master cache first.
     - name: analyze
       script:
         - ./script/incremental_build.sh analyze
-      depends_on:
-        - format # Upload the master cache first.
+      # depends_on:
+      #   - format # Upload the master cache first.
     - name: build_all_plugins_apk
       << : *FLUTTER_SKIP_WEB_TEMPLATE
       script:
         - ./script/build_all_plugins_app.sh apk
-      depends_on:
-        - format # Upload the master cache first.
+      # depends_on:
+      #   - format # Upload the master cache first.
     - name: build-apks+java-test+firebase-test-lab
       << : *FLUTTER_SKIP_WEB_TEMPLATE
       environment:
@@ -93,9 +96,9 @@ task:
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
-      depends_on:
-        - publishable
-        - format
+      # depends_on:
+      #   - publishable
+      #   - format
 
 task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
@@ -107,12 +110,15 @@ task:
     CHANNEL: "master" # Default to flutter master, tests can override.
   channel_script:
     - flutter channel $CHANNEL
-  flutter_pkg_cache:
-    folder: $FLUTTER_HOME/bin/cache/pkg
-    fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
-  flutter_artifacts_cache:
-    folder: $FLUTTER_HOME/bin/cache/artifacts
-    fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
+  # flutter_pkg_cache:
+  #   folder: $FLUTTER_HOME/bin/cache/pkg
+  #   fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
+  # flutter_artifacts_cache:
+  #   folder: $FLUTTER_HOME/bin/cache/artifacts
+  #   fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
+  # dart_cache:
+  #   folder: $FLUTTER_HOME/bin/cache/dart-sdk
+  #   fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/cache/dart-sdk/revision
   upgrade_script:
     - flutter upgrade
     - git fetch origin master
@@ -144,6 +150,6 @@ task:
       script:
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh drive-examples
-      depends_on:
-        - build_all_plugins_ipa # Upload the master cache first.
-        - lint_darwin_plugins # Upload the stable cache first.
+      # depends_on:
+      #   - build_all_plugins_ipa # Upload the master cache first.
+      #   - lint_darwin_plugins # Upload the stable cache first.
