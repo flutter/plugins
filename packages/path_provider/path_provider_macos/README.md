@@ -1,6 +1,6 @@
 # path_provider_macos
 
-The macos implementation of [`connectivity`].
+The macos implementation of [`path_provider`].
 
 ## Usage
 
