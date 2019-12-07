@@ -78,7 +78,9 @@ abstract class InAppPurchaseConnection {
   /// Failure to call this method before access [instance] will throw an exception.
   ///
   /// It is an no-op on iOS.
-  static void enablePendingPurchases(){_enablePendingPurchase = true;}
+  static void enablePendingPurchases() {
+    _enablePendingPurchase = true;
+  }
 
   /// Query product details for the given set of IDs.
   ///

@@ -9,6 +9,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'consumable_store.dart';
 
 void main() {
+  InAppPurchaseConnection.enablePendingPurchases();
   runApp(MyApp());
 }
 

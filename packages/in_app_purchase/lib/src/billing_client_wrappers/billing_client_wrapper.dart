@@ -49,7 +49,6 @@ typedef void PurchasesUpdatedListener(PurchasesResultWrapper purchasesResult);
 /// some minor changes to account for language differences. Callbacks have been
 /// converted to futures where appropriate.
 class BillingClient {
-
   bool _enablePendingPurchases = false;
 
   BillingClient(PurchasesUpdatedListener onPurchasesUpdated) {
@@ -98,15 +97,18 @@ class BillingClient {
   Future<BillingResultWrapper> startConnection(
       {@required
           OnBillingServiceDisconnected onBillingServiceDisconnected}) async {
-    assert(_enablePendingPurchases, 'enablePendingPurchases() must be called before calling startConnection');
+    assert(_enablePendingPurchases,
+        'enablePendingPurchases() must be called before calling startConnection');
     List<Function> disconnectCallbacks =
         _callbacks[_kOnBillingServiceDisconnected] ??= [];
     disconnectCallbacks.add(onBillingServiceDisconnected);
     return BillingResultWrapper.fromJson(await channel
         .invokeMapMethod<String, dynamic>(
             "BillingClient#startConnection(BillingClientStateListener)",
-            <String, dynamic>{'handle': disconnectCallbacks.length - 1,
-            'enablePendingPurchases': _enablePendingPurchases}));
+            <String, dynamic>{
+          'handle': disconnectCallbacks.length - 1,
+          'enablePendingPurchases': _enablePendingPurchases
+        }));
   }
 
   /// Calls
