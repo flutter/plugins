@@ -4,24 +4,6 @@ flutter_skip_web_template: &FLUTTER_SKIP_WEB_TEMPLATE
     # https://github.com/flutter/flutter/issues/42864
     - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
 
-# fingerprint_script doesn't seem to work in templates.
-# To keep OS caches from colliding, split them into separate caches.
-cache_stable_linux_template: &CACHE_STABLE_LINUX_TEMPLATE
-  pub_linux_cache:
-    folder: $HOME/.pub-cache
-  flutter_pkg_linux_cache:
-    folder: $FLUTTER_HOME/bin/cache/pkg
-  flutter_artifacts_linux_cache:
-    folder: $FLUTTER_HOME/bin/cache/artifacts
-
-cache_stable_macos_template: &CACHE_STABLE_MACOS_TEMPLATE
-  pub_macos_cache:
-    folder: $HOME/.pub-cache
-  flutter_pkg_macos_cache:
-    folder: $FLUTTER_HOME/bin/cache/pkg
-  flutter_artifacts_macos_cache:
-    folder: $FLUTTER_HOME/bin/cache/artifacts
-
 task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   container:
@@ -31,29 +13,32 @@ task:
   environment:
     PATH: $PATH:$HOME/.pub-cache/bin
     CHANNEL: "stable" # Default to flutter stable, tests can override.
+  pub_cache:
+    folder: $HOME/.pub-cache
+    fingerprint_script: echo $OS; grep -r --include=pubspec.yaml '\:.*[0-9]\+\.' . | grep -v 'version\|flutter\|sdk'| xargs
+  flutter_pkg_cache:
+    folder: $FLUTTER_HOME/bin/cache/pkg
+    fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
+  flutter_artifacts_cache:
+    folder: $FLUTTER_HOME/bin/cache/artifacts
+    fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
   upgrade_script:
-    - which flutter
     - flutter channel $CHANNEL
-    - date
     - flutter upgrade
     - git fetch origin master
-    - date
   activate_script: pub global activate flutter_plugin_tools
   matrix:
     - name: publishable
-      << : *CACHE_STABLE_LINUX_TEMPLATE
       script:
         - ./script/check_publish.sh
     - name: format
       environment:
          CHANNEL: "master"
       install_script:
-        - date
         - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
         - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main"
         - sudo apt-get update
         - sudo apt-get install -y --allow-unauthenticated clang-format-7
-        - date
       format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-7
     - name: test
       << : *FLUTTER_SKIP_WEB_TEMPLATE
@@ -69,7 +54,6 @@ task:
       script:
         - ./script/incremental_build.sh analyze
     - name: build_all_plugins_apk
-      << : *CACHE_STABLE_LINUX_TEMPLATE
       << : *FLUTTER_SKIP_WEB_TEMPLATE
       script:
         - ./script/build_all_plugins_app.sh apk
@@ -88,7 +72,6 @@ task:
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
       script:
-        - date
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
         # See: https://github.com/flutter/flutter/issues/24935
@@ -109,7 +92,6 @@ task:
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
-        - date
       depends_on:
         - format
         - publishable
@@ -122,25 +104,30 @@ task:
     COCOAPODS_DISABLE_STATS: true
     PATH: $PATH:/usr/local/bin:$HOME/.pub-cache/bin
     CHANNEL: "stable" # Default to flutter stable, tests can override.
+  pub_cache:
+    folder: $HOME/.pub-cache
+    fingerprint_script: echo $OS; echo $CHANNEL; grep -r --include=pubspec.yaml '\:.*[0-9]\+\.' . | grep -v 'version\|flutter\|sdk'| xargs
+  flutter_pkg_cache:
+    folder: $FLUTTER_HOME/bin/cache/pkg
+    fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
+  flutter_artifacts_cache:
+    folder: $FLUTTER_HOME/bin/cache/artifacts
+    fingerprint_script: echo $OS; cat ${FLUTTER_HOME}/bin/internal/*.version
   upgrade_script:
     - which flutter
     - flutter channel $CHANNEL
-    - date
     - flutter upgrade
     - git fetch origin master
-    - date
   activate_script: pub global activate flutter_plugin_tools
   create_simulator_script:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-2 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
-      << : *CACHE_STABLE_MACOS_TEMPLATE
       << : *FLUTTER_SKIP_WEB_TEMPLATE
       script:
         - ./script/build_all_plugins_app.sh ios --no-codesign
     - name: lint_darwin_plugins
-      << : *CACHE_STABLE_MACOS_TEMPLATE
       << : *FLUTTER_SKIP_WEB_TEMPLATE
       script:
         - ./script/lint_darwin_plugins.sh
@@ -157,11 +144,8 @@ task:
           CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       script:
-        - date
         - ./script/incremental_build.sh build-examples --ipa
-        - date
         - ./script/incremental_build.sh drive-examples
-        - date
   depends_on:
     - format
     - publishable
