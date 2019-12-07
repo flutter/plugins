@@ -25,15 +25,6 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   int textureId;
 
   @override
-  String get dataSource => '';
-
-  @override
-  DataSourceType get _dataSourceType => DataSourceType.file;
-
-  @override
-  String get _package => null;
-
-  @override
   Future<Duration> get position async => value.position;
 
   @override
@@ -52,17 +43,14 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<void> setLooping(bool looping) async {}
 
   @override
-  VideoFormat get formatHint => null;
+  Future<void> setAssetDataSource(String dataSource, {String package}) async {}
 
   @override
-  Future<void> setAssetDataSource(String dataSource, {String package}) {}
-
-  @override
-  Future<void> setFileDataSource(File file) {}
+  Future<void> setFileDataSource(File file) async {}
 
   @override
   Future<void> setNetworkDataSource(String dataSource,
-      {VideoFormat formatHint}) {}
+      {VideoFormat formatHint}) async {}
 }
 
 void main() {
