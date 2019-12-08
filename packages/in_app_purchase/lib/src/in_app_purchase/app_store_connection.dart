@@ -154,7 +154,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
           .toList();
     }
     List<String> invalidIdentifiers = response.invalidProductIdentifiers ?? [];
-    if (productDetails.length == 0) {
+    if (productDetails.isEmpty) {
       invalidIdentifiers = identifiers.toList();
     }
     ProductDetailsResponse productDetailsResponse = ProductDetailsResponse(

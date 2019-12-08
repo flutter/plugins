@@ -17,6 +17,12 @@ const MethodChannel _kChannel =
 /// print("Version is: ${packageInfo.version}");
 /// ```
 class PackageInfo {
+  /// Constructs an instance with the given values for testing. [PackageInfo]
+  /// instances constructed this way won't actually reflect any real information
+  /// from the platform, just whatever was passed in at construction time.
+  ///
+  /// See [fromPlatform] for the right API to get a [PackageInfo] that's
+  /// actually populated with real data.
   PackageInfo({
     this.appName,
     this.packageName,
@@ -24,28 +30,23 @@ class PackageInfo {
     this.buildNumber,
   });
 
-  static Future<PackageInfo> _fromPlatform;
+  static PackageInfo _fromPlatform;
 
   /// Retrieves package information from the platform.
   /// The result is cached.
   static Future<PackageInfo> fromPlatform() async {
-    if (_fromPlatform == null) {
-      final Completer<PackageInfo> completer = Completer<PackageInfo>();
-
-      _kChannel.invokeMapMethod<String, dynamic>('getAll').then(
-          (dynamic result) {
-        final Map<dynamic, dynamic> map = result;
-
-        completer.complete(PackageInfo(
-          appName: map["appName"],
-          packageName: map["packageName"],
-          version: map["version"],
-          buildNumber: map["buildNumber"],
-        ));
-      }, onError: completer.completeError);
-
-      _fromPlatform = completer.future;
+    if (_fromPlatform != null) {
+      return _fromPlatform;
     }
+
+    final Map<String, dynamic> map =
+        await _kChannel.invokeMapMethod<String, dynamic>('getAll');
+    _fromPlatform = PackageInfo(
+      appName: map["appName"],
+      packageName: map["packageName"],
+      version: map["version"],
+      buildNumber: map["buildNumber"],
+    );
     return _fromPlatform;
   }
 

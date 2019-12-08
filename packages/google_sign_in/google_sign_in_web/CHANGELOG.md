@@ -1,3 +1,7 @@
+## 0.8.1+1
+
+* Add missing documentation.
+
 ## 0.8.1
 
 * Add podspec to enable compilation on iOS.

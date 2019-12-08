@@ -1,3 +1,9 @@
+## 0.4.0+12
+
+* Fix pedantic lints. This involved internally refactoring how the
+  `PackageInfo.fromPlatform` code handled futures, but shouldn't change existing
+  functionality.
+
 ## 0.4.0+11
 
 * Remove AndroidX warnings.

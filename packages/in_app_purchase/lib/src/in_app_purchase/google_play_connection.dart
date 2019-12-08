@@ -238,7 +238,7 @@ class GooglePlayConnection
         ..status = status
         ..error = error);
     }).toList();
-    if (!purchases.isEmpty) {
+    if (purchases.isNotEmpty) {
       return Future.wait(purchases);
     } else {
       return [
