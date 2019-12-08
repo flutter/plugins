@@ -14,7 +14,10 @@ task:
   matrix:
     - name: publishable
       script:
-        - flutter channel stable
+        # Temporarily disabling CI on stable to allow using new Flutter features closely
+        # before a new release.
+        # TODO(franciscojma): re-enable this
+        - flutter channel master
         - ./script/check_publish.sh
     - name: format
       install_script:
