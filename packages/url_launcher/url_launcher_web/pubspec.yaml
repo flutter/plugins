@@ -2,7 +2,7 @@ name: url_launcher_web
 description: Web platform implementation of url_launcher
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher_web
-version: 0.1.0
+version: 0.1.0+1
 
 flutter:
   plugin:
