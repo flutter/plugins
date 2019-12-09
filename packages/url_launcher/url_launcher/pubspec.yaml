@@ -14,6 +14,8 @@ flutter:
         pluginClass: FLTURLLauncherPlugin
       web:
         default_package: url_launcher_web
+      macos:
+        default_package: url_launcher_macos
 
 dependencies:
   flutter:
