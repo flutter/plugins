@@ -1,8 +1,6 @@
 # espresso
 
-A new flutter plugin project.
-
-This package provides bindings for Espresso tests of Flutter apps.
+This package provides bindings for Espresso tests of Flutter Android apps.
 
 ## Installation
 
