@@ -272,7 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('TextField in Dialog'),
+            title: Text('Set Image Picker Options'),
             content: Column(
               children: <Widget>[
                 TextField(
