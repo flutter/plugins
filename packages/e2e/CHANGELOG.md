@@ -1,3 +1,7 @@
+## 0.2.2+3
+
+* Remove the deprecated `author:` field from pubspec.yaml
+
 ## 0.2.2+2
 
 * Adds an android dummy project to silence warnings and removes unnecessary

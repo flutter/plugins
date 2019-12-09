@@ -1,3 +1,7 @@
+## 0.5.21+15
+
+* Remove the deprecated `author:` field from pubspec.yaml
+
 ## 0.5.21+14
 
 * Adds support for toggling 3D buildings.

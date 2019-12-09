@@ -1,3 +1,7 @@
+## 4.0.16
+
+* Remove the deprecated `author:` field from pubspec.yaml
+
 ## 4.0.15
 
 * Export SignInOption from interface since it is used in the frontend as a type.

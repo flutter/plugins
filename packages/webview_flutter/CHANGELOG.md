@@ -1,3 +1,7 @@
+## 0.3.18+1
+
+* Remove the deprecated `author:` field from pubspec.yaml
+
 ## 0.3.18
 
 * Add support for onPageStarted event.

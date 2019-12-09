@@ -1,3 +1,7 @@
+## 0.8.1+2
+
+* Remove the deprecated `author:` field from pubspec.yaml
+
 ## 0.8.1+1
 
 * Add missing documentation.

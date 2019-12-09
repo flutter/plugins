@@ -1,3 +1,7 @@
+## 0.5.7+2
+
+* Remove the deprecated `author:` field from pubspec.yaml
+
 ## 0.5.7+1
 
 * Fix example null exception.

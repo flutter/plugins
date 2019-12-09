@@ -1,3 +1,7 @@
+## 0.4.1+4
+
+* Remove the deprecated `author:` field from pubspec.yaml
+
 ## 0.4.1+3
 
 * Improve documentation and add unit test coverage.

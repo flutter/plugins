@@ -1,3 +1,7 @@
+## 0.3.1+6
+
+* Remove the deprecated `author:` field from pubspec.yaml
+
 ## 0.3.1+5
 
 * Fix pedantic linter errors.
