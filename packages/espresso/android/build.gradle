@@ -38,12 +38,6 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'
     implementation 'com.google.code.gson:gson:2.8.6'
     androidTestImplementation 'org.hamcrest:hamcrest:2.2'
-//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-//    androidTestImplementation 'androidx.test:runner:1.1.0'
-//    androidTestImplementation 'androidx.test:rules:1.1.0'
-//    implementation 'androidx.test.ext:junit:1.0.0'
-//    implementation 'androidx.test.ext:truth:1.0.0'
-//    implementation 'com.google.truth:truth:0.42'
 
     testImplementation 'junit:junit:4.12'
     testImplementation "com.google.truth:truth:1.0"
