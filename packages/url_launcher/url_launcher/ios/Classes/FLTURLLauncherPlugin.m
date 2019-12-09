@@ -4,10 +4,10 @@
 
 #import <SafariServices/SafariServices.h>
 
-#import "UrlLauncherPlugin.h"
+#import "FLTURLLauncherPlugin.h"
 
 API_AVAILABLE(ios(9.0))
-@interface FLTUrlLaunchSession : NSObject <SFSafariViewControllerDelegate>
+@interface FLTURLLaunchSession : NSObject <SFSafariViewControllerDelegate>
 
 @property(copy, nonatomic) FlutterResult flutterResult;
 @property(strong, nonatomic) NSURL *url;
@@ -16,7 +16,7 @@ API_AVAILABLE(ios(9.0))
 
 @end
 
-@implementation FLTUrlLaunchSession
+@implementation FLTURLLaunchSession
 
 - (instancetype)initWithUrl:url withFlutterResult:result {
   self = [super init];
@@ -55,19 +55,19 @@ API_AVAILABLE(ios(9.0))
 @end
 
 API_AVAILABLE(ios(9.0))
-@interface FLTUrlLauncherPlugin ()
+@interface FLTURLLauncherPlugin ()
 
-@property(strong, nonatomic) FLTUrlLaunchSession *currentSession;
+@property(strong, nonatomic) FLTURLLaunchSession *currentSession;
 
 @end
 
-@implementation FLTUrlLauncherPlugin
+@implementation FLTURLLauncherPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher"
                                   binaryMessenger:registrar.messenger];
-  FLTUrlLauncherPlugin *plugin = [[FLTUrlLauncherPlugin alloc] init];
+  FLTURLLauncherPlugin *plugin = [[FLTURLLauncherPlugin alloc] init];
   [registrar addMethodCallDelegate:plugin channel:channel];
 }
 
@@ -131,7 +131,7 @@ API_AVAILABLE(ios(9.0))
 
 - (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
   NSURL *url = [NSURL URLWithString:urlString];
-  self.currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
+  self.currentSession = [[FLTURLLaunchSession alloc] initWithUrl:url withFlutterResult:result];
   __weak typeof(self) weakSelf = self;
   self.currentSession.didFinish = ^(void) {
     weakSelf.currentSession = nil;
