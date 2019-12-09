@@ -5,9 +5,10 @@ version: 0.3.4+8
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.androidintent
-    iosPrefix: FLT
-    pluginClass: AndroidIntentPlugin
+    platforms:
+      android:
+        package: io.flutter.plugins.androidintent
+        pluginClass: AndroidIntentPlugin
 
 dependencies:
   flutter:
@@ -21,4 +22,4 @@ dev_dependencies:
     sdk: flutter
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
-  flutter: ">=1.6.7 <2.0.0"
+  flutter: ">=1.10.0 <2.0.0"

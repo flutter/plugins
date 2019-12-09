@@ -6,9 +6,12 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/video_player/v
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.videoplayer
-    iosPrefix: FLT
-    pluginClass: VideoPlayerPlugin
+    platforms:
+      android:
+        package: io.flutter.plugins.videoplayer
+        pluginClass: VideoPlayerPlugin
+      ios:
+        pluginClass: FLTVideoPlayerPlugin
 
 dependencies:
   meta: "^1.0.5"
@@ -23,4 +26,4 @@ dev_dependencies:
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
-  flutter: ">=1.9.1+hotfix.5 <2.0.0"
+  flutter: ">=1.10.0 <2.0.0"

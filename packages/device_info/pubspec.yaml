@@ -6,9 +6,12 @@ version: 0.4.1+4
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.deviceinfo
-    iosPrefix: FLT
-    pluginClass: DeviceInfoPlugin
+    platforms:
+      android:
+        package: io.flutter.plugins.deviceinfo
+        pluginClass: DeviceInfoPlugin
+      ios:
+        pluginClass: FLTDeviceInfoPlugin
 
 dependencies:
   flutter:

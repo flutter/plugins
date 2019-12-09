@@ -20,9 +20,13 @@ dev_dependencies:
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.camera
-    pluginClass: CameraPlugin
+    platforms:
+      android:
+        package: io.flutter.plugins.camera
+        pluginClass: CameraPlugin
+      ios:
+        pluginClass: CameraPlugin
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
-  flutter: ">=1.6.7 <2.0.0"
+  flutter: ">=1.10.0 <2.0.0"

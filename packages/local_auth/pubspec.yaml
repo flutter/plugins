@@ -6,9 +6,12 @@ version: 0.6.1+1
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.localauth
-    iosPrefix: FLT
-    pluginClass: LocalAuthPlugin
+    platforms:
+      android:
+        package: io.flutter.plugins.localauth
+        pluginClass: LocalAuthPlugin
+      ios:
+        pluginClass: FLTLocalAuthPlugin
 
 dependencies:
   flutter:
@@ -23,4 +26,4 @@ dev_dependencies:
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
-  flutter: ">=1.5.0 <2.0.0"
+  flutter: ">=1.10.0 <2.0.0"
