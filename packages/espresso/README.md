@@ -81,9 +81,7 @@ public class MainActivityTest {
 
     @Test
     public void performClick() {
-        WidgetInteraction interaction =
-                onFlutterWidget(withTooltip("Increment")).perform(click());
-        assertThat(interaction).isNotNull();
+        onFlutterWidget(withTooltip("Increment")).perform(click());
         onFlutterWidget(withValueKey("CountText")).check(matches(withText("Button tapped 1 time.")));
     }
  ```
