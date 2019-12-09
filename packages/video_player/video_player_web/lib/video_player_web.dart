@@ -42,8 +42,27 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
     final int textureId = _textureCounter;
     _textureCounter++;
 
+    Uri uri;
+    switch (dataSource.sourceType) {
+      case DataSourceType.network:
+        uri = Uri.parse(dataSource.uri);
+        break;
+      case DataSourceType.asset:
+        // 'webOnlyAssetManager' is only in the web version of dart:ui
+        // ignore: undefined_prefixed_name
+        String assetUrl = ui.webOnlyAssetManager.getAssetUrl(dataSource.asset);
+        if (dataSource.package != null && dataSource.package.isNotEmpty) {
+          assetUrl = 'packages/${dataSource.package}/$assetUrl';
+        }
+        uri = Uri.parse(assetUrl);
+        break;
+      default:
+        return Future.error(
+            UnimplementedError('video_player cannot play files on the web'));
+    }
+
     final _VideoPlayer player = _VideoPlayer(
-      uri: Uri.parse(dataSource.uri),
+      uri: uri,
       textureId: textureId,
     );
 
