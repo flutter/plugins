@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Add support for Navigation History observation.
+
 ## 1.0.2
 
 * Android Code Inspection and Clean up.

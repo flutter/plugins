@@ -148,6 +148,12 @@ class FlutterWebViewClient {
     }
   }
 
+  private void onUpdateVisitedHistory(String url) {
+    HashMap<String, Object> args = new HashMap<>();
+    args.put("url", url);
+    methodChannel.invokeMethod("onUpdateVisitedHistory", args);
+  }
+
   // This method attempts to avoid using WebViewClientCompat due to bug
   // https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
   // https://github.com/flutter/flutter/issues/29446.
@@ -163,6 +169,12 @@ class FlutterWebViewClient {
 
   private WebViewClient internalCreateWebViewClient() {
     return new WebViewClient() {
+      @Override
+      public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+        FlutterWebViewClient.this.onUpdateVisitedHistory(url);
+        super.doUpdateVisitedHistory(view, url, isReload);
+      }
+
       @TargetApi(Build.VERSION_CODES.N)
       @Override
       public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -204,6 +216,12 @@ class FlutterWebViewClient {
 
   private WebViewClientCompat internalCreateWebViewClientCompat() {
     return new WebViewClientCompat() {
+      @Override
+      public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+        FlutterWebViewClient.this.onUpdateVisitedHistory(url);
+        super.doUpdateVisitedHistory(view, url, isReload);
+      }
+
       @Override
       public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
         return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, request);

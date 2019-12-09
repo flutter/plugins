@@ -145,6 +145,9 @@ typedef void PageFinishedCallback(String url);
 /// Signature for when a [WebView] has failed to load a resource.
 typedef void WebResourceErrorCallback(WebResourceError error);
 
+/// Signature for when a [WebView] had a history update.
+typedef void PageUpdateVisitedHistoryCallback(String url);
+
 /// Specifies possible restrictions on automatic media playback.
 ///
 /// This is typically used in [WebView.initialMediaPlaybackPolicy].
@@ -214,6 +217,7 @@ class WebView extends StatefulWidget {
     this.onPageStarted,
     this.onPageFinished,
     this.onWebResourceError,
+    this.onUpdateVisitedHistory,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
@@ -349,6 +353,12 @@ class WebView extends StatefulWidget {
   /// This can be called for any resource (iframe, image, etc.), not just for
   /// the main page.
   final WebResourceErrorCallback onWebResourceError;
+
+  /// Invoked when the URL in the browser changed.
+  ///
+  /// This is always triggered when the URL changes. Also when this is done via
+  /// JavaScript and no [onPageStarted] or [onPageFinished] events would be fired.
+  final PageUpdateVisitedHistoryCallback onUpdateVisitedHistory;
 
   /// Controls whether WebView debugging is enabled.
   ///
@@ -557,6 +567,13 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   void onWebResourceError(WebResourceError error) {
     if (_widget.onWebResourceError != null) {
       _widget.onWebResourceError(error);
+    }
+  }
+
+  @override
+  void onUpdateVisitedHistory(String url) {
+    if (_widget.onUpdateVisitedHistory != null) {
+      _widget.onUpdateVisitedHistory(url);
     }
   }
 

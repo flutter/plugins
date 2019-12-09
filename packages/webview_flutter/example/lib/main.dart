@@ -82,6 +82,9 @@ class _WebViewExampleState extends State<WebViewExample> {
             print('Page finished loading: $url');
           },
           gestureNavigationEnabled: true,
+          onUpdateVisitedHistory: (String url) {
+            print('Update visited history: $url');
+          },
         );
       }),
       floatingActionButton: favoriteButton(),

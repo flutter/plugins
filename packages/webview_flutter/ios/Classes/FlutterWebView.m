@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FlutterWebView.h"
+#import "FLTWKHistoryDelegate.h"
 #import "FLTWKNavigationDelegate.h"
 #import "JavaScriptChannelHandler.h"
 
@@ -64,6 +65,7 @@
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
   FLTWKNavigationDelegate* _navigationDelegate;
+  FLTWKHistoryDelegate* _historyDelegate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -95,6 +97,7 @@
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
+    _historyDelegate = [[FLTWKHistoryDelegate alloc] initWithWebView:_webView channel:_channel];
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
@@ -117,6 +120,10 @@
     }
   }
   return self;
+}
+
+- (void)dealloc {
+  [_historyDelegate stopObserving:_webView];
 }
 
 - (UIView*)view {

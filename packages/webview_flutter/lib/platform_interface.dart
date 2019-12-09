@@ -31,6 +31,9 @@ abstract class WebViewPlatformCallbacksHandler {
 
   /// Report web resource loading error to the host application.
   void onWebResourceError(WebResourceError error);
+
+  /// Invoked by [WebViewPlatformController] when the URL has changed.
+  void onUpdateVisitedHistory(String url);
 }
 
 /// Possible error type categorizations used by [WebResourceError].
