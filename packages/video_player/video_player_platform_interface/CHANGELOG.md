@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Remove author field from pubspec.yaml
+
 ## 1.0.3
 
 * Document public API.
