@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
         ),
         body: Center(
             child: Text(
-                'This plugin only provides Android Lifecycle API\n for other Android plugins. NO DART!')),
+                'This plugin only provides Android Lifecycle API\n for other Android plugins.')),
       ),
     );
   }
