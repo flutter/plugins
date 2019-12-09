@@ -12,7 +12,7 @@ flutter:
         package: io.flutter.plugins.urllauncher
         pluginClass: UrlLauncherPlugin
       ios:
-        pluginClass: FLTUrlLauncherPlugin
+        pluginClass: FLTURLLauncherPlugin
       web:
         default_package: url_launcher_web
 
