@@ -1,3 +1,7 @@
+## 0.6.3
+
+* Video Capture from Camera is supporting Duration and Quality parameters.
+
 ## 0.6.2+1
 
 * Android: Fix a crash when a non-image file is picked.
