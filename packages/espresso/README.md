@@ -87,13 +87,26 @@ public class MainActivityTest {
     }
  ```
 
+You'll need to create a test app that enables the Flutter driver extension.
+You can put this in your test_driver/ folder, e.g. test_driver/example.dart.
+
+```
+import 'package:flutter_driver/driver_extension.dart';
+import '../lib/main.dart' as app;
+
+void main() {
+  enableFlutterDriverExtension();
+  app.main();
+}
+```
+
 The following command line command runs the test locally:
 
 ```
-./gradlew app:connectedAndroidTest -Ptarget=`pwd`/../test_driver/shared_preferences.dart
+./gradlew app:connectedAndroidTest -Ptarget=`pwd`/../test_driver/example.dart
 ```
 
-Tests can also be uploaded to Firebase Test Lab:
+Espresso tests can also be run on [Firebase Test Lab](https://firebase.google.com/docs/test-lab):
 
 ```
 ./gradlew app:assembleAndroidTest
@@ -107,7 +120,3 @@ gcloud firebase test android run --type instrumentation \
   --results-bucket=<RESULTS_BUCKET> \
   --results-dir=<RESULTS_DIRECTORY>
 ```
-
-This guarantees that UrlLauncherPlatform.instance cannot be set to an object that `implements`
-UrlLauncherPlatform (it can only be set to an object that `extends` UrlLauncherPlatform).
-
