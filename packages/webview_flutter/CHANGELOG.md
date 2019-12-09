@@ -1,6 +1,20 @@
-## 0.3.15+4
+## 0.3.19
 
 * iOS now can open iframe links and target _blank links.
+
+## 0.3.18
+
+* Add support for onPageStarted event.
+
+## 0.3.17
+
+* Fix pedantic lint errors. Added missing documentation and awaited some futures
+  in tests and the example app.
+
+## 0.3.16
+
+* Add support for async NavigationDelegates. Synchronous NavigationDelegates
+  should still continue to function without any change in behavior.
 
 ## 0.3.15+3
 

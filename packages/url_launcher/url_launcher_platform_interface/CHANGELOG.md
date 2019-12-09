@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Minor DartDoc changes and add a lint for missing DartDocs.
+
 ## 1.0.2
 
 * Use package URI in test directory to import code from lib.

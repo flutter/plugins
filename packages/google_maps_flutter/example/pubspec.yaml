@@ -15,6 +15,7 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   test: ^1.6.0
+  e2e: ^0.2.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

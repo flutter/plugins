@@ -1,3 +1,19 @@
+## 0.5.21+14
+
+* Adds support for toggling 3D buildings.
+
+## 0.5.21+13
+
+* Add documentation.
+
+## 0.5.21+12
+
+* Update driver tests in the example app to e2e tests.
+
+## 0.5.21+11
+
+* Define clang module for iOS, fix analyzer warnings.
+
 ## 0.5.21+10
 
 * Cast error.code to unsigned long to avoid using NSInteger as %ld format warnings.
