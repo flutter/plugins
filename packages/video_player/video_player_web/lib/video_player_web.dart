@@ -56,9 +56,9 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
         }
         uri = Uri.parse(assetUrl);
         break;
-      default:
-        return Future.error(
-            UnimplementedError('video_player cannot play files on the web'));
+      case DataSourceType.file:
+        return Future.error(UnimplementedError(
+            'web implementation of video_player cannot play local files'));
     }
 
     final _VideoPlayer player = _VideoPlayer(
