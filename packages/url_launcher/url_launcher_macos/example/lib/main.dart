@@ -5,7 +5,6 @@
 // ignore_for_file: public_member_api_docs
 
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -184,18 +183,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text(
                     'Launch a universal link in a native app, fallback to Safari.(Youtube)'),
               ),
-              const Padding(padding: EdgeInsets.all(16.0)),
-              if (!Platform.isMacOS) 
-                RaisedButton(
-                  onPressed: () => setState(() {
-                    _launched = _launchInWebViewOrVC(toLaunch);
-                    Timer(const Duration(seconds: 5), () {
-                      print('Closing WebView after 5 seconds...');
-                      closeWebView();
-                    });
-                  }),
-                  child: const Text('Launch in app + close after 5 seconds'),
-                ),
               const Padding(padding: EdgeInsets.all(16.0)),
               FutureBuilder<void>(future: _launched, builder: _launchStatus),
             ],
