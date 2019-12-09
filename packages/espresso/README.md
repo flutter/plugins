@@ -1,10 +1,11 @@
 # espresso
 
-This package provides bindings for Espresso tests of Flutter Android apps.
+Provides bindings for Espresso tests of Flutter Android apps.
 
 ## Installation
 
-Add ```android:usesCleartextTraffic="true"``` to your ```<application>``` in your AndroidManifest.xml.
+Add ```android:usesCleartextTraffic="true"``` in the ```<application>``` in the AndroidManifest.xml
+of the Android app used for testing.
 
 Add dependencies to your build.gradle:
 
@@ -16,7 +17,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 
     // Core library
-    androidTestImplementation 'androidx.test:core:1.2.0'
+    api 'androidx.test:core:1.2.0'
 
     // AndroidJUnitRunner and JUnit Rules
     androidTestImplementation 'androidx.test:runner:1.1.0'
@@ -79,9 +80,9 @@ public class MainActivityTest {
     }
 
     @Test
-    public void performSyntheticClick() {
+    public void performClick() {
         WidgetInteraction interaction =
-                onFlutterWidget(withTooltip("Increment")).perform(syntheticClick());
+                onFlutterWidget(withTooltip("Increment")).perform(click());
         assertThat(interaction).isNotNull();
         onFlutterWidget(withValueKey("CountText")).check(matches(withText("Button tapped 1 time.")));
     }
