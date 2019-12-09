@@ -2,6 +2,7 @@
 
 * Add support for onPageStarted event.
 * Remove the deprecated `author:` field from pubspec.yaml
+* Migrate to the new pubspec platforms manifest.
 
 ## 0.3.17
 
