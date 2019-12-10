@@ -106,14 +106,9 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
               new EventChannel(
                   flutterState.binaryMessenger, "flutter.io/videoPlayer/videoEvents" + handle.id());
 
-          EventChannel errorChannel =
-              new EventChannel(
-                  flutterState.binaryMessenger, "flutter.io/videoPlayer/videoErrors" + handle.id());
-
             VideoPlayer player = new VideoPlayer(
                 flutterState.applicationContext,
                 eventChannel,
-                errorChannel,
                 handle,
                 result);
 
