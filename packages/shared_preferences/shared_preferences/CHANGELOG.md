@@ -1,6 +1,6 @@
 ## 0.5.4+10
 
-* Adds a `shared_preferences_macos` package
+* Adds a `shared_preferences_macos` package.
 
 ## 0.5.4+9
 
