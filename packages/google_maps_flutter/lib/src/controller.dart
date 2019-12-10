@@ -14,10 +14,6 @@ class GoogleMapController {
     channel.setMethodCallHandler(_handleMethodCall);
   }
 
-  /// Initialize control of a [GoogleMap] with [id].
-  ///
-  /// Mainly for internal use when instantiating a [GoogleMapController] passed
-  /// in [GoogleMap.onMapCreated] callback.
   static Future<GoogleMapController> init(
     int id,
     CameraPosition initialCameraPosition,
@@ -34,9 +30,6 @@ class GoogleMapController {
     );
   }
 
-  /// Used to communicate with the native platform.
-  ///
-  /// Accessible only for testing.
   @visibleForTesting
   final MethodChannel channel;
 
@@ -86,14 +79,6 @@ class GoogleMapController {
       case 'map#onLongPress':
         _googleMapState
             .onLongPress(LatLng._fromJson(call.arguments['position']));
-        break;
-      case 'tileOverlay#getTile':
-        return await _googleMapState.onGetTile(
-          call.arguments['tileOverlayId'],
-          call.arguments['x'],
-          call.arguments['y'],
-          call.arguments['zoom'],
-        );
         break;
       default:
         throw MissingPluginException();
@@ -192,33 +177,6 @@ class GoogleMapController {
     });
   }
 
-  /// Updates tile overlays configuration.
-  ///
-  /// Change listeners are notified once the update has been made on the
-  /// platform side.
-  ///
-  /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateTileOverlays(
-      _TileOverlayUpdates tileOverlayUpdates) async {
-    assert(tileOverlayUpdates != null);
-    await channel.invokeMethod<void>(
-      'tileOverlays#update',
-      tileOverlayUpdates._toMap(),
-    );
-  }
-
-  /// Clears the tile cache so that all tiles will be requested again from the
-  /// [TileProvider]. The current tiles from this tile overlay will also be
-  /// cleared from the map after calling this method. The API maintains a small
-  /// in-memory cache of tiles. If you want to cache tiles for longer, you
-  /// should implement an on-disk cache.
-  Future<void> clearTileCache(TileOverlayId tileOverlayId) async {
-    await channel.invokeMethod<void>(
-        'tileOverlays#clearTileCache', <String, dynamic>{
-      'tileOverlayId': tileOverlayId.value,
-    });
-  }
-
   /// Sets the styling of the base map.
   ///
   /// Set to `null` to clear any previous custom styling.
@@ -249,26 +207,5 @@ class GoogleMapController {
     final LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
 
     return LatLngBounds(northeast: northeast, southwest: southwest);
-  }
-
-  /// Return [ScreenCoordinate] of the [LatLng] in the current map view.
-  ///
-  /// A projection is used to translate between on screen location and geographic coordinates.
-  /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
-  /// of the map, not necessarily of the whole screen.
-  Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
-    final Map<String, int> point = await channel.invokeMapMethod<String, int>(
-        'map#getScreenCoordinate', latLng._toJson());
-    return ScreenCoordinate(x: point['x'], y: point['y']);
-  }
-
-  /// Returns [LatLng] corresponding to the [ScreenCoordinate] in the current map view.
-  ///
-  /// Returned [LatLng] corresponds to a screen location. The screen location is specified in screen
-  /// pixels (not display pixels) relative to the top left of the map, not top left of the whole screen.
-  Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) async {
-    final List<dynamic> latLng = await channel.invokeMethod<List<dynamic>>(
-        'map#getLatLng', screenCoordinate._toJson());
-    return LatLng(latLng[0], latLng[1]);
   }
 }

@@ -17,7 +17,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -85,12 +84,10 @@ final class GoogleMapController
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
   private final CirclesController circlesController;
-  private final TileOverlaysController tileOverlayController;
   private List<Object> initialMarkers;
   private List<Object> initialPolygons;
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
-  private List<Object> initialTileOverlays;
 
   GoogleMapController(
       int id,
@@ -112,7 +109,6 @@ final class GoogleMapController
     this.polygonsController = new PolygonsController(methodChannel);
     this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel);
-    this.tileOverlayController = new TileOverlaysController(methodChannel);
   }
 
   @Override
@@ -195,12 +191,10 @@ final class GoogleMapController
     polygonsController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     circlesController.setGoogleMap(googleMap);
-    tileOverlayController.setGoogleMap(googleMap);
     updateInitialMarkers();
     updateInitialPolygons();
     updateInitialPolylines();
     updateInitialCircles();
-    updateInitialTileOverlays();
   }
 
   @Override
@@ -229,32 +223,6 @@ final class GoogleMapController
                 "GoogleMap uninitialized",
                 "getVisibleRegion called prior to map initialization",
                 null);
-          }
-          break;
-        }
-      case "map#getScreenCoordinate":
-        {
-          if (googleMap != null) {
-            LatLng latLng = Convert.toLatLng(call.arguments);
-            Point screenLocation = googleMap.getProjection().toScreenLocation(latLng);
-            result.success(Convert.pointToJson(screenLocation));
-          } else {
-            result.error(
-                "GoogleMap uninitialized",
-                "getScreenCoordinate called prior to map initialization",
-                null);
-          }
-          break;
-        }
-      case "map#getLatLng":
-        {
-          if (googleMap != null) {
-            Point point = Convert.toPoint(call.arguments);
-            LatLng latLng = googleMap.getProjection().fromScreenLocation(point);
-            result.success(Convert.latLngToJson(latLng));
-          } else {
-            result.error(
-                "GoogleMap uninitialized", "getLatLng called prior to map initialization", null);
           }
           break;
         }
@@ -384,24 +352,6 @@ final class GoogleMapController
           result.success(mapStyleResult);
           break;
         }
-      case "tileOverlays#update":
-      {
-        Object tileOverlaysToAdd = call.argument("tileOverlaysToAdd");
-        tileOverlayController.addTileOverlays((List<Object>) tileOverlaysToAdd);
-        Object tileOverlaysToChange = call.argument("tileOverlaysToChange");
-        tileOverlayController.changeTileOverlays((List<Object>) tileOverlaysToChange);
-        Object tileOverlaysToRemove = call.argument("tileOverlayIdsToRemove");
-        tileOverlayController.removeTileOverlays((List<Object>) tileOverlaysToRemove);
-        result.success(null);
-        break;
-      }
-      case "tileOverlays#clearTileCache":
-      {
-        Object rawTileOverlayId = call.argument("tileOverlayId");
-        tileOverlayController.clearTileCache(rawTileOverlayId);
-        result.success(null);
-        break;
-      }
       default:
         result.notImplemented();
     }
@@ -490,20 +440,6 @@ final class GoogleMapController
     mapView.onDestroy();
     registrar.activity().getApplication().unregisterActivityLifecycleCallbacks(this);
   }
-
-  // @Override
-  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
-  // does. This will override it when available even with the annotation commented out.
-  public void onInputConnectionLocked() {
-    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
-  };
-
-  // @Override
-  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
-  // does. This will override it when available even with the annotation commented out.
-  public void onInputConnectionUnlocked() {
-    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
-  };
 
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -698,18 +634,6 @@ final class GoogleMapController
 
   private void updateInitialCircles() {
     circlesController.addCircles(initialCircles);
-  }
-
-  @Override
-  public void setInitialTileOverlays(Object initialTileOverlays) {
-    this.initialTileOverlays = (List<Object>) initialTileOverlays;
-    if(googleMap!=null) {
-      updateInitialTileOverlays();
-    }
-  }
-
-  private void updateInitialTileOverlays() {
-    tileOverlayController.addTileOverlays(initialTileOverlays);
   }
 
   @SuppressLint("MissingPermission")

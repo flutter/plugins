@@ -19,7 +19,6 @@ class FakePlatformGoogleMap {
     updatePolygons(params);
     updatePolylines(params);
     updateCircles(params);
-    updateTileOverlays(params);
   }
 
   MethodChannel channel;
@@ -78,12 +77,6 @@ class FakePlatformGoogleMap {
 
   Set<Circle> circlesToChange;
 
-  Set<TileOverlayId> tileOverlayIdsToRemove;
-
-  Set<TileOverlay> tileOverlaysToAdd;
-
-  Set<TileOverlay> tileOverlaysToChange;
-
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'map#update':
@@ -100,9 +93,6 @@ class FakePlatformGoogleMap {
         return Future<void>.sync(() {});
       case 'circles#update':
         updateCircles(call.arguments);
-        return Future<void>.sync(() {});
-      case 'tileOverlays#update':
-        updateTileOverlays(call.arguments);
         return Future<void>.sync(() {});
       default:
         return Future<void>.sync(() {});
@@ -286,18 +276,6 @@ class FakePlatformGoogleMap {
     circlesToChange = _deserializeCircles(circleUpdates['circlesToChange']);
   }
 
-  void updateTileOverlays(Map<dynamic, dynamic> updateTileOverlayUpdates) {
-    if (updateTileOverlayUpdates == null) {
-      return;
-    }
-    tileOverlaysToAdd =
-        _deserializeTileOverlays(updateTileOverlayUpdates['tileOverlaysToAdd']);
-    tileOverlayIdsToRemove = _deserializeTileOverlayIds(
-        updateTileOverlayUpdates['tileOverlayIdsToRemove']);
-    tileOverlaysToChange = _deserializeTileOverlays(
-        updateTileOverlayUpdates['tileOverlaysToChange']);
-  }
-
   Set<CircleId> _deserializeCircleIds(List<dynamic> circleIds) {
     if (circleIds == null) {
       // TODO(iskakaushik): Remove this when collection literals makes it to stable.
@@ -329,49 +307,6 @@ class FakePlatformGoogleMap {
         circleId: CircleId(circleId),
         visible: visible,
         radius: radius,
-      ));
-    }
-
-    return result;
-  }
-
-  Set<TileOverlayId> _deserializeTileOverlayIds(List<dynamic> tileOverlayIds) {
-    if (tileOverlayIds == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<TileOverlayId>();
-    }
-    return tileOverlayIds
-        .map((dynamic tileOverlayId) => TileOverlayId(tileOverlayId))
-        .toSet();
-  }
-
-  Set<TileOverlay> _deserializeTileOverlays(dynamic tileOverlays) {
-    if (tileOverlays == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<TileOverlay>();
-    }
-    final List<dynamic> tileOverlaysData = tileOverlays;
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // https://github.com/flutter/flutter/issues/28312
-    // ignore: prefer_collection_literals
-    final Set<TileOverlay> result = Set<TileOverlay>();
-    for (Map<dynamic, dynamic> tileOverlayData in tileOverlaysData) {
-      final String tileOverlayId = tileOverlayData['tileOverlayId'];
-      final bool fadeIn = tileOverlayData['fadeIn'];
-      final double transparency = tileOverlayData['transparency'];
-      final double zIndex = tileOverlayData['zIndex'];
-      final bool visible = tileOverlayData['visible'];
-
-      result.add(TileOverlay(
-        tileOverlayId: TileOverlayId(tileOverlayId),
-        fadeIn: fadeIn,
-        transparency: transparency,
-        zIndex: zIndex,
-        visible: visible,
       ));
     }
 
