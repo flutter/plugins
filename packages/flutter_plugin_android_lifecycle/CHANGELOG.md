@@ -1,13 +1,17 @@
+## 1.0.4
+
+* Add notice in example this plugin only provides Android Lifecycle API.
+
 ## 1.0.3
 
-* Add notice in example this plugin only provides Android Lifecycle API. No Dart!
+* Remove the deprecated `author:` field from pubspec.yaml
+* Require Flutter SDK 1.10.0 or greater.
 
 ## 1.0.2
 
 * Adapt to the embedding API changes in https://github.com/flutter/engine/pull/13280 (only supports Activity Lifecycle).
 
 ## 1.0.1
-
 * Register the E2E plugin in the example app.
 
 ## 1.0.0
