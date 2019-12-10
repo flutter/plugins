@@ -177,21 +177,12 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Stream<void> videoControllerErrorsFor(int textureId) {
-    return _errorChannelFor(textureId).receiveBroadcastStream();
-  }
-
-  @override
   Widget buildView(int textureId) {
     return Texture(textureId: textureId);
   }
 
   EventChannel _eventChannelFor(int textureId) {
     return EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
-  }
-
-  EventChannel _errorChannelFor(int textureId) {
-    return EventChannel('flutter.io/videoPlayer/videoErrors$textureId');
   }
 
   DurationRange _toDurationRange(dynamic value) {

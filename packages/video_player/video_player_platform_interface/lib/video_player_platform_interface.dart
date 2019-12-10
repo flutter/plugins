@@ -80,11 +80,6 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('videoEventsFor() has not been implemented.');
   }
 
-  /// Returns an empty Stream only for video controller errors.
-  Stream<void> videoControllerErrorsFor(int textureId) {
-    throw UnimplementedError('videoControllerErrorsFor() has not been implemented.');
-  }
-
   /// Sets the looping attribute of the video.
   Future<void> setLooping(int textureId, bool looping) {
     throw UnimplementedError('setLooping() has not been implemented.');

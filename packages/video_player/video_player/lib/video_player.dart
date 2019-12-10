@@ -154,7 +154,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   final Completer<void> _creatingCompleter = Completer<void>();
   Completer<void> _initializingCompleter;
   StreamSubscription<dynamic> _eventSubscription;
-  StreamSubscription<dynamic> _errorSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
 
   bool get _created => _creatingCompleter.isCompleted;
@@ -172,15 +171,47 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _applyLooping();
     _applyVolume();
 
+    void eventListener(VideoEvent event) {
+      if (_isDisposed || event.key != _dataSource.key) {
+        return;
+      }
+
+      switch (event.eventType) {
+        case VideoEventType.initialized:
+          value = value.copyWith(
+            duration: event.duration,
+            size: event.size,
+          );
+          _initializingCompleter.complete(null);
+          _applyPlayPause();
+          break;
+        case VideoEventType.completed:
+          value = value.copyWith(isPlaying: false, position: value.duration);
+          _timer?.cancel();
+          break;
+        case VideoEventType.bufferingUpdate:
+          value = value.copyWith(buffered: event.buffered);
+          break;
+        case VideoEventType.bufferingStart:
+          value = value.copyWith(isBuffering: true);
+          break;
+        case VideoEventType.bufferingEnd:
+          value = value.copyWith(isBuffering: false);
+          break;
+        case VideoEventType.unknown:
+          break;
+      }
+    }
+
     void errorListener(Object obj) {
       final PlatformException e = obj;
       value = VideoPlayerValue.erroneous(e.message);
       _timer?.cancel();
     }
 
-    _errorSubscription = VideoPlayerPlatform.instance
-        .videoControllerErrorsFor(_textureId)
-        .listen((_) {}, onError: errorListener);
+    _eventSubscription = VideoPlayerPlatform.instance
+        .videoEventsFor(_textureId)
+        .listen(eventListener, onError: errorListener);
   }
 
   /// Set data source for playing a video from an asset.
@@ -245,48 +276,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
     if (!_creatingCompleter.isCompleted) await _creatingCompleter.future;
 
-    _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
-    _lifeCycleObserver.initialize();
-
-    final key = this._dataSource.key;
-
-    void eventListener(VideoEvent event) {
-      if (_isDisposed || event.key != key) {
-        return;
-      }
-
-      switch (event.eventType) {
-        case VideoEventType.initialized:
-          value = value.copyWith(
-            duration: event.duration,
-            size: event.size,
-          );
-          _initializingCompleter.complete(null);
-          _applyPlayPause();
-          break;
-        case VideoEventType.completed:
-          value = value.copyWith(isPlaying: false, position: value.duration);
-          _timer?.cancel();
-          break;
-        case VideoEventType.bufferingUpdate:
-          value = value.copyWith(buffered: event.buffered);
-          break;
-        case VideoEventType.bufferingStart:
-          value = value.copyWith(isBuffering: true);
-          break;
-        case VideoEventType.bufferingEnd:
-          value = value.copyWith(isBuffering: false);
-          break;
-        case VideoEventType.unknown:
-          break;
-      }
+    if(_lifeCycleObserver == null) {
+      _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
+      _lifeCycleObserver.initialize();
     }
-
-    await _eventSubscription?.cancel();
-
-    _eventSubscription = VideoPlayerPlatform.instance
-        .videoEventsFor(_textureId)
-        .listen(eventListener);
 
     _initializingCompleter = Completer<void>();
     await VideoPlayerPlatform.instance
@@ -303,7 +296,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         value = VideoPlayerValue.uninitialized();
         _timer?.cancel();
         await _eventSubscription?.cancel();
-        await _errorSubscription?.cancel();
         await VideoPlayerPlatform.instance.dispose(_textureId);
       }
       _lifeCycleObserver?.dispose();
