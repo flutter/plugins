@@ -45,19 +45,6 @@
   }
   _polygon.path = path;
 }
-- (void)setHoles:(NSArray<NSArray<CLLocation*>*>*)rawHoles {
-  NSMutableArray<GMSMutablePath*>* holes = [[NSMutableArray<GMSMutablePath*> alloc] init];
-
-  for (NSArray<CLLocation*>* points in rawHoles) {
-    GMSMutablePath* path = [GMSMutablePath path];
-    for (CLLocation* location in points) {
-      [path addCoordinate:location.coordinate];
-    }
-    [holes addObject:path];
-  }
-
-  _polygon.holes = holes;
-}
 
 - (void)setFillColor:(UIColor*)color {
   _polygon.fillColor = color;
@@ -76,10 +63,6 @@ static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:
 
 static NSArray<CLLocation*>* ToPoints(NSArray* data) {
   return [FLTGoogleMapJsonConversions toPoints:data];
-}
-
-static NSArray<NSArray<CLLocation*>*>* ToHoles(NSArray<NSArray*>* data) {
-  return [FLTGoogleMapJsonConversions toHoles:data];
 }
 
 static UIColor* ToColor(NSNumber* data) { return [FLTGoogleMapJsonConversions toColor:data]; }
@@ -104,11 +87,6 @@ static void InterpretPolygonOptions(NSDictionary* data, id<FLTGoogleMapPolygonOp
   NSArray* points = data[@"points"];
   if (points) {
     [sink setPoints:ToPoints(points)];
-  }
-
-  NSArray* holes = data[@"holes"];
-  if (holes) {
-    [sink setHoles:ToHoles(holes)];
   }
 
   NSNumber* fillColor = data[@"fillColor"];

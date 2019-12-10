@@ -201,9 +201,21 @@ class Convert {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 
-  private static LatLng toLatLng(Object o) {
+  static LatLng toLatLng(Object o) {
     final List<?> data = toList(o);
     return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
+  }
+
+  static Point toPoint(Object o) {
+    Map<String, Integer> screenCoordinate = (Map<String, Integer>) o;
+    return new Point(screenCoordinate.get("x"), screenCoordinate.get("y"));
+  }
+
+  static Map<String, Integer> pointToJson(Point point) {
+    final Map<String, Integer> data = new HashMap<>(2);
+    data.put("x", point.x);
+    data.put("y", point.y);
+    return data;
   }
 
   private static LatLngBounds toLatLngBounds(Object o) {
@@ -320,6 +332,10 @@ class Convert {
     if (trafficEnabled != null) {
       sink.setTrafficEnabled(toBoolean(trafficEnabled));
     }
+    final Object buildingsEnabled = data.get("buildingsEnabled");
+    if (buildingsEnabled != null) {
+      sink.setBuildingsEnabled(toBoolean(buildingsEnabled));
+    }
   }
 
   /** Returns the dartMarkerId of the interpreted marker. */
@@ -427,10 +443,6 @@ class Convert {
     final Object points = data.get("points");
     if (points != null) {
       sink.setPoints(toPoints(points));
-    }
-    final Object holes = data.get("holes");
-    if (holes != null) {
-      sink.setHoles(toHoles(holes));
     }
     final String polygonId = (String) data.get("polygonId");
     if (polygonId == null) {
@@ -545,16 +557,6 @@ class Convert {
       points.add(new LatLng(toFloat(point.get(0)), toFloat(point.get(1))));
     }
     return points;
-  }
-
-  private static List<List<LatLng>> toHoles(Object o) {
-    final List<?> data = toList(o);
-    final List<List<LatLng>> holes = new ArrayList<>(data.size());
-
-    for (Object ob : data) {
-      holes.add(toPoints(ob));
-    }
-    return holes;
   }
 
   private static List<PatternItem> toPattern(Object o) {

@@ -13,7 +13,6 @@
 - (void)setStrokeColor:(UIColor*)color;
 - (void)setStrokeWidth:(CGFloat)width;
 - (void)setPoints:(NSArray<CLLocation*>*)points;
-- (void)setHoles:(NSArray<NSArray<CLLocation*>*>*)holes;
 - (void)setZIndex:(int)zIndex;
 @end
 

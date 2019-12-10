@@ -1,6 +1,12 @@
-## 0.5.22
+## 0.5.21+15
 
-* Add support for holes in Polygons
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.5.21+14
+
+* Adds support for toggling 3D buildings.
 
 ## 0.5.21+13
 
