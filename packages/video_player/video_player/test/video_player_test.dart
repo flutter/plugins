@@ -153,7 +153,7 @@ void main() {
       );
       expect(controller.textureId, isNull);
       expect(await controller.position, const Duration(seconds: 0));
-      controller.initialize();
+      await controller.initialize();
 
       await controller.dispose();
 

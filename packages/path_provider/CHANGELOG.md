@@ -1,3 +1,7 @@
+## 1.5.0
+
+* Add macOS support.
+
 ## 1.4.5
 
 * Add support for v2 plugins APIs.

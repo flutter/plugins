@@ -1,3 +1,8 @@
+## 0.6.2+2
+
+* Android: Revert the image file return logic when the image doesn't have to be scaled. Fix a rotation regression caused by 0.6.2+1
+* Example App: Add a dialog to enter `maxWidth`, `maxHeight` or `quality` when picking image.
+
 ## 0.6.2+1
 
 * Android: Fix a crash when a non-image file is picked.
