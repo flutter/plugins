@@ -1,4 +1,4 @@
-package com.example.ios_platform_images
+package io.flutter.ios_platform_images
 
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
