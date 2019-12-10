@@ -33,7 +33,7 @@ void main() {
       expect(VideoPlayerPlatform.instance.init(), completes);
     });
 
-    test('can create', () {
+    test('can create from network', () {
       expect(
           VideoPlayerPlatform.instance.create(
             DataSource(
@@ -42,6 +42,29 @@ void main() {
                     'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
           ),
           completion(isNonZero));
+    });
+
+    test('can create from asset', () {
+      expect(
+          VideoPlayerPlatform.instance.create(
+            DataSource(
+              sourceType: DataSourceType.asset,
+              asset: 'videos/bee.mp4',
+              package: 'bee_vids',
+            ),
+          ),
+          completion(isNonZero));
+    });
+
+    test('cannot create from file', () {
+      expect(
+          VideoPlayerPlatform.instance.create(
+            DataSource(
+              sourceType: DataSourceType.file,
+              uri: '/videos/bee.mp4',
+            ),
+          ),
+          throwsUnimplementedError);
     });
 
     test('can dispose', () {

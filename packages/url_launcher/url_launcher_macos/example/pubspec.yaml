@@ -1,0 +1,17 @@
+name: url_launcher_example
+description: Demonstrates how to use the url_launcher plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  url_launcher: any
+  url_launcher_macos:
+    path: ../
+
+dev_dependencies:
+  e2e: "^0.2.0"
+  flutter_driver:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

@@ -29,6 +29,8 @@ Future<void> injectJSLibraries(List<String> libraries,
   return Future.wait(loading);
 }
 
+/// Utility method that converts `currentUser` to the equivalent
+/// [GoogleSignInUserData].
 GoogleSignInUserData gapiUserToPluginUserData(auth2.GoogleUser currentUser) {
   assert(currentUser != null);
   final auth2.BasicProfile profile = currentUser.getBasicProfile();

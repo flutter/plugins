@@ -53,4 +53,8 @@ class GoogleMapInspector {
   Future<bool> isTrafficEnabled() async {
     return await _channel.invokeMethod<bool>('map#isTrafficEnabled');
   }
+
+  Future<bool> isBuildingsEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isBuildingsEnabled');
+  }
 }
