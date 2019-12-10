@@ -4,6 +4,8 @@ Provides bindings for Espresso tests of Flutter Android apps.
 
 ## Installation
 
+Add the `espresso` package as a `dev_dependency` in your app's pubspec.yaml. If you're testing the example app of a package, add it as a dev_dependency of the main package as well.
+
 Add ```android:usesCleartextTraffic="true"``` in the ```<application>``` in the AndroidManifest.xml
 of the Android app used for testing.
 
