@@ -1,7 +1,6 @@
 ## 4.1.0
 
 * Support web by default.
-* Use the new plugins pubspec schema.
 * Require Flutter SDK `v1.12.13+hotfix.4` or greater.
 
 ## 4.0.17
