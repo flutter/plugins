@@ -8,10 +8,9 @@ import 'package:test/test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 class SamplePluginPlatform extends PlatformInterface {
-  SamplePluginPlatform(): super(token: _token);
+  SamplePluginPlatform() : super(token: _token);
 
   static const Object _token = Object();
-
 
   static set instance(SamplePluginPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
@@ -37,7 +36,7 @@ void main() {
 
   test('Can be mocked with `implements`', () {
     final SamplePluginPlatform mock =
-    ImplementsSamplePluginPlatformUsingMockPlatformInterfaceMixin();
+        ImplementsSamplePluginPlatformUsingMockPlatformInterfaceMixin();
     SamplePluginPlatform.instance = mock;
   });
 
