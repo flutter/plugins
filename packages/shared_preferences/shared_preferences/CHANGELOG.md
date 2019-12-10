@@ -1,3 +1,9 @@
+## 0.5.4+9
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
 ## 0.5.4+8
 
 * Switch `package:shared_preferences` to `package:shared_preferences_platform_interface`.
