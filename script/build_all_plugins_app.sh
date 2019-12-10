@@ -18,6 +18,7 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "google_sign_in_platform_interface"
   "video_player_platform_interface"
   "shared_preferences_platform_interface"
+  "shared_preferences_macos"
 )
 # Comma-separated string of the list above
 readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")

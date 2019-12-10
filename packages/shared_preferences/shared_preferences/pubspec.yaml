@@ -2,7 +2,7 @@ name: shared_preferences
 description: Flutter plugin for reading and writing simple key-value pairs.
   Wraps NSUserDefaults on iOS and SharedPreferences on Android.
 homepage: https://github.com/flutter/plugins/tree/master/packages/shared_preferences/shared_preferences
-version: 0.5.5
+version: 0.5.6
 
 flutter:
   plugin:
@@ -12,6 +12,8 @@ flutter:
         pluginClass: SharedPreferencesPlugin
       ios:
         pluginClass: FLTSharedPreferencesPlugin
+      macos:
+        default_package: shared_preferences_macos
       web:
         default_package: shared_preferences_web
 
@@ -23,8 +25,9 @@ dependencies:
   # The design on https://flutter.dev/go/federated-plugins was to leave
   # this constraint as "any". We cannot do it right now as it fails pub publish
   # validation, so we set a ^ constraint.
-  # TODO(amirh): Revisit this (either update this part in the  design or the pub tool).
+  # TODO(franciscojma): Revisit this (either update this part in the  design or the pub tool).
   # https://github.com/flutter/flutter/issues/46264
+  shared_preferences_macos: ^0.0.1
   shared_preferences_web: ^0.1.2
 
 
