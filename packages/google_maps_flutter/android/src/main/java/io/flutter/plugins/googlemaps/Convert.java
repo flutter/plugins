@@ -8,23 +8,23 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 
-import com.google.android.libraries.maps.CameraUpdate;
-import com.google.android.libraries.maps.CameraUpdateFactory;
-import com.google.android.libraries.maps.model.BitmapDescriptor;
-import com.google.android.libraries.maps.model.BitmapDescriptorFactory;
-import com.google.android.libraries.maps.model.ButtCap;
-import com.google.android.libraries.maps.model.CameraPosition;
-import com.google.android.libraries.maps.model.Cap;
-import com.google.android.libraries.maps.model.CustomCap;
-import com.google.android.libraries.maps.model.Dash;
-import com.google.android.libraries.maps.model.Dot;
-import com.google.android.libraries.maps.model.Gap;
-import com.google.android.libraries.maps.model.LatLng;
-import com.google.android.libraries.maps.model.LatLngBounds;
-import com.google.android.libraries.maps.model.PatternItem;
-import com.google.android.libraries.maps.model.RoundCap;
-import com.google.android.libraries.maps.model.SquareCap;
-import com.google.android.libraries.maps.model.Tile;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.ButtCap;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Cap;
+import com.google.android.gms.maps.model.CustomCap;
+import com.google.android.gms.maps.model.Dash;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.Gap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.PatternItem;
+import com.google.android.gms.maps.model.RoundCap;
+import com.google.android.gms.maps.model.SquareCap;
+import com.google.android.gms.maps.model.Tile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -224,21 +224,9 @@ class Convert {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 
-  static LatLng toLatLng(Object o) {
+  private static LatLng toLatLng(Object o) {
     final List<?> data = toList(o);
     return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
-  }
-
-  static Point toPoint(Object o) {
-    Map<String, Integer> screenCoordinate = (Map<String, Integer>) o;
-    return new Point(screenCoordinate.get("x"), screenCoordinate.get("y"));
-  }
-
-  static Map<String, Integer> pointToJson(Point point) {
-    final Map<String, Integer> data = new HashMap<>(2);
-    data.put("x", point.x);
-    data.put("y", point.y);
-    return data;
   }
 
   private static LatLngBounds toLatLngBounds(Object o) {
