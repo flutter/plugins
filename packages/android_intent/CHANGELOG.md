@@ -1,3 +1,9 @@
+##  0.3.4+8
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
 ##  0.3.4+7
 
 * Fix pedantic linter errors.

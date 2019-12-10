@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-#import "GoogleSignInPlugin.h"
+#import "FLTGoogleSignInPlugin.h"
 #import <GoogleSignIn/GoogleSignIn.h>
 
 // The key within `GoogleService-Info.plist` used to hold the application's
