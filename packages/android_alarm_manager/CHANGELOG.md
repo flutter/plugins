@@ -1,3 +1,9 @@
+## 0.4.5+2
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
 ## 0.4.5+1
 
 * Loosen Flutter version restriction to 1.9.1. **NOTE: plugin registration
