@@ -1,3 +1,7 @@
+## 0.5.5
+
+* Support macos by default.
+
 ## 0.5.4+10
 
 * Adds a `shared_preferences_macos` package.
