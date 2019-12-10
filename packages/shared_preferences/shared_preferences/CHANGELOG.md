@@ -1,4 +1,4 @@
-## 0.6.0
+## 0.5.5
 
 * Support macos by default.
 
