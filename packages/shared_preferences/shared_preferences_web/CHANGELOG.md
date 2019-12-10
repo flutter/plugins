@@ -1,3 +1,8 @@
+# 0.1.2
+
+* Bump lower constraint on Flutter version.
+* Add stub podspec file.
+
 # 0.1.1
 
 * Adds a `shared_preferences_macos` package.
