@@ -1,7 +1,6 @@
 ## 5.4.0
 
 * Support macos by default.
-* Use the new plugins pubspec schema.
 
 ## 5.3.0
 
