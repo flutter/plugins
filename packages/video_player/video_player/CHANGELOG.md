@@ -1,3 +1,14 @@
+## 0.10.5
+
+* Support `web` by default.
+* Require Flutter SDK 1.12.13+hotfix.4 or greater.
+
+## 0.10.4+2
+
+* Remove the deprecated `author:` field form pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
 ## 0.10.4+1
 
 * Fix pedantic lints. This fixes some potential race conditions in cases where

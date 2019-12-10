@@ -3,6 +3,16 @@
 * Support web by default.
 * Use the new plugins pubspec schema.
 
+## 4.0.17
+
+* Add missing documentation and fix an unawaited future in the example app.
+
+## 4.0.16
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
 ## 4.0.15
 
 * Export SignInOption from interface since it is used in the frontend as a type.
@@ -56,8 +66,8 @@
 
 ## 4.0.3
 
-* Update guava to `27.0.1-android`.	
-* Add correct @NonNull annotations to reduce compiler warnings.	
+* Update guava to `27.0.1-android`.
+* Add correct @NonNull annotations to reduce compiler warnings.
 
 ## 4.0.2
 
