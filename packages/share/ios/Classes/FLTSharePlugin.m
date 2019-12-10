@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "SharePlugin.h"
+#import "FLTSharePlugin.h"
 
 static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 

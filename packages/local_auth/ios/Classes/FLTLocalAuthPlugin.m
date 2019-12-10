@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #import <LocalAuthentication/LocalAuthentication.h>
 
-#import "LocalAuthPlugin.h"
+#import "FLTLocalAuthPlugin.h"
 
 @implementation FLTLocalAuthPlugin {
   NSDictionary *lastCallArgs;
