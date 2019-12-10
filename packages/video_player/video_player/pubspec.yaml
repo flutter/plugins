@@ -1,7 +1,7 @@
 name: video_player
 description: Flutter plugin for displaying inline video with other Flutter
   widgets on Android and iOS.
-version: 0.10.4+2
+version: 0.10.5
 homepage: https://github.com/flutter/plugins/tree/master/packages/video_player/video_player
 
 flutter:
@@ -12,10 +12,18 @@ flutter:
         pluginClass: VideoPlayerPlugin
       ios:
         pluginClass: FLTVideoPlayerPlugin
+      web:
+        default_package: video_player_web
 
 dependencies:
   meta: "^1.0.5"
   video_player_platform_interface: ^1.0.1
+  # The design on https://flutter.dev/go/federated-plugins was to leave
+  # this constraint as "any". We cannot do it right now as it fails pub publish
+  # validation, so we set a ^ constraint.
+  # TODO(amirh): Revisit this (either update this part in the  design or the pub tool).
+  # https://github.com/flutter/flutter/issues/46264
+  video_player_web: ^0.1.1
 
   flutter:
     sdk: flutter
@@ -26,4 +34,4 @@ dev_dependencies:
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
-  flutter: ">=1.10.0 <2.0.0"
+  flutter: ">=1.12.13+hotfix.4 <2.0.0"
