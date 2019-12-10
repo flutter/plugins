@@ -30,7 +30,6 @@ class VideoPlayerValue {
     this.position = const Duration(),
     this.buffered = const <DurationRange>[],
     this.isPlaying = false,
-
     this.isLooping = false,
     this.isBuffering = false,
     this.volume = 1.0,
