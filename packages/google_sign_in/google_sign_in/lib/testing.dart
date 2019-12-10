@@ -60,8 +60,8 @@ class FakeSignInBackend {
 
 /// Represents a fake user that can be used with the [FakeSignInBackend] to
 /// obtain a [GoogleSignInAccount] and simulate authentication.
-///
 class FakeUser {
+  /// Any of the given parameters can be null.
   const FakeUser({
     this.id,
     this.email,
@@ -71,11 +71,22 @@ class FakeUser {
     this.accessToken,
   });
 
+  /// Will be converted into [GoogleSignInUserData.id].
   final String id;
+
+  /// Will be converted into [GoogleSignInUserData.email].
   final String email;
+
+  /// Will be converted into [GoogleSignInUserData.displayName].
   final String displayName;
+
+  /// Will be converted into [GoogleSignInUserData.photoUrl].
   final String photoUrl;
+
+  /// Will be converted into [GoogleSignInTokenData.idToken].
   final String idToken;
+
+  /// Will be converted into [GoogleSignInTokenData.accessToken].
   final String accessToken;
 
   Map<String, String> get _asMap => <String, String>{

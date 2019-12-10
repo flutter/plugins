@@ -1,3 +1,7 @@
+## 4.0.17
+
+* Add missing documentation and fix an unawaited future in the example app.
+
 ## 4.0.16
 
 * Remove the deprecated `author:` field from pubspec.yaml
@@ -57,8 +61,8 @@
 
 ## 4.0.3
 
-* Update guava to `27.0.1-android`.	
-* Add correct @NonNull annotations to reduce compiler warnings.	
+* Update guava to `27.0.1-android`.
+* Add correct @NonNull annotations to reduce compiler warnings.
 
 ## 4.0.2
 
