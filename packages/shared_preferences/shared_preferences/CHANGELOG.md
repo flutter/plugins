@@ -1,3 +1,8 @@
+## 0.5.5
+
+* Support `web` by default.
+* Require Flutter SDK 1.12.13+hotfix.4 or greater.
+
 ## 0.5.4+10
 
 * Adds a `shared_preferences_macos` package.
