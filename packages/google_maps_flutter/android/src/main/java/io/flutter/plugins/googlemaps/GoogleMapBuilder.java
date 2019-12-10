@@ -6,9 +6,9 @@ package io.flutter.plugins.googlemaps;
 
 import android.content.Context;
 import android.graphics.Rect;
-import com.google.android.libraries.maps.GoogleMapOptions;
-import com.google.android.libraries.maps.model.CameraPosition;
-import com.google.android.libraries.maps.model.LatLngBounds;
+import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLngBounds;
 import io.flutter.plugin.common.PluginRegistry;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,11 +19,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean myLocationButtonEnabled = false;
   private boolean indoorEnabled = true;
   private boolean trafficEnabled = false;
+  private boolean buildingsEnabled = true;
   private Object initialMarkers;
   private Object initialPolygons;
   private Object initialPolylines;
   private Object initialCircles;
-  private Object initialTileOverlays;
   private Rect padding = new Rect(0, 0, 0, 0);
 
   GoogleMapController build(
@@ -35,12 +35,12 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
     controller.setIndoorEnabled(indoorEnabled);
     controller.setTrafficEnabled(trafficEnabled);
+    controller.setBuildingsEnabled(buildingsEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
     controller.setInitialMarkers(initialMarkers);
     controller.setInitialPolygons(initialPolygons);
     controller.setInitialPolylines(initialPolylines);
     controller.setInitialCircles(initialCircles);
-    controller.setInitialTileOverlays(initialTileOverlays);
     controller.setPadding(padding.top, padding.left, padding.bottom, padding.right);
     return controller;
   }
@@ -120,6 +120,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
+  public void setBuildingsEnabled(boolean buildingsEnabled) {
+    this.buildingsEnabled = buildingsEnabled;
+  }
+
+  @Override
   public void setMyLocationEnabled(boolean myLocationEnabled) {
     this.myLocationEnabled = myLocationEnabled;
   }
@@ -147,10 +152,5 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setInitialCircles(Object initialCircles) {
     this.initialCircles = initialCircles;
-  }
-
-  @Override
-  public void setInitialTileOverlays(Object initialTileOverlays) {
-    this.initialTileOverlays = initialTileOverlays;
   }
 }

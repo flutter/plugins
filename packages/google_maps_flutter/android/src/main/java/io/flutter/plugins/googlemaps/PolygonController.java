@@ -4,8 +4,8 @@
 
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.libraries.maps.model.LatLng;
-import com.google.android.libraries.maps.model.Polygon;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polygon;
 import java.util.List;
 
 /** Controller of a single Polygon on the map. */
@@ -48,10 +48,6 @@ class PolygonController implements PolygonOptionsSink {
   @Override
   public void setPoints(List<LatLng> points) {
     polygon.setPoints(points);
-  }
-
-  public void setHoles(List<List<LatLng>> holes) {
-    polygon.setHoles(holes);
   }
 
   @Override

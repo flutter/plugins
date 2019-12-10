@@ -21,19 +21,19 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import com.google.android.libraries.maps.CameraUpdate;
-import com.google.android.libraries.maps.GoogleMap;
-import com.google.android.libraries.maps.GoogleMapOptions;
-import com.google.android.libraries.maps.MapView;
-import com.google.android.libraries.maps.OnMapReadyCallback;
-import com.google.android.libraries.maps.model.CameraPosition;
-import com.google.android.libraries.maps.model.Circle;
-import com.google.android.libraries.maps.model.LatLng;
-import com.google.android.libraries.maps.model.LatLngBounds;
-import com.google.android.libraries.maps.model.MapStyleOptions;
-import com.google.android.libraries.maps.model.Marker;
-import com.google.android.libraries.maps.model.Polygon;
-import com.google.android.libraries.maps.model.Polyline;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.Polyline;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -76,6 +76,7 @@ final class GoogleMapController
   private boolean myLocationButtonEnabled = false;
   private boolean indoorEnabled = true;
   private boolean trafficEnabled = false;
+  private boolean buildingsEnabled = true;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
@@ -85,12 +86,10 @@ final class GoogleMapController
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
   private final CirclesController circlesController;
-  private final TileOverlaysController tileOverlayController;
   private List<Object> initialMarkers;
   private List<Object> initialPolygons;
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
-  private List<Object> initialTileOverlays;
 
   GoogleMapController(
       int id,
@@ -112,7 +111,6 @@ final class GoogleMapController
     this.polygonsController = new PolygonsController(methodChannel);
     this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel);
-    this.tileOverlayController = new TileOverlaysController(methodChannel);
   }
 
   @Override
@@ -175,6 +173,7 @@ final class GoogleMapController
     this.googleMap = googleMap;
     this.googleMap.setIndoorEnabled(this.indoorEnabled);
     this.googleMap.setTrafficEnabled(this.trafficEnabled);
+    this.googleMap.setBuildingsEnabled(this.buildingsEnabled);
     googleMap.setOnInfoWindowClickListener(this);
     if (mapReadyResult != null) {
       mapReadyResult.success(null);
@@ -195,12 +194,10 @@ final class GoogleMapController
     polygonsController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     circlesController.setGoogleMap(googleMap);
-    tileOverlayController.setGoogleMap(googleMap);
     updateInitialMarkers();
     updateInitialPolygons();
     updateInitialPolylines();
     updateInitialCircles();
-    updateInitialTileOverlays();
   }
 
   @Override
@@ -366,6 +363,11 @@ final class GoogleMapController
           result.success(googleMap.isTrafficEnabled());
           break;
         }
+      case "map#isBuildingsEnabled":
+        {
+          result.success(googleMap.isBuildingsEnabled());
+          break;
+        }
       case "map#setStyle":
         {
           String mapStyle = (String) call.arguments;
@@ -384,24 +386,6 @@ final class GoogleMapController
           result.success(mapStyleResult);
           break;
         }
-      case "tileOverlays#update":
-      {
-        Object tileOverlaysToAdd = call.argument("tileOverlaysToAdd");
-        tileOverlayController.addTileOverlays((List<Object>) tileOverlaysToAdd);
-        Object tileOverlaysToChange = call.argument("tileOverlaysToChange");
-        tileOverlayController.changeTileOverlays((List<Object>) tileOverlaysToChange);
-        Object tileOverlaysToRemove = call.argument("tileOverlayIdsToRemove");
-        tileOverlayController.removeTileOverlays((List<Object>) tileOverlaysToRemove);
-        result.success(null);
-        break;
-      }
-      case "tileOverlays#clearTileCache":
-      {
-        Object rawTileOverlayId = call.argument("tileOverlayId");
-        tileOverlayController.clearTileCache(rawTileOverlayId);
-        result.success(null);
-        break;
-      }
       default:
         result.notImplemented();
     }
@@ -700,18 +684,6 @@ final class GoogleMapController
     circlesController.addCircles(initialCircles);
   }
 
-  @Override
-  public void setInitialTileOverlays(Object initialTileOverlays) {
-    this.initialTileOverlays = (List<Object>) initialTileOverlays;
-    if(googleMap!=null) {
-      updateInitialTileOverlays();
-    }
-  }
-
-  private void updateInitialTileOverlays() {
-    tileOverlayController.addTileOverlays(initialTileOverlays);
-  }
-
   @SuppressLint("MissingPermission")
   private void updateMyLocationSettings() {
     if (hasLocationPermission()) {
@@ -750,5 +722,9 @@ final class GoogleMapController
 
   public void setTrafficEnabled(boolean trafficEnabled) {
     this.trafficEnabled = trafficEnabled;
+  }
+
+  public void setBuildingsEnabled(boolean buildingsEnabled) {
+    this.buildingsEnabled = buildingsEnabled;
   }
 }

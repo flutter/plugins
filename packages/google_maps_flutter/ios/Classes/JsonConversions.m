@@ -58,14 +58,4 @@
   return points;
 }
 
-+ (NSArray<NSArray<CLLocation*>*>*)toHoles:(NSArray*)data {
-  NSMutableArray<NSArray<CLLocation*>*>* holes = [[[NSMutableArray alloc] init] init];
-  for (unsigned i = 0; i < [data count]; i++) {
-    NSArray<CLLocation*>* points = [FLTGoogleMapJsonConversions toPoints:data[i]];
-    [holes addObject:points];
-  }
-
-  return holes;
-}
-
 @end

@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.android.tools.build:gradle:3.3.2'
     }
 }
 
@@ -16,16 +16,10 @@ rootProject.allprojects {
     repositories {
         google()
         jcenter()
-        flatDir {
-            dirs 'libs'
-        }
     }
 }
 
 apply plugin: 'com.android.library'
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-sourceCompatibility = JavaVersion.VERSION_1_8
 
 android {
     compileSdkVersion 28
@@ -37,19 +31,9 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
-    compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
-    }
 
     dependencies {
-        implementation name: 'maps-sdk-3.0.0-beta', ext: 'aar'
-        implementation 'com.android.support:support-v4:+'
-        implementation 'com.android.support:appcompat-v7:+'
-        implementation 'com.google.android.gms:play-services-basement:17.1.0'
-        implementation 'com.google.android.gms:play-services-base:17.1.0'
-        implementation 'com.google.android.gms:play-services-gcm:17.0.0'
-        implementation 'com.google.android.gms:play-services-location:17.0.0'
+        implementation 'com.google.android.gms:play-services-maps:17.0.0'
     }
 }
 

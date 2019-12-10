@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.libraries.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 /** Receiver of GoogleMap configuration options. */
 interface GoogleMapOptionsSink {
@@ -38,6 +38,8 @@ interface GoogleMapOptionsSink {
 
   void setTrafficEnabled(boolean trafficEnabled);
 
+  void setBuildingsEnabled(boolean buildingsEnabled);
+
   void setInitialMarkers(Object initialMarkers);
 
   void setInitialPolygons(Object initialPolygons);
@@ -45,6 +47,4 @@ interface GoogleMapOptionsSink {
   void setInitialPolylines(Object initialPolylines);
 
   void setInitialCircles(Object initialCircles);
-
-  void setInitialTileOverlays(Object initialTileOverlays);
 }

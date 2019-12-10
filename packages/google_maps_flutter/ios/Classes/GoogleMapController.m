@@ -254,6 +254,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isTrafficEnabled"]) {
     NSNumber* isTrafficEnabled = @(_mapView.trafficEnabled);
     result(isTrafficEnabled);
+  } else if ([call.method isEqualToString:@"map#isBuildingsEnabled"]) {
+    NSNumber* isBuildingsEnabled = @(_mapView.buildingsEnabled);
+    result(isBuildingsEnabled);
   } else if ([call.method isEqualToString:@"map#setStyle"]) {
     NSString* mapStyle = [call arguments];
     NSString* error = [self setMapStyle:mapStyle];
@@ -313,6 +316,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)setTrafficEnabled:(BOOL)enabled {
   _mapView.trafficEnabled = enabled;
+}
+
+- (void)setBuildingsEnabled:(BOOL)enabled {
+  _mapView.buildingsEnabled = enabled;
 }
 
 - (void)setMapType:(GMSMapViewType)mapType {
@@ -553,6 +560,10 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   id trafficEnabled = data[@"trafficEnabled"];
   if (trafficEnabled) {
     [sink setTrafficEnabled:ToBool(trafficEnabled)];
+  }
+  id buildingsEnabled = data[@"buildingsEnabled"];
+  if (buildingsEnabled) {
+    [sink setBuildingsEnabled:ToBool(buildingsEnabled)];
   }
   id mapType = data[@"mapType"];
   if (mapType) {

@@ -7,32 +7,28 @@ package io.flutter.plugins.googlemaps;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-
-import com.google.android.libraries.maps.CameraUpdate;
-import com.google.android.libraries.maps.CameraUpdateFactory;
-import com.google.android.libraries.maps.model.BitmapDescriptor;
-import com.google.android.libraries.maps.model.BitmapDescriptorFactory;
-import com.google.android.libraries.maps.model.ButtCap;
-import com.google.android.libraries.maps.model.CameraPosition;
-import com.google.android.libraries.maps.model.Cap;
-import com.google.android.libraries.maps.model.CustomCap;
-import com.google.android.libraries.maps.model.Dash;
-import com.google.android.libraries.maps.model.Dot;
-import com.google.android.libraries.maps.model.Gap;
-import com.google.android.libraries.maps.model.LatLng;
-import com.google.android.libraries.maps.model.LatLngBounds;
-import com.google.android.libraries.maps.model.PatternItem;
-import com.google.android.libraries.maps.model.RoundCap;
-import com.google.android.libraries.maps.model.SquareCap;
-import com.google.android.libraries.maps.model.Tile;
-
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.ButtCap;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Cap;
+import com.google.android.gms.maps.model.CustomCap;
+import com.google.android.gms.maps.model.Dash;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.Gap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.PatternItem;
+import com.google.android.gms.maps.model.RoundCap;
+import com.google.android.gms.maps.model.SquareCap;
+import io.flutter.view.FlutterMain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import io.flutter.view.FlutterMain;
 
 /** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
@@ -146,13 +142,6 @@ class Convert {
     return ((Number) o).intValue();
   }
 
-  private static byte[] toByteArray(Object o) {
-    if (o == null) {
-      return null;
-    }
-    return (byte[]) o;
-  }
-
   static Object cameraPositionToJson(CameraPosition position) {
     if (position == null) {
       return null;
@@ -205,18 +194,6 @@ class Convert {
     }
     final Map<String, Object> data = new HashMap<>(1);
     data.put("circleId", circleId);
-    return data;
-  }
-
-  static Object tileOverlayArgumentsToJson(String tileOverlayId, int x, int y, int zoom) {
-    if (tileOverlayId == null) {
-      return null;
-    }
-    final Map<String, Object> data = new HashMap<>(4);
-    data.put("tileOverlayId", tileOverlayId);
-    data.put("x", x);
-    data.put("y", y);
-    data.put("zoom", zoom);
     return data;
   }
 
@@ -355,6 +332,10 @@ class Convert {
     if (trafficEnabled != null) {
       sink.setTrafficEnabled(toBoolean(trafficEnabled));
     }
+    final Object buildingsEnabled = data.get("buildingsEnabled");
+    if (buildingsEnabled != null) {
+      sink.setBuildingsEnabled(toBoolean(buildingsEnabled));
+    }
   }
 
   /** Returns the dartMarkerId of the interpreted marker. */
@@ -462,10 +443,6 @@ class Convert {
     final Object points = data.get("points");
     if (points != null) {
       sink.setPoints(toPoints(points));
-    }
-    final Object holes = data.get("holes");
-    if (holes != null) {
-      sink.setHoles(toHoles(holes));
     }
     final String polygonId = (String) data.get("polygonId");
     if (polygonId == null) {
@@ -582,16 +559,6 @@ class Convert {
     return points;
   }
 
-  private static List<List<LatLng>> toHoles(Object o) {
-    final List<?> data = toList(o);
-    final List<List<LatLng>> holes = new ArrayList<>(data.size());
-
-    for (Object ob : data) {
-      holes.add(toPoints(ob));
-    }
-    return holes;
-  }
-
   private static List<PatternItem> toPattern(Object o) {
     final List<?> data = toList(o);
 
@@ -639,39 +606,5 @@ class Convert {
       default:
         throw new IllegalArgumentException("Cannot interpret " + o + " as Cap");
     }
-  }
-
-  static String interpretTileOverlayOptions(Object o, TileOverlaySink sink) {
-    final Map<?, ?> data = toMap(o);
-    final Object fadeIn = data.get("fadeIn");
-    if (fadeIn != null) {
-      sink.setFadeIn(toBoolean(fadeIn));
-    }
-    final Object transparency = data.get("transparency");
-    if (transparency != null) {
-      sink.setTransparency(toFloat(transparency));
-    }
-    final Object zIndex = data.get("zIndex");
-    if (zIndex != null) {
-      sink.setZIndex(toFloat(zIndex));
-    }
-    final Object visible = data.get("visible");
-    if (visible != null) {
-      sink.setVisible(toBoolean(visible));
-    }
-    final String tileOverlayId = (String) data.get("tileOverlayId");
-    if (tileOverlayId == null) {
-      throw new IllegalArgumentException("tileOverlayId was null");
-    } else {
-      return tileOverlayId;
-    }
-  }
-
-  static Tile interpretTile(Object o) {
-    final Map<?, ?> data = toMap(o);
-    int width = toInt(data.get("width"));
-    int height = toInt(data.get("height"));
-    byte[] dataArray = toByteArray(data.get("data"));
-    return new Tile(width, height, dataArray);
   }
 }

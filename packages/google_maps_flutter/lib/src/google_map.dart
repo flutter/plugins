@@ -44,11 +44,11 @@ class GoogleMap extends StatefulWidget {
     this.padding = const EdgeInsets.all(0),
     this.indoorViewEnabled = false,
     this.trafficEnabled = false,
+    this.buildingsEnabled = true,
     this.markers,
     this.polygons,
     this.polylines,
     this.circles,
-    this.tileOverlays,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -108,9 +108,6 @@ class GoogleMap extends StatefulWidget {
 
   /// Circles to be placed on the map.
   final Set<Circle> circles;
-
-  /// Tile overlays to be placed on the map.
-  final Set<TileOverlay> tileOverlays;
 
   /// Called when the camera starts moving.
   ///
@@ -183,6 +180,9 @@ class GoogleMap extends StatefulWidget {
   /// Enables or disables the traffic layer of the map
   final bool trafficEnabled;
 
+  /// Enables or disables showing 3D buildings where available
+  final bool buildingsEnabled;
+
   /// Which gestures should be consumed by the map.
   ///
   /// It is possible for other gesture recognizers to be competing with the map on pointer
@@ -207,8 +207,6 @@ class _GoogleMapState extends State<GoogleMap> {
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
-  Map<TileOverlayId, TileOverlay> _tileOverlays =
-      <TileOverlayId, TileOverlay>{};
   _GoogleMapOptions _googleMapOptions;
 
   @override
@@ -220,7 +218,6 @@ class _GoogleMapState extends State<GoogleMap> {
       'polygonsToAdd': _serializePolygonSet(widget.polygons),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'circlesToAdd': _serializeCircleSet(widget.circles),
-      'tileOverlaysToAdd': _serializeTileOverlaySet(widget.tileOverlays),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
@@ -252,7 +249,6 @@ class _GoogleMapState extends State<GoogleMap> {
     _polygons = _keyByPolygonId(widget.polygons);
     _polylines = _keyByPolylineId(widget.polylines);
     _circles = _keyByCircleId(widget.circles);
-    _tileOverlays = _keyTileOverlayId(widget.tileOverlays);
   }
 
   @override
@@ -263,7 +259,6 @@ class _GoogleMapState extends State<GoogleMap> {
     _updatePolygons();
     _updatePolylines();
     _updateCircles();
-    _updateTileOverlays();
   }
 
   void _updateOptions() async {
@@ -309,13 +304,6 @@ class _GoogleMapState extends State<GoogleMap> {
     controller._updateCircles(
         _CircleUpdates.from(_circles.values.toSet(), widget.circles));
     _circles = _keyByCircleId(widget.circles);
-  }
-
-  void _updateTileOverlays() async {
-    final GoogleMapController controller = await _controller.future;
-    controller._updateTileOverlays(_TileOverlayUpdates.from(
-        _tileOverlays.values.toSet(), widget.tileOverlays));
-    _tileOverlays = _keyTileOverlayId(widget.tileOverlays);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
@@ -387,21 +375,6 @@ class _GoogleMapState extends State<GoogleMap> {
       widget.onLongPress(position);
     }
   }
-
-  Future<Map<String, dynamic>> onGetTile(
-      String tileOverlayIdParam, int x, int y, int zoom) async {
-    assert(tileOverlayIdParam != null);
-    final TileOverlayId tileOverlayId = TileOverlayId(tileOverlayIdParam);
-    final TileOverlay tileOverlay = _tileOverlays[tileOverlayId];
-    Tile tile;
-    if (tileOverlay != null && tileOverlay.tileProvider != null) {
-      tile = await tileOverlay.tileProvider.getTile(x, y, zoom);
-    }
-    if (tile == null) {
-      tile = TileProvider.noTile;
-    }
-    return tile.toJson();
-  }
 }
 
 /// Configuration options for the GoogleMaps user interface.
@@ -425,6 +398,7 @@ class _GoogleMapOptions {
     this.padding,
     this.indoorViewEnabled,
     this.trafficEnabled,
+    this.buildingsEnabled,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -444,6 +418,7 @@ class _GoogleMapOptions {
       padding: map.padding,
       indoorViewEnabled: map.indoorViewEnabled,
       trafficEnabled: map.trafficEnabled,
+      buildingsEnabled: map.buildingsEnabled,
     );
   }
 
@@ -477,6 +452,8 @@ class _GoogleMapOptions {
 
   final bool trafficEnabled;
 
+  final bool buildingsEnabled;
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -506,6 +483,7 @@ class _GoogleMapOptions {
     ]);
     addIfNonNull('indoorEnabled', indoorViewEnabled);
     addIfNonNull('trafficEnabled', trafficEnabled);
+    addIfNonNull('buildingsEnabled', buildingsEnabled);
     return optionsMap;
   }
 
