@@ -1,10 +1,10 @@
-## 0.3.19
-
-* iOS now can open iframe links and target _blank links.
-
 ## 0.3.18
 
 * Add support for onPageStarted event.
+
+## 0.3.17+1
+
+* iOS now can open iframe links and target _blank links.
 
 ## 0.3.17
 
