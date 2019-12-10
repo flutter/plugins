@@ -1,3 +1,7 @@
+## 0.5.4+10
+
+* Adds a `shared_preferences_macos` package.
+
 ## 0.5.4+9
 
 * Remove the deprecated `author:` field from pubspec.yaml
