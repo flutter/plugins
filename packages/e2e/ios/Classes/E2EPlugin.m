@@ -33,7 +33,7 @@ static NSString *const kMethodTestFinished = @"allTestsFinished";
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([call.method isEqual:kMethodTestFinished]) {
+  if ([kMethodTestFinished isEqual:call.method]) {
     self.testResults = call.arguments[@"results"];
     result(nil);
   } else {
