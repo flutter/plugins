@@ -19,6 +19,7 @@ class FutureMemoryImage extends ImageProvider<FutureMemoryImage> {
         assert(scale != null);
 
   final Future<Uint8List> _futureBytes;
+
   /// The scale to place in the ImageInfo object of the image.
   final double scale;
 
@@ -37,7 +38,8 @@ class FutureMemoryImage extends ImageProvider<FutureMemoryImage> {
     );
   }
 
-  Future<ui.Codec> _loadAsync(FutureMemoryImage key, DecoderCallback decode) async {
+  Future<ui.Codec> _loadAsync(
+      FutureMemoryImage key, DecoderCallback decode) async {
     assert(key == this);
     return _futureBytes.then((Uint8List bytes) {
       return decode(bytes);
