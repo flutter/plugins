@@ -523,6 +523,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       result(@([player position]));
     } else if ([@"seekTo" isEqualToString:call.method]) {
       [player seekTo:[argsMap[@"location"] intValue]];
+      [_registry textureFrameAvailable:textureId];
       result(nil);
     } else if ([@"pause" isEqualToString:call.method]) {
       [player pause];
