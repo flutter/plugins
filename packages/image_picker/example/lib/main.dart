@@ -8,6 +8,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/basic.dart';
+import 'package:flutter/src/widgets/container.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
@@ -41,6 +43,10 @@ class _MyHomePageState extends State<MyHomePage> {
   VideoPlayerController _controller;
   String _retrieveDataError;
 
+  final TextEditingController maxWidthController = TextEditingController();
+  final TextEditingController maxHeightController = TextEditingController();
+  final TextEditingController qualityController = TextEditingController();
+
   Future<void> _playVideo(File file) async {
     if (file != null && mounted) {
       await _disposeVideoController();
@@ -53,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _onImageButtonPressed(ImageSource source) async {
+  void _onImageButtonPressed(ImageSource source, {BuildContext context}) async {
     if (_controller != null) {
       await _controller.setVolume(0.0);
     }
@@ -61,12 +67,19 @@ class _MyHomePageState extends State<MyHomePage> {
       final File file = await ImagePicker.pickVideo(source: source);
       await _playVideo(file);
     } else {
-      try {
-        _imageFile = await ImagePicker.pickImage(source: source);
-        setState(() {});
-      } catch (e) {
-        _pickImageError = e;
-      }
+      await _displayPickImageDialog(context,
+          (double maxWidth, double maxHeight, int quality) async {
+        try {
+          _imageFile = await ImagePicker.pickImage(
+              source: source,
+              maxWidth: maxWidth,
+              maxHeight: maxHeight,
+              imageQuality: quality);
+          setState(() {});
+        } catch (e) {
+          _pickImageError = e;
+        }
+      });
     }
   }
 
@@ -82,6 +95,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     _disposeVideoController();
+    maxWidthController.dispose();
+    maxHeightController.dispose();
+    qualityController.dispose();
     super.dispose();
   }
 
@@ -192,7 +208,7 @@ class _MyHomePageState extends State<MyHomePage> {
           FloatingActionButton(
             onPressed: () {
               isVideo = false;
-              _onImageButtonPressed(ImageSource.gallery);
+              _onImageButtonPressed(ImageSource.gallery, context: context);
             },
             heroTag: 'image0',
             tooltip: 'Pick Image from gallery',
@@ -203,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton(
               onPressed: () {
                 isVideo = false;
-                _onImageButtonPressed(ImageSource.camera);
+                _onImageButtonPressed(ImageSource.camera, context: context);
               },
               heroTag: 'image1',
               tooltip: 'Take a Photo',
@@ -249,7 +265,66 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     return null;
   }
+
+  Future<void> _displayPickImageDialog(
+      BuildContext context, OnPickImageCallback onPick) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Add optional parameters'),
+            content: Column(
+              children: <Widget>[
+                TextField(
+                  controller: maxWidthController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration:
+                      InputDecoration(hintText: "Enter maxWidth if desired"),
+                ),
+                TextField(
+                  controller: maxHeightController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration:
+                      InputDecoration(hintText: "Enter maxHeight if desired"),
+                ),
+                TextField(
+                  controller: qualityController,
+                  keyboardType: TextInputType.number,
+                  decoration:
+                      InputDecoration(hintText: "Enter quality if desired"),
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: const Text('CANCEL'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              FlatButton(
+                  child: const Text('PICK'),
+                  onPressed: () {
+                    double width = maxWidthController.text.length > 0
+                        ? double.parse(maxWidthController.text)
+                        : null;
+                    double height = maxHeightController.text.length > 0
+                        ? double.parse(maxHeightController.text)
+                        : null;
+                    int quality = qualityController.text.length > 0
+                        ? int.parse(qualityController.text)
+                        : null;
+                    onPick(width, height, quality);
+                    Navigator.of(context).pop();
+                  }),
+            ],
+          );
+        });
+  }
 }
+
+typedef void OnPickImageCallback(
+    double maxWidth, double maxHeight, int quality);
 
 class AspectRatioVideo extends StatefulWidget {
   AspectRatioVideo(this.controller);

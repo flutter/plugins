@@ -365,6 +365,8 @@ class _MyAppState extends State<MyApp> {
 
   void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+                  await InAppPurchaseConnection.instance
+                .consumePurchase(purchaseDetails);
       if (purchaseDetails.status == PurchaseStatus.pending) {
         showPendingUI();
       } else {
