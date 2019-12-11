@@ -3,6 +3,7 @@ import 'package:ios_platform_images/ios_platform_images.dart';
 
 void main() => runApp(MyApp());
 
+/// Main widget for the example app.
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
