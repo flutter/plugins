@@ -5,9 +5,9 @@
 package io.flutter.plugins.batteryexample;
 
 import android.os.Bundle;
+import dev.flutter.plugins.e2e.E2EPlugin;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.battery.BatteryPlugin;
-import dev.flutter.plugins.e2e.E2EPlugin;
 
 public class EmbedderV1Activity extends FlutterActivity {
   @Override
