@@ -1,3 +1,8 @@
+## 4.1.0
+
+* Support web by default.
+* Require Flutter SDK `v1.12.13+hotfix.4` or greater.
+
 ## 4.0.17
 
 * Add missing documentation and fix an unawaited future in the example app.
