@@ -63,6 +63,7 @@ class SnakeState extends State<Snake> {
   double cellSize;
   GameState state;
   AccelerometerEvent acceleration;
+  StreamSubscription<AccelerometerEvent> _streamSubscription;
   Timer _timer;
 
   @override
@@ -73,13 +74,15 @@ class SnakeState extends State<Snake> {
   @override
   void dispose() {
     super.dispose();
+    _streamSubscription.cancel();
     _timer.cancel();
   }
 
   @override
   void initState() {
     super.initState();
-    accelerometerEvents.listen((AccelerometerEvent event) {
+    _streamSubscription =
+        accelerometerEvents.listen((AccelerometerEvent event) {
       setState(() {
         acceleration = event;
       });
