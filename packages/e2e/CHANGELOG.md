@@ -1,3 +1,8 @@
+## 0.2.2+4
+* Updates E2EPlugin and add skeleton iOS test case E2EIosTest.
+* Adds instructions to README.md about e2e testing on iOS device.
+* Applies iOS e2e to example.
+
 ## 0.2.2+3
 
 * Remove the deprecated `author:` field from pubspec.yaml
