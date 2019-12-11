@@ -9,6 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.0.5
+  plugin_platform_interface: ^1.0.0
 
 dev_dependencies:
   flutter_test:
