@@ -6,7 +6,6 @@ import 'dart:async' show Stream;
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player/video_player.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:video_player_web/video_player_web.dart';
 
@@ -34,7 +33,7 @@ void main() {
       expect(VideoPlayerPlatform.instance.init(), completes);
     });
 
-    test('can create from network', () async {
+    test('can set data source from network', () async {
       expect(
           VideoPlayerPlatform.instance.create().then((textureId) {
             return VideoPlayerPlatform.instance.setDataSource(
@@ -45,10 +44,10 @@ void main() {
                       'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
             );
           }),
-          completion(isNonZero));
+          completes);
     });
 
-    test('can create from asset', () async {
+    test('can set data source from asset', () async {
       expect(
           VideoPlayerPlatform.instance.create().then((textureId) {
             return VideoPlayerPlatform.instance.setDataSource(
@@ -60,7 +59,7 @@ void main() {
               ),
             );
           }),
-          completion(isNonZero));
+          completes);
     });
 
     test('cannot create from file', () {
