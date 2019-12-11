@@ -16,10 +16,6 @@ class IosPlatformImagesPlugin: MethodCallHandler {
   }
 
   override fun onMethodCall(call: MethodCall, result: Result) {
-    if (call.method == "getPlatformVersion") {
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
-    } else {
-      result.error("AndroidNotSupported", "This plugin is for iOS only.", null)
-    }
+    result.error("AndroidNotSupported", "This plugin is for iOS only.", null)
   }
 }
