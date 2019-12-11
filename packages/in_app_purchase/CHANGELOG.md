@@ -1,3 +1,7 @@
+## 0.2.2+5
+
+* Update version of json_annotation to ^3.0.0 and json_serializable to ^3.2.0. Resolve conflicts with other packages e.g. flutter_tools from sdk.
+
 ## 0.2.2+4
 
 * Remove the deprecated `author:` field from pubspec.yaml

@@ -8,34 +8,70 @@ part of 'sk_payment_transaction_wrappers.dart';
 
 SKPaymentTransactionWrapper _$SKPaymentTransactionWrapperFromJson(Map json) {
   return SKPaymentTransactionWrapper(
-      payment: json['payment'] == null
-          ? null
-          : SKPaymentWrapper.fromJson(json['payment'] as Map),
-      transactionState: json['transactionState'] == null
-          ? null
-          : const SKTransactionStatusConverter()
-              .fromJson(json['transactionState'] as int),
-      originalTransaction: json['originalTransaction'] == null
-          ? null
-          : SKPaymentTransactionWrapper.fromJson(
-              json['originalTransaction'] as Map),
-      transactionTimeStamp: (json['transactionTimeStamp'] as num)?.toDouble(),
-      transactionIdentifier: json['transactionIdentifier'] as String,
-      error: json['error'] == null
-          ? null
-          : SKError.fromJson(json['error'] as Map));
+    payment: json['payment'] == null
+        ? null
+        : SKPaymentWrapper.fromJson(json['payment'] as Map),
+    transactionState: _$enumDecodeNullable(
+        _$SKPaymentTransactionStateWrapperEnumMap, json['transactionState']),
+    originalTransaction: json['originalTransaction'] == null
+        ? null
+        : SKPaymentTransactionWrapper.fromJson(
+            json['originalTransaction'] as Map),
+    transactionTimeStamp: (json['transactionTimeStamp'] as num)?.toDouble(),
+    transactionIdentifier: json['transactionIdentifier'] as String,
+    error:
+        json['error'] == null ? null : SKError.fromJson(json['error'] as Map),
+  );
 }
 
 Map<String, dynamic> _$SKPaymentTransactionWrapperToJson(
         SKPaymentTransactionWrapper instance) =>
     <String, dynamic>{
-      'transactionState': instance.transactionState == null
-          ? null
-          : const SKTransactionStatusConverter()
-              .toJson(instance.transactionState),
+      'transactionState':
+          _$SKPaymentTransactionStateWrapperEnumMap[instance.transactionState],
       'payment': instance.payment,
       'originalTransaction': instance.originalTransaction,
       'transactionTimeStamp': instance.transactionTimeStamp,
       'transactionIdentifier': instance.transactionIdentifier,
-      'error': instance.error
+      'error': instance.error,
     };
+
+T _$enumDecode<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
+  if (source == null) {
+    throw ArgumentError('A value must be provided. Supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+
+  final value = enumValues.entries
+      .singleWhere((e) => e.value == source, orElse: () => null)
+      ?.key;
+
+  if (value == null && unknownValue == null) {
+    throw ArgumentError('`$source` is not one of the supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+  return value ?? unknownValue;
+}
+
+T _$enumDecodeNullable<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
+  if (source == null) {
+    return null;
+  }
+  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+}
+
+const _$SKPaymentTransactionStateWrapperEnumMap = {
+  SKPaymentTransactionStateWrapper.purchasing: 0,
+  SKPaymentTransactionStateWrapper.purchased: 1,
+  SKPaymentTransactionStateWrapper.failed: 2,
+  SKPaymentTransactionStateWrapper.restored: 3,
+  SKPaymentTransactionStateWrapper.deferred: 4,
+};
