@@ -41,7 +41,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
+@property(nonatomic, readonly) NSString* key;
 - (void)play;
 - (void)pause;
 - (void)setIsLooping:(bool)isLooping;
@@ -55,9 +55,16 @@ static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 @implementation FLTVideoPlayer
-- (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater {
-  NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
-  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
+- (instancetype)initWithFrameUpdater:(FLTFrameUpdater *)frameUpdater {
+  self = [super init];
+  NSAssert(self, @"super init cannot be nil");
+  _isInitialized = false;
+  _isPlaying = false;
+  _disposed = false;
+  _player = [[AVPlayer alloc] init];
+  _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+  [self createVideoOutputAndDisplayLink:frameUpdater];
+  return self;
 }
 
 - (void)addObservers:(AVPlayerItem*)item {
@@ -89,13 +96,34 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                              object:item];
 }
 
+- (void)removeObservers {
+  if (_player.currentItem == nil) {
+    return;
+  }
+  [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"loadedTimeRanges"
+                                context:timeRangeContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"playbackLikelyToKeepUp"
+                                context:playbackLikelyToKeepUpContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"playbackBufferEmpty"
+                                context:playbackBufferEmptyContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"playbackBufferFull"
+                                context:playbackBufferFullContext];
+  [_player replaceCurrentItemWithPlayerItem:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)itemDidPlayToEndTime:(NSNotification*)notification {
   if (_isLooping) {
     AVPlayerItem* p = [notification object];
     [p seekToTime:kCMTimeZero completionHandler:nil];
   } else {
     if (_eventSink) {
-      _eventSink(@{@"event" : @"completed"});
+      _eventSink(@{@"event" : @"completed", @"key" : _key});
     }
   }
 }
@@ -157,11 +185,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _displayLink.paused = YES;
 }
 
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
-  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
-  return [self initWithPlayerItem:item frameUpdater:frameUpdater];
-}
-
 - (CGAffineTransform)fixTransform:(AVAssetTrack*)videoTrack {
   CGAffineTransform transform = videoTrack.preferredTransform;
   // TODO(@recastrodiaz): why do we need to do this? Why is the preferredTransform incorrect?
@@ -185,12 +208,22 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return transform;
 }
 
-- (instancetype)initWithPlayerItem:(AVPlayerItem*)item frameUpdater:(FLTFrameUpdater*)frameUpdater {
-  self = [super init];
-  NSAssert(self, @"super init cannot be nil");
+- (void)setDataSourceAsset:(NSString*)asset withKey:(NSString*)key {
+  NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
+  return [self setDataSourceURL:[NSURL fileURLWithPath:path] withKey:key];
+}
+
+- (void)setDataSourceURL:(NSURL*)url withKey:(NSString*)key {
+  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
+  return [self setDataSourcePlayerItem:item withKey:key];
+}
+
+- (void)setDataSourcePlayerItem:(AVPlayerItem*)item withKey:(NSString*)key{
   _isInitialized = false;
   _isPlaying = false;
   _disposed = false;
+  _key = key;
+  [self removeObservers];
 
   AVAsset* asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
@@ -221,16 +254,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     }
   };
 
-  _player = [AVPlayer playerWithPlayerItem:item];
-  _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-
-  [self createVideoOutputAndDisplayLink:frameUpdater];
-
+  [_player replaceCurrentItemWithPlayerItem:item];
   [self addObservers:item];
-
   [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
-
-  return self;
 }
 
 - (void)observeValueForKeyPath:(NSString*)path
@@ -245,7 +271,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         int64_t start = FLTCMTimeToMillis(range.start);
         [values addObject:@[ @(start), @(start + FLTCMTimeToMillis(range.duration)) ]];
       }
-      _eventSink(@{@"event" : @"bufferingUpdate", @"values" : values});
+      _eventSink(@{@"event" : @"bufferingUpdate", @"values" : values, @"key": _key});
     }
   } else if (context == statusContext) {
     AVPlayerItem* item = (AVPlayerItem*)object;
@@ -271,16 +297,16 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
       [self updatePlayingState];
       if (_eventSink != nil) {
-        _eventSink(@{@"event" : @"bufferingEnd"});
+        _eventSink(@{@"event" : @"bufferingEnd",@"key" : _key});
       }
     }
   } else if (context == playbackBufferEmptyContext) {
     if (_eventSink != nil) {
-      _eventSink(@{@"event" : @"bufferingStart"});
+      _eventSink(@{@"event" : @"bufferingStart",@"key" : _key});
     }
   } else if (context == playbackBufferFullContext) {
     if (_eventSink != nil) {
-      _eventSink(@{@"event" : @"bufferingEnd"});
+      _eventSink(@{@"event" : @"bufferingEnd",@"key" : _key});
     }
   }
 }
@@ -317,7 +343,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       @"event" : @"initialized",
       @"duration" : @([self duration]),
       @"width" : @(width),
-      @"height" : @(height)
+      @"height" : @(height),
+      @"key" : _key
     });
   }
 }
@@ -388,23 +415,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)dispose {
   _disposed = true;
-  [_displayLink invalidate];
-  [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"loadedTimeRanges"
-                                context:timeRangeContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"playbackLikelyToKeepUp"
-                                context:playbackLikelyToKeepUpContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"playbackBufferEmpty"
-                                context:playbackBufferEmptyContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"playbackBufferFull"
-                                context:playbackBufferFullContext];
-  [_player replaceCurrentItemWithPlayerItem:nil];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_eventChannel setStreamHandler:nil];
+  [self removeObservers];
 }
 
 @end
@@ -463,34 +474,34 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [_players removeAllObjects];
     result(nil);
   } else if ([@"create" isEqualToString:call.method]) {
-    NSDictionary* argsMap = call.arguments;
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
-    NSString* assetArg = argsMap[@"asset"];
-    NSString* uriArg = argsMap[@"uri"];
-    FLTVideoPlayer* player;
-    if (assetArg) {
-      NSString* assetPath;
-      NSString* package = argsMap[@"package"];
-      if (![package isEqual:[NSNull null]]) {
-        assetPath = [_registrar lookupKeyForAsset:assetArg fromPackage:package];
-      } else {
-        assetPath = [_registrar lookupKeyForAsset:assetArg];
-      }
-      player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
-      [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
-    } else if (uriArg) {
-      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
-                                      frameUpdater:frameUpdater];
-      [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
-    } else {
-      result(FlutterMethodNotImplemented);
-    }
-
+    FLTVideoPlayer* player = [[FLTVideoPlayer alloc] initWithFrameUpdater:frameUpdater];
+    [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
   } else {
     NSDictionary* argsMap = call.arguments;
-    int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;
-    FLTVideoPlayer* player = _players[@(textureId)];
-    if ([@"dispose" isEqualToString:call.method]) {
+    int64_t textureId = ((NSNumber *) argsMap[@"textureId"]).unsignedIntegerValue;
+    FLTVideoPlayer *player = _players[@(textureId)];
+    if ([@"setDataSource" isEqualToString:call.method]) {
+      NSDictionary *dataSource = argsMap[@"dataSource"];
+      NSString *assetArg = dataSource[@"asset"];
+      NSString *uriArg = dataSource[@"uri"];
+      NSString *key = dataSource[@"key"];
+      if (assetArg) {
+        NSString *assetPath;
+        NSString *package = dataSource[@"package"];
+        if (![package isEqual:[NSNull null]]) {
+          assetPath = [_registrar lookupKeyForAsset:assetArg fromPackage:package];
+        } else {
+          assetPath = [_registrar lookupKeyForAsset:assetArg];
+        }
+        [player setDataSourceAsset:assetPath withKey:key];
+      } else if (uriArg) {
+        [player setDataSourceURL:[NSURL URLWithString:uriArg] withKey:key];
+      } else {
+        result(FlutterMethodNotImplemented);
+      }
+      result(nil);
+    } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_players removeObjectForKey:@(textureId)];
       // If the Flutter contains https://github.com/flutter/engine/pull/12695,
