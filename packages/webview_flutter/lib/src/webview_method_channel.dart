@@ -10,6 +10,8 @@ import '../platform_interface.dart';
 
 /// A [WebViewPlatformController] that uses a method channel to control the webview.
 class MethodChannelWebViewPlatform implements WebViewPlatformController {
+  /// Constructs an instance that will listen for webviews broadcasting to the
+  /// given [id], using the given [WebViewPlatformCallbacksHandler].
   MethodChannelWebViewPlatform(int id, this._platformCallbacksHandler)
       : assert(_platformCallbacksHandler != null),
         _channel = MethodChannel('plugins.flutter.io/webview_$id') {
@@ -37,6 +39,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         );
       case 'onPageFinished':
         _platformCallbacksHandler.onPageFinished(call.arguments['url']);
+        return null;
+      case 'onPageStarted':
+        _platformCallbacksHandler.onPageStarted(call.arguments['url']);
         return null;
     }
     throw MissingPluginException(

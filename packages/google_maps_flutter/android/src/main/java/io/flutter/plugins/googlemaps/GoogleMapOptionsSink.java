@@ -38,6 +38,8 @@ interface GoogleMapOptionsSink {
 
   void setTrafficEnabled(boolean trafficEnabled);
 
+  void setBuildingsEnabled(boolean buildingsEnabled);
+
   void setInitialMarkers(Object initialMarkers);
 
   void setInitialPolygons(Object initialPolygons);

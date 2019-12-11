@@ -1,3 +1,19 @@
+## 0.3.18+1
+
+* Be explicit that keyboard is not ready for production in README.md.
+
+## 0.3.18
+
+* Add support for onPageStarted event.
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate to the new pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.3.17
+
+* Fix pedantic lint errors. Added missing documentation and awaited some futures
+  in tests and the example app.
+
 ## 0.3.16
 
 * Add support for async NavigationDelegates. Synchronous NavigationDelegates

@@ -1,5 +1,0 @@
-# Exclude auto-generated files from analysis/linting
-analyzer:
-  exclude:
-    - "lib/src/generated/**"
-    

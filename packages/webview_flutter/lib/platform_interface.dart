@@ -23,6 +23,9 @@ abstract class WebViewPlatformCallbacksHandler {
   /// If true is returned the navigation is allowed, otherwise it is blocked.
   FutureOr<bool> onNavigationRequest({String url, bool isForMainFrame});
 
+  /// Invoked by [WebViewPlatformController] when a page has started loading.
+  void onPageStarted(String url);
+
   /// Invoked by [WebViewPlatformController] when a page has finished loading.
   void onPageFinished(String url);
 }
@@ -220,6 +223,10 @@ class WebSetting<T> {
 ///
 /// The `userAgent` parameter must not be null.
 class WebSettings {
+  /// Construct an instance with initial settings. Future setting changes can be
+  /// sent with [WebviewPlatform#updateSettings].
+  ///
+  /// The `userAgent` parameter must not be null.
   WebSettings({
     this.javascriptMode,
     this.hasNavigationDelegate,
@@ -258,6 +265,10 @@ class WebSettings {
 ///
 /// The `autoMediaPlaybackPolicy` parameter must not be null.
 class CreationParams {
+  /// Constructs an instance to use when creating a new
+  /// [WebViewPlatformController].
+  ///
+  /// The `autoMediaPlaybackPolicy` parameter must not be null.
   CreationParams({
     this.initialUrl,
     this.webSettings,
