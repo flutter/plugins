@@ -75,10 +75,11 @@ class BillingClient {
 
   /// Enable the [BillingClientWrapper] to handle pending purchases.
   ///
-  /// This method is required to be called when initialize the application.
+  /// Play requires that you call this method when initializing your application.
   /// It is to acknowledge your application has been updated to support pending purchases.
   /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
   /// for more details.
+  ///
   /// Failure to call this method before any other method in the [startConnection] will throw an exception.
   void enablePendingPurchases() {
     _enablePendingPurchases = true;
