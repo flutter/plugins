@@ -25,9 +25,9 @@
   NSLog(@"================== Test Results End ====================");
   BOOL testPass = failedTests.count == 0;
   if (!testPass && testResult) {
-    *testResult = [NSString stringWithFormat:@"Detected failed E2E test(s) %@ among %@",
-                                             failedTests.description,
-                                             testResults.allKeys.description];
+    *testResult =
+        [NSString stringWithFormat:@"Detected failed E2E test(s) %@ among %@",
+                                   failedTests.description, testResults.allKeys.description];
   }
   return testPass;
 }
