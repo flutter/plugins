@@ -27,6 +27,23 @@ void main() {
 }
 ```
 
+### Additional steps for iOS
+
+iOS e2e package depends on XCTest framework, which requires your project to
+dynamically link to XCTest.framework. Otherwise, you will see the following
+message when running your app:
+
+```
+dyld: Library not loaded:
+    @rpath/XCTest.framework/XCTest
+  Referenced from:...
+  Reason: image not found
+```
+
+This issue can be resolved by adding a unit test target to your Xcode project (
+in Xcode, navigating `File > New > Target...` and set up the values) and run the
+empty test once.
+
 ## Test locations
 
 It is recommended to put e2e tests in the `test/` folder of the app or package.
@@ -151,4 +168,36 @@ You can pass additional parameters on the command line, such as the
 devices you want to test on. See
 [gcloud firebase test android run](https://cloud.google.com/sdk/gcloud/reference/firebase/test/android/run).
 
-iOS support for Firebase Test Lab is not yet available, but is planned.
+## iOS device testing
+
+You need to change `iOS/Podfile` to avoid test target statically linking to the plugins. One way is to
+link all of the plugins dynamically:
+
+```
+target 'Runner' do
+  use_framework!
+  ...
+end
+```
+
+To e2e test on your iOS device (simulator or real), rebuild your iOS targets with Flutter tool.
+
+```
+flutter build ios -t test_driver/<package_name>_e2e.dart (--simulator)
+```
+
+Open Xcode project (by default, it's `ios/Runner.xcodeproj`). Under your test target, create a test file
+`RunnerTest.m` and change the code. You can change `RunnerTest.m` to the name of your choice.
+
+```objective-c
+#import <XCTest/XCTest.h>
+#import <e2e/E2EIosTest.h>
+
+@interface RunnerTests : E2EIosTest
+@end
+
+@implementation RunnerTests
+@end
+```
+
+Now you can start RunnerTests to kick out e2e tests!
