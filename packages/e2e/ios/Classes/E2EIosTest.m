@@ -3,7 +3,7 @@
 
 @implementation E2EIosTest
 
-- (void)testStub {
+- (void)testE2E {
   E2EPlugin *e2ePlugin = [E2EPlugin instance];
   while (!e2ePlugin.testResults) {
     CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.f, NO);

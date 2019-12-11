@@ -29,7 +29,7 @@ void main() {
 
 ### Additional steps for iOS
 
-iOS e2e package depends on XCTest framework, which requires your project to
+iOS e2e package depends on the XCTest framework, which requires your project to
 dynamically link to XCTest.framework. Otherwise, you will see the following
 message when running your app:
 
@@ -175,7 +175,7 @@ link all of the plugins dynamically:
 
 ```
 target 'Runner' do
-  use_framework!
+  use_frameworks!
   ...
 end
 ```
