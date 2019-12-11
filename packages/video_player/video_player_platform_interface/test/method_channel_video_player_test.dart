@@ -245,6 +245,7 @@ void main() {
     });
 
     test('videoEventsFor', () async {
+      String key = "key";
       // TODO(cbenhagen): This has been deprecated and should be replaced
       // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
       // available on all the versions of Flutter that we test.
@@ -263,6 +264,7 @@ void main() {
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
+                  'key': key,
                   'event': 'initialized',
                   'duration': 98765,
                   'width': 1920,
@@ -278,6 +280,7 @@ void main() {
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
+                  'key': key,
                   'event': 'completed',
                 }),
                 (ByteData data) {});
@@ -290,6 +293,7 @@ void main() {
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
+                  'key': key,
                   'event': 'bufferingUpdate',
                   'values': <List<dynamic>>[
                     <int>[0, 1234],
@@ -306,6 +310,7 @@ void main() {
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
+                  'key': key,
                   'event': 'bufferingStart',
                 }),
                 (ByteData data) {});
@@ -318,6 +323,7 @@ void main() {
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
+                  'key': key,
                   'event': 'bufferingEnd',
                 }),
                 (ByteData data) {});
@@ -334,12 +340,17 @@ void main() {
           player.videoEventsFor(123),
           emitsInOrder(<dynamic>[
             VideoEvent(
+              key: key,
               eventType: VideoEventType.initialized,
               duration: const Duration(milliseconds: 98765),
               size: const Size(1920, 1080),
             ),
-            VideoEvent(eventType: VideoEventType.completed),
             VideoEvent(
+              key: key,
+              eventType: VideoEventType.completed,
+            ),
+            VideoEvent(
+                key: key,
                 eventType: VideoEventType.bufferingUpdate,
                 buffered: <DurationRange>[
                   DurationRange(
@@ -351,8 +362,14 @@ void main() {
                     const Duration(milliseconds: 4000),
                   ),
                 ]),
-            VideoEvent(eventType: VideoEventType.bufferingStart),
-            VideoEvent(eventType: VideoEventType.bufferingEnd),
+            VideoEvent(
+              key: key,
+              eventType: VideoEventType.bufferingStart,
+            ),
+            VideoEvent(
+              key: key,
+              eventType: VideoEventType.bufferingEnd,
+            ),
           ]));
     });
   });

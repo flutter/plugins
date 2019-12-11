@@ -7,9 +7,6 @@ package io.flutter.plugins.videoplayer;
 import android.content.Context;
 import android.util.Log;
 import android.util.LongSparseArray;
-
-import java.util.Map;
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
@@ -20,6 +17,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.FlutterMain;
 import io.flutter.view.TextureRegistry;
+import java.util.Map;
 
 /** Android platform implementation of the VideoPlayerPlugin. */
 public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
@@ -106,13 +104,10 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
               new EventChannel(
                   flutterState.binaryMessenger, "flutter.io/videoPlayer/videoEvents" + handle.id());
 
-            VideoPlayer player = new VideoPlayer(
-                flutterState.applicationContext,
-                eventChannel,
-                handle,
-                result);
+          VideoPlayer player =
+              new VideoPlayer(flutterState.applicationContext, eventChannel, handle, result);
 
-            videoPlayers.put(handle.id(), player);
+          videoPlayers.put(handle.id(), player);
           break;
         }
       default:
@@ -135,35 +130,31 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
   private void onMethodCall(MethodCall call, Result result, long textureId, VideoPlayer player) {
     switch (call.method) {
       case "setDataSource":
-      {
-        Map<String, String> dataSource = call.argument("dataSource");
-        String key = dataSource.get("key");
-        if (dataSource.get("asset") != null) {
-          String assetLookupKey;
-          if (dataSource.get("package") != null) {
-            assetLookupKey =
-                flutterState.keyForAssetAndPackageName.get(
-                        dataSource.get("asset"), dataSource.get("package"));
-          } else {
-            assetLookupKey = flutterState.keyForAsset.get(dataSource.get("asset"));
-          }
+        {
+          Map<String, String> dataSource = call.argument("dataSource");
+          String key = dataSource.get("key");
+          if (dataSource.get("asset") != null) {
+            String assetLookupKey;
+            if (dataSource.get("package") != null) {
+              assetLookupKey =
+                  flutterState.keyForAssetAndPackageName.get(
+                      dataSource.get("asset"), dataSource.get("package"));
+            } else {
+              assetLookupKey = flutterState.keyForAsset.get(dataSource.get("asset"));
+            }
 
-          player.setDataSource(
-              flutterState.applicationContext,
-              key,
-              "asset:///" + assetLookupKey,
-              null,
-              result);
-        } else {
-          player.setDataSource(
-               flutterState.applicationContext,
-               key,
-               dataSource.get("uri"),
-               dataSource.get("formatHint"),
-               result);
+            player.setDataSource(
+                flutterState.applicationContext, key, "asset:///" + assetLookupKey, null, result);
+          } else {
+            player.setDataSource(
+                flutterState.applicationContext,
+                key,
+                dataSource.get("uri"),
+                dataSource.get("formatHint"),
+                result);
+          }
+          break;
         }
-        break;
-      }
       case "setLooping":
         player.setLooping(call.argument("looping"));
         result.success(null);

@@ -38,9 +38,19 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   }
 
   @override
-  Future<int> create(DataSource dataSource) async {
+  Future<int> create() async {
     final int textureId = _textureCounter;
     _textureCounter++;
+
+    final _VideoPlayer player = _VideoPlayer(textureId);
+
+    _videoPlayers[textureId] = player;
+    return textureId;
+  }
+
+  @override
+  Future<void> setDataSource(int textureId, DataSource dataSource) async {
+    final _VideoPlayer player = _videoPlayers[textureId];
 
     Uri uri;
     switch (dataSource.sourceType) {
@@ -62,15 +72,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
             'web implementation of video_player cannot play local files'));
     }
 
-    final _VideoPlayer player = _VideoPlayer(
-      uri: uri,
-      textureId: textureId,
-    );
-
-    player.initialize();
-
-    _videoPlayers[textureId] = player;
-    return textureId;
+    player.setDataSource(dataSource.key, uri);
   }
 
   @override
@@ -116,19 +118,17 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 }
 
 class _VideoPlayer {
-  _VideoPlayer({this.uri, this.textureId});
-
   final StreamController<VideoEvent> eventController =
       StreamController<VideoEvent>();
 
-  final Uri uri;
   final int textureId;
+  Uri uri;
+  String key;
   VideoElement videoElement;
   bool isInitialized = false;
 
-  void initialize() {
+  _VideoPlayer(this.textureId) {
     videoElement = VideoElement()
-      ..src = uri.toString()
       ..autoplay = false
       ..controls = false
       ..style.border = 'none';
@@ -148,12 +148,21 @@ class _VideoPlayer {
       eventController.addError(error);
     });
     videoElement.onEnded.listen((dynamic _) {
-      eventController.add(VideoEvent(eventType: VideoEventType.completed));
+      eventController
+          .add(VideoEvent(key: key, eventType: VideoEventType.completed));
     });
+  }
+
+  void setDataSource(String key, Uri uri) {
+    this.key = key;
+    this.uri = uri;
+    isInitialized = false;
+    videoElement.src = uri.toString();
   }
 
   void sendBufferingUpdate() {
     eventController.add(VideoEvent(
+      key: key,
       buffered: _toDurationRange(videoElement.buffered),
       eventType: VideoEventType.bufferingUpdate,
     ));
@@ -186,6 +195,7 @@ class _VideoPlayer {
   void sendInitialized() {
     eventController.add(
       VideoEvent(
+        key: key,
         eventType: VideoEventType.initialized,
         duration: Duration(
           milliseconds: (videoElement.duration * 1000).round(),

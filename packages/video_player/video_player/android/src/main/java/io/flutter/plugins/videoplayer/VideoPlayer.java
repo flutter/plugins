@@ -74,11 +74,7 @@ final class VideoPlayer {
   }
 
   void setDataSource(
-      Context context,
-      String key,
-      String dataSource,
-      String formatHint,
-      Result result) {
+      Context context, String key, String dataSource, String formatHint, Result result) {
     this.key = key;
 
     isInitialized = false;

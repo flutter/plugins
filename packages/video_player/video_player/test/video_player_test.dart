@@ -162,7 +162,8 @@ void main() {
       });
     });
 
-    test('correctly change video controller state during setting new data source',
+    test(
+        'correctly change video controller state during setting new data source',
         () async {
       final VideoPlayerController controller = VideoPlayerController();
       await controller.setAssetDataSource('a.avi');

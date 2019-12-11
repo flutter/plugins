@@ -289,6 +289,7 @@ class VideoEvent {
     return identical(this, other) ||
         other is VideoEvent &&
             runtimeType == other.runtimeType &&
+            key == other.key &&
             eventType == other.eventType &&
             duration == other.duration &&
             size == other.size &&

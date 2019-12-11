@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 @TestOn('browser')
-
-import 'dart:async';
+import 'dart:async' show Stream;
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,7 +16,9 @@ void main() {
 
     setUp(() async {
       VideoPlayerPlatform.instance = VideoPlayerPlugin();
-      textureId = await VideoPlayerPlatform.instance.create(
+      textureId = await VideoPlayerPlatform.instance.create();
+      await VideoPlayerPlatform.instance.setDataSource(
+        textureId,
         DataSource(
             sourceType: DataSourceType.network,
             uri:
@@ -33,37 +34,46 @@ void main() {
       expect(VideoPlayerPlatform.instance.init(), completes);
     });
 
-    test('can create from network', () {
+    test('can create from network', () async {
       expect(
-          VideoPlayerPlatform.instance.create(
-            DataSource(
-                sourceType: DataSourceType.network,
-                uri:
-                    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
-          ),
+          VideoPlayerPlatform.instance.create().then((textureId) {
+            return VideoPlayerPlatform.instance.setDataSource(
+              textureId,
+              DataSource(
+                  sourceType: DataSourceType.network,
+                  uri:
+                      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
+            );
+          }),
           completion(isNonZero));
     });
 
-    test('can create from asset', () {
+    test('can create from asset', () async {
       expect(
-          VideoPlayerPlatform.instance.create(
-            DataSource(
-              sourceType: DataSourceType.asset,
-              asset: 'videos/bee.mp4',
-              package: 'bee_vids',
-            ),
-          ),
+          VideoPlayerPlatform.instance.create().then((textureId) {
+            return VideoPlayerPlatform.instance.setDataSource(
+              textureId,
+              DataSource(
+                sourceType: DataSourceType.asset,
+                asset: 'videos/bee.mp4',
+                package: 'bee_vids',
+              ),
+            );
+          }),
           completion(isNonZero));
     });
 
     test('cannot create from file', () {
       expect(
-          VideoPlayerPlatform.instance.create(
-            DataSource(
-              sourceType: DataSourceType.file,
-              uri: '/videos/bee.mp4',
-            ),
-          ),
+          VideoPlayerPlatform.instance.create().then((textureId) {
+            return VideoPlayerPlatform.instance.setDataSource(
+              textureId,
+              DataSource(
+                sourceType: DataSourceType.file,
+                uri: '/videos/bee.mp4',
+              ),
+            );
+          }),
           throwsUnimplementedError);
     });
 

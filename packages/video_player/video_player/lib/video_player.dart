@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:pedantic/pedantic.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -168,8 +169,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _textureId = await VideoPlayerPlatform.instance.create();
     _creatingCompleter.complete(null);
 
-    _applyLooping();
-    _applyVolume();
+    unawaited(_applyLooping());
+    unawaited(_applyVolume());
 
     void eventListener(VideoEvent event) {
       if (_isDisposed || event.key != _dataSource.key) {
@@ -276,7 +277,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
     if (!_creatingCompleter.isCompleted) await _creatingCompleter.future;
 
-    if(_lifeCycleObserver == null) {
+    if (_lifeCycleObserver == null) {
       _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
       _lifeCycleObserver.initialize();
     }
