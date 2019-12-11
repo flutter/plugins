@@ -1,3 +1,7 @@
+## 5.4.0
+
+* Support macos by default.
+
 ## 5.3.0
 
 * Support web by default.
