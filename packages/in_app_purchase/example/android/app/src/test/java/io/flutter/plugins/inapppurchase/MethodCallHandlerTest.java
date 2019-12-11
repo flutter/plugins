@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
@@ -76,7 +77,10 @@ public class MethodCallHandlerTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    factory = (context, channel, true) -> mockBillingClient;
+    factory =
+        (@NonNull Context context,
+            @NonNull MethodChannel channel,
+            boolean enablePendingPurchases) -> mockBillingClient;
     methodChannelHandler = new MethodCallHandlerImpl(activity, context, mockMethodChannel, factory);
   }
 
@@ -133,8 +137,9 @@ public class MethodCallHandlerTest {
 
   @Test
   public void startConnection_multipleCalls() {
-    Map<String, Integer> arguments = new HashMap<>();
+    Map<String, Object> arguments = new HashMap<>();
     arguments.put("handle", 1);
+    arguments.put("enablePendingPurchases", true);
     MethodCall call = new MethodCall(START_CONNECTION, arguments);
     ArgumentCaptor<BillingClientStateListener> captor =
         ArgumentCaptor.forClass(BillingClientStateListener.class);
@@ -170,8 +175,9 @@ public class MethodCallHandlerTest {
   public void endConnection() {
     // Set up a connected BillingClient instance
     final int disconnectCallbackHandle = 22;
-    Map<String, Integer> arguments = new HashMap<>();
+    Map<String, Object> arguments = new HashMap<>();
     arguments.put("handle", disconnectCallbackHandle);
+    arguments.put("enablePendingPurchases", true);
     MethodCall connectCall = new MethodCall(START_CONNECTION, arguments);
     ArgumentCaptor<BillingClientStateListener> captor =
         ArgumentCaptor.forClass(BillingClientStateListener.class);
@@ -546,8 +552,9 @@ public class MethodCallHandlerTest {
   }
 
   private ArgumentCaptor<BillingClientStateListener> mockStartConnection() {
-    Map<String, Integer> arguments = new HashMap<>();
+    Map<String, Object> arguments = new HashMap<>();
     arguments.put("handle", 1);
+    arguments.put("enablePendingPurchases", true);
     MethodCall call = new MethodCall(START_CONNECTION, arguments);
     ArgumentCaptor<BillingClientStateListener> captor =
         ArgumentCaptor.forClass(BillingClientStateListener.class);
@@ -558,10 +565,11 @@ public class MethodCallHandlerTest {
   }
 
   private void establishConnectedBillingClient(
-      @Nullable Map<String, Integer> arguments, @Nullable Result result) {
+      @Nullable Map<String, Object> arguments, @Nullable Result result) {
     if (arguments == null) {
       arguments = new HashMap<>();
       arguments.put("handle", 1);
+      arguments.put("enablePendingPurchases", true);
     }
     if (result == null) {
       result = mock(Result.class);
