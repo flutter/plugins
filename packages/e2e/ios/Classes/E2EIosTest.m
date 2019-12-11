@@ -3,7 +3,7 @@
 
 @implementation E2EIosTest
 
-- (void)testE2E {
+- (BOOL)testE2E:(NSString **)testResult {
   E2EPlugin *e2ePlugin = [E2EPlugin instance];
   while (!e2ePlugin.testResults) {
     CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.f, NO);
@@ -23,8 +23,13 @@
     }
   }
   NSLog(@"================== Test Results End ====================");
-  XCTAssertFalse(failedTests.count, @"Detected failed E2E test(s) %@ among %@",
-                 failedTests.description, testResults.allKeys.description);
+  BOOL testPass = failedTests.count == 0;
+  if (!testPass && testResult) {
+    *testResult = [NSString stringWithFormat:@"Detected failed E2E test(s) %@ among %@",
+                                             failedTests.description,
+                                             testResults.allKeys.description];
+  }
+  return testPass;
 }
 
 @end
