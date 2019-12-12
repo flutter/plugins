@@ -11,6 +11,7 @@ source "$SCRIPT_DIR/common.sh"
 check_changed_packages > /dev/null
 
 readonly EXCLUDED_PLUGINS_LIST=(
+  "flutter_plugin_android_lifecycle"
   "instrumentation_adapter"
   "url_launcher_platform_interface"
   "url_launcher_web"
