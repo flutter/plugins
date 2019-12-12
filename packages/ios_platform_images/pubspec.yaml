@@ -1,5 +1,5 @@
 name: ios_platform_images
-description: A new flutter plugin project.
+description: A plugin to share images between Flutter and iOS in add-to-app setups.
 version: 0.0.1
 homepage: https://github.com/flutter/plugins/tree/master/packages/ios_platform_images/ios_platform_images
 
