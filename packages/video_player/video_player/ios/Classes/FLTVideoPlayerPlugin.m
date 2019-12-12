@@ -55,7 +55,7 @@ static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 @implementation FLTVideoPlayer
-- (instancetype)initWithFrameUpdater:(FLTFrameUpdater *)frameUpdater {
+- (instancetype)initWithFrameUpdater:(FLTFrameUpdater*)frameUpdater {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _isInitialized = false;
@@ -218,7 +218,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return [self setDataSourcePlayerItem:item withKey:key];
 }
 
-- (void)setDataSourcePlayerItem:(AVPlayerItem*)item withKey:(NSString*)key{
+- (void)setDataSourcePlayerItem:(AVPlayerItem*)item withKey:(NSString*)key {
   _isInitialized = false;
   _isPlaying = false;
   _disposed = false;
@@ -271,7 +271,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         int64_t start = FLTCMTimeToMillis(range.start);
         [values addObject:@[ @(start), @(start + FLTCMTimeToMillis(range.duration)) ]];
       }
-      _eventSink(@{@"event" : @"bufferingUpdate", @"values" : values, @"key": _key});
+      _eventSink(@{@"event" : @"bufferingUpdate", @"values" : values, @"key" : _key});
     }
   } else if (context == statusContext) {
     AVPlayerItem* item = (AVPlayerItem*)object;
@@ -297,16 +297,16 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
       [self updatePlayingState];
       if (_eventSink != nil) {
-        _eventSink(@{@"event" : @"bufferingEnd",@"key" : _key});
+        _eventSink(@{@"event" : @"bufferingEnd", @"key" : _key});
       }
     }
   } else if (context == playbackBufferEmptyContext) {
     if (_eventSink != nil) {
-      _eventSink(@{@"event" : @"bufferingStart",@"key" : _key});
+      _eventSink(@{@"event" : @"bufferingStart", @"key" : _key});
     }
   } else if (context == playbackBufferFullContext) {
     if (_eventSink != nil) {
-      _eventSink(@{@"event" : @"bufferingEnd",@"key" : _key});
+      _eventSink(@{@"event" : @"bufferingEnd", @"key" : _key});
     }
   }
 }
@@ -479,16 +479,16 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
   } else {
     NSDictionary* argsMap = call.arguments;
-    int64_t textureId = ((NSNumber *) argsMap[@"textureId"]).unsignedIntegerValue;
-    FLTVideoPlayer *player = _players[@(textureId)];
+    int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;
+    FLTVideoPlayer* player = _players[@(textureId)];
     if ([@"setDataSource" isEqualToString:call.method]) {
-      NSDictionary *dataSource = argsMap[@"dataSource"];
-      NSString *assetArg = dataSource[@"asset"];
-      NSString *uriArg = dataSource[@"uri"];
-      NSString *key = dataSource[@"key"];
+      NSDictionary* dataSource = argsMap[@"dataSource"];
+      NSString* assetArg = dataSource[@"asset"];
+      NSString* uriArg = dataSource[@"uri"];
+      NSString* key = dataSource[@"key"];
       if (assetArg) {
-        NSString *assetPath;
-        NSString *package = dataSource[@"package"];
+        NSString* assetPath;
+        NSString* package = dataSource[@"package"];
         if (![package isEqual:[NSNull null]]) {
           assetPath = [_registrar lookupKeyForAsset:assetArg fromPackage:package];
         } else {
