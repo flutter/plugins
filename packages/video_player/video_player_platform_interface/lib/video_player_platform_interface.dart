@@ -190,10 +190,6 @@ class DataSource {
   /// [DataSourceType.asset] videos.
   final String package;
 
-  /// The URI to the video file. This will be in different formats depending on
-  /// the [DataSourceType] of the original video.
-  String get dataSource => uri ?? asset;
-
   /// Key to compare DataSource
   String get key {
     uri ?? ((package ?? "") + ":" + asset) + ":" + (formatHint ?? "");
