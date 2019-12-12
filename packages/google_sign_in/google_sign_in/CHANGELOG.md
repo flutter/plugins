@@ -1,3 +1,7 @@
+## 4.1.1
+
+* Added a new error code `network_error`, and return it when a network error occurred.
+
 ## 4.1.0
 
 * Support web by default.
