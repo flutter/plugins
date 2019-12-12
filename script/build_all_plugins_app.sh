@@ -11,6 +11,7 @@ source "$SCRIPT_DIR/common.sh"
 check_changed_packages > /dev/null
 
 readonly EXCLUDED_PLUGINS_LIST=(
+  "flutter_plugin_android_lifecycle"
   "google_sign_in_platform_interface"
   "google_sign_in_web"
   "instrumentation_adapter"
