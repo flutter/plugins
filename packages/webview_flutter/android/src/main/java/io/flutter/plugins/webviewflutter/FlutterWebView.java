@@ -272,10 +272,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
           webView.setWebContentsDebuggingEnabled(debuggingEnabled);
           break;
+        case "gestureNavigationEnabled":
+          break;
         case "userAgent":
           updateUserAgent((String) settings.get(key));
-          break;
-        case "allowsBackForwardNavigationGestures":
           break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);

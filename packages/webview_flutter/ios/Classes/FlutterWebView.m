@@ -257,13 +257,13 @@
       _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
     } else if ([key isEqualToString:@"debuggingEnabled"]) {
       // no-op debugging is always enabled on iOS.
-    } else if ([key isEqualToString:@"userAgent"]) {
-      NSString* userAgent = settings[key];
-      [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
-    } else if ([key isEqualToString:@"allowsBackForwardNavigationGestures"]) {
+    } else if ([key isEqualToString:@"gestureNavigationEnabled"]) {
       NSNumber* allowsBackForwardNavigationGestures = settings[key];
       _webView.allowsBackForwardNavigationGestures =
           [allowsBackForwardNavigationGestures boolValue];
+    } else if ([key isEqualToString:@"userAgent"]) {
+      NSString* userAgent = settings[key];
+      [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
     } else {
       [unknownKeys addObject:key];
     }

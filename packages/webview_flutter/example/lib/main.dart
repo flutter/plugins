@@ -74,7 +74,7 @@ class _WebViewExampleState extends State<WebViewExample> {
           onPageFinished: (String url) {
             print('Page finished loading: $url');
           },
-          allowsBackForwardNavigationGestures: true,
+          gestureNavigationEnabled: true,
         );
       }),
       floatingActionButton: favoriteButton(),

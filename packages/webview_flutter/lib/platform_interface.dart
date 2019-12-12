@@ -231,8 +231,8 @@ class WebSettings {
     this.javascriptMode,
     this.hasNavigationDelegate,
     this.debuggingEnabled,
+    this.gestureNavigationEnabled,
     @required this.userAgent,
-    this.allowsBackForwardNavigationGestures,
   }) : assert(userAgent != null);
 
   /// The JavaScript execution mode to be used by the webview.
@@ -258,12 +258,12 @@ class WebSettings {
 
   /// Whether to allow swipe based navigation in iOS.
   ///
-  /// See also: [WebView.allowsBackForwardNavigationGestures]
-  final bool allowsBackForwardNavigationGestures;
+  /// See also: [WebView.gestureNavigationEnabled]
+  final bool gestureNavigationEnabled;
 
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, userAgent: $userAgent, allowsBackForwardNavigationGestures: $allowsBackForwardNavigationGestures)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent)';
   }
 }
 

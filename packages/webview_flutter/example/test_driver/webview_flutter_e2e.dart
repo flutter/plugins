@@ -653,7 +653,7 @@ void main() {
     });
   });
 
-  testWidgets('launches with allowsBackForwardNavigationGestures on iOS',
+  testWidgets('launches with gestureNavigationEnabled on iOS',
       (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -666,7 +666,7 @@ void main() {
           child: WebView(
             key: GlobalKey(),
             initialUrl: 'https://flutter.dev/',
-            allowsBackForwardNavigationGestures: true,
+            gestureNavigationEnabled: true,
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
