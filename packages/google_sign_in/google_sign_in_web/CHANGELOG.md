@@ -1,6 +1,6 @@
 ## 0.8.2+1
 
-* Add a non-opp Android implementation to avoid a flaky Gradle issue.
+* Add a non-op Android implementation to avoid a flaky Gradle issue.
 
 ## 0.8.2
 
