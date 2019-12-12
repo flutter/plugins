@@ -5,6 +5,7 @@
 To set data source now you should use `VideoPlayerPlatform.setDataSource(int textureId, DataSource dataSource)`.
 This method set data source to video player associated with passed textureId on platform side and return Future which completes after the data source is ready to play.
 `VideoEvent` now contains `key` field to match events from platform with concrete data source and avoid raise condition when we changed data source on Dart side and after this receive event from old data source.
+So platform implementers should use this key do determine is this `VideoEvent` relate to current data source or not.
 
 ## 1.0.4
 
