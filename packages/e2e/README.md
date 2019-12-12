@@ -10,10 +10,14 @@ Add a dependency on the `e2e` package in the
 `dev_dependencies` section of pubspec.yaml. For plugins, do this in the
 pubspec.yaml of the example app.
 
-Invoke `E2EWidgetsFlutterBinding.ensureInitialized()` at the start
-of a test file, e.g.
+Add a `@TestOn('!vm')` declaration to the top of your test file, ensuring
+that the unit test runner doesn't try to run your test. You'll want to
+call `E2EWidgetsFlutterBinding.ensureInitialized()`, replacing any other
+binding initialization.
 
 ```dart
+@TestOn('!vm');
+
 import 'package:e2e/e2e.dart';
 
 void main() {
@@ -54,7 +58,7 @@ To run a example app test with Flutter driver:
 
 ```
 cd example
-flutter drive test/<package_name>_e2e.dart
+flutter drive --driver=test/<package_name>_test.dart test/<package_name>_e2e_test.dart
 ```
 
 To test plugin APIs using Flutter driver:
@@ -111,7 +115,7 @@ dependencies {
 To e2e test on a local Android device (emulated or physical):
 
 ```
-./gradlew app:connectedAndroidTest -Ptarget=`pwd`/../test_driver/<package_name>_e2e.dart
+./gradlew app:connectedAndroidTest -Ptarget=`pwd`/../test/<package_name>_e2e_test.dart
 ```
 
 ## Firebase Test Lab
@@ -164,7 +168,7 @@ end
 To e2e test on your iOS device (simulator or real), rebuild your iOS targets with Flutter tool.
 
 ```
-flutter build ios -t test_driver/<package_name>_e2e.dart (--simulator)
+flutter build ios -t test_driver/<package_name>_e2e_test.dart (--simulator)
 ```
 
 Open Xcode project (by default, it's `ios/Runner.xcodeproj`). Create a test target
@@ -178,4 +182,4 @@ change the code. You can change `RunnerTests.m` to the name of your choice.
 E2E_IOS_RUNNER(RunnerTests)
 ```
 
-Now you can start RunnerTests to kick out e2e tests!
+Now you can start RunnerTests to run your e2e tests.
