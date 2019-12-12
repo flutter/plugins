@@ -1,6 +1,6 @@
 ## 0.0.2+1
 
-* Update README.
+* Add CHANGELOG.
 
 ## 0.0.1
 
