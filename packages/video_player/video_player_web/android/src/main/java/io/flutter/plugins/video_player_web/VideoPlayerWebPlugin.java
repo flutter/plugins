@@ -1,8 +1,6 @@
 package io.flutter.plugins.video_player_web;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** VideoPlayerWebPlugin */
