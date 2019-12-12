@@ -7,7 +7,7 @@ The macos implementation of [`shared_preferences`][1].
 ### Import the package
 
 This package has been endorsed, meaning that you only need to add `shared_preferences`
-as a dependency in your `pubspec.yaml`. It will be automaticallu included in your app
+as a dependency in your `pubspec.yaml`. It will be automatically included in your app
 when you depend on `package:shared_preferences`.
 
 This is what the above means to your `pubspec.yaml`:

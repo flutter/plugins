@@ -7,7 +7,7 @@ The macos implementation of [`url_launcher`][1].
 ### Import the package
 
 This package has been endorsed, meaning that you only need to add `url_launcher`
-as a dependency in your `pubspec.yaml`. It will be automaticallu included in your app
+as a dependency in your `pubspec.yaml`. It will be automatically included in your app
 when you depend on `package:url_launcher`.
 
 This is what the above means to your `pubspec.yaml`:
