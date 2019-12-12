@@ -1,6 +1,6 @@
 ## 0.0.1+3
 
-* Update README.md
+* Update README.
 
 ## 0.0.1+2
 
