@@ -1,3 +1,7 @@
+## 0.3.18+2
+
+* iOS now can open iframe links and target _blank links.
+
 ## 0.3.18+1
 
 * Be explicit that keyboard is not ready for production in README.md.
@@ -8,10 +12,6 @@
 * Remove the deprecated `author:` field from pubspec.yaml
 * Migrate to the new pubspec platforms manifest.
 * Require Flutter SDK 1.10.0 or greater.
-
-## 0.3.17+1
-
-* iOS now can open iframe links and target _blank links.
 
 ## 0.3.17
 
