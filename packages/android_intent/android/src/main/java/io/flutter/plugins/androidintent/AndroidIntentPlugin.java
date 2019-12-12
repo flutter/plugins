@@ -187,6 +187,7 @@ public final class AndroidIntentPlugin implements FlutterPlugin, ActivityAware {
         return Intent.ACTION_CALL;
       default:
         return action;
+    }
   }
 
   @Override
