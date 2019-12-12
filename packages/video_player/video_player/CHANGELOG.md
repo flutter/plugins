@@ -1,3 +1,12 @@
+## 0.11.0
+
+* **Breaking change**. VideoPlayerController instance now can be reused for different data sources. 
+`VideoPlayerController()` constructor now accepts nothing and immediately instantiates video player on platform side without data source.
+`VideoPlayerController.initialize()` removed. To set data source now you should use one of three methods:
+`VideoPlayerController.setNetworkDataSource`, `VideoPlayerController.setAssetDataSource` or 
+`VideoPlayerController.setFileDataSource`. All this three methods set this data source to video player
+ on both Dart and platform side and return Future which completes after the data source is ready to play.
+
 ## 0.10.4+2
 
 * Remove the deprecated `author:` field form pubspec.yaml
