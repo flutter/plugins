@@ -15,13 +15,6 @@ function check_publish() {
   for dir in $(pub global run flutter_plugin_tools list --plugins="$1"); do
     local package_name=$(basename "$dir")
 
-    # Temporarily skipping publish check for url_launcher while it has a
-    # dependency override.
-    # TODO(amirh): remove this after publishing url_launcher_platform_interface
-    if [[ $package_name == "url_launcher" ]]; then
-      echo "Skipping publish check for $package_name"
-      continue
-    fi
     echo "Checking that $package_name can be published."
     if [[ $(cd "$dir" && cat pubspec.yaml | grep -E "^publish_to: none") ]]; then
       echo "Package $package_name is marked as unpublishable. Skipping."
