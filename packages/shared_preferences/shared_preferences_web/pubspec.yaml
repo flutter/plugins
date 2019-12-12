@@ -1,7 +1,7 @@
 name: shared_preferences_web
 description: Web platform implementation of shared_preferences
 homepage: https://github.com/flutter/plugins/tree/master/packages/shared_preferences/shared_preferences_web
-version: 0.1.2
+version: 0.1.2+1
 
 flutter:
   plugin:
