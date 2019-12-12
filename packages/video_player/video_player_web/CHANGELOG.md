@@ -7,6 +7,10 @@
 `VideoPlayerController.setFileDataSource`. All this three methods set this data source to video player
  on both Dart and platform side and return Future which completes after the data source is ready to play.
 
+## 0.1.1+1
+
+- Add an android/ folder with no-op implementation to workaround https://github.com/flutter/flutter/issues/46898.
+
 ## 0.1.1
 
 * Support videos from assets.
