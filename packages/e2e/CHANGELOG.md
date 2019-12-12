@@ -1,3 +1,7 @@
+## 0.2.3+1
+
+* Updated README.
+
 ## 0.2.3
 
 * Updates `E2EPlugin` and add skeleton iOS test case `E2EIosTest`.
