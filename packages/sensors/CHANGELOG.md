@@ -1,6 +1,6 @@
 ## 0.4.1+5
 
-* Fix example setState() called after dispose() by canceling the timer.
+* Fix example `setState()` called after `dispose()` by canceling the timer.
 
 ## 0.4.1+4
 
