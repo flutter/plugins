@@ -58,14 +58,14 @@ To run a example app test with Flutter driver:
 
 ```
 cd example
-flutter drive --driver=test/<package_name>_test.dart test/<package_name>_e2e_test.dart
+flutter drive --driver=test_driver/<package_name>_e2e_test.dart test/<package_name>_e2e_test.dart
 ```
 
-To test plugin APIs using Flutter driver:
+To test plugin APIs using Flutter driver, run `flutter drive` in the example app folder:
 
 ```
 cd example
-flutter drive --driver=test_driver/<package_name>_test.dart test/<package_name>_e2e.dart
+flutter drive --driver=test_driver/<package_name>_e2e_test.dart ../test/<package_name>_e2e_test.dart
 ```
 
 ## Android device testing
