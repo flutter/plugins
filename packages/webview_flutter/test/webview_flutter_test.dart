@@ -1195,7 +1195,8 @@ class MatchesWebSettings extends Matcher {
         _webSettings.hasNavigationDelegate ==
             webSettings.hasNavigationDelegate &&
         _webSettings.debuggingEnabled == webSettings.debuggingEnabled &&
-        _webSettings.gestureNavigationEnabled == webSettings.gestureNavigationEnabled &&
+        _webSettings.gestureNavigationEnabled ==
+            webSettings.gestureNavigationEnabled &&
         _webSettings.userAgent == webSettings.userAgent;
   }
 }
