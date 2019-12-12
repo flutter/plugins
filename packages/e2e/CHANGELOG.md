@@ -1,4 +1,5 @@
-## 0.2.2+4
+## 0.2.3
+
 * Updates `E2EPlugin` and add skeleton iOS test case `E2EIosTest`.
 * Adds instructions to README.md about e2e testing on iOS devices.
 * Adds iOS e2e testing to example.
