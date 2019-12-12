@@ -1,19 +1,12 @@
 package io.flutter.plugins.google_sign_in_web;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** GoogleSignInWebPlugin */
-public class GoogleSignInWebPlugin implements FlutterPlugin, MethodCallHandler {
+public class GoogleSignInWebPlugin implements FlutterPlugin {
   @Override
-  public void onAttachedToEngine(FlutterPluginBinding flutterPluginBinding) {
-    final MethodChannel channel = new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "google_sign_in_web");
-    channel.setMethodCallHandler(new GoogleSignInWebPlugin());
-  }
+  public void onAttachedToEngine(FlutterPluginBinding flutterPluginBinding) {}
 
   // This static function is optional and equivalent to onAttachedToEngine. It supports the old
   // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
@@ -24,21 +17,8 @@ public class GoogleSignInWebPlugin implements FlutterPlugin, MethodCallHandler {
   // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
   // depending on the user's project. onAttachedToEngine or registerWith must both be defined
   // in the same class.
-  public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "google_sign_in_web");
-    channel.setMethodCallHandler(new GoogleSignInWebPlugin());
-  }
+  public static void registerWith(Registrar registrar) {}
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
-    } else {
-      result.notImplemented();
-    }
-  }
-
-  @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {
-  }
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {}
 }
