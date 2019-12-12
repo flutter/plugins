@@ -1,11 +1,15 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quick_actions/quick_actions.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   QuickActions quickActions;
   final List<MethodCall> log = <MethodCall>[];
 
@@ -14,7 +18,7 @@ void main() {
     quickActions.channel.setMockMethodCallHandler(
       (MethodCall methodCall) async {
         log.add(methodCall);
-        return null;
+        return 'non empty response';
       },
     );
   });
@@ -57,8 +61,9 @@ void main() {
     log.clear();
   });
 
-  test('runLaunchAction', () {
-    quickActions.runLaunchAction(null);
+  test('initialize', () async {
+    final Completer<bool> quickActionsHandler = Completer<bool>();
+    quickActions.initialize((_) => quickActionsHandler.complete(true));
     expect(
       log,
       <Matcher>[
@@ -66,5 +71,20 @@ void main() {
       ],
     );
     log.clear();
+
+    expect(quickActionsHandler.future, completion(isTrue));
+  });
+
+  test('Shortcut item can be constructed', () {
+    const String type = 'type';
+    const String localizedTitle = 'title';
+    const String icon = 'foo';
+
+    const ShortcutItem item =
+        ShortcutItem(type: type, localizedTitle: localizedTitle, icon: icon);
+
+    expect(item.type, type);
+    expect(item.localizedTitle, localizedTitle);
+    expect(item.icon, icon);
   });
 }

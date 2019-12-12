@@ -34,6 +34,8 @@ Widget _mapWithPolygons(Set<Polygon> polygons) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final FakePlatformViewsController fakePlatformViewsController =
       FakePlatformViewsController();
 
@@ -73,10 +75,10 @@ void main() {
 
     final Polygon addedPolygon = platformGoogleMap.polygonsToAdd.first;
     expect(addedPolygon, equals(p2));
+
     expect(platformGoogleMap.polygonIdsToRemove.isEmpty, true);
 
-    expect(platformGoogleMap.polygonsToChange.length, 1);
-    expect(platformGoogleMap.polygonsToChange.first, equals(p1));
+    expect(platformGoogleMap.polygonsToChange.isEmpty, true);
   });
 
   testWidgets("Removing a polygon", (WidgetTester tester) async {
@@ -128,6 +130,25 @@ void main() {
     expect(update.geodesic, true);
   });
 
+  testWidgets("Mutate a polygon", (WidgetTester tester) async {
+    final Polygon p1 = Polygon(
+      polygonId: PolygonId("polygon_1"),
+      points: <LatLng>[const LatLng(0.0, 0.0)],
+    );
+    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
+
+    p1.points.add(const LatLng(1.0, 1.0));
+    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+    expect(platformGoogleMap.polygonsToChange.length, 1);
+    expect(platformGoogleMap.polygonsToChange.first, equals(p1));
+
+    expect(platformGoogleMap.polygonIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
+  });
+
   testWidgets("Multi Update", (WidgetTester tester) async {
     Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
     Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
@@ -172,29 +193,22 @@ void main() {
     expect(platformGoogleMap.polygonIdsToRemove.first, equals(p3.polygonId));
   });
 
-  testWidgets(
-    "Partial Update",
-    (WidgetTester tester) async {
-      final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-      Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
-      final Set<Polygon> prev = _toSet(p1: p1, p2: p2);
-      p2 = Polygon(polygonId: PolygonId("polygon_2"), geodesic: true);
-      final Set<Polygon> cur = _toSet(p1: p1, p2: p2);
+  testWidgets("Partial Update", (WidgetTester tester) async {
+    final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
+    final Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
+    Polygon p3 = Polygon(polygonId: PolygonId("polygon_3"));
+    final Set<Polygon> prev = _toSet(p1: p1, p2: p2, p3: p3);
+    p3 = Polygon(polygonId: PolygonId("polygon_3"), geodesic: true);
+    final Set<Polygon> cur = _toSet(p1: p1, p2: p2, p3: p3);
 
-      await tester.pumpWidget(_mapWithPolygons(prev));
-      await tester.pumpWidget(_mapWithPolygons(cur));
+    await tester.pumpWidget(_mapWithPolygons(prev));
+    await tester.pumpWidget(_mapWithPolygons(cur));
 
-      final FakePlatformGoogleMap platformGoogleMap =
-          fakePlatformViewsController.lastCreatedView;
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
 
-      expect(platformGoogleMap.polygonsToChange, _toSet(p2: p2));
-      expect(platformGoogleMap.polygonIdsToRemove.isEmpty, true);
-      expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
-    },
-    // The test is currently broken due to a bug (we're updating all polygons
-    // instead of just the ones that were changed):
-    // https://github.com/flutter/flutter/issues/30764
-    // TODO(amirh): enable this test when the issue is fixed.
-    skip: true,
-  );
+    expect(platformGoogleMap.polygonsToChange, _toSet(p3: p3));
+    expect(platformGoogleMap.polygonIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
+  });
 }

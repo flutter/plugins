@@ -95,6 +95,7 @@ class LatLngBounds {
     }
   }
 
+  /// Converts a list to [LatLngBounds].
   @visibleForTesting
   static LatLngBounds fromList(dynamic json) {
     if (json == null) {
