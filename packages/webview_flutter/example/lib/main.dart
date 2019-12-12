@@ -50,7 +50,7 @@ class _WebViewExampleState extends State<WebViewExample> {
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
-          initialUrl: 'https://flutter.dev',
+          initialUrl: 'https://asdasdasdasdasd.dev',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
@@ -70,6 +70,9 @@ class _WebViewExampleState extends State<WebViewExample> {
           },
           onPageStarted: (String url) {
             print('Page started loading: $url');
+          },
+          onPageReceiveError: (url, code, s) {
+            Scaffold.of(context).showSnackBar(SnackBar(content: Text('Code: $code, Url: $url, Message: $s')));
           },
           onPageFinished: (String url) {
             print('Page finished loading: $url');

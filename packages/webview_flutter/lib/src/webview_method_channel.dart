@@ -40,6 +40,12 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       case 'onPageFinished':
         _platformCallbacksHandler.onPageFinished(call.arguments['url']);
         return null;
+      case 'onPageReceiveError':
+        _platformCallbacksHandler.onPageReceiveError(
+            url: call.arguments['url'],
+            code: call.arguments['code'],
+            description: call.arguments['description']);
+        return null;
       case 'onPageStarted':
         _platformCallbacksHandler.onPageStarted(call.arguments['url']);
         return null;

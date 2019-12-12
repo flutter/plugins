@@ -9,9 +9,13 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import androidx.annotation.NonNull;
+import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
@@ -67,11 +71,6 @@ class FlutterWebViewClient {
     return true;
   }
 
-  private void onPageStarted(WebView view, String url) {
-    Map<String, Object> args = new HashMap<>();
-    args.put("url", url);
-    methodChannel.invokeMethod("onPageStarted", args);
-  }
 
   private void onPageFinished(WebView view, String url) {
     Map<String, Object> args = new HashMap<>();
@@ -90,6 +89,20 @@ class FlutterWebViewClient {
     } else {
       methodChannel.invokeMethod("navigationRequest", args);
     }
+  }
+
+  private void onReceiveError(WebView view, int code, String description, String url) {
+    Map<String, Object> args = new HashMap<>();
+    args.put("url", url);
+    args.put("code", code);
+    args.put("description", description);
+    methodChannel.invokeMethod("onPageReceiveError", args);
+  }
+
+  private void onPageStarted(WebView view, String url) {
+    Map<String, Object> args = new HashMap<>();
+    args.put("url", url);
+    methodChannel.invokeMethod("onPageStarted", args);
   }
 
   // This method attempts to avoid using WebViewClientCompat due to bug
@@ -114,11 +127,6 @@ class FlutterWebViewClient {
       }
 
       @Override
-      public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        FlutterWebViewClient.this.onPageStarted(view, url);
-      }
-
-      @Override
       public void onPageFinished(WebView view, String url) {
         FlutterWebViewClient.this.onPageFinished(view, url);
       }
@@ -129,13 +137,45 @@ class FlutterWebViewClient {
         // handled even though they were handled. We don't want to propagate those as they're not
         // truly lost.
       }
+
+      @TargetApi(Build.VERSION_CODES.M)
+      @Override
+      public void onReceivedError(
+          WebView view, WebResourceRequest request, WebResourceError error) {
+        FlutterWebViewClient.this.onReceiveError(
+            view,
+            error.getErrorCode(),
+            error.getDescription().toString(),
+            request.getUrl().toString());
+      }
+
+      @TargetApi(Build.VERSION_CODES.M)
+      @Override
+      public void onReceivedHttpError(
+          WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+        FlutterWebViewClient.this.onReceiveError(
+            view, errorResponse.getStatusCode(), null, request.getUrl().toString());
+      }
+
+      @SuppressWarnings("deprecation")
+      @Override
+      public void onReceivedError(
+          WebView view, int errorCode, String description, String failingUrl) {
+        FlutterWebViewClient.this.onReceiveError(view, errorCode, description, failingUrl);
+      }
+
+      @Override
+      public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        FlutterWebViewClient.this.onPageStarted(view, url);
+      }
     };
   }
 
   private WebViewClientCompat internalCreateWebViewClientCompat() {
     return new WebViewClientCompat() {
       @Override
-      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+      public boolean shouldOverrideUrlLoading(
+          @NonNull WebView view, @NonNull WebResourceRequest request) {
         return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, request);
       }
 
@@ -145,13 +185,44 @@ class FlutterWebViewClient {
       }
 
       @Override
-      public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        FlutterWebViewClient.this.onPageStarted(view, url);
+      public void onPageFinished(WebView view, String url) {
+        FlutterWebViewClient.this.onPageFinished(view, url);
+      }
+
+      @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+      @Override
+      public void onReceivedHttpError(
+          @NonNull WebView view,
+          @NonNull WebResourceRequest request,
+          @NonNull WebResourceResponse errorResponse) {
+        FlutterWebViewClient.this.onReceiveError(
+            view, errorResponse.getStatusCode(), null, request.getUrl().toString());
+      }
+
+      @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+      @Override
+      public void onReceivedError(
+          @NonNull WebView view,
+          @NonNull WebResourceRequest request,
+          @NonNull WebResourceErrorCompat error) {
+        //TODO: is really need to check WebViewFeature.isFeatureSupported() and api version.
+        FlutterWebViewClient.this.onReceiveError(
+            view,
+            error.getErrorCode(),
+            error.getDescription().toString(),
+            request.getUrl().toString());
+      }
+
+      @SuppressWarnings("deprecation")
+      @Override
+      public void onReceivedError(
+          WebView view, int errorCode, String description, String failingUrl) {
+        FlutterWebViewClient.this.onReceiveError(view, errorCode, description, failingUrl);
       }
 
       @Override
-      public void onPageFinished(WebView view, String url) {
-        FlutterWebViewClient.this.onPageFinished(view, url);
+      public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        FlutterWebViewClient.this.onPageStarted(view, url);
       }
 
       @Override
