@@ -11,14 +11,18 @@ source "$SCRIPT_DIR/common.sh"
 check_changed_packages > /dev/null
 
 readonly EXCLUDED_PLUGINS_LIST=(
+  "google_sign_in_platform_interface"
+  "google_sign_in_web"
   "instrumentation_adapter"
+  "plugin_platform_interface"
+  "shared_preferences_macos"
+  "shared_preferences_platform_interface"
+  "shared_preferences_web"
+  "url_launcher_macos"
   "url_launcher_platform_interface"
   "url_launcher_web"
-  "url_launcher_macos"
-  "google_sign_in_platform_interface"
   "video_player_platform_interface"
-  "shared_preferences_platform_interface"
-  "shared_preferences_macos"
+  "video_player_web"
 )
 # Comma-separated string of the list above
 readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
