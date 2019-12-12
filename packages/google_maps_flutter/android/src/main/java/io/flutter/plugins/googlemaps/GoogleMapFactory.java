@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.googlemaps;
 
 import static io.flutter.plugin.common.PluginRegistry.Registrar;
@@ -34,6 +38,9 @@ public class GoogleMapFactory extends PlatformViewFactory {
     }
     if (params.containsKey("markersToAdd")) {
       builder.setInitialMarkers(params.get("markersToAdd"));
+    }
+    if (params.containsKey("polygonsToAdd")) {
+      builder.setInitialPolygons(params.get("polygonsToAdd"));
     }
     if (params.containsKey("polylinesToAdd")) {
       builder.setInitialPolylines(params.get("polylinesToAdd"));

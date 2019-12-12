@@ -36,6 +36,7 @@ class _MyAppState extends State<MyApp> {
   bool _isAvailable = false;
   bool _purchasePending = false;
   bool _loading = true;
+  String _queryProductError;
 
   @override
   void initState() {
@@ -67,14 +68,29 @@ class _MyAppState extends State<MyApp> {
       return;
     }
 
-    ProductDetailsResponse productDetails =
+    ProductDetailsResponse productDetailResponse =
         await _connection.queryProductDetails(_kProductIds.toSet());
-    if (productDetails.productDetails.isEmpty) {
+    if (productDetailResponse.error != null) {
       setState(() {
+        _queryProductError = productDetailResponse.error.message;
         _isAvailable = isAvailable;
-        _products = productDetails.productDetails;
+        _products = productDetailResponse.productDetails;
         _purchases = [];
-        _notFoundIds = productDetails.notFoundIDs;
+        _notFoundIds = productDetailResponse.notFoundIDs;
+        _consumables = [];
+        _purchasePending = false;
+        _loading = false;
+      });
+      return;
+    }
+
+    if (productDetailResponse.productDetails.isEmpty) {
+      setState(() {
+        _queryProductError = null;
+        _isAvailable = isAvailable;
+        _products = productDetailResponse.productDetails;
+        _purchases = [];
+        _notFoundIds = productDetailResponse.notFoundIDs;
         _consumables = [];
         _purchasePending = false;
         _loading = false;
@@ -84,6 +100,9 @@ class _MyAppState extends State<MyApp> {
 
     final QueryPurchaseDetailsResponse purchaseResponse =
         await _connection.queryPastPurchases();
+    if (purchaseResponse.error != null) {
+      // handle query past purchase error..
+    }
     final List<PurchaseDetails> verifiedPurchases = [];
     for (PurchaseDetails purchase in purchaseResponse.pastPurchases) {
       if (await _verifyPurchase(purchase)) {
@@ -93,9 +112,9 @@ class _MyAppState extends State<MyApp> {
     List<String> consumables = await ConsumableStore.load();
     setState(() {
       _isAvailable = isAvailable;
-      _products = productDetails.productDetails;
+      _products = productDetailResponse.productDetails;
       _purchases = verifiedPurchases;
-      _notFoundIds = productDetails.notFoundIDs;
+      _notFoundIds = productDetailResponse.notFoundIDs;
       _consumables = consumables;
       _purchasePending = false;
       _loading = false;
@@ -111,25 +130,31 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     List<Widget> stack = [];
-    stack.add(
-      ListView(
-        children: [
-          _buildConnectionCheckTile(),
-          _buildProductList(),
-          _buildConsumableBox(),
-        ],
-      ),
-    );
+    if (_queryProductError == null) {
+      stack.add(
+        ListView(
+          children: [
+            _buildConnectionCheckTile(),
+            _buildProductList(),
+            _buildConsumableBox(),
+          ],
+        ),
+      );
+    } else {
+      stack.add(Center(
+        child: Text(_queryProductError),
+      ));
+    }
     if (_purchasePending) {
       stack.add(
         Stack(
           children: [
-            new Opacity(
+            Opacity(
               opacity: 0.3,
               child: const ModalBarrier(dismissible: false, color: Colors.grey),
             ),
-            new Center(
-              child: new CircularProgressIndicator(),
+            Center(
+              child: CircularProgressIndicator(),
             ),
           ],
         ),
@@ -188,7 +213,7 @@ class _MyAppState extends State<MyApp> {
         title: Text('Products for Sale',
             style: Theme.of(context).textTheme.headline));
     List<ListTile> productList = <ListTile>[];
-    if (!_notFoundIds.isEmpty) {
+    if (_notFoundIds.isNotEmpty) {
       productList.add(ListTile(
           title: Text('[${_notFoundIds.join(", ")}] not found',
               style: TextStyle(color: ThemeData.light().errorColor)),
@@ -315,7 +340,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void handleError(PurchaseError error) {
+  void handleError(IAPError error) {
     setState(() {
       _purchasePending = false;
     });
@@ -350,10 +375,12 @@ class _MyAppState extends State<MyApp> {
           }
         }
         if (Platform.isIOS) {
-          InAppPurchaseConnection.instance.completePurchase(purchaseDetails);
+          await InAppPurchaseConnection.instance
+              .completePurchase(purchaseDetails);
         } else if (Platform.isAndroid) {
           if (!kAutoConsume && purchaseDetails.productID == _kConsumableId) {
-            InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
+            await InAppPurchaseConnection.instance
+                .consumePurchase(purchaseDetails);
           }
         }
       }
