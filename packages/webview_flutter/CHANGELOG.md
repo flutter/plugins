@@ -1,3 +1,7 @@
+## 0.3.18+2
+
+* Add support for onProgressChanged event.
+
 ## 0.3.18+1
 
 * Be explicit that keyboard is not ready for production in README.md.
