@@ -1207,24 +1207,6 @@ class FakePlatformWebView {
     );
   }
 
-  void fakeOnPageStartedCallback() {
-    final StandardMethodCodec codec = const StandardMethodCodec();
-
-    final ByteData data = codec.encodeMethodCall(MethodCall(
-      'onPageStarted',
-      <dynamic, dynamic>{'url': currentUrl},
-    ));
-
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(
-      channel.name,
-      data,
-      (ByteData data) {},
-    );
-  }
-
   void _loadUrl(String url) {
     history = history.sublist(0, currentPosition + 1);
     history.add(url);

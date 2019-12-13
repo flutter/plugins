@@ -167,11 +167,6 @@ class FlutterWebViewClient {
           WebView view, int errorCode, String description, String failingUrl) {
         FlutterWebViewClient.this.onReceiveError(view, errorCode, description, failingUrl);
       }
-
-      @Override
-      public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        FlutterWebViewClient.this.onPageStarted(view, url);
-      }
     };
   }
 
@@ -233,11 +228,6 @@ class FlutterWebViewClient {
       public void onReceivedError(
           WebView view, int errorCode, String description, String failingUrl) {
         FlutterWebViewClient.this.onReceiveError(view, errorCode, description, failingUrl);
-      }
-
-      @Override
-      public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        FlutterWebViewClient.this.onPageStarted(view, url);
       }
     };
   }
