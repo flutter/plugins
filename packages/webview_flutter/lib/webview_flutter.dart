@@ -84,7 +84,7 @@ typedef void PageFinishedCallback(String url);
 /// Description is optional
 typedef void PageReceiveErrorCallback(String url, int code, String description);
 
-final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
+final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9_]*\$');
 
 /// Specifies possible restrictions on automatic media playback.
 ///
