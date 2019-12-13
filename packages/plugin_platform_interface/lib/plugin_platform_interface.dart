@@ -57,7 +57,7 @@ abstract class PlatformInterface {
   /// This is implemented as a static method so that it cannot be overridden
   /// with `noSuchMethod`.
   static void verifyToken(PlatformInterface instance, Object token) {
-    if (identical(instance._instanceToken, MockPlatformInterfaceMixin._token)) {
+    if (instance is MockPlatformInterfaceMixin) {
       bool assertionsEnabled = false;
       assert(() {
         assertionsEnabled = true;
@@ -67,10 +67,10 @@ abstract class PlatformInterface {
         throw AssertionError(
             '`MockPlatformInterfaceMixin` is not intended for use in release builds.');
       }
+      return;
     }
     if (!identical(token, instance._instanceToken)) {
-      throw AssertionError(
-          'Platform interfaces must not be implemented with `implements`');
+      throw AssertionError('Platform interfaces must not be implemented with `implements`');
     }
   }
 }
@@ -91,8 +91,6 @@ abstract class PlatformInterface {
 /// ```
 @visibleForTesting
 abstract class MockPlatformInterfaceMixin implements PlatformInterface {
-  static final Object _token = Object();
-
   @override
-  Object get _instanceToken => _token;
+  Object get _instanceToken => null;
 }
