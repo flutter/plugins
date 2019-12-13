@@ -90,7 +90,4 @@ abstract class PlatformInterface {
 ///    implements UrlLauncherPlatform {}
 /// ```
 @visibleForTesting
-abstract class MockPlatformInterfaceMixin implements PlatformInterface {
-  @override
-  Object get _instanceToken => null;
-}
+abstract class MockPlatformInterfaceMixin implements PlatformInterface {}
