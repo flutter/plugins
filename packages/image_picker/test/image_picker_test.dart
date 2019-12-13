@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('$ImagePicker', () {
     const MethodChannel channel =
         MethodChannel('plugins.flutter.io/image_picker');
@@ -138,6 +140,33 @@ void main() {
         expect(
             await ImagePicker.pickImage(source: ImageSource.gallery), isNull);
         expect(await ImagePicker.pickImage(source: ImageSource.camera), isNull);
+      });
+    });
+
+    group('#pickVideo', () {
+      test('passes the image source argument correctly', () async {
+        await ImagePicker.pickVideo(source: ImageSource.camera);
+        await ImagePicker.pickVideo(source: ImageSource.gallery);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+            }),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 1,
+            }),
+          ],
+        );
+      });
+
+      test('handles a null image path response gracefully', () async {
+        channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+
+        expect(
+            await ImagePicker.pickVideo(source: ImageSource.gallery), isNull);
+        expect(await ImagePicker.pickVideo(source: ImageSource.camera), isNull);
       });
     });
 

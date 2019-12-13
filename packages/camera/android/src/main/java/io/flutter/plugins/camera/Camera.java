@@ -1,6 +1,7 @@
 package io.flutter.plugins.camera;
 
 import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
+import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -16,16 +17,17 @@ import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import androidx.annotation.NonNull;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.view.FlutterView;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,22 +48,33 @@ public class Camera {
   private final String cameraName;
   private final Size captureSize;
   private final Size previewSize;
-  private final Size videoSize;
   private final boolean enableAudio;
 
   private CameraDevice cameraDevice;
   private CameraCaptureSession cameraCaptureSession;
   private ImageReader pictureImageReader;
   private ImageReader imageStreamReader;
-  private EventChannel.EventSink eventSink;
+  private DartMessenger dartMessenger;
   private CaptureRequest.Builder captureRequestBuilder;
   private MediaRecorder mediaRecorder;
   private boolean recordingVideo;
+  private CamcorderProfile recordingProfile;
   private int currentOrientation = ORIENTATION_UNKNOWN;
+
+  // Mirrors camera.dart
+  public enum ResolutionPreset {
+    low,
+    medium,
+    high,
+    veryHigh,
+    ultraHigh,
+    max,
+  }
 
   public Camera(
       final Activity activity,
-      final FlutterView flutterView,
+      final SurfaceTextureEntry flutterTexture,
+      final DartMessenger dartMessenger,
       final String cameraName,
       final String resolutionPreset,
       final boolean enableAudio)
@@ -72,7 +85,8 @@ public class Camera {
 
     this.cameraName = cameraName;
     this.enableAudio = enableAudio;
-    this.flutterTexture = flutterView.createSurfaceTexture();
+    this.flutterTexture = flutterTexture;
+    this.dartMessenger = dartMessenger;
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     orientationEventListener =
         new OrientationEventListener(activity.getApplicationContext()) {
@@ -87,21 +101,6 @@ public class Camera {
         };
     orientationEventListener.enable();
 
-    int minHeight;
-    switch (resolutionPreset) {
-      case "high":
-        minHeight = 720;
-        break;
-      case "medium":
-        minHeight = 480;
-        break;
-      case "low":
-        minHeight = 240;
-        break;
-      default:
-        throw new IllegalArgumentException("Unknown preset: " + resolutionPreset);
-    }
-
     CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
     StreamConfigurationMap streamConfigurationMap =
         characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
@@ -110,27 +109,11 @@ public class Camera {
     //noinspection ConstantConditions
     isFrontFacing =
         characteristics.get(CameraCharacteristics.LENS_FACING) == CameraMetadata.LENS_FACING_FRONT;
-    captureSize = CameraUtils.computeBestCaptureSize(streamConfigurationMap);
-    Size[] sizes =
-        CameraUtils.computeBestPreviewAndRecordingSize(
-            activity, streamConfigurationMap, minHeight, getMediaOrientation(), captureSize);
-    videoSize = sizes[0];
-    previewSize = sizes[1];
-  }
-
-  public void setupCameraEventChannel(EventChannel cameraEventChannel) {
-    cameraEventChannel.setStreamHandler(
-        new EventChannel.StreamHandler() {
-          @Override
-          public void onListen(Object arguments, EventChannel.EventSink sink) {
-            eventSink = sink;
-          }
-
-          @Override
-          public void onCancel(Object arguments) {
-            eventSink = null;
-          }
-        });
+    ResolutionPreset preset = ResolutionPreset.valueOf(resolutionPreset);
+    recordingProfile =
+        CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
+    captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
+    previewSize = computeBestPreviewSize(cameraName, preset);
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
@@ -143,13 +126,13 @@ public class Camera {
     // of these function calls.
     if (enableAudio) mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
     mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-    mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-    if (enableAudio) mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-    mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-    mediaRecorder.setVideoEncodingBitRate(1024 * 1000);
-    if (enableAudio) mediaRecorder.setAudioSamplingRate(16000);
-    mediaRecorder.setVideoFrameRate(27);
-    mediaRecorder.setVideoSize(videoSize.getWidth(), videoSize.getHeight());
+    mediaRecorder.setOutputFormat(recordingProfile.fileFormat);
+    if (enableAudio) mediaRecorder.setAudioEncoder(recordingProfile.audioCodec);
+    mediaRecorder.setVideoEncoder(recordingProfile.videoCodec);
+    mediaRecorder.setVideoEncodingBitRate(recordingProfile.videoBitRate);
+    if (enableAudio) mediaRecorder.setAudioSamplingRate(recordingProfile.audioSampleRate);
+    mediaRecorder.setVideoFrameRate(recordingProfile.videoFrameRate);
+    mediaRecorder.setVideoSize(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     mediaRecorder.setOutputFile(outputFilePath);
     mediaRecorder.setOrientationHint(getMediaOrientation());
 
@@ -189,14 +172,14 @@ public class Camera {
 
           @Override
           public void onClosed(@NonNull CameraDevice camera) {
-            sendEvent(EventType.CAMERA_CLOSING);
+            dartMessenger.sendCameraClosingEvent();
             super.onClosed(camera);
           }
 
           @Override
           public void onDisconnected(@NonNull CameraDevice cameraDevice) {
             close();
-            sendEvent(EventType.ERROR, "The camera was disconnected.");
+            dartMessenger.send(DartMessenger.EventType.ERROR, "The camera was disconnected.");
           }
 
           @Override
@@ -222,7 +205,7 @@ public class Camera {
               default:
                 errorDescription = "Unknown camera error";
             }
-            sendEvent(EventType.ERROR, errorDescription);
+            dartMessenger.send(DartMessenger.EventType.ERROR, errorDescription);
           }
         },
         null);
@@ -330,7 +313,8 @@ public class Camera {
           public void onConfigured(@NonNull CameraCaptureSession session) {
             try {
               if (cameraDevice == null) {
-                sendEvent(EventType.ERROR, "The camera was closed during configuration.");
+                dartMessenger.send(
+                    DartMessenger.EventType.ERROR, "The camera was closed during configuration.");
                 return;
               }
               cameraCaptureSession = session;
@@ -341,13 +325,14 @@ public class Camera {
                 onSuccessCallback.run();
               }
             } catch (CameraAccessException | IllegalStateException | IllegalArgumentException e) {
-              sendEvent(EventType.ERROR, e.getMessage());
+              dartMessenger.send(DartMessenger.EventType.ERROR, e.getMessage());
             }
           }
 
           @Override
           public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-            sendEvent(EventType.ERROR, "Failed to configure camera session.");
+            dartMessenger.send(
+                DartMessenger.EventType.ERROR, "Failed to configure camera session.");
           }
         };
 
@@ -392,13 +377,56 @@ public class Camera {
     }
   }
 
+  public void pauseVideoRecording(@NonNull final Result result) {
+    if (!recordingVideo) {
+      result.success(null);
+      return;
+    }
+
+    try {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        mediaRecorder.pause();
+      } else {
+        result.error("videoRecordingFailed", "pauseVideoRecording requires Android API +24.", null);
+        return;
+      }
+    } catch (IllegalStateException e) {
+      result.error("videoRecordingFailed", e.getMessage(), null);
+      return;
+    }
+
+    result.success(null);
+  }
+
+  public void resumeVideoRecording(@NonNull final Result result) {
+    if (!recordingVideo) {
+      result.success(null);
+      return;
+    }
+
+    try {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        mediaRecorder.resume();
+      } else {
+        result.error(
+            "videoRecordingFailed", "resumeVideoRecording requires Android API +24.", null);
+        return;
+      }
+    } catch (IllegalStateException e) {
+      result.error("videoRecordingFailed", e.getMessage(), null);
+      return;
+    }
+
+    result.success(null);
+  }
+
   public void startPreview() throws CameraAccessException {
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
 
   public void startPreviewWithImageStream(EventChannel imageStreamChannel)
       throws CameraAccessException {
-    createCaptureSession(CameraDevice.TEMPLATE_STILL_CAPTURE, imageStreamReader.getSurface());
+    createCaptureSession(CameraDevice.TEMPLATE_RECORD, imageStreamReader.getSurface());
 
     imageStreamChannel.setStreamHandler(
         new EventChannel.StreamHandler() {
@@ -447,22 +475,6 @@ public class Camera {
         null);
   }
 
-  private void sendEvent(EventType eventType) {
-    sendEvent(eventType, null);
-  }
-
-  private void sendEvent(EventType eventType, String description) {
-    if (eventSink != null) {
-      Map<String, String> event = new HashMap<>();
-      event.put("eventType", eventType.toString().toLowerCase());
-      // Only errors have description
-      if (eventType != EventType.ERROR) {
-        event.put("errorDescription", description);
-      }
-      eventSink.success(event);
-    }
-  }
-
   private void closeCaptureSession() {
     if (cameraCaptureSession != null) {
       cameraCaptureSession.close();
@@ -504,10 +516,5 @@ public class Camera {
             ? 0
             : (isFrontFacing) ? -currentOrientation : currentOrientation;
     return (sensorOrientationOffset + sensorOrientation + 360) % 360;
-  }
-
-  private enum EventType {
-    ERROR,
-    CAMERA_CLOSING,
   }
 }

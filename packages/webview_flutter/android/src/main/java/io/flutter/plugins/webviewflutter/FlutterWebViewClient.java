@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
 import android.webkit.WebResourceError;
+import android.view.KeyEvent;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -70,6 +71,12 @@ class FlutterWebViewClient {
     return true;
   }
 
+  private void onPageStarted(WebView view, String url) {
+    Map<String, Object> args = new HashMap<>();
+    args.put("url", url);
+    methodChannel.invokeMethod("onPageStarted", args);
+  }
+
   private void onPageFinished(WebView view, String url) {
     Map<String, Object> args = new HashMap<>();
     args.put("url", url);
@@ -97,12 +104,6 @@ class FlutterWebViewClient {
     methodChannel.invokeMethod("onPageReceiveError", args);
   }
 
-  private void onPageStarted(WebView view, String url) {
-    Map<String, Object> args = new HashMap<>();
-    args.put("url", url);
-    methodChannel.invokeMethod("onPageStarted", args);
-  }
-
   // This method attempts to avoid using WebViewClientCompat due to bug
   // https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
   // https://github.com/flutter/flutter/issues/29446.
@@ -125,8 +126,20 @@ class FlutterWebViewClient {
       }
 
       @Override
+      public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        FlutterWebViewClient.this.onPageStarted(view, url);
+      }
+
+      @Override
       public void onPageFinished(WebView view, String url) {
         FlutterWebViewClient.this.onPageFinished(view, url);
+      }
+
+      @Override
+      public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
+        // Deliberately empty. Occasionally the webview will mark events as having failed to be
+        // handled even though they were handled. We don't want to propagate those as they're not
+        // truly lost.
       }
 
       @TargetApi(Build.VERSION_CODES.M)
@@ -165,8 +178,7 @@ class FlutterWebViewClient {
   private WebViewClientCompat internalCreateWebViewClientCompat() {
     return new WebViewClientCompat() {
       @Override
-      public boolean shouldOverrideUrlLoading(
-          @NonNull WebView view, @NonNull WebResourceRequest request) {
+      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
         return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, request);
       }
 
@@ -176,8 +188,20 @@ class FlutterWebViewClient {
       }
 
       @Override
+      public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        FlutterWebViewClient.this.onPageStarted(view, url);
+      }
+
+      @Override
       public void onPageFinished(WebView view, String url) {
         FlutterWebViewClient.this.onPageFinished(view, url);
+      }
+
+      @Override
+      public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
+        // Deliberately empty. Occasionally the webview will mark events as having failed to be
+        // handled even though they were handled. We don't want to propagate those as they're not
+        // truly lost.
       }
 
       @TargetApi(Build.VERSION_CODES.LOLLIPOP)

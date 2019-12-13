@@ -1,3 +1,38 @@
+## 0.4.1+5
+
+* Fix example `setState()` called after `dispose()` by canceling the timer.
+
+## 0.4.1+4
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.4.1+3
+
+* Improve documentation and add unit test coverage.
+
+## 0.4.1+2
+
+* Remove AndroidX warnings.
+
+## 0.4.1+1
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.4.1
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
+## 0.4.0+3
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
 ## 0.4.0+2
 
 * Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446

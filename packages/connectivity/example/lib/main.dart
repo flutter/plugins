@@ -2,13 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
+// ignore_for_file: public_member_api_docs
 
+import 'dart:async';
+import 'dart:io';
+
+import 'package:connectivity/connectivity.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:connectivity/connectivity.dart';
+
+// Sets a platform override for desktop to avoid exceptions. See
+// https://flutter.dev/desktop#target-platform-override for more info.
+void _enablePlatformOverrideForDesktop() {
+  if (!kIsWeb && (Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
+    debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
+  }
+}
 
 void main() {
+  _enablePlatformOverrideForDesktop();
   runApp(MyApp());
 }
 
@@ -68,10 +81,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) {
-      return;
+      return Future.value(null);
     }
 
-    _updateConnectionStatus(result);
+    return _updateConnectionStatus(result);
   }
 
   @override
@@ -90,14 +103,44 @@ class _MyHomePageState extends State<MyHomePage> {
         String wifiName, wifiBSSID, wifiIP;
 
         try {
-          wifiName = await _connectivity.getWifiName();
+          if (Platform.isIOS) {
+            LocationAuthorizationStatus status =
+                await _connectivity.getLocationServiceAuthorization();
+            if (status == LocationAuthorizationStatus.notDetermined) {
+              status =
+                  await _connectivity.requestLocationServiceAuthorization();
+            }
+            if (status == LocationAuthorizationStatus.authorizedAlways ||
+                status == LocationAuthorizationStatus.authorizedWhenInUse) {
+              wifiName = await _connectivity.getWifiName();
+            } else {
+              wifiName = await _connectivity.getWifiName();
+            }
+          } else {
+            wifiName = await _connectivity.getWifiName();
+          }
         } on PlatformException catch (e) {
           print(e.toString());
           wifiName = "Failed to get Wifi Name";
         }
 
         try {
-          wifiBSSID = await _connectivity.getWifiBSSID();
+          if (Platform.isIOS) {
+            LocationAuthorizationStatus status =
+                await _connectivity.getLocationServiceAuthorization();
+            if (status == LocationAuthorizationStatus.notDetermined) {
+              status =
+                  await _connectivity.requestLocationServiceAuthorization();
+            }
+            if (status == LocationAuthorizationStatus.authorizedAlways ||
+                status == LocationAuthorizationStatus.authorizedWhenInUse) {
+              wifiBSSID = await _connectivity.getWifiBSSID();
+            } else {
+              wifiBSSID = await _connectivity.getWifiBSSID();
+            }
+          } else {
+            wifiBSSID = await _connectivity.getWifiBSSID();
+          }
         } on PlatformException catch (e) {
           print(e.toString());
           wifiBSSID = "Failed to get Wifi BSSID";
