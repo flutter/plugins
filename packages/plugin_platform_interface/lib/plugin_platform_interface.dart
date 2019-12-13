@@ -91,7 +91,7 @@ abstract class PlatformInterface {
 /// ```
 @visibleForTesting
 abstract class MockPlatformInterfaceMixin implements PlatformInterface {
-  static const Object _token = Object();
+  static final Object _token = Object();
 
   @override
   Object get _instanceToken => _token;

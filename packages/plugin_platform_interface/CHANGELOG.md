@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Fixed a bug that made all platform interface apeear as mock on release builds (https://github.com/flutter/flutter/issues/46941).
+
 ## 1.0.0 - Initial release.
 
 * Provides `PlatformInterface` with common mechanism for enforcing that a platform interface
