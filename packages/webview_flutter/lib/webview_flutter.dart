@@ -296,7 +296,6 @@ class WebView extends StatefulWidget {
   /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
 
-
   /// Invoked when a webview return error.
   final PageReceiveErrorCallback onPageReceiveError;
 
