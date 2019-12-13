@@ -1,3 +1,7 @@
+## 0.3.19
+
+* Add setting for iOS to allow gesture based navigation.
+
 ## 0.3.18+1
 
 * Be explicit that keyboard is not ready for production in README.md.
