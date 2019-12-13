@@ -70,7 +70,8 @@ abstract class PlatformInterface {
       return;
     }
     if (!identical(token, instance._instanceToken)) {
-      throw AssertionError('Platform interfaces must not be implemented with `implements`');
+      throw AssertionError(
+          'Platform interfaces must not be implemented with `implements`');
     }
   }
 }
