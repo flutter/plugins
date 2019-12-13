@@ -46,11 +46,11 @@ class _FutureImageStreamCompleter extends ImageStreamCompleter {
 
 /// Performs exactly like a [MemoryImage] but instead of taking in bytes it takes
 /// in a future that represents bytes.
-class FutureMemoryImage extends ImageProvider<FutureMemoryImage> {
+class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
   /// Constructor for FutureMemoryImage.  [_futureBytes] is the bytes that will
-  /// be loaded into an image and [_scale] is the scale that will be applied to
+  /// be loaded into an image and [_futureScale] is the scale that will be applied to
   /// that image to account for high-resolution images.
-  const FutureMemoryImage(this._futureBytes, this._futureScale)
+  const _FutureMemoryImage(this._futureBytes, this._futureScale)
       : assert(_futureBytes != null),
         assert(_futureScale != null);
 
@@ -59,13 +59,13 @@ class FutureMemoryImage extends ImageProvider<FutureMemoryImage> {
 
   /// See [ImageProvider.obtainKey].
   @override
-  Future<FutureMemoryImage> obtainKey(ImageConfiguration configuration) {
-    return SynchronousFuture<FutureMemoryImage>(this);
+  Future<_FutureMemoryImage> obtainKey(ImageConfiguration configuration) {
+    return SynchronousFuture<_FutureMemoryImage>(this);
   }
 
   /// See [ImageProvider.load].
   @override
-  ImageStreamCompleter load(FutureMemoryImage key, DecoderCallback decode) {
+  ImageStreamCompleter load(_FutureMemoryImage key, DecoderCallback decode) {
     return _FutureImageStreamCompleter(
       codec: _loadAsync(key, decode),
       futureScale: _futureScale,
@@ -73,7 +73,7 @@ class FutureMemoryImage extends ImageProvider<FutureMemoryImage> {
   }
 
   Future<ui.Codec> _loadAsync(
-      FutureMemoryImage key, DecoderCallback decode) async {
+      _FutureMemoryImage key, DecoderCallback decode) async {
     assert(key == this);
     return _futureBytes.then((Uint8List bytes) {
       return decode(bytes);
@@ -84,7 +84,7 @@ class FutureMemoryImage extends ImageProvider<FutureMemoryImage> {
   @override
   bool operator ==(dynamic other) {
     if (other.runtimeType != runtimeType) return false;
-    final FutureMemoryImage typedOther = other;
+    final _FutureMemoryImage typedOther = other;
     return _futureBytes == typedOther._futureBytes &&
         _futureScale == typedOther._futureScale;
   }
@@ -112,7 +112,7 @@ class IosPlatformImages {
   /// Throws an exception if the image can't be found.
   ///
   /// See [https://developer.apple.com/documentation/uikit/uiimage/1624146-imagenamed?language=objc]
-  static FutureMemoryImage load(String name) {
+  static ImageProvider load(String name) {
     Future<Map> loadInfo = _channel.invokeMethod('loadImage', name);
     Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
     Completer<double> scaleCompleter = Completer<double>();
@@ -120,7 +120,7 @@ class IosPlatformImages {
       scaleCompleter.complete(map["scale"]);
       bytesCompleter.complete(map["data"]);
     });
-    return FutureMemoryImage(bytesCompleter.future, scaleCompleter.future);
+    return _FutureMemoryImage(bytesCompleter.future, scaleCompleter.future);
   }
 
   /// Resolves an URL for a resource.  The equivalent would be:
