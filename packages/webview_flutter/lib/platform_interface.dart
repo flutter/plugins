@@ -28,6 +28,9 @@ abstract class WebViewPlatformCallbacksHandler {
 
   /// Invoked by [WebViewPlatformController] when a page has finished loading.
   void onPageFinished(String url);
+
+  ///  Invoked by [WebViewPlatformController] when a page is loading in progress.
+  void onProgressChanged(int progress);
 }
 
 /// Interface for talking to the webview's platform implementation.

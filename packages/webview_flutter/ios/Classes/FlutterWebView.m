@@ -77,6 +77,8 @@
       [weakSelf onMethodCall:call result:result];
     }];
 
+    [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
+
     [self applySettings:settings];
     // TODO(amirh): return an error if apply settings failed once it's possible to do so.
     // https://github.com/flutter/flutter/issues/36228
@@ -88,7 +90,20 @@
   }
   return self;
 }
+#pragma mark - listen estimatedProgress
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
 
+    if ([keyPath isEqualToString:@"estimatedProgress"]) {
+        if (object == _webView) {
+            int progress =(int)(_webView.estimatedProgress*100);
+            [_channel invokeMethod:@"onProgressChanged" arguments: [NSNumber numberWithInt:progress]];
+        }
+    }
+}
+
+- (void)dealloc {
+    [_webView removeObserver:self forKeyPath:@"estimatedProgress"];
+}
 - (UIView*)view {
   return _webView;
 }

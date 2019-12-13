@@ -34,7 +34,7 @@ class WebViewExample extends StatefulWidget {
 class _WebViewExampleState extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
-
+  double progress = 0.0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,31 +49,49 @@ class _WebViewExampleState extends State<WebViewExample> {
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
-        return WebView(
-          initialUrl: 'https://flutter.dev',
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
-            _controller.complete(webViewController);
-          },
-          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-          // ignore: prefer_collection_literals
-          javascriptChannels: <JavascriptChannel>[
-            _toasterJavascriptChannel(context),
-          ].toSet(),
-          navigationDelegate: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to $request}');
-              return NavigationDecision.prevent;
-            }
-            print('allowing navigation to $request');
-            return NavigationDecision.navigate;
-          },
-          onPageStarted: (String url) {
-            print('Page started loading: $url');
-          },
-          onPageFinished: (String url) {
-            print('Page finished loading: $url');
-          },
+        return Stack(
+          children: <Widget>[
+            WebView(
+              initialUrl: 'https://flutter.dev',
+              javascriptMode: JavascriptMode.unrestricted,
+              onWebViewCreated: (WebViewController webViewController) {
+                _controller.complete(webViewController);
+              },
+              // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+              // ignore: prefer_collection_literals
+              javascriptChannels: <JavascriptChannel>[
+                _toasterJavascriptChannel(context),
+              ].toSet(),
+              navigationDelegate: (NavigationRequest request) {
+                if (request.url.startsWith('https://www.youtube.com/')) {
+                  print('blocking navigation to $request}');
+                  return NavigationDecision.prevent;
+                }
+                print('allowing navigation to $request');
+                return NavigationDecision.navigate;
+              },
+              onPageStarted: (String url) {
+                print('Page started loading: $url');
+              },
+              onPageFinished: (String url) {
+                print('Page finished loading: $url');
+              },
+              onProgressChanged: (int p){
+                setState(() {
+                  progress = p/100.0;
+                });
+              },
+            ),
+            Offstage(
+                offstage: progress == 1,
+                child: SizedBox(
+                  height: 1.5,
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    valueColor: const AlwaysStoppedAnimation(Colors.red),
+                  ),
+                ))
+          ],
         );
       }),
       floatingActionButton: favoriteButton(),

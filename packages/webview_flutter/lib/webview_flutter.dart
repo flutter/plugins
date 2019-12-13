@@ -79,6 +79,9 @@ typedef void PageStartedCallback(String url);
 /// Signature for when a [WebView] has finished loading a page.
 typedef void PageFinishedCallback(String url);
 
+/// Signature for when a [WebView] is loading in progress.
+typedef void OnProgressChangedCallback(int progress);
+
 /// Specifies possible restrictions on automatic media playback.
 ///
 /// This is typically used in [WebView.initialMediaPlaybackPolicy].
@@ -147,6 +150,7 @@ class WebView extends StatefulWidget {
     this.gestureRecognizers,
     this.onPageStarted,
     this.onPageFinished,
+    this.onProgressChanged,
     this.debuggingEnabled = false,
     this.userAgent,
     this.initialMediaPlaybackPolicy =
@@ -275,6 +279,10 @@ class WebView extends StatefulWidget {
   /// directly in the HTML has been loaded and code injected with
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
+
+
+  /// Invoked when a page is loading in progress.
+  final OnProgressChangedCallback onProgressChanged;
 
   /// Controls whether WebView debugging is enabled.
   ///
@@ -470,6 +478,13 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   void onPageFinished(String url) {
     if (_widget.onPageFinished != null) {
       _widget.onPageFinished(url);
+    }
+  }
+
+  @override
+  void onProgressChanged(int progress) {
+    if (_widget.onProgressChanged != null) {
+      _widget.onProgressChanged(progress);
     }
   }
 
