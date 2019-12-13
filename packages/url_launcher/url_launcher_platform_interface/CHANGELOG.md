@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Make the `PlatformInterface` `_token` non `const` (as `const` `Object`s are not unique).
+
 ## 1.0.4
 
 * Use the common PlatformInterface code from plugin_platform_interface.
