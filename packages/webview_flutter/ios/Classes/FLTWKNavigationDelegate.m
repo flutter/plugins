@@ -109,11 +109,5 @@
   decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
-- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
-  [_methodChannel invokeMethod:@"onPageStarted"
-                     arguments:@{
-                       @"url" : webView.URL.absoluteString ?: [NSNull null],
-                     }];
-}
 
 @end
