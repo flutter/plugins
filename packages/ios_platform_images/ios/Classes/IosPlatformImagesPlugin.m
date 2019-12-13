@@ -20,7 +20,10 @@
       UIImage* image = [UIImage imageNamed:name];
       NSData* data = UIImagePNGRepresentation(image);
       if (data) {
-        result([FlutterStandardTypedData typedDataWithBytes:data]);
+        result(@{
+          @"scale" : @(image.scale),
+          @"data" : [FlutterStandardTypedData typedDataWithBytes:data],
+        });
       } else {
         result(nil);
       }
