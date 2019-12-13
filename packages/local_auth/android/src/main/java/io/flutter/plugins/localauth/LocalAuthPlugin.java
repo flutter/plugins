@@ -8,6 +8,11 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -17,23 +22,48 @@ import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** LocalAuthPlugin */
+/**
+ * Flutter plugin providing access to local authentication.
+ *
+ * <p>Instantiate this in an add to app scenario to gracefully handle activity and context changes.
+ */
 @SuppressWarnings("deprecation")
-public class LocalAuthPlugin implements MethodCallHandler {
-  private final Registrar registrar;
+public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
+  private static final String CHANNEL_NAME = "plugins.flutter.io/local_auth";
+
+  private Activity activity;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
   private AuthenticationHelper authenticationHelper;
 
-  /** Plugin registration. */
+  // These are null when not using v2 embedding.
+  private MethodChannel channel;
+  private Lifecycle lifecycle;
+
+  /**
+   * Registers a plugin with the v1 embedding api {@code io.flutter.plugin.common}.
+   *
+   * <p>Calling this will register the plugin with the passed registrar. However, plugins
+   * initialized this way won't react to changes in activity or context.
+   *
+   * @param registrar attaches this plugin's {@link
+   *     io.flutter.plugin.common.MethodChannel.MethodCallHandler} to the registrar's {@link
+   *     io.flutter.plugin.common.BinaryMessenger}.
+   */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/local_auth");
-    channel.setMethodCallHandler(new LocalAuthPlugin(registrar));
+    final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
+    channel.setMethodCallHandler(new LocalAuthPlugin(registrar.activity()));
   }
 
-  private LocalAuthPlugin(Registrar registrar) {
-    this.registrar = registrar;
+  private LocalAuthPlugin(Activity activity) {
+    this.activity = activity;
   }
+
+  /**
+   * Default constructor for LocalAuthPlugin.
+   *
+   * <p>Use this constructor when adding this plugin to an app with v2 embedding.
+   */
+  public LocalAuthPlugin() {}
 
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
@@ -47,7 +77,6 @@ public class LocalAuthPlugin implements MethodCallHandler {
         return;
       }
 
-      Activity activity = registrar.activity();
       if (activity == null || activity.isFinishing()) {
         result.error("no_activity", "local_auth plugin requires a foreground activity", null);
         return;
@@ -63,6 +92,7 @@ public class LocalAuthPlugin implements MethodCallHandler {
       authInProgress.set(true);
       authenticationHelper =
           new AuthenticationHelper(
+              lifecycle,
               (FragmentActivity) activity,
               call,
               new AuthCompletionHandler() {
@@ -90,7 +120,6 @@ public class LocalAuthPlugin implements MethodCallHandler {
       authenticationHelper.authenticate();
     } else if (call.method.equals("getAvailableBiometrics")) {
       try {
-        Activity activity = registrar.activity();
         if (activity == null || activity.isFinishing()) {
           result.error("no_activity", "local_auth plugin requires a foreground activity", null);
           return;
@@ -136,5 +165,39 @@ public class LocalAuthPlugin implements MethodCallHandler {
     } catch (Exception e) {
       result.success(false);
     }
+  }
+
+  @Override
+  public void onAttachedToEngine(FlutterPluginBinding binding) {
+    channel = new MethodChannel(binding.getFlutterEngine().getDartExecutor(), CHANNEL_NAME);
+  }
+
+  @Override
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {}
+
+  @Override
+  public void onAttachedToActivity(ActivityPluginBinding binding) {
+    activity = binding.getActivity();
+    lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
+    channel.setMethodCallHandler(this);
+  }
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+    lifecycle = null;
+    activity = null;
+  }
+
+  @Override
+  public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+    activity = binding.getActivity();
+    lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
+  }
+
+  @Override
+  public void onDetachedFromActivity() {
+    activity = null;
+    lifecycle = null;
+    channel.setMethodCallHandler(null);
   }
 }

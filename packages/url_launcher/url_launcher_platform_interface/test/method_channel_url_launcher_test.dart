@@ -5,6 +5,7 @@
 import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'package:url_launcher_platform_interface/method_channel_url_launcher.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
@@ -25,9 +26,7 @@ void main() {
     });
 
     test('Can be mocked with `implements`', () {
-      final ImplementsUrlLauncherPlatform mock =
-          ImplementsUrlLauncherPlatform();
-      when(mock.isMock).thenReturn(true);
+      final UrlLauncherPlatformMock mock = UrlLauncherPlatformMock();
       UrlLauncherPlatform.instance = mock;
     });
 
@@ -279,6 +278,10 @@ void main() {
     });
   });
 }
+
+class UrlLauncherPlatformMock extends Mock
+    with MockPlatformInterfaceMixin
+    implements UrlLauncherPlatform {}
 
 class ImplementsUrlLauncherPlatform extends Mock
     implements UrlLauncherPlatform {}

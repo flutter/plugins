@@ -73,6 +73,9 @@ enum NavigationDecision {
 typedef FutureOr<NavigationDecision> NavigationDelegate(
     NavigationRequest navigation);
 
+/// Signature for when a [WebView] has started loading a page.
+typedef void PageStartedCallback(String url);
+
 /// Signature for when a [WebView] has finished loading a page.
 typedef void PageFinishedCallback(String url);
 
@@ -142,8 +145,10 @@ class WebView extends StatefulWidget {
     this.javascriptChannels,
     this.navigationDelegate,
     this.gestureRecognizers,
+    this.onPageStarted,
     this.onPageFinished,
     this.debuggingEnabled = false,
+    this.gestureNavigationEnabled = false,
     this.userAgent,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
@@ -257,6 +262,9 @@ class WebView extends StatefulWidget {
   ///     * When a navigationDelegate is set HTTP requests do not include the HTTP referer header.
   final NavigationDelegate navigationDelegate;
 
+  /// Invoked when a page starts loading.
+  final PageStartedCallback onPageStarted;
+
   /// Invoked when a page has finished loading.
   ///
   /// This is invoked only for the main frame.
@@ -283,6 +291,13 @@ class WebView extends StatefulWidget {
   final bool debuggingEnabled;
 
   /// The value used for the HTTP User-Agent: request header.
+  /// A Boolean value indicating whether horizontal swipe gestures will trigger back-forward list navigations.
+  ///
+  /// This only works on iOS.
+  ///
+  /// By default `gestureNavigationEnabled` is false.
+  final bool gestureNavigationEnabled;
+
   ///
   /// When null the platform's webview default is used for the User-Agent header.
   ///
@@ -376,6 +391,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     javascriptMode: widget.javascriptMode,
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
+    gestureNavigationEnabled: widget.gestureNavigationEnabled,
     userAgent: WebSetting<String>.of(widget.userAgent),
   );
 }
@@ -450,6 +466,13 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
         await _widget.navigationDelegate(request) ==
             NavigationDecision.navigate;
     return allowNavigation;
+  }
+
+  @override
+  void onPageStarted(String url) {
+    if (_widget.onPageStarted != null) {
+      _widget.onPageStarted(url);
+    }
   }
 
   @override
