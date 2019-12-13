@@ -1,5 +1,6 @@
 ## 0.0.2
-Fixed a bug where the scale value of the image wasn't respected.
+
+* Fixed a bug where the scale value of the image wasn't respected.
 
 ## 0.0.1
 
