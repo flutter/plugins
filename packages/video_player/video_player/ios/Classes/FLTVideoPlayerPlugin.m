@@ -41,9 +41,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
-@property(nonatomic, readonly) NSString* key;
-@property(nonatomic, readonly) CVPixelBufferRef prevBuffer;
-@property(nonatomic, readonly) int failedCount;
+- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
 - (void)play;
 - (void)pause;
 - (void)setIsLooping:(bool)isLooping;
@@ -57,35 +55,31 @@ static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 @implementation FLTVideoPlayer
-- (instancetype)initWithFrameUpdater:(FLTFrameUpdater*)frameUpdater {
-  self = [super init];
-  NSAssert(self, @"super init cannot be nil");
-  _isInitialized = false;
-  _isPlaying = false;
-  _disposed = false;
-  _player = [[AVPlayer alloc] init];
-  _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-  _displayLink = [CADisplayLink displayLinkWithTarget:frameUpdater
-                                             selector:@selector(onDisplayLink:)];
-  [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-  _displayLink.paused = YES;
-  return self;
+- (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater {
+  NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
+  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
 }
 
 - (void)addObservers:(AVPlayerItem*)item {
-  [item addObserver:self forKeyPath:@"loadedTimeRanges" options:0 context:timeRangeContext];
-  [item addObserver:self forKeyPath:@"status" options:0 context:statusContext];
+  [item addObserver:self
+         forKeyPath:@"loadedTimeRanges"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:timeRangeContext];
+  [item addObserver:self
+         forKeyPath:@"status"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:statusContext];
   [item addObserver:self
          forKeyPath:@"playbackLikelyToKeepUp"
-            options:0
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackLikelyToKeepUpContext];
   [item addObserver:self
          forKeyPath:@"playbackBufferEmpty"
-            options:0
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferEmptyContext];
   [item addObserver:self
          forKeyPath:@"playbackBufferFull"
-            options:0
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
 
   // Add an observer that will respond to itemDidPlayToEndTime
@@ -95,56 +89,13 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                              object:item];
 }
 
-- (void)removeVideoOutput {
-  _videoOutput = nil;
-  if (_player.currentItem == nil) {
-    return;
-  }
-  NSArray<AVPlayerItemOutput*>* outputs = [[_player currentItem] outputs];
-  for (AVPlayerItemOutput* output in outputs) {
-    [[_player currentItem] removeOutput:output];
-  }
-}
-
-- (void)clear {
-  _isInitialized = false;
-  _isPlaying = false;
-  _disposed = false;
-  _displayLink.paused = YES;
-  _videoOutput = nil;
-  _failedCount = 0;
-  if (_player.currentItem == nil) {
-    return;
-  }
-
-  if (_player.currentItem == nil) {
-    return;
-  }
-  [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"loadedTimeRanges"
-                                context:timeRangeContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"playbackLikelyToKeepUp"
-                                context:playbackLikelyToKeepUpContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"playbackBufferEmpty"
-                                context:playbackBufferEmptyContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"playbackBufferFull"
-                                context:playbackBufferFullContext];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  AVAsset* asset = [_player.currentItem asset];
-  [asset cancelLoading];
-}
-
 - (void)itemDidPlayToEndTime:(NSNotification*)notification {
   if (_isLooping) {
     AVPlayerItem* p = [notification object];
     [p seekToTime:kCMTimeZero completionHandler:nil];
   } else {
     if (_eventSink) {
-      _eventSink(@{@"event" : @"completed", @"key" : _key});
+      _eventSink(@{@"event" : @"completed"});
     }
   }
 }
@@ -193,26 +144,22 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return videoComposition;
 }
 
-- (void)addVideoOutput {
-  if (_player.currentItem == nil) {
-    return;
-  }
-
-  if (_videoOutput) {
-    NSArray<AVPlayerItemOutput*>* outputs = [[_player currentItem] outputs];
-    for (AVPlayerItemOutput* output in outputs) {
-      if (output == _videoOutput) {
-        return;
-      }
-    }
-  }
-
+- (void)createVideoOutputAndDisplayLink:(FLTFrameUpdater*)frameUpdater {
   NSDictionary* pixBuffAttributes = @{
     (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA),
     (id)kCVPixelBufferIOSurfacePropertiesKey : @{}
   };
   _videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
-  [_player.currentItem addOutput:_videoOutput];
+
+  _displayLink = [CADisplayLink displayLinkWithTarget:frameUpdater
+                                             selector:@selector(onDisplayLink:)];
+  [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+  _displayLink.paused = YES;
+}
+
+- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
+  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
+  return [self initWithPlayerItem:item frameUpdater:frameUpdater];
 }
 
 - (CGAffineTransform)fixTransform:(AVAssetTrack*)videoTrack {
@@ -238,19 +185,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return transform;
 }
 
-- (void)setDataSourceAsset:(NSString*)asset withKey:(NSString*)key {
-  NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
-  return [self setDataSourceURL:[NSURL fileURLWithPath:path] withKey:key];
-}
-
-- (void)setDataSourceURL:(NSURL*)url withKey:(NSString*)key {
-  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
-  return [self setDataSourcePlayerItem:item withKey:key];
-}
-
-- (void)setDataSourcePlayerItem:(AVPlayerItem*)item withKey:(NSString*)key {
-  _key = key;
-  [_player replaceCurrentItemWithPlayerItem:item];
+- (instancetype)initWithPlayerItem:(AVPlayerItem*)item frameUpdater:(FLTFrameUpdater*)frameUpdater {
+  self = [super init];
+  NSAssert(self, @"super init cannot be nil");
+  _isInitialized = false;
+  _isPlaying = false;
+  _disposed = false;
 
   AVAsset* asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
@@ -281,8 +221,16 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     }
   };
 
-  [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
+  _player = [AVPlayer playerWithPlayerItem:item];
+  _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+
+  [self createVideoOutputAndDisplayLink:frameUpdater];
+
   [self addObservers:item];
+
+  [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
+
+  return self;
 }
 
 - (void)observeValueForKeyPath:(NSString*)path
@@ -297,7 +245,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         int64_t start = FLTCMTimeToMillis(range.start);
         [values addObject:@[ @(start), @(start + FLTCMTimeToMillis(range.duration)) ]];
       }
-      _eventSink(@{@"event" : @"bufferingUpdate", @"values" : values, @"key" : _key});
+      _eventSink(@{@"event" : @"bufferingUpdate", @"values" : values});
     }
   } else if (context == statusContext) {
     AVPlayerItem* item = (AVPlayerItem*)object;
@@ -314,30 +262,31 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       case AVPlayerItemStatusUnknown:
         break;
       case AVPlayerItemStatusReadyToPlay:
-        [self onReadyToPlay];
+        [item addOutput:_videoOutput];
+        [self sendInitialized];
+        [self updatePlayingState];
         break;
     }
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
       [self updatePlayingState];
       if (_eventSink != nil) {
-        _eventSink(@{@"event" : @"bufferingEnd", @"key" : _key});
+        _eventSink(@{@"event" : @"bufferingEnd"});
       }
     }
   } else if (context == playbackBufferEmptyContext) {
     if (_eventSink != nil) {
-      _eventSink(@{@"event" : @"bufferingStart", @"key" : _key});
+      _eventSink(@{@"event" : @"bufferingStart"});
     }
   } else if (context == playbackBufferFullContext) {
     if (_eventSink != nil) {
-      _eventSink(@{@"event" : @"bufferingEnd", @"key" : _key});
+      _eventSink(@{@"event" : @"bufferingEnd"});
     }
   }
 }
 
 - (void)updatePlayingState {
   if (!_isInitialized) {
-    _displayLink.paused = YES;
     return;
   }
   if (_isPlaying) {
@@ -348,16 +297,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _displayLink.paused = !_isPlaying;
 }
 
-- (void)onReadyToPlay {
+- (void)sendInitialized {
   if (_eventSink && !_isInitialized) {
-    if (!_player.currentItem) {
-      return;
-    }
-    if (_player.status != AVPlayerStatusReadyToPlay) {
-      return;
-    }
-
-    CGSize size = [_player currentItem].presentationSize;
+    CGSize size = [self.player currentItem].presentationSize;
     CGFloat width = size.width;
     CGFloat height = size.height;
 
@@ -371,14 +313,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     }
 
     _isInitialized = true;
-    [self addVideoOutput];
-    [self updatePlayingState];
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
       @"width" : @(width),
-      @"height" : @(height),
-      @"key" : _key
+      @"height" : @(height)
     });
   }
 }
@@ -415,51 +354,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
 }
 
-// This workaround if you will change dataSource. Flutter engine caches CVPixelBufferRef and if you
-// return NULL from method copyPixelBuffer Flutter will use cached CVPixelBufferRef. If you will
-// change your datasource you can see frame from previeous video. Thats why we should return
-// trasparent frame for this situation
-- (CVPixelBufferRef)prevTransparentBuffer {
-  if (_prevBuffer) {
-    CVPixelBufferLockBaseAddress(_prevBuffer, 0);
-
-    int bufferWidth = CVPixelBufferGetWidth(_prevBuffer);
-    int bufferHeight = CVPixelBufferGetHeight(_prevBuffer);
-    unsigned char* pixel = (unsigned char*)CVPixelBufferGetBaseAddress(_prevBuffer);
-
-    for (int row = 0; row < bufferHeight; row++) {
-      for (int column = 0; column < bufferWidth; column++) {
-        pixel[0] = 0;
-        pixel[1] = 0;
-        pixel[2] = 0;
-        pixel[3] = 0;
-        pixel += 4;
-      }
-    }
-    CVPixelBufferUnlockBaseAddress(_prevBuffer, 0);
-    return _prevBuffer;
-  }
-  return _prevBuffer;
-}
-
 - (CVPixelBufferRef)copyPixelBuffer {
-  if (!_videoOutput || !_isInitialized || !_isPlaying) {
-    return [self prevTransparentBuffer];
-  }
-
   CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
   if ([_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
-    _failedCount = 0;
-    _prevBuffer = [_videoOutput copyPixelBufferForItemTime:outputItemTime itemTimeForDisplay:NULL];
-    return _prevBuffer;
+    return [_videoOutput copyPixelBufferForItemTime:outputItemTime itemTimeForDisplay:NULL];
   } else {
-    // AVPlayerItemVideoOutput.hasNewPixelBufferForItemTime doesn't work correctly
-    _failedCount++;
-    if (_failedCount > 100) {
-      _failedCount = 0;
-      [self removeVideoOutput];
-      [self addVideoOutput];
-    }
     return NULL;
   }
 }
@@ -483,13 +382,29 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   // This line ensures the 'initialized' event is sent when the event
   // 'AVPlayerItemStatusReadyToPlay' fires before _eventSink is set (this function
   // onListenWithArguments is called)
-  [self onReadyToPlay];
+  [self sendInitialized];
   return nil;
 }
 
 - (void)dispose {
-  [self clear];
   _disposed = true;
+  [_displayLink invalidate];
+  [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"loadedTimeRanges"
+                                context:timeRangeContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"playbackLikelyToKeepUp"
+                                context:playbackLikelyToKeepUpContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"playbackBufferEmpty"
+                                context:playbackBufferEmptyContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"playbackBufferFull"
+                                context:playbackBufferFullContext];
+  [_player replaceCurrentItemWithPlayerItem:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [_eventChannel setStreamHandler:nil];
 }
 
 @end
@@ -548,35 +463,34 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [_players removeAllObjects];
     result(nil);
   } else if ([@"create" isEqualToString:call.method]) {
+    NSDictionary* argsMap = call.arguments;
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
-    FLTVideoPlayer* player = [[FLTVideoPlayer alloc] initWithFrameUpdater:frameUpdater];
-    [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
+    NSString* assetArg = argsMap[@"asset"];
+    NSString* uriArg = argsMap[@"uri"];
+    FLTVideoPlayer* player;
+    if (assetArg) {
+      NSString* assetPath;
+      NSString* package = argsMap[@"package"];
+      if (![package isEqual:[NSNull null]]) {
+        assetPath = [_registrar lookupKeyForAsset:assetArg fromPackage:package];
+      } else {
+        assetPath = [_registrar lookupKeyForAsset:assetArg];
+      }
+      player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
+      [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
+    } else if (uriArg) {
+      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
+                                      frameUpdater:frameUpdater];
+      [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
+    } else {
+      result(FlutterMethodNotImplemented);
+    }
+
   } else {
     NSDictionary* argsMap = call.arguments;
     int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;
     FLTVideoPlayer* player = _players[@(textureId)];
-    if ([@"setDataSource" isEqualToString:call.method]) {
-      [player clear];
-      NSDictionary* dataSource = argsMap[@"dataSource"];
-      NSString* assetArg = dataSource[@"asset"];
-      NSString* uriArg = dataSource[@"uri"];
-      NSString* key = dataSource[@"key"];
-      if (assetArg) {
-        NSString* assetPath;
-        NSString* package = dataSource[@"package"];
-        if (![package isEqual:[NSNull null]]) {
-          assetPath = [_registrar lookupKeyForAsset:assetArg fromPackage:package];
-        } else {
-          assetPath = [_registrar lookupKeyForAsset:assetArg];
-        }
-        [player setDataSourceAsset:assetPath withKey:key];
-      } else if (uriArg) {
-        [player setDataSourceURL:[NSURL URLWithString:uriArg] withKey:key];
-      } else {
-        result(FlutterMethodNotImplemented);
-      }
-      result(nil);
-    } else if ([@"dispose" isEqualToString:call.method]) {
+    if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_players removeObjectForKey:@(textureId)];
       // If the Flutter contains https://github.com/flutter/engine/pull/12695,
