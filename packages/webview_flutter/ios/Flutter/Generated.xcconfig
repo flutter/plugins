@@ -1,0 +1,9 @@
+// This is a generated file; do not edit or check into version control.
+FLUTTER_ROOT=D:\work\flutter
+FLUTTER_APPLICATION_PATH=C:\Users\runquan.tan\Desktop\ServiceMe.Apps.CRM.APP\ServiceMe.Apps.CRM.APP\lib\packages\webview_flutter
+FLUTTER_TARGET=lib\main.dart
+FLUTTER_BUILD_DIR=build
+SYMROOT=${SOURCE_ROOT}/../build\ios
+FLUTTER_FRAMEWORK_DIR=D:\work\flutter\bin\cache\artifacts\engine\ios
+FLUTTER_BUILD_NAME=0.3.14
+FLUTTER_BUILD_NUMBER=1
