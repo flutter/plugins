@@ -339,6 +339,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!_created || _isDisposed) {
       return;
     }
+    _timer?.cancel();
     if (value.isPlaying) {
       await VideoPlayerPlatform.instance.play(_textureId);
       _timer = Timer.periodic(
@@ -355,7 +356,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         },
       );
     } else {
-      _timer?.cancel();
       await VideoPlayerPlatform.instance.pause(_textureId);
     }
   }
