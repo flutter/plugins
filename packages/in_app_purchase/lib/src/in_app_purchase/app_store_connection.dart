@@ -34,9 +34,8 @@ class AppStoreConnection implements InAppPurchaseConnection {
     }
 
     _instance = AppStoreConnection();
-    _skPaymentQueueWrapper = SKPaymentQueueWrapper();
     _observer = _TransactionObserver(StreamController.broadcast());
-    _skPaymentQueueWrapper.setTransactionObserver(observer);
+    _skPaymentQueueWrapper = SKPaymentQueueWrapper(observer: observer);
     return _instance;
   }
 
