@@ -1,3 +1,7 @@
+## 0.10.5+1
+
+* Update ExoPlayer to version 2.11.0
+
 ## 0.10.5
 
 * Support `web` by default.

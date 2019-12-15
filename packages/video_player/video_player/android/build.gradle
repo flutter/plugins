@@ -38,11 +38,12 @@ android {
         }
     }
 
+    def exoPlayerVersion = "2.11.0"
     dependencies {
-        implementation 'com.google.android.exoplayer:exoplayer-core:2.9.6'
-        implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.6'
-        implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.6'
-        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.6'
+        implementation "com.google.android.exoplayer:exoplayer-core:$exoPlayerVersion"
+        implementation "com.google.android.exoplayer:exoplayer-hls:$exoPlayerVersion"
+        implementation "com.google.android.exoplayer:exoplayer-dash:$exoPlayerVersion"
+        implementation "com.google.android.exoplayer:exoplayer-smoothstreaming:$exoPlayerVersion"
     }
 }
 
