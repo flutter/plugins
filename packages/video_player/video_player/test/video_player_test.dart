@@ -47,6 +47,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   VideoFormat get formatHint => null;
+
+  @override
+  Future<void> setMuted(bool muted) async {}
 }
 
 void main() {
@@ -182,6 +185,17 @@ void main() {
       await controller.setLooping(true);
 
       expect(controller.value.isLooping, isTrue);
+    });
+
+    test('setMuted', () async {
+      final VideoPlayerController controller = VideoPlayerController.network(
+        'https://127.0.0.1',
+      );
+      await controller.initialize();
+      expect(controller.value.isMuted, isFalse);
+      await controller.setMuted(true);
+
+      expect(controller.value.isMuted, isTrue);
     });
 
     test('pause', () async {
@@ -347,6 +361,7 @@ void main() {
       expect(uninitialized.buffered, isEmpty);
       expect(uninitialized.isPlaying, isFalse);
       expect(uninitialized.isLooping, isFalse);
+      expect(uninitialized.isMuted, isFalse);
       expect(uninitialized.isBuffering, isFalse);
       expect(uninitialized.volume, 1.0);
       expect(uninitialized.errorDescription, isNull);
@@ -366,6 +381,7 @@ void main() {
       expect(error.buffered, isEmpty);
       expect(error.isPlaying, isFalse);
       expect(error.isLooping, isFalse);
+      expect(error.isMuted, isFalse);
       expect(error.isBuffering, isFalse);
       expect(error.volume, 1.0);
       expect(error.errorDescription, errorMessage);
@@ -386,6 +402,7 @@ void main() {
       const bool isPlaying = true;
       const bool isLooping = true;
       const bool isBuffering = true;
+      const bool isMuted = true;
       const double volume = 0.5;
 
       final VideoPlayerValue value = VideoPlayerValue(
@@ -396,10 +413,11 @@ void main() {
           isPlaying: isPlaying,
           isLooping: isLooping,
           isBuffering: isBuffering,
+          isMuted: isMuted,
           volume: volume);
 
       expect(value.toString(),
-          'VideoPlayerValue(duration: 0:00:05.000000, size: Size(400.0, 300.0), position: 0:00:01.000000, buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], isPlaying: true, isLooping: true, isBuffering: truevolume: 0.5, errorDescription: null)');
+          'VideoPlayerValue(duration: 0:00:05.000000, size: Size(400.0, 300.0), position: 0:00:01.000000, buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], isPlaying: true, isLooping: true, isBuffering: true, isMuted: true, volume: 0.5, errorDescription: null)');
     });
 
     test('copyWith()', () {
@@ -470,6 +488,7 @@ class FakeVideoPlayerPlatform {
       case 'pause':
       case 'play':
       case 'setLooping':
+      case 'setMuted':
       case 'setVolume':
         break;
       default:

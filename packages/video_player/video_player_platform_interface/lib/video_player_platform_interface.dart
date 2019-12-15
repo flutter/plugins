@@ -95,6 +95,11 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('setVolume() has not been implemented.');
   }
 
+  /// Sets the muted attribute of the video.
+  Future<void> setMuted(int textureId, bool muted) {
+    throw UnimplementedError('setMuted() has no been implemented.');
+  }
+
   /// Sets the video position to a [Duration] from the start.
   Future<void> seekTo(int textureId, Duration position) {
     throw UnimplementedError('seekTo() has not been implemented.');

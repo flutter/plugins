@@ -57,6 +57,8 @@ final class VideoPlayer {
 
   private boolean isInitialized = false;
 
+  private float currentVolume;
+
   VideoPlayer(
       Context context,
       EventChannel eventChannel,
@@ -233,6 +235,15 @@ final class VideoPlayer {
   void setVolume(double value) {
     float bracketedValue = (float) Math.max(0.0, Math.min(1.0, value));
     exoPlayer.setVolume(bracketedValue);
+  }
+
+  void setMuted(boolean muted) {
+    if (muted) {
+      currentVolume = exoPlayer.getVolume();
+      exoPlayer.setVolume(0.0f);
+    } else if (exoPlayer.getVolume() == 0.0) {
+      exoPlayer.setVolume(currentVolume);
+    }
   }
 
   void seekTo(int location) {

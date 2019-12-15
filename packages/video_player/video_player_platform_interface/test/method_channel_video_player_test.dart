@@ -150,6 +150,19 @@ void main() {
       );
     });
 
+    test('setMuted', () async {
+      await player.setMuted(1, true);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('setMuted', arguments: <String, Object>{
+            'textureId': 1,
+            'muted': true,
+          })
+        ],
+      );
+    });
+
     test('play', () async {
       await player.play(1);
       expect(

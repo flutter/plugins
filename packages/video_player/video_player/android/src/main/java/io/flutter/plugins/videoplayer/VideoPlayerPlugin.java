@@ -162,6 +162,10 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
         player.setVolume(call.argument("volume"));
         result.success(null);
         break;
+      case "setMuted":
+        player.setMuted(call.argument("muted"));
+        result.success(null);
+        break;
       case "play":
         player.play();
         result.success(null);

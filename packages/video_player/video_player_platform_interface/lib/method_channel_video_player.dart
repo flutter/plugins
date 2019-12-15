@@ -69,6 +69,17 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> setMuted(int textureId, bool muted) {
+    return _channel.invokeMethod<void>(
+      'setMuted',
+      <String, dynamic>{
+        'textureId': textureId,
+        'muted': muted,
+      },
+    );
+  }
+
+  @override
   Future<void> play(int textureId) {
     return _channel.invokeMethod<void>(
       'play',

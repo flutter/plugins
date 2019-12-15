@@ -76,6 +76,10 @@ void main() {
           VideoPlayerPlatform.instance.setLooping(textureId, true), completes);
     });
 
+    test('can set muted', () {
+      expect(VideoPlayerPlatform.instance.setMuted(textureId, true), completes);
+    });
+
     test('can play', () async {
       // Mute video to allow autoplay (See https://goo.gl/xX8pDD)
       await VideoPlayerPlatform.instance.setVolume(textureId, 0);

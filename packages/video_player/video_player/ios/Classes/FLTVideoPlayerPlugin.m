@@ -354,6 +354,17 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
 }
 
+- (void)setMuted:(bool)isMuted {
+  [_player setMuted:isMuted];
+  if (isMuted) {
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
+                                     withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                                           error:nil];
+  } else {
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+  }
+}
+
 - (CVPixelBufferRef)copyPixelBuffer {
   CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
   if ([_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
@@ -515,6 +526,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       result(nil);
     } else if ([@"setVolume" isEqualToString:call.method]) {
       [player setVolume:[argsMap[@"volume"] doubleValue]];
+      result(nil);
+    } else if ([@"setMuted" isEqualToString:call.method]) {
+      [player setMuted:[argsMap[@"muted"] boolValue]];
       result(nil);
     } else if ([@"play" isEqualToString:call.method]) {
       [player play];

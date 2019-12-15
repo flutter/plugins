@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Add `muted` attribute
+
 ## 1.0.4
 
 * Remove the deprecated `author:` field from pubspec.yaml
