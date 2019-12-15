@@ -10,7 +10,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class SamplePluginPlatform extends PlatformInterface {
   SamplePluginPlatform() : super(token: _token);
 
-  static const Object _token = Object();
+  static final Object _token = Object();
 
   static set instance(SamplePluginPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
