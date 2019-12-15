@@ -26,7 +26,7 @@ part 'sk_payment_queue_wrapper.g.dart';
 /// Guide](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Introduction.html#//apple_ref/doc/uid/TP40008267).
 class SKPaymentQueueWrapper {
   SKTransactionObserverWrapper _observer;
-  bool _initialized;
+  bool _initialized = false;
   /// Returns the default payment queue.
   ///
   /// We do not support instantiating a custom payment queue, hence the
@@ -35,8 +35,8 @@ class SKPaymentQueueWrapper {
     final obj = _singleton;
     obj._observer = observer;
     if (!obj._initialized) {
-      obj._init();
       obj._initialized = true;
+      obj._init();
     }
     return obj;
   }
