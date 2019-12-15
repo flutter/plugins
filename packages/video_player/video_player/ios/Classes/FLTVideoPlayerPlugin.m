@@ -113,6 +113,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   _displayLink.paused = YES;
   _videoOutput = nil;
   _failedCount = 0;
+  _key = nil;
   if (_player.currentItem == nil) {
     return;
   }
@@ -336,10 +337,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)updatePlayingState {
-  if (!_isInitialized) {
+  if (!_isInitialized || !_key) {
     _displayLink.paused = YES;
     return;
   }
+    
   if (_isPlaying) {
     [_player play];
   } else {
@@ -349,7 +351,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)onReadyToPlay {
-  if (_eventSink && !_isInitialized) {
+  if (_eventSink && !_isInitialized && _key) {
     if (!_player.currentItem) {
       return;
     }
@@ -443,7 +445,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
-  if (!_videoOutput || !_isInitialized || !_isPlaying) {
+  if (!_videoOutput || !_isInitialized || !_isPlaying || !_key) {
     return [self prevTransparentBuffer];
   }
 
