@@ -141,6 +141,8 @@ class DataSource {
     this.formatHint,
     this.asset,
     this.package,
+    this.maxCacheSize,
+    this.maxFileSize,
   });
 
   /// The way in which the video was originally loaded.
@@ -165,6 +167,12 @@ class DataSource {
   /// The package that the asset was loaded from. Only set for
   /// [DataSourceType.asset] videos.
   final String package;
+
+  /// The max size of cache
+  final int maxCacheSize;
+
+  /// The max size file in cache
+  final int maxFileSize;
 }
 
 /// The way in which the video was originally loaded.

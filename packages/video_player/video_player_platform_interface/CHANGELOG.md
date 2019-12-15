@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Add caching functionality to videos from network sources.
+
 ## 1.0.4
 
 * Remove the deprecated `author:` field from pubspec.yaml

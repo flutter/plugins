@@ -5,6 +5,7 @@
 #import "FLTVideoPlayerPlugin.h"
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
+#import "VIMediaCache.h"
 
 int64_t FLTCMTimeToMillis(CMTime time) {
   if (time.timescale == 0) return 0;
@@ -46,6 +47,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 - (void)pause;
 - (void)setIsLooping:(bool)isLooping;
 - (void)updatePlayingState;
++ (VIResourceLoaderManager*)resourceLoaderManager;
 @end
 
 static void* timeRangeContext = &timeRangeContext;
@@ -158,8 +160,27 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
-  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
+  return [self initWithURL:url frameUpdater:frameUpdater enableCache:NO];
+}
+
+- (instancetype)initWithURL:(NSURL*)url
+               frameUpdater:(FLTFrameUpdater*)frameUpdater
+                enableCache:(BOOL)enableCache {
+  AVPlayerItem* item;
+  if (enableCache) {
+    item = [[FLTVideoPlayer resourceLoaderManager] playerItemWithURL:url];
+  } else {
+    item = [AVPlayerItem playerItemWithURL:url];
+  }
   return [self initWithPlayerItem:item frameUpdater:frameUpdater];
+}
+
++ (VIResourceLoaderManager*)resourceLoaderManager {
+  static VIResourceLoaderManager* resourceLoaderManager = nil;
+  if (resourceLoaderManager == nil) {
+    resourceLoaderManager = [VIResourceLoaderManager new];
+  }
+  return resourceLoaderManager;
 }
 
 - (CGAffineTransform)fixTransform:(AVAssetTrack*)videoTrack {
@@ -467,6 +488,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
     NSString* assetArg = argsMap[@"asset"];
     NSString* uriArg = argsMap[@"uri"];
+    long maxCacheSizeArg = ((NSNumber*)argsMap[@"maxCacheSize"]).longValue;
+    long maxFileSizeArg = ((NSNumber*)argsMap[@"maxFileSize"]).longValue;
     FLTVideoPlayer* player;
     if (assetArg) {
       NSString* assetPath;
@@ -479,8 +502,20 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else if (uriArg) {
-      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
-                                      frameUpdater:frameUpdater];
+      BOOL enableCache = maxCacheSizeArg > 0 && maxFileSizeArg > 0;
+
+      if (enableCache) {
+        NSString* escapedURL = [uriArg
+            stringByAddingPercentEncodingWithAllowedCharacters:NSMutableCharacterSet
+                                                                   .alphanumericCharacterSet];
+        player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:escapedURL]
+                                        frameUpdater:frameUpdater
+                                         enableCache:enableCache];
+      } else {
+        player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
+                                        frameUpdater:frameUpdater];
+      }
+
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else {
       result(FlutterMethodNotImplemented);

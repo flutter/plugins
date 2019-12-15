@@ -148,6 +148,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   VideoPlayerController.asset(this.dataSource, {this.package})
       : dataSourceType = DataSourceType.asset,
         formatHint = null,
+        _isCached = false,
         super(VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from obtained from
@@ -157,8 +158,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null.
   /// **Android only**: The [formatHint] option allows the caller to override
   /// the video format detection code.
-  VideoPlayerController.network(this.dataSource, {this.formatHint})
+  VideoPlayerController.network(this.dataSource,
+      {this.formatHint, bool isCached = true})
       : dataSourceType = DataSourceType.network,
+        _isCached = isCached ?? false,
         package = null,
         super(VideoPlayerValue(duration: null));
 
@@ -171,6 +174,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
+        _isCached = false,
         super(VideoPlayerValue(duration: null));
 
   int _textureId;
@@ -187,6 +191,37 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// is constructed with.
   final DataSourceType dataSourceType;
 
+  /// The maximum cache size to keep on disk in bytes.
+  static int _maxCacheSize = 100 * 1024 * 1024;
+
+  /// The maximum size of each individual file in bytes.
+  static int _maxCacheFileSize = 10 * 1024 * 1024;
+
+  /// If the video is cached or not
+  final bool _isCached;
+
+  /// If we've set the cache once already
+  static bool _hasAlreadySetCache = false;
+
+  /// Set the cache size in bytes. Default is maxSize of `100 * 1024 * 1024`
+  /// and maxFileSize of `10 * 1024 * 1024`.
+  ///
+  /// Throws StateError if you try to set the cache size twice. You can only set it once.
+  static void setCacheSize(int maxSize, int maxFileSize) {
+    assert(maxSize != null && maxSize > 0);
+    assert(maxFileSize != null && maxFileSize > 0);
+
+    if (_hasAlreadySetCache == false) {
+      VideoPlayerController._maxCacheSize = maxSize;
+      VideoPlayerController._maxCacheFileSize = maxFileSize;
+      VideoPlayerController._hasAlreadySetCache = true;
+    } else {
+      throw StateError(
+        "You can only set the VideoPlayerController cache size once.",
+      );
+    }
+  }
+
   /// Only set for [asset] videos. The package that the asset was loaded from.
   final String package;
   Timer _timer;
@@ -202,9 +237,15 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
+    /// Initializing cements the cache size
+    VideoPlayerController._hasAlreadySetCache = true;
+
     _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
     _lifeCycleObserver.initialize();
     _creatingCompleter = Completer<void>();
+
+    final maxCacheSize = _isCached ? _maxCacheSize : 0;
+    final maxFileSize = _isCached ? _maxCacheFileSize : 0;
 
     DataSource dataSourceDescription;
     switch (dataSourceType) {
@@ -213,6 +254,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           sourceType: DataSourceType.asset,
           asset: dataSource,
           package: package,
+          maxCacheSize: maxCacheSize,
+          maxFileSize: maxFileSize,
         );
         break;
       case DataSourceType.network:
@@ -220,15 +263,20 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           sourceType: DataSourceType.network,
           uri: dataSource,
           formatHint: formatHint,
+          maxCacheSize: maxCacheSize,
+          maxFileSize: maxFileSize,
         );
         break;
       case DataSourceType.file:
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.file,
           uri: dataSource,
+          maxCacheSize: maxCacheSize,
+          maxFileSize: maxFileSize,
         );
         break;
     }
+
     _textureId =
         await VideoPlayerPlatform.instance.create(dataSourceDescription);
     _creatingCompleter.complete(null);

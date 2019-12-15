@@ -103,6 +103,18 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
               new EventChannel(
                   flutterState.binaryMessenger, "flutter.io/videoPlayer/videoEvents" + handle.id());
 
+          int maxCacheSize, maxFileSize;
+          if (call.argument("maxCacheSize") == null) {
+            maxCacheSize = (100 * 1024 * 1024); // default to 100 MiB for the entire cache
+          } else {
+            maxCacheSize = call.argument("maxCacheSize");
+          }
+          if (call.argument("maxFileSize") == null) {
+            maxFileSize = (10 * 1024 * 1024); // default to 10 MiB per file
+          } else {
+            maxFileSize = call.argument("maxFileSize");
+          }
+
           VideoPlayer player;
           if (call.argument("asset") != null) {
             String assetLookupKey;
@@ -120,8 +132,9 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
                     handle,
                     "asset:///" + assetLookupKey,
                     result,
-                    null);
-            videoPlayers.put(handle.id(), player);
+                    null,
+                    maxCacheSize,
+                    maxFileSize);
           } else {
             player =
                 new VideoPlayer(
@@ -130,9 +143,11 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
                     handle,
                     call.argument("uri"),
                     result,
-                    call.argument("formatHint"));
-            videoPlayers.put(handle.id(), player);
+                    call.argument("formatHint"),
+                    maxCacheSize,
+                    maxFileSize);
           }
+          videoPlayers.put(handle.id(), player);
           break;
         }
       default:

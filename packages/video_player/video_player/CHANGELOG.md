@@ -1,3 +1,7 @@
+## 0.10.6
+
+* Add caching functionality to videos from network sources.
+
 ## 0.10.5
 
 * Support `web` by default.
