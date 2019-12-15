@@ -168,10 +168,10 @@ class DataSource {
   /// [DataSourceType.asset] videos.
   final String package;
 
-  /// The max size of cache
+  /// The maximum cache size to keep on disk in bytes.
   final int maxCacheSize;
 
-  /// The max size file in cache
+  /// The maximum size of each individual file in bytes.
   final int maxFileSize;
 }
 
