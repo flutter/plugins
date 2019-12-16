@@ -177,6 +177,7 @@ class _VideoPlayer {
   }
 
   void setVolume(double value) {
+    videoElement.muted = false;
     videoElement.volume = value;
   }
 

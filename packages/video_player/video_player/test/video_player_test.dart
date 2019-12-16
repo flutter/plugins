@@ -4,11 +4,12 @@
 
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:video_player/video_player.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 class FakeController extends ValueNotifier<VideoPlayerValue>
@@ -25,23 +26,31 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   String get dataSource => '';
+
   @override
   DataSourceType get dataSourceType => DataSourceType.file;
+
   @override
   String get package => null;
+
   @override
   Future<Duration> get position async => value.position;
 
   @override
   Future<void> seekTo(Duration moment) async {}
+
   @override
   Future<void> setVolume(double volume) async {}
+
   @override
   Future<void> initialize() async {}
+
   @override
   Future<void> pause() async {}
+
   @override
   Future<void> play() async {}
+
   @override
   Future<void> setLooping(bool looping) async {}
 
@@ -266,6 +275,20 @@ void main() {
 
         await controller.setVolume(11);
         expect(controller.value.volume, 1.0);
+      });
+
+      test('disable mute', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        await controller.initialize();
+        await controller.setMuted(true);
+        expect(controller.value.isMuted, isTrue);
+
+        const double volume = 0.5;
+        await controller.setVolume(volume);
+
+        expect(controller.value.isMuted, isFalse);
       });
     });
 

@@ -57,7 +57,7 @@ final class VideoPlayer {
 
   private boolean isInitialized = false;
 
-  private float currentVolume;
+  private float lastMutedVolume;
 
   VideoPlayer(
       Context context,
@@ -239,10 +239,10 @@ final class VideoPlayer {
 
   void setMuted(boolean muted) {
     if (muted) {
-      currentVolume = exoPlayer.getVolume();
+      lastMutedVolume = exoPlayer.getVolume();
       exoPlayer.setVolume(0.0f);
     } else if (exoPlayer.getVolume() == 0.0) {
-      exoPlayer.setVolume(currentVolume);
+      exoPlayer.setVolume(lastMutedVolume);
     }
   }
 

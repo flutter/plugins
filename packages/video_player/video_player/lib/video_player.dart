@@ -6,11 +6,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
     show DurationRange, DataSourceType, VideoFormat;
 
@@ -254,7 +254,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           );
           initializingCompleter.complete(null);
           _applyLooping();
-          _applyVolume();
+          _applyVolume().then((_) => _applyMuted());
           _applyPlayPause();
           break;
         case VideoEventType.completed:
@@ -405,12 +405,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     value = value.copyWith(position: position);
   }
 
-  /// Sets the audio volume of [this].
+  /// Sets the audio volume of [this] and disable mute if enabled.
   ///
   /// [volume] indicates a value between 0.0 (silent) and 1.0 (full volume) on a
   /// linear scale.
   Future<void> setVolume(double volume) async {
-    value = value.copyWith(volume: volume.clamp(0.0, 1.0));
+    value = value.copyWith(volume: volume.clamp(0.0, 1.0), isMuted: false);
     await _applyVolume();
   }
 }
