@@ -10,9 +10,12 @@ import 'package:google_sign_in_platform_interface/google_sign_in_platform_interf
 
 import 'src/common.dart';
 
+export 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart'
+    show SignInOption;
 export 'src/common.dart';
 export 'widgets.dart';
 
+/// Holds authentication tokens after sign in.
 class GoogleSignInAuthentication {
   GoogleSignInAuthentication._(this._data);
 
@@ -30,6 +33,10 @@ class GoogleSignInAuthentication {
   String toString() => 'GoogleSignInAuthentication:$_data';
 }
 
+/// Holds fields describing a signed in user's identity, following
+/// [GoogleSignInUserData].
+///
+/// [id] is guaranteed to be non-null.
 class GoogleSignInAccount implements GoogleIdentity {
   GoogleSignInAccount._(this._googleSignIn, GoogleSignInUserData data)
       : displayName = data.displayName,
@@ -98,6 +105,10 @@ class GoogleSignInAccount implements GoogleIdentity {
     return GoogleSignInAuthentication._(response);
   }
 
+  /// Convenience method returning a `<String, String>` map of HTML Authorization
+  /// headers, containing the current `authentication.accessToken`.
+  ///
+  /// See also https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization.
   Future<Map<String, String>> get authHeaders async {
     final String token = (await authentication).accessToken;
     return <String, String>{

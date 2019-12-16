@@ -249,7 +249,7 @@ class IAPError {
       {@required this.source,
       @required this.code,
       @required this.message,
-      this.details = null});
+      this.details});
 
   /// Which source is the error on.
   final IAPSource source;

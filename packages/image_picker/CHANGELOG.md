@@ -1,3 +1,21 @@
+## 0.6.2+3
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.6.2+2
+* Android: Revert the image file return logic when the image doesn't have to be scaled. Fix a rotation regression caused by 0.6.2+1
+* Example App: Add a dialog to enter `maxWidth`, `maxHeight` or `quality` when picking image.
+
+## 0.6.2+1
+
+* Android: Fix a crash when a non-image file is picked.
+* Android: Fix unwanted bitmap scaling.
+
+## 0.6.2
+
+* iOS: Fixes an issue where picking content from Gallery would result in a crash on iOS 13.
+
 ## 0.6.1+11
 
 * Stability and Maintainability: update documentations, add unit tests.

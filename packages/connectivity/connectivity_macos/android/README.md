@@ -1,0 +1,1 @@
+This is a dummy project used to silence an error raised on Flutter version 1.9.1 where it looks for an android directory inside the plugin's macos directory. Once this error is fixed in new versions of Flutter, the android folder should be removed.

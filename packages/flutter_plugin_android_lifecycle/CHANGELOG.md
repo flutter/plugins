@@ -1,3 +1,8 @@
+## 1.0.3
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Require Flutter SDK 1.10.0 or greater.
+
 ## 1.0.2
 
 * Adapt to the embedding API changes in https://github.com/flutter/engine/pull/13280 (only supports Activity Lifecycle).

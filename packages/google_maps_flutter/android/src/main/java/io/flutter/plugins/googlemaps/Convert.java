@@ -332,6 +332,10 @@ class Convert {
     if (trafficEnabled != null) {
       sink.setTrafficEnabled(toBoolean(trafficEnabled));
     }
+    final Object buildingsEnabled = data.get("buildingsEnabled");
+    if (buildingsEnabled != null) {
+      sink.setBuildingsEnabled(toBoolean(buildingsEnabled));
+    }
   }
 
   /** Returns the dartMarkerId of the interpreted marker. */

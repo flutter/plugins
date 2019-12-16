@@ -445,7 +445,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       throw CameraException(e.code, e.message);
     }
 
-    _imageStreamSubscription.cancel();
+    await _imageStreamSubscription.cancel();
     _imageStreamSubscription = null;
   }
 

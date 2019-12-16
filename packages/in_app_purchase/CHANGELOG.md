@@ -1,3 +1,18 @@
+## 0.2.2+5
+
+* Update version of json_annotation to ^3.0.0 and json_serializable to ^3.2.0. Resolve conflicts with other packages e.g. flutter_tools from sdk.
+
+## 0.2.2+4
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.2.2+3
+
+* Fix failing pedantic lints. None of these fixes should have any change in
+  functionality.
+
 ## 0.2.2+2
 
 * Include lifecycle dependency as a compileOnly one on Android to resolve
