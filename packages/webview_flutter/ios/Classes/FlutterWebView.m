@@ -4,6 +4,7 @@
 
 #import "FlutterWebView.h"
 #import "FLTWKNavigationDelegate.h"
+#import "FLTWKProgressionDelegate.h"
 #import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
@@ -34,6 +35,10 @@
 
 @end
 
+@interface FLTWebViewController () <WKUIDelegate>
+
+@end
+
 @implementation FLTWebViewController {
   WKWebView* _webView;
   int64_t _viewId;
@@ -42,6 +47,7 @@
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
   FLTWKNavigationDelegate* _navigationDelegate;
+  FLTWKProgressionDelegate* _progressionDelegate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -72,6 +78,7 @@
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.navigationDelegate = _navigationDelegate;
+    _webView.UIDelegate = self;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
@@ -87,6 +94,12 @@
     }
   }
   return self;
+}
+
+- (void)dealloc {
+  if (_progressionDelegate != nil) {
+    [_progressionDelegate stopObservingProgress:_webView];
+  }
 }
 
 - (UIView*)view {
@@ -120,6 +133,8 @@
     [self clearCache:result];
   } else if ([[call method] isEqualToString:@"getTitle"]) {
     [self onGetTitle:result];
+  } else if ([[call method] isEqualToString:@"takeScreenshot"]) {
+    [self takeScreenshot:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -245,6 +260,18 @@
   result(title);
 }
 
+- (void) takeScreenshot:(FlutterResult)result {
+  if (_webView != nil) {
+    //UIGraphicsBeginImageContext(_webView.bounds.size);
+    UIGraphicsBeginImageContextWithOptions(_webView.bounds.size, NO, 0);
+    [_webView.layer renderInContext: UIGraphicsGetCurrentContext()];
+    UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    NSData* data = UIImagePNGRepresentation(image);
+    result([FlutterStandardTypedData typedDataWithBytes:data]);
+  }
+}
+
 // Returns nil when successful, or an error message when one or more keys are unknown.
 - (NSString*)applySettings:(NSDictionary<NSString*, id>*)settings {
   NSMutableArray<NSString*>* unknownKeys = [[NSMutableArray alloc] init];
@@ -255,6 +282,12 @@
     } else if ([key isEqualToString:@"hasNavigationDelegate"]) {
       NSNumber* hasDartNavigationDelegate = settings[key];
       _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
+    } else if ([key isEqualToString:@"hasProgressTracking"]) {
+      NSNumber* hasProgressTrackingValue = settings[key];
+      bool hasProgressTracking = [hasProgressTrackingValue boolValue];
+      if (hasProgressTracking) {
+        _progressionDelegate = [[FLTWKProgressionDelegate alloc] initWithWebView:_webView channel:_channel];
+      }
     } else if ([key isEqualToString:@"debuggingEnabled"]) {
       // no-op debugging is always enabled on iOS.
     } else if ([key isEqualToString:@"gestureNavigationEnabled"]) {
@@ -367,6 +400,20 @@
   } else {
     NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
   }
+}
+
+// Added to allow for all iframe links / ads to ask the navigationdelegate for rejection or
+// acceptance
+- (WKWebView*)webView:(WKWebView*)webView
+    createWebViewWithConfiguration:(WKWebViewConfiguration*)configuration
+               forNavigationAction:(WKNavigationAction*)navigationAction
+                    windowFeatures:(WKWindowFeatures*)windowFeatures {
+  if (!navigationAction.targetFrame.isMainFrame) {
+    // ...
+    [webView loadRequest:navigationAction.request];
+  }
+
+  return nil;
 }
 
 @end
