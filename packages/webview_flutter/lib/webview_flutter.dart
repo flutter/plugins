@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -79,6 +80,14 @@ typedef void PageStartedCallback(String url);
 /// Signature for when a [WebView] has finished loading a page.
 typedef void PageFinishedCallback(String url);
 
+/// Signature for when a [WebView] receive a error.
+/// Code may be NSURLErrorDomain code or const from Android WebViewClient or http status code.
+/// Description is optional
+typedef void PageReceiveErrorCallback(String url, int code, String description);
+
+/// Signature for when a [WebView] is loading a page.
+typedef void PageLoadingCallback(int progress);
+
 /// Specifies possible restrictions on automatic media playback.
 ///
 /// This is typically used in [WebView.initialMediaPlaybackPolicy].
@@ -147,6 +156,8 @@ class WebView extends StatefulWidget {
     this.gestureRecognizers,
     this.onPageStarted,
     this.onPageFinished,
+    this.onPageReceiveError,
+    this.onProgress,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
@@ -277,6 +288,12 @@ class WebView extends StatefulWidget {
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
 
+  /// Invoked when a page is error.
+  final PageReceiveErrorCallback onPageReceiveError;
+
+  /// Invoked when a page is loading.
+  final PageLoadingCallback onProgress;
+
   /// Controls whether WebView debugging is enabled.
   ///
   /// Setting this to true enables [WebView debugging on Android](https://developers.google.com/web/tools/chrome-devtools/remote-debugging/).
@@ -390,6 +407,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
   return WebSettings(
     javascriptMode: widget.javascriptMode,
     hasNavigationDelegate: widget.navigationDelegate != null,
+    hasProgressTracking: widget.onProgress != null,
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     userAgent: WebSetting<String>.of(widget.userAgent),
@@ -401,6 +419,7 @@ WebSettings _clearUnchangedWebSettings(
     WebSettings currentValue, WebSettings newValue) {
   assert(currentValue.javascriptMode != null);
   assert(currentValue.hasNavigationDelegate != null);
+  assert(currentValue.hasProgressTracking != null);
   assert(currentValue.debuggingEnabled != null);
   assert(currentValue.userAgent.isPresent);
   assert(newValue.javascriptMode != null);
@@ -410,6 +429,7 @@ WebSettings _clearUnchangedWebSettings(
 
   JavascriptMode javascriptMode;
   bool hasNavigationDelegate;
+  bool hasProgressTracking;
   bool debuggingEnabled;
   WebSetting<String> userAgent = WebSetting<String>.absent();
   if (currentValue.javascriptMode != newValue.javascriptMode) {
@@ -417,6 +437,9 @@ WebSettings _clearUnchangedWebSettings(
   }
   if (currentValue.hasNavigationDelegate != newValue.hasNavigationDelegate) {
     hasNavigationDelegate = newValue.hasNavigationDelegate;
+  }
+  if (currentValue.hasProgressTracking != newValue.hasProgressTracking) {
+    hasProgressTracking = newValue.hasProgressTracking;
   }
   if (currentValue.debuggingEnabled != newValue.debuggingEnabled) {
     debuggingEnabled = newValue.debuggingEnabled;
@@ -428,6 +451,7 @@ WebSettings _clearUnchangedWebSettings(
   return WebSettings(
     javascriptMode: javascriptMode,
     hasNavigationDelegate: hasNavigationDelegate,
+    hasProgressTracking: hasProgressTracking,
     debuggingEnabled: debuggingEnabled,
     userAgent: userAgent,
   );
@@ -479,6 +503,20 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   void onPageFinished(String url) {
     if (_widget.onPageFinished != null) {
       _widget.onPageFinished(url);
+    }
+  }
+
+  @override
+  void onPageReceiveError({String url, int code, String description}) {
+    if (_widget.onPageReceiveError != null) {
+      _widget.onPageReceiveError(url, code, description);
+    }
+  }
+
+  @override
+  void onProgress(int progress) {
+    if (_widget.onProgress != null) {
+      _widget.onProgress(progress);
     }
   }
 
@@ -659,6 +697,10 @@ class WebViewController {
   Future<String> getTitle() {
     return _webViewPlatformController.getTitle();
   }
+
+  // Takes screenshot of the current webview
+  Future<Uint8List> takeScreenshot() async =>
+      await _webViewPlatformController.takeScreenshot();
 }
 
 /// Manages cookies pertaining to all [WebView]s.

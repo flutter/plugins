@@ -10,7 +10,9 @@ import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebStorage;
+import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -157,6 +159,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "getTitle":
         getTitle(result);
         break;
+      case "takeScreenshot":
+        takeScreenshot(result);
       default:
         result.notImplemented();
     }
@@ -253,6 +257,30 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(webView.getTitle());
   }
 
+  private void takeScreenshot(Result result) {
+    if (webView != null) {
+      float scale = webView.getScale();
+      int height = (int) (webView.getContentHeight() * scale + 0.5);
+      Bitmap bitmap = Bitmap.createBitmap(webView.getWidth(), height, Bitmap.Config.ARGB_8888);
+      Canvas canvas = new Canvas(bitmap);
+      webView.draw(canvas);
+
+      // prevent IllegalArgumentException for createBitmap:
+      // y + height must be <= bitmap.height()
+      int scrollOffset = (webView.getScrollY() + webView.getMeasuredHeight() > bitmap.getHeight())
+          ? bitmap.getHeight() : webView.getScrollY();
+      // Crop visible content
+      Bitmap resized = Bitmap.createBitmap(
+          bitmap, 0, scrollOffset, bitmap.getWidth(), webView.getMeasuredHeight());
+
+      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+      resized.compress(Bitmap.CompressFormat.PNG, 100, stream);
+      byte[] byteArray = stream.toByteArray();
+      resized.recycle();
+      result.success(byteArray);
+    }
+  }
+
   private void applySettings(Map<String, Object> settings) {
     for (String key : settings.keySet()) {
       switch (key) {
@@ -273,6 +301,17 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           webView.setWebContentsDebuggingEnabled(debuggingEnabled);
           break;
         case "gestureNavigationEnabled":
+          break;
+        case "hasProgressTracking":
+          final boolean progressTrackingEnabled = (boolean) settings.get(key);
+          if (progressTrackingEnabled) {
+            webView.setWebChromeClient(
+                new WebChromeClient() {
+                  public void onProgressChanged(WebView view, int progress) {
+                    flutterWebViewClient.onLoadingProgress(progress);
+                  }
+                });
+          }
           break;
         case "userAgent":
           updateUserAgent((String) settings.get(key));

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 
@@ -39,6 +40,15 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         );
       case 'onPageFinished':
         _platformCallbacksHandler.onPageFinished(call.arguments['url']);
+        return null;
+      case 'onPageReceiveError':
+        _platformCallbacksHandler.onPageReceiveError(
+            url: call.arguments['url'],
+            code: call.arguments['code'],
+            description: call.arguments['description']);
+        return null;
+      case 'onProgress':
+        _platformCallbacksHandler.onProgress(call.arguments['progress']);
         return null;
       case 'onPageStarted':
         _platformCallbacksHandler.onPageStarted(call.arguments['url']);
@@ -111,6 +121,10 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   @override
   Future<String> getTitle() => _channel.invokeMethod<String>("getTitle");
 
+  @override
+  Future<Uint8List> takeScreenshot() =>
+      _channel.invokeMethod<Uint8List>("takeScreenshot");
+
   /// Method channel implementation for [WebViewPlatform.clearCookies].
   static Future<bool> clearCookies() {
     return _cookieManagerChannel
@@ -136,6 +150,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
 
     _addIfNonNull('jsMode', settings.javascriptMode?.index);
     _addIfNonNull('hasNavigationDelegate', settings.hasNavigationDelegate);
+    _addIfNonNull('hasProgressTracking', settings.hasProgressTracking);
     _addIfNonNull('debuggingEnabled', settings.debuggingEnabled);
     _addIfNonNull(
         'gestureNavigationEnabled', settings.gestureNavigationEnabled);

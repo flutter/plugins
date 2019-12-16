@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -28,6 +29,12 @@ abstract class WebViewPlatformCallbacksHandler {
 
   /// Invoked by [WebViewPlatformController] when a page has finished loading.
   void onPageFinished(String url);
+
+  /// Invoked by [WebViewPlatformController] when a page has Receive Error.
+  void onPageReceiveError({String url, int code, String description});
+
+  /// Invoked by [WebViewPlatformController] when a page is loading.
+  void onProgress(int progress);
 }
 
 /// Interface for talking to the webview's platform implementation.
@@ -167,6 +174,12 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView getTitle is not implemented on the current platform");
   }
+
+  // Takes screenshot of the current webview
+  Future<Uint8List> takeScreenshot() {
+    throw UnimplementedError(
+        "WebView takeScreenshot is not implemented on the current platform");
+  }
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.
@@ -230,6 +243,7 @@ class WebSettings {
   WebSettings({
     this.javascriptMode,
     this.hasNavigationDelegate,
+    this.hasProgressTracking,
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
     @required this.userAgent,
@@ -240,6 +254,9 @@ class WebSettings {
 
   /// Whether the [WebView] has a [NavigationDelegate] set.
   final bool hasNavigationDelegate;
+
+  /// Whether the [WebView] should track page loading progress.
+  final bool hasProgressTracking;
 
   /// Whether to enable the platform's webview content debugging tools.
   ///
