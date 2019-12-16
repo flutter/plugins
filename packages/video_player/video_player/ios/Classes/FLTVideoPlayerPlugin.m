@@ -352,18 +352,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)setVolume:(double)volume {
   _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
-  [self setMuted:[false]]
+  [self setMuted:false];
 }
 
 - (void)setMuted:(bool)isMuted {
   [_player setMuted:isMuted];
-  if (isMuted) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
-                                     withOptions:AVAudioSessionCategoryOptionMixWithOthers
-                                           error:nil];
-  } else {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-  }
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
