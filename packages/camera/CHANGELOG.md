@@ -1,3 +1,7 @@
+## 0.5.7+3
+
+* Fixed garbled audio (in video) by setting audio encoding bitrate.
+
 ## 0.5.7+2
 
 * Remove the deprecated `author:` field from pubspec.yaml
