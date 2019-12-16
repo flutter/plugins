@@ -27,6 +27,7 @@ part 'sk_payment_queue_wrapper.g.dart';
 class SKPaymentQueueWrapper {
   SKTransactionObserverWrapper _observer;
   bool _initialized = false;
+
   /// Returns the default payment queue.
   ///
   /// We do not support instantiating a custom payment queue, hence the
