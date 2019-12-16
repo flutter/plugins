@@ -1,16 +1,3 @@
-def PLUGIN = "google_maps_flutter";
-def ANDROIDX_WARNING = "flutterPluginsAndroidXWarning";
-gradle.buildFinished { buildResult ->
-    if (buildResult.failure && !rootProject.ext.has(ANDROIDX_WARNING)) {
-        println '         *********************************************************'
-        println 'WARNING: This version of ' + PLUGIN + ' will break your Android build if it or its dependencies aren\'t compatible with AndroidX.'
-        println '         See https://goo.gl/CP92wY for more information on the problem and how to fix it.'
-        println '         This warning prints for all Android build failures. The real root cause of the error may be unrelated.'
-        println '         *********************************************************'
-        rootProject.ext.set(ANDROIDX_WARNING, true);
-    }
-}
-
 group 'io.flutter.plugins.googlemaps'
 version '1.0-SNAPSHOT'
 
@@ -47,5 +34,31 @@ android {
 
     dependencies {
         implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    }
+}
+
+// TODO(cyanglaz): Remove this hack once androidx.lifecycle is included on stable. https://github.com/flutter/flutter/issues/42348
+afterEvaluate {
+    def containsEmbeddingDependencies = false
+    for (def configuration : configurations.all) {
+        for (def dependency : configuration.dependencies) {
+            if (dependency.group == 'io.flutter' &&
+                dependency.name.startsWith('flutter_embedding') &&
+                dependency.isTransitive())
+            {
+                containsEmbeddingDependencies = true
+                break
+            }
+        }
+    }
+    if (!containsEmbeddingDependencies) {
+        android {
+            dependencies {
+                def lifecycle_version = "1.1.1"
+                compileOnly "android.arch.lifecycle:runtime:$lifecycle_version"
+                compileOnly "android.arch.lifecycle:common:$lifecycle_version"
+                compileOnly "android.arch.lifecycle:common-java8:$lifecycle_version"
+            }
+        }
     }
 }

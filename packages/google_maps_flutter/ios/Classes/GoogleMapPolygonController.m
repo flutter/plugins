@@ -70,17 +70,17 @@ static UIColor* ToColor(NSNumber* data) { return [FLTGoogleMapJsonConversions to
 static void InterpretPolygonOptions(NSDictionary* data, id<FLTGoogleMapPolygonOptionsSink> sink,
                                     NSObject<FlutterPluginRegistrar>* registrar) {
   NSNumber* consumeTapEvents = data[@"consumeTapEvents"];
-  if (consumeTapEvents) {
+  if (consumeTapEvents != nil) {
     [sink setConsumeTapEvents:ToBool(consumeTapEvents)];
   }
 
   NSNumber* visible = data[@"visible"];
-  if (visible) {
+  if (visible != nil) {
     [sink setVisible:ToBool(visible)];
   }
 
   NSNumber* zIndex = data[@"zIndex"];
-  if (zIndex) {
+  if (zIndex != nil) {
     [sink setZIndex:ToInt(zIndex)];
   }
 
@@ -90,17 +90,17 @@ static void InterpretPolygonOptions(NSDictionary* data, id<FLTGoogleMapPolygonOp
   }
 
   NSNumber* fillColor = data[@"fillColor"];
-  if (fillColor) {
+  if (fillColor != nil) {
     [sink setFillColor:ToColor(fillColor)];
   }
 
   NSNumber* strokeColor = data[@"strokeColor"];
-  if (strokeColor) {
+  if (strokeColor != nil) {
     [sink setStrokeColor:ToColor(strokeColor)];
   }
 
   NSNumber* strokeWidth = data[@"strokeWidth"];
-  if (strokeWidth) {
+  if (strokeWidth != nil) {
     [sink setStrokeWidth:ToInt(strokeWidth)];
   }
 }

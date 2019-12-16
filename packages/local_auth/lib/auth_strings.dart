@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This is a temporary ignore to allow us to land a new set of linter rules in a
+// series of manageable patches instead of one gigantic PR. It disables some of
+// the new lints that are already failing on this plugin, for this plugin. It
+// should be deleted and the failing lints addressed as soon as possible.
+// ignore_for_file: public_member_api_docs
+
 import 'package:intl/intl.dart';
 
 /// Android side authentication messages.

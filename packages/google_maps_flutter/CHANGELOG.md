@@ -1,3 +1,42 @@
+## 0.5.21+15
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.5.21+14
+
+* Adds support for toggling 3D buildings.
+
+## 0.5.21+13
+
+* Add documentation.
+
+## 0.5.21+12
+
+* Update driver tests in the example app to e2e tests.
+
+## 0.5.21+11
+
+* Define clang module for iOS, fix analyzer warnings.
+
+## 0.5.21+10
+
+* Cast error.code to unsigned long to avoid using NSInteger as %ld format warnings.
+
+## 0.5.21+9
+
+* Remove AndroidX warnings.
+
+## 0.5.21+8
+
+* Add NS_ASSUME_NONNULL_* macro to reduce iOS compiler warnings.
+
+## 0.5.21+7
+
+* Create a clone of cached elements in GoogleMap (Polyline, Polygon, etc.) to detect modifications
+  if these objects are mutated instead of modified by copy.
+
 ## 0.5.21+6
 
 * Override a default method to work around flutter/flutter#40126.

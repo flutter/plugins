@@ -49,6 +49,8 @@ class FakePlatformGoogleMap {
 
   bool trafficEnabled;
 
+  bool buildingsEnabled;
+
   bool myLocationButtonEnabled;
 
   List<dynamic> padding;
@@ -195,15 +197,23 @@ class FakePlatformGoogleMap {
       final String polygonId = polygonData['polygonId'];
       final bool visible = polygonData['visible'];
       final bool geodesic = polygonData['geodesic'];
+      final List<LatLng> points = _deserializePoints(polygonData['points']);
 
       result.add(Polygon(
         polygonId: PolygonId(polygonId),
         visible: visible,
         geodesic: geodesic,
+        points: points,
       ));
     }
 
     return result;
+  }
+
+  List<LatLng> _deserializePoints(List<dynamic> points) {
+    return points.map<LatLng>((dynamic list) {
+      return LatLng(list[0], list[1]);
+    }).toList();
   }
 
   void updatePolylines(Map<dynamic, dynamic> polylineUpdates) {
@@ -245,11 +255,13 @@ class FakePlatformGoogleMap {
       final String polylineId = polylineData['polylineId'];
       final bool visible = polylineData['visible'];
       final bool geodesic = polylineData['geodesic'];
+      final List<LatLng> points = _deserializePoints(polylineData['points']);
 
       result.add(Polyline(
         polylineId: PolylineId(polylineId),
         visible: visible,
         geodesic: geodesic,
+        points: points,
       ));
     }
 
@@ -347,6 +359,9 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('trafficEnabled')) {
       trafficEnabled = options['trafficEnabled'];
+    }
+    if (options.containsKey('buildingsEnabled')) {
+      buildingsEnabled = options['buildingsEnabled'];
     }
     if (options.containsKey('padding')) {
       padding = options['padding'];
