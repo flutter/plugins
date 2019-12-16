@@ -43,7 +43,7 @@ class SKPaymentQueueWrapper {
 
   static final SKPaymentQueueWrapper _singleton = SKPaymentQueueWrapper._();
 
-  SKPaymentQueueWrapper._() {}
+  SKPaymentQueueWrapper._();
 
   _init() {
     callbackChannel.setMethodCallHandler(_handleObserverCallbacks);
