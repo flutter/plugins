@@ -320,8 +320,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _applyLooping();
   }
 
-  /// Sets whether or not video should be muted. See also
-  /// [VideoPlayerValue.isMuted].
+  /// Sets whether or not video should be muted.
+  ///
+  /// This method doesn't affect volume value.
+  ///
+  /// See also [VideoPlayerValue.isMuted].
   Future<void> setMuted(bool muted) async {
     value = value.copyWith(isMuted: muted);
     await _applyMuted();

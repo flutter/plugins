@@ -96,6 +96,8 @@ abstract class VideoPlayerPlatform {
   }
 
   /// Sets the muted attribute of the video.
+  ///
+  /// This method shouldn't affect volume value.
   Future<void> setMuted(int textureId, bool muted) {
     throw UnimplementedError('setMuted() has no been implemented.');
   }
