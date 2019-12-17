@@ -5,8 +5,8 @@
 package io.flutter.plugins.webviewflutterexample;
 
 import android.os.Bundle;
-import io.flutter.app.FlutterActivity;
 import dev.flutter.plugins.e2e.E2EPlugin;
+import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.webviewflutter.WebViewFlutterPlugin;
 
 public class EmbeddingV1Activity extends FlutterActivity {
@@ -14,6 +14,7 @@ public class EmbeddingV1Activity extends FlutterActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     E2EPlugin.registerWith(registrarFor("dev.flutter.plugins.e2e.E2EPlugin"));
-    WebViewFlutterPlugin.registerWith(registrarFor("io.flutter.plugins.webviewflutter.WebViewFlutterPlugin"));
+    WebViewFlutterPlugin.registerWith(
+        registrarFor("io.flutter.plugins.webviewflutter.WebViewFlutterPlugin"));
   }
 }
