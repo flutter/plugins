@@ -12,5 +12,6 @@ import org.junit.runner.RunWith;
 
 @RunWith(FlutterRunner.class)
 public class FlutterActivityTest {
-  @Rule public ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(FlutterActivity.class);
+  @Rule
+  public ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(FlutterActivity.class);
 }
