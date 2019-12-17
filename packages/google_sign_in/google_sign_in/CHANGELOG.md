@@ -1,3 +1,7 @@
+## 4.1.1
+
+* Support passing `clientId` to the web plugin programmatically.
+
 ## 4.1.0
 
 * Support web by default.
