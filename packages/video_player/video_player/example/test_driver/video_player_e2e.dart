@@ -62,5 +62,28 @@ void main() {
       expect(_controller.value.isPlaying, false);
       expect(_controller.value.position, pausedPosition);
     }, skip: Platform.isIOS);
+
+    testWidgets('can be muted and unmuted', (WidgetTester tester) async {
+      await _controller.initialize();
+
+      // check init volume
+      expect(_controller.value.volume, equals(1.0));
+
+      // Play for a second with sound,
+      await _controller.play();
+      await tester.pumpAndSettle(_playDuration);
+
+      // then mute, and then play for a second without sound,
+      await _controller.setMuted(true);
+      await tester.pumpAndSettle(_playDuration);
+
+      // then unmute and play for a second with sound again.
+      await _controller.setMuted(false);
+      await tester.pumpAndSettle(_playDuration);
+
+      // Verify that mute disabled and volume is
+      expect(_controller.value.isMuted, isFalse);
+      expect(_controller.value.volume, equals(1.0));
+    }, skip: Platform.isIOS);
   });
 }
