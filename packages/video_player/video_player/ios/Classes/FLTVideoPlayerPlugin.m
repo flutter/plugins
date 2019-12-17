@@ -493,7 +493,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
     NSString* assetArg = argsMap[@"asset"];
     NSString* uriArg = argsMap[@"uri"];
-    bool useCache = [argsMap[@"useCache"] boolValue];
     FLTVideoPlayer* player;
     if (assetArg) {
       NSString* assetPath;
@@ -506,6 +505,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else if (uriArg) {
+      BOOL useCache = [argsMap[@"useCache"] boolValue];
       BOOL enableCache = _maxCacheSize > 0 && _maxCacheFileSize > 0 && useCache;
       if (enableCache) {
         NSString* escapedURL = [uriArg
