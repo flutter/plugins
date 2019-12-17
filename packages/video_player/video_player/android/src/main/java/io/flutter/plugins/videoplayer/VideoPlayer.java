@@ -39,7 +39,6 @@ import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.view.TextureRegistry;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -94,7 +93,7 @@ final class VideoPlayer {
               true);
       if (useCache && maxCacheSize > 0 && maxCacheFileSize > 0) {
         dataSourceFactory =
-                new CacheDataSourceFactory(context, maxCacheSize, maxCacheFileSize, dataSourceFactory);
+            new CacheDataSourceFactory(context, maxCacheSize, maxCacheFileSize, dataSourceFactory);
       }
     } else {
       dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
@@ -303,14 +302,17 @@ final class VideoPlayer {
     private static SimpleCache downloadCache;
 
     CacheDataSourceFactory(
-            Context context, long maxCacheSize, long maxFileSize, DataSource.Factory upstreamDataSource) {
+        Context context,
+        long maxCacheSize,
+        long maxFileSize,
+        DataSource.Factory upstreamDataSource) {
       super();
       this.context = context;
       this.maxCacheSize = maxCacheSize;
       this.maxFileSize = maxFileSize;
       DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
       defaultDatasourceFactory =
-              new DefaultDataSourceFactory(this.context, bandwidthMeter, upstreamDataSource);
+          new DefaultDataSourceFactory(this.context, bandwidthMeter, upstreamDataSource);
     }
 
     @Override
@@ -322,12 +324,12 @@ final class VideoPlayer {
       }
 
       return new CacheDataSource(
-              downloadCache,
-              defaultDatasourceFactory.createDataSource(),
-              new FileDataSource(),
-              new CacheDataSink(downloadCache, maxFileSize),
-              CacheDataSource.FLAG_BLOCK_ON_CACHE | CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR,
-              null);
+          downloadCache,
+          defaultDatasourceFactory.createDataSource(),
+          new FileDataSource(),
+          new CacheDataSink(downloadCache, maxFileSize),
+          CacheDataSource.FLAG_BLOCK_ON_CACHE | CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR,
+          null);
     }
   }
 }

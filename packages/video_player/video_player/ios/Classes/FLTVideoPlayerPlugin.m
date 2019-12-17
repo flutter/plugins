@@ -435,6 +435,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 @property(readonly, nonatomic) NSObject<FlutterBinaryMessenger>* messenger;
 @property(readonly, nonatomic) NSMutableDictionary* players;
 @property(readonly, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
+@property(readonly, nonatomic) long maxCacheSize;
+@property(readonly, nonatomic) long maxFileSize;
 
 @end
 
@@ -482,14 +484,16 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       [_players[textureId] dispose];
     }
     [_players removeAllObjects];
+    NSDictionary* argsMap = call.arguments;
+    _maxCacheSize = ((NSNumber*)argsMap[@"maxCacheSize"]).longValue;
+    _maxFileSize = ((NSNumber*)argsMap[@"maxFileSize"]).longValue;
     result(nil);
   } else if ([@"create" isEqualToString:call.method]) {
     NSDictionary* argsMap = call.arguments;
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
     NSString* assetArg = argsMap[@"asset"];
     NSString* uriArg = argsMap[@"uri"];
-    long maxCacheSizeArg = ((NSNumber*)argsMap[@"maxCacheSize"]).longValue;
-    long maxFileSizeArg = ((NSNumber*)argsMap[@"maxFileSize"]).longValue;
+    bool useCache = [argsMap[@"useCache"] boolValue];
     FLTVideoPlayer* player;
     if (assetArg) {
       NSString* assetPath;
@@ -502,7 +506,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else if (uriArg) {
-      BOOL enableCache = maxCacheSizeArg > 0 && maxFileSizeArg > 0;
+      BOOL enableCache = _maxCacheSize > 0 && _maxFileSize > 0 && useCache;
 
       if (enableCache) {
         NSString* escapedURL = [uriArg
@@ -520,7 +524,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     } else {
       result(FlutterMethodNotImplemented);
     }
-
   } else {
     NSDictionary* argsMap = call.arguments;
     int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;
