@@ -60,8 +60,7 @@
 
 ## 0.6.1
 
-* New feature : Get images with custom quality. While picking images, user can pass `imageQuality`
-  parameter to compress image.
+* New feature : Get images with custom quality. While picking images, user can pass `imageQuality` parameter to compress image.
 
 ## 0.6.0+20
 
