@@ -24,6 +24,9 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
   private final LongSparseArray<VideoPlayer> videoPlayers = new LongSparseArray<>();
   private FlutterState flutterState;
 
+  private int maxCacheSize;
+  private int maxCacheFileSize;
+
   /** Register this with the v2 embedding for the plugin to respond to lifecycle callbacks. */
   public VideoPlayerPlugin() {}
 
@@ -93,7 +96,10 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
     }
     switch (call.method) {
       case "init":
+        maxCacheSize = call.argument("maxCacheSize");
+        maxCacheFileSize = call.argument("maxCacheFileSize");
         disposeAllPlayers();
+        result.success(null);
         break;
       case "create":
         {
@@ -102,18 +108,6 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
           EventChannel eventChannel =
               new EventChannel(
                   flutterState.binaryMessenger, "flutter.io/videoPlayer/videoEvents" + handle.id());
-
-          int maxCacheSize, maxFileSize;
-          if (call.argument("maxCacheSize") == null) {
-            maxCacheSize = (100 * 1024 * 1024); // default to 100 MiB for the entire cache
-          } else {
-            maxCacheSize = call.argument("maxCacheSize");
-          }
-          if (call.argument("maxFileSize") == null) {
-            maxFileSize = (10 * 1024 * 1024); // default to 10 MiB per file
-          } else {
-            maxFileSize = call.argument("maxFileSize");
-          }
 
           VideoPlayer player;
           if (call.argument("asset") != null) {
@@ -131,10 +125,11 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
                     eventChannel,
                     handle,
                     "asset:///" + assetLookupKey,
-                    result,
                     null,
                     maxCacheSize,
-                    maxFileSize);
+                    maxCacheFileSize,
+                    false,
+                    result);
           } else {
             player =
                 new VideoPlayer(
@@ -142,10 +137,11 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
                     eventChannel,
                     handle,
                     call.argument("uri"),
-                    result,
                     call.argument("formatHint"),
                     maxCacheSize,
-                    maxFileSize);
+                    maxCacheFileSize,
+                    call.argument("useCache"),
+                    result);
           }
           videoPlayers.put(handle.id(), player);
           break;

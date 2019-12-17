@@ -4,10 +4,9 @@
 
 import 'dart:ui';
 
-import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:mockito/mockito.dart';
 import 'package:video_player_platform_interface/method_channel_video_player.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
@@ -54,10 +53,15 @@ void main() {
     });
 
     test('init', () async {
-      await player.init();
+      await player.init(100, 10);
       expect(
         log,
-        <Matcher>[isMethodCall('init', arguments: null)],
+        <Matcher>[
+          isMethodCall('init', arguments: <String, Object>{
+            'maxCacheSize': 100,
+            'maxCacheFileSize': 10,
+          })
+        ],
       );
     });
 
@@ -110,11 +114,117 @@ void main() {
         <Matcher>[
           isMethodCall('create', arguments: <String, Object>{
             'uri': 'someUri',
-            'formatHint': 'dash'
+            'formatHint': 'dash',
+            'useCache': false,
           })
         ],
       );
       expect(textureId, 3);
+    });
+
+    group('create with network', () {
+      test('with cache', () async {
+        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return <String, dynamic>{'textureId': 3};
+        });
+        final int textureId = await player.create(
+          DataSource(
+            sourceType: DataSourceType.network,
+            uri: 'someUri',
+            useCache: true,
+          ),
+        );
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('create', arguments: <String, Object>{
+              'uri': 'someUri',
+              'formatHint': null,
+              'useCache': true,
+            })
+          ],
+        );
+        expect(textureId, 3);
+      });
+
+      test('without cache', () async {
+        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return <String, dynamic>{'textureId': 3};
+        });
+        final int textureId = await player.create(
+          DataSource(
+            sourceType: DataSourceType.network,
+            uri: 'someUri',
+            useCache: false,
+          ),
+        );
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('create', arguments: <String, Object>{
+              'uri': 'someUri',
+              'formatHint': null,
+              'useCache': false,
+            })
+          ],
+        );
+        expect(textureId, 3);
+      });
+
+      test('without cache by default', () async {
+        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return <String, dynamic>{'textureId': 3};
+        });
+        final int textureId = await player.create(
+          DataSource(
+            sourceType: DataSourceType.network,
+            uri: 'someUri',
+          ),
+        );
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('create', arguments: <String, Object>{
+              'uri': 'someUri',
+              'formatHint': null,
+              'useCache': false,
+            })
+          ],
+        );
+        expect(textureId, 3);
+      });
+
+      test('with hint', () async {
+        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return <String, dynamic>{'textureId': 3};
+        });
+        final int textureId = await player.create(
+          DataSource(
+            sourceType: DataSourceType.network,
+            uri: 'someUri',
+            formatHint: VideoFormat.dash,
+          ),
+        );
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('create', arguments: <String, Object>{
+              'uri': 'someUri',
+              'formatHint': 'dash',
+              'useCache': false,
+            })
+          ],
+        );
+        expect(textureId, 3);
+      });
     });
 
     test('create with file', () async {

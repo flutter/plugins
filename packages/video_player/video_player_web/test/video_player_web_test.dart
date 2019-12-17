@@ -30,7 +30,7 @@ void main() {
     });
 
     test('can init', () {
-      expect(VideoPlayerPlatform.instance.init(), completes);
+      expect(VideoPlayerPlatform.instance.init(100, 10), completes);
     });
 
     test('can create from network', () {

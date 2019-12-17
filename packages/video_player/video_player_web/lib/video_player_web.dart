@@ -20,7 +20,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   int _textureCounter = 1;
 
   @override
-  Future<void> init() async {
+  Future<void> init(int maxCacheSize, int maxCacheFileSize) async {
     return _disposeAllPlayers();
   }
 

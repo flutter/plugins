@@ -70,10 +70,11 @@ final class VideoPlayer {
       EventChannel eventChannel,
       TextureRegistry.SurfaceTextureEntry textureEntry,
       String dataSource,
-      Result result,
       String formatHint,
       int maxCacheSize,
-      int maxFileSize) {
+      int maxCacheFileSize,
+      boolean useCache,
+      Result result) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
 
@@ -91,9 +92,9 @@ final class VideoPlayer {
               DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
               DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
               true);
-      if (maxCacheSize > 0 && maxFileSize > 0) {
+      if (useCache && maxCacheSize > 0 && maxCacheFileSize > 0) {
         dataSourceFactory =
-                new CacheDataSourceFactory(context, maxCacheSize, maxFileSize, dataSourceFactory);
+                new CacheDataSourceFactory(context, maxCacheSize, maxCacheFileSize, dataSourceFactory);
       }
     } else {
       dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
