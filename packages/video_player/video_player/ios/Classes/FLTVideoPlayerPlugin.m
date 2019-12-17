@@ -436,7 +436,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 @property(readonly, nonatomic) NSMutableDictionary* players;
 @property(readonly, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
 @property(readonly, nonatomic) long maxCacheSize;
-@property(readonly, nonatomic) long maxFileSize;
+@property(readonly, nonatomic) long maxCacheFileSize;
 
 @end
 
@@ -486,7 +486,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [_players removeAllObjects];
     NSDictionary* argsMap = call.arguments;
     _maxCacheSize = ((NSNumber*)argsMap[@"maxCacheSize"]).longValue;
-    _maxFileSize = ((NSNumber*)argsMap[@"maxFileSize"]).longValue;
+    _maxCacheFileSize = ((NSNumber*)argsMap[@"maxCacheFileSize"]).longValue;
     result(nil);
   } else if ([@"create" isEqualToString:call.method]) {
     NSDictionary* argsMap = call.arguments;
@@ -506,8 +506,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else if (uriArg) {
-      BOOL enableCache = _maxCacheSize > 0 && _maxFileSize > 0 && useCache;
-
+      BOOL enableCache = _maxCacheSize > 0 && _maxCacheFileSize > 0 && useCache;
       if (enableCache) {
         NSString* escapedURL = [uriArg
             stringByAddingPercentEncodingWithAllowedCharacters:NSMutableCharacterSet
