@@ -254,7 +254,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           );
           initializingCompleter.complete(null);
           _applyLooping();
-          _applyVolume().then((_) => _applyMuted());
+          _applyVolume();
+          _applyMuted();
           _applyPlayPause();
           break;
         case VideoEventType.completed:
