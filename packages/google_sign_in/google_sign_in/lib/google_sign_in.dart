@@ -165,6 +165,7 @@ class GoogleSignIn {
     this.signInOption = SignInOption.standard,
     this.scopes = const <String>[],
     this.hostedDomain,
+    this.clientId,
   });
 
   /// Factory for creating default sign in user experience.
@@ -210,6 +211,9 @@ class GoogleSignIn {
   /// Domain to restrict sign-in to.
   final String hostedDomain;
 
+  /// Client ID being used to connect to google sign-in. Only supported on web.
+  final String clientId;
+
   StreamController<GoogleSignInAccount> _currentUserController =
       StreamController<GoogleSignInAccount>.broadcast();
 
@@ -243,6 +247,7 @@ class GoogleSignIn {
       signInOption: signInOption,
       scopes: scopes,
       hostedDomain: hostedDomain,
+      clientId: clientId,
     )..catchError((dynamic _) {
         // Invalidate initialization if it errors out.
         _initialization = null;
