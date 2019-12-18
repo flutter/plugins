@@ -1,3 +1,7 @@
+## 0.6.3
+
+* place holder
+
 ## 0.6.2+3
 * Remove the deprecated `author:` field from pubspec.yaml
 * Migrate the plugin to the pubspec platforms manifest.
