@@ -1,3 +1,9 @@
+## 0.3.19+1
+
+* Raise min Flutter SDK requirement to the latest stable. v2 embedding apps no
+  longer need to special case their Flutter SDK requirement like they have
+  since v0.3.15+3.
+
 ## 0.3.19
 
 * Add setting for iOS to allow gesture based navigation.
