@@ -10,6 +10,9 @@
     android:icon="@mipmap/ic_launcher"
     android:label="webview_flutter_example"
     android:name="io.flutter.app.FlutterApplication">
+    <meta-data
+        android:name="flutterEmbedding"
+        android:value="2" />
     <activity
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
       android:exported="true"
@@ -30,7 +33,7 @@
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
       android:hardwareAccelerated="true"
       android:launchMode="singleTop"
-      android:name=".MainActivity"
+      android:name="io.flutter.embedding.android.FlutterActivity"
       android:theme="@style/LaunchTheme"
       android:windowSoftInputMode="adjustResize">
       <intent-filter>
