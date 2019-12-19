@@ -27,7 +27,7 @@ class LatLng {
   final double longitude;
 
   dynamic _toJson() {
-    return <double>[latitude, longitude];
+    return <double>[double.parse(latitude.toStringAsFixed(2)), double.parse(longitude.toStringAsFixed(2))];
   }
 
   static LatLng _fromJson(dynamic json) {
