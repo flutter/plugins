@@ -1,3 +1,7 @@
+## 4.1.3
+
+* Make plugin example meet naming convention.
+
 ## 4.1.2
 
 * Added a new error code `network_error`, and return it when a network error occurred.
