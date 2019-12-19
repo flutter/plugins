@@ -110,6 +110,11 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('buildView() has not been implemented.');
   }
 
+  /// Sets the audio mode to mix with other sources
+  Future<void> setMixWithOthers(bool mixWithOthers) {
+    throw UnimplementedError('setMixWithOthers() has not been implemented.');
+  }
+
   // This method makes sure that VideoPlayer isn't implemented with `implements`.
   //
   // See class doc for more details on why implementing this class is forbidden.
@@ -330,4 +335,14 @@ class DurationRange {
 
   @override
   int get hashCode => start.hashCode ^ end.hashCode;
+}
+
+/// [VideoPlayerOptions] can be optionally used to set additional player settings
+class VideoPlayerOptions {
+  /// Set this to true to mix the video players audio with other audio sources.
+  /// The default value is false
+  final bool mixWithOthers;
+
+  /// set additional optional player settings
+  VideoPlayerOptions({this.mixWithOthers = false});
 }

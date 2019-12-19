@@ -23,6 +23,7 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
   private static final String TAG = "VideoPlayerPlugin";
   private final LongSparseArray<VideoPlayer> videoPlayers = new LongSparseArray<>();
   private FlutterState flutterState;
+  private VideoPlayerOptions options = new VideoPlayerOptions();
 
   /** Register this with the v2 embedding for the plugin to respond to lifecycle callbacks. */
   public VideoPlayerPlugin() {}
@@ -95,6 +96,10 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
       case "init":
         disposeAllPlayers();
         break;
+      case "setMixWithOthers":
+        options.mixWithOthers = (boolean) call.arguments;
+        result.success(null);
+        break;
       case "create":
         {
           TextureRegistry.SurfaceTextureEntry handle =
@@ -120,7 +125,8 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
                     handle,
                     "asset:///" + assetLookupKey,
                     result,
-                    null);
+                    null,
+                    options);
             videoPlayers.put(handle.id(), player);
           } else {
             player =
@@ -130,7 +136,8 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
                     handle,
                     call.argument("uri"),
                     result,
-                    call.argument("formatHint"));
+                    call.argument("formatHint"),
+                    options);
             videoPlayers.put(handle.id(), player);
           }
           break;

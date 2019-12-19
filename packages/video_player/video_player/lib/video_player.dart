@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
-    show DurationRange, DataSourceType, VideoFormat;
+    show DurationRange, DataSourceType, VideoFormat, VideoPlayerOptions;
 
 // This will clear all open videos on the platform when a full restart is
 // performed.
@@ -145,7 +145,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// The name of the asset is given by the [dataSource] argument and must not be
   /// null. The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
-  VideoPlayerController.asset(this.dataSource, {this.package})
+  VideoPlayerController.asset(this.dataSource,
+      {this.package, this.videoPlayerOptions})
       : dataSourceType = DataSourceType.asset,
         formatHint = null,
         super(VideoPlayerValue(duration: null));
@@ -157,7 +158,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null.
   /// **Android only**: The [formatHint] option allows the caller to override
   /// the video format detection code.
-  VideoPlayerController.network(this.dataSource, {this.formatHint})
+  VideoPlayerController.network(this.dataSource,
+      {this.formatHint, this.videoPlayerOptions})
       : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: null));
@@ -166,7 +168,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
-  VideoPlayerController.file(File file)
+  VideoPlayerController.file(File file, {this.videoPlayerOptions})
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
@@ -186,6 +188,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// Describes the type of data source this [VideoPlayerController]
   /// is constructed with.
   final DataSourceType dataSourceType;
+
+  /// Provide additional configuration options (optional). Like setting the audio mode to mix
+  final VideoPlayerOptions videoPlayerOptions;
 
   /// Only set for [asset] videos. The package that the asset was loaded from.
   final String package;
@@ -229,6 +234,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         );
         break;
     }
+    if (videoPlayerOptions?.mixWithOthers != null) {
+      await VideoPlayerPlatform.instance
+          .setMixWithOthers(videoPlayerOptions.mixWithOthers);
+    }
+
     _textureId =
         await VideoPlayerPlatform.instance.create(dataSourceDescription);
     _creatingCompleter.complete(null);

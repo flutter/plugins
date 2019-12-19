@@ -47,6 +47,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   VideoFormat get formatHint => null;
+
+  @override
+  VideoPlayerOptions get videoPlayerOptions => null;
 }
 
 void main() {
@@ -423,6 +426,27 @@ void main() {
     expect(colors.playedColor, playedColor);
     expect(colors.bufferedColor, bufferedColor);
     expect(colors.backgroundColor, backgroundColor);
+  });
+
+  test('setMixWithOthers', () {
+    bool mixWithOthers = false;
+    const MethodChannel('flutter.io/videoPlayer')
+        .setMockMethodCallHandler((MethodCall methodCall) async {
+      switch (methodCall.method) {
+        case 'setMixWithOthers':
+          return mixWithOthers = methodCall.arguments;
+        case 'create':
+          return <String, dynamic>{'textureId': 100};
+        default:
+          return null;
+      }
+    });
+
+    final VideoPlayerController controller = VideoPlayerController.file(
+        File(''),
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
+    controller.initialize();
+    expect(mixWithOthers, true);
   });
 }
 

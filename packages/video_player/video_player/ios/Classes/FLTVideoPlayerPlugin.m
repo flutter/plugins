@@ -462,6 +462,16 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     }
     [_players removeAllObjects];
     result(nil);
+  } else if ([@"setMixWithOthers" isEqualToString:call.method]) {
+    BOOL mixWithOthers = [call.arguments boolValue];
+    if (mixWithOthers) {
+      [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
+                                       withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                                             error:nil];
+    } else {
+      [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+    }
+    result(nil);
   } else if ([@"create" isEqualToString:call.method]) {
     NSDictionary* argsMap = call.arguments;
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];

@@ -1,3 +1,7 @@
+## 0.10.6
+
+* Introduce VideoPlayerOptions to set the audio mix mode.
+
 ## 0.10.5
 
 * Support `web` by default.
