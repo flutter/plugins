@@ -1,3 +1,7 @@
+## 0.1.0+1
+
+* Removed Android support from the pubspec.
+
 ## 0.1.0
 
 * Fixed a bug where the scale value of the image wasn't respected.
