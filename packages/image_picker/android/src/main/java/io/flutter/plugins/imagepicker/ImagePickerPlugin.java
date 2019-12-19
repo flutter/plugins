@@ -125,7 +125,7 @@ public class ImagePickerPlugin
     plugin.setup(registrar.messenger(), applicationContext, activity, registrar, null);
   }
 
-  ImagePickerPlugin() {}
+  public ImagePickerPlugin() {}
 
   @VisibleForTesting
   ImagePickerPlugin(final ImagePickerDelegate delegate, final Activity activity) {
