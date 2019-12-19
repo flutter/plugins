@@ -1,3 +1,11 @@
+## 0.8.2+1
+
+* Add a non-op Android implementation to avoid a flaky Gradle issue.
+
+## 0.8.2
+
+* Require Flutter SDK 1.12.13+hotfix.4 or greater.
+
 ## 0.8.1+2
 
 * Remove the deprecated `author:` field from pubspec.yaml
