@@ -26,6 +26,7 @@ class LatLng {
   /// The longitude in degrees between -180.0 (inclusive) and 180.0 (exclusive).
   final double longitude;
 
+  /// The latitude and longitude must be adjusted because they can, in old devices, com as a double with too many digits after the dot, and, some times, the java plugin crashes because of it
   dynamic _toJson() {
     return <double>[double.parse(latitude.toStringAsFixed(2)), double.parse(longitude.toStringAsFixed(2))];
   }

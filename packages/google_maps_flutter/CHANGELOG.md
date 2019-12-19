@@ -1,3 +1,7 @@
+## 0.5.21+16
+
+* Change latitude and longitude calculation to avoid crash on old devices
+
 ## 0.5.21+15
 
 * Remove the deprecated `author:` field from pubspec.yaml
