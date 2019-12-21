@@ -1,3 +1,47 @@
+## 0.2.2+6
+
+* Correct a comment.
+
+## 0.2.2+5
+
+* Update version of json_annotation to ^3.0.0 and json_serializable to ^3.2.0. Resolve conflicts with other packages e.g. flutter_tools from sdk.
+
+## 0.2.2+4
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.2.2+3
+
+* Fix failing pedantic lints. None of these fixes should have any change in
+  functionality.
+
+## 0.2.2+2
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.2.2+1
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.2.2
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
+## 0.2.1+5
+
+* Define clang module for iOS.
+* Fix iOS build warning.
+
+## 0.2.1+4
+
+* Update and migrate iOS example project.
+
 ## 0.2.1+3
 
 * Android : Improved testability.

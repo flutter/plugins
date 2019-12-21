@@ -10,15 +10,34 @@ part of google_maps_flutter;
 class BitmapDescriptor {
   const BitmapDescriptor._(this._json);
 
+  /// Convenience hue value representing red.
   static const double hueRed = 0.0;
+
+  /// Convenience hue value representing orange.
   static const double hueOrange = 30.0;
+
+  /// Convenience hue value representing yellow.
   static const double hueYellow = 60.0;
+
+  /// Convenience hue value representing green.
   static const double hueGreen = 120.0;
+
+  /// Convenience hue value representing cyan.
   static const double hueCyan = 180.0;
+
+  /// Convenience hue value representing azure.
   static const double hueAzure = 210.0;
+
+  /// Convenience hue value representing blue.
   static const double hueBlue = 240.0;
+
+  /// Convenience hue value representing violet.
   static const double hueViolet = 270.0;
+
+  /// Convenience hue value representing magenta.
   static const double hueMagenta = 300.0;
+
+  /// Convenience hue value representing rose.
   static const double hueRose = 330.0;
 
   /// Creates a BitmapDescriptor that refers to the default marker image.

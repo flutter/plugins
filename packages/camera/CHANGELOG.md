@@ -1,3 +1,55 @@
+## 0.5.7+2
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.5.7+1
+
+* Fix example null exception.
+
+## 0.5.7
+
+* Fix unawaited futures.
+
+## 0.5.6+4
+
+* Android: Use CameraDevice.TEMPLATE_RECORD to improve image streaming.
+
+## 0.5.6+3
+
+* Remove AndroidX warning.
+
+## 0.5.6+2
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.5.6+1
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.5.6
+
+* Add support for the v2 Android embedding. This shouldn't affect existing
+  functionality.
+
+## 0.5.5+1
+
+* Fix event type check
+
+## 0.5.5
+
+* Define clang modules for iOS.
+
+## 0.5.4+3
+
+* Update and migrate iOS example project.
+
+## 0.5.4+2
+
+* Fix Android NullPointerException on devices with only front-facing camera.
+
 ## 0.5.4+1
 
 * Fix Android pause and resume video crash when executing in APIs below 24.

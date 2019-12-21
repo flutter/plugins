@@ -4,13 +4,31 @@
 # sure all first party plugins can be compiled together.
 
 # So that users can run this script from anywhere and it will work as expected.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
-REPO_DIR="$(dirname "$SCRIPT_DIR")"
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
+readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
 check_changed_packages > /dev/null
 
-(cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app --exclude instrumentation_adapter)
+readonly EXCLUDED_PLUGINS_LIST=(
+  "flutter_plugin_android_lifecycle"
+  "google_sign_in_platform_interface"
+  "google_sign_in_web"
+  "instrumentation_adapter"
+  "plugin_platform_interface"
+  "shared_preferences_macos"
+  "shared_preferences_platform_interface"
+  "shared_preferences_web"
+  "url_launcher_macos"
+  "url_launcher_platform_interface"
+  "url_launcher_web"
+  "video_player_platform_interface"
+  "video_player_web"
+)
+# Comma-separated string of the list above
+readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
+
+(cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app --exclude $EXCLUDED)
 
 function error() {
   echo "$@" 1>&2

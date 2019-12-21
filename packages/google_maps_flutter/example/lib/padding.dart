@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: public_member_api_docs
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
@@ -98,7 +100,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Flexible(
             flex: 2,
             child: TextField(
@@ -110,7 +112,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Flexible(
             flex: 2,
             child: TextField(
@@ -122,7 +124,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Flexible(
             flex: 2,
             child: TextField(
