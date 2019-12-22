@@ -86,7 +86,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-11.2.1-flutter
+    image: mojave-xcode-11.3-flutter
   setup_script:
     - pod repo update
   upgrade_script:
@@ -133,7 +133,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-11.2.1-flutter
+    image: mojave-xcode-11.3-flutter
   setup_script:
     - pod repo update
     - flutter config --enable-macos-desktop
