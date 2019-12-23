@@ -125,6 +125,12 @@ public class ImagePickerPlugin
     plugin.setup(registrar.messenger(), applicationContext, activity, registrar, null);
   }
 
+  /**
+   * Default constructor for the plugin.
+   *
+   * Use this constructor for production code.
+   */
+  // See also: * {@link #ImagePickerPlugin(ImagePickerDelegate, Activity)} for testing.
   public ImagePickerPlugin() {}
 
   @VisibleForTesting
