@@ -74,7 +74,6 @@ class Polygon {
   /// default; to form a closed polygon, the start and end points must be the same.
   final List<LatLng> points;
 
-
   /// To create an empty area within a polygon, you need to use holes.
   /// To create the hole, the coordinates defining the hole path must be inside the polygon.
   ///
