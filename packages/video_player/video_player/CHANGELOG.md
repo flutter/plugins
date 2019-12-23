@@ -1,3 +1,7 @@
+## 0.10.6
+
+* Add macOS support
+
 ## 0.10.5
 
 * Support `web` by default.
