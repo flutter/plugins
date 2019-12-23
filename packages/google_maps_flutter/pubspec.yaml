@@ -6,7 +6,7 @@ version: 0.5.22
 dependencies:
   flutter:
     sdk: flutter
-  collection: any
+  collection: ^1.14.11
 
 dev_dependencies:
   flutter_test:
