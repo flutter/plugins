@@ -1,4 +1,4 @@
-# shared_preferences_macos
+# connectivity_macos
 
 The macos implementation of [`connectivity`].
 

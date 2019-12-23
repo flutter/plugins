@@ -1,3 +1,7 @@
+## 0.4.1+5
+
+* Fix example `setState()` called after `dispose()` by canceling the timer.
+
 ## 0.4.1+4
 
 * Remove the deprecated `author:` field from pubspec.yaml
