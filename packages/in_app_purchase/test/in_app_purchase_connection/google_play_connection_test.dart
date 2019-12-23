@@ -43,6 +43,7 @@ void main() {
         name: startConnectionCall,
         value: buildBillingResultMap(expectedBillingResult));
     stubPlatform.addResponse(name: endConnectionCall, value: null);
+    InAppPurchaseConnection.enablePendingPurchases();
     connection = GooglePlayConnection.instance;
   });
 

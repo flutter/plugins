@@ -154,7 +154,7 @@ class PurchaseDetails {
 
   /// Points back to the `BillingClient`'s [PurchaseWrapper] object that generated this [PurchaseDetails] object.
   ///
-  /// This is null on Android.
+  /// This is null on iOS.
   final PurchaseWrapper billingClientPurchase;
 
   /// The developer has to call [InAppPurchaseConnection.completePurchase] if the value is `true`
