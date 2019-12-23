@@ -128,7 +128,7 @@ public class ImagePickerPlugin
   /**
    * Default constructor for the plugin.
    *
-   * Use this constructor for production code.
+   * <p>Use this constructor for production code.
    */
   // See also: * {@link #ImagePickerPlugin(ImagePickerDelegate, Activity)} for testing.
   public ImagePickerPlugin() {}
