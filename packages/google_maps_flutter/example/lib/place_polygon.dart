@@ -31,7 +31,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
   GoogleMapController controller;
   Map<PolygonId, Polygon> polygons = <PolygonId, Polygon>{};
   Map<PolygonId, double> polygonOffsets = <PolygonId, double>{};
-  int _polygonIdCounter = 1;
+  int _polygonIdCounter = 0;
   PolygonId selectedPolygon;
 
   // Values when toggling polygon color
@@ -80,7 +80,6 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
     }
 
     final String polygonIdVal = 'polygon_id_$_polygonIdCounter';
-    _polygonIdCounter++;
     final PolygonId polygonId = PolygonId(polygonIdVal);
 
     final Polygon polygon = Polygon(
@@ -98,6 +97,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
     setState(() {
       polygons[polygonId] = polygon;
       polygonOffsets[polygonId] = _polygonIdCounter.ceilToDouble();
+      _polygonIdCounter++;
     });
   }
 

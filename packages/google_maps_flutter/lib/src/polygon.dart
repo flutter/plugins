@@ -178,6 +178,7 @@ class Polygon {
         fillColor == typedOther.fillColor &&
         geodesic == typedOther.geodesic &&
         listEquals(points, typedOther.points) &&
+        DeepCollectionEquality().equals(holes, typedOther.holes) &&
         visible == typedOther.visible &&
         strokeColor == typedOther.strokeColor &&
         strokeWidth == typedOther.strokeWidth &&
