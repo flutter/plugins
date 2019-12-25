@@ -108,9 +108,6 @@
                             case LAErrorTouchIDNotAvailable:
                             case LAErrorTouchIDNotEnrolled:
                             case LAErrorTouchIDLockout:
-                              [self handleErrors:error
-                                   flutterArguments:arguments
-                                  withFlutterResult:result];
                               return;
                             case LAErrorSystemCancel:
                               if ([arguments[@"stickyAuth"] boolValue]) {
