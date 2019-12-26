@@ -1,7 +1,13 @@
-## 0.3.19+1
+## 0.3.19+2
 
 * On iOS, fix the scroll view content inset is automatically adjusted. After the fix, the content position of the WebView is customizable by Flutter.
 * Fix an iOS 13 bug where the scroll indicator shows at random location.
+
+## 0.3.19+1
+
+* Raise min Flutter SDK requirement to the latest stable. v2 embedding apps no
+  longer need to special case their Flutter SDK requirement like they have
+  since v0.3.15+3.
 
 ## 0.3.19
 
