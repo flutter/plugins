@@ -12,7 +12,7 @@ description: Reusable base class for Flutter plugin platform interfaces.
 # be done when absolutely necessary and after the ecosystem has already migrated to 1.X.Y version
 # that is forward compatible with 2.0.0 (ideally the ecosystem have migrated to depend on:
 # `plugin_platform_interface: >=1.X.Y <3.0.0`).
-version: 1.0.0
+version: 1.0.1
 
 homepage: https://github.com/flutter/plugins/plugin_platform_interface
 

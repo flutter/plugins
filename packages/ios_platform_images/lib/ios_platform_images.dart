@@ -8,38 +8,72 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/foundation.dart'
     show SynchronousFuture, describeIdentity;
 
+class _FutureImageStreamCompleter extends ImageStreamCompleter {
+  final Future<double> futureScale;
+  final InformationCollector informationCollector;
+
+  _FutureImageStreamCompleter(
+      {Future<ui.Codec> codec, this.futureScale, this.informationCollector})
+      : assert(codec != null),
+        assert(futureScale != null) {
+    codec.then<void>(_onCodecReady, onError: (dynamic error, StackTrace stack) {
+      reportError(
+        context: ErrorDescription('resolving a single-frame image stream'),
+        exception: error,
+        stack: stack,
+        informationCollector: informationCollector,
+        silent: true,
+      );
+    });
+  }
+
+  Future<void> _onCodecReady(ui.Codec codec) async {
+    try {
+      ui.FrameInfo nextFrame = await codec.getNextFrame();
+      double scale = await futureScale;
+      setImage(ImageInfo(image: nextFrame.image, scale: scale));
+    } catch (exception, stack) {
+      reportError(
+        context: ErrorDescription('resolving an image frame'),
+        exception: exception,
+        stack: stack,
+        informationCollector: this.informationCollector,
+        silent: true,
+      );
+    }
+  }
+}
+
 /// Performs exactly like a [MemoryImage] but instead of taking in bytes it takes
 /// in a future that represents bytes.
-class FutureMemoryImage extends ImageProvider<FutureMemoryImage> {
+class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
   /// Constructor for FutureMemoryImage.  [_futureBytes] is the bytes that will
-  /// be loaded into an image and [scale] is the scale that will be applied to
+  /// be loaded into an image and [_futureScale] is the scale that will be applied to
   /// that image to account for high-resolution images.
-  const FutureMemoryImage(this._futureBytes, {this.scale = 1.0})
+  const _FutureMemoryImage(this._futureBytes, this._futureScale)
       : assert(_futureBytes != null),
-        assert(scale != null);
+        assert(_futureScale != null);
 
   final Future<Uint8List> _futureBytes;
-
-  /// The scale to place in the ImageInfo object of the image.
-  final double scale;
+  final Future<double> _futureScale;
 
   /// See [ImageProvider.obtainKey].
   @override
-  Future<FutureMemoryImage> obtainKey(ImageConfiguration configuration) {
-    return SynchronousFuture<FutureMemoryImage>(this);
+  Future<_FutureMemoryImage> obtainKey(ImageConfiguration configuration) {
+    return SynchronousFuture<_FutureMemoryImage>(this);
   }
 
   /// See [ImageProvider.load].
   @override
-  ImageStreamCompleter load(FutureMemoryImage key, DecoderCallback decode) {
-    return MultiFrameImageStreamCompleter(
+  ImageStreamCompleter load(_FutureMemoryImage key, DecoderCallback decode) {
+    return _FutureImageStreamCompleter(
       codec: _loadAsync(key, decode),
-      scale: key.scale,
+      futureScale: _futureScale,
     );
   }
 
   Future<ui.Codec> _loadAsync(
-      FutureMemoryImage key, DecoderCallback decode) async {
+      _FutureMemoryImage key, DecoderCallback decode) async {
     assert(key == this);
     return _futureBytes.then((Uint8List bytes) {
       return decode(bytes);
@@ -50,18 +84,19 @@ class FutureMemoryImage extends ImageProvider<FutureMemoryImage> {
   @override
   bool operator ==(dynamic other) {
     if (other.runtimeType != runtimeType) return false;
-    final FutureMemoryImage typedOther = other;
-    return _futureBytes == typedOther._futureBytes && scale == typedOther.scale;
+    final _FutureMemoryImage typedOther = other;
+    return _futureBytes == typedOther._futureBytes &&
+        _futureScale == typedOther._futureScale;
   }
 
   /// See [ImageProvider.hashCode].
   @override
-  int get hashCode => hashValues(_futureBytes.hashCode, scale);
+  int get hashCode => hashValues(_futureBytes.hashCode, _futureScale);
 
   /// See [ImageProvider.toString].
   @override
   String toString() =>
-      '$runtimeType(${describeIdentity(_futureBytes)}, scale: $scale)';
+      '$runtimeType(${describeIdentity(_futureBytes)}, scale: $_futureScale)';
 }
 
 /// Class to help loading of iOS platform images into Flutter.
@@ -77,8 +112,15 @@ class IosPlatformImages {
   /// Throws an exception if the image can't be found.
   ///
   /// See [https://developer.apple.com/documentation/uikit/uiimage/1624146-imagenamed?language=objc]
-  static FutureMemoryImage load(String name) {
-    return FutureMemoryImage(_channel.invokeMethod('loadImage', name));
+  static ImageProvider load(String name) {
+    Future<Map> loadInfo = _channel.invokeMethod('loadImage', name);
+    Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
+    Completer<double> scaleCompleter = Completer<double>();
+    loadInfo.then((map) {
+      scaleCompleter.complete(map["scale"]);
+      bytesCompleter.complete(map["data"]);
+    });
+    return _FutureMemoryImage(bytesCompleter.future, scaleCompleter.future);
   }
 
   /// Resolves an URL for a resource.  The equivalent would be:
