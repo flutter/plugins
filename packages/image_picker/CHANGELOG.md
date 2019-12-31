@@ -15,7 +15,7 @@
 
 ## 0.6.2+1
 
-* Android: Fix a crash when a non*image file is picked.
+* Android: Fix a crash when a non-image file is picked.
 * Android: Fix unwanted bitmap scaling.
 
 ## 0.6.2
@@ -63,7 +63,7 @@
 
 ## 0.6.1+2
 
-* Replace dependency on `androidx.legacy:legacy*support*v4:1.0.0` with `androidx.core:core:1.0.2`
+* Replace dependency on `androidx.legacy:legacy-support-v4:1.0.0` with `androidx.core:core:1.0.2`
 
 ## 0.6.1+1
 
@@ -71,8 +71,7 @@
 
 ## 0.6.1
 
-* New feature : Get images with custom quality. While picking images, user can pass `imageQuality`
-  parameter to compress image.
+* New feature : Get images with custom quality. While picking images, user can pass `imageQuality` parameter to compress image.
 
 ## 0.6.0+20
 
@@ -130,7 +129,7 @@
 
 ## 0.6.0+7
 
-* iOS: Rename objects to follow Objective*C naming convention to avoid conflicts with other iOS library/frameworks.
+* iOS: Rename objects to follow Objective-C naming convention to avoid conflicts with other iOS library/frameworks.
 
 ## 0.6.0+6
 
@@ -354,7 +353,6 @@
 
 * Updated dependencies
 * **Breaking Change**: You need to add a maven section with the "https://maven.google.com" endpoint to the repository section of your `android/build.gradle`. For example:
-
 ```gradle
 allprojects {
     repositories {
