@@ -30,6 +30,7 @@ keystore.properties
 gradlew
 gradlew.bat
 gradle-wrapper.jar
+.flutter-plugins-dependencies
 *.iml
 
 GeneratedPluginRegistrant.h

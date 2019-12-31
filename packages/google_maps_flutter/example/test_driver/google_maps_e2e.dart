@@ -401,6 +401,31 @@ void main() {
     expect(isTrafficEnabled, true);
   });
 
+  testWidgets('testBuildings', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        buildingsEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    final bool isBuildingsEnabled = await inspector.isBuildingsEnabled();
+    expect(isBuildingsEnabled, true);
+  });
+
   testWidgets('testMyLocationButtonToggle', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
