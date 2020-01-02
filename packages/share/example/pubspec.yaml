@@ -1,11 +1,14 @@
 name: share_example
 description: Demonstrates how to use the share plugin.
+version: 1.0.0+1
 
 dependencies:
   flutter:
     sdk: flutter
   share:
     path: ../
+  path_provider:
+    path: ../../path_provider/
 
 dev_dependencies:
   flutter_driver:
@@ -18,4 +21,3 @@ flutter:
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
   flutter: ">=1.9.1+hotfix.2 <2.0.0"
-  

@@ -32,3 +32,8 @@ sharing to email.
 ``` dart
 Share.share('check out my website https://example.com', subject: 'Look what I made!');
 ```
+
+To share a file invoke the static `shareFile` method anywhere in your Dart code
+``` dart
+Share.shareFile(File('${directory.path}/image.jpg'));
+```
