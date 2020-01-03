@@ -71,23 +71,21 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 }
 
 - (UIImage *)activityViewController:(UIActivityViewController *)activityViewController
-       thumbnailImageForActivityType:(UIActivityType)activityType
-                       suggestedSize:(CGSize)suggestedSize {
-    if (_path != nil
-        && _mimeType != nil
-        && [_mimeType hasPrefix:@"image/"]) {
-      UIImage *image = [UIImage imageWithContentsOfFile:_path];
-      return [self imageWithImage:image scaledToSize:suggestedSize];
-    }
-    return nil;
+      thumbnailImageForActivityType:(UIActivityType)activityType
+                      suggestedSize:(CGSize)suggestedSize {
+  if (_path != nil && _mimeType != nil && [_mimeType hasPrefix:@"image/"]) {
+    UIImage *image = [UIImage imageWithContentsOfFile:_path];
+    return [self imageWithImage:image scaledToSize:suggestedSize];
+  }
+  return nil;
 }
 
 - (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize{
-    UIGraphicsBeginImageContext(newSize);
-    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return newImage;
+  UIGraphicsBeginImageContext(newSize);
+  [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+  UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return newImage;
 }
 
 @end
@@ -139,7 +137,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
                                    message:@"Non-empty path expected"
                                    details:nil]);
         return;
-       }
+      }
 
       [self shareFile:path
             withMimeType:mimeType
@@ -147,7 +145,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
                 withText:text
           withController:[UIApplication sharedApplication].keyWindow.rootViewController
                 atSource:originRect];
-       result(nil);
+      result(nil);
     } else {
       result(FlutterMethodNotImplemented);
     }
@@ -181,8 +179,8 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
     withController:(UIViewController *)controller
           atSource:(CGRect)origin {
   NSArray *items = @[
-    [[ShareData alloc] initWithSubject:subject text:text],
-    [[ShareData alloc] initWithFile:path mimeType:mimeType]
+    [[ShareData alloc] initWithSubject:subject text:text], [[ShareData alloc] initWithFile:path
+                                                                                  mimeType:mimeType]
   ];
   [self share:items withController:controller atSource:origin];
 }
