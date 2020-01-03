@@ -60,18 +60,16 @@ class DemoAppState extends State<DemoApp> {
                 ),
                 const Padding(padding: EdgeInsets.only(top: 12.0)),
                 InkWell(
-                  onTap: () =>
-                      setState(() {
-                        shareFile = !shareFile;
-                      }),
+                  onTap: () => setState(() {
+                    shareFile = !shareFile;
+                  }),
                   child: Row(
                     children: <Widget>[
                       Checkbox(
                         value: shareFile,
-                        onChanged: (bool value) =>
-                            setState(() {
-                              shareFile = value;
-                            }),
+                        onChanged: (bool value) => setState(() {
+                          shareFile = value;
+                        }),
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,19 +109,20 @@ class DemoAppState extends State<DemoApp> {
                                 // - after migration of it to v2
                                 //  - https://github.com/flutter/flutter/issues/41839
                                 //  - https://github.com/flutter/plugins/pull/2430)
-                                final File file = await _createTextFile('sample.txt', text);
+                                final File file =
+                                    await _createTextFile('sample.txt', text);
                                 await Share.shareFile(file,
                                     text: text,
                                     subject: subject,
                                     sharePositionOrigin:
-                                    box.localToGlobal(Offset.zero) &
-                                    box.size);
+                                        box.localToGlobal(Offset.zero) &
+                                            box.size);
                               } else {
                                 await Share.share(text,
                                     subject: subject,
                                     sharePositionOrigin:
-                                    box.localToGlobal(Offset.zero) &
-                                    box.size);
+                                        box.localToGlobal(Offset.zero) &
+                                            box.size);
                               }
                             },
                     );

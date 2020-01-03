@@ -14,7 +14,8 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 @property(readonly, nonatomic, copy) NSString *mimeType;
 
 - (instancetype)initWithSubject:(NSString *)subject text:(NSString *)text NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithFile:(NSString *)path mimeType:(NSString *)mimeType NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFile:(NSString *)path
+                    mimeType:(NSString *)mimeType NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init __attribute__((unavailable("Use initWithSubject:text: instead")));
 
@@ -36,8 +37,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   return self;
 }
 
-- (instancetype)initWithFile:(NSString *)path
-                    mimeType:(NSString *)mimeType {
+- (instancetype)initWithFile:(NSString *)path mimeType:(NSString *)mimeType {
   self = [super init];
   if (self) {
     _path = path;
@@ -80,7 +80,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   return nil;
 }
 
-- (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize{
+- (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize {
   UIGraphicsBeginImageContext(newSize);
   [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
   UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();

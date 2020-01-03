@@ -8,16 +8,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
-
+import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
 
 /** Handles share intent. */
 class Share {
@@ -60,8 +58,7 @@ class Share {
     }
   }
 
-  void shareFile(String path, String mimeType, String text, String subject)
-      throws IOException {
+  void shareFile(String path, String mimeType, String text, String subject) throws IOException {
     if (path == null || path.isEmpty()) {
       throw new IllegalArgumentException("Non-empty path expected");
     }
@@ -74,8 +71,7 @@ class Share {
 
     Uri fileUri =
         FileProvider.getUriForFile(
-            activity, activity.getPackageName() + ".flutter.share_provider",
-            file);
+            activity, activity.getPackageName() + ".flutter.share_provider", file);
 
     Intent shareIntent = new Intent();
     shareIntent.setAction(Intent.ACTION_SEND);
