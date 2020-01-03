@@ -10,8 +10,11 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 
 @property(readonly, nonatomic, copy) NSString *subject;
 @property(readonly, nonatomic, copy) NSString *text;
+@property(readonly, nonatomic, copy) NSString *path;
+@property(readonly, nonatomic, copy) NSString *mimeType;
 
 - (instancetype)initWithSubject:(NSString *)subject text:(NSString *)text NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFile:(NSString *)path mimeType:(NSString *)mimeType NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init __attribute__((unavailable("Use initWithSubject:text: instead")));
 
@@ -27,8 +30,18 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 - (instancetype)initWithSubject:(NSString *)subject text:(NSString *)text {
   self = [super init];
   if (self) {
-    _subject = subject;
+    _subject = [subject isKindOfClass:NSNull.class] ? @"" : subject;
     _text = text;
+  }
+  return self;
+}
+
+- (instancetype)initWithFile:(NSString *)path
+                    mimeType:(NSString *)mimeType {
+  self = [super init];
+  if (self) {
+    _path = path;
+    _mimeType = mimeType;
   }
   return self;
 }
@@ -39,12 +52,42 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 
 - (id)activityViewController:(UIActivityViewController *)activityViewController
          itemForActivityType:(UIActivityType)activityType {
+  if (_path != nil && _mimeType != nil) {
+    if ([_mimeType hasPrefix:@"image/"]) {
+      UIImage *image = [UIImage imageWithContentsOfFile:_path];
+      return image;
+    } else {
+      NSURL *url = [NSURL fileURLWithPath:_path];
+      return url;
+    }
+  }
+
   return _text;
 }
 
 - (NSString *)activityViewController:(UIActivityViewController *)activityViewController
               subjectForActivityType:(UIActivityType)activityType {
-  return [_subject isKindOfClass:NSNull.class] ? @"" : _subject;
+  return _subject;
+}
+
+- (UIImage *)activityViewController:(UIActivityViewController *)activityViewController
+       thumbnailImageForActivityType:(UIActivityType)activityType
+                       suggestedSize:(CGSize)suggestedSize {
+    if (_path != nil
+        && _mimeType != nil
+        && [_mimeType hasPrefix:@"image/"]) {
+      UIImage *image = [UIImage imageWithContentsOfFile:_path];
+      return [self imageWithImage:image scaledToSize:suggestedSize];
+    }
+    return nil;
+}
+
+- (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize{
+    UIGraphicsBeginImageContext(newSize);
+    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
 }
 
 @end
@@ -137,23 +180,10 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
           withText:(NSString *)text
     withController:(UIViewController *)controller
           atSource:(CGRect)origin {
-  NSMutableArray *items = [[NSMutableArray alloc] init];
-
-  if (subject != nil && subject.length != 0) {
-    [items addObject:subject];
-  }
-  if (text != nil && text.length != 0) {
-    [items addObject:text];
-  }
-
-  if ([mimeType hasPrefix:@"image/"]) {
-    UIImage *image = [UIImage imageWithContentsOfFile:path];
-    [items addObject:image];
-  } else {
-    NSURL *url = [NSURL fileURLWithPath:path];
-    [items addObject:url];
-  }
-
+  NSArray *items = @[
+    [[ShareData alloc] initWithSubject:subject text:text],
+    [[ShareData alloc] initWithFile:path mimeType:mimeType]
+  ];
   [self share:items withController:controller atSource:origin];
 }
 
