@@ -1,3 +1,7 @@
+## 0.3.19+2
+
+* Migrate from deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
+
 ## 0.3.19+1
 
 * Raise min Flutter SDK requirement to the latest stable. v2 embedding apps no
