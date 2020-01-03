@@ -1,6 +1,5 @@
 name: share_example
 description: Demonstrates how to use the share plugin.
-version: 1.0.0+1
 
 dependencies:
   flutter:
