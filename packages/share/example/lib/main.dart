@@ -111,14 +111,14 @@ class DemoAppState extends State<DemoApp> {
                                 //  - https://github.com/flutter/flutter/issues/41839
                                 //  - https://github.com/flutter/plugins/pull/2430)
                                 final File file = await _createTextFile('sample.txt', text);
-                                Share.shareFile(file,
+                                await Share.shareFile(file,
                                     text: text,
                                     subject: subject,
                                     sharePositionOrigin:
                                     box.localToGlobal(Offset.zero) &
                                     box.size);
                               } else {
-                                Share.share(text,
+                                await Share.share(text,
                                     subject: subject,
                                     sharePositionOrigin:
                                     box.localToGlobal(Offset.zero) &
