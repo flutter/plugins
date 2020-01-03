@@ -1,3 +1,8 @@
+## 0.5.21+16
+
+* Uncomment the marker icon example. 
+  See: https://github.com/flutter/flutter/issues/33438
+
 ## 0.5.21+15
 
 * Remove the deprecated `author:` field from pubspec.yaml
