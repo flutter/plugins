@@ -1,4 +1,4 @@
-## 0.4.7
+## 0.4.6+2
 
 * Migrate deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
 * Bump Flutter SDK to 1.12.13+hotfix.5 or greater (current stable).
