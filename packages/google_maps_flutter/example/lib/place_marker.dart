@@ -244,42 +244,36 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-// A breaking change to the ImageStreamListener API affects this sample.
-// I've updates the sample to use the new API, but as we cannot use the new
-// API before it makes it to stable I'm commenting out this sample for now
-// TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
-// https://github.com/flutter/flutter/issues/33438
-//
-//  void _setMarkerIcon(BitmapDescriptor assetIcon) {
-//    if (selectedMarker == null) {
-//      return;
-//    }
-//
-//    final Marker marker = markers[selectedMarker];
-//    setState(() {
-//      markers[selectedMarker] = marker.copyWith(
-//        iconParam: assetIcon,
-//      );
-//    });
-//  }
-//
-//  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
-//    final Completer<BitmapDescriptor> bitmapIcon =
-//        Completer<BitmapDescriptor>();
-//    final ImageConfiguration config = createLocalImageConfiguration(context);
-//
-//    const AssetImage('assets/red_square.png')
-//        .resolve(config)
-//        .addListener(ImageStreamListener((ImageInfo image, bool sync) async {
-//      final ByteData bytes =
-//          await image.image.toByteData(format: ImageByteFormat.png);
-//      final BitmapDescriptor bitmap =
-//          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
-//      bitmapIcon.complete(bitmap);
-//    }));
-//
-//    return await bitmapIcon.future;
-//  }
+  void _setMarkerIcon(BitmapDescriptor assetIcon) {
+    if (selectedMarker == null) {
+      return;
+    }
+
+    final Marker marker = markers[selectedMarker];
+    setState(() {
+      markers[selectedMarker] = marker.copyWith(
+        iconParam: assetIcon,
+      );
+    });
+  }
+
+  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
+    final Completer<BitmapDescriptor> bitmapIcon =
+        Completer<BitmapDescriptor>();
+    final ImageConfiguration config = createLocalImageConfiguration(context);
+
+    const AssetImage('assets/red_square.png')
+        .resolve(config)
+        .addListener(ImageStreamListener((ImageInfo image, bool sync) async {
+      final ByteData bytes =
+          await image.image.toByteData(format: ImageByteFormat.png);
+      final BitmapDescriptor bitmap =
+          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
+      bitmapIcon.complete(bitmap);
+    }));
+
+    return await bitmapIcon.future;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -365,22 +359,16 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                           child: const Text('change zIndex'),
                           onPressed: _changeZIndex,
                         ),
-                        // A breaking change to the ImageStreamListener API affects this sample.
-                        // I've updates the sample to use the new API, but as we cannot use the new
-                        // API before it makes it to stable I'm commenting out this sample for now
-                        // TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
-                        // https://github.com/flutter/flutter/issues/33438
-                        //
-                        // FlatButton(
-                        //   child: const Text('set marker icon'),
-                        //   onPressed: () {
-                        //     _getAssetIcon(context).then(
-                        //       (BitmapDescriptor icon) {
-                        //         _setMarkerIcon(icon);
-                        //       },
-                        //     );
-                        //   },
-                        // ),
+                        FlatButton(
+                          child: const Text('set marker icon'),
+                          onPressed: () {
+                            _getAssetIcon(context).then(
+                              (BitmapDescriptor icon) {
+                                _setMarkerIcon(icon);
+                              },
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ],
