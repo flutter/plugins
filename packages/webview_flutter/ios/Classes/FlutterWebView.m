@@ -77,6 +77,9 @@
       [weakSelf onMethodCall:call result:result];
     }];
 
+    if (@available(iOS 11.0, *)) {
+      _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
     if (@available(iOS 13.0, *)) {
       _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
       _webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
@@ -262,6 +265,10 @@
       _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
     } else if ([key isEqualToString:@"debuggingEnabled"]) {
       // no-op debugging is always enabled on iOS.
+    } else if ([key isEqualToString:@"gestureNavigationEnabled"]) {
+      NSNumber* allowsBackForwardNavigationGestures = settings[key];
+      _webView.allowsBackForwardNavigationGestures =
+          [allowsBackForwardNavigationGestures boolValue];
     } else if ([key isEqualToString:@"userAgent"]) {
       NSString* userAgent = settings[key];
       [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
