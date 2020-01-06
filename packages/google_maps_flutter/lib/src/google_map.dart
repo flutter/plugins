@@ -49,6 +49,7 @@ class GoogleMap extends StatefulWidget {
     this.polygons,
     this.polylines,
     this.circles,
+    this.heatmaps,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -108,6 +109,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Circles to be placed on the map.
   final Set<Circle> circles;
+
+  /// Heatmaps to be placed on the map.
+  final Set<Heatmap> heatmaps;
 
   /// Called when the camera starts moving.
   ///
@@ -207,6 +211,7 @@ class _GoogleMapState extends State<GoogleMap> {
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
+  Map<HeatmapId, Heatmap> _heatmaps = <HeatmapId, Heatmap>{};
   _GoogleMapOptions _googleMapOptions;
 
   @override
@@ -218,6 +223,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'polygonsToAdd': _serializePolygonSet(widget.polygons),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'circlesToAdd': _serializeCircleSet(widget.circles),
+      'heatmapsToAdd': _serializeHeatmapSet(widget.heatmaps),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
@@ -249,6 +255,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _polygons = _keyByPolygonId(widget.polygons);
     _polylines = _keyByPolylineId(widget.polylines);
     _circles = _keyByCircleId(widget.circles);
+    _heatmaps = _keyByHeatmapId(widget.heatmaps);
   }
 
   @override
@@ -259,6 +266,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _updatePolygons();
     _updatePolylines();
     _updateCircles();
+    _updateHeatmaps();
   }
 
   void _updateOptions() async {
@@ -304,6 +312,14 @@ class _GoogleMapState extends State<GoogleMap> {
     controller._updateCircles(
         _CircleUpdates.from(_circles.values.toSet(), widget.circles));
     _circles = _keyByCircleId(widget.circles);
+  }
+
+  void _updateHeatmaps() async {
+    final GoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
+    controller._updateHeatmaps(
+        _HeatmapUpdates.from(_heatmaps.values.toSet(), widget.heatmaps));
+    _heatmaps = _keyByHeatmapId(widget.heatmaps);
   }
 
   Future<void> onPlatformViewCreated(int id) async {

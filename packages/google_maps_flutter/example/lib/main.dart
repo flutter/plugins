@@ -17,6 +17,7 @@ import 'place_circle.dart';
 import 'place_marker.dart';
 import 'place_polygon.dart';
 import 'place_polyline.dart';
+import 'place_heatmap.dart';
 import 'scrolling_map.dart';
 
 final List<Page> _allPages = <Page>[
@@ -31,6 +32,7 @@ final List<Page> _allPages = <Page>[
   PlacePolylinePage(),
   PlacePolygonPage(),
   PlaceCirclePage(),
+  PlaceHeatmapPage(),
   PaddingPage(),
 ];
 

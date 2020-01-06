@@ -47,4 +47,6 @@ interface GoogleMapOptionsSink {
   void setInitialPolylines(Object initialPolylines);
 
   void setInitialCircles(Object initialCircles);
+
+  void setInitialHeatmaps(Object initialHeatmaps);
 }

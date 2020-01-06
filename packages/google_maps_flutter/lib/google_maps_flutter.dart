@@ -21,6 +21,8 @@ part 'src/circle.dart';
 part 'src/circle_updates.dart';
 part 'src/controller.dart';
 part 'src/google_map.dart';
+part 'src/heatmap.dart';
+part 'src/heatmap_updates.dart';
 part 'src/joint_type.dart';
 part 'src/location.dart';
 part 'src/marker.dart';
