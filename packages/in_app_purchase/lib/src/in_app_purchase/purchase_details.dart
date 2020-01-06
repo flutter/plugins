@@ -134,7 +134,7 @@ class PurchaseDetails {
 
   /// Points back to the `BillingClient`'s [PurchaseWrapper] object that generated this [PurchaseDetails] object.
   ///
-  /// This is null on Android.
+  /// This is null on iOS.
   final PurchaseWrapper billingClientPurchase;
 
   PurchaseDetails({
@@ -142,8 +142,8 @@ class PurchaseDetails {
     @required this.productID,
     @required this.verificationData,
     @required this.transactionDate,
-    this.skPaymentTransaction = null,
-    this.billingClientPurchase = null,
+    this.skPaymentTransaction,
+    this.billingClientPurchase,
   });
 
   /// Generate a [PurchaseDetails] object based on an iOS [SKTransactionWrapper] object.
