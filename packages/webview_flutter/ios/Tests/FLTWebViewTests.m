@@ -16,6 +16,7 @@
 @implementation FLTWebViewTests
 
 - (void)setUp {
+  [super setUp];
   self.mockBinaryMessenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
 }
 
