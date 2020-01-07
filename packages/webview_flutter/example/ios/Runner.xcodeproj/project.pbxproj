@@ -230,12 +230,6 @@
 				LastUpgradeCheck = 1030;
 				ORGANIZATIONNAME = "The Chromium Authors";
 				TargetAttributes = {
-					68BDCAE823C3F7CB00D9C032 = {
-						CreatedOnToolsVersion = 11.3;
-						DevelopmentTeam = S8QB4VV633;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 97C146ED1CF9000F007C117D;
-					};
 					97C146ED1CF9000F007C117D = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
