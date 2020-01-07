@@ -38,12 +38,6 @@ public class ImagePickerPlugin
     }
 
     @Override
-    public void onCreate(@NonNull LifecycleOwner owner) {}
-
-    @Override
-    public void onStart(@NonNull LifecycleOwner owner) {}
-
-    @Override
     public void onResume(@NonNull LifecycleOwner owner) {}
 
     @Override
@@ -104,7 +98,7 @@ public class ImagePickerPlugin
   private ImagePickerDelegate delegate;
   private FlutterPluginBinding pluginBinding;
   private ActivityPluginBinding activityBinding;
-  private Application applicationContext;
+  private Application application;
   private Activity activity;
   // This is null when not using v2 embedding;
   private Lifecycle lifecycle;
@@ -117,12 +111,12 @@ public class ImagePickerPlugin
       return;
     }
     Activity activity = registrar.activity();
-    Application applicationContext = null;
+    Application application = null;
     if (registrar.context() != null) {
-      applicationContext = (Application) (registrar.context().getApplicationContext());
+      application = (Application) (registrar.context().getApplicationContext());
     }
     ImagePickerPlugin plugin = new ImagePickerPlugin();
-    plugin.setup(registrar.messenger(), applicationContext, activity, registrar, null);
+    plugin.setup(registrar.messenger(), application, activity, registrar, null);
   }
 
   /**
@@ -177,20 +171,20 @@ public class ImagePickerPlugin
 
   private void setup(
       final BinaryMessenger messenger,
-      final Application applicationContext,
+      final Application application,
       final Activity activity,
       final PluginRegistry.Registrar registrar,
       final ActivityPluginBinding activityBinding) {
     this.activity = activity;
-    this.applicationContext = applicationContext;
+    this.application = application;
     this.delegate = constructDelegate(activity);
     channel = new MethodChannel(messenger, CHANNEL);
     channel.setMethodCallHandler(this);
+    observer = new LifeCycleObserver(activity);
     if (registrar != null) {
       // V1 embedding setup for activity listeners.
-      observer = new LifeCycleObserver(activity);
-      applicationContext.registerActivityLifecycleCallbacks(
-          observer); // Use getApplicationContext() to avoid casting failures.
+      application.registerActivityLifecycleCallbacks(
+          observer);
       registrar.addActivityResultListener(delegate);
       registrar.addRequestPermissionsResultListener(delegate);
     } else {
@@ -198,7 +192,6 @@ public class ImagePickerPlugin
       activityBinding.addActivityResultListener(delegate);
       activityBinding.addRequestPermissionsResultListener(delegate);
       lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(activityBinding);
-      observer = new LifeCycleObserver(activity);
       lifecycle.addObserver(observer);
     }
   }
@@ -212,8 +205,8 @@ public class ImagePickerPlugin
     delegate = null;
     channel.setMethodCallHandler(null);
     channel = null;
-    applicationContext.unregisterActivityLifecycleCallbacks(observer);
-    applicationContext = null;
+    application.unregisterActivityLifecycleCallbacks(observer);
+    application = null;
   }
 
   private final ImagePickerDelegate constructDelegate(final Activity setupActivity) {
