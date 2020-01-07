@@ -316,6 +316,10 @@ class Convert {
     if (zoomGesturesEnabled != null) {
       sink.setZoomGesturesEnabled(toBoolean(zoomGesturesEnabled));
     }
+    final Object liteModeEnabled = data.get("liteModeEnabled");
+    if (liteModeEnabled != null) {
+      sink.setLiteModeEnabled(toBoolean(liteModeEnabled));
+    }
     final Object myLocationEnabled = data.get("myLocationEnabled");
     if (myLocationEnabled != null) {
       sink.setMyLocationEnabled(toBoolean(myLocationEnabled));

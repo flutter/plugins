@@ -36,6 +36,7 @@ class GoogleMap extends StatefulWidget {
     this.rotateGesturesEnabled = true,
     this.scrollGesturesEnabled = true,
     this.zoomGesturesEnabled = true,
+    this.liteModeEnabled = false,
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
@@ -90,6 +91,9 @@ class GoogleMap extends StatefulWidget {
 
   /// True if the map view should respond to zoom gestures.
   final bool zoomGesturesEnabled;
+
+  /// True if the map view should be in lite mode. Android only. See https://developers.google.com/maps/documentation/android-sdk/lite#overview_of_lite_mode for more details.
+  final bool liteModeEnabled;
 
   /// True if the map view should respond to tilt gestures.
   final bool tiltGesturesEnabled;
@@ -393,6 +397,7 @@ class _GoogleMapOptions {
     this.tiltGesturesEnabled,
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
+    this.liteModeEnabled,
     this.myLocationEnabled,
     this.myLocationButtonEnabled,
     this.padding,
@@ -413,6 +418,7 @@ class _GoogleMapOptions {
       tiltGesturesEnabled: map.tiltGesturesEnabled,
       trackCameraPosition: map.onCameraMove != null,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
+      liteModeEnabled: map.liteModeEnabled,
       myLocationEnabled: map.myLocationEnabled,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
       padding: map.padding,
@@ -441,6 +447,8 @@ class _GoogleMapOptions {
   final bool trackCameraPosition;
 
   final bool zoomGesturesEnabled;
+
+  final bool liteModeEnabled;
 
   final bool myLocationEnabled;
 
@@ -472,6 +480,10 @@ class _GoogleMapOptions {
     addIfNonNull('scrollGesturesEnabled', scrollGesturesEnabled);
     addIfNonNull('tiltGesturesEnabled', tiltGesturesEnabled);
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
+    addIfNonNull('liteModeEnabled', liteModeEnabled);
+    if (liteModeEnabled != null && liteModeEnabled && !Platform.isAndroid) {
+      print('Warning: liteModeEnabled is Android only');
+    }
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);

@@ -69,6 +69,7 @@ final class GoogleMapController
   private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
   private final PluginRegistry.Registrar registrar;
+  private final GoogleMapOptions options;
   private final MapView mapView;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
@@ -101,6 +102,7 @@ final class GoogleMapController
     this.context = context;
     this.activityState = activityState;
     this.registrar = registrar;
+    this.options = options;
     this.mapView = new MapView(context, options);
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel =
@@ -338,6 +340,11 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
           break;
         }
+      case "map#isLiteModeEnabled":
+        {
+          result.success(options.getLiteMode());
+          break;
+        }
       case "map#isScrollGesturesEnabled":
         {
           result.success(googleMap.getUiSettings().isScrollGesturesEnabled());
@@ -476,17 +483,21 @@ final class GoogleMapController
   }
 
   // @Override
-  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView
+  // interface, but the maximum
   // does. This will override it when available even with the annotation commented out.
   public void onInputConnectionLocked() {
-    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126
+    // is fixed in stable.
   };
 
   // @Override
-  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView
+  // interface, but the maximum
   // does. This will override it when available even with the annotation commented out.
   public void onInputConnectionUnlocked() {
-    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126
+    // is fixed in stable.
   };
 
   @Override
@@ -612,6 +623,12 @@ final class GoogleMapController
   @Override
   public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
     googleMap.getUiSettings().setZoomGesturesEnabled(zoomGesturesEnabled);
+  }
+
+  /** This call will have no effect on already created map */
+  @Override
+  public void setLiteModeEnabled(boolean liteModeEnabled) {
+    options.liteMode(liteModeEnabled);
   }
 
   @Override
