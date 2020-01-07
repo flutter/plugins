@@ -1,3 +1,7 @@
+## 0.3.19+3
+
+* Setup XCTests.
+
 ## 0.3.19+2
 
 * Migrate from deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
