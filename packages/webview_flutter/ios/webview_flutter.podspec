@@ -18,4 +18,10 @@ A WebView Plugin for Flutter.
 
   s.platform = :ios, '8.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'Tests/**/*'
+    test_spec.dependency 'OCMock','3.5'
+    test_spec.dependency 'Flutter'
+  end
 end
