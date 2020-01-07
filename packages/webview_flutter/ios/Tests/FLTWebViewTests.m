@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Flutter/Flutter.h>
-#import <OCMock/OCMock.h>
-#import <XCTest/XCTest.h>
-
+@import Flutter;
+@import OCMock;
+@import XCTest;
 @import webview_flutter;
 
 @interface FLTWebViewTests : XCTestCase
