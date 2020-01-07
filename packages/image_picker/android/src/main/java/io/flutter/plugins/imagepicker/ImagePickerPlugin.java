@@ -38,6 +38,12 @@ public class ImagePickerPlugin
     }
 
     @Override
+    public void onCreate(@NonNull LifecycleOwner owner) {}
+
+    @Override
+    public void onStart(@NonNull LifecycleOwner owner) {}
+
+    @Override
     public void onResume(@NonNull LifecycleOwner owner) {}
 
     @Override
