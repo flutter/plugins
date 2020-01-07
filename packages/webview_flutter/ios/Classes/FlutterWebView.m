@@ -79,10 +79,9 @@
 
     if (@available(iOS 11.0, *)) {
       _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    }
-    if (@available(iOS 13.0, *)) {
-      _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-      _webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
+      if (@available(iOS 13.0, *)) {
+        _webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
+      }
     }
 
     [self applySettings:settings];
