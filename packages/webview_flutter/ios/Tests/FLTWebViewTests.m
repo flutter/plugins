@@ -7,9 +7,7 @@
 @import XCTest;
 @import webview_flutter;
 
-@end
-
-    @interface FLTWebViewTests : XCTestCase
+@interface FLTWebViewTests : XCTestCase
 
 @property(strong, nonatomic) NSObject<FlutterBinaryMessenger> *mockBinaryMessenger;
 
