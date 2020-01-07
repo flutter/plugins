@@ -59,8 +59,8 @@
                                     binaryMessenger:self.mockBinaryMessenger];
     UIView *view = controller.view;
     XCTAssertTrue([view isKindOfClass:WKWebView.class]);
-    WKWebView *webView = (WKWebView *)view XCTAssertFalse(
-        webView.scrollView.automaticallyAdjustsScrollIndicatorInsets);
+    WKWebView *webView = (WKWebView *)view;
+    XCTAssertFalse(webView.scrollView.automaticallyAdjustsScrollIndicatorInsets);
   }
 }
 
