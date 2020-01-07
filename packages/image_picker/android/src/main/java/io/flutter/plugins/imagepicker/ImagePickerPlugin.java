@@ -189,8 +189,7 @@ public class ImagePickerPlugin
     observer = new LifeCycleObserver(activity);
     if (registrar != null) {
       // V1 embedding setup for activity listeners.
-      application.registerActivityLifecycleCallbacks(
-          observer);
+      application.registerActivityLifecycleCallbacks(observer);
       registrar.addActivityResultListener(delegate);
       registrar.addRequestPermissionsResultListener(delegate);
     } else {
